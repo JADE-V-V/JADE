@@ -1,0 +1,162 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Nov  4 16:52:09 2019
+
+@author: Davide Laghi
+"""
+import inputfile as ipt
+import matreader as mat
+import os
+import subprocess
+import shutil
+
+from copy import deepcopy
+from tqdm import tqdm
+
+#Relative path to WW folder for sphere leakage test
+vtr_data_folder = os.path.join('Benchmarks inputs','VRT')
+
+
+class Test():
+    """
+    Class representing a general test. This class will have to be extended for
+    specific tests.
+    """
+
+    def __init__(self,inp,lib,config):
+        """
+        inp: (str) path to inputfile blueprint
+        lib: (str) library suffix to use
+        config: (DataFrame row) configuration options for the test
+        """
+        #Test Library
+        self.lib = lib
+        
+        #Configuration options for the test
+        self.config = config
+        
+        # MCNP original input
+        self.original_inp = inp
+        
+        #Generate input file template
+        self.inp = ipt.InputFile.from_text(inp)
+        
+        self.name = self.inp.name
+        
+        #Add the stop card according to config
+        config = config.dropna()
+        try:
+            nps = config['NPS cut-off']
+        except KeyError:
+            nps = None
+        try:
+            ctme = config['CTME cut-off']
+        except KeyError:
+            ctme = None
+        try:
+            tally = config['Relative Error cut-off'].split('-')[0]
+            error = config['Relative Error cut-off'].split('-')[1]
+            precision = (tally,error)
+        except KeyError:
+            precision = None
+        self.inp.add_stopCard(nps,ctme,precision)
+        
+        #Directory where the MCNP run will be performed
+        self.MCNPdir = None
+    
+    def translate_input(self,lib):
+        """
+        Returns the test input translated using the specified library.
+        
+        lib: (str) suffix of the library to translate to
+        """
+        pass#TODO
+    
+    
+    def run(self,cpu=1):
+        """
+        Run Test
+        """
+        code = 'mcnp6'
+        command = 'name='+self.name+' tasks '+cpu
+        subprocess.call([code,command], cwd=self.MCNPdir) #changing directory
+    
+
+class SphereTest(Test):
+    """
+    Class handling the sphere test
+    """        
+    
+    def generate_test(self,libmanager,directory):
+        '''
+        Generate all sphere test for a selected library
+        
+        libmanager: (LibManager) libraries handler
+        directory: (str) path to sphere input folder
+        '''
+        #Get zaids available into the selected library
+        zaids = libmanager.get_libzaids(self.lib)
+        
+        testname = self.inp.name
+        motherdir = os.path.join(directory,testname)
+        #If previous results are present they are canceled
+        if os.path.exists(motherdir):
+            shutil.rmtree(motherdir)
+        os.mkdir(motherdir)
+
+        
+        self.MCNPdir = motherdir
+        
+        for zaid in tqdm(zaids[:10]):
+            #Get VRT files
+            cp = os.path.dirname(os.getcwd())
+            directoryVRT = os.path.join(cp,vtr_data_folder,zaid)
+            edits_file = os.path.join(directoryVRT,'inp_edits.txt')
+            ww_file = os.path.join(directoryVRT,'wwinp')
+        
+            #Adjourn the material cars for the zaid
+            zaid = mat.Zaid(1, zaid[:-3], zaid[-3:], self.lib)
+            name,formula = libmanager.get_zaidname(zaid)
+            submat = mat.SubMaterial('M1',[zaid],header='C '+name+' '+formula)
+            material = mat.Material([zaid],None,'M1',submaterials=[submat])
+            matlist = mat.MatCardsList([material])
+            
+            #Generate the new input
+            newinp = deepcopy(self.inp)
+            newinp.matlist = matlist #Assign material
+            #adjourn density
+            newinp.change_density(zaid)
+            
+            if os.path.exists(directoryVRT):
+                newinp.add_edits(edits_file) #Add variance reduction 
+            
+            #Write new input file
+            outfile = testname+'_'+zaid.element+zaid.isotope+'_'+formula+'_'
+            outdir = testname+'_'+zaid.element+zaid.isotope+'_'+formula
+            outpath = os.path.join(motherdir,outdir)
+            os.mkdir(outpath)
+            outinpfile = os.path.join(outpath,outfile)
+            newinp.write(outinpfile)
+            
+            #Copy also wwinp file
+            if os.path.exists(directoryVRT):
+                outwwfile = os.path.join(outpath,'wwinp')
+                shutil.copyfile(ww_file,outwwfile)
+            
+    
+    def run(self,cpu=1):
+        """
+        Sphere test needs an ad-hoc run method to run all zaids tests
+        """
+        for folder in tqdm(os.listdir(self.MCNPdir)):
+            path = os.path.join(self.MCNPdir,folder)
+            name = folder+'_'
+            code = 'mcnp6'
+            command = 'name='+name+' wwinp=wwinp tasks '+ str(cpu)
+            subprocess.run([code,command], cwd=path, creationflags =subprocess.CREATE_NEW_CONSOLE)
+            
+            
+
+def safe_mkdir(directory):
+    if not os.path.exists(directory):
+           os.mkdir(directory) 

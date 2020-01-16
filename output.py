@@ -13,6 +13,7 @@ import os
 import shutil
 import plotter
 from tqdm import tqdm
+import atlas as at
 
 
 class BenchmarkOutput:
@@ -49,6 +50,7 @@ class BenchmarkOutput:
         test_path = r'Tests\01_MCNP_Run'  # path to runned tests
 
         cp = os.path.dirname(os.getcwd())
+        self.code_path = os.path.join(cp, 'Code')
         self.test_path = os.path.join(cp, test_path, lib, testname)
         out = os.path.join(cp, output_path, lib)
         if not os.path.exists(out):
@@ -151,6 +153,17 @@ class SphereOutput(BenchmarkOutput):
                 outname = str(zaidnum)+'-'+self.lib+'-'+str(tally)
                 plot = plotter.Plotter(data, title, outpath, outname)
                 plot.binned_plot(ylabel)
+
+        print(' Generating PLots Atlas...')
+        # Printing Atlas
+        template = os.path.join(self.code_path, 'Templates',
+                                'AtlasTemplate.docx')
+        atlas = at.Atlas(template, self.lib)
+        atlas.build(outpath)
+        atlas.save(self.atlas_path)
+        # Remove tmp images
+        shutil.rmtree(outpath)
+
         print(' Single library post-processing completed')
 
     def pp_excel_single(self):

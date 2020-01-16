@@ -16,71 +16,19 @@ Created on Thu Oct 24 09:26:52 2019
 # from subprocess import Popen, CREATE_NEW_CONSOLE
 # import Parser as par
 # import xlwings as xw
-import matplotlib.pyplot as plt
-from matplotlib.ticker import LogLocator, AutoMinorLocator, MultipleLocator
+# import atlas as at
 
-
-def plot_sphereTest(data, title, comparison=False):
-
-    # General parameters
-    fontsize = 20  # fontsize for text in plot
-    xlabel = 'Energy [MeV]'
-    if comparison:
-        nrows = 3
-    else:
-        nrows = 2
-
-    # Set properties for the plot spacing
-    gridspec_kw = {'height_ratios': [4, 1], 'hspace': 0.05}
-    # Initiate plot
-    fig, axes = plt.subplots(nrows=nrows, ncols=1, sharex=True,
-                             figsize=(18, 13.5),
-                             ridspec_kw=gridspec_kw)
-    fig.title(title, fontsize=fontsize+4)
-
-    # --- Main plot ---
-    ax1 = axes[0]
-    # Labels
-    ax1.set_ylabel('Flux').set_fontsize(fontsize)  # Y axis label
-
-    # Ticks
-    subs = (0.2, 0.4, 0.6, 0.8)
-    ax1.set_xscale('log')
-    ax1.set_yscale('log')
-    ax1.xaxis.set_major_locator(LogLocator(base=10, numticks=15))
-    ax1.yaxis.set_major_locator(LogLocator(base=10, numticks=15))
-    ax1.xaxis.set_minor_locator(LogLocator(base=10.0, subs=subs, numticks=12))
-    ax1.yaxis.set_minor_locator(LogLocator(base=10.0, subs=subs, numticks=12))
-
-    # Plot Data
-    for dic_data in data['main']:
-        x = dic_data['x']
-        y = dic_data['y']
-        err = y*dic_data['err']
-
-        for dataset in [x, y, err]:
-            dataset = [0]+list[dataset]
-
-        ax1.errorbar(x, y, drawstyle='steps', linewidth=0.85, yerr=err,
-                     label=dic_data['ylabel'], elinewidth=0.5)
-
-    # --- Error Plot ---
-    ax2 = axes[1]
-
-    # --- Comparison Plot ---
-    # TODO
-
-    axes[-1].set_xlabel(xlabel).set_fontsize(fontsize)
-
-    # --- Common Features ---
-    for ax in axes:
-        # Grid control
-        ax.grid()
-        ax.grid('True', which='minor')
-        # Legend
-        ax.legend(loc='best', prop={'size': fontsize-2})
-    #x.xaxis.set_minor_locator(LogLocator(base=10,numticks=15))
-    
+# template = r'C:\Users\laghi\Documents\03_dottorato\04_F4E\01_JADE\Code\Templates\AtlasTemplate.docx'
+# lib = '71c'
+# atlas = at.Atlas(template, lib)
+# atlas.build(r'C:\Users\laghi\Documents\03_dottorato\04_F4E\01_JADE\Tests\02_Output\Single Libraries\71c\Sphere\Atlas\tmp')
+# atlas.save(r'C:\Users\laghi\Documents\03_dottorato\04_F4E\01_JADE\Tests\02_Output\Single Libraries\71c\Sphere\Atlas')
+#     #x.xaxis.set_minor_locator(LogLocator(base=10,numticks=15))
+import status
+st = status.Status()
+print(st.run_tree)
+print(st.comparison_tree)
+print(st.single_tree)    
     #ax.tick_params(which='major', width=1.00)
     #ax.tick_params(which='major', length=5)
     #ax.tick_params(which='minor', width=0.75)

@@ -142,7 +142,7 @@ def check_override_pp(session):
     """
     # Check if library is available
     while True:
-        lib = input(' Libraries to post-process (e.g. 31c-71c): ')
+        lib_input = input(' Libraries to post-process (e.g. 31c-71c): ')
         testpath = os.path.join(os.path.dirname(os.getcwd()), 'Tests',
                                 mcnptag, lib)
         if os.path.exists(testpath):
@@ -154,35 +154,42 @@ def check_override_pp(session):
               ''')
 
     # Individuate libraries to pp
-    lib = lib.split('-')
+    lib = lib_input.split('-')
     if len(lib) == 1:
-        lib = lib[0]
         tagpp = 'Single Libraries'
     else:
         tagpp = 'Comparison'
 
+    # Check if single library post-process is missing
+    if tag
+
     # Check if outputs are already present
     config = session.conf.comp_default
+    override_flag = False
     to_override = []
     for idx, row in config.iterrows():
         filename = str(row['File Name'])
         testname = filename.split('.')[0]
 
         # Check if outputs of the test already exist
-        if os.path.exists(os.path.join(os.path.dirname(os.getcwd()), 'Tests',
-                                       outtag, tagpp, lib, testname)):
+        if os.path.exists(os.path.join(os.path.dirname(os.getcwd()),
+                                       'Tests', outtag, tagpp, lib,
+                                       testname)):
             # Check if the test needs to be post-processed
             pp = row['Post-Processing']
             if pp is True or pp == 'True' or pp == 'true':
                 to_override.append(testname)
+                override_flag = True
 
     # Ask for override
-    if len(to_override) > 0:
+    if override_flag:
         while True:
             print("""
  The following benchmark(s) have already been post-processed:""")
-            for test in to_override:
-                print(' - '+test)
+            # for lib, to_override in override.items():
+            #     print(' Lib')
+                for test in to_override:
+                    print('     - '+test)
 
             print("""
  You can manage the selection of benchmarks to post-pr. in the Config.xlsx file

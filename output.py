@@ -132,7 +132,7 @@ class SphereOutput(BenchmarkOutput):
         print(' Generating Excel Recap...')
         self.pp_excel_single()
         self.print_raw()
-        print(' Creating Plots Atlas...')
+        print(' Creating Atlas...')
         outpath = os.path.join(self.atlas_path, 'tmp')
         os.mkdir(outpath)
 

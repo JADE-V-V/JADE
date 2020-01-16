@@ -8,6 +8,7 @@ import gui
 import configuration as cnf
 import libmanager
 import os
+import status
 
 
 class Session:
@@ -29,6 +30,40 @@ class Session:
         cp = os.path.dirname(cp)
         log = os.path.join(cp, 'Utilities', 'Log.txt')
         self.log = cnf.Log(log)
+
+        # Initialize status
+        self.state = status.Status(self)
+
+    def check_active_tests(self, action):
+        """
+        Check the configuration file for active benchmarks to perform or
+        post-process
+
+        Parameters
+        ----------
+        session : Session
+            JADE session
+        action : str
+            either 'Post-Processing' or 'Run' (as in Configuration file)
+
+        Returns
+        -------
+        to_perform : list
+            list of active test names
+
+        """
+        # Check Which benchmarks are to perform
+        config = self.conf.comp_default
+        to_perform = []
+        for idx, row in config.iterrows():
+            filename = str(row['File Name'])
+            testname = filename.split('.')[0]
+
+            pp = row[action]
+            if pp is True or pp == 'True' or pp == 'true':
+                to_perform.append(testname)
+
+        return to_perform
 
 
 if __name__ == "__main__":

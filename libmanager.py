@@ -139,3 +139,24 @@ class LibManager:
         formula = newiso['E'].loc[i]+'-'+str(int(zaid.isotope))
 
         return name, formula
+
+    def select_lib(self):
+        """
+        Prompt an library input selection with Xsdir availabilty check
+
+        Returns
+        -------
+        lib : str
+            Library to assess.
+
+        """
+        while True:
+            lib = input(' Library to assess (e.g. 31c): ')
+            if lib in self.libraries:
+                break
+            else:
+                print('''
+                  Error:
+                  The selected library is not available.
+                  ''')
+        return lib

@@ -9,6 +9,7 @@ import sys
 import computational as cmp
 import utilitiesgui as uty
 import postprocess as pp
+import status
 
 
 def clear_screen():
@@ -132,11 +133,12 @@ def comploop(session):
 
         elif option == 'assess':
             # Select and check library
-            lib, ans = uty.check_override(session)
+            lib = session.lib_manager.select_lib()
+            ans = session.state.check_override_run(lib, session)
             # If checks are ok perform assessment
             if ans:
                 # Check active tests
-                to_perform = uty.check_active_tests(session, 'Run')
+                to_perform = session.check_active_tests('Run')
                 # Logging
                 bartext = 'Computational benchmark execution started'
                 session.log.bar_adjourn(bartext)
@@ -203,6 +205,34 @@ def pploop(session):
 
         elif option == 'pp':
             # Select and check library
+            ans, to_single_pp = session.state.check_override_pp(session)
+            # If checks are ok perform assessment
+            if ans:
+                lib = to_single_pp[0]
+                # Check active tests
+                to_perform = session.check_active_tests('Post-Processing')
+                # Logging
+                bartext = 'Post-Processing started'
+                session.log.bar_adjourn(bartext)
+                session.log.adjourn('Selected Library: '+lib, spacing=False)
+                print('\n ########################### POST-PROCESSING STARTED ###########################\n')
+
+                if 'Sphere' in to_perform:
+                    try:
+                        pp.postprocessSphere(session, lib)
+                    except PermissionError as e:
+                        clear_screen()
+                        print(pp_menu)
+                        print(' '+str(e))
+                        print(' Please close all excel files and retry')
+                        continue
+
+                print('\n ######################### POST-PROCESSING ENDED ###############################\n')
+                t = 'Post-Processing completed'
+                session.log.bar_adjourn(t, spacing=False)
+
+        elif option == 'compare':
+            # Select and check library
             lib, ans = uty.check_override_pp(session)
             # If checks are ok perform assessment
             if ans:
@@ -227,33 +257,6 @@ def pploop(session):
                 print('\n ######################### POST-PROCESSING ENDED ###############################\n')
                 t = 'Post-Processing completed'
                 session.log.bar_adjourn(t, spacing=False)
-
-            elif option == 'compare':
-                # Select and check library
-                lib, ans = uty.check_override_pp(session)
-                # If checks are ok perform assessment
-                if ans:
-                    # Check active tests
-                    to_perform = uty.check_active_tests(session, 'Post-Processing')
-                    # Logging
-                    bartext = 'Post-Processing started'
-                    session.log.bar_adjourn(bartext)
-                    session.log.adjourn('Selected Library: '+lib, spacing=False)
-                    print('\n ########################### POST-PROCESSING STARTED ###########################\n')
-    
-                    if 'Sphere' in to_perform:
-                        try:
-                            pp.postprocessSphere(session, lib)
-                        except PermissionError as e:
-                            clear_screen()
-                            print(pp_menu)
-                            print(' '+str(e))
-                            print(' Please close all excel files and retry')
-                            continue
-    
-                    print('\n ######################### POST-PROCESSING ENDED ###############################\n')
-                    t = 'Post-Processing completed'
-                    session.log.bar_adjourn(t, spacing=False)
 
             else:
                 clear_screen()

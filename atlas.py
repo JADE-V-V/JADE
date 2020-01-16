@@ -51,7 +51,7 @@ class Atlas():
         for tally in tallies:
             self.doc.add_heading('Tally N.'+str(tally), level=2)
             masked = images[images['tally'] == int(tally)]
-            #blablablab
+            #blablablabòohkokokokkokèkoèkèo
 
     def save(self, outpath, pdfprint=True):
         outpath_word = os.path.join(outpath, self.outname+'.docx')

@@ -143,7 +143,7 @@ class Plotter():
 
                 # Main plot
                 if idx > 0:
-                    tag = 'T'+str(idx)+' :'
+                    tag = 'T'+str(idx)+': '
                 else:
                     tag = 'R: '
                 ax1.step(x, y, label=tag+dic_data['ylabel'], color=colors[idx])

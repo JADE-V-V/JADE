@@ -193,10 +193,33 @@ class Status():
 
         return test_runned
 
-    def check_pp_single(self, lib, session):
+    def check_pp_single(self, lib, session, tree='single'):
+        """
+        Check if the post processing of a single library or a comparison has
+        been already done. To consider it done, all benchmarks must have been
+        post-processed
+
+        Parameters
+        ----------
+        lib : string
+            library/ies to check.
+        session : Session
+            JADE session.
+        tree : string, optional
+            Either 'single' to check in the single pp tree or 'comparison'
+            to check into the comparison one. The default is 'single'.
+
+        Returns
+        -------
+        Boolean
+            True if PP has been done.
+
+        """
         self.update_pp_status()
+        trees = {'single': self.single_tree,
+                 'comparison': self.comparison_tree}
         try:
-            library_tests = self.single_tree[lib]
+            library_tests = trees[tree][lib]
             to_pp = session.check_active_tests('Post-Processing')
             ans = True
             for test in to_pp:
@@ -210,7 +233,9 @@ class Status():
         """
         Asks for the library/ies to post-process and checks which tests have
         already been performed and would be overidden according to the
-        configuration file
+        configuration file.
+        This can be used also to check if in a post processing of multiple
+        libraries wich single library post processing is missing.
 
         Parameters
         ----------
@@ -219,7 +244,10 @@ class Status():
 
         Returns
         -------
-        lib, ans
+        lib: str
+            Library/ies to post process
+        ans: Boolean
+            True if the PP can begin (Possible override has been accepted).
 
         """
         lib_input = input(' Libraries to post-process (e.g. 31c-71c): ')
@@ -247,7 +275,8 @@ class Status():
             for lib in libs:
                 if not self.check_pp_single(lib, session):
                     to_single_pp.append(lib)
-
+            
+            # Single Library PP
             if tagpp == 'Single Libraries':
                 # Ask for override
                 if len(to_single_pp) == 0:
@@ -273,5 +302,32 @@ class Status():
 
                 else:
                     ans = True
+            
+            # Libraries comparison PP
+            elif tagpp == 'Comparison':
+                # Check if single pp has been done
+                for lib in libs:
+                    # Ask for override
+                    if self.check_pp_single(lib_input, session):
+
+                        while True:
+                            print("""
+ A comparison for these libraries was already performed.
+""")
+                            i = input(' Would you like to override the results?(y/n) ')
+                            if i == 'y':
+                                ans = True
+                                logtext = '\nThe Post-Process for library ' + \
+                                    str(lib)+' has been overwritten'
+                                session.log.adjourn(logtext)
+                                break
+                            elif i == 'n':
+                                ans = False
+                                break
+                            else:
+                                print('\n please select one between "y" or "n"')
+    
+                    else:
+                        ans = True
 
         return ans, to_single_pp

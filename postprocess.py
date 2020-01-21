@@ -15,3 +15,7 @@ def postprocessSphere(session, lib):
     out.single_postprocess()
     session.log.adjourn('Sphere Leakage benchmark post-processing coompleted' +
                         '    ' + str(datetime.datetime.now()))
+
+
+def compareSphere(session, lib):
+    pass

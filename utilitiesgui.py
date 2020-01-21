@@ -55,3 +55,4 @@ def translate_input(session, lib, inputfile):
 
 def print_libraries(libmanager):
     print(libmanager.libraries)
+

@@ -205,7 +205,7 @@ def pploop(session):
 
         elif option == 'pp':
             # Select and check library
-            ans, to_single_pp = session.state.check_override_pp(session)
+            ans, to_single_pp, lib_input = session.state.check_override_pp(session)
             # If checks are ok perform assessment
             if ans:
                 lib = to_single_pp[0]
@@ -232,35 +232,51 @@ def pploop(session):
                 session.log.bar_adjourn(t, spacing=False)
 
         elif option == 'compare':
+
             # Select and check library
-            ans, to_single_pp = session.state.check_override_pp(session)
-            # if ans:
-            #     # Check active tests
-            #     to_perform = uty.check_active_tests(session, 'Post-Processing')
-            #     # Logging
-            #     bartext = 'Post-Processing started'
-            #     session.log.bar_adjourn(bartext)
-            #     session.log.adjourn('Selected Library: '+lib, spacing=False)
-            #     print('\n ########################### POST-PROCESSING STARTED ###########################\n')
+            ans, to_single_pp, lib_input = session.state.check_override_pp(session)
 
-            #     if 'Sphere' in to_perform:
-            #         try:
-            #             pp.postprocessSphere(session, lib)
-            #         except PermissionError as e:
-            #             clear_screen()
-            #             print(pp_menu)
-            #             print(' '+str(e))
-            #             print(' Please close all excel files and retry')
-            #             continue
+            if ans:
+                # Logging
+                bartext = 'Comparison Post-Processing started'
+                session.log.bar_adjourn(bartext)
+                session.log.adjourn('Selected Library: '+lib_input,
+                                    spacing=True)
+                print('\n ########################### COMPARISON STARTED ###########################\n')
 
-            #     print('\n ######################### POST-PROCESSING ENDED ###############################\n')
-            #     t = 'Post-Processing completed'
-            #     session.log.bar_adjourn(t, spacing=False)
+                # Check active tests
+                to_perform = session.check_active_tests('Post-Processing')
 
-            else:
-                clear_screen()
-                print(computational_menu)
-                print(' Post-Processing dismissed.')
+                # Execut single pp
+                for lib in to_single_pp:
+                    if 'Sphere' in to_perform:
+                        try:
+                            print(' Single PP of library '+lib+' required')
+                            pp.postprocessSphere(session, lib)
+                            session.log.adjourn("""
+Additional Post-Processing of library:"""+lib+' completed', spacing=False)
+                        except PermissionError as e:
+                            clear_screen()
+                            print(pp_menu)
+                            print(' '+str(e))
+                            print(' Please close all excel files and retry')
+                            continue
+
+                # Execute Comparison
+                if 'Sphere' in to_perform:
+                    try:
+                        print(' comparison')
+                        pp.compareSphere(session, lib_input)
+                    except PermissionError as e:
+                        clear_screen()
+                        print(pp_menu)
+                        print(' '+str(e))
+                        print(' Please close all excel files and retry')
+                        continue
+
+                print('\n ######################### COMPARISON ENDED ###############################\n')
+                t = 'Post-Processing completed'
+                session.log.bar_adjourn(t, spacing=False)
 
         elif option == 'back':
             mainloop(session)

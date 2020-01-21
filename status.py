@@ -275,7 +275,7 @@ class Status():
             for lib in libs:
                 if not self.check_pp_single(lib, session):
                     to_single_pp.append(lib)
-            
+
             # Single Library PP
             if tagpp == 'Single Libraries':
                 # Ask for override
@@ -302,7 +302,7 @@ class Status():
 
                 else:
                     ans = True
-            
+
             # Libraries comparison PP
             elif tagpp == 'Comparison':
                 # Check if single pp has been done
@@ -317,7 +317,7 @@ class Status():
                             i = input(' Would you like to override the results?(y/n) ')
                             if i == 'y':
                                 ans = True
-                                logtext = '\nThe Post-Process for library ' + \
+                                logtext = '\nThe Post-Process for libraries ' + \
                                     str(lib)+' has been overwritten'
                                 session.log.adjourn(logtext)
                                 break
@@ -326,8 +326,7 @@ class Status():
                                 break
                             else:
                                 print('\n please select one between "y" or "n"')
-    
                     else:
                         ans = True
 
-        return ans, to_single_pp
+        return ans, to_single_pp, lib_input

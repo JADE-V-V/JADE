@@ -299,7 +299,7 @@ class SubMaterial:
                     fraction = str(item[1]*item[2]/ref_mass*zaid.fraction)
                     element = str(key)[:-3]
                     isotope = str(key)[-3:]
-                    library = str(item[0])
+                    library = item[0]
 
                     newzaids.append(Zaid(fraction, element, isotope, library))
 
@@ -308,7 +308,7 @@ class SubMaterial:
                     fraction = str(item[1]*zaid.fraction)
                     element = str(key)[:-3]
                     isotope = str(key)[-3:]
-                    library = str(item[0])
+                    library = item[0]
 
                     newzaids.append(Zaid(fraction, element, isotope, library))
 

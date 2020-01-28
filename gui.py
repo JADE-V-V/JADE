@@ -265,7 +265,6 @@ Additional Post-Processing of library:"""+lib+' completed', spacing=False)
                 # Execute Comparison
                 if 'Sphere' in to_perform:
                     try:
-                        print(' comparison')
                         pp.compareSphere(session, lib_input)
                     except PermissionError as e:
                         clear_screen()

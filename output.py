@@ -40,6 +40,10 @@ class BenchmarkOutput:
         if type(lib) == list and len(lib) > 1:
             self.single = False  # Indicator for single or comparison
             self.lib = lib
+            couples = []
+            for library in lib[1:]:
+                couples.append((lib[0],library))
+            self.couples = couples  # Couples of libraries to post process
             output_path = r'Tests\02_Output\Comparison'
         # SINGLE-LIBRARY
         else:
@@ -165,6 +169,44 @@ class SphereOutput(BenchmarkOutput):
         shutil.rmtree(outpath)
 
         print(' Single library post-processing completed')
+    
+    def compare(self):
+        print(' Generating Excel Recap...')
+        # self.pp_excel_single()
+        # self.print_raw()
+        # print(' Creating Atlas...')
+        # outpath = os.path.join(self.atlas_path, 'tmp')
+        # os.mkdir(outpath)
+
+        # for tally, title, ylabel in \
+        #     [(2, 'Leakage Neutron Flux (175 groups)', 'Neutron Flux'),
+        #      (32, 'Leakage Gamma Flux (24 groups)', 'Gamma Flux')]:
+
+        #     print(' Plotting tally n.'+str(tally))
+        #     for zaidnum, output in tqdm(self.outputs.items()):
+        #         title = title
+        #         tally_data = output.mdata.set_index('Tally N.').loc[tally]
+        #         energy = tally_data['Energy'].values
+        #         values = tally_data['Value'].values
+        #         error = tally_data['Error'].values
+        #         lib = {'x': energy, 'y': values, 'err': error,
+        #                'ylabel': str(zaidnum)+'.'+self.lib}
+        #         data = [lib]
+        #         outname = str(zaidnum)+'-'+self.lib+'-'+str(tally)
+        #         plot = plotter.Plotter(data, title, outpath, outname)
+        #         plot.binned_plot(ylabel)
+
+        # print(' Generating PLots Atlas...')
+        # # Printing Atlas
+        # template = os.path.join(self.code_path, 'Templates',
+        #                         'AtlasTemplate.docx')
+        # atlas = at.Atlas(template, self.lib)
+        # atlas.build(outpath)
+        # atlas.save(self.atlas_path)
+        # # Remove tmp images
+        # shutil.rmtree(outpath)
+
+        # print(' Single library post-processing completed')
 
     def pp_excel_single(self):
         """

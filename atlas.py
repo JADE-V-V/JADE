@@ -13,7 +13,7 @@ import pandas as pd
 
 
 class Atlas():
-    def __init__(self, template, lib):
+    def __init__(self, template, name):
         """
         Atlas of plots for post-processing
 
@@ -21,25 +21,25 @@ class Atlas():
         ----------
         template : Path/str
             Word template for atlas
-        lib : list/str
-            libraries to post-process
+        # lib : list/str
+        #     libraries to post-process
 
         Returns
         -------
         None.
 
         """
-        if type(lib) == list and len(lib) > 1:
-            self.comparison = True
-            name = ''
-            for l in lib:
-                name = name+l+'-'
-            del[name[-1]]
-        else:
-            self.comparison = False
-            name = lib
+        # if type(lib) == list and len(lib) > 1:
+        #     self.comparison = True
+        #     name = ''
+        #     for l in lib:
+        #         name = name+l+'-'
+        #     del[name[-1]]
+        # else:
+        #     self.comparison = False
+        #     name = lib
 
-        self.lib = lib  # Libraries to post process
+        # self.lib = str(lib)  # Libraries to post process
         self.name = name  # Name of the Atlas (from libraries)
         # Open The Atlas template
         doc = docx.Document(template)
@@ -84,7 +84,7 @@ class Atlas():
             self.doc.add_heading('Tally N.'+str(tally), level=1)
             df = images.loc[tally]
             for idx, row in df.iterrows():
-                self.doc.add_heading('Zaid: '+row['zaid']+'.'+self.lib,
+                self.doc.add_heading('Zaid: '+row['zaid']+'.'+self.name,
                                      level=2)
                 self.insert_img(row['img'])
 

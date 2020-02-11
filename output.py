@@ -14,6 +14,7 @@ import shutil
 import plotter
 from tqdm import tqdm
 import atlas as at
+import numpy as np
 
 
 class BenchmarkOutput:
@@ -36,59 +37,187 @@ class BenchmarkOutput:
         """
         self.raw_data = {}  # Raw data
         self.testname = testname  # test name
+        test_path = r'Tests\01_MCNP_Run'  # path to runned tests
+        cp = os.path.dirname(os.getcwd())
+        self.code_path = os.path.join(cp, 'Code')
+
         # COMPARISON
         if type(lib) == list and len(lib) > 1:
             self.single = False  # Indicator for single or comparison
             self.lib = lib
             couples = []
+            tp = os.path.join(cp, test_path, lib[0], testname)
+            self.test_path = {lib[0]: tp}
+            output_path = r'Tests\02_Output\Comparisons'
             for library in lib[1:]:
-                couples.append((lib[0],library))
+                name = library+'_Vs_'+lib[0]
+                couples.append((lib[0], library, name))
+                tp = os.path.join(cp, test_path, library, testname)
+                self.test_path[library] = tp
+
+                # Generate library output path
+                out = os.path.join(cp, output_path, name)
+                if not os.path.exists(out):
+                    os.mkdir(out)
+
+                out = os.path.join(out, testname)
+                if os.path.exists(out):
+                    shutil.rmtree(out)
+                os.mkdir(out)
+                excel_path = os.path.join(out, 'Excel')
+                atlas_path = os.path.join(out, 'Atlas')
+                # raw_path = os.path.join(out, 'Raw Data')
+                os.mkdir(excel_path)
+                os.mkdir(atlas_path)
+                # os.mkdir(raw_path)
+                self.excel_path = excel_path
+                # self.raw_path = raw_path
+                self.atlas_path = atlas_path
+
             self.couples = couples  # Couples of libraries to post process
-            output_path = r'Tests\02_Output\Comparison'
+
         # SINGLE-LIBRARY
         else:
             self.single = True  # Indicator for single or comparison
             self.lib = str(lib)  # In case of 1-item list
+            self.test_path = os.path.join(cp, test_path, lib, testname)
             output_path = r'Tests\02_Output\Single Libraries'
 
-        test_path = r'Tests\01_MCNP_Run'  # path to runned tests
+            # Generate library output path
+            out = os.path.join(cp, output_path, lib)
+            if not os.path.exists(out):
+                os.mkdir(out)
 
-        cp = os.path.dirname(os.getcwd())
-        self.code_path = os.path.join(cp, 'Code')
-        self.test_path = os.path.join(cp, test_path, lib, testname)
-        out = os.path.join(cp, output_path, lib)
-        if not os.path.exists(out):
+            out = os.path.join(out, testname)
+            if os.path.exists(out):
+                shutil.rmtree(out)
             os.mkdir(out)
-
-        out = os.path.join(out, testname)
-        if os.path.exists(out):
-            shutil.rmtree(out)
-        os.mkdir(out)
-        excel_path = os.path.join(out, 'Excel')
-        atlas_path = os.path.join(out, 'Atlas')
-        raw_path = os.path.join(out, 'Raw Data')
-        os.mkdir(excel_path)
-        os.mkdir(atlas_path)
-        os.mkdir(raw_path)
-        self.excel_path = excel_path
-        self.raw_path = raw_path
-        self.atlas_path = atlas_path
+            excel_path = os.path.join(out, 'Excel')
+            atlas_path = os.path.join(out, 'Atlas')
+            raw_path = os.path.join(out, 'Raw Data')
+            os.mkdir(excel_path)
+            os.mkdir(atlas_path)
+            os.mkdir(raw_path)
+            self.excel_path = excel_path
+            self.raw_path = raw_path
+            self.atlas_path = atlas_path
 
 
 class SphereOutput(BenchmarkOutput):
 
-    def get_excel_data(self):
+    def single_postprocess(self):
         """
-        Get the results data for excel recap
+        Execute the full post-processing of a single library (i.e. excel,
+        raw data and atlas)
 
         Returns
         -------
-        results : DataFrame
-            Excel values for different tallies for all zaids
-        errors : DataFrame
-            Average error for different tallies for all zaids
+        None.
 
         """
+        print(' Generating Excel Recap...')
+        self.pp_excel_single()
+        self.print_raw()
+        print(' Creating Atlas...')
+        outpath = os.path.join(self.atlas_path, 'tmp')
+        os.mkdir(outpath)
+
+        for tally, title, ylabel in \
+            [(2, 'Leakage Neutron Flux (175 groups)', 'Neutron Flux'),
+             (32, 'Leakage Gamma Flux (24 groups)', 'Gamma Flux')]:
+
+            print(' Plotting tally n.'+str(tally))
+            for zaidnum, output in tqdm(self.outputs.items()):
+                title = title
+                tally_data = output.mdata.set_index('Tally N.').loc[tally]
+                energy = tally_data['Energy'].values
+                values = tally_data['Value'].values
+                error = tally_data['Error'].values
+                lib = {'x': energy, 'y': values, 'err': error,
+                       'ylabel': str(zaidnum)+'.'+self.lib}
+                data = [lib]
+                outname = str(zaidnum)+'-'+self.lib+'-'+str(tally)
+                plot = plotter.Plotter(data, title, outpath, outname)
+                plot.binned_plot(ylabel)
+
+        print(' Generating Plots Atlas...')
+        # Printing Atlas
+        template = os.path.join(self.code_path, 'Templates',
+                                'AtlasTemplate.docx')
+        atlas = at.Atlas(template, self.lib)
+        atlas.build(outpath)
+        atlas.save(self.atlas_path)
+        # Remove tmp images
+        shutil.rmtree(outpath)
+
+        print(' Single library post-processing completed')
+
+    def compare(self, state):
+        print(' Generating Excel Recap...')
+        self.pp_excel_comparison(state)
+        print(' Creating Atlas...')
+        outpath = os.path.join(self.atlas_path, 'tmp')
+        os.mkdir(outpath)
+
+        libraries = []
+        outputs = []
+        for libname, outputslib in self.outputs.items():
+            libraries.append(libname)
+            outputs.append(outputslib)
+
+        globalname = ''
+        for lib in libraries:
+            globalname = globalname + lib + '_Vs_'
+
+        globalname = globalname[:-4]
+        print(globalname)
+
+        for tally, title, ylabel in \
+            [(2, 'Leakage Neutron Flux (175 groups)', 'Neutron Flux'),
+             (32, 'Leakage Gamma Flux (24 groups)', 'Gamma Flux')]:
+
+            print(' Plotting tally n.'+str(tally))
+            for zaidnum, outputdummy in tqdm(outputs[0].items()):
+                title = title
+                data = []
+                for idx, output in enumerate(outputs):
+                    tally_data = output[zaidnum].mdata.set_index('Tally N.').loc[tally]
+                    energy = tally_data['Energy'].values
+                    values = tally_data['Value'].values
+                    error = tally_data['Error'].values
+                    lib = {'x': energy, 'y': values, 'err': error,
+                           'ylabel': str(zaidnum)+'.'+libraries[idx]}
+                    data.append(lib)
+
+                outname = str(zaidnum)+'-'+globalname+'-'+str(tally)
+                plot = plotter.Plotter(data, title, outpath, outname)
+                plot.binned_plot(ylabel)
+
+        print(' Generating Plots Atlas...')
+        # Printing Atlas
+        template = os.path.join(self.code_path, 'Templates',
+                                'AtlasTemplate.docx')
+        atlas = at.Atlas(template, globalname)
+        atlas.build(outpath)
+        atlas.save(self.atlas_path)
+        # Remove tmp images
+        shutil.rmtree(outpath)
+
+        # print(' Single library post-processing completed')
+
+    def pp_excel_single(self):
+        """
+        Generate the single library results excel
+
+        Returns
+        -------
+        None.
+
+        """
+        template = os.path.join(os.getcwd(), 'Templates', 'Sphere_single.xlsx')
+        outpath = os.path.join(self.excel_path, 'Sphere_single_' +
+                               self.lib+'.xlsx')
+        # Get results
         results = []
         errors = []
         outputs = {}
@@ -129,99 +258,6 @@ class SphereOutput(BenchmarkOutput):
         self.outputs = outputs
         self.results = results
         self.errors = errors
-
-        return self.results, self.errors
-
-    def single_postprocess(self):
-        print(' Generating Excel Recap...')
-        self.pp_excel_single()
-        self.print_raw()
-        print(' Creating Atlas...')
-        outpath = os.path.join(self.atlas_path, 'tmp')
-        os.mkdir(outpath)
-
-        for tally, title, ylabel in \
-            [(2, 'Leakage Neutron Flux (175 groups)', 'Neutron Flux'),
-             (32, 'Leakage Gamma Flux (24 groups)', 'Gamma Flux')]:
-
-            print(' Plotting tally n.'+str(tally))
-            for zaidnum, output in tqdm(self.outputs.items()):
-                title = title
-                tally_data = output.mdata.set_index('Tally N.').loc[tally]
-                energy = tally_data['Energy'].values
-                values = tally_data['Value'].values
-                error = tally_data['Error'].values
-                lib = {'x': energy, 'y': values, 'err': error,
-                       'ylabel': str(zaidnum)+'.'+self.lib}
-                data = [lib]
-                outname = str(zaidnum)+'-'+self.lib+'-'+str(tally)
-                plot = plotter.Plotter(data, title, outpath, outname)
-                plot.binned_plot(ylabel)
-
-        print(' Generating PLots Atlas...')
-        # Printing Atlas
-        template = os.path.join(self.code_path, 'Templates',
-                                'AtlasTemplate.docx')
-        atlas = at.Atlas(template, self.lib)
-        atlas.build(outpath)
-        atlas.save(self.atlas_path)
-        # Remove tmp images
-        shutil.rmtree(outpath)
-
-        print(' Single library post-processing completed')
-    
-    def compare(self):
-        print(' Generating Excel Recap...')
-        # self.pp_excel_single()
-        # self.print_raw()
-        # print(' Creating Atlas...')
-        # outpath = os.path.join(self.atlas_path, 'tmp')
-        # os.mkdir(outpath)
-
-        # for tally, title, ylabel in \
-        #     [(2, 'Leakage Neutron Flux (175 groups)', 'Neutron Flux'),
-        #      (32, 'Leakage Gamma Flux (24 groups)', 'Gamma Flux')]:
-
-        #     print(' Plotting tally n.'+str(tally))
-        #     for zaidnum, output in tqdm(self.outputs.items()):
-        #         title = title
-        #         tally_data = output.mdata.set_index('Tally N.').loc[tally]
-        #         energy = tally_data['Energy'].values
-        #         values = tally_data['Value'].values
-        #         error = tally_data['Error'].values
-        #         lib = {'x': energy, 'y': values, 'err': error,
-        #                'ylabel': str(zaidnum)+'.'+self.lib}
-        #         data = [lib]
-        #         outname = str(zaidnum)+'-'+self.lib+'-'+str(tally)
-        #         plot = plotter.Plotter(data, title, outpath, outname)
-        #         plot.binned_plot(ylabel)
-
-        # print(' Generating PLots Atlas...')
-        # # Printing Atlas
-        # template = os.path.join(self.code_path, 'Templates',
-        #                         'AtlasTemplate.docx')
-        # atlas = at.Atlas(template, self.lib)
-        # atlas.build(outpath)
-        # atlas.save(self.atlas_path)
-        # # Remove tmp images
-        # shutil.rmtree(outpath)
-
-        # print(' Single library post-processing completed')
-
-    def pp_excel_single(self):
-        """
-        Generate the single library results excel
-
-        Returns
-        -------
-        None.
-
-        """
-        template = os.path.join(os.getcwd(), 'Templates', 'Sphere_single.xlsx')
-        outpath = os.path.join(self.excel_path, 'Sphere_single_' +
-                               self.lib+'.xlsx')
-        # Get results
-        results, errors = self.get_excel_data()
         # Write excel
         ex = ExcelOutputSheet(template, outpath)
         # Results
@@ -229,6 +265,90 @@ class SphereOutput(BenchmarkOutput):
         ex.insert_df(9, 2, errors, 1)
         ex.wb.sheets[0].range('D1').value = self.lib
         ex.save()
+
+    def pp_excel_comparison(self, state):
+        template = os.path.join(os.getcwd(), 'Templates',
+                                'Sphere_comparison.xlsx')
+
+        outputs = {}
+        iteration = 0
+        for reflib, tarlib, name in self.couples:
+            outpath = os.path.join(self.excel_path, 'Sphere_comparison_' +
+                                   name+'.xlsx')
+            # Get results
+            dfs = []
+            iteration = iteration+1
+
+            for test_path in [self.test_path[reflib], self.test_path[tarlib]]:
+                results = []
+
+                outputs_lib = {}
+                for folder in os.listdir(test_path):
+                    results_path = os.path.join(test_path, folder)
+                    pieces = folder.split('_')
+                    # Get zaid
+                    zaidnum = pieces[-2]
+                    zaidname = pieces[-1]
+                    # Get mfile
+                    for file in os.listdir(results_path):
+                        if file[-1] == 'm':
+                            mfile = file
+
+                    # Parse output
+                    output = MCNPoutput(os.path.join(results_path, mfile))
+                    outputs_lib[zaidnum] = output
+
+                    res, columns = output.get_comparison_data()
+                    res.append(int(zaidnum))
+                    res.append(zaidname)
+
+                    results.append(res)
+
+                # Add reference library outputs
+                if iteration == 1:
+                    outputs[reflib] = outputs_lib
+
+                if test_path == self.test_path[tarlib]:
+                    outputs[tarlib] = outputs_lib
+
+                # Generate DataFrames
+                columns.extend(['Zaid', 'Zaid Name'])
+                df = pd.DataFrame(results, columns=columns)
+                df.set_index(['Zaid', 'Zaid Name'], inplace=True)
+                dfs.append(df)
+
+                # outputs_couple = outputs
+                # self.results = results
+
+            self.outputs = outputs
+            # Consider only common zaids
+            idx1 = dfs[0].index
+            idx2 = dfs[1].index
+            newidx = idx1.intersection(idx2)
+
+            # Build the final excel data
+            final = (dfs[0].loc[newidx]-dfs[1].loc[newidx])/dfs[0].loc[newidx]
+            # If it is zero the CS are equal! (NaN if both zeros)
+            final[final == np.nan] = 'Not Available'
+            final[final == 0] = 'Identical'
+
+            final.sort_index(level=0, inplace=True)
+
+            # Write excel
+            ex = ExcelOutputSheet(template, outpath)
+            # Results
+            rangeex = ex.wb.sheets[0].range('B10')
+            rangeex.options(index=True, header=True).value = final
+            ex.wb.sheets[0].range('D1').value = name
+
+            # Add single pp sheets
+            for lib in [reflib, tarlib]:
+                cp = state.get_path('single', [lib, 'Sphere', 'Excel'])
+                file = os.listdir(cp)[0]
+                cp = os.path.join(cp, file)
+                ex.copy_sheets(cp)
+
+            ex.save()
 
     def print_raw(self):
         for key, data in self.raw_data.items():
@@ -392,6 +512,50 @@ class MCNPoutput:
 
         return results, errors
 
+    def get_comparison_data(self):
+        """
+        Get Data for single zaid to be used in comparison.
+
+        Returns
+        -------
+        results : list
+            All results per tally to compare
+        columns : list
+            Tally names
+
+        """
+        # Tallies to post process
+        tallies2pp = ['12', '22', '24', '14', '34', '6', '46']
+        data = self.mdata.set_index(['Tally Description', 'Energy'])
+        results = []  # Store data to compare for different tallies
+        columns = []  # Tally names and numbers
+        # Reorder tallies
+        tallies = []
+        for tallynum in tallies2pp:
+            for tally in self.mctal.tallies:
+                num = str(tally.tallyNumber)
+                if num == tallynum:
+                    tallies.append(tally)
+
+        for tally in tallies:
+            num = str(tally.tallyNumber)
+            # Isolate tally
+
+            masked = data.loc[tally.tallyComment[0]]
+            if num in tallies2pp:
+                if num in ['12', '22']:  # Coarse Flux bins
+                    # Get energy bins
+                    bins = list(masked.reset_index()['Energy'].values)
+                    for ebin in bins:
+                        colname = '(T.ly '+str(num)+') '+str(ebin)
+                        columns.append(colname)
+                        results.append(masked['Value'].loc[ebin])
+                else:
+                    columns.append(tally.tallyComment[0])
+                    results.append(masked['Value'].values[0])
+
+        return results, columns
+
 
 class ExcelOutputSheet:
     def __init__(self, template, outpath):
@@ -414,15 +578,29 @@ class ExcelOutputSheet:
         ws = self.wb.sheets[ws]
         exsupp.insert_df(startrow, startcolumn, df, ws)
 
-    # def merge(self, ExcelSheets, outfile):
-    #     """
-    #     Merge the current sheet with other excels/sheets
+    def copy_sheets(self, wb_origin_path):
+        """
+        Copy all sheets of the selected excel file into the current one
 
-    #     ExcelSheets: (list) list of paths of excel files to merge to current
-    #                 sheet
-    #     outfile: (path/str) path to final excel file
-    #     """
-    #     exsupp.merge_sheets(ExcelSheets, self.wb)
+        Parameters
+        ----------
+        wb_origin_path : str/path
+            Path to excel file containing sheets to add.
+
+        Returns
+        -------
+        None.
+
+        """
+        wb = self.app.books.open(wb_origin_path)
+        for sheet in wb.sheets:
+
+            # copy to a new workbook
+            sheet.api.Copy()
+
+            # copy to an existing workbook by putting it in front of a
+            # worksheet object
+            sheet.api.Copy(Before=self.wb.sheets[0].api)
 
     def save(self):
         """

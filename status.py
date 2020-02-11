@@ -96,6 +96,46 @@ class Status():
 
         return comparison_tree, single_tree
 
+    def get_path(self, tree, itinerary):
+        """
+        Get the resulting path of an itinery on one tree
+
+        Parameters
+        ----------
+        tree : str
+            Either 'comparison', 'single', or 'run'.
+        itinerary : list
+            list of strings representing the step to take inside the tree.
+
+        Raises
+        ------
+        KeyError
+            if var tree is not among possible strings.
+
+        Returns
+        -------
+        cp : str/path
+            path to final step.
+        """
+
+        # Identify Tree and starting path
+        if tree == 'run':
+            # tree = self.run_tree
+            cp = self.run_path
+        elif tree == 'single':
+            # tree = self.single_tree
+            cp = os.path.join(self.pp_path, 'Single Libraries')
+        elif tree == 'comparison':
+            # tree = self.comparison_tree
+            cp = os.path.join(self.pp_path, 'Comparisons')
+        else:
+            raise KeyError(str(tree)+' is not a valid option.')
+
+        for step in itinerary:
+            cp = os.path.join(cp, step)
+
+        return cp
+
     def check_override_run(self, lib, session):
         """
         Check status of the requested run. If overridden is required permission
@@ -147,6 +187,24 @@ class Status():
         return ans
 
     def check_lib_run(self, lib, session):
+        """
+        Check if a library has been run. To be considered run a meshtally or
+        meshtal have to be produced. Only active benchmarks (specified in
+        the configuration file) are checked.
+
+        Parameters
+        ----------
+        lib : str
+            Library to check.
+        session : Session
+            Jade Session.
+
+        Returns
+        -------
+        test_runned : Bool
+            True if all benchmark have been run for the library.
+
+        """
         # Update Tree
         self.update_run_status()
         # Check if/what is already run
@@ -227,6 +285,7 @@ class Status():
                     ans = False
             return ans
         except KeyError:
+            # print('entered in key error')
             return False
 
     def check_override_pp(self, session):
@@ -264,12 +323,13 @@ class Status():
             test_run = self.check_lib_run(lib, session)
             if len(test_run) == 0:  # TODO not checking for each benchmark
                 flag_not_run = True
+                lib_not_run = lib
 
         to_single_pp = []
 
         if flag_not_run:
             ans = False
-            print(' '+lib+' was not run. Please run it first.')
+            print(' '+lib_not_run+' was not run. Please run it first.')
         else:
             # Check if single pp has been done
             for lib in libs:
@@ -305,10 +365,13 @@ class Status():
 
             # Libraries comparison PP
             elif tagpp == 'Comparison':
-                # Check if single pp has been done
-                for lib in libs:
+                # Check if comparisons have been done
+                for lib in libs[1:]:
+                    name = lib+'_Vs_'+libs[0]
+                    override = self.check_pp_single(name, session,
+                                                    tree='comparison')
                     # Ask for override
-                    if self.check_pp_single(lib_input, session):
+                    if override:
 
                         while True:
                             print("""

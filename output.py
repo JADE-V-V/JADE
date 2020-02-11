@@ -49,30 +49,33 @@ class BenchmarkOutput:
             tp = os.path.join(cp, test_path, lib[0], testname)
             self.test_path = {lib[0]: tp}
             output_path = r'Tests\02_Output\Comparisons'
+            name = lib[0]
             for library in lib[1:]:
-                name = library+'_Vs_'+lib[0]
-                couples.append((lib[0], library, name))
+                name_couple = lib[0]+'_Vs_'+library
+                name = name+'_Vs_'+library
+                couples.append((lib[0], library, name_couple))
                 tp = os.path.join(cp, test_path, library, testname)
                 self.test_path[library] = tp
 
-                # Generate library output path
-                out = os.path.join(cp, output_path, name)
-                if not os.path.exists(out):
-                    os.mkdir(out)
-
-                out = os.path.join(out, testname)
-                if os.path.exists(out):
-                    shutil.rmtree(out)
+            self.name = name
+            # Generate library output path
+            out = os.path.join(cp, output_path, name)
+            if not os.path.exists(out):
                 os.mkdir(out)
-                excel_path = os.path.join(out, 'Excel')
-                atlas_path = os.path.join(out, 'Atlas')
-                # raw_path = os.path.join(out, 'Raw Data')
-                os.mkdir(excel_path)
-                os.mkdir(atlas_path)
-                # os.mkdir(raw_path)
-                self.excel_path = excel_path
-                # self.raw_path = raw_path
-                self.atlas_path = atlas_path
+
+            out = os.path.join(out, testname)
+            if os.path.exists(out):
+                shutil.rmtree(out)
+            os.mkdir(out)
+            excel_path = os.path.join(out, 'Excel')
+            atlas_path = os.path.join(out, 'Atlas')
+            # raw_path = os.path.join(out, 'Raw Data')
+            os.mkdir(excel_path)
+            os.mkdir(atlas_path)
+            # os.mkdir(raw_path)
+            self.excel_path = excel_path
+            # self.raw_path = raw_path
+            self.atlas_path = atlas_path
 
             self.couples = couples  # Couples of libraries to post process
 
@@ -161,33 +164,44 @@ class SphereOutput(BenchmarkOutput):
 
         libraries = []
         outputs = []
+        zaids = []
         for libname, outputslib in self.outputs.items():
             libraries.append(libname)
             outputs.append(outputslib)
+            zaids.append(list(outputslib.keys()))
+
+        # Extend list to all zaids
+        allzaids = zaids[0]
+        for zaidlist in zaids[1:]:
+            allzaids.extend(zaidlist)
+        allzaids = set(allzaids)  # no duplicates
 
         globalname = ''
         for lib in libraries:
             globalname = globalname + lib + '_Vs_'
 
         globalname = globalname[:-4]
-        print(globalname)
 
         for tally, title, ylabel in \
             [(2, 'Leakage Neutron Flux (175 groups)', 'Neutron Flux'),
              (32, 'Leakage Gamma Flux (24 groups)', 'Gamma Flux')]:
 
             print(' Plotting tally n.'+str(tally))
-            for zaidnum, outputdummy in tqdm(outputs[0].items()):
-                title = title
+            for zaidnum in tqdm(allzaids):
+                # title = title
                 data = []
                 for idx, output in enumerate(outputs):
-                    tally_data = output[zaidnum].mdata.set_index('Tally N.').loc[tally]
-                    energy = tally_data['Energy'].values
-                    values = tally_data['Value'].values
-                    error = tally_data['Error'].values
-                    lib = {'x': energy, 'y': values, 'err': error,
-                           'ylabel': str(zaidnum)+'.'+libraries[idx]}
-                    data.append(lib)
+                    try:  # Zaid could not be common to the libraries
+                        tally_data = output[zaidnum].mdata.set_index('Tally N.').loc[tally]
+                        energy = tally_data['Energy'].values
+                        values = tally_data['Value'].values
+                        error = tally_data['Error'].values
+                        lib = {'x': energy, 'y': values, 'err': error,
+                               'ylabel': str(zaidnum)+'.'+libraries[idx]}
+                        data.append(lib)
+                    except KeyError:
+                        # It is ok, simply nothing to plot here
+                        pass
 
                 outname = str(zaidnum)+'-'+globalname+'-'+str(tally)
                 plot = plotter.Plotter(data, title, outpath, outname)
@@ -267,6 +281,20 @@ class SphereOutput(BenchmarkOutput):
         ex.save()
 
     def pp_excel_comparison(self, state):
+        """
+        Compute the data and create the excel for all libraries comparisons.
+        In the meantime, additional data is stored for future plots.
+
+        Parameters
+        ----------
+        state : Status
+            Jade status.
+
+        Returns
+        -------
+        None.
+
+        """
         template = os.path.join(os.getcwd(), 'Templates',
                                 'Sphere_comparison.xlsx')
 
@@ -277,11 +305,10 @@ class SphereOutput(BenchmarkOutput):
                                    name+'.xlsx')
             # Get results
             dfs = []
-            iteration = iteration+1
 
             for test_path in [self.test_path[reflib], self.test_path[tarlib]]:
                 results = []
-
+                iteration = iteration+1
                 outputs_lib = {}
                 for folder in os.listdir(test_path):
                     results_path = os.path.join(test_path, folder)
@@ -328,6 +355,9 @@ class SphereOutput(BenchmarkOutput):
 
             # Build the final excel data
             final = (dfs[0].loc[newidx]-dfs[1].loc[newidx])/dfs[0].loc[newidx]
+            
+            self.diff_data = final
+            
             # If it is zero the CS are equal! (NaN if both zeros)
             final[final == np.nan] = 'Not Available'
             final[final == 0] = 'Identical'

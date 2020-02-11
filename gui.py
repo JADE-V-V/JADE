@@ -224,7 +224,7 @@ def pploop(session):
                         clear_screen()
                         print(pp_menu)
                         print(' '+str(e))
-                        print(' Please close all excel files and retry')
+                        print(' Please close all excel/word files and retry')
                         continue
 
                 print('\n ######################### POST-PROCESSING ENDED ###############################\n')
@@ -254,12 +254,12 @@ def pploop(session):
                             print(' Single PP of library '+lib+' required')
                             pp.postprocessSphere(session, lib)
                             session.log.adjourn("""
-Additional Post-Processing of library:"""+lib+' completed', spacing=False)
+Additional Post-Processing of library:"""+lib+' completed\n', spacing=False)
                         except PermissionError as e:
                             clear_screen()
                             print(pp_menu)
                             print(' '+str(e))
-                            print(' Please close all excel files and retry')
+                            print(' Please close all excel/word files and retry')
                             continue
 
                 # Execute Comparison
@@ -270,7 +270,7 @@ Additional Post-Processing of library:"""+lib+' completed', spacing=False)
                         clear_screen()
                         print(pp_menu)
                         print(' '+str(e))
-                        print(' Please close all excel files and retry')
+                        print(' Please close all excel/word files and retry')
                         continue
 
                 print('\n ######################### COMPARISON ENDED ###############################\n')

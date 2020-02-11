@@ -24,11 +24,21 @@ Created on Thu Oct 24 09:26:52 2019
 # atlas.build(r'C:\Users\laghi\Documents\03_dottorato\04_F4E\01_JADE\Tests\02_Output\Single Libraries\71c\Sphere\Atlas\tmp')
 # atlas.save(r'C:\Users\laghi\Documents\03_dottorato\04_F4E\01_JADE\Tests\02_Output\Single Libraries\71c\Sphere\Atlas')
 #     #x.xaxis.set_minor_locator(LogLocator(base=10,numticks=15))
-import status
-st = status.Status()
-print(st.run_tree)
-print(st.comparison_tree)
-print(st.single_tree)    
+# import status
+# st = status.Status()
+# print(st.run_tree)
+# print(st.comparison_tree)
+# print(st.single_tree)
+
+import warnings
+
+def fxn():
+    warnings.warn("deprecated", RuntimeWarning)
+
+# with warnings.catch_warnings():
+#     warnings.simplefilter("ignore")
+#     fxn()
+fxn()
     #ax.tick_params(which='major', width=1.00)
     #ax.tick_params(which='major', length=5)
     #ax.tick_params(which='minor', width=0.75)

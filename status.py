@@ -366,30 +366,33 @@ class Status():
             # Libraries comparison PP
             elif tagpp == 'Comparison':
                 # Check if comparisons have been done
+                name = libs[0]
                 for lib in libs[1:]:
-                    name = lib+'_Vs_'+libs[0]
-                    override = self.check_pp_single(name, session,
-                                                    tree='comparison')
-                    # Ask for override
-                    if override:
+                    name = name+'_Vs_'+lib
 
-                        while True:
-                            print("""
+                print(name)
+                override = self.check_pp_single(name, session,
+                                                tree='comparison')
+                # Ask for override
+                if override:
+
+                    while True:
+                        print("""
  A comparison for these libraries was already performed.
 """)
-                            i = input(' Would you like to override the results?(y/n) ')
-                            if i == 'y':
-                                ans = True
-                                logtext = '\nThe Post-Process for libraries ' + \
-                                    str(lib)+' has been overwritten'
-                                session.log.adjourn(logtext)
-                                break
-                            elif i == 'n':
-                                ans = False
-                                break
-                            else:
-                                print('\n please select one between "y" or "n"')
-                    else:
-                        ans = True
+                        i = input(' Would you like to override the results?(y/n) ')
+                        if i == 'y':
+                            ans = True
+                            logtext = '\nThe Post-Process for libraries ' + \
+                                str(lib)+' has been overwritten'
+                            session.log.adjourn(logtext)
+                            break
+                        elif i == 'n':
+                            ans = False
+                            break
+                        else:
+                            print('\n please select one between "y" or "n"')
+                else:
+                    ans = True
 
         return ans, to_single_pp, lib_input

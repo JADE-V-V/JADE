@@ -121,3 +121,6 @@ class Atlas():
                                     OptimizeFor=0,   # 0=Print (higher res), 1=Screen (lower res)
                                     CreateBookmarks=1,  # 0=No bookmarks, 1=Heading bookmarks only, 2=bookmarks match word bookmarks
                                     DocStructureTags=True)
+            
+            doc.Close()
+            word.Quit()

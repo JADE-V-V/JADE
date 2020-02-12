@@ -29,20 +29,23 @@ Created on Thu Oct 24 09:26:52 2019
 # print(st.run_tree)
 # print(st.comparison_tree)
 # print(st.single_tree)
+number = 0.00000001455
+# number = round(number,5)
+stringa = '%s' % float('%.5g' % number)
+print(stringa+' test')
+# import warnings
 
-import warnings
+# def fxn():
+#     warnings.warn("deprecated", RuntimeWarning)
 
-def fxn():
-    warnings.warn("deprecated", RuntimeWarning)
-
-# with warnings.catch_warnings():
-#     warnings.simplefilter("ignore")
-#     fxn()
-fxn()
-    #ax.tick_params(which='major', width=1.00)
-    #ax.tick_params(which='major', length=5)
-    #ax.tick_params(which='minor', width=0.75)
-    #ax.tick_params(which='minor', length=2.5)
+# # with warnings.catch_warnings():
+# #     warnings.simplefilter("ignore")
+# #     fxn()
+# fxn()
+#     #ax.tick_params(which='major', width=1.00)
+#     #ax.tick_params(which='major', length=5)
+#     #ax.tick_params(which='minor', width=0.75)
+#     #ax.tick_params(which='minor', length=2.5)
 
     
     #plt.tight_layout() #This cuts the white space surrounding the image

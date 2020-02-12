@@ -66,7 +66,7 @@ class Zaid:
         """
         Get the zaid string ready for MCNP material card
         """
-        fraction = str(round(self.fraction, 5))
+        fraction = '%s' % float('%.5g' % self.fraction)
         if self.library is None:
             line = '      '+self.element+self.isotope+'    '+fraction
         else:
@@ -74,7 +74,12 @@ class Zaid:
                 self.library + '    ' + fraction
 
         # Add INFO
-        line = line+'  $ '+self.fullname+' AB(%) '+str(self.ab)
+        try:
+            abundance = '%s' % float('%.5g' % float(self.ab))
+        except ValueError:
+            abundance = ''
+            
+        line = line+'  $ '+self.fullname+' AB(%) '+abundance
 
         return line
 

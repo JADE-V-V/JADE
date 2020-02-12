@@ -355,9 +355,9 @@ class SphereOutput(BenchmarkOutput):
 
             # Build the final excel data
             final = (dfs[0].loc[newidx]-dfs[1].loc[newidx])/dfs[0].loc[newidx]
-            
+
             self.diff_data = final
-            
+
             # If it is zero the CS are equal! (NaN if both zeros)
             final[final == np.nan] = 'Not Available'
             final[final == 0] = 'Identical'

@@ -116,11 +116,14 @@ class Atlas():
             word = win32com.client.Dispatch('Word.Application')
             doc = word.Documents.Open(in_file)
             doc.ExportAsFixedFormat(OutputFileName=out_file,
-                                    ExportFormat=17,  # 17 = PDF output, 18=XPS output
+                                    # 17 = PDF output, 18=XPS output
+                                    ExportFormat=17,
                                     OpenAfterExport=False,
-                                    OptimizeFor=0,   # 0=Print (higher res), 1=Screen (lower res)
-                                    CreateBookmarks=1,  # 0=No bookmarks, 1=Heading bookmarks only, 2=bookmarks match word bookmarks
+                                    # 0=Print (higher res), 1=Screen (lower res)
+                                    OptimizeFor=0,
+   # 0=No bookmarks, 1=Heading bookmarks only, 2=bookmarks match word bookmarks
+                                    CreateBookmarks=1,
                                     DocStructureTags=True)
-            
+
             doc.Close()
             word.Quit()

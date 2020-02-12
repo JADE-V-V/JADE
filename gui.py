@@ -9,7 +9,6 @@ import sys
 import computational as cmp
 import utilitiesgui as uty
 import postprocess as pp
-import status
 
 
 def clear_screen():
@@ -79,16 +78,22 @@ def mainloop(session):
             inputfile = input(' Input to translate: ')
 
             if newlib in session.lib_manager.libraries:
-                uty.translate_input(session, newlib, inputfile)
-                print(' Translation successfully completed!\n')
-                session.log.adjourn('file'+inputfile +
-                                    ' successfully translated to ' + newlib)
+                ans = uty.translate_input(session, newlib, inputfile)
+                if ans:
+                    print(' Translation successfully completed!\n')
+                    session.log.adjourn('file'+inputfile +
+                                        ' successfully translated to ' + newlib)
+                else:
+                    print('''
+    Error:
+    The file does not exist or can't be opened
+                      ''')
 
             else:
                 print('''
-                      Error:
-                      The selected library is not available.
-                      Check your available libraries using 'printlib'
+    Error:
+    The selected library is not available.
+    Check your available libraries using 'printlib'
                       ''')
 
         elif option == 'exit':

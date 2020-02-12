@@ -9,7 +9,6 @@ import configuration as cnf
 import libmanager
 import os
 import status
-import sys
 import warnings
 
 
@@ -69,13 +68,13 @@ class Session:
 
 
 if __name__ == "__main__":
-    
+
     # Module having problem with log(0) for tick position in graphs
     warnings.filterwarnings('ignore',
                             r'invalid value encountered in double_scalars')
     warnings.filterwarnings('ignore',
                             r'overflow encountered in power')
     warnings.filterwarnings('ignore', module=r'plotter')
-    
+
     session = Session()
     gui.mainloop(session)

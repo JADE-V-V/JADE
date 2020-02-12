@@ -23,7 +23,11 @@ def translate_input(session, lib, inputfile):
     outpath = os.path.dirname(outpath)
     outpath = os.path.join(outpath, 'Utilities')
 
-    inp = ipt.InputFile.from_text(inputfile)
+    try:
+        inp = ipt.InputFile.from_text(inputfile)
+    except PermissionError:
+        return False
+
     info1 = inp.matlist.get_info()
     inp.translate(lib, libmanager)
     inp.update_zaidinfo(libmanager)
@@ -51,6 +55,8 @@ def translate_input(session, lib, inputfile):
         text = '  Warning: it was impossible to produce the translation Log'
         print(text)
         session.log.adjourn(text)
+
+    return True
 
 
 def print_libraries(libmanager):

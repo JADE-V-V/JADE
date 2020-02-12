@@ -6,7 +6,6 @@ Created on Fri Jan  3 15:33:01 2020
 """
 import datetime
 import output as o
-import warnings
 
 
 def postprocessSphere(session, lib):

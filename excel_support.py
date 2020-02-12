@@ -8,7 +8,6 @@ Excel support
 """
 # from copy import copy
 # import openpyxl
-from openpyxl.styles import Alignment
 
 
 # def createNewWorkbook(manyWb, theOne):

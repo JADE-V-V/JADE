@@ -99,8 +99,8 @@ class Element:
 
     def __init__(self, zaidList):
         """
-        Generate an Element object starting from a list of zaids. It will collapse
-        multiple instance of a zaid into a single one
+        Generate an Element object starting from a list of zaids.
+        It will collapse multiple instance of a zaid into a single one
 
         zaidList: (list) list of zaids constituing the element
         """
@@ -151,8 +151,8 @@ class SubMaterial:
     def __init__(self, name, zaidList, elemList=None, header=None,
                  additional_keys=[]):
         """
-        Generate a SubMaterial Object starting from a list of Zaid and eventually
-        Elements list
+        Generate a SubMaterial Object starting from a list of Zaid and
+        eventually Elements list
         """
         # List of zaids object of the submaterial
         self.zaidList = zaidList

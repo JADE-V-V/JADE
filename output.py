@@ -326,7 +326,12 @@ class SphereOutput(BenchmarkOutput):
                     outputs_lib[zaidnum] = output
 
                     res, columns = output.get_comparison_data()
-                    res.append(int(zaidnum))
+                    try:
+                        zn = int(zaidnum)
+                    except ValueError:  # Happens for tipycal materials
+                        zn = zaidnum 
+                    
+                    res.append(zn)
                     res.append(zaidname)
 
                     results.append(res)

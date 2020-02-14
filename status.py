@@ -136,6 +136,63 @@ class Status():
 
         return cp
 
+    def get_unfinished_zaids(self, lib):
+        """
+        Identify zaids to run for rerun or continuation purposes
+
+        Parameters
+        ----------
+        lib : str
+            library to check.
+
+        Returns
+        -------
+        unfinished : list
+            zaids/typical materials not run.
+
+        """
+        self.update_run_status()
+        test = 'Sphere'
+        try:
+            folders = self.run_tree[lib][test]
+        except KeyError:
+            return None  # Not Generated
+
+        unfinished = []
+        for zaid in folders:
+            files = folders[zaid]
+            if not self.check_test_run(files):
+                unfinished.append(zaid)
+
+        motherdir = os.path.join(self.run_path, lib, test)
+
+        return unfinished, motherdir
+
+    @staticmethod
+    def check_test_run(files):
+        """
+        Check if a test has been run
+
+        Parameters
+        ----------
+        files : list
+            file names inside test folder.
+
+        Returns
+        -------
+        flag_test_run : Bool
+            True if test has been run.
+
+        """
+        flag_run_test = False
+        for file in files:
+            c1 = (file[-1] == 'm')  # mctal file
+            c2 = (file[-4:] == 'msht')  # meshtally file
+            if c1 or c2:
+                flag_run_test = True
+
+        return flag_run_test
+
     def check_override_run(self, lib, session):
         """
         Check status of the requested run. If overridden is required permission
@@ -396,3 +453,17 @@ class Status():
                     ans = True
 
         return ans, to_single_pp, lib_input
+
+
+def gen_dict_extract(key, var):
+    if hasattr(var, 'items'):
+        for k, v in var.items():
+            if k == key:
+                yield v
+            if isinstance(v, dict):
+                for result in gen_dict_extract(key, v):
+                    yield result
+            elif isinstance(v, list):
+                for d in v:
+                    for result in gen_dict_extract(key, d):
+                        yield result

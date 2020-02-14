@@ -9,150 +9,142 @@ import matreader as mat
 import Parser as par
 import os
 
+
 class InputFile:
-    
-    def __init__(self,cards,matlist,name=None):
-        
-        # All cards from parser epurated by the materials 
+
+    def __init__(self, cards, matlist, name=None):
+
+        # All cards from parser epurated by the materials
         self.cards = cards
-        
+
         # Materials list (see matreader.py)
         self.matlist = matlist
-        
-        #Set a name
+
+        # Set a name
         self.name = name
-    
+
     @classmethod
-    def from_text(cls,inputfile):
+    def from_text(cls, inputfile):
         """
-        This method use the numjuggler parser to help identify the mcards in 
+        This method use the numjuggler parser to help identify the mcards in
         the input which will usually undergo special treatments in the input
         creation
-        
+
         inputfile: (str) path to the MCNP input file
         """
         matPat = re.compile('[mM]\d+')
-        mxPat = re.compile('mx\d+',re.IGNORECASE)
+        mxPat = re.compile('mx\d+', re.IGNORECASE)
         commentPat = re.compile('[cC]')
-        # Using parser the data cards are extracted from the input. Comment section
-        # are interpreted as cards by the parser
+        # Using parser the data cards are extracted from the input.
+        # Comment sections are interpreted as cards by the parser
         cards = par.get_cards_from_input(inputfile)
         cardsDic = par.get_blocks(cards)
         datacards = cardsDic[5]
-        
-        cards = {'cells' : cardsDic[3], #Parser cards
-                 'surf' : cardsDic[4], #Parser cards
-                 'settings' : []} #Parser cards
-        
-        #Check for a title
+
+        cards = {'cells': cardsDic[3],  # Parser cards
+                 'surf': cardsDic[4],  # Parser cards
+                 'settings': []}  # Parser cards
+
+        # Check for a title
         try:
             cards['title'] = cardsDic[2][0]
         except KeyError:
             cards['title'] = None
-        
+
 #        materials = [] # Custom material objects!
-        
+
         previous_lines = ['']
         for datacard in datacards:
             lines = datacard.lines
-            #Check if it is a material card or mx card to ignore
-            if matPat.match(lines[0]) is not None or mxPat.match(lines[0]) is not None:
-#               #Ignore
-#                Check if previous card is the header
+            # Check if it is a material card or mx card to ignore
+            if matPat.match(lines[0]) is not None \
+                    or mxPat.match(lines[0]) is not None:
+                # Ignore
+                # Check if previous card is the header
                 if commentPat.match(previous_lines[0]):
-                    
-                    del cards['settings'][-1] #cancel the comment from settings
-#                    
-#                    previous_lines.extend(lines)
-#                    material = mat.Material.from_text(previous_lines)
-#                else:
-#                    material = mat.Material.from_text(lines)
-#                
-#                materials.append(material)
-                
-            #Not a material
+                    # cancel the comment from settings
+                    del cards['settings'][-1]
+
+            # Not a material
             else:
                 cards['settings'].append(datacard)
-            
+
             previous_lines = lines
-        
+
         matlist = mat.MatCardsList.from_input(inputfile)
-        
-        return cls(cards,matlist,name=os.path.basename(inputfile).split('.')[0])
-    
-    
+
+        return cls(cards, matlist,
+                   name=os.path.basename(inputfile).split('.')[0])
+
     def write(self, out):
         """
         Write the input to a file
-        
+
         out: (str) path to the output file
         """
         if self.cards['title'] is not None:
-            lines =  self.cards['title'].lines
+            lines = self.cards['title'].lines
         else:
             lines = []
-        
-        #Add cells
+
+        # Add cells
         for card in self.cards['cells']:
             lines.extend(card.lines)
-        
-        lines.append('\n') #Section breaker
-        
-        #Add surfaces
+
+        lines.append('\n')  # Section breaker
+
+        # Add surfaces
         for card in self.cards['surf']:
             lines.extend(card.lines)
-            
-        lines.append('\n')  #Section breaker
-        
-        #Add materials
+
+        lines.append('\n')  # Section breaker
+
+        # Add materials
         lines.append(self.matlist.to_text())
-        lines.append('\n')#Missing
-        
-        #Add remaining data cards
+        lines.append('\n')  # Missing
+
+        # Add remaining data cards
         for card in self.cards['settings']:
             lines.extend(card.lines)
-        
+
         toprint = ''
         for line in lines:
             toprint = toprint+line
-            
-        with open(out,'w') as outfile:
+
+        with open(out, 'w') as outfile:
             outfile.write(toprint)
-            
-    
-    def translate(self,newlib,libmanager):
+
+    def translate(self, newlib, libmanager):
         """
         Translate the input to another library
-        
+
         newlib: (str) suffix of the new lib to translate to
         lib_manager: (LibManager) Library manager for the conversion
         """
-        
-        self.matlist.translate(newlib,libmanager)
-        
-    
-    def update_zaidinfo(self,lib_manager):
+
+        self.matlist.translate(newlib, libmanager)
+
+    def update_zaidinfo(self, lib_manager):
         """
         This methods allows to update the in-line comments for every zaids
         containing additional information
-        
+
         lib_manager: (LibManager) Library manager for the conversion
         """
-        
+
         self.matlist.update_info(lib_manager)
-        
-        
-    def add_stopCard(self,nps,ctme,precision):
+
+    def add_stopCard(self, nps, ctme, precision):
         """
         Add Stop card
-        
+
         nps = (int) number of particles to simulate
-        ctme = (int) copmuter time 
+        ctme = (int) copmuter time
         precision = (tally (str), error (float)) [tuple]
         """
         tally = precision[0]
         error = precision[1]
-        
+
         line = 'STOP '
         if nps is not None:
             line = line+'NPS '+str(int(nps))+' '
@@ -160,70 +152,59 @@ class InputFile:
             line = line+'CTME '+str(int(ctme))+' '
         if precision is not None:
             line = line+str(tally)+' '+str(error)
-        
+
         line = line+'\n'
-        
+
         card = par.Card([line], 5, -1)
         self.cards['settings'].append(card)
-        
-    
-    def change_density(self,zaid,cellidx=1):
+
+    def change_density(self, zaid, cellidx=1):
         """
         Change the density of the sphere according to the selected zaid
-        
+
         WARNING!: USE ONLY FOR SPHERE LEAKAGE TEST
-        
+
         zaid: (str) zaid name of shere test (e.g. 1001)
         cellidx: (int) cell index where to modify the density
         """
-        #Compute Density
-        density = str(-round(7.874/26*int(zaid.element),4))
-        
-        #Change density in sphere cell
+        # Compute Density
+        density = str(-round(7.874/26*int(zaid.element), 4))
+
+        # Change density in sphere cell
         card = self.cards['cells'][cellidx]
         card.get_values()
         card.set_d(density)
         card.lines = card.card()
-    
-    
-    def add_edits(self,edits_file):
+
+    def add_edits(self, edits_file):
         """
         Add weight windows and source bias resulted from ADVANTG analysis
-        
+
         zaid : (str) zaid name (e.g. 1001)
         """
-        #Parse edits file
+        # Parse edits file
         patBias = re.compile('sb', re.IGNORECASE)
         patWWP = re.compile('wwp', re.IGNORECASE)
         patSP = re.compile('sp', re.IGNORECASE)
-        
+
         bias = []
         wwp = []
-        with open(edits_file,'r') as infile:
+        with open(edits_file, 'r') as infile:
             for line in infile:
                 if patBias.match(line) is not None:
                     bias.append(par.Card([line], 5, -1))
                 elif patWWP.match(line) is not None:
                     wwp.append(par.Card([line], 5, -1))
-        
+
         newsettings = []
         for card in self.cards['settings']:
-            #TODO !!!!! this works only if there is only one source card !!!!
+            # TODO !!!!! this works only if there is only one source card !!!!
             if patSP.match(card.lines[0]) is not None:
                 newsettings.append(card)
                 newsettings.extend(bias)
             else:
                 newsettings.append(card)
-        
-        newsettings.extend(wwp)
-        
-        self.cards['settings'] = newsettings
 
-                    
-        
-    
-    
-    
-    
-    
-    
+        newsettings.extend(wwp)
+
+        self.cards['settings'] = newsettings

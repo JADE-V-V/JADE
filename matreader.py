@@ -78,7 +78,7 @@ class Zaid:
             abundance = '%s' % float('%.5g' % float(self.ab))
         except ValueError:
             abundance = ''
-            
+
         line = line+'  $ '+self.fullname+' AB(%) '+abundance
 
         return line
@@ -255,24 +255,27 @@ class SubMaterial:
         self.elements = elemList
 
     def to_text(self):
-        text = self.header
-        if self.name is not None:
-            text = text+'\n'+self.name
+        if self.header is not None:
+            text = self.header+'\n'
+        else:
+            text = ''
+        # if self.name is not None:
+        #     text = text+'\n'+self.name
         if self.elements is not None:
             for elem in self.elements:
                 for zaid in elem.zaids:
-                    text = text+'\n'+zaid.to_text()
+                    text = text+zaid.to_text()+'\n'
         else:
             for zaid in self.zaidList:
-                text = text+'\n'+zaid.to_text()
+                text = text+zaid.to_text()+'\n'
 
         # Add additional keys
         if len(self.additional_keys) > 0:
-            text = text+'\n      '
+            text = text+'\t'
             for key in self.additional_keys:
                 text = text+' '+key
 
-        return text
+        return text.strip('\n')
 
     def translate(self, newlib, lib_manager):
         """
@@ -396,6 +399,21 @@ class Material:
         self.submaterials = submaterials
         self.name = name
         self.mx_cards = mx_cards
+        self.header = None
+
+        # Adjust the submaterial and headers reading
+        try:
+            # The first submaterial header is actually the material header.
+            # If submat is void it has to be deleted (only header), otherwise
+            # it means it has no header
+            submat = submaterials[0]
+            self.header = submat.header
+            if len(submat.zaidList) == 0:
+                del self.submaterials[0]
+            else:
+                self.submaterials[0].header = None
+        except IndexError:
+            self.header = None
 
     @classmethod
     def from_text(cls, text):
@@ -430,7 +448,10 @@ class Material:
         return cls(None, None, submaterials[0].name, submaterials=submaterials)
 
     def to_text(self):
-        text = ''
+        if self.header is not None:
+            text = self.header+'\n'+self.name
+        else:
+            text = self.name
         if self.submaterials is not None:
             for submaterial in self.submaterials:
                 text = text+'\n'+submaterial.to_text()
@@ -445,15 +466,18 @@ class Material:
 
         return text.strip('\n')
 
-    def translate(self, newlib, lib_manager):
+    def translate(self, newlib, lib_manager, update=True):
         """
         This method allows to translate all submaterials to another library
 
         newlib: (str) suffix of the new lib to translate to
         lib_manager: (LibManager) Library manager for the conversion
+        update: (Bool) if True (default) material infos are updated
         """
         for submat in self.submaterials:
             submat.translate(newlib, lib_manager)
+
+        self.update_info(lib_manager)
 
     def check_fraction(self):
         """
@@ -601,6 +625,6 @@ class MatCardsList:
                 infos.append(info)
 
         df = pd.concat(infos)
-        df.set_index(['Material', 'Submaterial'], inplace=True)
+        df.set_index(['Material', 'Submaterial', 'Element'], inplace=True)
 
         return df

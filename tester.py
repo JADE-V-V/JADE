@@ -17,7 +17,6 @@ Created on Thu Oct 24 09:26:52 2019
 # import Parser as par
 # import xlwings as xw
 # import atlas as at
-
 # template = r'C:\Users\laghi\Documents\03_dottorato\04_F4E\01_JADE\Code\Templates\AtlasTemplate.docx'
 # lib = '71c'
 # atlas = at.Atlas(template, lib)
@@ -29,11 +28,11 @@ Created on Thu Oct 24 09:26:52 2019
 # print(st.run_tree)
 # print(st.comparison_tree)
 # print(st.single_tree)
-number = 0.00000001455
-# number = round(number,5)
-stringa = '%s' % float('%.5g' % number)
-print(stringa+' test')
-# import warnings
+# number = 0.00000001455
+# # number = round(number,5)
+# stringa = '%s' % float('%.5g' % number)
+# print(stringa+' test')
+# # import warnings
 
 # def fxn():
 #     warnings.warn("deprecated", RuntimeWarning)
@@ -46,8 +45,55 @@ print(stringa+' test')
 #     #ax.tick_params(which='major', length=5)
 #     #ax.tick_params(which='minor', width=0.75)
 #     #ax.tick_params(which='minor', length=2.5)
+o = { 'temparature': '50', 
+      'logging': {
+        'handlers': {
+          'console': {
+            'formatter': 'simple', 
+            'class': 'logging.StreamHandler', 
+            'stream': 'ext://sys.stdout', 
+            'level': 'DEBUG'
+          }
+        },
+        'loggers': {
+          'simpleExample': {
+            'handlers': ['console'], 
+            'propagate': 'no', 
+            'level': 'INFO'
+          },
+         'root': {
+           'handlers': ['console'], 
+           'level': 'DEBUG'
+         }
+       }, 
+       'version': '1', 
+       'formatters': {
+         'simple': {
+           'datefmt': "'%Y-%m-%d %H:%M:%S'", 
+           'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+         }
+       }
+     }, 
+     'treatment': {'second': 5, 'last': 4, 'first': 4},   
+     'treatment_plan': [[4, 5, 4], [4, 5, 4], [5, 5, 5]]
+}
 
-    
+def gen_dict_extract(key, var):
+    if hasattr(var,'items'):
+        for k, v in var.items():
+            if k == key:
+                yield v
+            if isinstance(v, dict):
+                for result in gen_dict_extract(key, v):
+                    yield result
+            elif isinstance(v, list):
+                for d in v:
+                    for result in gen_dict_extract(key, d):
+                        yield result
+results = gen_dict_extract('treatment_plan', o)
+print(list(results)[0])
+# for result in results:
+#     print(result)    
     #plt.tight_layout() #This cuts the white space surrounding the image
 
 # app = xw.App(visible=False)
@@ -108,9 +154,11 @@ print(stringa+' test')
 ##print(sub.header+sub.name)
 #
 #
-##
-##lmanager = lm.LibManager(r'C:\Users\laghi\Documents\03_dottorato\04_F4E\01_code\other\xsdir')
-#inp = ipt.InputFile.from_text(inputfile)
+# ##
+# inputfile = r'C:\Users\laghi\Documents\03_dottorato\04_F4E\01_JADE\Benchmarks inputs\TypicalMaterials'
+# lmanager = lm.LibManager(r'C:\Users\laghi\Documents\MCNP\MCNP_DATA\xsdir_mcnp6.2')
+# inp = ipt.InputFile.from_text(inputfile)
+# print(inp.matlist.materials)
 #
 #card = inp.cards['cells'][0]
 #density='-100.515'

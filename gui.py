@@ -9,6 +9,8 @@ import sys
 import computational as cmp
 import utilitiesgui as uty
 import postprocess as pp
+import testrun
+from tqdm import tqdm
 
 
 def clear_screen():
@@ -116,6 +118,7 @@ computational_menu = """
 
  * Print available libraries          (printlib)
  * Assess library                       (assess)
+ * Continue assessment                (continue)
  * Back to main menu                      (back)
  * Exit                                   (exit)
 """
@@ -161,6 +164,29 @@ def comploop(session):
                 clear_screen()
                 print(computational_menu)
                 print(' Assessment canceled.')
+
+        elif option == 'continue':
+            # Select and check library
+            # Warning: this is done only for sphere test at the moment
+            lib = session.lib_manager.select_lib()
+            unfinished, motherdir = session.state.get_unfinished_zaids(lib)
+            if unfinished is None:
+                print(' The selected library was not assessed')
+            elif len(unfinished) == 0:
+                print(' The assessment is already completed')
+            else:
+                print(' Completing sphere assessment:')
+                session.log.adjourn('Assessment of: '+lib+' started',
+                                    spacing=False, time=True)
+                for directory in tqdm(unfinished):
+                    path = os.path.join(motherdir, directory)
+                    name = directory+'_'
+
+                    testrun.Test.run(name, path, cpu=session.conf.cpu)
+                    print(' Assessment completed')
+
+                session.log.adjourn('Assessment of: '+lib+' completed',
+                                    spacing=False, time=True)
 
         elif option == 'back':
             mainloop(session)

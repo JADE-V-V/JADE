@@ -44,13 +44,19 @@ def sphereTestRun(session, lib):
     session.log.adjourn('Sphere test input generated with success'+'    ' +
                         str(datetime.datetime.now()))
 
-    # --- Input Run ---
-    print(' MCNP run running:         '+str(datetime.datetime.now()))
-    spheretest.run()
-    print('\n        -- SPHERE LEAKAGE TEST COMPLETED --\n')
-    # Adjourn log
-    session.log.adjourn('Sphere test run completed with success'+'    ' +
-                        str(datetime.datetime.now()))
+    if bool(config['OnlyInput']):
+        print('\n        -- SPHERE LEAKAGE TEST COMPLETED --\n')
+        # Adjourn log
+        session.log.adjourn('Sphere test inputs generated with success' +
+                            '    ' + str(datetime.datetime.now()))
+    else:
+        # --- Input Run ---
+        print(' MCNP run running:         '+str(datetime.datetime.now()))
+        spheretest.run(cpu=session.conf.cpu)
+        print('\n        -- SPHERE LEAKAGE TEST COMPLETED --\n')
+        # Adjourn log
+        session.log.adjourn('Sphere test run completed with success'+'    ' +
+                            str(datetime.datetime.now()))
 
 
 def safemkdir(directory):

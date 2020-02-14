@@ -85,10 +85,14 @@ class LibManager:
         elif lib in zaidlibs:
             translation = {zaid: (lib, 1, 1)}  # mass not important
 
-        # No possible correspondence, default lib has to be used
+        # No possible correspondence, natural or default lib has to be used
         else:
+            # Check if the natural zaid is available
+            natzaid = zaid[:-3]+'000'
+            if self.XS.find_table(natzaid+'.'+lib, mode='exact'):
+                translation = {natzaid: (lib, 1, 1)}  # mass not important
             # Check if default lib is available
-            if self.XS.find_table(zaid+'.'+self.defaultlib, mode='exact'):
+            elif self.XS.find_table(zaid+'.'+self.defaultlib, mode='exact'):
                 translation = {zaid: (self.defaultlib, 1, 1)}  # mass not imp
             else:
                 # Check if any zaid cross section is available

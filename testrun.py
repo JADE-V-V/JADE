@@ -114,12 +114,14 @@ class SphereTest(Test):
         self.MCNPdir = motherdir
 
         print(' Zaids:')
-        for zaid in tqdm(zaids[:10]):
+        # for zaid in tqdm(zaids[:10]):
+        for zaid in tqdm(zaids):
             self.generate_zaid_test(zaid, libmanager, testname,
                                     motherdir)
 
         print(' Materials:')
-        for material in tqdm(matlist.materials[:2]):
+        # for material in tqdm(matlist.materials[:2]):
+        for material in tqdm(matlist.materials):
             self.generate_material_test(material, libmanager, testname,
                                         motherdir)
 

@@ -240,7 +240,12 @@ class SphereOutput(BenchmarkOutput):
             pieces = folder.split('_')
             # Get zaid
             zaidnum = pieces[-2]
-            zaidname = pieces[-1]
+            # Check for material exception
+            if zaidnum == 'Sphere':
+                zaidnum = pieces[-1]
+                zaidname = 'Typical Material'
+            else:
+                zaidname = pieces[-1]
             # Get mfile
             for file in os.listdir(results_path):
                 if file[-1] == 'm':

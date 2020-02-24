@@ -183,7 +183,7 @@ def comploop(session):
                     name = directory+'_'
 
                     testrun.Test.run(name, path, cpu=session.conf.cpu)
-                    print(' Assessment completed')
+                print(' Assessment completed')
 
                 session.log.adjourn('Assessment of: '+lib+' completed',
                                     spacing=False, time=True)

@@ -23,11 +23,12 @@ class Test():
     specific tests.
     """
 
-    def __init__(self, inp, lib, config):
+    def __init__(self, inp, lib, config, log):
         """
         inp: (str) path to inputfile blueprint
         lib: (str) library suffix to use
         config: (DataFrame row) configuration options for the test
+        log: (Log) Jade log file access
         """
         # Test Library
         self.lib = lib
@@ -41,7 +42,11 @@ class Test():
         # Generate input file template
         self.inp = ipt.InputFile.from_text(inp)
 
+        # Name of input file
         self.name = self.inp.name
+
+        # Log for warnings
+        self.log = log
 
         # Add the stop card according to config
         config = config.dropna()
@@ -73,15 +78,22 @@ class Test():
         pass  # TODO
 
     @staticmethod
-    def run(name, directory, cpu=1):
+    def run(name, directory, cpu=1, timeout=3600):
         """
         Run Test
         """
         code = 'mcnp6'
         command = 'name='+name+' wwinp=wwinp tasks '+str(cpu)
-        # changing directory
-        subprocess.run([code, command], cwd=directory,
-                       creationflags=subprocess.CREATE_NEW_CONSOLE)
+        flagnotrun = False
+        try:
+            subprocess.run([code, command], cwd=directory,
+                           creationflags=subprocess.CREATE_NEW_CONSOLE,
+                           timeout=timeout)
+
+        except subprocess.TimeoutExpired:
+            pass
+
+        return flagnotrun
 
 
 class SphereTest(Test):
@@ -114,14 +126,14 @@ class SphereTest(Test):
         self.MCNPdir = motherdir
 
         print(' Zaids:')
-        # for zaid in tqdm(zaids[:10]):
-        for zaid in tqdm(zaids):
+        for zaid in tqdm(zaids[:10]):
+        # for zaid in tqdm(zaids):
             self.generate_zaid_test(zaid, libmanager, testname,
                                     motherdir)
 
         print(' Materials:')
-        # for material in tqdm(matlist.materials[:2]):
-        for material in tqdm(matlist.materials):
+        for material in tqdm(matlist.materials[:2]):
+        # for material in tqdm(matlist.materials):
             self.generate_material_test(material, libmanager, testname,
                                         motherdir)
 
@@ -238,17 +250,30 @@ class SphereTest(Test):
             outwwfile = os.path.join(outpath, 'wwinp')
             shutil.copyfile(ww_file, outwwfile)
 
-    def run(self, cpu=1):
+    def run(self, cpu=1, timeout=10):
         """
         Sphere test needs an ad-hoc run method to run all zaids tests
         """
+        flagnotrun = False
         for folder in tqdm(os.listdir(self.MCNPdir)):
             path = os.path.join(self.MCNPdir, folder)
             name = folder+'_'
             code = 'mcnp6'
             command = 'name='+name+' wwinp=wwinp tasks '+str(cpu)
-            subprocess.run([code, command], cwd=path,
-                           creationflags=subprocess.CREATE_NEW_CONSOLE)
+            try:
+                subprocess.run([code, command], cwd=path,
+                               creationflags=subprocess.CREATE_NEW_CONSOLE,
+                               timeout=timeout)
+
+            except subprocess.TimeoutExpired:
+                flagnotrun = True
+                self.log.adjourn(name+' reached timeout, eliminate folder')
+                continue
+
+        if flagnotrun:
+            print("""
+ Some MCNP run reached timeout, they are listed in the log file.
+ Please remove their folders before attempting to postprocess the library""")
 
 
 def safe_mkdir(directory):

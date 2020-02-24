@@ -178,11 +178,21 @@ def comploop(session):
                 print(' Completing sphere assessment:')
                 session.log.adjourn('Assessment of: '+lib+' started',
                                     spacing=False, time=True)
+                flagOk = True
                 for directory in tqdm(unfinished):
                     path = os.path.join(motherdir, directory)
                     name = directory+'_'
 
-                    testrun.Test.run(name, path, cpu=session.conf.cpu)
+                    flag = testrun.Test.run(name, path, cpu=session.conf.cpu)
+                    if flag:
+                        flagOk = False
+                        session.log.adjourn(name +' reached timeout, eliminate folder')
+
+                if not flagOk:
+                    print("""
+ Some MCNP run reached timeout, they are listed in the log file.
+ Please remove their folders before attempting to postprocess the library""")
+
                 print(' Assessment completed')
 
                 session.log.adjourn('Assessment of: '+lib+' completed',

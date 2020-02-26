@@ -80,12 +80,40 @@ class Test():
     @staticmethod
     def run(name, directory, cpu=1, timeout=3600):
         """
-        Run Test
+        Run or continue test execution
+
+        Parameters
+        ----------
+        name : str
+            MCNP inputfile name.
+        directory : str/path
+            path to the test.
+        cpu : int, optional
+            Number of CPU to use. The default is 1.
+        timeout : int, optional
+            Time in s for emergency timeout. The default is 3600.
+
+        Returns
+        -------
+        flagnotrun : Bool
+            If true the timeout was reached.
+
         """
         code = 'mcnp6'
         command = 'name='+name+' wwinp=wwinp tasks '+str(cpu)
         flagnotrun = False
         try:
+            # cancel eventual previous output file
+            outputfile = os.path.join(directory, name+'o')
+            if os.path.exists(outputfile):
+                os.remove(outputfile)
+
+            # check if runtpe exits
+            runtpe = os.path.join(directory, name+'r')
+            if os.path.exists(runtpe):
+                command = command+' runtpe='+name+'r'
+
+            # Execution
             subprocess.run([code, command], cwd=directory,
                            creationflags=subprocess.CREATE_NEW_CONSOLE,
                            timeout=timeout)
@@ -250,7 +278,7 @@ class SphereTest(Test):
             outwwfile = os.path.join(outpath, 'wwinp')
             shutil.copyfile(ww_file, outwwfile)
 
-    def run(self, cpu=1, timeout=10):
+    def run(self, cpu=1, timeout=200):
         """
         Sphere test needs an ad-hoc run method to run all zaids tests
         """

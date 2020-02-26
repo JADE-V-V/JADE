@@ -265,14 +265,25 @@ class SphereOutput(BenchmarkOutput):
         # Generate DataFrames
         results = pd.DataFrame(results)
         errors = pd.DataFrame(errors)
-        # Swap Columns
-        res_cols = list(results.columns)
-        nres_cols = [res_cols[-2], res_cols[-1]] + res_cols
-        err_cols = list(errors.columns)
-        nerr_cols = [err_cols[-2], err_cols[-1]] + err_cols
-        del nres_cols[-2:], nerr_cols[-2:]
-        results = results[nres_cols]
-        errors = errors[nerr_cols]
+
+        # Swap Columns and correct zaid sorting
+        # results
+        results['index'] = pd.to_numeric(results['Zaid'].values,
+                                         errors='coerce')
+        results.sort_values('index', inplace=True)
+        del results['index']
+
+        results.set_index(['Zaid', 'Zaid Name'], inplace=True)
+        results.reset_index(inplace=True)
+
+        # errors
+        errors['index'] = pd.to_numeric(errors['Zaid'].values,
+                                        errors='coerce')
+        errors.sort_values('index', inplace=True)
+        del errors['index']
+
+        errors.set_index(['Zaid', 'Zaid Name'], inplace=True)
+        errors.reset_index(inplace=True)
 
         self.outputs = outputs
         self.results = results
@@ -334,8 +345,8 @@ class SphereOutput(BenchmarkOutput):
                     try:
                         zn = int(zaidnum)
                     except ValueError:  # Happens for tipycal materials
-                        zn = zaidnum 
-                    
+                        zn = zaidnum
+
                     res.append(zn)
                     res.append(zaidname)
 
@@ -372,7 +383,14 @@ class SphereOutput(BenchmarkOutput):
             final[final == np.nan] = 'Not Available'
             final[final == 0] = 'Identical'
 
-            final.sort_index(level=0, inplace=True)
+            # Correct sorting
+            final['index'] = pd.to_numeric(final['Zaid'].values,
+                                           errors='coerce')
+            final.sort_values('index', inplace=True)
+            del final['index']
+
+            final.set_index(['Zaid', 'Zaid Name'], inplace=True)
+            final.reset_index(inplace=True)
 
             # Write excel
             ex = ExcelOutputSheet(template, outpath)

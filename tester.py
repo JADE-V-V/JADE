@@ -45,53 +45,69 @@ Created on Thu Oct 24 09:26:52 2019
 #     #ax.tick_params(which='major', length=5)
 #     #ax.tick_params(which='minor', width=0.75)
 #     #ax.tick_params(which='minor', length=2.5)
-o = { 'temparature': '50', 
-      'logging': {
-        'handlers': {
-          'console': {
-            'formatter': 'simple', 
-            'class': 'logging.StreamHandler', 
-            'stream': 'ext://sys.stdout', 
-            'level': 'DEBUG'
-          }
-        },
-        'loggers': {
-          'simpleExample': {
-            'handlers': ['console'], 
-            'propagate': 'no', 
-            'level': 'INFO'
-          },
-         'root': {
-           'handlers': ['console'], 
-           'level': 'DEBUG'
-         }
-       }, 
-       'version': '1', 
-       'formatters': {
-         'simple': {
-           'datefmt': "'%Y-%m-%d %H:%M:%S'", 
-           'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-         }
-       }
-     }, 
-     'treatment': {'second': 5, 'last': 4, 'first': 4},   
-     'treatment_plan': [[4, 5, 4], [4, 5, 4], [5, 5, 5]]
-}
 
-def gen_dict_extract(key, var):
-    if hasattr(var,'items'):
-        for k, v in var.items():
-            if k == key:
-                yield v
-            if isinstance(v, dict):
-                for result in gen_dict_extract(key, v):
-                    yield result
-            elif isinstance(v, list):
-                for d in v:
-                    for result in gen_dict_extract(key, d):
-                        yield result
-results = gen_dict_extract('treatment_plan', o)
-print(list(results)[0])
+import pandas as pd
+
+df1 = pd.DataFrame([{'idx': 1, 'value1': 3648, 'value2': 'yep'},
+                    {'idx': 'no', 'value1': 468, 'value2': 'yep'},
+                    {'idx': 'yes', 'value1': 348, 'value2': 'yep'}])
+
+df2 = pd.DataFrame([{'idx': 1, 'value1': 3648, 'value2': 'yep'},
+                    {'idx': 'no', 'value1': 348, 'value2': 'yep'}])
+
+df1.set_index(['idx', 'value1'], inplace=True)
+df2.set_index(['idx', 'value1'], inplace=True)
+
+print(df1.index.intersection(df2.index))
+
+
+# o = { 'temparature': '50', 
+#       'logging': {
+#         'handlers': {
+#           'console': {
+#             'formatter': 'simple', 
+#             'class': 'logging.StreamHandler', 
+#             'stream': 'ext://sys.stdout', 
+#             'level': 'DEBUG'
+#           }
+#         },
+#         'loggers': {
+#           'simpleExample': {
+#             'handlers': ['console'], 
+#             'propagate': 'no', 
+#             'level': 'INFO'
+#           },
+#          'root': {
+#            'handlers': ['console'], 
+#            'level': 'DEBUG'
+#          }
+#        }, 
+#        'version': '1', 
+#        'formatters': {
+#          'simple': {
+#            'datefmt': "'%Y-%m-%d %H:%M:%S'", 
+#            'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+#          }
+#        }
+#      }, 
+#      'treatment': {'second': 5, 'last': 4, 'first': 4},   
+#      'treatment_plan': [[4, 5, 4], [4, 5, 4], [5, 5, 5]]
+# }
+
+# def gen_dict_extract(key, var):
+#     if hasattr(var,'items'):
+#         for k, v in var.items():
+#             if k == key:
+#                 yield v
+#             if isinstance(v, dict):
+#                 for result in gen_dict_extract(key, v):
+#                     yield result
+#             elif isinstance(v, list):
+#                 for d in v:
+#                     for result in gen_dict_extract(key, d):
+#                         yield result
+# results = gen_dict_extract('treatment_plan', o)
+# print(list(results)[0])
 # for result in results:
 #     print(result)    
     #plt.tight_layout() #This cuts the white space surrounding the image

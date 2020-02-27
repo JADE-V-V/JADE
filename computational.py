@@ -8,9 +8,6 @@ import testrun
 import os
 import datetime
 
-mcnptag = '01_MCNP_Run'
-inputdir = 'Benchmarks inputs'
-
 
 def sphereTestRun(session, lib):
     """
@@ -24,22 +21,16 @@ def sphereTestRun(session, lib):
 
     # --- Input Generation ---
     libmanager = session.lib_manager
-    # Get directory
-    cp = os.getcwd()
-    cp = os.path.dirname(cp)
-    cpt = os.path.join(cp, 'Tests')
-#    safemkdir(os.path.join(cp,'Sphere'))
-    cpt = os.path.join(cpt, mcnptag)
-    safemkdir(cpt)
-    outpath = os.path.join(cpt, lib)
+    outpath = os.path.join(session.path_run, lib)
     safemkdir(outpath)
     # Get the settings for the test
     config = session.conf.comp_default.set_index('Description')
     config = config.loc['Sphere Leakage Test']
 
     fname = config['File Name']
-    inpfile = os.path.join(cp, inputdir, fname)
-    spheretest = testrun.SphereTest(inpfile, lib, config, log)
+    inpfile = os.path.join(session.path_inputs, fname)
+    VRTpath = os.path.join(session.path_inputs, 'VRT')
+    spheretest = testrun.SphereTest(inpfile, lib, config, log, VRTpath)
     spheretest.generate_test(libmanager, outpath)
     # Adjourn log
     log.adjourn('Sphere test input generated with success'+'    ' +

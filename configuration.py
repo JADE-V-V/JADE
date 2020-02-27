@@ -30,7 +30,6 @@ class Configuration:
         self.suppressW = main['Value'].loc['Suppress warnings']
         self.multi_threads = main['Value'].loc['multithread']
         self.cpu = main['Value'].loc['CPU']
-        self.uti_dir = main['Value'].loc['Utilities output path']
 
         # Computational
         self.comp_default = pd.read_excel(conf_file,

@@ -19,7 +19,7 @@ import numpy as np
 
 class BenchmarkOutput:
 
-    def __init__(self, lib, testname):
+    def __init__(self, lib, testname, session):
         """
         General class for a Benchmark output
 
@@ -29,6 +29,8 @@ class BenchmarkOutput:
             library to post-process
         testname : str
             Name of the benchmark
+        session: Session
+            Jade Session
 
         Returns
         -------
@@ -37,29 +39,26 @@ class BenchmarkOutput:
         """
         self.raw_data = {}  # Raw data
         self.testname = testname  # test name
-        test_path = r'Tests\01_MCNP_Run'  # path to runned tests
-        cp = os.path.dirname(os.getcwd())
-        self.code_path = os.path.join(cp, 'Code')
+        self.code_path = os.getcwd()  # path to code
 
         # COMPARISON
         if type(lib) == list and len(lib) > 1:
             self.single = False  # Indicator for single or comparison
             self.lib = lib
             couples = []
-            tp = os.path.join(cp, test_path, lib[0], testname)
+            tp = os.path.join(session.path_run, lib[0], testname)
             self.test_path = {lib[0]: tp}
-            output_path = r'Tests\02_Output\Comparisons'
             name = lib[0]
             for library in lib[1:]:
                 name_couple = lib[0]+'_Vs_'+library
                 name = name+'_Vs_'+library
                 couples.append((lib[0], library, name_couple))
-                tp = os.path.join(cp, test_path, library, testname)
+                tp = os.path.join(session.path_run, library, testname)
                 self.test_path[library] = tp
 
             self.name = name
             # Generate library output path
-            out = os.path.join(cp, output_path, name)
+            out = os.path.join(session.path_comparison, name)
             if not os.path.exists(out):
                 os.mkdir(out)
 
@@ -83,11 +82,10 @@ class BenchmarkOutput:
         else:
             self.single = True  # Indicator for single or comparison
             self.lib = str(lib)  # In case of 1-item list
-            self.test_path = os.path.join(cp, test_path, lib, testname)
-            output_path = r'Tests\02_Output\Single Libraries'
+            self.test_path = os.path.join(session.path_run, lib, testname)
 
             # Generate library output path
-            out = os.path.join(cp, output_path, lib)
+            out = os.path.join(session.path_single, lib)
             if not os.path.exists(out):
                 os.mkdir(out)
 
@@ -384,13 +382,14 @@ class SphereOutput(BenchmarkOutput):
             final[final == 0] = 'Identical'
 
             # Correct sorting
+            final.reset_index(inplace=True)
             final['index'] = pd.to_numeric(final['Zaid'].values,
                                            errors='coerce')
             final.sort_values('index', inplace=True)
             del final['index']
 
             final.set_index(['Zaid', 'Zaid Name'], inplace=True)
-            final.reset_index(inplace=True)
+            # final.reset_index(inplace=True)
 
             # Write excel
             ex = ExcelOutputSheet(template, outpath)

@@ -9,11 +9,11 @@ import os
 
 class Status():
     def __init__(self, session):
-        cp = os.path.dirname(os.getcwd())
         # Paths
-        self.test_path = os.path.join(cp, 'Tests')
-        self.run_path = os.path.join(self.test_path, '01_MCNP_Run')
-        self.pp_path = os.path.join(self.test_path, '02_Output')
+        self.test_path = session.path_test
+        self.run_path = session.path_run
+        self.single_path = session.path_single
+        self.comparison_path = session.path_comparison
 
         self.config = session.conf
 
@@ -74,7 +74,7 @@ class Status():
         """
         # Read comparison tree
         comparison_tree = {}
-        cp = os.path.join(self.pp_path, 'Comparisons')
+        cp = self.comparison_path
         for lib in os.listdir(cp):
             comparison_tree[lib] = []
             cp1 = os.path.join(cp, lib)
@@ -83,7 +83,7 @@ class Status():
 
         # Read Single library tree
         single_tree = {}
-        cp = os.path.join(self.pp_path, 'Single Libraries')
+        cp = self.single_path
         for lib in os.listdir(cp):
             single_tree[lib] = []
             cp1 = os.path.join(cp, lib)
@@ -124,10 +124,10 @@ class Status():
             cp = self.run_path
         elif tree == 'single':
             # tree = self.single_tree
-            cp = os.path.join(self.pp_path, 'Single Libraries')
+            cp = self.single_path
         elif tree == 'comparison':
             # tree = self.comparison_tree
-            cp = os.path.join(self.pp_path, 'Comparisons')
+            cp = self.comparison_path
         else:
             raise KeyError(str(tree)+' is not a valid option.')
 
@@ -427,7 +427,7 @@ class Status():
                 for lib in libs[1:]:
                     name = name+'_Vs_'+lib
 
-                print(name)
+                # print(name)
                 override = self.check_pp_single(name, session,
                                                 tree='comparison')
                 # Ask for override

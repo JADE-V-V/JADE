@@ -11,7 +11,7 @@ import output as o
 def postprocessSphere(session, lib):
     print(' Post-Processing Sphere Leakage test:' +
           '    '+str(datetime.datetime.now()))
-    out = o.SphereOutput(lib, 'Sphere')
+    out = o.SphereOutput(lib, 'Sphere', session)
     out.single_postprocess()
     session.log.adjourn('Sphere Leakage benchmark post-processing coompleted' +
                         '    ' + str(datetime.datetime.now()))
@@ -21,7 +21,7 @@ def compareSphere(session, lib_input):
     print(' Comparing Sphere Leakage test:' +
           '    '+str(datetime.datetime.now()))
     lib = lib_input.split('-')
-    out = o.SphereOutput(lib, 'Sphere')
+    out = o.SphereOutput(lib, 'Sphere', session)
     out.compare(session.state)
     session.log.adjourn('Sphere Leakage benchmark comparison coompleted' +
                         '    ' + str(datetime.datetime.now()))

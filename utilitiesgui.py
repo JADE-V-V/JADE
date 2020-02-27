@@ -17,11 +17,13 @@ def translate_input(session, lib, inputfile):
     Translate an input file to a selected library. A log of the translation is
     also produced.
     """
+    print(" Translating...")
 
     libmanager = session.lib_manager
     outpath = os.getcwd()
     outpath = os.path.dirname(outpath)
-    outpath = os.path.join(outpath, 'Utilities')
+    outpath = session.path_uti
+    filename = os.path.basename(inputfile)
 
     try:
         inp = ipt.InputFile.from_text(inputfile)
@@ -36,7 +38,7 @@ def translate_input(session, lib, inputfile):
     newdir = os.path.join(outpath, 'Translation')
     if not os.path.exists(newdir):
         os.mkdir(newdir)
-    outfile = os.path.join(newdir, inputfile+'_translated_'+lib)
+    outfile = os.path.join(newdir, filename+'_translated_'+lib)
     inp.write(outfile)
 
     # Log production
@@ -47,7 +49,7 @@ def translate_input(session, lib, inputfile):
         info1['Fraction difference [%]'] = perc
         del info1['Fraction']
 
-        outlog = os.path.join(newdir, inputfile+'_translated_'+lib+'_LOG.xlsx')
+        outlog = os.path.join(newdir, filename+'_translated_'+lib+'_LOG.xlsx')
 
         info1.to_excel(outlog)
     # In case at leat one entire element was not translated

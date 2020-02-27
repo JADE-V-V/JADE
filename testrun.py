@@ -13,9 +13,6 @@ import shutil
 from copy import deepcopy
 from tqdm import tqdm
 
-# Relative path to WW folder for sphere leakage test
-vtr_data_folder = os.path.join('Benchmarks inputs', 'VRT')
-
 
 class Test():
     """
@@ -23,12 +20,13 @@ class Test():
     specific tests.
     """
 
-    def __init__(self, inp, lib, config, log):
+    def __init__(self, inp, lib, config, log, VRTpath):
         """
         inp: (str) path to inputfile blueprint
         lib: (str) library suffix to use
         config: (DataFrame row) configuration options for the test
         log: (Log) Jade log file access
+        VRTpath: (str/path) path to the variance reduction folder
         """
         # Test Library
         self.lib = lib
@@ -47,6 +45,9 @@ class Test():
 
         # Log for warnings
         self.log = log
+
+        # VRT path
+        self.path_VRT = VRTpath
 
         # Add the stop card according to config
         config = config.dropna()
@@ -186,8 +187,7 @@ class SphereTest(Test):
 
         """
         # Get VRT files
-        cp = os.path.dirname(os.getcwd())
-        directoryVRT = os.path.join(cp, vtr_data_folder, zaid)
+        directoryVRT = os.path.join(self.path_VRT, zaid)
         edits_file = os.path.join(directoryVRT, 'inp_edits.txt')
         ww_file = os.path.join(directoryVRT, 'wwinp')
 
@@ -245,8 +245,7 @@ class SphereTest(Test):
         """
         truename = material.name
         # Get VRT file
-        cp = os.path.dirname(os.getcwd())
-        directoryVRT = os.path.join(cp, vtr_data_folder, truename)
+        directoryVRT = os.path.join(self.path_VRT, truename)
         edits_file = os.path.join(directoryVRT, 'inp_edits.txt')
         ww_file = os.path.join(directoryVRT, 'wwinp')
 

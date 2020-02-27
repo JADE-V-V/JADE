@@ -18,6 +18,18 @@ class Session:
     """
 
     def __init__(self):
+        """
+        Initialize JADE session:
+            - folders structure is created if absent
+            - Configuration file is read and correspondent object is created
+            - Libmanager is created
+            - Logfile is created
+
+        Returns
+        -------
+        None.
+
+        """
         # Read configuration file. All vital variables are stored here
         self.conf = cnf.Configuration('Config.xlsx')
 
@@ -25,6 +37,31 @@ class Session:
         dl = self.conf.default_lib
         self.lib_manager = libmanager.LibManager(self.conf.xsdir_path,
                                                  defaultlib=dl)
+
+        # --- Generate and store the JADE path structure ---
+        cp = os.getcwd()
+        cp = os.path.dirname(cp)
+        # Benchmark inputs should be externally copied, that is too heavy
+        self.path_inputs = os.path.join(cp, 'Benchmarks inputs')
+        # Future implementation
+        self.path_quality = os.path.join(cp, 'Quality')
+        # Test level 1
+        self.path_test = os.path.join(cp, 'Tests')
+        # Test level 2
+        self.path_run = os.path.join(self.path_test, 'MCNP simulations')
+        self.path_pp = os.path.join(self.path_test, 'Post-Processing')
+        # Test level 3
+        self.path_single = os.path.join(self.path_pp, 'Single Libraries')
+        self.path_comparison = os.path.join(self.path_pp, 'Comparisons')
+        # Utilities
+        self.path_uti = os.path.join(cp, 'Utilities')
+
+        keypaths = [self.path_inputs, self.path_quality, self.path_test,
+                    self.path_run, self.path_pp, self.path_uti,
+                    self.path_single, self.path_comparison]
+        for path in keypaths:
+            if not os.path.exists(path):
+                os.mkdir(path)
 
         # Create the session LOG
         cp = os.getcwd()

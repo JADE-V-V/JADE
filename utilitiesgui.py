@@ -63,6 +63,22 @@ def translate_input(session, lib, inputfile):
 
 def print_libraries(libmanager):
     print(libmanager.libraries)
-    
 
-# def print_material_info()
+
+def print_material_info(session, filepath):
+
+    try:
+        inputfile = ipt.InputFile.from_text(filepath)
+    except PermissionError:
+        return False
+
+    info = inputfile.matlist.get_info(zaids=True)
+    outpath = os.path.join(session.path_uti, 'Materials Infos')
+    if not os.path.exists(outpath):
+        os.mkdir(outpath)
+
+    outname = os.path.basename(filepath)+'_materialinfo.xlsx'
+    outfile = os.path.join(outpath, outname)
+    info.to_excel(outfile)
+
+    return True

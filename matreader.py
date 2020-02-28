@@ -335,16 +335,23 @@ class SubMaterial:
     def get_info(self):
         """
         Returns DataFrame containing the different fractions of the elements
+        and zaids
         """
-        dic = {'Element': [], 'Fraction': []}
+        dic_element = {'Element': [], 'Fraction': []}
+        dic_zaids = {'Element': [], 'Zaid': [], 'Fraction': []}
         for elem in self.elements:
             fraction = elem.get_fraction()
-            dic['Element'].append(elem.Z)
-            dic['Fraction'].append(fraction)
+            dic_element['Element'].append(elem.Z)
+            dic_element['Fraction'].append(fraction)
+            for zaid in elem.zaids:
+                dic_zaids['Element'].append(elem.Z)
+                dic_zaids['Zaid'].append(zaid.isotope)
+                dic_zaids['Fraction'].append(fraction)
 
-        df = pd.DataFrame(dic)
+        df_el = pd.DataFrame(dic_element)
+        df_zaids = pd.DataFrame(dic_zaids)
 
-        return df
+        return df_el, df_zaids
 
 
 # Support function for Submaterial
@@ -611,7 +618,7 @@ class MatCardsList:
         for mat in self.materials:
             mat.update_info(lib_manager)
 
-    def get_info(self):
+    def get_info(self, zaids=False):
         """
         Produce a DataFrame containing the fraction recap of different
         submaterials
@@ -619,12 +626,24 @@ class MatCardsList:
         infos = []
         for mat in self.materials:
             for i, submat in enumerate(mat.submaterials):
-                info = submat.get_info()
-                info['Material'] = mat.name
-                info['Submaterial'] = i+1
-                infos.append(info)
+                dic_el, dic_zaids = submat.get_info()
+
+                if zaids:
+                    dic = dic_zaids
+                else:
+                    dic = dic_el
+
+                dic['Material'] = mat.name
+                dic['Submaterial'] = i+1
+                infos.append(dic)
 
         df = pd.concat(infos)
-        df.set_index(['Material', 'Submaterial', 'Element'], inplace=True)
+
+        if zaids:
+            df.set_index(['Material', 'Submaterial', 'Element', 'Zaid'],
+                         inplace=True)
+            
+        else:
+            df.set_index(['Material', 'Submaterial', 'Element'], inplace=True)
 
         return df

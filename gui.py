@@ -39,6 +39,7 @@ principal_menu = """
 
  * Print available libraries          (printlib)
  * Translate an MCNP input               (trans)
+ * Print materials info               (printmat)
  -----------------------------------------------
 
  * Exit                                   (exit)
@@ -96,6 +97,17 @@ def mainloop(session):
     Error:
     The selected library is not available.
     Check your available libraries using 'printlib'
+                      ''')
+
+        elif option == 'printmat':
+            inputfile = input(' MCNP Input file of interest: ')
+            ans = uty.print_material_info(session, inputfile)
+            if ans:
+                print(' Material infos printed')
+            else:
+                print('''
+    Error:
+    The file does not exist or can't be opened
                       ''')
 
         elif option == 'exit':

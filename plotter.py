@@ -68,8 +68,8 @@ class Plotter():
         # General parameters
         data = self.data
         title = self.title
-        colors = ['blue', 'orange', 'green', 'olive', 'purple', 'cyan']
-        fontsize = 20  # fontsize for text in plot
+        colors = ['blue', 'orange', 'green', 'purple', 'cyan', 'olive']
+        fontsize = 30  # fontsize for text in plot
         if len(data) > 1:
             nrows = 3
         else:
@@ -77,9 +77,9 @@ class Plotter():
 
         # Set properties for the plot spacing
         if len(data) > 1:
-            gridspec_kw = {'height_ratios': [4, 1, 1], 'hspace': 0.05}
+            gridspec_kw = {'height_ratios': [4, 1, 1], 'hspace': 0.13}
         else:
-            gridspec_kw = {'height_ratios': [4, 1], 'hspace': 0.05}
+            gridspec_kw = {'height_ratios': [4, 1], 'hspace': 0.13}
         # Initiate plot
         fig, axes = plt.subplots(nrows=nrows, ncols=1, sharex=True,
                                  figsize=(18, 13.5),
@@ -106,7 +106,7 @@ class Plotter():
         # --- Error Plot ---
         ax2 = axes[1]
         ax2.axhline(y=10, linestyle='--', color='black')
-        ax2.set_ylabel('Error 1σ [%]', labelpad=20).set_fontsize(fontsize)
+        ax2.set_ylabel('1σ [%]', labelpad=35).set_fontsize(fontsize)
         ax2.set_yscale('log')
         ax2.set_ylim(bottom=0, top=100)
         ax2.yaxis.set_major_locator(LogLocator(base=10, numticks=15))
@@ -117,7 +117,7 @@ class Plotter():
         if len(data) > 1:
             ax3 = axes[2]
             ax3.axhline(y=1, linestyle='--', color='black')
-            ax3.set_ylabel('Ratio $T_i/R$', labelpad=15).set_fontsize(fontsize)
+            ax3.set_ylabel('$T_i/R$', labelpad=30).set_fontsize(fontsize)
             ax3.yaxis.set_major_locator(MultipleLocator(0.5))
             ax3.yaxis.set_minor_locator(AutoMinorLocator(5))
             ax3.axhline(y=2, linestyle='--', color='red', linewidth=0.5)
@@ -183,10 +183,10 @@ class Plotter():
                               color='black', label='< 0.5',
                               markerfacecolor='black', markersize=8, lw=0)]
                 ax3.legend(handles=leg, loc='best',
-                           prop={'size': fontsize-8})
+                           prop={'size': fontsize-15})
 
         # Final operations
-        ax1.legend(loc='best', prop={'size': fontsize-2})
+        ax1.legend(loc='best', prop={'size': fontsize-5})
         axes[-1].set_xlabel(xlabel).set_fontsize(fontsize)
 
         # --- Common Features ---

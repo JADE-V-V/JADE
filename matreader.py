@@ -642,7 +642,7 @@ class MatCardsList:
         if zaids:
             df.set_index(['Material', 'Submaterial', 'Element', 'Zaid'],
                          inplace=True)
-            
+
         else:
             df.set_index(['Material', 'Submaterial', 'Element'], inplace=True)
 

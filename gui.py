@@ -27,6 +27,10 @@ principal_menu = """
  ***********************************************
               Welcome to JADE
       A nuclear libraries V&V Test Suite
+
+                 MAIN MENU
+
+        Powered by NIER, UNIBO, F4E
  ***********************************************
  MAIN FUNCTIONS
 
@@ -126,6 +130,8 @@ computational_menu = """
       A nuclear libraries V&V Test Suite
 
           COMPUTATIONAL BENCHMARK MENU
+
+        Powered by NIER, UNIBO, F4E
  ***********************************************
 
  * Print available libraries          (printlib)
@@ -229,6 +235,8 @@ pp_menu = """
       A nuclear libraries V&V Test Suite
 
           POST PROCESSING MENU
+
+        Powered by NIER, UNIBO, F4E
  ***********************************************
 
  * Print tested libraries             (printlib)

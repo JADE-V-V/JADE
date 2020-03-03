@@ -124,8 +124,10 @@ class SphereOutput(BenchmarkOutput):
         os.mkdir(outpath)
 
         for tally, title, ylabel in \
-            [(2, 'Leakage Neutron Flux (175 groups)', 'Neutron Flux'),
-             (32, 'Leakage Gamma Flux (24 groups)', 'Gamma Flux')]:
+            [(2, 'Leakage Neutron Flux (175 groups)',
+              'Neutron Flux $[\#/cm^2]$'),
+             (32, 'Leakage Gamma Flux (24 groups)',
+              'Gamma Flux $[\#/cm^2]$')]:
 
             print(' Plotting tally n.'+str(tally))
             for zaidnum, output in tqdm(self.outputs.items()):
@@ -181,8 +183,10 @@ class SphereOutput(BenchmarkOutput):
         globalname = globalname[:-4]
 
         for tally, title, ylabel in \
-            [(2, 'Leakage Neutron Flux (175 groups)', 'Neutron Flux'),
-             (32, 'Leakage Gamma Flux (24 groups)', 'Gamma Flux')]:
+            [(2, 'Leakage Neutron Flux (175 groups)',
+              'Neutron Flux $[\#/cm^2]$'),
+             (32, 'Leakage Gamma Flux (24 groups)',
+              'Gamma Flux $[\#/cm^2]$')]:
 
             print(' Plotting tally n.'+str(tally))
             for zaidnum in tqdm(allzaids):
@@ -426,7 +430,7 @@ class MCNPoutput:
         mctal = mtal.MCTAL(mctal_file)
         mctal.Read()
         self.mctal = mctal
-        self.mdata = self.organize_mctal()
+        self.mdata, self.totalbins = self.organize_mctal()
 
     def organize_mctal(self):
         """
@@ -436,6 +440,7 @@ class MCNPoutput:
         """
         # Extract data
         rows = []
+        rowstotal = []
         for t in self.mctal.tallies:
             num = t.tallyNumber
             des = t.tallyComment[0]
@@ -490,9 +495,21 @@ class MCNPoutput:
                                                                val, err]
                                                         rows.append(row)
 
+            # If Energy binning is involved
+            if t.ergTC == 't':
+                # 7 steps to get to energy, + 4 for time and mesh directions
+                totalbin = t.valsErrors[-1][-1][-1][-1][-1][-1][-1][-1][-1][-1][-1]
+                totalvalue = totalbin[0]
+                totalerror = totalbin[-1]
+                row = [num, des, totalvalue, totalerror]
+                rowstotal.append(row)
+
         df = pd.DataFrame(rows, columns=['Tally N.', 'Tally Description',
                                          'Energy', 'Value', 'Error'])
-        return df
+        dftotal = pd.DataFrame(rowstotal, columns=['Tally N.',
+                                                   'Tally Description',
+                                                   'Value', 'Error'])
+        return df, dftotal
 
     def get_single_excel_data(self):
         """
@@ -510,6 +527,7 @@ class MCNPoutput:
         tallies2pp = ['2', '32', '24', '14', '34']
         heating_tallies = ['4', '6', '44', '46']
         data = self.mdata.set_index(['Tally Description', 'Energy'])
+        totbins = self.totalbins.set_index('Tally Description')
         results = {}  # Store excel results of different tallies
         errors = {}  # Store average error in different tallies
         keys = {}  # Tally names and numbers
@@ -521,8 +539,13 @@ class MCNPoutput:
             keys[num] = tally.tallyComment[0]
             # Isolate tally
             masked = data.loc[tally.tallyComment[0]]
-            # Get mean error among bins
-            mean_error = masked['Error'].mean()
+
+            # Get mean error among bins, different for single bin
+            if tally.ergTC == 't':
+                mean_error = totbins.loc[tally.tallyComment[0]]['Error']
+            else:
+                mean_error = masked['Error'].mean()
+
             if num in tallies2pp:
                 masked_zero = masked[masked['Value'] == 0]
                 original_length = len(masked)

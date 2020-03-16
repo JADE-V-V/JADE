@@ -332,21 +332,30 @@ class SubMaterial:
         for elem in self.elements:
             elem.update_zaidinfo(lib_manager)
 
-    def get_info(self):
+    def get_info(self, lib_manager):
         """
         Returns DataFrame containing the different fractions of the elements
         and zaids
         """
+        # dic_element = {'Element': [], 'Fraction': []}
+        # dic_zaids = {'Element': [], 'Zaid': [], 'Fraction': []}
         dic_element = {'Element': [], 'Fraction': []}
-        dic_zaids = {'Element': [], 'Zaid': [], 'Fraction': []}
+        dic_zaids = {'Element': [], 'Isotope': [], 'Fraction': []}
         for elem in self.elements:
             fraction = elem.get_fraction()
-            dic_element['Element'].append(elem.Z)
+            # dic_element['Element'].append(elem.Z)
             dic_element['Fraction'].append(fraction)
             for zaid in elem.zaids:
-                dic_zaids['Element'].append(elem.Z)
-                dic_zaids['Zaid'].append(zaid.isotope)
+                fullname = zaid.get_fullname(lib_manager)
+                elementname = fullname.split('-')[0]
+                # dic_zaids['Element'].append(elem.Z)
+                # dic_zaids['Zaid'].append(zaid.isotope)
+                dic_zaids['Element'].append(elementname)
+                dic_zaids['Isotope'].append(fullname + ' [' + str(zaid.element)
+                                            + str(zaid.isotope)+']')
                 dic_zaids['Fraction'].append(fraction)
+
+            dic_element['Element'].append(elementname)
 
         df_el = pd.DataFrame(dic_element)
         df_zaids = pd.DataFrame(dic_zaids)
@@ -618,15 +627,17 @@ class MatCardsList:
         for mat in self.materials:
             mat.update_info(lib_manager)
 
-    def get_info(self, zaids=False):
+    def get_info(self, lib_manager, zaids=False):
         """
         Produce a DataFrame containing the fraction recap of different
         submaterials
+
+        lib_manager: (LibManager) Library manager for the conversion
         """
         infos = []
         for mat in self.materials:
             for i, submat in enumerate(mat.submaterials):
-                dic_el, dic_zaids = submat.get_info()
+                dic_el, dic_zaids = submat.get_info(lib_manager)
 
                 if zaids:
                     dic = dic_zaids
@@ -640,7 +651,7 @@ class MatCardsList:
         df = pd.concat(infos)
 
         if zaids:
-            df.set_index(['Material', 'Submaterial', 'Element', 'Zaid'],
+            df.set_index(['Material', 'Submaterial', 'Element', 'Isotope'],
                          inplace=True)
 
         else:

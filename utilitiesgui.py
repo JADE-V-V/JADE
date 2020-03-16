@@ -30,7 +30,7 @@ def translate_input(session, lib, inputfile):
     except PermissionError:
         return False
 
-    info1 = inp.matlist.get_info()
+    info1 = inp.matlist.get_info(libmanager)
     inp.translate(lib, libmanager)
     inp.update_zaidinfo(libmanager)
     info2 = inp.matlist.get_info()
@@ -65,14 +65,14 @@ def print_libraries(libmanager):
     print(libmanager.libraries)
 
 
-def print_material_info(session, filepath):
+def print_material_info(session, filepath, lib_manager):
 
     try:
         inputfile = ipt.InputFile.from_text(filepath)
     except PermissionError:
         return False
 
-    info = inputfile.matlist.get_info(zaids=True)
+    info = inputfile.matlist.get_info(lib_manager, zaids=True)
     outpath = os.path.join(session.path_uti, 'Materials Infos')
     if not os.path.exists(outpath):
         os.mkdir(outpath)

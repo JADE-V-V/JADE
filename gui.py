@@ -105,7 +105,8 @@ def mainloop(session):
 
         elif option == 'printmat':
             inputfile = input(' MCNP Input file of interest: ')
-            ans = uty.print_material_info(session, inputfile)
+            ans = uty.print_material_info(session, inputfile,
+                                          session.lib_manager)
             if ans:
                 print(' Material infos printed')
             else:
@@ -164,7 +165,9 @@ def comploop(session):
             # If checks are ok perform assessment
             if ans:
                 # Check active tests
-                to_perform = session.check_active_tests('Run')
+                run_active = session.check_active_tests('Run')
+                input_active = session.check_active_tests('OnlyInput')
+                to_perform = run_active + input_active
                 # Logging
                 bartext = 'Computational benchmark execution started'
                 session.log.bar_adjourn(bartext)

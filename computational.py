@@ -38,9 +38,6 @@ def sphereTestRun(session, lib):
 
     if bool(config['OnlyInput']):
         print('\n        -- SPHERE LEAKAGE TEST COMPLETED --\n')
-        # Adjourn log
-        log.adjourn('Sphere test inputs generated with success' +
-                    '    ' + str(datetime.datetime.now()))
     else:
         # --- Input Run ---
         print(' MCNP run running:         '+str(datetime.datetime.now()))

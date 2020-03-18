@@ -25,8 +25,9 @@ exit_text = '\nSession concluded normally \n'
 
 principal_menu = """
  ***********************************************
-              Welcome to JADE
+              Welcome to JADE v0.4
       A nuclear libraries V&V Test Suite
+          Release date: toadjounrn
 
                  MAIN MENU
 
@@ -127,7 +128,7 @@ def mainloop(session):
 
 computational_menu = """
  ***********************************************
-              Welcome to JADE
+              Welcome to JADE v0.4
       A nuclear libraries V&V Test Suite
 
           COMPUTATIONAL BENCHMARK MENU
@@ -234,7 +235,7 @@ def comploop(session):
 
 pp_menu = """
  ***********************************************
-              Welcome to JADE
+              Welcome to JADE v0.4
       A nuclear libraries V&V Test Suite
 
           POST PROCESSING MENU
@@ -263,9 +264,8 @@ def pploop(session):
         option = input(' Enter action: ')
 
         if option == 'printlib':
-            clear_screen()
-            print(pp_menu)
-            print(' Currently not developed. Please select another option')
+            lib_tested = list(session.state.run_tree.keys())
+            print(lib_tested)
 
         elif option == 'pp':
             # Select and check library

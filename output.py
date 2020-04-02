@@ -106,7 +106,7 @@ class BenchmarkOutput:
 
 class SphereOutput(BenchmarkOutput):
 
-    def single_postprocess(self):
+    def single_postprocess(self, libmanager):
         """
         Execute the full post-processing of a single library (i.e. excel,
         raw data and atlas)
@@ -148,14 +148,14 @@ class SphereOutput(BenchmarkOutput):
         template = os.path.join(self.code_path, 'Templates',
                                 'AtlasTemplate.docx')
         atlas = at.Atlas(template, self.lib)
-        atlas.build(outpath)
+        atlas.build(outpath, libmanager)
         atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(outpath)
 
         print(' Single library post-processing completed')
 
-    def compare(self, state):
+    def compare(self, state, libmanager):
         print(' Generating Excel Recap...')
         self.pp_excel_comparison(state)
         print(' Creating Atlas...')
@@ -214,7 +214,7 @@ class SphereOutput(BenchmarkOutput):
         template = os.path.join(self.code_path, 'Templates',
                                 'AtlasTemplate.docx')
         atlas = at.Atlas(template, globalname)
-        atlas.build(outpath)
+        atlas.build(outpath, libmanager)
         atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(outpath)
@@ -346,7 +346,7 @@ class SphereOutput(BenchmarkOutput):
                     res, columns = output.get_comparison_data()
                     try:
                         zn = int(zaidnum)
-                    except ValueError:  # Happens for tipycal materials
+                    except ValueError:  # Happens for typical materials
                         zn = zaidnum
 
                     res.append(zn)
@@ -607,6 +607,7 @@ class MCNPoutput:
         # Tallies to post process
         tallies2pp = ['12', '22', '24', '14', '34', '6', '46']
         data = self.mdata.set_index(['Tally Description', 'Energy'])
+        totalbins = self.totalbins.set_index('Tally Description')
         results = []  # Store data to compare for different tallies
         columns = []  # Tally names and numbers
         # Reorder tallies
@@ -624,12 +625,19 @@ class MCNPoutput:
             masked = data.loc[tally.tallyComment[0]]
             if num in tallies2pp:
                 if num in ['12', '22']:  # Coarse Flux bins
+                    masked_tot = totalbins.loc[tally.tallyComment[0]]
                     # Get energy bins
                     bins = list(masked.reset_index()['Energy'].values)
                     for ebin in bins:
-                        colname = '(T.ly '+str(num)+') '+str(ebin)
+                        # colname = '(T.ly '+str(num)+') '+str(ebin)
+                        colname = str(ebin)+' [MeV]'
                         columns.append(colname)
                         results.append(masked['Value'].loc[ebin])
+                    # Add the total bin
+                    colname = 'Total'
+                    columns.append(colname)
+                    results.append(masked_tot['Value'])
+
                 else:
                     columns.append(tally.tallyComment[0])
                     results.append(masked['Value'].values[0])

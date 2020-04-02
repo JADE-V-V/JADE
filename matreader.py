@@ -12,6 +12,7 @@ Support classes for MCNP material card reader/writer
 import re
 import pandas as pd
 import Parser as par
+from collections import Sequence
 
 
 # -------------------------------------
@@ -68,20 +69,20 @@ class Zaid:
         """
         fraction = '%s' % float('%.5g' % self.fraction)
         if self.library is None:
-            line = '      '+self.element+self.isotope+'    '+fraction
+            zaidname = self.element+self.isotope
         else:
-            line = '      ' + self.element + self.isotope + '.' + \
-                self.library + '    ' + fraction
-
+            zaidname = self.element+self.isotope+'.'+self.library
         # Add INFO
         try:
             abundance = '%s' % float('%.5g' % float(self.ab))
         except ValueError:
             abundance = ''
 
-        line = line+'  $ '+self.fullname+' AB(%) '+abundance
+        abundance = 'AB(%) '+abundance
+        inline_comm = '    $ '+self.fullname
+        args = (zaidname, fraction, inline_comm, abundance)
 
-        return line
+        return '{0:>15} {1:>12} {2:<12} {3:<10}'.format(*args)
 
     def get_fullname(self, libmanager):
         """
@@ -332,6 +333,8 @@ class SubMaterial:
         for elem in self.elements:
             elem.update_zaidinfo(lib_manager)
 
+        self.collapse_zaids()
+
     def get_info(self, lib_manager):
         """
         Returns DataFrame containing the different fractions of the elements
@@ -361,6 +364,25 @@ class SubMaterial:
         df_zaids = pd.DataFrame(dic_zaids)
 
         return df_el, df_zaids
+
+    def scale_fractions(self, norm_factor):
+        """
+        Scale the zaids fractions using a normalizing factor
+
+        Parameters
+        ----------
+        norm_factor : float
+            scaling factor.
+
+        Returns
+        -------
+        None.
+
+        """
+        for zaid in self.zaidList:
+            zaid.fraction = zaid.fraction*norm_factor
+
+        self.collapse_zaids()
 
 
 # Support function for Submaterial
@@ -465,9 +487,9 @@ class Material:
 
     def to_text(self):
         if self.header is not None:
-            text = self.header+'\n'+self.name
+            text = self.header+'\n'+self.name.upper()
         else:
-            text = self.name
+            text = self.name.upper()
         if self.submaterials is not None:
             for submaterial in self.submaterials:
                 text = text+'\n'+submaterial.to_text()
@@ -475,7 +497,7 @@ class Material:
             for mx in self.mx_cards:
                 for line in mx:
                     line = line.strip('\n')
-                    text = text+'\n'+line
+                    text = text+'\n'+line.upper()
         else:
             text = '  Not supported yet, generate submaterials first'
             pass  # TODO
@@ -495,16 +517,16 @@ class Material:
 
         self.update_info(lib_manager)
 
-    def check_fraction(self):
+    def get_tot_fraction(self):
         """
-        This method is used to check if zaid fractions are correctly normalized
+        Returns the total material fraction
         """
         fraction = 0
         for submat in self.submaterials:
             for zaid in submat.zaidList:
                 fraction = fraction+zaid.fraction
 
-        #  TODO
+        return fraction
 
     def add_mx(self, mx_cards):
         """
@@ -523,7 +545,7 @@ class Material:
             submaterial.update_info(lib_manager)
 
 
-class MatCardsList:
+class MatCardsList(Sequence):
 
     def __init__(self, materials):
         """
@@ -532,6 +554,32 @@ class MatCardsList:
         materials: (list)(Material) materials of the list
         """
         self.materials = materials
+        # Build also the dictionary
+        self.matdic = self._compute_dic()
+
+    def __len__(self):
+        return len(self.materials)
+
+    def __repr__(self):
+        return str(self.matdic)
+
+    def __getitem__(self, key):
+        return self.matdic[key.upper()]
+
+    def append(self, material):
+        self.materials.append(material)
+        self.matdic = self._compute_dic()
+
+    def remove(self, item):
+        self.materials.remove(item)  # TODO this should get the key instead
+        self.matdic = self._compute_dic()
+
+    def _compute_dic(self):
+        matdic = {}
+        for material in self.materials:
+            matdic[material.name.upper()] = material
+
+        return matdic
 
     @classmethod
     def from_input(cls, inputfile):
@@ -629,10 +677,24 @@ class MatCardsList:
 
     def get_info(self, lib_manager, zaids=False):
         """
-        Produce a DataFrame containing the fraction recap of different
-        submaterials
+        Get the material informations in terms of fraction and composition
+        of the material card
 
-        lib_manager: (LibManager) Library manager for the conversion
+        Parameters
+        ----------
+        lib_manager : libmanager.LibManager
+            To handle element name recovering.
+        zaids : bool, optional
+            Consider or not the zaid level. The default is False.
+
+        Returns
+        -------
+        df : pd.DataFrame
+            Raw infos on the fractions.
+        df_elem : pd.DataFrame
+            processed info for the element: normalized fraction added both for
+            material and submaterial.
+
         """
         infos = []
         for mat in self.materials:
@@ -657,4 +719,26 @@ class MatCardsList:
         else:
             df.set_index(['Material', 'Submaterial', 'Element'], inplace=True)
 
-        return df
+        # Additional df containing normalized element fraction of submaterial
+        # and material
+
+        # Get total fractions
+        df_elem = df.groupby(['Material', 'Submaterial', 'Element']).sum()
+        df_sub = df.groupby(['Material', 'Submaterial']).sum()
+        df_mat = df.groupby(['Material']).sum()
+
+        # Compute percentages
+        sub_percentage = []
+        mat_percentage = []
+        for idx, row in df_elem.iterrows():
+            matID = idx[0]
+            elemID = idx[1]
+            sub_percentage.append(row['Fraction'] /
+                                  df_sub['Fraction'].loc[(matID, elemID)])
+            mat_percentage.append(row['Fraction'] /
+                                  df_mat['Fraction'].loc[matID])
+
+        df_elem['Sub-Material Fraction'] = sub_percentage
+        df_elem['Material Fraction'] = mat_percentage
+
+        return df, df_elem

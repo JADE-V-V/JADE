@@ -133,14 +133,23 @@ class LibManager:
         """
         Given a zaid, its chemical name and isotope number is returned
 
-        zaid: (Zaid) object
+        zaid: (Zaid) object or str
         """
+        if type(zaid) == str:
+            splitted = zaid.split('.')
+            elem = splitted[0][:-3]
+            i = int(elem)
+            isotope = splitted[0][-3:]
+
+        else:
+            i = int(zaid.element)
+            isotope = zaid.isotope
+
         newiso = self.isotopes.set_index('Z')
         newiso = newiso.loc[~newiso.index.duplicated(keep='first')]
 
-        i = int(zaid.element)
         name = newiso['Element'].loc[i]
-        formula = newiso['E'].loc[i]+'-'+str(int(zaid.isotope))
+        formula = newiso['E'].loc[i]+'-'+str(int(isotope))
 
         return name, formula
 

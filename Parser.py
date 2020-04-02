@@ -1212,7 +1212,7 @@ def get_cards_from_input(inp, debug=None):
 
     def replace_tab(l, cln):
         if "\t" in l:
-            print("c Line {}: tab replaced with 4 spaces".format(cln + 1))
+            # print("c Line {}: tab replaced with 4 spaces".format(cln + 1))
             l = l.replace("\t", " "*4)
         else:
             l = l[:]

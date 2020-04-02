@@ -12,6 +12,9 @@ import postprocess as pp
 import testrun
 from tqdm import tqdm
 
+date = 'tobedefined'
+version = 'v4.0'
+
 
 def clear_screen():
     if os.name == 'nt':
@@ -22,13 +25,13 @@ def clear_screen():
 
 exit_text = '\nSession concluded normally \n'
 
-
-principal_menu = """
+header = """
  ***********************************************
-              Welcome to JADE v0.4
+              Welcome to JADE """+version+"""
       A nuclear libraries V&V Test Suite
-          Release date: toadjounrn
+          Release date: """+date+'\n'
 
+principal_menu = header+"""
                  MAIN MENU
 
         Powered by NIER, UNIBO, F4E
@@ -45,6 +48,7 @@ principal_menu = """
  * Print available libraries          (printlib)
  * Translate an MCNP input               (trans)
  * Print materials info               (printmat)
+ * Generate material                  (generate)
  -----------------------------------------------
 
  * Exit                                   (exit)
@@ -113,8 +117,32 @@ def mainloop(session):
             else:
                 print('''
     Error:
-    The file does not exist or can't be opened
+    Either the input or output files do not exist or can't be opened
                       ''')
+
+        elif option == 'generate':
+            inputfile = input(' Materials source file: ')
+            materials = input(' Source materials (e.g. m1-m10): ')
+            percentages = input(' Materials percentages (e.g. 0.1-0.9): ')
+            materials = materials.split('-')
+            percentages = percentages.split('-')
+
+            if len(materials) == len(percentages):
+                ans = uty.generate_material(session, inputfile,
+                                            materials, percentages)
+                if ans:
+                    print(' Material generated')
+                else:
+                    print('''
+    Error:
+    Either the input or output files do not exist or can't be opened
+                          ''')
+
+            else:
+                print('''
+    Error:
+    The number of materials and percentages must be the same
+                          ''')
 
         elif option == 'exit':
             session.log.adjourn('\nSession concluded normally \n')
@@ -126,11 +154,7 @@ def mainloop(session):
             print(' Please enter a valid option!')
 
 
-computational_menu = """
- ***********************************************
-              Welcome to JADE v0.4
-      A nuclear libraries V&V Test Suite
-
+computational_menu = header+"""
           COMPUTATIONAL BENCHMARK MENU
 
         Powered by NIER, UNIBO, F4E
@@ -233,11 +257,7 @@ def comploop(session):
             print(' Please enter a valid option!')
 
 
-pp_menu = """
- ***********************************************
-              Welcome to JADE v0.4
-      A nuclear libraries V&V Test Suite
-
+pp_menu = header+"""
           POST PROCESSING MENU
 
         Powered by NIER, UNIBO, F4E

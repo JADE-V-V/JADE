@@ -12,7 +12,7 @@ import postprocess as pp
 import testrun
 from tqdm import tqdm
 
-date = 'tobedefined'
+date = '08/04/2020'
 version = 'v4.0'
 
 
@@ -121,21 +121,23 @@ def mainloop(session):
                       ''')
 
         elif option == 'generate':
-            inputfile = input(' Materials source file: ')
+            inputfile = uty.select_inputfile(' Materials source file: ')
             materials = input(' Source materials (e.g. m1-m10): ')
             percentages = input(' Materials percentages (e.g. 0.1-0.9): ')
+            lib = session.lib_manager.select_lib()
+
             materials = materials.split('-')
             percentages = percentages.split('-')
 
             if len(materials) == len(percentages):
                 ans = uty.generate_material(session, inputfile,
-                                            materials, percentages)
+                                            materials, percentages, lib)
                 if ans:
                     print(' Material generated')
                 else:
                     print('''
     Error:
-    Either the input or output files do not exist or can't be opened
+    Either the input or output files can't be opened
                           ''')
 
             else:

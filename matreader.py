@@ -330,10 +330,15 @@ class SubMaterial:
 
         lib_manager: (LibManager) Library manager for the conversion
         """
+        self.collapse_zaids()  # To be sure to have adjourned elements
+
         for elem in self.elements:
             elem.update_zaidinfo(lib_manager)
 
-        self.collapse_zaids()
+        # TODO
+        # Here the zaidlist of the submaterial should be adjourned or the next
+        # collapse zaid will cancel the informations. If update info is used
+        # as last operations there are no problems.
 
     def get_info(self, lib_manager):
         """
@@ -430,14 +435,15 @@ def readLine(string):
 
 class Material:
 
-    def __init__(self, zaids, elem, name, submaterials=None, mx_cards=[]):
+    def __init__(self, zaids, elem, name, submaterials=None, mx_cards=[],
+                 header=None):
 
         self.zaids = zaids
         self.elem = elem
         self.submaterials = submaterials
         self.name = name
         self.mx_cards = mx_cards
-        self.header = None
+        self.header = header
 
         # Adjust the submaterial and headers reading
         try:
@@ -445,11 +451,11 @@ class Material:
             # If submat is void it has to be deleted (only header), otherwise
             # it means it has no header
             submat = submaterials[0]
-            self.header = submat.header
-            if len(submat.zaidList) == 0:
+            if len(submat.zaidList) == 0:  # Happens in reading from text
+                self.header = submat.header
                 del self.submaterials[0]
-            else:
-                self.submaterials[0].header = None
+            # else:
+            #     self.submaterials[0].header = None
         except IndexError:
             self.header = None
 
@@ -462,12 +468,18 @@ class Material:
         """
         # split the different submaterials
         patC = re.compile('[cC]')
+        pat_matHeader = re.compile('[mM]\d+')
         inHeader = True
         subtext = []
         submaterials = []
 
         for line in text:
             checkComment = patC.match(line)
+            checkHeaderMat = pat_matHeader.match(line)
+
+            if checkHeaderMat is not None:
+                header = subtext
+                subtext = []
 
             if inHeader:
                 subtext.append(line)
@@ -483,7 +495,8 @@ class Material:
 
         submaterials.append(SubMaterial.from_text(subtext))
 
-        return cls(None, None, submaterials[0].name, submaterials=submaterials)
+        return cls(None, None, submaterials[0].name, submaterials=submaterials,
+                   header=header)
 
     def to_text(self):
         if self.header is not None:
@@ -543,6 +556,63 @@ class Material:
         """
         for submaterial in self.submaterials:
             submaterial.update_info(lib_manager)
+
+    def switch_fraction(self, ftype, lib_manager):
+        """
+        Switch between atom or mass fraction for the material card.
+        If the material is already switched the command is ignored.
+
+        Parameters
+        ----------
+        ftype : str
+            Either 'mass' or 'atom' to chose the type of switch.
+        lib_manager : libmanager.LibManager
+            Handles zaid data.
+
+        Raises
+        ------
+        KeyError
+            if ftype is not either 'atom' or 'mass'.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Get total fraction
+        totf = self.get_tot_fraction()
+        if ftype == 'atom':  # mass2atom switch
+            if totf < 0:  # Check if the switch must be effectuated
+                # x_n = (x_m/m)/sum(x_m/m)
+                # get sum(x_m/m)
+                norm = 0
+                for submat in self.submaterials:
+                    for zaid in submat.zaidList:
+                        atom_mass = lib_manager.get_zaid_mass(zaid)
+                        norm = norm + (-1*zaid.fraction/atom_mass)
+
+                for submat in self.submaterials:
+                    for zaid in submat.zaidList:
+                        atom_mass = lib_manager.get_zaid_mass(zaid)
+                        zaid.fraction = (-1*zaid.fraction/atom_mass)/norm
+
+        elif ftype == 'mass':  # atom2mass switch
+            if totf > 0:  # Check if the switch must be effectuated
+                # x_n = (x_m*m)/sum(x_m*m)
+                # get sum(x_m*m)
+                norm = 0
+                for submat in self.submaterials:
+                    for zaid in submat.zaidList:
+                        atom_mass = lib_manager.get_zaid_mass(zaid)
+                        norm = norm + (zaid.fraction*atom_mass)
+
+                for submat in self.submaterials:
+                    for zaid in submat.zaidList:
+                        atom_mass = lib_manager.get_zaid_mass(zaid)
+                        zaid.fraction = (-1*zaid.fraction*atom_mass)/norm
+
+        else:
+            raise KeyError(ftype+' is not a valid key error [atom, mass]')
 
 
 class MatCardsList(Sequence):

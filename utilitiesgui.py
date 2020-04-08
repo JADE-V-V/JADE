@@ -112,21 +112,28 @@ def print_material_info(session, filepath, lib_manager):
     return True
 
 
-def generate_material(session, sourcefile, materials, percentages):
+def generate_material(session, sourcefile, materials, percentages, newlib,
+                      fractiontype='atom'):
     # Read the source file
     try:
         inputfile = ipt.InputFile.from_text(sourcefile)
     except PermissionError:
         return False
 
+    # Translate to requested lib
+    inputfile.translate(newlib, session.lib_manager)
+
     # Collect all submaterials
     submaterials = []
     for materialname, percentage in zip(materials, percentages):
         material = inputfile.matlist[materialname]
-        totfraction = material.get_tot_fraction()
+        # Ensure materials have the requested fraction type
+        material.switch_fraction(fractiontype, session.lib_manager)
+
         # Scale fractions
+        totfraction = material.get_tot_fraction()
         for submat in material.submaterials:
-            norm_factor = float(percentage)/totfraction  # normalized and scaled
+            norm_factor = float(percentage)/totfraction  # normalized & scaled
             submat.scale_fractions(norm_factor)
             submat.update_info(session.lib_manager)
             submaterials.append(submat)
@@ -134,6 +141,7 @@ def generate_material(session, sourcefile, materials, percentages):
     # Generate new material and matlist
     newmat = mat.Material(None, None, 'M1', submaterials=submaterials)
     matcard = mat.MatCardsList([newmat])
+    # matcard.update_info(session.lib_manager)
 
     # Dump it
     outfile = os.path.join(session.path_uti, 'Generated Materials')
@@ -147,3 +155,29 @@ def generate_material(session, sourcefile, materials, percentages):
         return False
 
     return True
+
+
+def select_inputfile(message):
+    """
+    Safe inputfile selector
+
+    Parameters
+    ----------
+    message : str
+        Message to display for the input
+
+    Returns
+    -------
+    inputfile : str/path
+        valid inputfile as enetered by the user.
+
+    """
+    while True:
+        inputfile = input(message)
+        if os.path.exists(inputfile):
+            return inputfile
+        else:
+            print("""
+                  The file does not exist,
+                  please select a new one
+                  """)

@@ -164,7 +164,7 @@ class LibManager:
 
         """
         while True:
-            lib = input(' Library to assess (e.g. 31c): ')
+            lib = input(' Select library (e.g. 31c): ')
             if lib in self.libraries:
                 break
             else:
@@ -173,3 +173,29 @@ class LibManager:
                   The selected library is not available.
                   ''')
         return lib
+
+    def get_zaid_mass(self, zaid):
+        """
+        Get the atomic mass of one zaid
+
+        Parameters
+        ----------
+        zaid : matreader.Zaid
+            Zaid to examinate.
+
+        Returns
+        -------
+        m: float
+            atomic mass.
+
+        """
+        try:
+            m = self.isotopes['Atomic Mass'].loc[zaid.element+zaid.isotope]
+        except KeyError:  # It means that it is a natural zaid
+            # For a natural zaid the natural abundance mass is used
+            df = self.isotopes.reset_index()
+            df['Partial mass'] = df['Atomic Mass']*df['Mean value']
+            masked = df.set_index('Z').loc[int(zaid.element)]
+            m = masked['Partial mass'].sum()
+
+        return float(m)

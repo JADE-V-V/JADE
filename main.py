@@ -10,6 +10,7 @@ import libmanager
 import os
 import status
 import warnings
+import time
 
 
 class Session:
@@ -55,18 +56,18 @@ class Session:
         self.path_comparison = os.path.join(self.path_pp, 'Comparisons')
         # Utilities
         self.path_uti = os.path.join(cp, 'Utilities')
+        self.path_logs = os.path.join(cp, 'Utilities', 'Log Files')
 
         keypaths = [self.path_inputs, self.path_quality, self.path_test,
                     self.path_run, self.path_pp, self.path_uti,
-                    self.path_single, self.path_comparison]
+                    self.path_single, self.path_comparison, self.path_logs]
         for path in keypaths:
             if not os.path.exists(path):
                 os.mkdir(path)
-
+            
         # Create the session LOG
-        cp = os.getcwd()
-        cp = os.path.dirname(cp)
-        log = os.path.join(cp, 'Utilities', 'Log.txt')
+        log = os.path.join(self.path_logs, 'Log '+time.ctime().replace(':','-')
+                           +'.txt')
         self.log = cnf.Log(log)
 
         # Initialize status

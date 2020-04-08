@@ -46,19 +46,19 @@ Created on Thu Oct 24 09:26:52 2019
 #     #ax.tick_params(which='minor', width=0.75)
 #     #ax.tick_params(which='minor', length=2.5)
 
-import pandas as pd
+# import pandas as pd
 
-df1 = pd.DataFrame([{'idx': 1, 'value1': 3648, 'value2': 'yep'},
-                    {'idx': 'no', 'value1': 468, 'value2': 'yep'},
-                    {'idx': 'yes', 'value1': 348, 'value2': 'yep'}])
+# df1 = pd.DataFrame([{'idx': 1, 'value1': 3648, 'value2': 'yep'},
+#                     {'idx': 'no', 'value1': 468, 'value2': 'yep'},
+#                     {'idx': 'yes', 'value1': 348, 'value2': 'yep'}])
 
-df2 = pd.DataFrame([{'idx': 1, 'value1': 3648, 'value2': 'yep'},
-                    {'idx': 'no', 'value1': 348, 'value2': 'yep'}])
+# df2 = pd.DataFrame([{'idx': 1, 'value1': 3648, 'value2': 'yep'},
+#                     {'idx': 'no', 'value1': 348, 'value2': 'yep'}])
 
-df1.set_index(['idx', 'value1'], inplace=True)
-df2.set_index(['idx', 'value1'], inplace=True)
+# df1.set_index(['idx', 'value1'], inplace=True)
+# df2.set_index(['idx', 'value1'], inplace=True)
 
-print(df1.index.intersection(df2.index))
+# print(df1.index.intersection(df2.index))
 
 
 # o = { 'temparature': '50', 
@@ -231,11 +231,18 @@ print(df1.index.intersection(df2.index))
 #
 #print(lmanager.convertZaid('17000','21c'))
 
-# file = r'C:\Users\laghi\Documents\03_dottorato\04_F4E\01_code\Tests\01_MCNP_Run\71c\Sphere\Sphere_1001_H-1\Sphere_1001_H-1_m'
-# m = MCTAL(file)
+from MCTAL_READER import MCTAL
+
+file = r'C:\Users\laghi\Documents\03_dottorato\04_F4E\01_JADE\Tests\MCNP simulations\30c\Sphere\Sphere_1001_H-1\Sphere_1001_H-1_m'
+m = MCTAL(file)
  
-# T = m.Read()
- 
+T = m.Read()
+tally = T[0]
+
+# 7 steps to get to energy, + 4 for time and mesh directions
+totalbin = tally.valsErrors[-1][-1][-1][-1][-1][-1][-1][-1][-1][-1][-1]
+totalerror = totalbin[-1]
+print(totalerror)
 
 # txtFileName = 'arguments.txt'
  

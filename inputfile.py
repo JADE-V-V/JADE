@@ -168,7 +168,10 @@ class InputFile:
         cellidx: (int) cell index where to modify the density
         """
         # Compute Density
-        density = str(-round(7.874/26*int(zaid.element), 4))
+        if zaid.element == '92' and zaid.isotope == '235':  # U-235
+            density = str(-1)  # Memory problem with the fissions
+        else:
+            density = str(-round(7.874/26*int(zaid.element), 4))
 
         # Change density in sphere cell
         card = self.cards['cells'][cellidx]

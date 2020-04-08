@@ -12,6 +12,9 @@ import postprocess as pp
 import testrun
 from tqdm import tqdm
 
+date = '08/04/2020'
+version = 'v4.0'
+
 
 def clear_screen():
     if os.name == 'nt':
@@ -22,11 +25,16 @@ def clear_screen():
 
 exit_text = '\nSession concluded normally \n'
 
-
-principal_menu = """
+header = """
  ***********************************************
-              Welcome to JADE
+              Welcome to JADE """+version+"""
       A nuclear libraries V&V Test Suite
+          Release date: """+date+'\n'
+
+principal_menu = header+"""
+                 MAIN MENU
+
+        Powered by NIER, UNIBO, F4E
  ***********************************************
  MAIN FUNCTIONS
 
@@ -39,6 +47,8 @@ principal_menu = """
 
  * Print available libraries          (printlib)
  * Translate an MCNP input               (trans)
+ * Print materials info               (printmat)
+ * Generate material                  (generate)
  -----------------------------------------------
 
  * Exit                                   (exit)
@@ -98,6 +108,44 @@ def mainloop(session):
     Check your available libraries using 'printlib'
                       ''')
 
+        elif option == 'printmat':
+            inputfile = input(' MCNP Input file of interest: ')
+            ans = uty.print_material_info(session, inputfile,
+                                          session.lib_manager)
+            if ans:
+                print(' Material infos printed')
+            else:
+                print('''
+    Error:
+    Either the input or output files do not exist or can't be opened
+                      ''')
+
+        elif option == 'generate':
+            inputfile = uty.select_inputfile(' Materials source file: ')
+            materials = input(' Source materials (e.g. m1-m10): ')
+            percentages = input(' Materials percentages (e.g. 0.1-0.9): ')
+            lib = session.lib_manager.select_lib()
+
+            materials = materials.split('-')
+            percentages = percentages.split('-')
+
+            if len(materials) == len(percentages):
+                ans = uty.generate_material(session, inputfile,
+                                            materials, percentages, lib)
+                if ans:
+                    print(' Material generated')
+                else:
+                    print('''
+    Error:
+    Either the input or output files can't be opened
+                          ''')
+
+            else:
+                print('''
+    Error:
+    The number of materials and percentages must be the same
+                          ''')
+
         elif option == 'exit':
             session.log.adjourn('\nSession concluded normally \n')
             sys.exit()
@@ -108,12 +156,10 @@ def mainloop(session):
             print(' Please enter a valid option!')
 
 
-computational_menu = """
- ***********************************************
-              Welcome to JADE
-      A nuclear libraries V&V Test Suite
-
+computational_menu = header+"""
           COMPUTATIONAL BENCHMARK MENU
+
+        Powered by NIER, UNIBO, F4E
  ***********************************************
 
  * Print available libraries          (printlib)
@@ -146,7 +192,9 @@ def comploop(session):
             # If checks are ok perform assessment
             if ans:
                 # Check active tests
-                to_perform = session.check_active_tests('Run')
+                run_active = session.check_active_tests('Run')
+                input_active = session.check_active_tests('OnlyInput')
+                to_perform = run_active + input_active
                 # Logging
                 bartext = 'Computational benchmark execution started'
                 session.log.bar_adjourn(bartext)
@@ -211,12 +259,10 @@ def comploop(session):
             print(' Please enter a valid option!')
 
 
-pp_menu = """
- ***********************************************
-              Welcome to JADE
-      A nuclear libraries V&V Test Suite
-
+pp_menu = header+"""
           POST PROCESSING MENU
+
+        Powered by NIER, UNIBO, F4E
  ***********************************************
 
  * Print tested libraries             (printlib)
@@ -240,9 +286,8 @@ def pploop(session):
         option = input(' Enter action: ')
 
         if option == 'printlib':
-            clear_screen()
-            print(pp_menu)
-            print(' Currently not developed. Please select another option')
+            lib_tested = list(session.state.run_tree.keys())
+            print(lib_tested)
 
         elif option == 'pp':
             # Select and check library

@@ -52,7 +52,7 @@ class Atlas():
         last_paragraph = self.doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    def build(self, images_path):
+    def build(self, images_path, libmanager):
         """
         Generate the atlas filling the world template with plots and headings
 
@@ -60,6 +60,9 @@ class Atlas():
         ----------
         images_path : str/path
             Path to temporary folder containig the images
+
+        lib_manager : libmanager.LibManager
+            Library manager for conversions and name recovery.
 
         Returns
         -------
@@ -84,8 +87,13 @@ class Atlas():
             self.doc.add_heading('Tally N.'+str(tally), level=1)
             df = images.loc[tally]
             for idx, row in df.iterrows():
-                self.doc.add_heading('Zaid: '+row['zaid']+'.'+self.name,
-                                     level=2)
+                title = 'Zaid: '+row['zaid']+'.'+self.name
+                try:
+                    name, formula = libmanager.get_zaidname(row['zaid'])
+                    title = title+' ('+name+' '+formula+')'
+                except ValueError:  # A material is passed instead of zaid
+                    pass
+                self.doc.add_heading(title, level=2)
                 self.insert_img(row['img'])
 
     def save(self, outpath, pdfprint=True):

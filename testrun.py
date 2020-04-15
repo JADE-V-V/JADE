@@ -251,7 +251,7 @@ class SphereTest(Test):
 
         # Translate and assign the material
         material.translate(self.lib, libmanager)
-        material.header = material.header+'\nC\nC True name:'+truename
+        material.header = material.header+'C\nC True name:'+truename
         material.name = 'M1'
         matlist = mat.MatCardsList([material])
 

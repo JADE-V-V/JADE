@@ -478,7 +478,7 @@ class Material:
             checkHeaderMat = pat_matHeader.match(line)
 
             if checkHeaderMat is not None:
-                header = subtext
+                header = ''.join(subtext)
                 subtext = []
 
             if inHeader:

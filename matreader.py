@@ -500,7 +500,7 @@ class Material:
 
     def to_text(self):
         if self.header is not None:
-            text = self.header+'\n'+self.name.upper()
+            text = self.header+self.name.upper()
         else:
             text = self.name.upper()
         if self.submaterials is not None:

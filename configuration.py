@@ -32,9 +32,10 @@ class Configuration:
         self.cpu = main['Value'].loc['CPU']
 
         # Computational
-        self.comp_default = pd.read_excel(conf_file,
-                                          sheet_name='Computational benchmarks',
-                                          skiprows=2, nrows=8).dropna()
+        comp_default = pd.read_excel(conf_file,
+                                     sheet_name='Computational benchmarks',
+                                     skiprows=2, nrows=8)
+        self.comp_default = comp_default.dropna(subset=['File Name'])
 
         # Libraries
         lib = pd.read_excel(conf_file, sheet_name='Libraries')

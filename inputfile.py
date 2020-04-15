@@ -142,8 +142,6 @@ class InputFile:
         ctme = (int) copmuter time
         precision = (tally (str), error (float)) [tuple]
         """
-        tally = precision[0]
-        error = precision[1]
 
         line = 'STOP '
         if nps is not None:
@@ -151,6 +149,8 @@ class InputFile:
         if ctme is not None:
             line = line+'CTME '+str(int(ctme))+' '
         if precision is not None:
+            tally = precision[0]
+            error = precision[1]
             line = line+str(tally)+' '+str(error)
 
         line = line+'\n'

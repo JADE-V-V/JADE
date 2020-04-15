@@ -84,7 +84,8 @@ class Test():
         None.
 
         """
-        self.inp = self.inp.translate(self.lib, libmanager)
+        self.inp.translate(self.lib, libmanager)
+        self.inp.update_zaidinfo(libmanager)
 
     def generate_test(self, lib_directory, libmanager):
         """
@@ -103,8 +104,8 @@ class Test():
         None.
 
         """
-
-        self._translate_input(libmanager)  # Translate the input
+        # Translate the input
+        self._translate_input(libmanager)
 
         # Identify working directory
         testname = self.inp.name
@@ -189,7 +190,7 @@ class SphereTest(Test):
     Class handling the sphere test
     """
 
-    def generate_test(self, libmanager, directory):
+    def generate_test(self, directory, libmanager):
         '''
         Generate all sphere test for a selected library
 

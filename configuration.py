@@ -34,7 +34,7 @@ class Configuration:
         # Computational
         self.comp_default = pd.read_excel(conf_file,
                                           sheet_name='Computational benchmarks',
-                                          skiprows=2, nrows=8)
+                                          skiprows=2, nrows=8).dropna()
 
         # Libraries
         lib = pd.read_excel(conf_file, sheet_name='Libraries')

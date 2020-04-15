@@ -191,20 +191,17 @@ def comploop(session):
             ans = session.state.check_override_run(lib, session)
             # If checks are ok perform assessment
             if ans:
-                # Check active tests
-                run_active = session.check_active_tests('Run')
-                input_active = session.check_active_tests('OnlyInput')
-                to_perform = run_active + input_active
+                # # Check active tests
+                # run_active = session.check_active_tests('Run')
+                # input_active = session.check_active_tests('OnlyInput')
+                # to_perform = run_active + input_active
                 # Logging
                 bartext = 'Computational benchmark execution started'
                 session.log.bar_adjourn(bartext)
                 session.log.adjourn('Selected Library: '+lib,
                                     spacing=False, time=True)
                 print(' ########################### COMPUTATIONAL BENCHMARKS EXECUTION ###########################\n')
-
-                if 'Sphere' in to_perform:
-                    cmp.sphereTestRun(session, lib)
-
+                cmp.executeBenchmarksRoutines(session, lib)  # Core function
                 print(' ####################### COMPUTATIONAL BENCHMARKS RUN ENDED ###############################\n')
                 t = 'Computational benchmark execution ended'
                 session.log.bar_adjourn(t)
@@ -231,7 +228,7 @@ def comploop(session):
                     path = os.path.join(motherdir, directory)
                     name = directory+'_'
 
-                    flag = testrun.Test.run(name, path, cpu=session.conf.cpu)
+                    flag = testrun.Test._run(name, path, cpu=session.conf.cpu)
                     if flag:
                         flagOk = False
                         session.log.adjourn(name +' reached timeout, eliminate folder')

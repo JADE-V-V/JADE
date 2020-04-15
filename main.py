@@ -64,10 +64,10 @@ class Session:
         for path in keypaths:
             if not os.path.exists(path):
                 os.mkdir(path)
-            
+
         # Create the session LOG
-        log = os.path.join(self.path_logs, 'Log '+time.ctime().replace(':','-')
-                           +'.txt')
+        log = os.path.join(self.path_logs,
+                           'Log '+time.ctime().replace(':', '-')+'.txt')
         self.log = cnf.Log(log)
 
         # Initialize status

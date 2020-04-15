@@ -70,16 +70,75 @@ class Test():
         # Directory where the MCNP run will be performed
         self.MCNPdir = None
 
-    def translate_input(self, lib):
+    def _translate_input(self, libmanager):
         """
-        Returns the test input translated using the specified library.
+        Translate the input template to selected library
 
-        lib: (str) suffix of the library to translate to
+        Parameters
+        ----------
+        libmanager : libmanager.LibManager
+            Manager dealing with libraries operations.
+
+        Returns
+        -------
+        None.
+
         """
-        pass  # TODO
+        self.inp = self.inp.translate(self.lib, libmanager)
+
+    def generate_test(self, lib_directory, libmanager):
+        """
+        Generate the test input files
+
+        Parameters
+        ----------
+        lib_directory : path or string
+            Path to lib benchmarks input folders.
+
+        libmanager : libmanager.LibManager
+            Manager dealing with libraries operations.
+
+        Returns
+        -------
+        None.
+
+        """
+
+        self._translate_input(libmanager)  # Translate the input
+
+        # Identify working directory
+        testname = self.inp.name
+        motherdir = os.path.join(lib_directory, testname)
+        self.MCNPdir = motherdir
+        # If previous results are present they are canceled
+        if os.path.exists(motherdir):
+            shutil.rmtree(motherdir)
+        os.mkdir(motherdir)
+
+        # Get VRT files if available
+        directoryVRT = os.path.join(self.path_VRT, testname)
+        edits_file = os.path.join(directoryVRT, 'inp_edits.txt')
+        ww_file = os.path.join(directoryVRT, 'wwinp')
+        if os.path.exists(directoryVRT):
+            # This was tested only for sphere... be careful
+            self.inp.add_edits(edits_file)  # Add variance reduction
+
+        # Write new input file
+        outinpfile = os.path.join(motherdir, testname)
+        self.inp.write(outinpfile)
+
+        # Copy also wwinp file if available
+        if os.path.exists(directoryVRT):
+            outwwfile = os.path.join(motherdir, 'wwinp')
+            shutil.copyfile(ww_file, outwwfile)
+
+    def run(self, cpu=1, timeout=None):
+        name = self.name
+        directory = self.MCNPdir
+        self._run(name, directory, cpu=cpu, timeout=timeout)
 
     @staticmethod
-    def run(name, directory, cpu=1, timeout=3600):
+    def _run(name, directory, cpu=1, timeout=None):
         """
         Run or continue test execution
 
@@ -92,7 +151,7 @@ class Test():
         cpu : int, optional
             Number of CPU to use. The default is 1.
         timeout : int, optional
-            Time in s for emergency timeout. The default is 3600.
+            Time in s for emergency timeout. The default is None.
 
         Returns
         -------
@@ -251,7 +310,7 @@ class SphereTest(Test):
 
         # Translate and assign the material
         material.translate(self.lib, libmanager)
-        material.header = material.header+'\nC\nC True name:'+truename
+        material.header = material.header+'C\nC True name:'+truename
         material.name = 'M1'
         matlist = mat.MatCardsList([material])
 
@@ -277,7 +336,7 @@ class SphereTest(Test):
             outwwfile = os.path.join(outpath, 'wwinp')
             shutil.copyfile(ww_file, outwwfile)
 
-    def run(self, cpu=1, timeout=200):
+    def run(self, cpu=1, timeout=None):
         """
         Sphere test needs an ad-hoc run method to run all zaids tests
         """

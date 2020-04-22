@@ -15,93 +15,7 @@ import plotter
 from tqdm import tqdm
 import atlas as at
 import numpy as np
-
-
-class BenchmarkOutput:
-
-    def __init__(self, lib, testname, session):
-        """
-        General class for a Benchmark output
-
-        Parameters
-        ----------
-        lib : str
-            library to post-process
-        testname : str
-            Name of the benchmark
-        session: Session
-            Jade Session
-
-        Returns
-        -------
-        None.
-
-        """
-        self.raw_data = {}  # Raw data
-        self.testname = testname  # test name
-        self.code_path = os.getcwd()  # path to code
-
-        # COMPARISON
-        if type(lib) == list and len(lib) > 1:
-            self.single = False  # Indicator for single or comparison
-            self.lib = lib
-            couples = []
-            tp = os.path.join(session.path_run, lib[0], testname)
-            self.test_path = {lib[0]: tp}
-            name = lib[0]
-            for library in lib[1:]:
-                name_couple = lib[0]+'_Vs_'+library
-                name = name+'_Vs_'+library
-                couples.append((lib[0], library, name_couple))
-                tp = os.path.join(session.path_run, library, testname)
-                self.test_path[library] = tp
-
-            self.name = name
-            # Generate library output path
-            out = os.path.join(session.path_comparison, name)
-            if not os.path.exists(out):
-                os.mkdir(out)
-
-            out = os.path.join(out, testname)
-            if os.path.exists(out):
-                shutil.rmtree(out)
-            os.mkdir(out)
-            excel_path = os.path.join(out, 'Excel')
-            atlas_path = os.path.join(out, 'Atlas')
-            # raw_path = os.path.join(out, 'Raw Data')
-            os.mkdir(excel_path)
-            os.mkdir(atlas_path)
-            # os.mkdir(raw_path)
-            self.excel_path = excel_path
-            # self.raw_path = raw_path
-            self.atlas_path = atlas_path
-
-            self.couples = couples  # Couples of libraries to post process
-
-        # SINGLE-LIBRARY
-        else:
-            self.single = True  # Indicator for single or comparison
-            self.lib = str(lib)  # In case of 1-item list
-            self.test_path = os.path.join(session.path_run, lib, testname)
-
-            # Generate library output path
-            out = os.path.join(session.path_single, lib)
-            if not os.path.exists(out):
-                os.mkdir(out)
-
-            out = os.path.join(out, testname)
-            if os.path.exists(out):
-                shutil.rmtree(out)
-            os.mkdir(out)
-            excel_path = os.path.join(out, 'Excel')
-            atlas_path = os.path.join(out, 'Atlas')
-            raw_path = os.path.join(out, 'Raw Data')
-            os.mkdir(excel_path)
-            os.mkdir(atlas_path)
-            os.mkdir(raw_path)
-            self.excel_path = excel_path
-            self.raw_path = raw_path
-            self.atlas_path = atlas_path
+from output import BenchmarkOutput
 
 
 class SphereOutput(BenchmarkOutput):
@@ -253,7 +167,7 @@ class SphereOutput(BenchmarkOutput):
                 if file[-1] == 'm':
                     mfile = file
             # Parse output
-            output = MCNPoutput(os.path.join(results_path, mfile))
+            output = SphereMCNPoutput(os.path.join(results_path, mfile))
             outputs[zaidnum] = output
             # Adjourn raw Data
             self.raw_data[zaidnum] = output.mdata
@@ -291,7 +205,7 @@ class SphereOutput(BenchmarkOutput):
         self.results = results
         self.errors = errors
         # Write excel
-        ex = ExcelOutputSheet(template, outpath)
+        ex = SphereExcelOutputSheet(template, outpath)
         # Results
         ex.insert_df(9, 2, results, 0)
         ex.insert_df(9, 2, errors, 1)
@@ -340,7 +254,7 @@ class SphereOutput(BenchmarkOutput):
                             mfile = file
 
                     # Parse output
-                    output = MCNPoutput(os.path.join(results_path, mfile))
+                    output = SphereMCNPoutput(os.path.join(results_path, mfile))
                     outputs_lib[zaidnum] = output
 
                     res, columns = output.get_comparison_data()
@@ -396,7 +310,7 @@ class SphereOutput(BenchmarkOutput):
             # final.reset_index(inplace=True)
 
             # Write excel
-            ex = ExcelOutputSheet(template, outpath)
+            ex = SphereExcelOutputSheet(template, outpath)
             # Results
             rangeex = ex.wb.sheets[0].range('B10')
             rangeex.options(index=True, header=True).value = final
@@ -417,7 +331,7 @@ class SphereOutput(BenchmarkOutput):
             data.to_csv(file, header=True, index=False)
 
 
-class MCNPoutput:
+class SphereMCNPoutput:
     def __init__(self, mctal_file):
         """
         Class handling an MCNP run Output
@@ -430,81 +344,86 @@ class MCNPoutput:
         mctal = mtal.MCTAL(mctal_file)
         mctal.Read()
         self.mctal = mctal
-        self.tallydata, self.totalbin = self.organize_mctal()
+        self.mdata, self.totalbins = self.organize_mctal()
 
     def organize_mctal(self):
         """
-        Retrieve and organize mctal data into a DataFrame.
+        Retrieve and organize mctal data. Simplified for sphere leakage case
 
         Returns: DataFrame containing the organized data
         """
-        tallydata = {}
-        totalbin = {}
-
+        # Extract data
+        rows = []
+        rowstotal = []
         for t in self.mctal.tallies:
-            rows = []
-
-            # --- Reorganize values ---
+            num = t.tallyNumber
+            des = t.tallyComment[0]
+            nCells = t.getNbins("f", False)
+            nCora = t.getNbins("i", False)
+            nCorb = t.getNbins("j", False)
+            nCorc = t.getNbins("k", False)
             nDir = t.getNbins("d", False)
+            # usrAxis = t.getAxis("u")
+            nUsr = t.getNbins("u", False)
+            # segAxis = t.getAxis("s")
+            nSeg = t.getNbins("s", False)
             nMul = t.getNbins("m", False)
-            # Some checks for voids
-            binnings = {'cells': t.cells, 'user': t.usr, 'segments': t.seg,
-                        'cosine': t.cos, 'energy': t.erg, 'time': t.tim,
-                        'cor A': t.cora, 'cor B': t.corb, 'cor C': t.corc}
+            # cosAxis = t.getAxis("c")
+            nCos = t.getNbins("c", False)
+            # ergAxis = t.getAxis("e")
+            nErg = t.getNbins("e", False)
+            # timAxis = t.getAxis("t")
+            nTim = t.getNbins("t", False)
 
-            for name, binning in binnings.items():
-                if len(binning) == 0:
-                    binnings[name] = [np.nan]
-            # Start iteration
-            for f, fn in enumerate(binnings['cells']):
-                for d in range(nDir):  # Unused
-                    for u, un in enumerate(binnings['user']):
-                        for s, sn in enumerate(binnings['segments']):
-                            for m in range(nMul):  # (unused)
-                                for c, cn in enumerate(binnings['cosine']):
-                                    for e, en in enumerate(binnings['energy']):
-                                        for nt, ntn in enumerate(binnings['time']):
-                                            for k, kn in enumerate(binnings['cor C']):
-                                                for j, jn in enumerate(binnings['cor B']):
-                                                    for i, ina in enumerate(binnings['cor A']):
-                                                        val = t.getValue(f, d, u, s, m, c, e, nt, i, j, k, 0)
-                                                        err = t.getValue(f, d, u, s, m, c, e, nt, i, j, k, 1)
-                                                        rows.append([fn, d, un, sn, m, cn, en, ntn, ina, jn, kn, val,err])
+            for f in range(nCells):
+                for d in range(nDir):
+                    for u in range(nUsr):
+                        for s in range(nSeg):
+                            for m in range(nMul):
+                                for c in range(nCos):
+                                    for e in range(nErg):
+                                        try:
+                                            erg = t.erg[e]
+                                        except IndexError:
+                                            erg = None
 
-                # Only one total bin per cell is admitted
-                val = t.getValue(f, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0)
-                err = t.getValue(f, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1)
-                if t.timTC is not None:
-                    rows.append([fn, d, un, sn, m, cn, en, 'total', ina, jn,
-                                 kn, val, err])
-                    total = 'Time'
-                elif t.ergTC is not None:
-                    rows.append([fn, d, un, sn, m, cn, 'total', ntn, ina, jn,
-                                 kn, val, err])
-                    total = 'Energy'
-                elif t.cosTC is not None:
-                    rows.append([fn, d, un, sn, m, 'total', en, ntn, ina, jn,
-                                 kn, val, err])
-                    total = 'Cosine'
+                                        for nt in range(nTim):
+                                            for k in range(nCorc):
+                                                for j in range(nCorb):
+                                                    for i in range(nCora):
+                                                        val = t.getValue(f, d,
+                                                                         u, s,
+                                                                         m, c,
+                                                                         e, nt,
+                                                                         i, j,
+                                                                         k, 0)
+                                                        err = t.getValue(f, d,
+                                                                         u, s,
+                                                                         m, c,
+                                                                         e, nt,
+                                                                         i, j,
+                                                                         k, 1)
 
-            # --- Build the tally DataFrame ---
-            columns = ['Cells', 'Dir', 'User', 'Segments',
-                       'Multiplier', 'Cosine', 'Energy', 'Time',
-                       'Cor C', 'Cor B', 'Cor A', 'Value', 'Error']
-            df = pd.DataFrame(rows, columns=columns)
+                                                        row = [num, des,
+                                                               erg,
+                                                               val, err]
+                                                        rows.append(row)
 
-            # Default drop of multiplier and Dir
-            del df['Dir']
-            del df['Multiplier']
-            df.dropna(axis=1, inplace=True)  # Keep only meaningful binning
+            # If Energy binning is involved
+            if t.ergTC == 't':
+                # 7 steps to get to energy, + 4 for time and mesh directions
+                totalbin = t.valsErrors[-1][-1][-1][-1][-1][-1][-1][-1][-1][-1][-1]
+                totalvalue = totalbin[0]
+                totalerror = totalbin[-1]
+                row = [num, des, totalvalue, totalerror]
+                rowstotal.append(row)
 
-            # Sub DF containing only total bins
-            dftotal = df[df[total] == 'total']
-
-            tallydata[t.tallyNumber] = df
-            totalbin[t.tallyNumber] = dftotal
-
-        return tallydata, totalbin
+        df = pd.DataFrame(rows, columns=['Tally N.', 'Tally Description',
+                                         'Energy', 'Value', 'Error'])
+        dftotal = pd.DataFrame(rowstotal, columns=['Tally N.',
+                                                   'Tally Description',
+                                                   'Value', 'Error'])
+        return df, dftotal
 
     def get_single_excel_data(self):
         """
@@ -640,7 +559,7 @@ class MCNPoutput:
         return results, columns
 
 
-class ExcelOutputSheet:
+class SphereExcelOutputSheet:
     def __init__(self, template, outpath):
         """
         Excel sheet reporting the outcome of an MCNP test

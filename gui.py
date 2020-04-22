@@ -191,10 +191,6 @@ def comploop(session):
             ans = session.state.check_override_run(lib, session)
             # If checks are ok perform assessment
             if ans:
-                # # Check active tests
-                # run_active = session.check_active_tests('Run')
-                # input_active = session.check_active_tests('OnlyInput')
-                # to_perform = run_active + input_active
                 # Logging
                 bartext = 'Computational benchmark execution started'
                 session.log.bar_adjourn(bartext)

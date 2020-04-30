@@ -243,7 +243,7 @@ class Status():
 
         return ans
 
-    def check_lib_run(self, lib, session):
+    def check_lib_run(self, lib, session, config_option='Run'):
         """
         Check if a library has been run. To be considered run a meshtally or
         meshtal have to be produced. Only active benchmarks (specified in
@@ -255,6 +255,9 @@ class Status():
             Library to check.
         session : Session
             Jade Session.
+        config_option: str
+            Specifies the configuration option onto which the check for tests
+            "to perform" are registered.
 
         Returns
         -------
@@ -272,7 +275,7 @@ class Status():
             testname = filename.split('.')[0]
 
             # Check if test is active
-            to_perform = session.check_active_tests('Run')
+            to_perform = session.check_active_tests(config_option)
 
             if testname in to_perform:
                 # Check if benchmark folder exists
@@ -377,7 +380,7 @@ class Status():
         # Check if libraries have been run
         flag_not_run = False
         for lib in libs:
-            test_run = self.check_lib_run(lib, session)
+            test_run = self.check_lib_run(lib, session, 'Post-Processing')
             if len(test_run) == 0:  # TODO not checking for each benchmark
                 flag_not_run = True
                 lib_not_run = lib

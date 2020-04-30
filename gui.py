@@ -296,9 +296,9 @@ def pploop(session):
                 session.log.adjourn('Selected Library: '+lib, spacing=False)
                 print('\n ########################### POST-PROCESSING STARTED ###########################\n')
 
-                if 'Sphere' in to_perform:
+                for testname in to_perform:
                     try:
-                        pp.postprocessSphere(session, lib)
+                        pp.postprocessBenchmark(session, lib, testname)
                     except PermissionError as e:
                         clear_screen()
                         print(pp_menu)

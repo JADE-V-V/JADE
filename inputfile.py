@@ -158,25 +158,18 @@ class InputFile:
         card = par.Card([line], 5, -1)
         self.cards['settings'].append(card)
 
-    def change_density(self, zaid, cellidx=1):
+    def change_density(self, density, cellidx=1):
         """
         Change the density of the sphere according to the selected zaid
 
-        WARNING!: USE ONLY FOR SPHERE LEAKAGE TEST
-
-        zaid: (str) zaid name of shere test (e.g. 1001)
+        density: (str/float) density to apply
         cellidx: (int) cell index where to modify the density
         """
-        # Compute Density
-        if zaid.element == '92' and zaid.isotope == '235':  # U-235
-            density = str(-1)  # Memory problem with the fissions
-        else:
-            density = str(-round(7.874/26*int(zaid.element), 4))
 
         # Change density in sphere cell
         card = self.cards['cells'][cellidx]
         card.get_values()
-        card.set_d(density)
+        card.set_d(str(density))
         card.lines = card.card()
 
     def add_edits(self, edits_file):

@@ -12,8 +12,8 @@ import postprocess as pp
 import testrun
 from tqdm import tqdm
 
-date = '08/04/2020'
-version = 'v4.0'
+date = 'TBD'
+version = 'v5.0'
 
 
 def clear_screen():

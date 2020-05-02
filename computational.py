@@ -48,13 +48,16 @@ def executeBenchmarksRoutines(session, lib):
             fname = row['File Name']
             inpfile = os.path.join(session.path_inputs, fname)
             VRTpath = os.path.join(session.path_inputs, 'VRT')
+            confpath = os.path.join(session.path_cnf, fname.split('.')[0])
 
             # Generate test
             # Special case for sphere leak
             if testname == 'Sphere Leakage Test':
-                test = testrun.SphereTest(inpfile, lib, row, log, VRTpath)
+                test = testrun.SphereTest(inpfile, lib, row, log, VRTpath,
+                                          confpath)
             else:
-                test = testrun.Test(inpfile, lib, row, log, VRTpath)
+                test = testrun.Test(inpfile, lib, row, log, VRTpath,
+                                    confpath)
 
             test.generate_test(outpath, libmanager)
             # Adjourn log

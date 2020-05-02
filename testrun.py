@@ -9,6 +9,7 @@ import matreader as mat
 import os
 import subprocess
 import shutil
+import pandas as pd
 
 from copy import deepcopy
 from tqdm import tqdm
@@ -20,13 +21,14 @@ class Test():
     specific tests.
     """
 
-    def __init__(self, inp, lib, config, log, VRTpath):
+    def __init__(self, inp, lib, config, log, VRTpath, confpath):
         """
         inp: (str) path to inputfile blueprint
         lib: (str) library suffix to use
         config: (DataFrame row) configuration options for the test
         log: (Log) Jade log file access
         VRTpath: (str/path) path to the variance reduction folder
+        confpath: (str/path) path to the test configuration folder
         """
         # Test Library
         self.lib = lib
@@ -48,6 +50,9 @@ class Test():
 
         # VRT path
         self.path_VRT = VRTpath
+
+        # Get the configuration files path
+        self.test_conf_path = confpath
 
         # Add the stop card according to config
         config = config.dropna()
@@ -212,13 +217,22 @@ class SphereTest(Test):
             shutil.rmtree(motherdir)
         os.mkdir(motherdir)
 
+        # Get densities
+        filedensities = os.path.join(self.test_conf_path, 'DensityTable.csv')
+        densities = pd.read_csv(filedensities, sep=';').set_index('Z')
+
         self.MCNPdir = motherdir
 
         print(' Zaids:')
         for zaid in tqdm(zaids[:10]):
             # for zaid in tqdm(zaids):
+            Z = int(zaid[:-3])
+            if zaid[-3:] == '235':  # Special treatment for U235
+                density = 1
+            else:
+                density = densities.loc[Z, 'Density [g/cc]']
             self.generate_zaid_test(zaid, libmanager, testname,
-                                    motherdir)
+                                    motherdir, -1*density)
 
         print(' Materials:')
         for material in tqdm(matlist.materials[:2]):
@@ -226,7 +240,8 @@ class SphereTest(Test):
             self.generate_material_test(material, libmanager, testname,
                                         motherdir)
 
-    def generate_zaid_test(self, zaid, libmanager, testname, motherdir):
+    def generate_zaid_test(self, zaid, libmanager, testname, motherdir,
+                           density):
         """
         Generate input for a single zaid sphere leakage benchmark run.
 
@@ -240,6 +255,8 @@ class SphereTest(Test):
             name of the benchmark.
         motherdir : str/path
             Path to the benchmark folder.
+        density : (str/float)
+            Density value for the sphere.
 
         Returns
         -------
@@ -251,7 +268,7 @@ class SphereTest(Test):
         edits_file = os.path.join(directoryVRT, 'inp_edits.txt')
         ww_file = os.path.join(directoryVRT, 'wwinp')
 
-        # Adjourn the material cars for the zaid
+        # Adjourn the material cards for the zaid
         zaid = mat.Zaid(1, zaid[:-3], zaid[-3:], self.lib)
         name, formula = libmanager.get_zaidname(zaid)
         submat = mat.SubMaterial('M1', [zaid],
@@ -263,7 +280,7 @@ class SphereTest(Test):
         newinp = deepcopy(self.inp)
         newinp.matlist = matlist  # Assign material
         # adjourn density
-        newinp.change_density(zaid)
+        newinp.change_density(density)
 
         if os.path.exists(directoryVRT):
             newinp.add_edits(edits_file)  # Add variance reduction

@@ -7,15 +7,15 @@ Created on Thu Jan  2 10:36:38 2020
 
 import MCTAL_READER as mtal
 import xlwings as xw
-# import excel_support as exsupp
 import pandas as pd
 import os
 import shutil
-import plotter
-from tqdm import tqdm
-import atlas as at
+# import plotter
+# from tqdm import tqdm
+# import atlas as at
 import numpy as np
 import string
+from outputFile import OutputFile
 
 
 class BenchmarkOutput:
@@ -210,19 +210,25 @@ class BenchmarkOutput:
 
 
 class MCNPoutput:
-    def __init__(self, mctal_file):
+    def __init__(self, mctal_file, output_file):
         """
         Class handling an MCNP run Output
 
         mctal_file: (str/path) path to the mctal file
         """
         self.mctal_file = mctal_file  # path to mctal file
+        self.output_file = output_file  # path to mcnp output file
 
         # Read and parse the mctal file
         mctal = mtal.MCTAL(mctal_file)
         mctal.Read()
         self.mctal = mctal
         self.tallydata, self.totalbin = self.organize_mctal()
+
+        # Read the output file
+        self.out = OutputFile(output_file)
+        self.out.assign_tally_description(self.mctal.tallies)
+        self.stat_checks = self.out.stat_checks
 
     def organize_mctal(self):
         """

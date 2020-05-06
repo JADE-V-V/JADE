@@ -5,7 +5,6 @@ Created on Thu Jan  2 10:36:38 2020
 @author: Davide Laghi
 """
 
-import MCTAL_READER as mtal
 import xlwings as xw
 import excel_support as exsupp
 import pandas as pd
@@ -16,6 +15,7 @@ from tqdm import tqdm
 import atlas as at
 import numpy as np
 from output import BenchmarkOutput
+from output import MCNPoutput
 
 
 class SphereOutput(BenchmarkOutput):
@@ -46,7 +46,7 @@ class SphereOutput(BenchmarkOutput):
             print(' Plotting tally n.'+str(tally))
             for zaidnum, output in tqdm(self.outputs.items()):
                 title = title
-                tally_data = output.mdata.set_index('Tally N.').loc[tally]
+                tally_data = output.tallydata.set_index('Tally N.').loc[tally]
                 energy = tally_data['Energy'].values
                 values = tally_data['Value'].values
                 error = tally_data['Error'].values
@@ -108,7 +108,7 @@ class SphereOutput(BenchmarkOutput):
                 data = []
                 for idx, output in enumerate(outputs):
                     try:  # Zaid could not be common to the libraries
-                        tally_data = output[zaidnum].mdata.set_index('Tally N.').loc[tally]
+                        tally_data = output[zaidnum].tallydata.set_index('Tally N.').loc[tally]
                         energy = tally_data['Energy'].values
                         values = tally_data['Value'].values
                         error = tally_data['Error'].values
@@ -150,6 +150,7 @@ class SphereOutput(BenchmarkOutput):
         # Get results
         results = []
         errors = []
+        stat_checks = []
         outputs = {}
         for folder in os.listdir(self.test_path):
             results_path = os.path.join(self.test_path, folder)
@@ -166,49 +167,51 @@ class SphereOutput(BenchmarkOutput):
             for file in os.listdir(results_path):
                 if file[-1] == 'm':
                     mfile = file
+                elif file[-1] == 'o':
+                    ofile = file
             # Parse output
-            output = SphereMCNPoutput(os.path.join(results_path, mfile))
+            output = SphereMCNPoutput(os.path.join(results_path, mfile),
+                                      os.path.join(results_path, ofile))
             outputs[zaidnum] = output
             # Adjourn raw Data
-            self.raw_data[zaidnum] = output.mdata
-
+            self.raw_data[zaidnum] = output.tallydata
+            # Recover statistical checks
+            st_ck = output.stat_checks
+            # Recover results and precisions
             res, err = output.get_single_excel_data()
-            for dic in [res, err]:
+            for dic in [res, err, st_ck]:
                 dic['Zaid'] = zaidnum
                 dic['Zaid Name'] = zaidname
             results.append(res)
             errors.append(err)
+            stat_checks.append(st_ck)
+
         # Generate DataFrames
         results = pd.DataFrame(results)
         errors = pd.DataFrame(errors)
+        stat_checks = pd.DataFrame(stat_checks)
 
         # Swap Columns and correct zaid sorting
         # results
-        results['index'] = pd.to_numeric(results['Zaid'].values,
-                                         errors='coerce')
-        results.sort_values('index', inplace=True)
-        del results['index']
+        for df in [results, errors, stat_checks]:
+            df['index'] = pd.to_numeric(df['Zaid'].values, errors='coerce')
+            df.sort_values('index', inplace=True)
+            del df['index']
 
-        results.set_index(['Zaid', 'Zaid Name'], inplace=True)
-        results.reset_index(inplace=True)
-
-        # errors
-        errors['index'] = pd.to_numeric(errors['Zaid'].values,
-                                        errors='coerce')
-        errors.sort_values('index', inplace=True)
-        del errors['index']
-
-        errors.set_index(['Zaid', 'Zaid Name'], inplace=True)
-        errors.reset_index(inplace=True)
+            df.set_index(['Zaid', 'Zaid Name'], inplace=True)
+            df.reset_index(inplace=True)
 
         self.outputs = outputs
         self.results = results
         self.errors = errors
+        self.stat_checks = stat_checks
+
         # Write excel
         ex = SphereExcelOutputSheet(template, outpath)
         # Results
         ex.insert_df(9, 2, results, 0)
         ex.insert_df(9, 2, errors, 1)
+        ex.insert_df(9, 2, stat_checks, 2)
         ex.wb.sheets[0].range('D1').value = self.lib
         ex.save()
 
@@ -331,20 +334,7 @@ class SphereOutput(BenchmarkOutput):
             data.to_csv(file, header=True, index=False)
 
 
-class SphereMCNPoutput:
-    def __init__(self, mctal_file):
-        """
-        Class handling an MCNP run Output
-
-        mctal_file: (str/path) path to the mctal file
-        """
-        self.mctal_file = mctal_file  # path to mctal file
-
-        # Read and parse the mctal file
-        mctal = mtal.MCTAL(mctal_file)
-        mctal.Read()
-        self.mctal = mctal
-        self.mdata, self.totalbins = self.organize_mctal()
+class SphereMCNPoutput(MCNPoutput):
 
     def organize_mctal(self):
         """
@@ -440,8 +430,8 @@ class SphereMCNPoutput:
         # Tallies to post process
         tallies2pp = ['2', '32', '24', '14', '34']
         heating_tallies = ['4', '6', '44', '46']
-        data = self.mdata.set_index(['Tally Description', 'Energy'])
-        totbins = self.totalbins.set_index('Tally Description')
+        data = self.tallydata.set_index(['Tally Description', 'Energy'])
+        totbins = self.totalbin.set_index('Tally Description')
         results = {}  # Store excel results of different tallies
         errors = {}  # Store average error in different tallies
         keys = {}  # Tally names and numbers
@@ -520,8 +510,8 @@ class SphereMCNPoutput:
         """
         # Tallies to post process
         tallies2pp = ['12', '22', '24', '14', '34', '6', '46']
-        data = self.mdata.set_index(['Tally Description', 'Energy'])
-        totalbins = self.totalbins.set_index('Tally Description')
+        data = self.tallydata.set_index(['Tally Description', 'Energy'])
+        totalbins = self.totalbin.set_index('Tally Description')
         results = []  # Store data to compare for different tallies
         columns = []  # Tally names and numbers
         # Reorder tallies

@@ -10,6 +10,7 @@ import os
 import subprocess
 import shutil
 import pandas as pd
+import numpy as np
 
 from copy import deepcopy
 from tqdm import tqdm
@@ -60,9 +61,13 @@ class Test():
             nps = config['NPS cut-off']
         except KeyError:
             nps = None
+        if nps is np.nan:
+            nps = None
         try:
             ctme = config['CTME cut-off']
         except KeyError:
+            ctme = None
+        if ctme is np.nan:
             ctme = None
         try:
             tally = config['Relative Error cut-off'].split('-')[0]
@@ -70,7 +75,10 @@ class Test():
             precision = (tally, error)
         except KeyError:
             precision = None
-        self.inp.add_stopCard(nps, ctme, precision)
+
+        self.nps = nps
+        self.ctme = ctme
+        self.precision = precision
 
         # Directory where the MCNP run will be performed
         self.MCNPdir = None
@@ -111,6 +119,9 @@ class Test():
         """
         # Translate the input
         self._translate_input(libmanager)
+
+        # Add stop card
+        self.inp.add_stopCard(self.nps, self.ctme, self.precision)
 
         # Identify working directory
         testname = self.inp.name
@@ -218,8 +229,8 @@ class SphereTest(Test):
         os.mkdir(motherdir)
 
         # Get densities
-        filedensities = os.path.join(self.test_conf_path, 'DensityTable.csv')
-        densities = pd.read_csv(filedensities, sep=';').set_index('Z')
+        settings = os.path.join(self.test_conf_path, 'ZaidSettings.csv')
+        settings = pd.read_csv(settings, sep=';').set_index('Z')
 
         self.MCNPdir = motherdir
 
@@ -227,12 +238,41 @@ class SphereTest(Test):
         for zaid in tqdm(zaids[:10]):
             # for zaid in tqdm(zaids):
             Z = int(zaid[:-3])
+            # Get Density
             if zaid[-3:] == '235':  # Special treatment for U235
                 density = 1
             else:
-                density = densities.loc[Z, 'Density [g/cc]']
+                density = settings.loc[Z, 'Density [g/cc]']
+
+            # get stop parameters
+            if self.nps is None:
+                nps = settings.loc[Z, 'NPS cut-off']
+                if nps is np.nan:
+                    nps = None
+            else:
+                nps = self.nps
+
+            if self.ctme is None:
+                ctme = settings.loc[Z, 'CTME cut-off']
+                if ctme is np.nan:
+                    ctme = None
+            else:
+                ctme = self.ctme
+
+            if self.precision is None:
+                prec = settings.loc[Z, 'Relative Error cut-off']
+                if prec is np.nan:
+                    precision = None
+                else:
+                    tally = prec.split('-')[0]
+                    error = prec.split('-')[1]
+                    precision = (tally, error)
+            else:
+                precision = self.precision
+
             self.generate_zaid_test(zaid, libmanager, testname,
-                                    motherdir, -1*density)
+                                    motherdir, -1*density, nps, ctme,
+                                    precision)
 
         print(' Materials:')
         for material in tqdm(matlist.materials[:2]):
@@ -241,7 +281,7 @@ class SphereTest(Test):
                                         motherdir)
 
     def generate_zaid_test(self, zaid, libmanager, testname, motherdir,
-                           density):
+                           density, nps, ctme, precision):
         """
         Generate input for a single zaid sphere leakage benchmark run.
 
@@ -257,6 +297,12 @@ class SphereTest(Test):
             Path to the benchmark folder.
         density : (str/float)
             Density value for the sphere.
+        nps : float
+            number of particles cut-off
+        ctme : float
+            computer time cut-off
+        precision : float
+            precision cut-off
 
         Returns
         -------
@@ -281,6 +327,8 @@ class SphereTest(Test):
         newinp.matlist = matlist  # Assign material
         # adjourn density
         newinp.change_density(density)
+        # assign stop card
+        newinp.add_stopCard(nps, ctme, precision)
 
         if os.path.exists(directoryVRT):
             newinp.add_edits(edits_file)  # Add variance reduction
@@ -337,6 +385,8 @@ class SphereTest(Test):
         newinp.matlist = matlist  # Assign material
         # # adjourn density
         # newinp.change_density(zaid)
+        # add stop card
+        newinp.add_stopCard(self.nps, self.ctme, self.precision)
 
         if os.path.exists(directoryVRT):
             newinp.add_edits(edits_file)  # Add variance reduction

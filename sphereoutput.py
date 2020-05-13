@@ -393,6 +393,8 @@ class SphereMCNPoutput(MCNPoutput):
                                                                          e, nt,
                                                                          i, j,
                                                                          k, 1)
+                                                        if val <= 0:
+                                                            err = np.nan
 
                                                         row = [num, des,
                                                                erg,
@@ -404,7 +406,10 @@ class SphereMCNPoutput(MCNPoutput):
                 # 7 steps to get to energy, + 4 for time and mesh directions
                 totalbin = t.valsErrors[-1][-1][-1][-1][-1][-1][-1][-1][-1][-1][-1]
                 totalvalue = totalbin[0]
-                totalerror = totalbin[-1]
+                if totalvalue > 0:
+                    totalerror = totalbin[-1]
+                else:
+                    totalerror = np.nan
                 row = [num, des, totalvalue, totalerror]
                 rowstotal.append(row)
 

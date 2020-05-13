@@ -145,9 +145,16 @@ class InputFile:
 
         line = 'STOP '
         if nps is not None:
-            line = line+'NPS '+str(int(nps))+' '
+            try:
+                line = line+'NPS '+str(int(nps))+' '
+            except ValueError:
+                pass  # an escaped NaN
         if ctme is not None:
-            line = line+'CTME '+str(int(ctme))+' '
+            try:
+                line = line+'CTME '+str(int(ctme))+' '
+            except ValueError:
+                pass  # an escaped NaN
+
         if precision is not None:
             tally = precision[0]
             error = precision[1]

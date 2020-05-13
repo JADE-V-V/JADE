@@ -210,7 +210,11 @@ def comploop(session):
             # Select and check library
             # Warning: this is done only for sphere test at the moment
             lib = session.lib_manager.select_lib()
-            unfinished, motherdir = session.state.get_unfinished_zaids(lib)
+            try:
+                unfinished, motherdir = session.state.get_unfinished_zaids(lib)
+            except TypeError:
+                unfinished = None
+
             if unfinished is None:
                 print(' The selected library was not assessed')
             elif len(unfinished) == 0:

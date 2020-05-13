@@ -69,9 +69,16 @@ class Atlas():
         None.
 
         """
+        names = []
+        # Reorder the plots
+        for img in os.listdir(images_path):
+            names.append(img)
+
+        names.sort()
+
         images = []
         tallies = []
-        for img in os.listdir(images_path):
+        for img in names:
             img_path = os.path.join(images_path, img)
             pieces = img.split('-')
             zaid = pieces[0]

@@ -1,22 +1,22 @@
 ﻿NPS cut-off;CTME cut-off;Relative Error cut-off;Density [g/cc];Name;Symbol;Z
-;;F32-0.0005;0.00008988;Hydrogen;H;1
-;;F32-0.0005;0.000179;Helium;He;2
+;;F32-0.0005;0.0000893;Hydrogen;H;1
+;;F32-0.0005;0.0001664;Helium;He;2
 ;;F32-0.0005;0.534;Lithium;Li;3
 ;;F32-0.0005;1.848;Beryllium;Be;4
 ;;F32-0.0005;2.34;Boron;B;5
 ;;F32-0.0005;2.26;Carbon;C;6
-;;F32-0.0005;0.0012506;Nitrogen;N;7
-;;F32-0.0005;0.001429;Oxygen;O;8
-;;F32-0.0005;0.001696;Fluorine;F;9
-;;F32-0.0005;0.0009;Neon;Ne;10
+;;F32-0.0005;0.001165;Nitrogen;N;7
+;;F32-0.0005;0.001331;Oxygen;O;8
+;;F32-0.0005;0.001574;Fluorine;F;9
+;;F32-0.0005;0.000849;Neon;Ne;10
 ;;F32-0.0005;0.971;Sodium;Na;11
 5.00E+08;;;1.738;Magnesium;Mg;12
 ;;F32-0.0005;2.702;Aluminum;Al;13
 5.00E+08;;;2.33;Silicon;Si;14
 ;;F32-0.0005;1.82;Phosphorus;P;15
 5.00E+08;;;2.07;Sulfur;S;16
-;;F32-0.0005;0.0032;Chlorine;Cl;17
-;;F32-0.0005;0.00178;Argon;Ar;18
+;;F32-0.0005;0.002994;Chlorine;Cl;17
+;;F32-0.0005;0.001661;Argon;Ar;18
 ;;F32-0.0005;0.862;Potassium;K;19
 ;;F32-0.0005;1.55;Calcium;Ca;20
 ;;F32-0.0005;2.99;Scandium;Sc;21
@@ -34,7 +34,7 @@
 ;;F32-0.0005;5.72;Arsenic;As;33
 ;;F32-0.0005;4.79;Selenium;Se;34
 ;;F32-0.0005;3.119;Bromine;Br;35
-;;F32-0.0005;0.00374;Krypton;Kr;36
+;;F32-0.0005;0.003531;Krypton;Kr;36
 ;;F32-0.0005;1.63;Rubidium;Rb;37
 ;;F32-0.0005;2.54;Strontium;Sr;38
 ;;F32-0.0005;4.47;Yttrium;Y;39
@@ -52,7 +52,7 @@
 5.00E+08;;;6.684;Antimony;Sb;51
 ;;F32-0.0005;6.24;Tellurium;Te;52
 ;;F32-0.0005;4.93;Iodine;I;53
-;;F32-0.0005;0.005894;Xenon;Xe;54
+;;F32-0.0005;0.005564;Xenon;Xe;54
 ;;F24-0.0005;1.873;Cesium;Cs;55
 5.00E+08;;;3.59;Barium;Ba;56
 5.00E+08;;;6.15;Lanthanum;La;57
@@ -83,7 +83,7 @@
 ;;F2-0.0005;11.35;Lead;Pb;82
 ;;F32-0.0005;9.75;Bismuth;Bi;83
 ;;F32-0.0005;9.3;Polonium;Po;84
-;;F32-0.0005;0.00973;Radon;Rn;86
+;;F32-0.0005;0.009186;Radon;Rn;86
 ;;F32-0.0005;5.5;Radium;Ra;88
 ;;F32-0.0005;10.07;Actinium;Ac;89
 ;;F32-0.0005;11.724;Thorium;Th;90

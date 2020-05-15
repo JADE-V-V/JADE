@@ -31,16 +31,19 @@ class Session:
         None.
 
         """
-        # Read configuration file. All vital variables are stored here
-        self.conf = cnf.Configuration('Config.xlsx')
 
+        # --- Generate and store the JADE path structure ---
+        cp = os.getcwd()
+        # Store configuration files path
+        self.path_cnf = os.path.join(cp, 'Configuration')
+        # Read global configuration file. All vital variables are stored here
+        self.conf = cnf.Configuration(os.path.join(self.path_cnf,
+                                                   'Config.xlsx'))
         # Create the library manager. This will handle library operations
         dl = self.conf.default_lib
         self.lib_manager = libmanager.LibManager(self.conf.xsdir_path,
                                                  defaultlib=dl)
 
-        # --- Generate and store the JADE path structure ---
-        cp = os.getcwd()
         cp = os.path.dirname(cp)
         # Benchmark inputs should be externally copied, that is too heavy
         self.path_inputs = os.path.join(cp, 'Benchmarks inputs')
@@ -64,10 +67,10 @@ class Session:
         for path in keypaths:
             if not os.path.exists(path):
                 os.mkdir(path)
-            
+
         # Create the session LOG
-        log = os.path.join(self.path_logs, 'Log '+time.ctime().replace(':','-')
-                           +'.txt')
+        log = os.path.join(self.path_logs,
+                           'Log '+time.ctime().replace(':', '-')+'.txt')
         self.log = cnf.Log(log)
 
         # Initialize status

@@ -12,8 +12,8 @@ import postprocess as pp
 import testrun
 from tqdm import tqdm
 
-date = '08/04/2020'
-version = 'v4.0'
+date = 'TBD'
+version = 'v5.0'
 
 
 def clear_screen():
@@ -191,20 +191,13 @@ def comploop(session):
             ans = session.state.check_override_run(lib, session)
             # If checks are ok perform assessment
             if ans:
-                # Check active tests
-                run_active = session.check_active_tests('Run')
-                input_active = session.check_active_tests('OnlyInput')
-                to_perform = run_active + input_active
                 # Logging
                 bartext = 'Computational benchmark execution started'
                 session.log.bar_adjourn(bartext)
                 session.log.adjourn('Selected Library: '+lib,
                                     spacing=False, time=True)
                 print(' ########################### COMPUTATIONAL BENCHMARKS EXECUTION ###########################\n')
-
-                if 'Sphere' in to_perform:
-                    cmp.sphereTestRun(session, lib)
-
+                cmp.executeBenchmarksRoutines(session, lib)  # Core function
                 print(' ####################### COMPUTATIONAL BENCHMARKS RUN ENDED ###############################\n')
                 t = 'Computational benchmark execution ended'
                 session.log.bar_adjourn(t)
@@ -217,7 +210,11 @@ def comploop(session):
             # Select and check library
             # Warning: this is done only for sphere test at the moment
             lib = session.lib_manager.select_lib()
-            unfinished, motherdir = session.state.get_unfinished_zaids(lib)
+            try:
+                unfinished, motherdir = session.state.get_unfinished_zaids(lib)
+            except TypeError:
+                unfinished = None
+
             if unfinished is None:
                 print(' The selected library was not assessed')
             elif len(unfinished) == 0:
@@ -231,7 +228,7 @@ def comploop(session):
                     path = os.path.join(motherdir, directory)
                     name = directory+'_'
 
-                    flag = testrun.Test.run(name, path, cpu=session.conf.cpu)
+                    flag = testrun.Test._run(name, path, cpu=session.conf.cpu)
                     if flag:
                         flagOk = False
                         session.log.adjourn(name +' reached timeout, eliminate folder')
@@ -303,9 +300,9 @@ def pploop(session):
                 session.log.adjourn('Selected Library: '+lib, spacing=False)
                 print('\n ########################### POST-PROCESSING STARTED ###########################\n')
 
-                if 'Sphere' in to_perform:
+                for testname in to_perform:
                     try:
-                        pp.postprocessSphere(session, lib)
+                        pp.postprocessBenchmark(session, lib, testname)
                     except PermissionError as e:
                         clear_screen()
                         print(pp_menu)

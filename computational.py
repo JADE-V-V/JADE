@@ -9,43 +9,72 @@ import os
 import datetime
 
 
-def sphereTestRun(session, lib):
+def executeBenchmarksRoutines(session, lib):
     """
-    Function executing the sphere leakage test
-    """
-    log = session.log
-    print('        -- SPHERE LEAKAGE TEST STARTED --\n')
-    print(' Generating input files:'+'    '+str(datetime.datetime.now()))
-    log.adjourn('Sphere test run started' + '    ' +
-                str(datetime.datetime.now()))
+    Check which benchmarks have to be generated and/or run and execute their
+    routines
 
-    # --- Input Generation ---
-    libmanager = session.lib_manager
-    outpath = os.path.join(session.path_run, lib)
-    safemkdir(outpath)
-    # Get the settings for the test
+    Parameters
+    ----------
+    session : jade.Session
+        Current JADE session.
+    lib : str
+        library to assess (e.g. 31c).
+
+    Returns
+    -------
+    None.
+
+    """
+    # Get the settings for the tests
     config = session.conf.comp_default.set_index('Description')
-    config = config.loc['Sphere Leakage Test']
+    # Get the log
+    log = session.log
 
-    fname = config['File Name']
-    inpfile = os.path.join(session.path_inputs, fname)
-    VRTpath = os.path.join(session.path_inputs, 'VRT')
-    spheretest = testrun.SphereTest(inpfile, lib, config, log, VRTpath)
-    spheretest.generate_test(libmanager, outpath)
-    # Adjourn log
-    log.adjourn('Sphere test input generated with success'+'    ' +
-                str(datetime.datetime.now()))
+    for testname, row in config.iterrows():
+        # Check for active test first
+        if bool(row['OnlyInput']) or bool(row['Run']):
+            print('        -- '+testname.upper()+' STARTED --\n')
+            print(' Generating input files:'+'    ' +
+                  str(datetime.datetime.now()))
+            log.adjourn(testname.upper()+' run started' + '    ' +
+                        str(datetime.datetime.now()))
 
-    if bool(config['OnlyInput']):
-        print('\n        -- SPHERE LEAKAGE TEST COMPLETED --\n')
-    else:
-        # --- Input Run ---
-        print(' MCNP run running:         '+str(datetime.datetime.now()))
-        spheretest.run(cpu=session.conf.cpu)
-        print('\n        -- SPHERE LEAKAGE TEST COMPLETED --\n')
-        # Adjourn log
-        log.adjourn('Sphere test run completed with success'+'    ' +
-                    str(datetime.datetime.now()))
+            # --- Input Generation ---
+            # Collect infos
+            libmanager = session.lib_manager
+            outpath = os.path.join(session.path_run, lib)  # get path to libdir
+            safemkdir(outpath)
+            fname = row['File Name']
+            inpfile = os.path.join(session.path_inputs, fname)
+            VRTpath = os.path.join(session.path_inputs, 'VRT')
+            confpath = os.path.join(session.path_cnf, fname.split('.')[0])
+
+            # Generate test
+            # Special case for sphere leak
+            if testname == 'Sphere Leakage Test':
+                test = testrun.SphereTest(inpfile, lib, row, log, VRTpath,
+                                          confpath)
+            else:
+                test = testrun.Test(inpfile, lib, row, log, VRTpath,
+                                    confpath)
+
+            test.generate_test(outpath, libmanager)
+            # Adjourn log
+            log.adjourn(testname.upper()+' test input generated with success' +
+                        '    ' + str(datetime.datetime.now()))
+
+            if bool(row['OnlyInput']):
+                print('\n        -- '+testname.upper()+' COMPLETED --\n')
+            else:
+                # --- Input Run ---
+                print(' MCNP run running:         ' +
+                      str(datetime.datetime.now()))
+                test.run(cpu=session.conf.cpu)
+                print('\n        -- '+testname.upper()+' COMPLETED --\n')
+                # Adjourn log
+                log.adjourn(testname.upper()+' run completed with success'
+                            + '    '+str(datetime.datetime.now()))
 
 
 def safemkdir(directory):

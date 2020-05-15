@@ -9,6 +9,8 @@ import matreader as mat
 import os
 import subprocess
 import shutil
+import pandas as pd
+import numpy as np
 
 from copy import deepcopy
 from tqdm import tqdm
@@ -20,13 +22,14 @@ class Test():
     specific tests.
     """
 
-    def __init__(self, inp, lib, config, log, VRTpath):
+    def __init__(self, inp, lib, config, log, VRTpath, confpath):
         """
         inp: (str) path to inputfile blueprint
         lib: (str) library suffix to use
         config: (DataFrame row) configuration options for the test
         log: (Log) Jade log file access
         VRTpath: (str/path) path to the variance reduction folder
+        confpath: (str/path) path to the test configuration folder
         """
         # Test Library
         self.lib = lib
@@ -49,15 +52,22 @@ class Test():
         # VRT path
         self.path_VRT = VRTpath
 
+        # Get the configuration files path
+        self.test_conf_path = confpath
+
         # Add the stop card according to config
         config = config.dropna()
         try:
             nps = config['NPS cut-off']
         except KeyError:
             nps = None
+        if nps is np.nan:
+            nps = None
         try:
             ctme = config['CTME cut-off']
         except KeyError:
+            ctme = None
+        if ctme is np.nan:
             ctme = None
         try:
             tally = config['Relative Error cut-off'].split('-')[0]
@@ -65,21 +75,87 @@ class Test():
             precision = (tally, error)
         except KeyError:
             precision = None
-        self.inp.add_stopCard(nps, ctme, precision)
+
+        self.nps = nps
+        self.ctme = ctme
+        self.precision = precision
 
         # Directory where the MCNP run will be performed
         self.MCNPdir = None
 
-    def translate_input(self, lib):
+    def _translate_input(self, libmanager):
         """
-        Returns the test input translated using the specified library.
+        Translate the input template to selected library
 
-        lib: (str) suffix of the library to translate to
+        Parameters
+        ----------
+        libmanager : libmanager.LibManager
+            Manager dealing with libraries operations.
+
+        Returns
+        -------
+        None.
+
         """
-        pass  # TODO
+        self.inp.translate(self.lib, libmanager)
+        self.inp.update_zaidinfo(libmanager)
+
+    def generate_test(self, lib_directory, libmanager):
+        """
+        Generate the test input files
+
+        Parameters
+        ----------
+        lib_directory : path or string
+            Path to lib benchmarks input folders.
+
+        libmanager : libmanager.LibManager
+            Manager dealing with libraries operations.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Translate the input
+        self._translate_input(libmanager)
+
+        # Add stop card
+        self.inp.add_stopCard(self.nps, self.ctme, self.precision)
+
+        # Identify working directory
+        testname = self.inp.name
+        motherdir = os.path.join(lib_directory, testname)
+        self.MCNPdir = motherdir
+        # If previous results are present they are canceled
+        if os.path.exists(motherdir):
+            shutil.rmtree(motherdir)
+        os.mkdir(motherdir)
+
+        # Get VRT files if available
+        directoryVRT = os.path.join(self.path_VRT, testname)
+        edits_file = os.path.join(directoryVRT, 'inp_edits.txt')
+        ww_file = os.path.join(directoryVRT, 'wwinp')
+        if os.path.exists(directoryVRT):
+            # This was tested only for sphere... be careful
+            self.inp.add_edits(edits_file)  # Add variance reduction
+
+        # Write new input file
+        outinpfile = os.path.join(motherdir, testname)
+        self.inp.write(outinpfile)
+
+        # Copy also wwinp file if available
+        if os.path.exists(directoryVRT):
+            outwwfile = os.path.join(motherdir, 'wwinp')
+            shutil.copyfile(ww_file, outwwfile)
+
+    def run(self, cpu=1, timeout=None):
+        name = self.name
+        directory = self.MCNPdir
+        self._run(name, directory, cpu=cpu, timeout=timeout)
 
     @staticmethod
-    def run(name, directory, cpu=1, timeout=3600):
+    def _run(name, directory, cpu=1, timeout=None):
         """
         Run or continue test execution
 
@@ -92,7 +168,7 @@ class Test():
         cpu : int, optional
             Number of CPU to use. The default is 1.
         timeout : int, optional
-            Time in s for emergency timeout. The default is 3600.
+            Time in s for emergency timeout. The default is None.
 
         Returns
         -------
@@ -130,7 +206,7 @@ class SphereTest(Test):
     Class handling the sphere test
     """
 
-    def generate_test(self, libmanager, directory):
+    def generate_test(self, directory, libmanager):
         '''
         Generate all sphere test for a selected library
 
@@ -152,13 +228,51 @@ class SphereTest(Test):
             shutil.rmtree(motherdir)
         os.mkdir(motherdir)
 
+        # Get densities
+        settings = os.path.join(self.test_conf_path, 'ZaidSettings.csv')
+        settings = pd.read_csv(settings, sep=';').set_index('Z')
+
         self.MCNPdir = motherdir
 
         print(' Zaids:')
         for zaid in tqdm(zaids[:10]):
             # for zaid in tqdm(zaids):
+            Z = int(zaid[:-3])
+            # Get Density
+            if zaid[-3:] == '235':  # Special treatment for U235
+                density = 1
+            else:
+                density = settings.loc[Z, 'Density [g/cc]']
+
+            # get stop parameters
+            if self.nps is None:
+                nps = settings.loc[Z, 'NPS cut-off']
+                if nps is np.nan:
+                    nps = None
+            else:
+                nps = self.nps
+
+            if self.ctme is None:
+                ctme = settings.loc[Z, 'CTME cut-off']
+                if ctme is np.nan:
+                    ctme = None
+            else:
+                ctme = self.ctme
+
+            if self.precision is None:
+                prec = settings.loc[Z, 'Relative Error cut-off']
+                if prec is np.nan:
+                    precision = None
+                else:
+                    tally = prec.split('-')[0]
+                    error = prec.split('-')[1]
+                    precision = (tally, error)
+            else:
+                precision = self.precision
+
             self.generate_zaid_test(zaid, libmanager, testname,
-                                    motherdir)
+                                    motherdir, -1*density, nps, ctme,
+                                    precision)
 
         print(' Materials:')
         for material in tqdm(matlist.materials[:2]):
@@ -166,7 +280,8 @@ class SphereTest(Test):
             self.generate_material_test(material, libmanager, testname,
                                         motherdir)
 
-    def generate_zaid_test(self, zaid, libmanager, testname, motherdir):
+    def generate_zaid_test(self, zaid, libmanager, testname, motherdir,
+                           density, nps, ctme, precision):
         """
         Generate input for a single zaid sphere leakage benchmark run.
 
@@ -180,6 +295,14 @@ class SphereTest(Test):
             name of the benchmark.
         motherdir : str/path
             Path to the benchmark folder.
+        density : (str/float)
+            Density value for the sphere.
+        nps : float
+            number of particles cut-off
+        ctme : float
+            computer time cut-off
+        precision : float
+            precision cut-off
 
         Returns
         -------
@@ -191,7 +314,7 @@ class SphereTest(Test):
         edits_file = os.path.join(directoryVRT, 'inp_edits.txt')
         ww_file = os.path.join(directoryVRT, 'wwinp')
 
-        # Adjourn the material cars for the zaid
+        # Adjourn the material cards for the zaid
         zaid = mat.Zaid(1, zaid[:-3], zaid[-3:], self.lib)
         name, formula = libmanager.get_zaidname(zaid)
         submat = mat.SubMaterial('M1', [zaid],
@@ -203,7 +326,9 @@ class SphereTest(Test):
         newinp = deepcopy(self.inp)
         newinp.matlist = matlist  # Assign material
         # adjourn density
-        newinp.change_density(zaid)
+        newinp.change_density(density)
+        # assign stop card
+        newinp.add_stopCard(nps, ctme, precision)
 
         if os.path.exists(directoryVRT):
             newinp.add_edits(edits_file)  # Add variance reduction
@@ -260,6 +385,8 @@ class SphereTest(Test):
         newinp.matlist = matlist  # Assign material
         # # adjourn density
         # newinp.change_density(zaid)
+        # add stop card
+        newinp.add_stopCard(self.nps, self.ctme, self.precision)
 
         if os.path.exists(directoryVRT):
             newinp.add_edits(edits_file)  # Add variance reduction
@@ -277,7 +404,7 @@ class SphereTest(Test):
             outwwfile = os.path.join(outpath, 'wwinp')
             shutil.copyfile(ww_file, outwwfile)
 
-    def run(self, cpu=1, timeout=200):
+    def run(self, cpu=1, timeout=None):
         """
         Sphere test needs an ad-hoc run method to run all zaids tests
         """

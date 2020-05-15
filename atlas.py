@@ -69,6 +69,7 @@ class Atlas():
         None.
 
         """
+        # Build Atlas
         images = []
         tallies = []
         for img in os.listdir(images_path):
@@ -76,16 +77,21 @@ class Atlas():
             pieces = img.split('-')
             zaid = pieces[0]
             tally = pieces[-1].split('.')[0]
+            zaidnum = zaid.split('.')[0]
             if tally not in tallies:
                 tallies.append(tally)
 
-            images.append({'tally': tally, 'zaid': zaid, 'img': img_path})
+            images.append({'tally': tally, 'zaid': zaid, 'img': img_path,
+                           'num': zaidnum})
 
         images = pd.DataFrame(images)
+        # Reorder atlas
+        images['num'] = pd.to_numeric(images['num'].values, errors='coerce')
         images.set_index('tally', inplace=True)
         for tally in tallies:
             self.doc.add_heading('Tally N.'+str(tally), level=1)
-            df = images.loc[tally]
+            # Be sure of the reordering
+            df = images.loc[tally].sort_values('num')
             for idx, row in df.iterrows():
                 title = 'Zaid: '+row['zaid']+'.'+self.name
                 try:

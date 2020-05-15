@@ -142,15 +142,22 @@ class InputFile:
         ctme = (int) copmuter time
         precision = (tally (str), error (float)) [tuple]
         """
-        tally = precision[0]
-        error = precision[1]
 
         line = 'STOP '
         if nps is not None:
-            line = line+'NPS '+str(int(nps))+' '
+            try:
+                line = line+'NPS '+str(int(nps))+' '
+            except ValueError:
+                pass  # an escaped NaN
         if ctme is not None:
-            line = line+'CTME '+str(int(ctme))+' '
+            try:
+                line = line+'CTME '+str(int(ctme))+' '
+            except ValueError:
+                pass  # an escaped NaN
+
         if precision is not None:
+            tally = precision[0]
+            error = precision[1]
             line = line+str(tally)+' '+str(error)
 
         line = line+'\n'
@@ -158,25 +165,18 @@ class InputFile:
         card = par.Card([line], 5, -1)
         self.cards['settings'].append(card)
 
-    def change_density(self, zaid, cellidx=1):
+    def change_density(self, density, cellidx=1):
         """
         Change the density of the sphere according to the selected zaid
 
-        WARNING!: USE ONLY FOR SPHERE LEAKAGE TEST
-
-        zaid: (str) zaid name of shere test (e.g. 1001)
+        density: (str/float) density to apply
         cellidx: (int) cell index where to modify the density
         """
-        # Compute Density
-        if zaid.element == '92' and zaid.isotope == '235':  # U-235
-            density = str(-1)  # Memory problem with the fissions
-        else:
-            density = str(-round(7.874/26*int(zaid.element), 4))
 
         # Change density in sphere cell
         card = self.cards['cells'][cellidx]
         card.get_values()
-        card.set_d(density)
+        card.set_d(str(density))
         card.lines = card.card()
 
     def add_edits(self, edits_file):

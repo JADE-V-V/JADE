@@ -332,10 +332,10 @@ def pploop(session):
 
                 # Execut single pp
                 for lib in to_single_pp:
-                    if 'Sphere' in to_perform:
+                    for testname in to_perform:
                         try:
                             print(' Single PP of library '+lib+' required')
-                            pp.postprocessSphere(session, lib)
+                            pp.postprocessBenchmark(session, lib, testname)
                             session.log.adjourn("""
 Additional Post-Processing of library:"""+lib+' completed\n', spacing=False)
                         except PermissionError as e:

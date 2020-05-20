@@ -255,9 +255,13 @@ class SphereOutput(BenchmarkOutput):
                     for file in os.listdir(results_path):
                         if file[-1] == 'm':
                             mfile = file
+                        elif file[-1] == 'o':
+                            outfile = file
 
                     # Parse output
-                    output = SphereMCNPoutput(os.path.join(results_path, mfile))
+                    mfile = os.path.join(results_path, mfile)
+                    outfile = os.path.join(results_path, outfile)
+                    output = SphereMCNPoutput(mfile, outfile)
                     outputs_lib[zaidnum] = output
 
                     res, columns = output.get_comparison_data()

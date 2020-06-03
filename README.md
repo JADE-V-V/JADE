@@ -49,4 +49,17 @@ The main menu is divided into two sections, the first one let the user open the 
 - 'printlib': print to video all the libreries available in the xsdir file specified in the <JADE_root>\Code\Configuration\Config.xlsx file. Those are the libraries that can be assessed;
 - 'trans': select an MCNP input file (absolute full path is required) and translate it to a selected library among the available ones; the results can be found in <JADE_root>\Utilities\Translations;
 - 'printmat': select an MCNP input file (absolute full path is required) and print an excel that summarizes its material cards information; the results can be found in <JADE_root>\Utilities\Materials Infos;
-- 'generate':
+- 'generate': select an MCNP input file (absolute full path is required); from this file, a number of materials can be selected and a new material will be created using user-specified fraction of them; the resulting material (in MCNP format) can be found in <JADE_root>\Utilities\Generated Materials;
+- 'exit': leave the application freezing the log file that is saved in <JADE_root>\Utilities\Log Files
+### Computational Benchmark Menu
+- printlib: print to video all the libreries available in the xsdir file specified in the <JADE_root>\Code\Configuration\Config.xlsx file. Those are the libraries that can be assessed;
+- assess: assess the selected library, the suite is run following the corresponding setup sheet in <JADE_root>\Code\Configuration\Config.xlsx; The MCNP input and output files can be found in <JADE_root>\Tests\MCNP simulations
+- continue: continue an unfinished assessesment of the selected library;
+- back: go back to the main menu;
+- 'exit': leave the application freezing the log file that is saved in <JADE_root>\Utilities\Log Files
+### Post Processing Menu
+- printlib: print to video all the libreries that have been already assessed and can be post-processed.
+- pp: post-process a single selected library, the results can be found in <JADE_root>\Tests\Post-Processing\Single Libraries;
+- compare: compare two or more selected libraries, the first indicated will be considered as the reference one; the results can be found in <JADE_root>\Tests\Post-Processing\Comparisons
+- back: go back to the main menu;
+- 'exit': leave the application freezing the log file that is saved in <JADE_root>\Utilities\Log Files

@@ -241,7 +241,7 @@ def comploop(session):
                 print(' Assessment completed')
 
                 session.log.adjourn('Assessment of: '+lib+' completed',
-                                    spacing=False, time=True)
+                                    spacing=True, time=True)
 
         elif option == 'back':
             mainloop(session)

@@ -361,7 +361,7 @@ class SubMaterial:
                 dic_zaids['Element'].append(elementname)
                 dic_zaids['Isotope'].append(fullname + ' [' + str(zaid.element)
                                             + str(zaid.isotope)+']')
-                dic_zaids['Fraction'].append(fraction)
+                dic_zaids['Fraction'].append(zaid.fraction)
 
             dic_element['Element'].append(elementname)
 

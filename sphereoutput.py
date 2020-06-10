@@ -337,10 +337,10 @@ class SphereOutput(BenchmarkOutput):
                             row[column] = l_range/len(cleaned)
                         except ZeroDivisionError:
                             row[column] = np.nan
-                   
+
                 old_lim = sup_lim
                 rows.append(row)
-            
+
             summary = pd.DataFrame(rows)
             summary.set_index('Range', inplace=True)
 

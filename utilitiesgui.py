@@ -14,17 +14,23 @@ import matreader as mat
 ###############################################################################
 # ------------------------ UTILITIES ------------------------------------------
 ###############################################################################
-def translate_input(session, lib, inputfile):
+def translate_input(session, lib, inputfile, testmode=False, outpath=None):
     """
     Translate an input file to a selected library. A log of the translation is
     also produced.
     """
-    print(" Translating...")
+    if not testmode:
+        print(" Translating...")
 
     libmanager = session.lib_manager
-    outpath = os.getcwd()
-    outpath = os.path.dirname(outpath)
-    outpath = session.path_uti
+
+    if testmode:
+        pass  # TODO
+    else:
+        outpath = os.getcwd()
+        outpath = os.path.dirname(outpath)
+        outpath = session.path_uti
+    
     filename = os.path.basename(inputfile)
 
     try:

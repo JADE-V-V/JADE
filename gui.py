@@ -10,6 +10,7 @@ import computational as cmp
 import utilitiesgui as uty
 import postprocess as pp
 import testrun
+import testInstallation as tinstall
 from tqdm import tqdm
 
 date = 'TBD'
@@ -145,6 +146,19 @@ def mainloop(session):
     Error:
     The number of materials and percentages must be the same
                           ''')
+
+        elif option == 'test':
+            pass
+    #         inputfile = input(' MCNP Input file of interest: ')
+    #         ans = uty.print_material_info(session, inputfile,
+    #                                       session.lib_manager)
+    #         if ans:
+    #             print(' Material infos printed')
+    #         else:
+    #             print('''
+    # Error:
+    # Either the input or output files do not exist or can't be opened
+    #                   ''')
 
         elif option == 'exit':
             session.log.adjourn('\nSession concluded normally \n')

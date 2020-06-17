@@ -51,6 +51,7 @@ principal_menu = header+"""
  * Print materials info               (printmat)
  * Generate material                  (generate)
  -----------------------------------------------
+ * Test installation                      (test)
 
  * Exit                                   (exit)
 """
@@ -111,8 +112,7 @@ def mainloop(session):
 
         elif option == 'printmat':
             inputfile = input(' MCNP Input file of interest: ')
-            ans = uty.print_material_info(session, inputfile,
-                                          session.lib_manager)
+            ans = uty.print_material_info(session, inputfile)
             if ans:
                 print(' Material infos printed')
             else:
@@ -148,17 +148,8 @@ def mainloop(session):
                           ''')
 
         elif option == 'test':
-            pass
-    #         inputfile = input(' MCNP Input file of interest: ')
-    #         ans = uty.print_material_info(session, inputfile,
-    #                                       session.lib_manager)
-    #         if ans:
-    #             print(' Material infos printed')
-    #         else:
-    #             print('''
-    # Error:
-    # Either the input or output files do not exist or can't be opened
-    #                   ''')
+            tinstall.test_installation(session)
+            print('\n Installation test completed\n')
 
         elif option == 'exit':
             session.log.adjourn('\nSession concluded normally \n')

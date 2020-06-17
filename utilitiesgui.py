@@ -14,23 +14,21 @@ import matreader as mat
 ###############################################################################
 # ------------------------ UTILITIES ------------------------------------------
 ###############################################################################
-def translate_input(session, lib, inputfile, testmode=False, outpath=None):
+def translate_input(session, lib, inputfile, outpath=None):
     """
     Translate an input file to a selected library. A log of the translation is
     also produced.
     """
-    if not testmode:
-        print(" Translating...")
+    print(" Translating...")
 
     libmanager = session.lib_manager
 
-    if testmode:
-        pass  # TODO
-    else:
-        outpath = os.getcwd()
-        outpath = os.path.dirname(outpath)
+    if outpath is None:
         outpath = session.path_uti
-    
+    else:
+        if not os.path.exists(outpath):
+            os.mkdir(outpath)
+
     filename = os.path.basename(inputfile)
 
     try:
@@ -73,7 +71,7 @@ def print_libraries(libmanager):
     print(libmanager.libraries)
 
 
-def print_material_info(session, filepath, lib_manager):
+def print_material_info(session, filepath, outpath=None):
     """
     Print materialcard information to excel file.
 
@@ -83,10 +81,12 @@ def print_material_info(session, filepath, lib_manager):
         JADE current session.
 
     filepath : str or path
-        path to the output file.
+        path to the input file.
 
-    lib_manager : libmanager.LibManager
-        Library manager for conversions and name recovery.
+
+    outpath: str/os.Path
+        output path. Default is None, in this case the utilities folder is
+        used
 
     Returns
     -------
@@ -94,6 +94,7 @@ def print_material_info(session, filepath, lib_manager):
         If False there was a permission error on the input or output file.
 
     """
+    lib_manager = session.lib_manager
 
     try:
         inputfile = ipt.InputFile.from_text(filepath)
@@ -101,7 +102,9 @@ def print_material_info(session, filepath, lib_manager):
         return False
 
     inforaw, info_elem = inputfile.matlist.get_info(lib_manager, zaids=True)
-    outpath = os.path.join(session.path_uti, 'Materials Infos')
+    if outpath is None:
+        outpath = os.path.join(session.path_uti, 'Materials Infos')
+
     if not os.path.exists(outpath):
         os.mkdir(outpath)
 
@@ -119,7 +122,7 @@ def print_material_info(session, filepath, lib_manager):
 
 
 def generate_material(session, sourcefile, materials, percentages, newlib,
-                      fractiontype='atom'):
+                      fractiontype='atom', outpath=None):
     # Read the source file
     try:
         inputfile = ipt.InputFile.from_text(sourcefile)
@@ -150,10 +153,14 @@ def generate_material(session, sourcefile, materials, percentages, newlib,
     # matcard.update_info(session.lib_manager)
 
     # Dump it
-    outfile = os.path.join(session.path_uti, 'Generated Materials')
+    if outpath is None:
+        outfile = os.path.join(session.path_uti, 'Generated Materials')
+    else:
+        outfile = outpath
     if not os.path.exists(outfile):
         os.mkdir(outfile)
-    outfile = os.path.join(outfile, os.path.basename(sourcefile))
+    outfile = os.path.join(outfile,
+                           os.path.basename(sourcefile)+'_new Material')
     try:
         with open(outfile, 'w') as writer:
             writer.write(matcard.to_text())

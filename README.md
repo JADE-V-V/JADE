@@ -25,6 +25,7 @@ The procedure to install JADE is the following:
   ```
 3) extract the zip into a folder of choice (from now on <JADE_root>);
 4) rename the folder containing the Python scripts as 'Code' (<JADE_root>\Code);
+<<<<<<< HEAD
 5) copy and paste the 'Benchmarks Inputs' folder into <JADE_root>;
 6) open the global configuration file: <JADE_root>\Code\Configuration\Config.xlsx; here you need to properly set the environment variables specified in the 'MAIN Config.' sheet (i.e. xsdir Path, and multithread options);
 7) open an anaconda prompt shell and change directory to <JADE_root>\Code. Then type:
@@ -32,6 +33,14 @@ The procedure to install JADE is the following:
   python main.py
   ```
 8) on the first usage the rest of the folders architecture is initialized.
+=======
+5) open the global configuration file: <JADE_root>\Code\Configuration\Config.xlsx; here you need to properly set the environment variables specified in the 'MAIN Config.' sheet (i.e. xsdir Path, and multithread options);
+6) open an anaconda prompt shell and change directory to <JADE_root>\Code. Then type:
+  ```
+  python main.py
+  ```
+7) on the first usage the rest of the folders architecture is initialized.
+>>>>>>> Developing
 
 ###### N.B.
 A limitator has been inserted in the code in order to test it before using JADE for production (this will be eliminated when a proper function testing the installation will be produced). To remove it, open <JADE_root>\Code\testrun.py and comment out line 239 and 279 while de-commenting line 238 and 278.
@@ -62,4 +71,8 @@ The main menu is divided into two sections, the first one let the user open the 
 - pp: post-process a single selected library, the results can be found in <JADE_root>\Tests\Post-Processing\Single Libraries;
 - compare: compare two or more selected libraries, the first indicated will be considered as the reference one; the results can be found in <JADE_root>\Tests\Post-Processing\Comparisons
 - back: go back to the main menu;
+<<<<<<< HEAD
 - 'exit': leave the application freezing the log file that is saved in <JADE_root>\Utilities\Log Files
+=======
+- 'exit': leave the application freezing the log file that is saved in <JADE_root>\Utilities\Log Files
+>>>>>>> Developing

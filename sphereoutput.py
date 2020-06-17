@@ -255,9 +255,13 @@ class SphereOutput(BenchmarkOutput):
                     for file in os.listdir(results_path):
                         if file[-1] == 'm':
                             mfile = file
+                        elif file[-1] == 'o':
+                            outfile = file
 
                     # Parse output
-                    output = SphereMCNPoutput(os.path.join(results_path, mfile))
+                    mfile = os.path.join(results_path, mfile)
+                    outfile = os.path.join(results_path, outfile)
+                    output = SphereMCNPoutput(mfile, outfile)
                     outputs_lib[zaidnum] = output
 
                     res, columns = output.get_comparison_data()
@@ -298,19 +302,51 @@ class SphereOutput(BenchmarkOutput):
 
             self.diff_data = final
 
-            # If it is zero the CS are equal! (NaN if both zeros)
-            final[final == np.nan] = 'Not Available'
-            final[final == 0] = 'Identical'
-
             # Correct sorting
             final.reset_index(inplace=True)
             final['index'] = pd.to_numeric(final['Zaid'].values,
                                            errors='coerce')
             final.sort_values('index', inplace=True)
             del final['index']
-
             final.set_index(['Zaid', 'Zaid Name'], inplace=True)
-            # final.reset_index(inplace=True)
+
+            # Create and concat the summary
+            old_l = 0
+            old_lim = 0
+            rows = []
+            limits = [0, 0.05, 0.1, 0.2, 0.2]
+            for i, sup_lim in enumerate(limits[1:]):
+                if i == len(limits)-2:
+                    row = {'Range': '% of cells > '+str(sup_lim*100)}
+                    for column in final.columns:
+                        cleaned = final[column].replace('', np.nan).dropna()
+                        l_range = len(cleaned[abs(cleaned) > sup_lim])
+                        try:
+                            row[column] = l_range/len(cleaned)
+                        except ZeroDivisionError:
+                            row[column] = np.nan
+                else:
+                    row = {'Range': str(old_lim*100)+' < '+'% of cells' +
+                           ' < ' + str(sup_lim*100)}
+                    for column in final.columns:
+                        cleaned = final[column].replace('', np.nan).dropna()
+                        lenght = len(cleaned[abs(cleaned) < sup_lim])
+                        old_l = len(cleaned[abs(cleaned) < limits[i]])
+                        l_range = lenght-old_l
+                        try:
+                            row[column] = l_range/len(cleaned)
+                        except ZeroDivisionError:
+                            row[column] = np.nan
+
+                old_lim = sup_lim
+                rows.append(row)
+
+            summary = pd.DataFrame(rows)
+            summary.set_index('Range', inplace=True)
+
+            # If it is zero the CS are equal! (NaN if both zeros)
+            final[final == np.nan] = 'Not Available'
+            final[final == 0] = 'Identical'
 
             # Write excel
             ex = SphereExcelOutputSheet(template, outpath)
@@ -318,6 +354,8 @@ class SphereOutput(BenchmarkOutput):
             rangeex = ex.wb.sheets[0].range('B10')
             rangeex.options(index=True, header=True).value = final
             ex.wb.sheets[0].range('D1').value = name
+            rangeex2 = ex.wb.sheets[0].range('V10')
+            rangeex2.options(index=True, header=True).value = summary
 
             # Add single pp sheets
             for lib in [reflib, tarlib]:
@@ -539,11 +577,11 @@ class SphereMCNPoutput(MCNPoutput):
                     bins = list(masked.reset_index()['Energy'].values)
                     for ebin in bins:
                         # colname = '(T.ly '+str(num)+') '+str(ebin)
-                        colname = str(ebin)+' [MeV]'
+                        colname = str(ebin)+' [MeV]'+' [t'+num+']'
                         columns.append(colname)
                         results.append(masked['Value'].loc[ebin])
                     # Add the total bin
-                    colname = 'Total'
+                    colname = 'Total'+' [t'+num+']'
                     columns.append(colname)
                     results.append(masked_tot['Value'])
 

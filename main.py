@@ -11,6 +11,7 @@ import os
 import status
 import warnings
 import time
+import shutil
 
 
 class Session:
@@ -45,8 +46,6 @@ class Session:
                                                  defaultlib=dl)
 
         cp = os.path.dirname(cp)
-        # Benchmark inputs should be externally copied, that is too heavy
-        self.path_inputs = os.path.join(cp, 'Benchmarks inputs')
         # Future implementation
         self.path_quality = os.path.join(cp, 'Quality')
         # Test level 1
@@ -60,13 +59,22 @@ class Session:
         # Utilities
         self.path_uti = os.path.join(cp, 'Utilities')
         self.path_logs = os.path.join(cp, 'Utilities', 'Log Files')
+        self.path_test_install = os.path.join(cp, 'Utilities',
+                                              'Installation Test')
 
-        keypaths = [self.path_inputs, self.path_quality, self.path_test,
+        keypaths = [self.path_quality, self.path_test,
                     self.path_run, self.path_pp, self.path_uti,
-                    self.path_single, self.path_comparison, self.path_logs]
+                    self.path_single, self.path_comparison, self.path_logs,
+                    self.path_test_install]
         for path in keypaths:
             if not os.path.exists(path):
                 os.mkdir(path)
+        # Copy files into benchmark inputs folder
+        path_inputs = os.path.join(cp, 'Benchmarks inputs')
+        if not os.path.exists(path_inputs):
+            files = os.path.join('Installation Files', 'Benchmarks inputs')
+            shutil.copytree(files, path_inputs)
+        self.path_inputs = path_inputs
 
         # Create the session LOG
         log = os.path.join(self.path_logs,

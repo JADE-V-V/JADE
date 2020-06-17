@@ -13,6 +13,7 @@ import re
 import pandas as pd
 import Parser as par
 from collections import Sequence
+from decimal import Decimal
 
 
 # -------------------------------------
@@ -67,7 +68,7 @@ class Zaid:
         """
         Get the zaid string ready for MCNP material card
         """
-        fraction = '%s' % float('%.5g' % self.fraction)
+        fraction = "{:.6E}".format(Decimal(self.fraction))
         if self.library is None:
             zaidname = self.element+self.isotope
         else:
@@ -82,7 +83,7 @@ class Zaid:
         inline_comm = '    $ '+self.fullname
         args = (zaidname, fraction, inline_comm, abundance)
 
-        return '{0:>15} {1:>12} {2:<12} {3:<10}'.format(*args)
+        return '{0:>15} {1:>18} {2:<12} {3:<10}'.format(*args)
 
     def get_fullname(self, libmanager):
         """
@@ -361,7 +362,7 @@ class SubMaterial:
                 dic_zaids['Element'].append(elementname)
                 dic_zaids['Isotope'].append(fullname + ' [' + str(zaid.element)
                                             + str(zaid.isotope)+']')
-                dic_zaids['Fraction'].append(fraction)
+                dic_zaids['Fraction'].append(zaid.fraction)
 
             dic_element['Element'].append(elementname)
 

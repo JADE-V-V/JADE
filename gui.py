@@ -10,6 +10,7 @@ import computational as cmp
 import utilitiesgui as uty
 import postprocess as pp
 import testrun
+import testInstallation as tinstall
 from tqdm import tqdm
 
 date = '15/05/2020'
@@ -50,6 +51,7 @@ principal_menu = header+"""
  * Print materials info               (printmat)
  * Generate material                  (generate)
  -----------------------------------------------
+ * Test installation                      (test)
 
  * Exit                                   (exit)
 """
@@ -110,8 +112,7 @@ def mainloop(session):
 
         elif option == 'printmat':
             inputfile = input(' MCNP Input file of interest: ')
-            ans = uty.print_material_info(session, inputfile,
-                                          session.lib_manager)
+            ans = uty.print_material_info(session, inputfile)
             if ans:
                 print(' Material infos printed')
             else:
@@ -145,6 +146,10 @@ def mainloop(session):
     Error:
     The number of materials and percentages must be the same
                           ''')
+
+        elif option == 'test':
+            tinstall.test_installation(session)
+            print('\n Installation test completed\n')
 
         elif option == 'exit':
             session.log.adjourn('\nSession concluded normally \n')
@@ -241,7 +246,7 @@ def comploop(session):
                 print(' Assessment completed')
 
                 session.log.adjourn('Assessment of: '+lib+' completed',
-                                    spacing=False, time=True)
+                                    spacing=True, time=True)
 
         elif option == 'back':
             mainloop(session)
@@ -332,10 +337,10 @@ def pploop(session):
 
                 # Execut single pp
                 for lib in to_single_pp:
-                    if 'Sphere' in to_perform:
+                    for testname in to_perform:
                         try:
                             print(' Single PP of library '+lib+' required')
-                            pp.postprocessSphere(session, lib)
+                            pp.postprocessBenchmark(session, lib, testname)
                             session.log.adjourn("""
 Additional Post-Processing of library:"""+lib+' completed\n', spacing=False)
                         except PermissionError as e:

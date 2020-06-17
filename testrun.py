@@ -235,8 +235,8 @@ class SphereTest(Test):
         self.MCNPdir = motherdir
 
         print(' Zaids:')
+        # for zaid in tqdm(zaids):
         for zaid in tqdm(zaids[:10]):
-            # for zaid in tqdm(zaids):
             Z = int(zaid[:-3])
             # Get Density
             if zaid[-3:] == '235':  # Special treatment for U235
@@ -244,22 +244,43 @@ class SphereTest(Test):
             else:
                 density = settings.loc[Z, 'Density [g/cc]']
 
-            # get stop parameters
-            if self.nps is None:
+            if check_true(settings.loc[Z, 'Let Override']):
+                # get stop parameters
+                if self.nps is None:
+                    nps = settings.loc[Z, 'NPS cut-off']
+                    if nps is np.nan:
+                        nps = None
+                else:
+                    nps = self.nps
+
+                if self.ctme is None:
+                    ctme = settings.loc[Z, 'CTME cut-off']
+                    if ctme is np.nan:
+                        ctme = None
+                else:
+                    ctme = self.ctme
+
+                if self.precision is None:
+                    prec = settings.loc[Z, 'Relative Error cut-off']
+                    if prec is np.nan:
+                        precision = None
+                    else:
+                        tally = prec.split('-')[0]
+                        error = prec.split('-')[1]
+                        precision = (tally, error)
+                else:
+                    precision = self.precision
+
+            # Zaid local settings are prioritized
+            else:
                 nps = settings.loc[Z, 'NPS cut-off']
                 if nps is np.nan:
                     nps = None
-            else:
-                nps = self.nps
 
-            if self.ctme is None:
                 ctme = settings.loc[Z, 'CTME cut-off']
                 if ctme is np.nan:
                     ctme = None
-            else:
-                ctme = self.ctme
 
-            if self.precision is None:
                 prec = settings.loc[Z, 'Relative Error cut-off']
                 if prec is np.nan:
                     precision = None
@@ -267,16 +288,15 @@ class SphereTest(Test):
                     tally = prec.split('-')[0]
                     error = prec.split('-')[1]
                     precision = (tally, error)
-            else:
-                precision = self.precision
 
             self.generate_zaid_test(zaid, libmanager, testname,
                                     motherdir, -1*density, nps, ctme,
                                     precision)
 
         print(' Materials:')
+        # for material in tqdm(matlist.materials):
         for material in tqdm(matlist.materials[:2]):
-            # for material in tqdm(matlist.materials):
+
             self.generate_material_test(material, libmanager, testname,
                                         motherdir)
 
@@ -433,3 +453,14 @@ class SphereTest(Test):
 def safe_mkdir(directory):
     if not os.path.exists(directory):
         os.mkdir(directory)
+
+
+def check_true(obj):
+    if obj is True:
+        return True
+    elif obj == 'True':
+        return True
+    elif obj == 'true':
+        return True
+    else:
+        return False

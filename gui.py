@@ -13,8 +13,8 @@ import testrun
 import testInstallation as tinstall
 from tqdm import tqdm
 
-date = '15/05/2020'
-version = 'v0.4.2'
+date = '17/06/2020'
+version = 'v0.5.0'
 
 
 def clear_screen():

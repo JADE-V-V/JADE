@@ -75,6 +75,12 @@ class Session:
             files = os.path.join('Installation Files', 'Benchmarks inputs')
             shutil.copytree(files, path_inputs)
         self.path_inputs = path_inputs
+        
+        # Copy input files for testing
+        path_inputs = os.path.join(self.path_test_install, 'Inputs')
+        if not os.path.exists(path_inputs):
+            files = os.path.join('Installation Files', 'Inputs install')
+            shutil.copytree(files, path_inputs)
 
         # Create the session LOG
         log = os.path.join(self.path_logs,

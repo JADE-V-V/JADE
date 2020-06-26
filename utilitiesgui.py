@@ -134,21 +134,32 @@ def generate_material(session, sourcefile, materials, percentages, newlib,
 
     # Collect all submaterials
     submaterials = []
+    main_header = "C Material Obtained from "+os.path.basename(sourcefile)
+
     for materialname, percentage in zip(materials, percentages):
+        main_header = (main_header+'\nC Material: '+materialname +
+                       ' Percentage: '+str(float(percentage)*100)+'%')
         material = inputfile.matlist[materialname]
         # Ensure materials have the requested fraction type
         material.switch_fraction(fractiontype, session.lib_manager)
 
         # Scale fractions
         totfraction = material.get_tot_fraction()
+        current_submaterials = []
         for submat in material.submaterials:
             norm_factor = float(percentage)/totfraction  # normalized & scaled
             submat.scale_fractions(norm_factor)
             submat.update_info(session.lib_manager)
-            submaterials.append(submat)
+            current_submaterials.append(submat)
+
+        # Change the header of the first submaterial to include the mat. one
+        current_submaterials[0].header = (material.header +
+                                          current_submaterials[0].header)
+        submaterials.extend(current_submaterials)
 
     # Generate new material and matlist
-    newmat = mat.Material(None, None, 'M1', submaterials=submaterials)
+    newmat = mat.Material(None, None, 'M1', submaterials=submaterials,
+                          header=main_header)
     matcard = mat.MatCardsList([newmat])
     # matcard.update_info(session.lib_manager)
 

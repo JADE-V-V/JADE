@@ -453,7 +453,7 @@ class Material:
             # it means it has no header
             submat = submaterials[0]
             if len(submat.zaidList) == 0:  # Happens in reading from text
-                self.header = submat.header
+                # self.header = submat.header
                 del self.submaterials[0]
             # else:
             #     self.submaterials[0].header = None

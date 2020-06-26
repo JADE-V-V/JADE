@@ -79,7 +79,17 @@ class LibManager:
                 translation = {}
                 reduced = self.isotopes[self.isotopes['Z'] == int(zaid[:-3])]
                 for idx, row in reduced.iterrows():
-                    translation[idx] = (lib, row['Mean value'],
+                    # zaid availability must be checked
+                    if self.XS.find_table(idx+'.'+lib, mode='exact'):
+                        newlib = lib
+                    elif self.XS.find_table(idx+'.'+self.defaultlib,
+                                            mode='exact'):
+                        newlib = self.defaultlib
+                    else:
+                        raise ValueError('No available translation for zaid :' +
+                                         zaid+'It is needed for natural zaid expansion.')
+
+                    translation[idx] = (newlib, row['Mean value'],
                                         row['Atomic Mass'])
         # 1to1
         elif lib in zaidlibs:

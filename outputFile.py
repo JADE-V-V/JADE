@@ -100,7 +100,11 @@ class OutputFile:
         for tnumber, result in self.stat_checks.items():
             for tally in tallylist:
                 if int(tally.tallyNumber) == int(tnumber):
-                    tdescr = tally.tallyComment[0]
+                    try:
+                        tdescr = tally.tallyComment[0]
+                    except IndexError:
+                        print('No description t. '+str(tnumber))
+                        tdescr = ''
             newkey = tdescr+' ['+str(tnumber)+']'
             new_stat_check[newkey] = result
 

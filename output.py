@@ -188,61 +188,74 @@ class BenchmarkOutput:
         self.raw_data = mcnp_output.tallydata
 
         # res, err = output.get_single_excel_data()
-        keys = {}
-        for tally in mctal.tallies:
-            num = tally.tallyNumber
-            key = tally.tallyComment[0]
-            keys[num] = key  # Memorize tally descriptions
-            tdata = mcnp_output.tallydata[num]  # Full tally data
-            try:
-                tally_settings = ex_cnf.loc[num]
-            except KeyError:
-                print(' Warning!: tally n.'+str(num) +
-                      ' is not in configuration')
-                continue
 
-            # Re-Elaborate tdata Dataframe
-            x_name = tally_settings['x']
-            x_tag = tally_settings['x name']
-            y_name = tally_settings['y']
-            y_tag = tally_settings['y name']
-            ylim = tally_settings['cut Y']
-            # select the index format
-            if x_name == 'Energy':
-                idx_format = '0.00E+00'
-                # TODO all possible cases should be addressed
-            else:
-                idx_format = '0'
+        for label in ['Value', 'Error']:
+            # keys = {}
+            for tally in mctal.tallies:
+                num = tally.tallyNumber
+                key = tally.tallyComment[0]
+                # keys[num] = key  # Memorize tally descriptions
+                tdata = mcnp_output.tallydata[num].copy()  # Full tally data
+                try:
+                    tally_settings = ex_cnf.loc[num]
+                except KeyError:
+                    print(' Warning!: tally n.'+str(num) +
+                          ' is not in configuration')
+                    continue
 
-            if y_name != 'tally':
-                tdata.set_index(x_name, inplace=True)
-                x_set = list(set(tdata.index))
-                y_set = list(set(tdata[y_name].values))
-                rows = []
-                for xval in x_set:
-                    row = tdata.loc[xval, 'Value'].values
-                    rows.append(row)
-                main_value_df = pd.DataFrame(rows, columns=y_set, index=x_set)
-                # reorder index
-                main_value_df['index'] = pd.to_numeric(x_set, errors='coerce')
-                main_value_df.sort_values('index', inplace=True)
-                del main_value_df['index']
-                # insert the df in pieces
-                ex.insert_cutted_df('B', main_value_df, 'Values', ylim,
-                                    header=(key, 'Tally n.'+str(num)),
-                                    index_name=x_tag, cols_name=y_tag,
-                                    index_num_format=idx_format)
-            else:
-                # reorder df
-                tdata['index'] = pd.to_numeric(tdata[x_name], errors='coerce')
-                tdata.sort_values('index', inplace=True)
-                del tdata['index']
-                # Insert DF
-                ex.insert_df('B', tdata, 'Values', print_index=False,
-                             header=(key, 'Tally n.'+str(num)))
+                # Re-Elaborate tdata Dataframe
+                x_name = tally_settings['x']
+                x_tag = tally_settings['x name']
+                y_name = tally_settings['y']
+                y_tag = tally_settings['y name']
+                ylim = tally_settings['cut Y']
+                # select the index format
+                if x_name == 'Energy':
+                    idx_format = '0.00E+00'
+                    # TODO all possible cases should be addressed
+                else:
+                    idx_format = '0'
 
-                #ex.insert_df('B', tdata, 'Values')
-            # totdata = mcnp_output.totalbin[num]  # tally tot bin data
+                if y_name != 'tally':
+                    tdata.set_index(x_name, inplace=True)
+                    x_set = list(set(tdata.index))
+                    y_set = list(set(tdata[y_name].values))
+                    rows = []
+                    for xval in x_set:
+                        row = tdata.loc[xval, label].values
+                        rows.append(row)
+                    main_value_df = pd.DataFrame(rows, columns=y_set,
+                                                 index=x_set)
+                    # reorder index
+                    main_value_df['index'] = pd.to_numeric(x_set,
+                                                           errors='coerce')
+                    main_value_df.sort_values('index', inplace=True)
+                    del main_value_df['index']
+                    # insert the df in pieces
+                    ex.insert_cutted_df('B', main_value_df, label+'s', ylim,
+                                        header=(key, 'Tally n.'+str(num)),
+                                        index_name=x_tag, cols_name=y_tag,
+                                        index_num_format=idx_format)
+                else:
+                    # reorder df
+                    tdata['index'] = pd.to_numeric(tdata[x_name],
+                                                   errors='coerce')
+                    tdata.sort_values('index', inplace=True)
+                    del tdata['index']
+
+                    if label == 'Value':
+                        del tdata['Error']
+                    elif label == 'Error':
+                        del tdata['Value']
+                    # Insert DF
+                    ex.insert_df('B', tdata, label+'s', print_index=False,
+                                 header=(key, 'Tally n.'+str(num)))
+
+            # Compile general infos in the sheet
+            ws = ex.current_ws
+            title = self.testname+' RESULTS RECAP: '+label+'s'
+            ws.range('A3').value = title
+            ws.range('C1').value = self.lib
 
         ex.save()
         # self.outputs = outputs
@@ -403,6 +416,7 @@ class ExcelOutputSheet:
 
         # Select new sheet
         ws = self.wb.sheets[ws_name]
+        self.current_ws = ws
         try:
             self.free_row = self.ws_free_rows[ws_name]
         except KeyError:
@@ -411,10 +425,36 @@ class ExcelOutputSheet:
         return ws
 
     def insert_df(self, startcolumn, df, ws, startrow=None, header=None,
-                  print_index=True, idx_format='0'):
+                  print_index=True, idx_format='0', cols_head_size = 12):
         '''
         Insert a DataFrame (df) into a Worksheet (ws) using xlwings.
-        (startrow) and (startcolumn) identify the starting data entry
+
+        Parameters
+        ----------
+        startcolumn : int or str
+            Starting column where to insert the DataFrame. It can be expressed
+            both as an integer as a letter in Excel fashion.
+        df : pandas.DataFrame
+            DataFrame to insert in the excel sheet
+        ws : str
+            name of the Excel worksheet where to put the DataFrame.
+        startrow : int
+            starting row where to put the DataFrame. Default is None that
+            triggers the use of the memorized first free row in the excel sheet
+        header : tuple (str, value)
+            contains the tag of the header and the header value. DEAFAULT is
+            None
+        print_index : bool
+            if True the DataFrame index is printed. DEAFAULT is True.
+        idx_format : str
+            how to format the index values. DEAFAULT is '0' (integer)
+        cols_head_size : int
+            Font size for columns header. DEAFAULT is 12
+
+        Returns
+        -------
+        None
+
         '''
         if startrow is None:
             startrow = self.free_row
@@ -422,26 +462,42 @@ class ExcelOutputSheet:
             add_space = 3  # Includes header
             self.free_row = self.free_row + len(df) + add_space
 
-        # ws = self._switch_ws(ws)
-        ws = self.wb.sheets[ws]
+        ws = self._switch_ws(ws)
+        # ws = self.wb.sheets[ws]
         # Start column can be provided as a letter or number (up to Z)
-        if type(startcolumn) is int:
-            startcolumn = string.ascii_uppercase[startcolumn]
+        if type(startcolumn) is str:
+            startcolumn = ord(startcolumn.lower())-96
 
-        anchor = startcolumn+str(startrow)
-        header_anchor_tag = 'A'+str(startrow)
-        header_anchor = 'A'+str(int(startrow)+1)
+        anchor = (startrow, startcolumn)
+        header_anchor_tag = (startrow, 1)
+        header_anchor = (startrow+1, 1)
 
         try:
             ws.range(anchor).options(index=print_index, header=True).value = df
-            rng = (startcolumn+str(startrow+1)+':'+startcolumn+
-                   str(startrow+1+len(df)))
-            ws.range(rng).number_format = idx_format
+            rng = ((startrow+1, startcolumn),
+                   (startrow+1+len(df), startcolumn))
+
+            # Formatting
+            ws.range(*rng).number_format = idx_format  # idx formatting
+            # Columns headers
+            anchor_columns = (anchor, (startrow, startcolumn+len(df.columns)))
+            ws.range(*anchor_columns).api.Font.Size = cols_head_size
+            ws.range(*anchor_columns).api.Font.Bold = True
+            ws.range(*anchor_columns).color = (236, 236, 236)
+
             if header is not None:
                 ws.range(header_anchor_tag).value = header[0]
+                ws.range(header_anchor_tag).api.Font.Size = cols_head_size
+                ws.range(header_anchor_tag).api.Font.Bold = True
+                ws.range(header_anchor_tag).color = (236, 236, 236)
+
                 ws.range(header_anchor).value = header[1]
+                ws.range(header_anchor).api.Font.Size = cols_head_size
+                ws.range(header_anchor_tag).api.Font.Bold = True
+                ws.range(header_anchor_tag).color = (236, 236, 236)
+ 
         except Exception as e:
-            print(e)
+            print(vars(e))
             print(header)
             print(df)
 
@@ -482,8 +538,7 @@ class ExcelOutputSheet:
         res_len = len(df.columns)
         start_col = 0
         ylim = int(ylim)
-        # ws = self._switch_ws(ws)
-        ws = self.wb.sheets[ws]
+        # ws = self.wb.sheets[ws]
         # Decode columns for index and columns names
         if type(startcolumn) is int:
             index_col = string.ascii_uppercase[startcolumn]
@@ -499,15 +554,22 @@ class ExcelOutputSheet:
             # Memorize anchors for headers name
             anchor_index = index_col+str(self.free_row)
             anchor_cols = columns_col+str(self.free_row-1)
-            end_anchor_cols = (chr(ord(columns_col)+len(curr_df.columns)-1)+
+            end_anchor_cols = (chr(ord(columns_col)+len(curr_df.columns)-1) +
                                str(self.free_row-1))
             # Insert cutted df
             self.insert_df(startcolumn, curr_df, ws, header=header,
                            idx_format=index_num_format)
             # Insert columns name and index name
-            ws.range(anchor_index).value = index_name
-            ws.range(anchor_cols).value = cols_name
-            ws.range(anchor_cols+':'+end_anchor_cols).merge()
+            self.current_ws.range(anchor_index).value = index_name
+            self.current_ws.range(anchor_index).api.Font.Size = 12
+            self.current_ws.range(anchor_index).api.Font.Bold = True
+            self.current_ws.range(anchor_index).color = (236, 236, 236)
+            
+            self.current_ws.range(anchor_cols).value = cols_name
+            self.current_ws.range(anchor_cols).api.Font.Size = 12
+            self.current_ws.range(anchor_cols).api.Font.Bold = True
+            self.current_ws.range(anchor_cols).color = (236, 236, 236)
+            self.current_ws.range(anchor_cols+':'+end_anchor_cols).merge()
             # Adjourn parameters
             start_col = start_col+ylim
             new_ylim = new_ylim+ylim
@@ -519,19 +581,19 @@ class ExcelOutputSheet:
             # Memorize anchors for headers name
             anchor_index = index_col+str(self.free_row)
             anchor_cols = columns_col+str(self.free_row-1)
-            end_anchor_cols = (chr(ord(columns_col)+len(curr_df.columns)-1)+
+            end_anchor_cols = (chr(ord(columns_col)+len(curr_df.columns)-1) +
                                str(self.free_row-1))
 
             self.insert_df(startcolumn, curr_df, ws, header=header,
                            idx_format=index_num_format)
             # Insert columns name and index name
-            ws.range(anchor_index).value = index_name
-            ws.range(anchor_cols).value = cols_name
+            self.current_ws.range(anchor_index).value = index_name
+            self.current_ws.range(anchor_cols).value = cols_name
             # Merge the cols name
-            ws.range(anchor_cols+':'+end_anchor_cols).merge()
+            self.current_ws.range(anchor_cols+':'+end_anchor_cols).merge()
 
         # Adjust lenght
-        ws.range(index_col+':AAA').autofit()
+        self.current_ws.range(index_col+':AAA').autofit()
 
     def copy_sheets(self, wb_origin_path):
         """

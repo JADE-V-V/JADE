@@ -9,13 +9,17 @@ import sphereoutput as spho
 import output as bencho
 
 
-def compareSphere(session, lib_input):
-    print('\n Comparing Sphere Leakage test:' +
+def compareBenchmark(session, lib_input, testname):
+    print('\n Comparing '+testname+':' +
           '    '+str(datetime.datetime.now()))
     lib = lib_input.split('-')
-    out = spho.SphereOutput(lib, 'Sphere', session)
+    if testname == 'Sphere':
+        out = spho.SphereOutput(lib, 'Sphere', session)
+    else:
+        out = bencho.BenchmarkOutput(lib, testname, session)
+
     out.compare(session.state, session.lib_manager)
-    session.log.adjourn('Sphere Leakage benchmark comparison coompleted' +
+    session.log.adjourn(testname+' benchmark comparison completed' +
                         '    ' + str(datetime.datetime.now()))
 
 
@@ -28,5 +32,5 @@ def postprocessBenchmark(session, lib, testname):
         out = bencho.BenchmarkOutput(lib, testname, session)
 
     out.single_postprocess(session.lib_manager)
-    session.log.adjourn(testname+' benchmark post-processing coompleted' +
+    session.log.adjourn(testname+' benchmark post-processing completed' +
                         '    ' + str(datetime.datetime.now()))

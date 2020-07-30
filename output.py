@@ -157,6 +157,70 @@ class BenchmarkOutput:
 
         print(' Single library post-processing completed')
 
+    def compare(self, state, libmanager):
+        print(' Generating Excel Recap...')
+        self._generate_comparison_excel_output()
+        # print(' Creating Atlas...')
+        # outpath = os.path.join(self.atlas_path, 'tmp')
+        # os.mkdir(outpath)
+
+        # libraries = []
+        # outputs = []
+        # zaids = []
+        # for libname, outputslib in self.outputs.items():
+        #     libraries.append(libname)
+        #     outputs.append(outputslib)
+        #     zaids.append(list(outputslib.keys()))
+
+        # # Extend list to all zaids
+        # allzaids = zaids[0]
+        # for zaidlist in zaids[1:]:
+        #     allzaids.extend(zaidlist)
+        # allzaids = set(allzaids)  # no duplicates
+
+        # globalname = ''
+        # for lib in libraries:
+        #     globalname = globalname + lib + '_Vs_'
+
+        # globalname = globalname[:-4]
+
+        # for tally, title, ylabel in \
+        #     [(2, 'Leakage Neutron Flux (175 groups)',
+        #       'Neutron Flux $[\#/cm^2]$'),
+        #      (32, 'Leakage Gamma Flux (24 groups)',
+        #       'Gamma Flux $[\#/cm^2]$')]:
+
+        #     print(' Plotting tally n.'+str(tally))
+        #     for zaidnum in tqdm(allzaids):
+        #         # title = title
+        #         data = []
+        #         for idx, output in enumerate(outputs):
+        #             try:  # Zaid could not be common to the libraries
+        #                 tally_data = output[zaidnum].tallydata.set_index('Tally N.').loc[tally]
+        #                 energy = tally_data['Energy'].values
+        #                 values = tally_data['Value'].values
+        #                 error = tally_data['Error'].values
+        #                 lib = {'x': energy, 'y': values, 'err': error,
+        #                        'ylabel': str(zaidnum)+'.'+libraries[idx]}
+        #                 data.append(lib)
+        #             except KeyError:
+        #                 # It is ok, simply nothing to plot here
+        #                 pass
+
+        #         outname = str(zaidnum)+'-'+globalname+'-'+str(tally)
+        #         plot = plotter.Plotter(data, title, outpath, outname)
+        #         plot.binned_plot(ylabel)
+
+        # print(' Generating Plots Atlas...')
+        # # Printing Atlas
+        # template = os.path.join(self.code_path, 'Templates',
+        #                         'AtlasTemplate.docx')
+        # atlas = at.Atlas(template, globalname)
+        # atlas.build(outpath, libmanager)
+        # atlas.save(self.atlas_path)
+        # # Remove tmp images
+        # shutil.rmtree(outpath)
+
     def _generate_single_excel_output(self):
 
         # Get excel configuration
@@ -257,23 +321,145 @@ class BenchmarkOutput:
             ws.range('A3').value = title
             ws.range('C1').value = self.lib
 
-        ex.save()
-        # self.outputs = outputs
-        # self.results = results
-        # self.errors = errors
+        # --- Compile statistical checks sheet ---
+        ws = ex.wb.sheets['Statistical Checks']
 
-        # # Write excel
-        # 
-        # # Results
-        # ex.insert_df(9, 2, results, 0)
-        # ex.insert_df(9, 2, errors, 1)
-        # ex.wb.sheets[0].range('D1').value = self.lib
-        # 
+        dic_checks = mcnp_output.out.stat_checks
+        rows = []
+        for tally in mctal.tallies:
+            num = tally.tallyNumber
+            key = tally.tallyComment[0]
+            key_dic = key+' ['+str(num)+']'
+            try:
+                stat = dic_checks[key_dic]
+            except KeyError:
+                stat = None
+            rows.append([num, key, stat])
+
+        df = pd.DataFrame(rows)
+        ws.range('A9').options(index=False, header=False).value = df
+
+        ex.save()
 
     def _print_raw(self):
         for key, data in self.raw_data.items():
             file = os.path.join(self.raw_path, str(key)+'.csv')
             data.to_csv(file, header=True, index=False)
+
+    def _generate_comparison_excel_output(self):
+
+        # Get excel configuration
+        ex_cnf = pd.read_excel(self.cnf_path, sheet_name='Excel')
+        ex_cnf.set_index('Tally', inplace=True)
+
+        # Open the excel file
+        name_tag = 'Generic_comparison.xlsx'
+        template = os.path.join(os.getcwd(), 'Templates', name_tag)
+
+        mcnp_outputs = {}
+        iteration = 0
+        for reflib, tarlib, name in self.couples:
+            iteration = iteration+1
+            outpath = os.path.join(self.excel_path, self.name+'_Comparison_' +
+                                   name+'.xlsx')
+            ex = ExcelOutputSheet(template, outpath)
+            # Get results
+            if iteration == 1:
+                to_read = [reflib, tarlib]
+            else:
+                to_read = [tarlib]
+
+            for lib in to_read:
+                results_path = self.test_path[lib]
+
+                # Get mfile and outfile
+                for file in os.listdir(results_path):
+                    if file[-1] == 'm':
+                        mfile = file
+                    elif file[-1] == 'o':
+                        ofile = file
+                # Parse output
+                mcnp_output = MCNPoutput(os.path.join(results_path, mfile),
+                                         os.path.join(results_path, ofile))
+                mcnp_outputs[lib] = mcnp_output
+
+            # Build the comparison
+            for tally in mcnp_outputs[reflib].mctal.tallies:
+                num = tally.tallyNumber
+                key = tally.tallyComment[0]
+
+                # Full tally data
+                tdata_ref = mcnp_outputs[reflib].tallydata[num].copy()
+                tdata_tar = mcnp_outputs[tarlib].tallydata[num].copy()
+                try:
+                    tally_settings = ex_cnf.loc[num]
+                except KeyError:
+                    print(' Warning!: tally n.'+str(num) +
+                          ' is not in configuration')
+                    continue
+
+                # Re-Elaborate tdata Dataframe
+                x_name = tally_settings['x']
+                x_tag = tally_settings['x name']
+                y_name = tally_settings['y']
+                y_tag = tally_settings['y name']
+                ylim = tally_settings['cut Y']
+                # select the index format
+                if x_name == 'Energy':
+                    idx_format = '0.00E+00'
+                    # TODO all possible cases should be addressed
+                else:
+                    idx_format = '0'
+
+                if y_name != 'tally':
+                    tdata_ref.set_index(x_name, inplace=True)
+                    tdata_tar.set_index(x_name, inplace=True)
+                    x_set = list(set(tdata_ref.index))
+                    y_set = list(set(tdata_ref[y_name].values))
+                    rows = []
+                    for xval in x_set:
+                        # !!! True divide warnings are suppressed !!!
+                        with np.errstate(divide='ignore', invalid='ignore'):
+                            row = ((tdata_ref.loc[xval, 'Value'].values -
+                                   tdata_tar.loc[xval, 'Value'].values) /
+                                   tdata_ref.loc[xval, 'Value'].values)
+                        rows.append(row)
+                    main_value_df = pd.DataFrame(rows, columns=y_set,
+                                                 index=x_set)
+                    # reorder index
+                    main_value_df['index'] = pd.to_numeric(x_set,
+                                                           errors='coerce')
+                    main_value_df.sort_values('index', inplace=True)
+                    del main_value_df['index']
+                    # insert the df in pieces
+                    ex.insert_cutted_df('B', main_value_df, 'Comparison', ylim,
+                                        header=(key, 'Tally n.'+str(num)),
+                                        index_name=x_tag, cols_name=y_tag,
+                                        index_num_format=idx_format)
+                else:
+                    # reorder df
+                    for tdata in [tdata_ref, tdata_tar]:
+                        tdata['index'] = pd.to_numeric(tdata[x_name],
+                                                       errors='coerce')
+                        tdata.sort_values('index', inplace=True)
+                        del tdata['index']
+                        del tdata['Error']
+                    
+                    # !!! True divide warnings are suppressed !!!
+                    with np.errstate(divide='ignore', invalid='ignore'):
+                        df = (tdata_ref-tdata_tar)/tdata_ref
+
+                    # Insert DF
+                    ex.insert_df('B', df, 'Comparison', print_index=False,
+                                 header=(key, 'Tally n.'+str(num)))
+
+            # Compile general infos in the sheet
+            ws = ex.current_ws
+            title = self.testname+' RESULTS RECAP: Comparison'
+            ws.range('A3').value = title
+            ws.range('C1').value = tarlib+' Vs '+reflib
+
+            ex.save()
 
 
 class MCNPoutput:
@@ -425,7 +611,7 @@ class ExcelOutputSheet:
         return ws
 
     def insert_df(self, startcolumn, df, ws, startrow=None, header=None,
-                  print_index=True, idx_format='0', cols_head_size = 12):
+                  print_index=True, idx_format='0', cols_head_size=12):
         '''
         Insert a DataFrame (df) into a Worksheet (ws) using xlwings.
 
@@ -495,7 +681,7 @@ class ExcelOutputSheet:
                 ws.range(header_anchor).api.Font.Size = cols_head_size
                 ws.range(header_anchor_tag).api.Font.Bold = True
                 ws.range(header_anchor_tag).color = (236, 236, 236)
- 
+
         except Exception as e:
             print(vars(e))
             print(header)
@@ -564,7 +750,7 @@ class ExcelOutputSheet:
             self.current_ws.range(anchor_index).api.Font.Size = 12
             self.current_ws.range(anchor_index).api.Font.Bold = True
             self.current_ws.range(anchor_index).color = (236, 236, 236)
-            
+
             self.current_ws.range(anchor_cols).value = cols_name
             self.current_ws.range(anchor_cols).api.Font.Size = 12
             self.current_ws.range(anchor_cols).api.Font.Bold = True

@@ -10,9 +10,9 @@ import xlwings as xw
 import pandas as pd
 import os
 import shutil
-# import plotter
-# from tqdm import tqdm
-# import atlas as at
+import plotter
+from tqdm import tqdm
+import atlas as at
 import numpy as np
 import string
 from outputFile import OutputFile
@@ -41,6 +41,7 @@ class BenchmarkOutput:
         self.raw_data = {}  # Raw data
         self.testname = testname  # test name
         self.code_path = os.getcwd()  # path to code
+        self.state = session.state
 
         # Read specific configuration
         self.cnf_path = os.path.join(session.path_cnf, testname+'.xlsx')
@@ -121,39 +122,68 @@ class BenchmarkOutput:
         self._generate_single_excel_output()
         self._print_raw()
 
-        # print(' Creating Atlas...')
-        # outpath = os.path.join(self.atlas_path, 'tmp')
-        # os.mkdir(outpath)
+        print(' Creating Atlas...')
+        outpath = os.path.join(self.atlas_path, 'tmp')
+        os.mkdir(outpath)
 
-        # for tally, title, ylabel in \
-        #     [(2, 'Leakage Neutron Flux (175 groups)',
-        #       'Neutron Flux $[\#/cm^2]$'),
-        #      (32, 'Leakage Gamma Flux (24 groups)',
-        #       'Gamma Flux $[\#/cm^2]$')]:
+        # Get atlas configuration
+        atl_cnf = pd.read_excel(self.cnf_path, sheet_name='Atlas')
+        atl_cnf.set_index('Tally', inplace=True)
 
-        #     print(' Plotting tally n.'+str(tally))
-        #     for zaidnum, output in tqdm(self.outputs.items()):
-        #         title = title
-        #         tally_data = output.mdata.set_index('Tally N.').loc[tally]
-        #         energy = tally_data['Energy'].values
-        #         values = tally_data['Value'].values
-        #         error = tally_data['Error'].values
-        #         lib = {'x': energy, 'y': values, 'err': error,
-        #                'ylabel': str(zaidnum)+'.'+self.lib}
-        #         data = [lib]
-        #         outname = str(zaidnum)+'-'+self.lib+'-'+str(tally)
-        #         plot = plotter.Plotter(data, title, outpath, outname)
-        #         plot.binned_plot(ylabel)
+        # Printing Atlas
+        template = os.path.join(self.code_path, 'Templates',
+                                'AtlasTemplate.docx')
+        atlas = at.Atlas(template, self.lib)
 
-        # print(' Generating Plots Atlas...')
-        # # Printing Atlas
-        # template = os.path.join(self.code_path, 'Templates',
-        #                         'AtlasTemplate.docx')
-        # atlas = at.Atlas(template, self.lib)
-        # atlas.build(outpath, libmanager)
-        # atlas.save(self.atlas_path)
-        # # Remove tmp images
-        # shutil.rmtree(outpath)
+        # Iterate over each type of plot
+        for plot_type in atl_cnf.columns:
+            print(' Plotting : '+plot_type)
+            atlas.doc.add_heading('Plot type: '+plot_type, level=1)
+            atl_cnf = atl_cnf[atl_cnf[plot_type]]  # Keep only tallies to plot
+            for tally_num in tqdm(atl_cnf.index, desc='Tallies'):
+                output = self.outputs[tally_num]
+                vals_df = output['Value']
+                err_df = output['Error']
+                ylabel = output['y_label']
+                xlabel = output['x_label']
+                title = output['title']
+
+                atlas.doc.add_heading('Tally: '+title, level=2)
+
+                columns = vals_df.columns
+                x = np.array(vals_df.index)
+
+                for column in tqdm(columns):
+                    if len(columns) > 1:
+                        # atlas.doc.add_heading(str(column), level=3)
+                        newtitle = title+' ('+str(int(column))+')'
+                    else:
+                        newtitle = title
+
+                    # If total is present it has to be deleted
+                    try:
+                        vals_df.drop(['total'], inplace=True)
+                        err_df.drop(['total'], inplace=True)
+                        x = x[:-1]
+                    except KeyError:
+                        pass
+
+                    values = vals_df[column].values
+                    error = err_df[column].values
+
+                    lib = {'x': x, 'y': values, 'err': error,
+                           'ylabel': self.lib}
+                    data = [lib]
+
+                    outname = 'tmp'
+                    plot = plotter.Plotter(data, newtitle, outpath, outname)
+                    img_path = plot.binned_plot(ylabel, xlabel=xlabel)
+
+                    atlas.insert_img(img_path)
+
+        atlas.save(self.atlas_path)
+        # Remove tmp images
+        shutil.rmtree(outpath)
 
         print(' Single library post-processing completed')
 
@@ -252,6 +282,7 @@ class BenchmarkOutput:
         self.raw_data = mcnp_output.tallydata
 
         # res, err = output.get_single_excel_data()
+        outputs = {}
 
         for label in ['Value', 'Error']:
             # keys = {}
@@ -273,6 +304,11 @@ class BenchmarkOutput:
                 y_name = tally_settings['y']
                 y_tag = tally_settings['y name']
                 ylim = tally_settings['cut Y']
+
+                if label == 'Value':
+                    outputs[num] = {'title': key, 'x_label': x_tag,
+                                    'y_label': y_tag}
+
                 # select the index format
                 if x_name == 'Energy':
                     idx_format = '0.00E+00'
@@ -295,6 +331,8 @@ class BenchmarkOutput:
                                                            errors='coerce')
                     main_value_df.sort_values('index', inplace=True)
                     del main_value_df['index']
+                    # memorize for atlas
+                    outputs[num][label] = main_value_df
                     # insert the df in pieces
                     ex.insert_cutted_df('B', main_value_df, label+'s', ylim,
                                         header=(key, 'Tally n.'+str(num)),
@@ -311,9 +349,14 @@ class BenchmarkOutput:
                         del tdata['Error']
                     elif label == 'Error':
                         del tdata['Value']
+                    # memorize for atlas
+                    outputs[num][label] = tdata.set_index(x_name)
                     # Insert DF
                     ex.insert_df('B', tdata, label+'s', print_index=False,
                                  header=(key, 'Tally n.'+str(num)))
+
+            # memorize data for atlas
+            self.outputs = outputs
 
             # Compile general infos in the sheet
             ws = ex.current_ws
@@ -435,7 +478,8 @@ class BenchmarkOutput:
                     ex.insert_cutted_df('B', main_value_df, 'Comparison', ylim,
                                         header=(key, 'Tally n.'+str(num)),
                                         index_name=x_tag, cols_name=y_tag,
-                                        index_num_format=idx_format)
+                                        index_num_format=idx_format,
+                                        values_format='0.00%')
                 else:
                     # reorder df
                     for tdata in [tdata_ref, tdata_tar]:
@@ -444,20 +488,30 @@ class BenchmarkOutput:
                         tdata.sort_values('index', inplace=True)
                         del tdata['index']
                         del tdata['Error']
-                    
+                        tdata.set_index(x_name, inplace=True)
+
                     # !!! True divide warnings are suppressed !!!
                     with np.errstate(divide='ignore', invalid='ignore'):
                         df = (tdata_ref-tdata_tar)/tdata_ref
 
                     # Insert DF
-                    ex.insert_df('B', df, 'Comparison', print_index=False,
-                                 header=(key, 'Tally n.'+str(num)))
+                    ex.insert_df('B', df, 'Comparison', print_index=True,
+                                 header=(key, 'Tally n.'+str(num)),
+                                 values_format='0.00%')
 
             # Compile general infos in the sheet
             ws = ex.current_ws
             title = self.testname+' RESULTS RECAP: Comparison'
             ws.range('A3').value = title
             ws.range('C1').value = tarlib+' Vs '+reflib
+
+            # Add single pp sheets
+            for lib in [reflib, tarlib]:
+                cp = self.state.get_path('single', [lib, self.testname,
+                                                    'Excel'])
+                file = os.listdir(cp)[0]
+                cp = os.path.join(cp, file)
+                ex.copy_sheets(cp)
 
             ex.save()
 
@@ -611,7 +665,8 @@ class ExcelOutputSheet:
         return ws
 
     def insert_df(self, startcolumn, df, ws, startrow=None, header=None,
-                  print_index=True, idx_format='0', cols_head_size=12):
+                  print_index=True, idx_format='0', cols_head_size=12,
+                  values_format=None):
         '''
         Insert a DataFrame (df) into a Worksheet (ws) using xlwings.
 
@@ -636,6 +691,8 @@ class ExcelOutputSheet:
             how to format the index values. DEAFAULT is '0' (integer)
         cols_head_size : int
             Font size for columns header. DEAFAULT is 12
+        values_format : str
+            how to format the values. DEAFAULT is None
 
         Returns
         -------
@@ -662,6 +719,12 @@ class ExcelOutputSheet:
             ws.range(anchor).options(index=print_index, header=True).value = df
             rng = ((startrow+1, startcolumn),
                    (startrow+1+len(df), startcolumn))
+            # Format values if requested
+            if values_format is not None:
+                rng_values = ((startrow+1, startcolumn+1),
+                              (startrow+1+len(df),
+                               startcolumn+1+len(df.columns)))
+                ws.range(*rng_values).number_format = values_format
 
             # Formatting
             ws.range(*rng).number_format = idx_format  # idx formatting
@@ -689,7 +752,7 @@ class ExcelOutputSheet:
 
     def insert_cutted_df(self, startcolumn, df, ws, ylim, startrow=None,
                          header=None, index_name=None, cols_name=None,
-                         index_num_format='0'):
+                         index_num_format='0', values_format=None):
         """
         Insert a DataFrame in the excel cutting its columns
 
@@ -715,6 +778,8 @@ class ExcelOutputSheet:
             Name of the columns. DEFAULT is None
         index_num_format: str
             format of index numbers
+        values_format : str
+            how to format the values. DEAFAULT is None
 
         Returns
         -------
@@ -744,7 +809,8 @@ class ExcelOutputSheet:
                                str(self.free_row-1))
             # Insert cutted df
             self.insert_df(startcolumn, curr_df, ws, header=header,
-                           idx_format=index_num_format)
+                           idx_format=index_num_format,
+                           values_format=values_format)
             # Insert columns name and index name
             self.current_ws.range(anchor_index).value = index_name
             self.current_ws.range(anchor_index).api.Font.Size = 12
@@ -771,7 +837,8 @@ class ExcelOutputSheet:
                                str(self.free_row-1))
 
             self.insert_df(startcolumn, curr_df, ws, header=header,
-                           idx_format=index_num_format)
+                           idx_format=index_num_format,
+                           values_format=values_format)
             # Insert columns name and index name
             self.current_ws.range(anchor_index).value = index_name
             self.current_ws.range(anchor_cols).value = cols_name

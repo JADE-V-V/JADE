@@ -54,6 +54,8 @@ class Atlas():
 
     def build(self, images_path, libmanager):
         """
+        TO BE USED FOR SPHERE LEAKAGE BENCHMARK
+
         Generate the atlas filling the world template with plots and headings
 
         Parameters

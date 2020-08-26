@@ -64,7 +64,8 @@ class Plotter():
 
         Returns
         -------
-        None.
+        outpath : str/path
+            path to the saved image
 
         """
 
@@ -144,11 +145,11 @@ class Plotter():
                 hist_areas = np.diff(x)*y[1:]
                 tot_area = hist_areas.sum()
                 # Normalize values
-                y = [0]+list(np.diff(x)*y[1:]/tot_area)   
+                y = [0]+list(np.diff(x)*y[1:]/tot_area)
 
             err = np.array(dic_data['err'])
             err_multi = np.array(y[1:])*np.abs(err)
-        
+
             # Main plot
             if idx > 0:
                 tag = 'T'+str(idx)+': '
@@ -214,3 +215,5 @@ class Plotter():
 
         plt.savefig(self.outpath)
         plt.close()
+
+        return self.outpath

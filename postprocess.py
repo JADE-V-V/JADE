@@ -18,7 +18,7 @@ def compareBenchmark(session, lib_input, testname):
     else:
         out = bencho.BenchmarkOutput(lib, testname, session)
 
-    out.compare(session.state, session.lib_manager)
+    out.compare()
     session.log.adjourn(testname+' benchmark comparison completed' +
                         '    ' + str(datetime.datetime.now()))
 
@@ -31,6 +31,6 @@ def postprocessBenchmark(session, lib, testname):
     else:
         out = bencho.BenchmarkOutput(lib, testname, session)
 
-    out.single_postprocess(session.lib_manager)
+    out.single_postprocess()
     session.log.adjourn(testname+' benchmark post-processing completed' +
                         '    ' + str(datetime.datetime.now()))

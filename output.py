@@ -16,6 +16,7 @@ import atlas as at
 import numpy as np
 import string
 from outputFile import OutputFile
+import pickle
 
 
 class BenchmarkOutput:
@@ -42,6 +43,7 @@ class BenchmarkOutput:
         self.testname = testname  # test name
         self.code_path = os.getcwd()  # path to code
         self.state = session.state
+        self.session = session
 
         # Read specific configuration
         self.cnf_path = os.path.join(session.path_cnf, testname+'.xlsx')
@@ -108,7 +110,7 @@ class BenchmarkOutput:
             self.raw_path = raw_path
             self.atlas_path = atlas_path
 
-    def single_postprocess(self, libmanager):
+    def single_postprocess(self):
         """
         Execute the full post-processing of a single library (i.e. excel,
         raw data and atlas)
@@ -135,8 +137,8 @@ class BenchmarkOutput:
                                 'AtlasTemplate.docx')
         atlas = at.Atlas(template, self.lib)
 
-        # Iterate over each type of plot
-        for plot_type in atl_cnf.columns:
+        # Iterate over each type of plot (first one is the measure unit)
+        for plot_type in list(atl_cnf.columns)[1:]:
             print(' Plotting : '+plot_type)
             atlas.doc.add_heading('Plot type: '+plot_type, level=1)
             atl_cnf = atl_cnf[atl_cnf[plot_type]]  # Keep only tallies to plot
@@ -144,7 +146,7 @@ class BenchmarkOutput:
                 output = self.outputs[tally_num]
                 vals_df = output['Value']
                 err_df = output['Error']
-                ylabel = output['y_label']
+                ylabel = str(atl_cnf['Unit'].loc[tally_num])
                 xlabel = output['x_label']
                 title = output['title']
 
@@ -155,7 +157,7 @@ class BenchmarkOutput:
 
                 for column in tqdm(columns):
                     if len(columns) > 1:
-                        # atlas.doc.add_heading(str(column), level=3)
+                        atlas.doc.add_heading(str(int(column)), level=3)
                         newtitle = title+' ('+str(int(column))+')'
                     else:
                         newtitle = title
@@ -185,71 +187,100 @@ class BenchmarkOutput:
         # Remove tmp images
         shutil.rmtree(outpath)
 
-        print(' Single library post-processing completed')
+    def compare(self):
+        """
+        Generates the full comparison post-processing (excel and atlas)
 
-    def compare(self, state, libmanager):
+        Returns
+        -------
+        None.
+
+        """
         print(' Generating Excel Recap...')
         self._generate_comparison_excel_output()
-        # print(' Creating Atlas...')
-        # outpath = os.path.join(self.atlas_path, 'tmp')
-        # os.mkdir(outpath)
 
-        # libraries = []
-        # outputs = []
-        # zaids = []
-        # for libname, outputslib in self.outputs.items():
-        #     libraries.append(libname)
-        #     outputs.append(outputslib)
-        #     zaids.append(list(outputslib.keys()))
+        print(' Creating Atlas...')
+        outpath = os.path.join(self.atlas_path, 'tmp')
+        os.mkdir(outpath)
 
-        # # Extend list to all zaids
-        # allzaids = zaids[0]
-        # for zaidlist in zaids[1:]:
-        #     allzaids.extend(zaidlist)
-        # allzaids = set(allzaids)  # no duplicates
+        # Get atlas configuration
+        atl_cnf = pd.read_excel(self.cnf_path, sheet_name='Atlas')
+        atl_cnf.set_index('Tally', inplace=True)
 
-        # globalname = ''
-        # for lib in libraries:
-        #     globalname = globalname + lib + '_Vs_'
+        # Printing Atlas
+        template = os.path.join(self.code_path, 'Templates',
+                                'AtlasTemplate.docx')
 
-        # globalname = globalname[:-4]
+        atlas = at.Atlas(template, self.name)
 
-        # for tally, title, ylabel in \
-        #     [(2, 'Leakage Neutron Flux (175 groups)',
-        #       'Neutron Flux $[\#/cm^2]$'),
-        #      (32, 'Leakage Gamma Flux (24 groups)',
-        #       'Gamma Flux $[\#/cm^2]$')]:
+        # Recover data
+        outputs_dic = {}
+        for lib in self.lib:
+            # Recover lib output
+            out_path = os.path.join(self.session.path_single,
+                                    lib, self.testname, 'Raw Data',
+                                    lib+'.pickle')
+            with open(out_path, 'rb') as handle:
+                outputs = pickle.load(handle)
+            outputs_dic[lib] = outputs
 
-        #     print(' Plotting tally n.'+str(tally))
-        #     for zaidnum in tqdm(allzaids):
-        #         # title = title
-        #         data = []
-        #         for idx, output in enumerate(outputs):
-        #             try:  # Zaid could not be common to the libraries
-        #                 tally_data = output[zaidnum].tallydata.set_index('Tally N.').loc[tally]
-        #                 energy = tally_data['Energy'].values
-        #                 values = tally_data['Value'].values
-        #                 error = tally_data['Error'].values
-        #                 lib = {'x': energy, 'y': values, 'err': error,
-        #                        'ylabel': str(zaidnum)+'.'+libraries[idx]}
-        #                 data.append(lib)
-        #             except KeyError:
-        #                 # It is ok, simply nothing to plot here
-        #                 pass
+        # Iterate over each type of plot (first one is the measure unit)
+        for plot_type in list(atl_cnf.columns)[1:]:
+            print(' Plotting : '+plot_type)
+            atlas.doc.add_heading('Plot type: '+plot_type, level=1)
+            atl_cnf = atl_cnf[atl_cnf[plot_type]]  # Keep only tallies to plot
+            for tally_num in tqdm(atl_cnf.index, desc='Tallies'):
+                # The last 'outputs' can be easily used for common data
+                output = outputs[tally_num]
+                vals_df = output['Value']
+                err_df = output['Error']
+                ylabel = str(atl_cnf['Unit'].loc[tally_num])
+                xlabel = output['x_label']
+                title = output['title']
 
-        #         outname = str(zaidnum)+'-'+globalname+'-'+str(tally)
-        #         plot = plotter.Plotter(data, title, outpath, outname)
-        #         plot.binned_plot(ylabel)
+                atlas.doc.add_heading('Tally: '+title, level=2)
 
-        # print(' Generating Plots Atlas...')
-        # # Printing Atlas
-        # template = os.path.join(self.code_path, 'Templates',
-        #                         'AtlasTemplate.docx')
-        # atlas = at.Atlas(template, globalname)
-        # atlas.build(outpath, libmanager)
-        # atlas.save(self.atlas_path)
-        # # Remove tmp images
-        # shutil.rmtree(outpath)
+                columns = vals_df.columns
+
+                for column in tqdm(columns):
+                    if len(columns) > 1:
+                        atlas.doc.add_heading(str(int(column)), level=3)
+                        newtitle = title+' ('+str(int(column))+')'
+
+                    else:
+                        newtitle = title
+                    data = []
+                    for lib in self.lib:
+                        output = outputs_dic[lib][tally_num]
+
+                        # override values and errors
+                        vals_df = output['Value']
+                        err_df = output['Error']
+
+                        # If total is present it has to be deleted
+                        try:
+                            vals_df.drop(['total'], inplace=True)
+                            err_df.drop(['total'], inplace=True)
+                        except KeyError:
+                            pass
+
+                        values = vals_df[column].values
+                        error = err_df[column].values
+                        x = np.array(vals_df.index)
+
+                        lib_data = {'x': x, 'y': values, 'err': error,
+                                    'ylabel': lib}
+                        data.append(lib_data)
+
+                    outname = 'tmp'
+                    plot = plotter.Plotter(data, newtitle, outpath, outname)
+                    img_path = plot.binned_plot(ylabel, xlabel=xlabel)
+
+                    atlas.insert_img(img_path)
+
+        atlas.save(self.atlas_path)
+        # Remove tmp images
+        shutil.rmtree(outpath)
 
     def _generate_single_excel_output(self):
 
@@ -306,8 +337,7 @@ class BenchmarkOutput:
                 ylim = tally_settings['cut Y']
 
                 if label == 'Value':
-                    outputs[num] = {'title': key, 'x_label': x_tag,
-                                    'y_label': y_tag}
+                    outputs[num] = {'title': key, 'x_label': x_tag}
 
                 # select the index format
                 if x_name == 'Energy':
@@ -357,6 +387,10 @@ class BenchmarkOutput:
 
             # memorize data for atlas
             self.outputs = outputs
+            # Dump them for comparisons
+            outpath = os.path.join(self.raw_path, self.lib+'.pickle')
+            with open(outpath, 'wb') as outfile:
+                pickle.dump(outputs, outfile)
 
             # Compile general infos in the sheet
             ws = ex.current_ws

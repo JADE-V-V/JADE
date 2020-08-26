@@ -919,7 +919,7 @@ E4    1.00001E-07 4.13994E-07 5.31579E-07 6.82560E-07 8.76425E-07
       1.56831E+01 1.64872E+01 1.69046E+01 1.73325E+01 1.96403E+01
 C 
 c   --------------------------------------------------------------------
-fc4  n-spectrum
+fc4  Neutron Flux [#/cm^2]
 f4:n
                  2 60 61 62 63 
                  64 65 66 67 68 
@@ -944,7 +944,7 @@ f4:n
 fm4   1.222e21
 c      ----------------------------------           
 c
-fc14  g-flux
+fc14  Gamma Flux [#/cm^2]
 f14:p
                   2 60 61 62 63
                   64 65 66 67 68
@@ -971,7 +971,7 @@ e14 .1 1 5 10 20 t
 fq14 f e $ change tally printout cell/surf down,ebins across top
 c      ---------------------------------
 c
-fc6   total nuclear heating (W/g)
+fc6   Total Nuclear Heating [W/g]
 f6:np
                   2 60 61 62 63
                   64 65 66 67 68
@@ -995,7 +995,7 @@ f6:np
                   110 111
 fm6   1.9577e8
 c      -----------------------------
-fc16   neutron heating (W/g)
+fc16   Neutron Heating [W/g]
 f16:n
                  2 60 61 62 63
                  64 65 66 67 68
@@ -1019,7 +1019,7 @@ f16:n
                  110 111
 fm16   1.9577e8
 c        --------------------------
-fc26   gamma heating (W/g)
+fc26   Gamma Heating [W/g]
 f26:p
                   2 60 61 62 63
                   64 65 66 67 68

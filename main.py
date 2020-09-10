@@ -90,7 +90,7 @@ class Session:
         # Initialize status
         self.state = status.Status(self)
 
-    def check_active_tests(self, action):
+    def check_active_tests(self, action, exp=False):
         """
         Check the configuration file for active benchmarks to perform or
         post-process
@@ -101,6 +101,8 @@ class Session:
             JADE session
         action : str
             either 'Post-Processing' or 'Run' (as in Configuration file)
+        exp : boolean
+            if True checks the experimental benchmarks. Default is False
 
         Returns
         -------
@@ -109,7 +111,11 @@ class Session:
 
         """
         # Check Which benchmarks are to perform
-        config = self.conf.comp_default
+        if exp:
+            config = self.conf.exp_default
+        else:
+            config = self.conf.comp_default
+
         to_perform = []
         for idx, row in config.iterrows():
             filename = str(row['File Name'])

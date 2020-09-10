@@ -73,9 +73,7 @@ def mainloop(session):
             comploop(session)
 
         elif option == 'exp':
-            clear_screen()
-            print(principal_menu)
-            print(' Currently not developed. Please select another option')
+            exploop(session)
 
         elif option == 'qual':
             clear_screen()
@@ -269,6 +267,75 @@ def comploop(session):
 
                 session.log.adjourn('Assessment of: '+lib+' completed',
                                     spacing=True, time=True)
+
+        elif option == 'back':
+            mainloop(session)
+
+        elif option == 'exit':
+            session.log.adjourn(exit_text)
+            sys.exit()
+
+        else:
+            clear_screen()
+            print(computational_menu)
+            print(' Please enter a valid option!')
+
+
+experimental_menu = header+"""
+          EXPERIMENTAL BENCHMARK MENU
+
+        Powered by NIER, UNIBO, F4E
+ ***********************************************
+
+ * Print available libraries          (printlib)
+ * Assess library                       (assess)
+ * Continue assessment                (continue)
+ * Back to main menu                      (back)
+ * Exit                                   (exit)
+"""
+
+
+def exploop(session):
+    """
+    This handle the actions related to the experimental benchmarck menu
+
+    session: (Session) object representing the current Jade session
+
+    """
+    clear_screen()
+    print(experimental_menu)
+    while True:
+        option = input(' Enter action: ')
+
+        if option == 'printlib':
+            uty.print_libraries(session.lib_manager)
+
+        elif option == 'assess':
+            # Select and check library
+            lib = session.lib_manager.select_lib()
+            ans = session.state.check_override_run(lib, session, exp=True)
+            # If checks are ok perform assessment
+            if ans:
+                # Logging
+                bartext = 'Experimental benchmark execution started'
+                session.log.bar_adjourn(bartext)
+                session.log.adjourn('Selected Library: '+lib,
+                                    spacing=False, time=True)
+                print(' ########################### EXPERIMENTAL BENCHMARKS EXECUTION ###########################\n')
+                # Core function
+                cmp.executeBenchmarksRoutines(session, lib, exp=True)
+                print(' ####################### EXPERIMENTAL BENCHMARKS RUN ENDED ###############################\n')
+                t = 'Experimental benchmark execution ended'
+                session.log.bar_adjourn(t)
+            else:
+                clear_screen()
+                print(computational_menu)
+                print(' Assessment canceled.')
+
+        elif option == 'continue':
+            clear_screen()
+            print(principal_menu)
+            print(' Currently not developed. Please select another option')
 
         elif option == 'back':
             mainloop(session)

@@ -9,7 +9,7 @@ import os
 import datetime
 
 
-def executeBenchmarksRoutines(session, lib):
+def executeBenchmarksRoutines(session, lib, exp=False):
     """
     Check which benchmarks have to be generated and/or run and execute their
     routines
@@ -20,6 +20,8 @@ def executeBenchmarksRoutines(session, lib):
         Current JADE session.
     lib : str
         library to assess (e.g. 31c).
+    exp : bool
+        if True the experimental Benchmarks are selected. The default is False
 
     Returns
     -------
@@ -27,7 +29,10 @@ def executeBenchmarksRoutines(session, lib):
 
     """
     # Get the settings for the tests
-    config = session.conf.comp_default.set_index('Description')
+    if exp:
+        config = session.conf.exp_default.set_index('Description')
+    else:
+        config = session.conf.comp_default.set_index('Description')
     # Get the log
     log = session.log
 

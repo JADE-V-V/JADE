@@ -615,6 +615,8 @@ class Material:
         else:
             raise KeyError(ftype+' is not a valid key error [atom, mass]')
 
+        self.update_info(lib_manager)
+
 
 class MatCardsList(Sequence):
 
@@ -635,7 +637,10 @@ class MatCardsList(Sequence):
         return str(self.matdic)
 
     def __getitem__(self, key):
-        return self.matdic[key.upper()]
+        if type(key) is int:
+            return self.materials[key]
+        else:
+            return self.matdic[key.upper()]
 
     def append(self, material):
         self.materials.append(material)

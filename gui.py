@@ -50,6 +50,7 @@ principal_menu = header+"""
  * Translate an MCNP input               (trans)
  * Print materials info               (printmat)
  * Generate material                  (generate)
+ * Switch fractions                     (switch)
  -----------------------------------------------
  * Test installation                      (test)
 
@@ -123,6 +124,9 @@ def mainloop(session):
 
         elif option == 'generate':
             inputfile = uty.select_inputfile(' Materials source file: ')
+            message = " Fraction type (either 'mass' or 'atom'): "
+            options = ['mass', 'atom']
+            fraction_type = uty.input_with_options(message, options)
             materials = input(' Source materials (e.g. m1-m10): ')
             percentages = input(' Materials percentages (e.g. 0.1-0.9): ')
             lib = session.lib_manager.select_lib()
@@ -132,7 +136,8 @@ def mainloop(session):
 
             if len(materials) == len(percentages):
                 ans = uty.generate_material(session, inputfile,
-                                            materials, percentages, lib)
+                                            materials, percentages, lib,
+                                            fractiontype=fraction_type)
                 if ans:
                     print(' Material generated')
                 else:
@@ -146,6 +151,23 @@ def mainloop(session):
     Error:
     The number of materials and percentages must be the same
                           ''')
+
+        elif option == 'switch':
+            # Select MCNP input
+            inputfile = uty.select_inputfile(' MCNP input file: ')
+            # Select fraction type
+            options = ['mass', 'atom']
+            message = " Fraction to switch to (either 'mass' or 'atom'): "
+            fraction_type = uty.input_with_options(message, options)
+
+            # Switch fraction
+            ans = uty.switch_fractions(session, inputfile, fraction_type)
+            if ans:
+                print(' Fractions have been switched')
+            else:
+                print('''
+    Error:
+    Either the input or output files can't be opened''')
 
         elif option == 'test':
             tinstall.test_installation(session)

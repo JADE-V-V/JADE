@@ -123,6 +123,37 @@ def print_material_info(session, filepath, outpath=None):
 
 def generate_material(session, sourcefile, materials, percentages, newlib,
                       fractiontype='atom', outpath=None):
+    """
+    Starting from an MCNP input, materials contained in its material list can
+    be used to generate a new material combining them.
+
+    Parameters
+    ----------
+    session : main.Session
+        JADE session.
+    sourcefile : path/str
+        MCNP input file.
+    materials : str
+        source input materials to use for the generation (e.g. M1-m10).
+    percentages : str
+        percentages associated to the source materials in the new materials
+        (e.g. 0.1-0.9). Their are intended as atom or mass fraction depending
+        on the fractiontype that is specified.
+    newlib : str
+        library for the new material.
+    fractiontype : str, optional
+        type of fraction to use in the new material (either 'atom' or 'mass'.
+        The default is 'atom'.
+    outpath : str/path, optional
+        specify a particular path for the output file. The default is None.
+
+    Returns
+    -------
+    bool
+        If False a problem with the opening of the input or output file was
+        encountered.
+
+    """
     # Read the source file
     try:
         inputfile = ipt.InputFile.from_text(sourcefile)
@@ -148,6 +179,8 @@ def generate_material(session, sourcefile, materials, percentages, newlib,
         current_submaterials = []
         for submat in material.submaterials:
             norm_factor = float(percentage)/totfraction  # normalized & scaled
+            if fractiontype == 'mass':
+                norm_factor = -norm_factor
             submat.scale_fractions(norm_factor)
             submat.update_info(session.lib_manager)
             current_submaterials.append(submat)
@@ -181,6 +214,51 @@ def generate_material(session, sourcefile, materials, percentages, newlib,
     return True
 
 
+def switch_fractions(session, sourcefile, fraction_type, outpath=None):
+    """
+    Switch all fractions of an MCNP input either to mass or atom fraction.
+
+    Parameters
+    ----------
+    session : main.Session
+        JADE session.
+    sourcefile : str/path
+        MCNP input to switch.
+    fraction_type : str
+        either 'atom' or 'mass'.
+    outpath : str/path, optional
+        specific a different outpath. The default is None.
+
+    Returns
+    -------
+    bool
+        DESCRIPTION.
+
+    """
+    # Read the source file
+    try:
+        inputfile = ipt.InputFile.from_text(sourcefile)
+    except PermissionError:
+        return False
+
+    for material in inputfile.matlist:
+        material.switch_fraction(fraction_type, session.lib_manager)
+
+    # Dump it
+    if outpath is None:
+        outfile = os.path.join(session.path_uti, 'Fraction switch')
+    else:
+        outfile = outpath
+    if not os.path.exists(outfile):
+        os.mkdir(outfile)
+    outfile = os.path.join(outfile,
+                           os.path.basename(sourcefile)+'_'+fraction_type)
+
+    inputfile.write(outfile)
+
+    return True
+
+
 def select_inputfile(message):
     """
     Safe inputfile selector
@@ -204,4 +282,31 @@ def select_inputfile(message):
             print("""
                   The file does not exist,
                   please select a new one
+                  """)
+
+
+def input_with_options(message, options):
+    """
+    Safe input selector with options
+
+    Parameters
+    ----------
+    message : str
+        message to use to prompt the choice
+    options : list
+        list of admissible options
+
+    Returns
+    -------
+    valid_input : str
+        valid input enetered by the user.
+
+    """
+    while True:
+        valid_input = input(message)
+        if valid_input in options:
+            return valid_input
+        else:
+            print("""
+                  Please chose a valid option
                   """)

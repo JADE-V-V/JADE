@@ -20,7 +20,7 @@ from output import MCNPoutput
 
 class SphereOutput(BenchmarkOutput):
 
-    def single_postprocess(self, libmanager):
+    def single_postprocess(self):
         """
         Execute the full post-processing of a single library (i.e. excel,
         raw data and atlas)
@@ -62,16 +62,16 @@ class SphereOutput(BenchmarkOutput):
         template = os.path.join(self.code_path, 'Templates',
                                 'AtlasTemplate.docx')
         atlas = at.Atlas(template, self.lib)
-        atlas.build(outpath, libmanager)
+        atlas.build(outpath, self.session.lib_manager)
         atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(outpath)
 
         print(' Single library post-processing completed')
 
-    def compare(self, state, libmanager):
+    def compare(self):
         print(' Generating Excel Recap...')
-        self.pp_excel_comparison(state)
+        self.pp_excel_comparison(self.session.state)
         print(' Creating Atlas...')
         outpath = os.path.join(self.atlas_path, 'tmp')
         os.mkdir(outpath)
@@ -128,7 +128,7 @@ class SphereOutput(BenchmarkOutput):
         template = os.path.join(self.code_path, 'Templates',
                                 'AtlasTemplate.docx')
         atlas = at.Atlas(template, globalname)
-        atlas.build(outpath, libmanager)
+        atlas.build(outpath, self.session.libmanager)
         atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(outpath)
@@ -215,15 +215,11 @@ class SphereOutput(BenchmarkOutput):
         ex.wb.sheets[0].range('D1').value = self.lib
         ex.save()
 
-    def pp_excel_comparison(self, state):
+    def pp_excel_comparison(self):
         """
         Compute the data and create the excel for all libraries comparisons.
         In the meantime, additional data is stored for future plots.
 
-        Parameters
-        ----------
-        state : Status
-            Jade status.
 
         Returns
         -------
@@ -359,7 +355,8 @@ class SphereOutput(BenchmarkOutput):
 
             # Add single pp sheets
             for lib in [reflib, tarlib]:
-                cp = state.get_path('single', [lib, 'Sphere', 'Excel'])
+                cp = self.session.state.get_path('single',
+                                                 [lib, 'Sphere', 'Excel'])
                 file = os.listdir(cp)[0]
                 cp = os.path.join(cp, file)
                 ex.copy_sheets(cp)

@@ -45,7 +45,8 @@ class Plotter():
         self.title = title
         self.outpath = os.path.join(outpath, outname+ext)
 
-    def binned_plot(self, mainYlabel, xlabel='Energy [MeV]'):
+    def binned_plot(self, mainYlabel, xlabel='Energy [MeV]',
+                    normalize=False):
         """
         PLot composed by three subplots.
         Main plot -> binned values (e.g. a flux in energies)
@@ -58,10 +59,13 @@ class Plotter():
             Y label for the main plot
         xlabel : str, optional
             X label for the entire plot. The default is 'Energy [MeV]'.
+        normalize: bool
+            If True the plot is normalized. (Default is False)
 
         Returns
         -------
-        None.
+        outpath : str/path
+            path to the saved image
 
         """
 
@@ -133,10 +137,18 @@ class Plotter():
         # --- Plot Data ---
         for idx, dic_data in enumerate(data):
 
-            x = [0]+list(dic_data['x'])
-            y = [0]+list(dic_data['y'])
+            x = np.array([0]+list(dic_data['x']))
+            y = np.array([0]+list(dic_data['y']))
+
+            if normalize:
+                # Find global area
+                hist_areas = np.diff(x)*y[1:]
+                tot_area = hist_areas.sum()
+                # Normalize values
+                y = [0]+list(np.diff(x)*y[1:]/tot_area)
+
             err = np.array(dic_data['err'])
-            err_multi = np.array(dic_data['y'])*np.abs(err)
+            err_multi = np.array(y[1:])*np.abs(err)
 
             # Main plot
             if idx > 0:
@@ -144,8 +156,8 @@ class Plotter():
             else:
                 tag = 'R: '
             ax1.step(x, y, label=tag+dic_data['ylabel'], color=colors[idx])
-            ax1.errorbar(newX, dic_data['y'], linewidth=0, yerr=err_multi,
-                         elinewidth=0.5, color=colors[idx])
+            ax1.errorbar(newX, y[1:], linewidth=0,
+                         yerr=err_multi, elinewidth=0.5, color=colors[idx])
 
             # Error Plot
             ax2.plot(newX, np.array(dic_data['err'])*100, 'o',
@@ -203,3 +215,5 @@ class Plotter():
 
         plt.savefig(self.outpath)
         plt.close()
+
+        return self.outpath

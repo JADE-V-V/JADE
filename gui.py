@@ -13,8 +13,8 @@ import testrun
 import testInstallation as tinstall
 from tqdm import tqdm
 
-date = '17/06/2020'
-version = 'v0.5.0'
+date = '23/09/2020'
+version = 'v0.5.1'
 
 
 def clear_screen():
@@ -50,6 +50,7 @@ principal_menu = header+"""
  * Translate an MCNP input               (trans)
  * Print materials info               (printmat)
  * Generate material                  (generate)
+ * Switch fractions                     (switch)
  -----------------------------------------------
  * Test installation                      (test)
 
@@ -72,9 +73,7 @@ def mainloop(session):
             comploop(session)
 
         elif option == 'exp':
-            clear_screen()
-            print(principal_menu)
-            print(' Currently not developed. Please select another option')
+            exploop(session)
 
         elif option == 'qual':
             clear_screen()
@@ -123,6 +122,9 @@ def mainloop(session):
 
         elif option == 'generate':
             inputfile = uty.select_inputfile(' Materials source file: ')
+            message = " Fraction type (either 'mass' or 'atom'): "
+            options = ['mass', 'atom']
+            fraction_type = uty.input_with_options(message, options)
             materials = input(' Source materials (e.g. m1-m10): ')
             percentages = input(' Materials percentages (e.g. 0.1-0.9): ')
             lib = session.lib_manager.select_lib()
@@ -132,7 +134,8 @@ def mainloop(session):
 
             if len(materials) == len(percentages):
                 ans = uty.generate_material(session, inputfile,
-                                            materials, percentages, lib)
+                                            materials, percentages, lib,
+                                            fractiontype=fraction_type)
                 if ans:
                     print(' Material generated')
                 else:
@@ -146,6 +149,23 @@ def mainloop(session):
     Error:
     The number of materials and percentages must be the same
                           ''')
+
+        elif option == 'switch':
+            # Select MCNP input
+            inputfile = uty.select_inputfile(' MCNP input file: ')
+            # Select fraction type
+            options = ['mass', 'atom']
+            message = " Fraction to switch to (either 'mass' or 'atom'): "
+            fraction_type = uty.input_with_options(message, options)
+
+            # Switch fraction
+            ans = uty.switch_fractions(session, inputfile, fraction_type)
+            if ans:
+                print(' Fractions have been switched')
+            else:
+                print('''
+    Error:
+    Either the input or output files can't be opened''')
 
         elif option == 'test':
             tinstall.test_installation(session)
@@ -261,6 +281,75 @@ def comploop(session):
             print(' Please enter a valid option!')
 
 
+experimental_menu = header+"""
+          EXPERIMENTAL BENCHMARK MENU
+
+        Powered by NIER, UNIBO, F4E
+ ***********************************************
+
+ * Print available libraries          (printlib)
+ * Assess library                       (assess)
+ * Continue assessment                (continue)
+ * Back to main menu                      (back)
+ * Exit                                   (exit)
+"""
+
+
+def exploop(session):
+    """
+    This handle the actions related to the experimental benchmarck menu
+
+    session: (Session) object representing the current Jade session
+
+    """
+    clear_screen()
+    print(experimental_menu)
+    while True:
+        option = input(' Enter action: ')
+
+        if option == 'printlib':
+            uty.print_libraries(session.lib_manager)
+
+        elif option == 'assess':
+            # Select and check library
+            lib = session.lib_manager.select_lib()
+            ans = session.state.check_override_run(lib, session, exp=True)
+            # If checks are ok perform assessment
+            if ans:
+                # Logging
+                bartext = 'Experimental benchmark execution started'
+                session.log.bar_adjourn(bartext)
+                session.log.adjourn('Selected Library: '+lib,
+                                    spacing=False, time=True)
+                print(' ########################### EXPERIMENTAL BENCHMARKS EXECUTION ###########################\n')
+                # Core function
+                cmp.executeBenchmarksRoutines(session, lib, exp=True)
+                print(' ####################### EXPERIMENTAL BENCHMARKS RUN ENDED ###############################\n')
+                t = 'Experimental benchmark execution ended'
+                session.log.bar_adjourn(t)
+            else:
+                clear_screen()
+                print(computational_menu)
+                print(' Assessment canceled.')
+
+        elif option == 'continue':
+            clear_screen()
+            print(principal_menu)
+            print(' Currently not developed. Please select another option')
+
+        elif option == 'back':
+            mainloop(session)
+
+        elif option == 'exit':
+            session.log.adjourn(exit_text)
+            sys.exit()
+
+        else:
+            clear_screen()
+            print(computational_menu)
+            print(' Please enter a valid option!')
+
+
 pp_menu = header+"""
           POST PROCESSING MENU
 
@@ -351,9 +440,9 @@ Additional Post-Processing of library:"""+lib+' completed\n', spacing=False)
                             continue
 
                 # Execute Comparison
-                if 'Sphere' in to_perform:
+                for testname in to_perform:
                     try:
-                        pp.compareSphere(session, lib_input)
+                        pp.compareBenchmark(session, lib_input, testname)
                     except PermissionError as e:
                         clear_screen()
                         print(pp_menu)

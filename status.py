@@ -193,7 +193,7 @@ class Status():
 
         return flag_run_test
 
-    def check_override_run(self, lib, session):
+    def check_override_run(self, lib, session, exp=False):
         """
         Check status of the requested run. If overridden is required permission
         is requested to the user
@@ -204,6 +204,8 @@ class Status():
             Library to run.
         session : Session
             Jade Session.
+        exp : False
+            if True checks the experimental benchmarks. Default is False
 
         Returns
         -------
@@ -212,7 +214,7 @@ class Status():
 
         """
 
-        test_runned = self.check_lib_run(lib, session)
+        test_runned = self.check_lib_run(lib, session, exp=exp)
         # Ask for override
         if len(test_runned) > 0:
             while True:
@@ -243,7 +245,7 @@ class Status():
 
         return ans
 
-    def check_lib_run(self, lib, session, config_option='Run'):
+    def check_lib_run(self, lib, session, config_option='Run', exp=False):
         """
         Check if a library has been run. To be considered run a meshtally or
         meshtal have to be produced. Only active benchmarks (specified in
@@ -258,6 +260,8 @@ class Status():
         config_option: str
             Specifies the configuration option onto which the check for tests
             "to perform" are registered.
+        exp: boolean
+            if True checks the experimental benchmarks. Default is False
 
         Returns
         -------
@@ -268,14 +272,18 @@ class Status():
         # Update Tree
         self.update_run_status()
         # Check if/what is already run
-        config = self.config.comp_default
+        if exp:
+            config = self.config.exp_default
+        else:
+            config = self.config.comp_default
+
         test_runned = []
         for idx, row in config.iterrows():
             filename = str(row['File Name'])
             testname = filename.split('.')[0]
 
             # Check if test is active
-            to_perform = session.check_active_tests(config_option)
+            to_perform = session.check_active_tests(config_option, exp=exp)
 
             if testname in to_perform:
                 # Check if benchmark folder exists

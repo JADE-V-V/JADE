@@ -76,6 +76,19 @@ class Session:
             shutil.copytree(files, path_inputs)
         self.path_inputs = path_inputs
 
+        # Copy input files for testing
+        path_inputs = os.path.join(self.path_test_install, 'Inputs')
+        if not os.path.exists(path_inputs):
+            files = os.path.join('Installation Files', 'Inputs install')
+            shutil.copytree(files, path_inputs)
+
+        # Copy experimental results folder
+        path_exp_res = os.path.join(cp, 'Experimental Results')
+        if not os.path.exists(path_exp_res):
+            files = os.path.join('Installation Files', 'Experimental Results')
+            shutil.copytree(files, path_exp_res)
+        self.path_exp_res = path_exp_res
+
         # Create the session LOG
         log = os.path.join(self.path_logs,
                            'Log '+time.ctime().replace(':', '-')+'.txt')
@@ -84,7 +97,7 @@ class Session:
         # Initialize status
         self.state = status.Status(self)
 
-    def check_active_tests(self, action):
+    def check_active_tests(self, action, exp=False):
         """
         Check the configuration file for active benchmarks to perform or
         post-process
@@ -95,6 +108,8 @@ class Session:
             JADE session
         action : str
             either 'Post-Processing' or 'Run' (as in Configuration file)
+        exp : boolean
+            if True checks the experimental benchmarks. Default is False
 
         Returns
         -------
@@ -103,7 +118,11 @@ class Session:
 
         """
         # Check Which benchmarks are to perform
-        config = self.conf.comp_default
+        if exp:
+            config = self.conf.exp_default
+        else:
+            config = self.conf.comp_default
+
         to_perform = []
         for idx, row in config.iterrows():
             filename = str(row['File Name'])

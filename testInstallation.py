@@ -28,7 +28,7 @@ def test_installation(session):
     results.append([' Translation', ans])
 
     # Print material info
-    ans = uti.print_material_info(session, inputfile, outpath=None)
+    ans = uti.print_material_info(session, inputfile, outpath=outpath)
     results.append([' Print Material Infos', ans])
 
     # Generate materials
@@ -47,4 +47,3 @@ def test_installation(session):
     text = 'INSTALLATION TEST RESULTS:\n'
     text = text+results.to_string()
     session.log.bar_adjourn(text)
-    

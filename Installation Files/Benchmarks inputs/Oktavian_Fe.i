@@ -78,7 +78,6 @@ C      6000.    6.2974E-04
       26058.    2.3559E-04
 c  problem cutoff
 c nps  100e6
-  nps   10e6
 c  peripheral cards
 c prdmp  10000000 10000000 j j 10000000
 c dbcn  j 10000000 1 10 j j j j j j 1 j j j j 1 j j

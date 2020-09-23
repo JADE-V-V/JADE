@@ -1,5 +1,5 @@
 # JADE
-Version: 0.4.3
+Version: 0.5.1
 A new tool for nuclear libraries V&V.
 Brought to you by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E).
 

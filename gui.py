@@ -13,7 +13,7 @@ import testrun
 import testInstallation as tinstall
 from tqdm import tqdm
 
-date = 'TBD'
+date = '23/09/2020'
 version = 'v0.5.1'
 
 

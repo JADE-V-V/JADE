@@ -82,6 +82,13 @@ class Session:
             files = os.path.join('Installation Files', 'Inputs install')
             shutil.copytree(files, path_inputs)
 
+        # Copy experimental results folder
+        path_exp_res = os.path.join(cp, 'Experimental Results')
+        if not os.path.exists(path_exp_res):
+            files = os.path.join('Installation Files', 'Experimental Results')
+            shutil.copytree(files, path_exp_res)
+        self.path_exp_res = path_exp_res
+
         # Create the session LOG
         log = os.path.join(self.path_logs,
                            'Log '+time.ctime().replace(':', '-')+'.txt')

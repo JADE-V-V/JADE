@@ -71,7 +71,7 @@ class SphereOutput(BenchmarkOutput):
 
     def compare(self):
         print(' Generating Excel Recap...')
-        self.pp_excel_comparison(self.session.state)
+        self.pp_excel_comparison()
         print(' Creating Atlas...')
         outpath = os.path.join(self.atlas_path, 'tmp')
         os.mkdir(outpath)
@@ -128,7 +128,7 @@ class SphereOutput(BenchmarkOutput):
         template = os.path.join(self.code_path, 'Templates',
                                 'AtlasTemplate.docx')
         atlas = at.Atlas(template, globalname)
-        atlas.build(outpath, self.session.libmanager)
+        atlas.build(outpath, self.session.lib_manager)
         atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(outpath)
@@ -246,7 +246,13 @@ class SphereOutput(BenchmarkOutput):
                     pieces = folder.split('_')
                     # Get zaid
                     zaidnum = pieces[-2]
-                    zaidname = pieces[-1]
+                    # Check for material exception
+                    if zaidnum == 'Sphere':
+                        zaidnum = pieces[-1]
+                        zaidname = 'Typical Material'
+                    else:
+                        zaidname = pieces[-1]
+
                     # Get mfile
                     for file in os.listdir(results_path):
                         if file[-1] == 'm':

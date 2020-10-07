@@ -1,5 +1,5 @@
 ﻿NPS cut-off;CTME cut-off;Relative Error cut-off;Density [g/cc];Name;Symbol;Z;Let Override
-;;F32-0.0005;0.0708;Hydrogen;H;1;False
+;;F32-0.0005;0.0708;Hydrogen;H;1;True
 ;;F32-0.0005;0.175;Helium;He;2;True
 ;;F32-0.0005;0.534;Lithium;Li;3;True
 ;;F32-0.0005;1.848;Beryllium;Be;4;True

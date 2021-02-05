@@ -53,7 +53,7 @@ class Plotter():
         """
         self.data = data
         self.title = title
-        self.outpath = os.path.join(outpath, testname+'_'+outname+ext)
+        self.outpath = os.path.join(outpath, outname+ext)
         self.xlabel = xlabel
         self.unit = unit
         self.quantity = quantity

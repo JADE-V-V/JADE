@@ -37,11 +37,11 @@ class SphereOutput(BenchmarkOutput):
         outpath = os.path.join(self.atlas_path, 'tmp')
         os.mkdir(outpath)
 
-        for tally, title, ylabel in \
+        for tally, title, quantity, unit in \
             [(2, 'Leakage Neutron Flux (175 groups)',
-              'Neutron Flux $[\#/cm^2]$'),
+              'Neutron Flux', '$\#/cm^2$'),
              (32, 'Leakage Gamma Flux (24 groups)',
-              'Gamma Flux $[\#/cm^2]$')]:
+              'Gamma Flux', '$\#/cm^2$')]:
 
             print(' Plotting tally n.'+str(tally))
             for zaidnum, output in tqdm(self.outputs.items()):
@@ -50,12 +50,13 @@ class SphereOutput(BenchmarkOutput):
                 energy = tally_data['Energy'].values
                 values = tally_data['Value'].values
                 error = tally_data['Error'].values
+                lib_name = self.session.conf.get_lib_name(self.lib)
                 lib = {'x': energy, 'y': values, 'err': error,
-                       'ylabel': str(zaidnum)+'.'+self.lib}
+                       'ylabel': str(zaidnum)+' ('+lib_name+')'}
                 data = [lib]
                 outname = str(zaidnum)+'-'+self.lib+'-'+str(tally)
-                plot = plotter.Plotter(data, title, outpath, outname, ylabel,
-                                       'Energy [MeV]')
+                plot = plotter.Plotter(data, title, outpath, outname, quantity,
+                                       unit, 'Energy [MeV]', self.testname)
                 plot.plot('Binned graph')
 
         print(' Generating Plots Atlas...')
@@ -97,11 +98,11 @@ class SphereOutput(BenchmarkOutput):
 
         globalname = globalname[:-4]
 
-        for tally, title, ylabel in \
+        for tally, title, quantity, unit in \
             [(2, 'Leakage Neutron Flux (175 groups)',
-              'Neutron Flux $[\#/cm^2]$'),
+              'Neutron Flux', '$\#/cm^2$'),
              (32, 'Leakage Gamma Flux (24 groups)',
-              'Gamma Flux $[\#/cm^2]$')]:
+              'Gamma Flux', '$\#/cm^2$')]:
 
             print(' Plotting tally n.'+str(tally))
             for zaidnum in tqdm(allzaids):
@@ -113,16 +114,17 @@ class SphereOutput(BenchmarkOutput):
                         energy = tally_data['Energy'].values
                         values = tally_data['Value'].values
                         error = tally_data['Error'].values
+                        lib_name = self.session.conf.get_lib_name(libraries[idx])
                         lib = {'x': energy, 'y': values, 'err': error,
-                               'ylabel': str(zaidnum)+'.'+libraries[idx]}
+                               'ylabel': str(zaidnum)+' ('+lib_name+')'}
                         data.append(lib)
                     except KeyError:
                         # It is ok, simply nothing to plot here
                         pass
 
                 outname = str(zaidnum)+'-'+globalname+'-'+str(tally)
-                plot = plotter.Plotter(data, title, outpath, outname, ylabel,
-                                       'Energy [MeV]')
+                plot = plotter.Plotter(data, title, outpath, outname, quantity,
+                                       unit, 'Energy [MeV]', self.testname)
                 plot.plot('Binned graph')
 
         print(' Generating Plots Atlas...')

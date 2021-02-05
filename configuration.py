@@ -49,6 +49,31 @@ class Configuration:
 
         self.default_lib = lib[lib['Default'] == 'yes']['Suffix'].values[0]
 
+    def get_lib_name(self, suffix):
+        """
+        Get the name of the library from its suffix. If a name was not
+        specified in the configuration file the same suffix is returned
+
+        Parameters
+        ----------
+        suffix : str
+            e.g. 21c .
+
+        Returns
+        -------
+        str
+            Name of the library.
+
+        """
+        df = self.lib.set_index('Suffix')
+        # strip the suffix from dots, just in case
+        suffix = suffix.strip('.')
+        try:
+            name = df.loc[suffix, 'Name']
+        except KeyError:
+            name = suffix
+        return name
+
 
 jade = '''
        8888888       oo       888oo       o8888o

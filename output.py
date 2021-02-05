@@ -184,8 +184,9 @@ class BenchmarkOutput:
                         values = vals_df['Value']
                         error = err_df['Error']
 
+                    lib_name = self.session.conf.get_lib_name(self.lib)
                     lib = {'x': x, 'y': values, 'err': error,
-                           'ylabel': self.lib}
+                           'ylabel': lib_name}
                     data = [lib]
 
                     outname = 'tmp'
@@ -290,8 +291,9 @@ class BenchmarkOutput:
 
                         x = np.array(vals_df.index)
 
+                        lib_name = self.session.conf.get_lib_name(lib)
                         lib_data = {'x': x, 'y': values, 'err': error,
-                                    'ylabel': lib}
+                                    'ylabel': lib_name}
                         data.append(lib_data)
 
                     outname = 'tmp'

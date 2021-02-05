@@ -388,6 +388,10 @@ def pploop(session):
                 lib = to_single_pp[0]
                 # Check active tests
                 to_perform = session.check_active_tests('Post-Processing')
+                to_perf_exp = session.check_active_tests('Post-Processing',
+                                                         exp=True)
+                to_perform.extend(to_perf_exp)
+
                 # Logging
                 bartext = 'Post-Processing started'
                 session.log.bar_adjourn(bartext)

@@ -54,8 +54,9 @@ class SphereOutput(BenchmarkOutput):
                        'ylabel': str(zaidnum)+'.'+self.lib}
                 data = [lib]
                 outname = str(zaidnum)+'-'+self.lib+'-'+str(tally)
-                plot = plotter.Plotter(data, title, outpath, outname)
-                plot.binned_plot(ylabel)
+                plot = plotter.Plotter(data, title, outpath, outname, ylabel,
+                                       'Energy [MeV]')
+                plot.plot('Binned graph')
 
         print(' Generating Plots Atlas...')
         # Printing Atlas
@@ -120,8 +121,9 @@ class SphereOutput(BenchmarkOutput):
                         pass
 
                 outname = str(zaidnum)+'-'+globalname+'-'+str(tally)
-                plot = plotter.Plotter(data, title, outpath, outname)
-                plot.binned_plot(ylabel)
+                plot = plotter.Plotter(data, title, outpath, outname, ylabel,
+                                       'Energy [MeV]')
+                plot.plot('Binned graph')
 
         print(' Generating Plots Atlas...')
         # Printing Atlas

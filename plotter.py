@@ -7,14 +7,16 @@ Created on Tue Jan 14 16:44:45 2020
 import os
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.ticker import LogLocator, AutoMinorLocator, MultipleLocator
+from matplotlib.ticker import (LogLocator, AutoMinorLocator, MultipleLocator,
+                               AutoLocator)
 from matplotlib.markers import CARETUPBASE
 from matplotlib.markers import CARETDOWNBASE
 from matplotlib.lines import Line2D
 
 
 class Plotter():
-    def __init__(self, data, title, outpath, outname, ext='.jpg'):
+    def __init__(self, data, title, outpath, outname, quantity, unit, xlabel,
+                 testname, ext='.png', fontsize=20):
         """
         Object Handling plots
 
@@ -26,15 +28,23 @@ class Plotter():
                      'ylabel': data label}
         title : str
             plot title
-
         outpath : str/path
             path to save image
-
         outname : str
             name of the image file
-
+        quantity : str
+            quantity of the y axis of the y axes
+        unit : str
+            unit of the y axis
+        xlabel : str
+            name of the x axis
+        testname : str
+            name of the benchmark
         ext : str
-            extension of image
+            extension of the image to save. Default is '.png'
+        fontsize : int
+            reference fontsize to be used throughout the plot. The Default is
+            20
 
         Returns
         -------
@@ -43,10 +53,136 @@ class Plotter():
         """
         self.data = data
         self.title = title
-        self.outpath = os.path.join(outpath, outname+ext)
+        self.outpath = os.path.join(outpath, testname+'_'+outname+ext)
+        self.xlabel = xlabel
+        self.unit = unit
+        self.quantity = quantity
+        self.fontsize = fontsize
+        self.testname = testname
 
-    def binned_plot(self, mainYlabel, xlabel='Energy [MeV]',
-                    normalize=False):
+        # --- Useful plots parameters ---
+        # plot decorators
+        self.markers = ['o', 's', 'X', 'p', 'D', '^', 'd', '*']
+        # Color-blind saver palette
+        self.colors = ['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628',
+                       '#984ea3', '#999999', '#e41a1c', '#dede00']
+
+    def plot(self, plot_type):
+        # --- Binned Plot ---
+        if plot_type == 'Binned graph':
+            outp = self._binned_plot()
+        # --- Ratio Plot ---
+        elif plot_type == 'Ratio graph':
+            if self.testname == 'ITER_1D':  # Special actions for ITER 1D
+                a_l = {'major': [('INBOARD', 0.21), ('PLASMA', 0.45),
+                                 ('OUTBOARD', 0.70)],
+                       'minor': [('TF Coil', 0.1), ('VV', 0.26),
+                                 ('FW/B/S', 0.37), ('FW/B/S', 0.55),
+                                 ('VV', 0.70), ('TF Coil', 0.87)]}
+                v_lines = {'major': [49, 53], 'minor': [23, 32, 70, 84]}
+
+                outp = self._ratio_plot(additional_labels=a_l, v_lines=v_lines)
+            else:
+                outp = self._ratio_plot()
+        else:
+            raise ValueError(plot_type+' is not an admissible plot type')
+
+        return outp
+
+    def _ratio_plot(self, additional_labels=None, v_lines=None):
+        """
+        Plot a ratio plot where all data dictionaries are plotted against the
+        first one which is used as reference
+
+        Parameters
+        ----------
+        additional_labels : dic
+            contains additional tags to print in the plot.
+            {'major': [(label, xpos), ...], 'minor': [(label, xpos), ...]}.
+            The default is None
+        v_lines : dic
+            contains additional vertical lines to plot.
+            {'major': [xpos, ...], 'minor': [xpos, ...]}.
+            The default is None
+
+        Returns
+        -------
+        outpath : str/path
+            path to the saved image
+
+        """
+        data = self.data
+        fontsize = self.fontsize
+
+        ref = data[0]
+        # Adjounrn ylabel
+        ylabel = 'Ratio of '+self.quantity+' (vs. '+ref['ylabel']+')'
+
+        # Initialize plot
+        fig, ax = plt.subplots(figsize=(16, 9))
+
+        # Plot all data
+        try:
+            for i, dic in enumerate(data[1:]):
+                ax.plot(dic['x'], dic['y']/ref['y'], color=self.colors[i],
+                        marker=self.markers[i], label=dic['ylabel'])
+
+        except KeyError:
+            # it is a single pp
+            return self._save()
+
+        # Plot details
+        ax.set_title(self.title, fontsize=fontsize+4)
+        ax.legend(loc='best', prop={'size': fontsize-5})
+        ax.set_xlabel(self.xlabel).set_fontsize(fontsize)
+        ax.set_ylabel(ylabel).set_fontsize(fontsize)
+
+        # Tiks positioning and dimensions
+        ax.xaxis.set_major_locator(AutoLocator())
+        ax.yaxis.set_major_locator(AutoLocator())
+        ax.xaxis.set_minor_locator(AutoMinorLocator())
+        ax.yaxis.set_minor_locator(AutoMinorLocator())
+
+        ax.tick_params(which='major', width=1.00, length=5,
+                       labelsize=fontsize-2)
+        ax.tick_params(which='minor', width=0.75, length=2.50)
+
+        # Grid
+        ax.grid('True', which='major', linewidth=0.50)
+        ax.grid('True', which='minor', linewidth=0.20)
+
+        # Add additional labels if requested
+        if additional_labels is not None:
+            # major labels
+            labels = additional_labels['major']
+            for label, xpos in labels:
+                bbox_dic = {'boxstyle': 'round,pad=0.5', 'facecolor': 'white',
+                            'alpha': 1}
+                ax.text(xpos, 0.95, label, fontsize=fontsize-5,
+                        bbox=bbox_dic, transform=ax.transAxes)
+
+            # minor labels
+            labels = additional_labels['minor']
+            for label, xpos in labels:
+                ax.text(xpos, 0.87, label, fontsize=fontsize-6,
+                        transform=ax.transAxes)
+
+        # Add vertical lines if requested
+        if v_lines is not None:
+            # major lines
+            lines = v_lines['major']
+            for line in lines:
+                ax.axvline(line, color='black')
+
+            # minor lines
+            lines = v_lines['minor']
+            for line in lines:
+                ax.axvline(line, color='black', ymin=0.10, ymax=0.90,
+                           linestyle='--', linewidth=1)
+
+        return self._save()
+
+    def _binned_plot(self, normalize=False):
         """
         PLot composed by three subplots.
         Main plot -> binned values (e.g. a flux in energies)
@@ -55,12 +191,6 @@ class Plotter():
 
         Parameters
         ----------
-        mainYlabel : str
-            Y label for the main plot
-        xlabel : str, optional
-            X label for the entire plot. The default is 'Energy [MeV]'.
-        normalize: bool
-            If True the plot is normalized. (Default is False)
 
         Returns
         -------
@@ -72,7 +202,8 @@ class Plotter():
         # General parameters
         data = self.data
         title = self.title
-        colors = ['blue', 'orange', 'green', 'purple', 'cyan', 'olive']
+        colors = self.colors
+        ylabel = self.quantity+' ['+self.unit+']'
         fontsize = 30  # fontsize for text in plot
         if len(data) > 1:
             nrows = 3
@@ -93,7 +224,7 @@ class Plotter():
         ax1 = axes[0]
         ax1.set_title(title, fontsize=fontsize+4)
         # Labels
-        ax1.set_ylabel(mainYlabel).set_fontsize(fontsize)  # Y axis label
+        ax1.set_ylabel(ylabel).set_fontsize(fontsize)  # Y axis label
 
         # Ticks
         subs = (0.2, 0.4, 0.6, 0.8)
@@ -199,7 +330,7 @@ class Plotter():
 
         # Final operations
         ax1.legend(loc='best', prop={'size': fontsize-5})
-        axes[-1].set_xlabel(xlabel).set_fontsize(fontsize)
+        axes[-1].set_xlabel(self.xlabel).set_fontsize(fontsize)
 
         # --- Common Features ---
         for ax in axes:
@@ -211,6 +342,9 @@ class Plotter():
                            labelsize=fontsize-2)
             ax.tick_params(which='minor', width=0.75, length=2.50)
 
+        return self._save()
+
+    def _save(self):
         plt.tight_layout()
 
         plt.savefig(self.outpath)

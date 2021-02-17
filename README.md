@@ -1,12 +1,12 @@
 # JADE
-Version: 0.5.1
+Version: 1.0.0
 A new tool for nuclear libraries V&V.
 Brought to you by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E).
 
-For additional information contact: d.laghi@niering.it
+For additional information contact: d.laghi@nier.it
 
 ## Requirements
-- Windows operative system (Linux compatibility has not been tested);
+- Windows operative system (Linux or MacOS compatibility has not been tested);
 - Up-to-date Anaconda distribution (Python 3);
 - Microsoft Office suite (Excel and Word);
 - Addtional Python packages to Anaconda distribution:
@@ -33,7 +33,7 @@ The procedure to install JADE is the following:
 7) on the first usage the rest of the folders architecture is initialized.
 
 ###### N.B.
-A limitator has been inserted in the code in order to test it before using JADE for production (this will be eliminated when a proper function testing the installation will be produced). To remove it, open <JADE_root>\Code\testrun.py and comment out line 239 and 279 while de-commenting line 238 and 278.
+A limitator has been inserted in the code in order to test it before using JADE for production (this will be eliminated when a proper function testing the installation will be produced). To remove it, open <JADE_root>\Code\testrun.py and comment out line 239 and 298 while de-commenting line 238 and 297.
 
 ## Usage
 JADE is a consolle based software where different menu can be accessed through direct typing into the shell.

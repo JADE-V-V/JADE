@@ -125,7 +125,7 @@ class Plotter():
         try:
             for i, dic in enumerate(data[1:]):
                 ax.plot(dic['x'], dic['y']/ref['y'], color=self.colors[i],
-                        marker=self.markers[i], label=dic['ylabel'])
+                        drawstyle='steps-mid', label=dic['ylabel'])
 
         except KeyError:
             # it is a single pp

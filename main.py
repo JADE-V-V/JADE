@@ -16,7 +16,8 @@ import shutil
 
 class Session:
     """
-    This object represent a JADE session
+    This object represent a JADE session. All "environment" variables are
+    initialized
     """
 
     def __init__(self):
@@ -33,19 +34,28 @@ class Session:
 
         """
 
-        # --- Generate and store the JADE path structure ---
         cp = os.getcwd()
-        # Store configuration files path
+
+        self.path_default_settings = os.path.join(cp, 'Default Settings')
+
+        cp = os.path.dirname(cp)
+
+        # --- Read or initialize the configuration file ---
         self.path_cnf = os.path.join(cp, 'Configuration')
+        # Copy default settings if it is the first initialization
+        if not os.path.exists(self.path_cnf):
+            files = self.path_default_settings
+            shutil.copytree(files, self.path_cnf)
         # Read global configuration file. All vital variables are stored here
         self.conf = cnf.Configuration(os.path.join(self.path_cnf,
                                                    'Config.xlsx'))
-        # Create the library manager. This will handle library operations
+
+        # --- Create the library manager ---
         dl = self.conf.default_lib
         self.lib_manager = libmanager.LibManager(self.conf.xsdir_path,
                                                  defaultlib=dl)
 
-        cp = os.path.dirname(cp)
+        # --- Create/memorize JADE folder structure ---
         # Future implementation
         self.path_quality = os.path.join(cp, 'Quality')
         # Test level 1
@@ -69,6 +79,7 @@ class Session:
         for path in keypaths:
             if not os.path.exists(path):
                 os.mkdir(path)
+
         # Copy files into benchmark inputs folder
         path_inputs = os.path.join(cp, 'Benchmarks inputs')
         if not os.path.exists(path_inputs):
@@ -89,12 +100,12 @@ class Session:
             shutil.copytree(files, path_exp_res)
         self.path_exp_res = path_exp_res
 
-        # Create the session LOG
+        # --- Create the session LOG ---
         log = os.path.join(self.path_logs,
                            'Log '+time.ctime().replace(':', '-')+'.txt')
         self.log = cnf.Log(log)
 
-        # Initialize status
+        # --- Initialize status ---
         self.state = status.Status(self)
 
     def check_active_tests(self, action, exp=False):

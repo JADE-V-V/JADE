@@ -346,7 +346,11 @@ class Status():
                  'comparison': self.comparison_tree}
         try:
             library_tests = trees[tree][lib]
+            # Get both experimental and computational benchmark
             to_pp = session.check_active_tests('Post-Processing')
+            to_pp_exp = session.check_active_tests('Post-Processing', exp=True)
+            to_pp.extend(to_pp_exp)
+
             ans = True
             for test in to_pp:
                 if test not in library_tests:

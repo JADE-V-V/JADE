@@ -14,6 +14,7 @@ import pandas as pd
 import Parser as par
 from collections import Sequence
 from decimal import Decimal
+import copy
 
 
 # -------------------------------------
@@ -558,7 +559,7 @@ class Material:
         for submaterial in self.submaterials:
             submaterial.update_info(lib_manager)
 
-    def switch_fraction(self, ftype, lib_manager):
+    def switch_fraction(self, ftype, lib_manager, inplace=True):
         """
         Switch between atom or mass fraction for the material card.
         If the material is already switched the command is ignored.
@@ -569,6 +570,9 @@ class Material:
             Either 'mass' or 'atom' to chose the type of switch.
         lib_manager : libmanager.LibManager
             Handles zaid data.
+        inplace : bool
+            if True the densities of the isotopes are changed inplace,
+            otherwise a copy of the material is provided. DEFAULT is True
 
         Raises
         ------
@@ -577,11 +581,14 @@ class Material:
 
         Returns
         -------
-        None.
+        submaterials : list
+            list of the submaterials where fraction have been switched
 
         """
         # Get total fraction
         totf = self.get_tot_fraction()
+        new_submats = []
+
         if ftype == 'atom':  # mass2atom switch
             if totf < 0:  # Check if the switch must be effectuated
                 # x_n = (x_m/m)/sum(x_m/m)
@@ -593,9 +600,21 @@ class Material:
                         norm = norm + (-1*zaid.fraction/atom_mass)
 
                 for submat in self.submaterials:
+                    new_zaids = []
+                    new_submat = copy.deepcopy(submat)
                     for zaid in submat.zaidList:
                         atom_mass = lib_manager.get_zaid_mass(zaid)
-                        zaid.fraction = (-1*zaid.fraction/atom_mass)/norm
+                        if inplace:
+                            zaid.fraction = (-1*zaid.fraction/atom_mass)/norm
+                        else:
+                            newz = copy.deepcopy(zaid)
+                            newz.fraction = (-1*zaid.fraction/atom_mass)/norm
+                            new_zaids.append(newz)
+                    new_submat.zaidList = new_zaids
+                    new_submat.update_info(lib_manager)
+                    new_submats.append(new_submat)
+            else:
+                new_submats = self.submaterials
 
         elif ftype == 'mass':  # atom2mass switch
             if totf > 0:  # Check if the switch must be effectuated
@@ -608,14 +627,28 @@ class Material:
                         norm = norm + (zaid.fraction*atom_mass)
 
                 for submat in self.submaterials:
+                    new_zaids = []
+                    new_submat = copy.deepcopy(submat)
                     for zaid in submat.zaidList:
                         atom_mass = lib_manager.get_zaid_mass(zaid)
-                        zaid.fraction = (-1*zaid.fraction*atom_mass)/norm
+                        if inplace:
+                            zaid.fraction = (-1*zaid.fraction*atom_mass)/norm
+                        else:
+                            newz = copy.deepcopy(zaid)
+                            newz.fraction = (-1*zaid.fraction*atom_mass)/norm
+                            new_zaids.append(newz)
+                    new_submat.zaidList = new_zaids
+                    new_submat.update_info(lib_manager)
+                    new_submats.append(new_submat)
+            else:
+                new_submats = self.submaterials
 
         else:
             raise KeyError(ftype+' is not a valid key error [atom, mass]')
 
         self.update_info(lib_manager)
+
+        return new_submats
 
 
 class MatCardsList(Sequence):
@@ -751,7 +784,7 @@ class MatCardsList(Sequence):
         for mat in self.materials:
             mat.update_info(lib_manager)
 
-    def get_info(self, lib_manager, zaids=False):
+    def get_info(self, lib_manager, zaids=False, complete=False):
         """
         Get the material informations in terms of fraction and composition
         of the material card
@@ -762,6 +795,9 @@ class MatCardsList(Sequence):
             To handle element name recovering.
         zaids : bool, optional
             Consider or not the zaid level. The default is False.
+        complete: bool, optional
+            If True both the atom and mass fraction are given in the raw
+            table. The default is False.
 
         Returns
         -------
@@ -773,27 +809,53 @@ class MatCardsList(Sequence):
 
         """
         infos = []
+        complete_infos = []
         for mat in self.materials:
-            for i, submat in enumerate(mat.submaterials):
+            submats_atom = mat.switch_fraction('mass', lib_manager,
+                                               inplace=False)
+            submats_mass = mat.switch_fraction('atom', lib_manager,
+                                               inplace=False)
+            i = 0
+            for submat, submat_a, submat_m in zip(mat.submaterials,
+                                                  submats_atom, submats_mass):
                 dic_el, dic_zaids = submat.get_info(lib_manager)
+                dic_el_a, dic_zaids_a = submat_a.get_info(lib_manager)
+                dic_el_m, dic_zaids_m = submat_m.get_info(lib_manager)
 
                 if zaids:
                     dic = dic_zaids
+                    dic_a = dic_zaids_a
+                    dic_m = dic_zaids_m
                 else:
                     dic = dic_el
+                    dic_a = dic_el_a
+                    dic_m = dic_el_m
 
                 dic['Material'] = mat.name
                 dic['Submaterial'] = i+1
                 infos.append(dic)
 
+                c_dic = copy.deepcopy(dic)
+                c_dic['Atom Fraction'] = dic_a['Fraction']
+                c_dic['Mass Fraction'] = dic_m['Fraction']
+                complete_infos.append(c_dic)
+
+                i = i+1
+
         df = pd.concat(infos)
+        df_complete = pd.concat(complete_infos)
+        del df_complete['Fraction']
 
         if zaids:
             df.set_index(['Material', 'Submaterial', 'Element', 'Isotope'],
                          inplace=True)
+            df_complete.set_index(['Material', 'Submaterial', 'Element',
+                                   'Isotope'], inplace=True)
 
         else:
             df.set_index(['Material', 'Submaterial', 'Element'], inplace=True)
+            df_complete.set_index(['Material', 'Submaterial', 'Element'],
+                                  inplace=True)
 
         # Additional df containing normalized element fraction of submaterial
         # and material
@@ -817,4 +879,7 @@ class MatCardsList(Sequence):
         df_elem['Sub-Material Fraction'] = sub_percentage
         df_elem['Material Fraction'] = mat_percentage
 
-        return df, df_elem
+        if complete:
+            return df_complete, df_elem
+        else:
+            return df, df_elem

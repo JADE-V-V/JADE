@@ -13,8 +13,8 @@ import testrun
 import testInstallation as tinstall
 from tqdm import tqdm
 
-date = '23/09/2020'
-version = 'v0.5.1'
+date = '17/02/2021'
+version = 'v1.0.0'
 
 
 def clear_screen():
@@ -388,6 +388,10 @@ def pploop(session):
                 lib = to_single_pp[0]
                 # Check active tests
                 to_perform = session.check_active_tests('Post-Processing')
+                to_perf_exp = session.check_active_tests('Post-Processing',
+                                                         exp=True)
+                to_perform.extend(to_perf_exp)
+
                 # Logging
                 bartext = 'Post-Processing started'
                 session.log.bar_adjourn(bartext)

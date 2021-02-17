@@ -31,8 +31,10 @@ class BenchmarkOutput:
             library to post-process
         testname : str
             Name of the benchmark
-        session: Session
+        session : Session
             Jade Session
+        exp : str
+            the benchmark is an experimental one
 
         Returns
         -------
@@ -137,16 +139,19 @@ class BenchmarkOutput:
                                 'AtlasTemplate.docx')
         atlas = at.Atlas(template, self.lib)
 
-        # Iterate over each type of plot (first one is the measure unit)
-        for plot_type in list(atl_cnf.columns)[1:]:
+        # Iterate over each type of plot (first one is quantity
+        # and second one the measure unit)
+        for plot_type in list(atl_cnf.columns)[2:]:
             print(' Plotting : '+plot_type)
             atlas.doc.add_heading('Plot type: '+plot_type, level=1)
-            atl_cnf = atl_cnf[atl_cnf[plot_type]]  # Keep only tallies to plot
-            for tally_num in tqdm(atl_cnf.index, desc='Tallies'):
+            # Keep only tallies to plot
+            atl_cnf_plot = atl_cnf[atl_cnf[plot_type]]
+            for tally_num in tqdm(atl_cnf_plot.index, desc='Tallies'):
                 output = self.outputs[tally_num]
                 vals_df = output['Value']
                 err_df = output['Error']
-                ylabel = str(atl_cnf['Unit'].loc[tally_num])
+                quantity = str(atl_cnf_plot['Quantity'].loc[tally_num])
+                unit = str(atl_cnf_plot['Unit'].loc[tally_num])
                 xlabel = output['x_label']
                 title = output['title']
 
@@ -170,16 +175,25 @@ class BenchmarkOutput:
                     except KeyError:
                         pass
 
-                    values = vals_df[column].values
-                    error = err_df[column].values
+                    try:
+                        values = vals_df[column].values
+                        error = err_df[column].values
+                    except KeyError:
+                        # this means that the column is only one and we have
+                        # two distinct DFs for values and errors
+                        values = vals_df['Value']
+                        error = err_df['Error']
 
+                    lib_name = self.session.conf.get_lib_name(self.lib)
                     lib = {'x': x, 'y': values, 'err': error,
-                           'ylabel': self.lib}
+                           'ylabel': lib_name}
                     data = [lib]
 
                     outname = 'tmp'
-                    plot = plotter.Plotter(data, newtitle, outpath, outname)
-                    img_path = plot.binned_plot(ylabel, xlabel=xlabel)
+                    plot = plotter.Plotter(data, newtitle, outpath, outname,
+                                           quantity, unit, xlabel,
+                                           self.testname)
+                    img_path = plot.plot(plot_type)
 
                     atlas.insert_img(img_path)
 
@@ -224,17 +238,20 @@ class BenchmarkOutput:
                 outputs = pickle.load(handle)
             outputs_dic[lib] = outputs
 
-        # Iterate over each type of plot (first one is the measure unit)
-        for plot_type in list(atl_cnf.columns)[1:]:
+        # Iterate over each type of plot (first one is quantity
+        # and second one the measure unit)
+        for plot_type in list(atl_cnf.columns)[2:]:
             print(' Plotting : '+plot_type)
             atlas.doc.add_heading('Plot type: '+plot_type, level=1)
-            atl_cnf = atl_cnf[atl_cnf[plot_type]]  # Keep only tallies to plot
-            for tally_num in tqdm(atl_cnf.index, desc='Tallies'):
+            # Keep only tallies to plot
+            atl_cnf_plot = atl_cnf[atl_cnf[plot_type]]
+            for tally_num in tqdm(atl_cnf_plot.index, desc='Tallies'):
                 # The last 'outputs' can be easily used for common data
                 output = outputs[tally_num]
                 vals_df = output['Value']
                 err_df = output['Error']
-                ylabel = str(atl_cnf['Unit'].loc[tally_num])
+                quantity = str(atl_cnf_plot['Quantity'].loc[tally_num])
+                unit = str(atl_cnf_plot['Unit'].loc[tally_num])
                 xlabel = output['x_label']
                 title = output['title']
 
@@ -254,27 +271,36 @@ class BenchmarkOutput:
                         output = outputs_dic[lib][tally_num]
 
                         # override values and errors
-                        vals_df = output['Value']
-                        err_df = output['Error']
-
-                        # If total is present it has to be deleted
                         try:
-                            vals_df.drop(['total'], inplace=True)
-                            err_df.drop(['total'], inplace=True)
-                        except KeyError:
-                            pass
+                            vals_df = output['Value']
+                            err_df = output['Error']
+                            # If total is present it has to be deleted
+                            try:
+                                vals_df.drop(['total'], inplace=True)
+                                err_df.drop(['total'], inplace=True)
+                            except KeyError:
+                                pass
+                            values = vals_df[column].values
+                            error = err_df[column].values
 
-                        values = vals_df[column].values
-                        error = err_df[column].values
+                        except KeyError:
+                            # this means that the column is only one and we
+                            # havetwo distinct DFs for values and errors
+                            values = vals_df['Value'].values
+                            error = err_df['Error'].values
+
                         x = np.array(vals_df.index)
 
+                        lib_name = self.session.conf.get_lib_name(lib)
                         lib_data = {'x': x, 'y': values, 'err': error,
-                                    'ylabel': lib}
+                                    'ylabel': lib_name}
                         data.append(lib_data)
 
                     outname = 'tmp'
-                    plot = plotter.Plotter(data, newtitle, outpath, outname)
-                    img_path = plot.binned_plot(ylabel, xlabel=xlabel)
+                    plot = plotter.Plotter(data, newtitle, outpath, outname,
+                                           quantity, unit, xlabel,
+                                           self.testname)
+                    img_path = plot.plot(plot_type)
 
                     atlas.insert_img(img_path)
 

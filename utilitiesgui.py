@@ -101,7 +101,8 @@ def print_material_info(session, filepath, outpath=None):
     except PermissionError:
         return False
 
-    inforaw, info_elem = inputfile.matlist.get_info(lib_manager, zaids=True)
+    inforaw, info_elem = inputfile.matlist.get_info(lib_manager, zaids=True,
+                                                    complete=True)
     if outpath is None:
         outpath = os.path.join(session.path_uti, 'Materials Infos')
 
@@ -168,8 +169,9 @@ def generate_material(session, sourcefile, materials, percentages, newlib,
     main_header = "C Material Obtained from "+os.path.basename(sourcefile)
 
     for materialname, percentage in zip(materials, percentages):
+        percentage_str = str(round(float(percentage)*100, 2))+'%'
         main_header = (main_header+'\nC Material: '+materialname +
-                       ' Percentage: '+str(float(percentage)*100)+'%')
+                       ' Percentage: '+percentage_str)
         material = inputfile.matlist[materialname]
         # Ensure materials have the requested fraction type
         material.switch_fraction(fractiontype, session.lib_manager)
@@ -186,8 +188,9 @@ def generate_material(session, sourcefile, materials, percentages, newlib,
             current_submaterials.append(submat)
 
         # Change the header of the first submaterial to include the mat. one
-        current_submaterials[0].header = (material.header +
-                                          current_submaterials[0].header)
+        new_sub_header = (material.header +
+                          current_submaterials[0].header).strip('\n')
+        current_submaterials[0].header = new_sub_header
         submaterials.extend(current_submaterials)
 
     # Generate new material and matlist

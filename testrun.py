@@ -244,7 +244,7 @@ class SphereTest(Test):
             else:
                 density = settings.loc[Z, 'Density [g/cc]']
 
-            if check_true(settings.loc[Z, 'Let Override']):
+            if settings.loc[Z, 'Let Override']:
                 # get stop parameters
                 if self.nps is None:
                     nps = settings.loc[Z, 'NPS cut-off']
@@ -456,6 +456,7 @@ def safe_mkdir(directory):
 
 
 def check_true(obj):
+    # It may not work! check needed
     if obj is True:
         return True
     elif obj == 'True':

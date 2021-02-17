@@ -1,7 +1,12 @@
 
+# this files are not useful
 *.pyc
 <<<<<<< HEAD
 =======
 Untitled.ipynb
+
+# These are generated folders for cache 
+.ipynb_checkpoints/
+__pycache__/
 *.pyc
 >>>>>>> Developing

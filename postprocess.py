@@ -7,6 +7,7 @@ Created on Fri Jan  3 15:33:01 2020
 import datetime
 import sphereoutput as spho
 import output as bencho
+import expoutput as expo
 
 
 def compareBenchmark(session, lib_input, testname):
@@ -14,7 +15,9 @@ def compareBenchmark(session, lib_input, testname):
           '    '+str(datetime.datetime.now()))
     lib = lib_input.split('-')
     if testname == 'Sphere':
-        out = spho.SphereOutput(lib, 'Sphere', session)
+        out = spho.SphereOutput(lib, testname, session)
+    elif testname == 'Oktavian_Fe':
+        out = expo.OktavianOutput(lib, testname, session)
     else:
         out = bencho.BenchmarkOutput(lib, testname, session)
 
@@ -28,6 +31,8 @@ def postprocessBenchmark(session, lib, testname):
           '    '+str(datetime.datetime.now()))
     if testname == 'Sphere':
         out = spho.SphereOutput(lib, testname, session)
+    elif testname == 'Oktavian_Fe':
+        pass
     else:
         out = bencho.BenchmarkOutput(lib, testname, session)
 

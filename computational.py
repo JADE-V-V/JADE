@@ -60,6 +60,9 @@ def executeBenchmarksRoutines(session, lib, exp=False):
             if testname == 'Sphere Leakage Test':
                 test = testrun.SphereTest(inpfile, lib, row, log, VRTpath,
                                           confpath)
+            elif testname == 'Oktavian Experiment':
+                test = testrun.MultipleTest(inpfile, lib, row, log, VRTpath,
+                                            confpath)
             else:
                 test = testrun.Test(inpfile, lib, row, log, VRTpath,
                                     confpath)

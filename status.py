@@ -6,6 +6,8 @@ Created on Thu Jan 16 11:57:26 2020
 """
 import os
 
+MULTI_TEST = ['Sphere', 'Oktavian']
+
 
 class Status():
     def __init__(self, session):
@@ -38,7 +40,7 @@ class Status():
             libraries[lib] = {}
             cp = os.path.join(self.run_path, lib)
             for test in os.listdir(cp):
-                if test == 'Sphere':
+                if test in MULTI_TEST:
                     libraries[lib][test] = {}
                     cp1 = os.path.join(cp, test)
                     for zaid in os.listdir(cp1):
@@ -289,7 +291,7 @@ class Status():
                 # Check if benchmark folder exists
                 try:
                     test = self.run_tree[lib][testname]
-                    if testname == 'Sphere':
+                    if testname in MULTI_TEST:
                         flag_test_run = True
                         for zaid, files in test.items():
                             # Check if output is present
@@ -304,7 +306,7 @@ class Status():
                                 flag_test_run = False
 
                         if flag_test_run:
-                            test_runned.append('Sphere')
+                            test_runned.append(testname)
                     else:
                         # Check if output is present
                         for file in test:

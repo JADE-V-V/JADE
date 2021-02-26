@@ -100,7 +100,7 @@ class Test():
         self.inp.translate(self.lib, libmanager)
         self.inp.update_zaidinfo(libmanager)
 
-    def generate_test(self, lib_directory, libmanager):
+    def generate_test(self, lib_directory, libmanager, MCNP_dir=None):
         """
         Generate the test input files
 
@@ -111,6 +111,9 @@ class Test():
 
         libmanager : libmanager.LibManager
             Manager dealing with libraries operations.
+
+        MCNPdir : str or path
+            allows to ovewrite the MCNP dir if needed. The default is None
 
         Returns
         -------
@@ -125,7 +128,10 @@ class Test():
 
         # Identify working directory
         testname = self.inp.name
-        motherdir = os.path.join(lib_directory, testname)
+        if MCNP_dir is None:
+            motherdir = os.path.join(lib_directory, testname)
+        else:
+            motherdir = MCNP_dir
         self.MCNPdir = motherdir
         # If previous results are present they are canceled
         if os.path.exists(motherdir):
@@ -199,6 +205,32 @@ class Test():
             pass
 
         return flagnotrun
+
+
+class MultipleTest:
+    def __init__(self, inpsfolder, lib, config, log, VRTpath, confpath):
+        """
+        This simply a collection of Test objects, see the single Test object,
+        for methods and attributes descriptions
+        """
+        tests = []
+        for folder in os.listdir(inpsfolder):
+            inp = os.path.join(inpsfolder, folder)
+            test = Test(inp, lib, config, log, VRTpath, confpath)
+            tests.append(test)
+        self.tests = tests
+        self.name = os.path.basename(inpsfolder)
+
+    def generate_test(self, lib_directory, libmanager):
+        self.MCNPdir = os.path.join(lib_directory, self.name)
+        safe_override(self.MCNPdir)
+        for test in self.tests:
+            mcnp_dir = os.path.join(self.MCNPdir, test.name)
+            test.generate_test(lib_directory, libmanager, MCNP_dir=mcnp_dir)
+
+    def run(self, cpu=1, timeout=None):
+        for test in tqdm(self.tests):
+            test.run(cpu=cpu, timeout=timeout)
 
 
 class SphereTest(Test):
@@ -453,6 +485,12 @@ class SphereTest(Test):
 def safe_mkdir(directory):
     if not os.path.exists(directory):
         os.mkdir(directory)
+
+
+def safe_override(directory):
+    if os.path.exists(directory):
+        shutil.rmtree(directory)
+    os.mkdir(directory)
 
 
 def check_true(obj):

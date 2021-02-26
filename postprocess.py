@@ -16,7 +16,7 @@ def compareBenchmark(session, lib_input, testname):
     lib = lib_input.split('-')
     if testname == 'Sphere':
         out = spho.SphereOutput(lib, testname, session)
-    elif testname == 'Oktavian_Fe':
+    elif testname == 'Oktavian':
         out = expo.OktavianOutput(lib, testname, session)
     else:
         out = bencho.BenchmarkOutput(lib, testname, session)
@@ -31,8 +31,9 @@ def postprocessBenchmark(session, lib, testname):
           '    '+str(datetime.datetime.now()))
     if testname == 'Sphere':
         out = spho.SphereOutput(lib, testname, session)
-    elif testname == 'Oktavian_Fe':
-        pass
+    elif testname == 'Oktavian':
+        print('\n No single pp is foreseen for experimental benchmarks')
+        return
     else:
         out = bencho.BenchmarkOutput(lib, testname, session)
 

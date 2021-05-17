@@ -9,22 +9,27 @@ import MCTAL_READER as mctal
 import numpy as np
 import math
 import os
+import atlas as at
+import shutil
 
 from output import BenchmarkOutput
 from output import MCNPoutput
+from tqdm import tqdm
+from status import EXP_TAG
+from plotter import Plotter
 
 
 class ExperimentalOutput(BenchmarkOutput):
     def __init__(self, lib, testname, session):
-        # Act on lib to ensure a comparison is always triggered
-        if type(lib) == list:
-            newlib = ['Exp']
-            newlib.extend(lib)
-        else:
-            newlib = ['Exp', lib]
-        super().__init__(newlib, testname, session)
+        super().__init__(lib, testname, session)
         # The experimental data needs to be loaded
         self.path_exp_res = os.path.join(session.path_exp_res, testname)
+
+        # Add the raw path data (not created because it is a comparison)
+        out = os.path.dirname(self.atlas_path)
+        raw_path = os.path.join(out, 'Raw Data')
+        os.mkdir(raw_path)
+        self.raw_path = raw_path
 
     def single_postprocess(self):
         raise AttributeError('No single pp is foreseen for exp benchmark')
@@ -41,9 +46,9 @@ class OktavianOutput(ExperimentalOutput):
         # # print(' Generating Excel Recap...')
         # # self.pp_excel_comparison()
 
-        # print(' Creating Atlas...')
-        # outpath = os.path.join(self.atlas_path, 'tmp')
-        # os.mkdir(outpath)
+        print(' Creating Atlas...')
+        outpath = os.path.join(self.atlas_path, 'tmp')
+        os.mkdir(outpath)
 
         # libraries = []
         # outputs = []
@@ -59,86 +64,118 @@ class OktavianOutput(ExperimentalOutput):
         #     allzaids.extend(zaidlist)
         # allzaids = set(allzaids)  # no duplicates
 
-        # globalname = ''
-        # for lib in libraries:
-        #     globalname = globalname + lib + '_Vs_'
+        globalname = ''
+        for lib in self.lib:
+            globalname = globalname + lib + '_Vs_'
+        globalname = globalname[:-4]
+        
+        maintitle = 'Oktavian Experiment: '
+        unit = '#/Lethargy'
+        xlabel = 'Energy [MeV]'
 
-        # globalname = globalname[:-4]
+        # Tally numbers should be fixed
+        for tallynum in ['21', '41']:
+            if tallynum == '21':
+                print(' Printing the Neutron Letharghy flux...')
+                tit_tag = ', Neutron Flux per Unit Lethargy'
+                quantity = 'Neutron Flux'
+            else:
+                print(' Printing the Photon Letharghy flux...')
+                tit_tag = ', Photon Flux per Unit Lethargy'
+                quantity = 'Photon Flux'
 
-        # for tally, title, quantity, unit in \
-        #     [(2, 'Leakage Neutron Flux (175 groups)',
-        #       'Neutron Flux', '$\#/cm^2$'),
-        #      (32, 'Leakage Gamma Flux (24 groups)',
-        #       'Gamma Flux', '$\#/cm^2$')]:
+            for material in tqdm(self.materials, desc='Materials: '):
+                title = maintitle+material+tit_tag
 
-        #     print(' Plotting tally n.'+str(tally))
-        #     for zaidnum in tqdm(allzaids):
-        #         # title = title
-        #         data = []
-        #         for idx, output in enumerate(outputs):
-        #             try:  # Zaid could not be common to the libraries
-        #                 tally_data = output[zaidnum].tallydata.set_index('Tally N.').loc[tally]
-        #                 energy = tally_data['Energy'].values
-        #                 values = tally_data['Value'].values
-        #                 error = tally_data['Error'].values
-        #                 lib_name = self.session.conf.get_lib_name(libraries[idx])
-        #                 lib = {'x': energy, 'y': values, 'err': error,
-        #                        'ylabel': str(zaidnum)+' ('+lib_name+')'}
-        #                 data.append(lib)
-        #             except KeyError:
-        #                 # It is ok, simply nothing to plot here
-        #                 pass
+                # Get the experimental data
+                file = 'oktavian_'+material+'_tal'+tallynum+'.exp'
+                filepath = os.path.join(self.path_exp_res, material, file)
+                if os.path.isfile(filepath):
+                    x, y, err = self._read_Oktavian_expresult(filepath)
+                else:
+                    # Skip the tally if no experimental data is available
+                    continue
+                lib = {'x': x, 'y': y, 'err': [],
+                       'ylabel': material +' (Experiment)'}
 
-        #         outname = str(zaidnum)+'-'+globalname+'-'+str(tally)
-        #         plot = plotter.Plotter(data, title, outpath, outname, quantity,
-        #                                unit, 'Energy [MeV]', self.testname)
-        #         plot.plot('Binned graph')
+                # Collect the data to be plotted
+                data = [lib]  #  The first one should be the exp one
+                for lib_tag in self.lib[1:]:  # Avoid exp
+                    lib_name = self.session.conf.get_lib_name(lib_tag)
+                    try:  # The tally may not be defined
+                        values = self.results[material, lib_tag][tallynum]
+                        lib = {'x': values['Energy [MeV]'],
+                               'y': values['Lethargy'], 'err': [],
+                               'ylabel': material +' ('+lib_name+')'}
+                        data.append(lib)
+                    except KeyError:
+                        # The tally is not defined
+                        pass
 
-        # print(' Generating Plots Atlas...')
-        # # Printing Atlas
-        # template = os.path.join(self.code_path, 'Templates',
-        #                         'AtlasTemplate.docx')
-        # atlas = at.Atlas(template, globalname)
-        # atlas.build(outpath, self.session.lib_manager)
-        # atlas.save(self.atlas_path)
-        # # Remove tmp images
-        # shutil.rmtree(outpath)
+                # Once the data is collected it is passed to the plotter
+                outname = material+'-'+globalname+'-'+tallynum
+                plot = Plotter(data, title, outpath, outname, quantity, unit,
+                               xlabel, self.testname)
+                plot.plot('Experimental points')
+
+        print(' Generating Plots Atlas...')
+        # Printing Atlas
+        template = os.path.join(self.code_path, 'Templates',
+                                'AtlasTemplate.docx')
+        atlas = at.Atlas(template, globalname)
+        atlas.build(outpath, self.session.lib_manager)
+        atlas.save(self.atlas_path)
+        # Remove tmp images
+        shutil.rmtree(outpath)
 
     def _extract_outputs(self):
         # Get results
-        results = []
-        errors = []
-        stat_checks = []
+        # results = []
+        # errors = []
+        # stat_checks = []
         outputs = {}
         results = {}
-        for folder in os.listdir(self.test_path):
-            results_path = os.path.join(self.test_path, folder)
-            pieces = folder.split('_')
-            # Get zaid
-            material = pieces[-1]
-
-            # Get mfile
-            for file in os.listdir(results_path):
-                if file[-1] == 'm':
-                    mfile = file
-                elif file[-1] == 'o':
-                    ofile = file
-            # Parse output
-            output = MCNPoutput(os.path.join(results_path, mfile),
-                                os.path.join(results_path, ofile))
-            outputs[material] = output
-            # Adjourn raw Data
-            self.raw_data[material] = output.tallydata
-            # Get the meaningful results
-            result[material] = self._processMCNPdata(output.mctal)
+        materials = []
+        # Iterate on the different libraries results except 'Exp'
+        for lib, test_path in self.test_path.items():
+            if lib != EXP_TAG:                
+                for folder in os.listdir(test_path):
+                    results_path = os.path.join(test_path, folder)
+                    pieces = folder.split('_')
+                    # Get zaid
+                    material = pieces[-1]
         
+                    # Get mfile
+                    for file in os.listdir(results_path):
+                        if file[-1] == 'm':
+                            mfile = file
+                        elif file[-1] == 'o':
+                            ofile = file
+                    # Parse output
+                    output = MCNPoutput(os.path.join(results_path, mfile),
+                                        os.path.join(results_path, ofile))
+                    outputs[material, lib] = output
+                    # Adjourn raw Data
+                    self.raw_data[material, lib] = output.tallydata
+                    # Get the meaningful results
+                    results[material, lib] = self._processMCNPdata(output.mctal)
+                    if material not in materials:
+                        materials.append(material)
+                
         self.outputs = outputs
         self.results = results
+        self.materials = materials
 
     def _print_raw(self):
-        for key, data in self.raw_data.items():
-            file = os.path.join(self.raw_path, key+'.csv')
-            data.to_csv(file, header=True, index=False)
+        # Generate a folder for each library
+        for lib_name in self.lib[1:]:  # Avoid Exp
+            cd_lib = os.path.join(self.raw_path, lib_name)
+            os.mkdir(cd_lib)
+            # result for each material
+            for material in self.materials:
+                for key, data in self.raw_data[material, lib_name].items():
+                    file = os.path.join(cd_lib, material+' '+str(key)+'.csv')
+                    data.to_csv(file, header=True, index=False)
             
 
     # def pp_excel_comparison():
@@ -182,3 +219,48 @@ class OktavianOutput(ExperimentalOutput):
             res2['Lethargy'] = flux
 
         return res
+    
+    @staticmethod
+    def _read_Oktavian_expresult(file):
+        """
+        Given a file containing the Oktavian experimental results read it and
+        return the values to plot.
+    
+        The values equal to 1e-38 are eliminated since it appears that they
+        are the zero values of the instrument used.
+
+        Parameters
+        ----------
+        file : os.Path or str
+            path to the file to be read.
+
+        Returns
+        -------
+        x : np.array
+            energy values.
+        y : np.array
+            lethargy flux values.
+
+        """
+        columns =  ['Upper Energy [MeV]', 'Nominal Energy [MeV]',
+                    'Lower Energy [MeV]', 'Lethargy Flux', 'Error']
+        # First of all understand how many comment lines there are
+        with open(file, 'r') as infile:
+            counter = 0
+            for line in infile:
+                if line[0] == '#':
+                    counter += 1
+                else:
+                    break
+        # then read the file accordingly
+        df = pd.read_csv(file, skiprows=counter, skipfooter=1, engine='python',
+                         header=None, sep='\s+')
+        df.columns = columns
+        
+        df = df[df['Lethargy Flux'] > 2e-38]
+
+        x = df['Nominal Energy [MeV]'].values
+        y = df['Lethargy Flux'].values
+        err = df['Error'].values
+
+        return x, y, err

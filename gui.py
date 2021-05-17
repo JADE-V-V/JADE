@@ -11,7 +11,9 @@ import utilitiesgui as uty
 import postprocess as pp
 import testrun
 import testInstallation as tinstall
+
 from tqdm import tqdm
+from status import EXP_TAG
 
 date = '17/02/2021'
 version = 'v1.0.0'
@@ -359,6 +361,7 @@ pp_menu = header+"""
  * Print tested libraries             (printlib)
  * Post-Process library                     (pp)
  * Compare libraries                   (compare)
+ * Compare Vs Experiments              (compexp)
  * Back to main menu                      (back)
  * Exit                                   (exit)
 """
@@ -457,6 +460,54 @@ Additional Post-Processing of library:"""+lib+' completed\n', spacing=False)
                 print('\n ######################### COMPARISON ENDED ###############################\n')
                 t = 'Post-Processing completed'
                 session.log.bar_adjourn(t, spacing=False)
+
+        elif option == 'compexp':
+
+            # Select and check library
+            ans, to_single_pp, lib_input = session.state.check_override_pp(session, exp=True)
+
+            if ans:
+                # Logging
+                bartext = 'Comparison Post-Processing started'
+                session.log.bar_adjourn(bartext)
+                session.log.adjourn('Selected Library: '+lib_input,
+                                    spacing=True)
+                print('\n ########################### COMPARISON STARTED ###########################\n')
+
+                # Check active tests
+                to_perform = session.check_active_tests('Post-Processing', exp=True)
+
+#                 # Execut single pp
+#                 for lib in to_single_pp:
+#                     for testname in to_perform:
+#                         try:
+#                             print(' Single PP of library '+lib+' required')
+#                             pp.postprocessBenchmark(session, lib, testname)
+#                             session.log.adjourn("""
+# Additional Post-Processing of library:"""+lib+' completed\n', spacing=False)
+#                         except PermissionError as e:
+#                             clear_screen()
+#                             print(pp_menu)
+#                             print(' '+str(e))
+#                             print(' Please close all excel/word files and retry')
+#                             continue
+
+                # Execute Comparison
+                lib_input = EXP_TAG+'-'+lib_input  # Insert the exp tag
+                for testname in to_perform:
+                    try:
+                        pp.compareBenchmark(session, lib_input, testname)
+                    except PermissionError as e:
+                        clear_screen()
+                        print(pp_menu)
+                        print(' '+str(e))
+                        print(' Please close all excel/word files and retry')
+                        continue
+
+                print('\n ######################### COMPARISON ENDED ###############################\n')
+                t = 'Post-Processing completed'
+                session.log.bar_adjourn(t, spacing=False)
+
 
         elif option == 'back':
             mainloop(session)

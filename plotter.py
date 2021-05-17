@@ -33,7 +33,7 @@ class Plotter():
         outname : str
             name of the image file
         quantity : str
-            quantity of the y axis of the y axes
+            quantity of the y axis
         unit : str
             unit of the y axis
         xlabel : str
@@ -71,6 +71,7 @@ class Plotter():
         # --- Binned Plot ---
         if plot_type == 'Binned graph':
             outp = self._binned_plot()
+
         # --- Ratio Plot ---
         elif plot_type == 'Ratio graph':
             if self.testname == 'ITER_1D':  # Special actions for ITER 1D
@@ -84,10 +85,77 @@ class Plotter():
                 outp = self._ratio_plot(additional_labels=a_l, v_lines=v_lines)
             else:
                 outp = self._ratio_plot()
+        
+        # --- Experimental Points Plot ---
+        elif plot_type == 'Experimental points':
+            outp = self._exp_points_plot()
         else:
             raise ValueError(plot_type+' is not an admissible plot type')
 
         return outp
+
+    def _exp_points_plot(self):
+        """
+        Plot a simple plot that compares experimental data points with
+        computational calculation
+
+        Parameters
+        ----------
+
+
+        Returns
+        -------
+        outpath : str/path
+            path to the saved image
+
+        """
+        data = self.data
+        fontsize = self.fontsize
+
+        ref = data[0]
+        # Adjounrn ylabel
+        ylabel = self.quantity+' ['+self.unit+']'
+
+        # Initialize plot
+        fig, ax = plt.subplots(figsize=(16, 9))
+        
+        # Plot referece
+        ax.plot(ref['x'], ref['y'], 's', color=self.colors[0],
+                label=ref['ylabel'])
+
+        # Plot all data
+        try:
+            for i, dic in enumerate(data[1:]):
+                ax.plot(dic['x'], dic['y'], color=self.colors[i+1],
+                        drawstyle='steps-mid', label=dic['ylabel'])
+        except KeyError:
+            # it is a single pp
+            return self._save()
+
+        # Plot details
+        ax.set_xscale('log')
+        ax.set_yscale('log')
+        
+        ax.set_title(self.title, fontsize=fontsize+4)
+        ax.legend(loc='best', prop={'size': fontsize-5})
+        ax.set_xlabel(self.xlabel).set_fontsize(fontsize)
+        ax.set_ylabel(ylabel).set_fontsize(fontsize)
+
+        # # Tiks positioning and dimensions
+        # ax.xaxis.set_major_locator(AutoLocator())
+        # ax.yaxis.set_major_locator(AutoLocator())
+        # ax.xaxis.set_minor_locator(AutoMinorLocator())
+        # ax.yaxis.set_minor_locator(AutoMinorLocator())
+
+        ax.tick_params(which='major', width=1.00, length=5,
+                       labelsize=fontsize-2)
+        ax.tick_params(which='minor', width=0.75, length=2.50)
+
+        # Grid
+        ax.grid('True', which='major', linewidth=0.50)
+        ax.grid('True', which='minor', linewidth=0.20)
+
+        return self._save()
 
     def _ratio_plot(self, additional_labels=None, v_lines=None):
         """

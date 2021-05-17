@@ -7,6 +7,7 @@ Created on Thu Jan 16 11:57:26 2020
 import os
 
 MULTI_TEST = ['Sphere', 'Oktavian']
+EXP_TAG = 'Exp'
 
 
 class Status():
@@ -362,7 +363,7 @@ class Status():
             # print('entered in key error')
             return False
 
-    def check_override_pp(self, session):
+    def check_override_pp(self, session, exp=False):
         """
         Asks for the library/ies to post-process and checks which tests have
         already been performed and would be overidden according to the
@@ -386,15 +387,19 @@ class Status():
         lib_input = input(' Libraries to post-process (e.g. 31c-71c): ')
         # Individuate libraries to pp
         libs = lib_input.split('-')
-        if len(libs) == 1:
-            tagpp = 'Single Libraries'
-        else:
+        if exp:
             tagpp = 'Comparison'
+        else:
+            if len(libs) == 1:
+                tagpp = 'Single Libraries'
+            else:
+                tagpp = 'Comparison'
 
         # Check if libraries have been run
         flag_not_run = False
         for lib in libs:
-            test_run = self.check_lib_run(lib, session, 'Post-Processing')
+            test_run = self.check_lib_run(lib, session, 'Post-Processing',
+                                          exp=exp)
             if len(test_run) == 0:  # TODO not checking for each benchmark
                 flag_not_run = True
                 lib_not_run = lib
@@ -405,10 +410,11 @@ class Status():
             ans = False
             print(' '+lib_not_run+' was not run. Please run it first.')
         else:
-            # Check if single pp has been done
-            for lib in libs:
-                if not self.check_pp_single(lib, session):
-                    to_single_pp.append(lib)
+            # Check if single pp has been done (if not experimantal benchmark)
+            if not exp:
+                for lib in libs:
+                    if not self.check_pp_single(lib, session):
+                        to_single_pp.append(lib)
 
             # Single Library PP
             if tagpp == 'Single Libraries':
@@ -440,9 +446,14 @@ class Status():
             # Libraries comparison PP
             elif tagpp == 'Comparison':
                 # Check if comparisons have been done
-                name = libs[0]
-                for lib in libs[1:]:
-                    name = name+'_Vs_'+lib
+                if exp:
+                    name = EXP_TAG
+                    for lib in libs:
+                        name = name+'_Vs_'+lib
+                else:
+                    name = libs[0]
+                    for lib in libs[1:]:
+                        name = name+'_Vs_'+lib
 
                 # print(name)
                 override = self.check_pp_single(name, session,

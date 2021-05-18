@@ -50,26 +50,17 @@ class OktavianOutput(ExperimentalOutput):
         outpath = os.path.join(self.atlas_path, 'tmp')
         os.mkdir(outpath)
 
-        # libraries = []
-        # outputs = []
-        # materials = []
-        # for libname, outputslib in self.outputs.items():
-        #     libraries.append(libname)
-        #     outputs.append(outputslib)
-        #     materials.append(list(outputslib.keys()))
-
-        # # Extend list to all zaids
-        # allzaids = zaids[0]
-        # for zaidlist in zaids[1:]:
-        #     allzaids.extend(zaidlist)
-        # allzaids = set(allzaids)  # no duplicates
-
         globalname = ''
         for lib in self.lib:
             globalname = globalname + lib + '_Vs_'
         globalname = globalname[:-4]
+
+        # Initialize the atlas
+        template = os.path.join(self.code_path, 'Templates',
+                                'AtlasTemplate.docx')
+        atlas = at.Atlas(template, globalname)
         
-        maintitle = 'Oktavian Experiment: '
+        maintitle = ' Oktavian Experiment: '
         unit = '#/Lethargy'
         xlabel = 'Energy [MeV]'
 
@@ -77,15 +68,20 @@ class OktavianOutput(ExperimentalOutput):
         for tallynum in ['21', '41']:
             if tallynum == '21':
                 print(' Printing the Neutron Letharghy flux...')
-                tit_tag = ', Neutron Flux per Unit Lethargy'
+                tit_tag = 'Neutron Flux per Unit Lethargy'
                 quantity = 'Neutron Flux'
             else:
                 print(' Printing the Photon Letharghy flux...')
-                tit_tag = ', Photon Flux per Unit Lethargy'
+                tit_tag = 'Photon Flux per Unit Lethargy'
                 quantity = 'Photon Flux'
+            
+            atlas.doc.add_heading(quantity, level=1)
 
             for material in tqdm(self.materials, desc='Materials: '):
-                title = maintitle+material+tit_tag
+
+                atlas.doc.add_heading('Material: '+material, level=2)
+
+                title = material+maintitle+tit_tag
 
                 # Get the experimental data
                 file = 'oktavian_'+material+'_tal'+tallynum+'.exp'
@@ -116,14 +112,11 @@ class OktavianOutput(ExperimentalOutput):
                 outname = material+'-'+globalname+'-'+tallynum
                 plot = Plotter(data, title, outpath, outname, quantity, unit,
                                xlabel, self.testname)
-                plot.plot('Experimental points')
+                img_path = plot.plot('Experimental points')
+                # Insert the image in the atlas
+                atlas.insert_img(img_path)
 
-        print(' Generating Plots Atlas...')
-        # Printing Atlas
-        template = os.path.join(self.code_path, 'Templates',
-                                'AtlasTemplate.docx')
-        atlas = at.Atlas(template, globalname)
-        atlas.build(outpath, self.session.lib_manager)
+        # Save Atlas
         atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(outpath)

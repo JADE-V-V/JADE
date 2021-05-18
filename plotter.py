@@ -12,6 +12,7 @@ from matplotlib.ticker import (LogLocator, AutoMinorLocator, MultipleLocator,
 from matplotlib.markers import CARETUPBASE
 from matplotlib.markers import CARETDOWNBASE
 from matplotlib.lines import Line2D
+from scipy.interpolate import interp1d
 
 
 class Plotter():
@@ -97,7 +98,9 @@ class Plotter():
     def _exp_points_plot(self):
         """
         Plot a simple plot that compares experimental data points with
-        computational calculation
+        computational calculation.
+        
+        Also a C/E plot is added
 
         Parameters
         ----------
@@ -115,31 +118,56 @@ class Plotter():
         ref = data[0]
         # Adjounrn ylabel
         ylabel = self.quantity+' ['+self.unit+']'
+        
+        # Grid info
+        gridspec_kw = {'height_ratios': [4, 1], 'hspace': 0.13}
+        figsize = (18, 13.5)
 
         # Initialize plot
-        fig, ax = plt.subplots(figsize=(16, 9))
+        fig, axes = plt.subplots(nrows=2, ncols=1, sharex=True,
+                                 figsize=figsize,
+                                 gridspec_kw=gridspec_kw)
+        
+        ax1 = axes[0]
+        ax2 = axes[1]
         
         # Plot referece
-        ax.plot(ref['x'], ref['y'], 's', color=self.colors[0],
-                label=ref['ylabel'])
+        ax1.plot(ref['x'], ref['y'], 's', color=self.colors[0],
+                 label=ref['ylabel'])
+        # Get the linear interpolation for C/E
+        interpolate = interp1d(ref['x'], ref['y'], fill_value=0,
+                               bounds_error=False)
 
         # Plot all data
         try:
             for i, dic in enumerate(data[1:]):
-                ax.plot(dic['x'], dic['y'], color=self.colors[i+1],
-                        drawstyle='steps-mid', label=dic['ylabel'])
+                # Plot the flux
+                ax1.plot(dic['x'], dic['y'], color=self.colors[i+1],
+                         drawstyle='steps-mid', label=dic['ylabel'])
+                # plot the C/E
+                interp_ref = interpolate(dic['x'])
+                ax2.plot(dic['x'], dic['y']/interp_ref, color=self.colors[i+1],
+                         drawstyle='steps-mid', label=dic['ylabel'])
         except KeyError:
             # it is a single pp
             return self._save()
 
-        # Plot details
-        ax.set_xscale('log')
-        ax.set_yscale('log')
+        # --- Plot details ---
+        # ax 1 details
+        ax1.set_yscale('log')
+        ax1.set_title(self.title, fontsize=fontsize+4)
+        ax1.set_ylabel(ylabel).set_fontsize(fontsize)
+        ax1.legend(loc='best', prop={'size': fontsize-5})
         
-        ax.set_title(self.title, fontsize=fontsize+4)
-        ax.legend(loc='best', prop={'size': fontsize-5})
-        ax.set_xlabel(self.xlabel).set_fontsize(fontsize)
-        ax.set_ylabel(ylabel).set_fontsize(fontsize)
+        # limit the ax 2 to +- 50%
+        ax2.set_ylim(bottom=0.5, top=1.5)
+        ax2.set_ylabel('C/E').set_fontsize(fontsize)
+        ax2.set_xlabel(self.xlabel).set_fontsize(fontsize)
+        ax2.axhline(y=1, linestyle='--', color='black')
+        
+        # Common for all axes
+        for ax in axes:
+            ax.set_xscale('log')
 
         # # Tiks positioning and dimensions
         # ax.xaxis.set_major_locator(AutoLocator())
@@ -147,13 +175,13 @@ class Plotter():
         # ax.xaxis.set_minor_locator(AutoMinorLocator())
         # ax.yaxis.set_minor_locator(AutoMinorLocator())
 
-        ax.tick_params(which='major', width=1.00, length=5,
-                       labelsize=fontsize-2)
-        ax.tick_params(which='minor', width=0.75, length=2.50)
-
-        # Grid
-        ax.grid('True', which='major', linewidth=0.50)
-        ax.grid('True', which='minor', linewidth=0.20)
+            ax.tick_params(which='major', width=1.00, length=5,
+                           labelsize=fontsize-2)
+            ax.tick_params(which='minor', width=0.75, length=2.50)
+    
+            # Grid
+            ax.grid('True', which='major', linewidth=0.50)
+            ax.grid('True', which='minor', linewidth=0.20)
 
         return self._save()
 

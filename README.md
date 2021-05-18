@@ -1,3 +1,5 @@
+<img src="https://user-images.githubusercontent.com/25747626/118662537-5f124900-b7f0-11eb-8d69-282305f795c4.png" width="300" />
+
 # JADE
 Version: 1.0.0
 A new tool for nuclear libraries V&V.
@@ -35,7 +37,8 @@ The procedure to install JADE is the following:
 ###### N.B.
 A limitator has been inserted in the code in order to test it before using JADE for production (this will be eliminated when a proper function testing the installation will be produced). To remove it, open <JADE_root>\Code\testrun.py and comment out line 239 and 298 while de-commenting line 238 and 297.
 
-## Usage
+## Usage!
+
 JADE is a consolle based software where different menu can be accessed through direct typing into the shell.
 ### Main Menu
 The main menu is divided into two sections, the first one let the user open the specific 2nd level menus of one of the main JADE functions, while the second one allows to directly execute some auxiliary functions.
@@ -62,3 +65,6 @@ The main menu is divided into two sections, the first one let the user open the 
 - compare: compare two or more selected libraries, the first indicated will be considered as the reference one; the results can be found in <JADE_root>\Tests\Post-Processing\Comparisons
 - back: go back to the main menu;
 - 'exit': leave the application freezing the log file that is saved in <JADE_root>\Utilities\Log Files
+
+## LICENSE
+JADE is an open-source software licensed under the [GNU GPLv3](./LICENSE) license.

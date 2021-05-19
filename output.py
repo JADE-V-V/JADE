@@ -142,7 +142,7 @@ class BenchmarkOutput:
         # Printing Atlas
         template = os.path.join(self.code_path, 'Templates',
                                 'AtlasTemplate.docx')
-        atlas = at.Atlas(template, self.lib)
+        atlas = at.Atlas(template, self.testname+' '+self.lib)
 
         # Iterate over each type of plot (first one is quantity
         # and second one the measure unit)
@@ -230,7 +230,7 @@ class BenchmarkOutput:
         template = os.path.join(self.code_path, 'Templates',
                                 'AtlasTemplate.docx')
 
-        atlas = at.Atlas(template, self.name)
+        atlas = at.Atlas(template, self.testname+' '+self.name)
 
         # Recover data
         outputs_dic = {}
@@ -468,7 +468,7 @@ class BenchmarkOutput:
         iteration = 0
         for reflib, tarlib, name in self.couples:
             iteration = iteration+1
-            outpath = os.path.join(self.excel_path, self.name+'_Comparison_' +
+            outpath = os.path.join(self.excel_path, self.testname+'_Comparison_' +
                                    name+'.xlsx')
             ex = ExcelOutputSheet(template, outpath)
             # Get results

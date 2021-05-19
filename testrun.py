@@ -260,9 +260,15 @@ class SphereTest(Test):
             shutil.rmtree(motherdir)
         os.mkdir(motherdir)
 
-        # Get densities
+        # GET SETTINGS
+        # Zaids
         settings = os.path.join(self.test_conf_path, 'ZaidSettings.csv')
         settings = pd.read_csv(settings, sep=';').set_index('Z')
+        # Materials
+        settings_mat = os.path.join(self.test_conf_path,
+                                    'MaterialsSettings.csv')
+        settings_mat = pd.read_csv(settings_mat, sep=';').set_index('Symbol')
+        
 
         self.MCNPdir = motherdir
 
@@ -328,9 +334,11 @@ class SphereTest(Test):
         print(' Materials:')
         # for material in tqdm(matlist.materials):
         for material in tqdm(matlist.materials[:2]):
+            # Get density
+            density = settings_mat.loc[material.name.upper(), 'Density [g/cc]']
 
-            self.generate_material_test(material, libmanager, testname,
-                                        motherdir)
+            self.generate_material_test(material, -1*density, libmanager,
+                                        testname, motherdir)
 
     def generate_zaid_test(self, zaid, libmanager, testname, motherdir,
                            density, nps, ctme, precision):
@@ -398,7 +406,7 @@ class SphereTest(Test):
             outwwfile = os.path.join(outpath, 'wwinp')
             shutil.copyfile(ww_file, outwwfile)
 
-    def generate_material_test(self, material, libmanager, testname,
+    def generate_material_test(self, material, density, libmanager, testname,
                                motherdir):
         """
         Generate a sphere leakage benchmark input for a single typical
@@ -406,8 +414,10 @@ class SphereTest(Test):
 
         Parameters
         ----------
-        material : str
-            Name of the material (e.g. m101).
+        material : matreader.Material
+            material object to be used for the new input.
+        density : float
+            densitiy value in g/cc
         libmanager : Libmanager
             Jade Libmanager.
         testname : str
@@ -435,8 +445,8 @@ class SphereTest(Test):
         # Generate the new input
         newinp = deepcopy(self.inp)
         newinp.matlist = matlist  # Assign material
-        # # adjourn density
-        # newinp.change_density(zaid)
+        # adjourn density
+        newinp.change_density(density)
         # add stop card
         newinp.add_stopCard(self.nps, self.ctme, self.precision)
 

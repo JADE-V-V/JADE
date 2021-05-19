@@ -20,6 +20,17 @@ from output import MCNPoutput
 
 class SphereOutput(BenchmarkOutput):
 
+    def __init__(self, lib, testname, session):
+        super().__init__(lib, testname, session)
+
+        # Load the settings for zaids and materials
+        mat_path = os.path.join(self.cnf_path, 'MaterialsSettings.csv')
+        self.mat_settings = pd.read_csv(mat_path, sep=';').set_index('Symbol')
+
+        zaid_path = os.path.join(self.cnf_path, 'ZaidSettings.csv')
+        self.zaid_settings = pd.read_csv(zaid_path, sep=';').set_index('Z')
+        
+
     def single_postprocess(self):
         """
         Execute the full post-processing of a single library (i.e. excel,
@@ -63,8 +74,8 @@ class SphereOutput(BenchmarkOutput):
         # Printing Atlas
         template = os.path.join(self.code_path, 'Templates',
                                 'AtlasTemplate.docx')
-        atlas = at.Atlas(template, self.lib)
-        atlas.build(outpath, self.session.lib_manager)
+        atlas = at.Atlas(template, 'Sphere '+self.lib)
+        atlas.build(outpath, self.session.lib_manager, self.mat_settings)
         atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(outpath)
@@ -131,8 +142,8 @@ class SphereOutput(BenchmarkOutput):
         # Printing Atlas
         template = os.path.join(self.code_path, 'Templates',
                                 'AtlasTemplate.docx')
-        atlas = at.Atlas(template, globalname)
-        atlas.build(outpath, self.session.lib_manager)
+        atlas = at.Atlas(template, 'Sphere '+globalname)
+        atlas.build(outpath, self.session.lib_manager, self.mat_settings)
         atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(outpath)
@@ -163,8 +174,8 @@ class SphereOutput(BenchmarkOutput):
             zaidnum = pieces[-2]
             # Check for material exception
             if zaidnum == 'Sphere':
-                zaidnum = pieces[-1]
-                zaidname = 'Typical Material'
+                zaidnum = pieces[-1].upper()
+                zaidname = self.mat_settings.loc[zaidnum, 'Name']
             else:
                 zaidname = pieces[-1]
             # Get mfile
@@ -252,8 +263,8 @@ class SphereOutput(BenchmarkOutput):
                     zaidnum = pieces[-2]
                     # Check for material exception
                     if zaidnum == 'Sphere':
-                        zaidnum = pieces[-1]
-                        zaidname = 'Typical Material'
+                        zaidnum = pieces[-1].upper()
+                        zaidname = self.mat_settings.loc[zaidnum, 'Name']
                     else:
                         zaidname = pieces[-1]
 

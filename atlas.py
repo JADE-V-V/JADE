@@ -52,7 +52,7 @@ class Atlas():
         last_paragraph = self.doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    def build(self, images_path, libmanager):
+    def build(self, images_path, libmanager, mat_settings):
         """
         TO BE USED FOR SPHERE LEAKAGE BENCHMARK
 
@@ -65,6 +65,9 @@ class Atlas():
 
         lib_manager : libmanager.LibManager
             Library manager for conversions and name recovery.
+        
+        mat_settings : pd.DataFrame
+            contains settings for Materials
 
         Returns
         -------
@@ -95,12 +98,14 @@ class Atlas():
             # Be sure of the reordering
             df = images.loc[tally].sort_values('num')
             for idx, row in df.iterrows():
-                title = 'Zaid: '+row['zaid']+'.'+self.name
+                title = 'Zaid: '+row['zaid']
                 try:
                     name, formula = libmanager.get_zaidname(row['zaid'])
                     title = title+' ('+name+' '+formula+')'
                 except ValueError:  # A material is passed instead of zaid
-                    pass
+                    matname = mat_settings.loc[row['zaid'], 'Name']
+                    title = title+' ('+matname+')'
+
                 self.doc.add_heading(title, level=2)
                 self.insert_img(row['img'])
 

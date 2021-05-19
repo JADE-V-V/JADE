@@ -431,7 +431,7 @@ def pploop(session):
                 # Check active tests
                 to_perform = session.check_active_tests('Post-Processing')
 
-                # Execut single pp
+                # Execute single pp
                 for lib in to_single_pp:
                     for testname in to_perform:
                         try:

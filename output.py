@@ -48,7 +48,12 @@ class BenchmarkOutput:
         self.session = session
 
         # Read specific configuration
-        self.cnf_path = os.path.join(session.path_cnf, testname+'.xlsx')
+        cnf_path = os.path.join(session.path_cnf, testname+'.xlsx')
+        if os.path.isfile(cnf_path):
+            self.cnf_path = cnf_path
+        # It can be assumed that there is a folder containing multiple files
+        else:
+            self.cnf_path = os.path.join(session.path_cnf, testname)
 
         # COMPARISON
         if type(lib) == list and len(lib) > 1:

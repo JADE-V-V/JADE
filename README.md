@@ -14,12 +14,17 @@ For additional information contact: d.laghi@nier.it
 - Windows operative system (Linux or MacOS compatibility has not been tested);
 - Up-to-date Anaconda distribution (Python 3);
 - Microsoft Office suite (Excel and Word);
-- Addtional Python packages to Anaconda distribution:
+- Additional Python packages to Anaconda distribution:
   - python-docx.
 
 ## Installation
 The procedure to install JADE is the following:
-1) install/update Anaconda;
+1) install/update Anaconda, you can update all packages in your current environment using:
+  ```
+  conda update --all
+  ```
+   However, if bugs or problems are encuntered, a fresh Anaconda re-installation may solve the issues
+
 2) install additional packages. It may be necessary to activate the conda-forge channel. It can be done typing in an anaconda prompt shell:
   ```
   conda config --add channels conda-forge

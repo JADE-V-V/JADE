@@ -17,6 +17,7 @@ from output import MCNPoutput
 from tqdm import tqdm
 from status import EXP_TAG
 from plotter import Plotter
+from scipy.interpolate import interp1d
 
 
 class ExperimentalOutput(BenchmarkOutput):
@@ -41,6 +42,15 @@ class ExperimentalOutput(BenchmarkOutput):
 
 class OktavianOutput(ExperimentalOutput):
     def compare(self):
+        """
+        Produce the C/E excel file and the ATLAS containing the comparison
+        of the tested libraries with the experimental results
+
+        Returns
+        -------
+        None.
+
+        """
         self._extract_outputs()
         self._print_raw()
         # # print(' Generating Excel Recap...')
@@ -61,19 +71,21 @@ class OktavianOutput(ExperimentalOutput):
         atlas = at.Atlas(template, globalname)
         
         maintitle = ' Oktavian Experiment: '
-        unit = '#/Lethargy'
+        unit = '$ 1/cm^2\cdot n_s\cdot u$'
         xlabel = 'Energy [MeV]'
+        
+        tables = []  # All C/E tables will be stored here and then concatenated
 
         # Tally numbers should be fixed
         for tallynum in ['21', '41']:
             if tallynum == '21':
-                print(' Printing the Neutron Letharghy flux...')
-                tit_tag = 'Neutron Flux per Unit Lethargy'
-                quantity = 'Neutron Flux'
+                particle = 'Neutron'
             else:
-                print(' Printing the Photon Letharghy flux...')
-                tit_tag = 'Photon Flux per Unit Lethargy'
-                quantity = 'Photon Flux'
+                particle = 'Photon'
+
+            print(' Printing the '+particle+' Letharghy flux...')
+            tit_tag = particle+'  Leakage Current per Unit Lethargy'
+            quantity = particle+' Leakage Current'
             
             atlas.doc.add_heading(quantity, level=1)
 
@@ -91,19 +103,29 @@ class OktavianOutput(ExperimentalOutput):
                 else:
                     # Skip the tally if no experimental data is available
                     continue
-                lib = {'x': x, 'y': y, 'err': [],
+                # lib will be passed to the plotter
+                lib = {'x': x, 'y': y, 'err': err,
                        'ylabel': material +' (Experiment)'}
+                # Get also the interpolator
+                interpolator = interp1d(x, y, fill_value=0, bounds_error=False)
 
                 # Collect the data to be plotted
                 data = [lib]  #  The first one should be the exp one
                 for lib_tag in self.lib[1:]:  # Avoid exp
                     lib_name = self.session.conf.get_lib_name(lib_tag)
                     try:  # The tally may not be defined
+                        # Data for the plotter
                         values = self.results[material, lib_tag][tallynum]
                         lib = {'x': values['Energy [MeV]'],
-                               'y': values['Lethargy'], 'err': [],
+                               'y': values['Lethargy'], 'err': values['Error'],
                                'ylabel': material +' ('+lib_name+')'}
                         data.append(lib)
+                        # data for the table
+                        table = _get_tablevalues(values, interpolator)
+                        table['Particle'] = particle
+                        table['Material'] = material
+                        table['Library'] = lib_name
+                        tables.append(table)
                     except KeyError:
                         # The tally is not defined
                         pass
@@ -116,7 +138,42 @@ class OktavianOutput(ExperimentalOutput):
                 # Insert the image in the atlas
                 atlas.insert_img(img_path)
 
+        # Dump the global C/E table
+        print(' Dump the C/E table in Excel...')
+        final_table = pd.concat(tables)
+        todump = final_table.set_index(['Material', 'Particle', 'Library'])
+        ex_outpath = os.path.join(self.excel_path, 'C over E table.xlsx')
+        
+        # Create a Pandas Excel writer using XlsxWriter as the engine.
+        writer = pd.ExcelWriter(ex_outpath, engine='xlsxwriter')
+        # dump global table
+        todump.to_excel(writer, sheet_name='Global')
+        
+        # Elaborate table for better output format
+        ft = final_table.set_index(['Material'])
+        ft['Energy Range [MeV]'] = (ft['Min E'].astype(str) + ' - ' +
+                                    ft['Max E'].astype(str))
+        ft['C/E (mean +/- σ)'] = (ft['C/E'].round(2).astype(str) + ' +/- ' +
+                                  ft['Standard Deviation (σ)'].round(2).astype(str))
+        # Delete all confusing columns
+        for column in ['C/E', 'Standard Deviation (σ)', 'Max E', 'Min E']:
+            del ft[column]
+
+        # Dump also table material by material
+        for material in self.materials:
+            # dump material table
+            todump = ft.loc[material]
+            todump = todump.pivot(index=['Particle', 'Energy Range [MeV]'],
+                                  columns='Library', values='C/E (mean +/- σ)')
+            todump.style.set_caption("C/E (mean +/- σ)")
+            todump.to_excel(writer, sheet_name=material)
+        # Close the Pandas Excel writer and output the Excel file.
+        writer.save()
+
+        # atlas.insert_df(final_table)
+                
         # Save Atlas
+        print(' Producing the PDF...')
         atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(outpath)
@@ -198,18 +255,22 @@ class OktavianOutput(ExperimentalOutput):
 
             energies = tally.erg
             flux = []
+            errors = []
             for i, t in enumerate(energies):
                 val = tally.getValue(0, 0, 0, 0, 0, 0, i, 0, 0, 0, 0, 0)
+                err = tally.getValue(0, 0, 0, 0, 0, 0, i, 0, 0, 0, 0, 1)
                 flux.append(val)
+                errors.append(err)
 
             # Energies for lethargy computation
-            ergs = [1e-10]  # Addtional "zero" energy for lethargy computation
+            ergs = [1e-10]  # Additional "zero" energy for lethargy computation
             ergs.extend(energies.tolist())
             ergs = np.array(ergs)
 
             flux = flux/np.log((ergs[1:]/ergs[:-1]))
             res2['Energy [MeV]'] = energies
             res2['Lethargy'] = flux
+            res2['Error'] = errors
 
         return res
     
@@ -257,3 +318,50 @@ class OktavianOutput(ExperimentalOutput):
         err = df['Error'].values
 
         return x, y, err
+
+
+def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='Lethargy',
+                     e_intervals = [0.1, 1, 5, 10, 20]):
+    """
+    Given the benchmark and experimental results returns a df to compile the
+    C/E table for energy intervals
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        benchmark data.
+    interpolator : func
+        interpolator from experimental data.
+    x : str, optional
+        x column. The default is 'Energy [MeV]'.
+    y : str, optional
+        y columns. The default is 'Lethargy'.
+    e_intervals : list, optional
+        energy intervals to be used. The default is [0, 0.1, 1, 5, 10, 20].
+
+    Returns
+    -------
+    pd.DataFrame
+        C/E table per energy interval.
+
+    """
+    rows = []
+    df = pd.DataFrame(df)
+    df['Exp'] = interpolator(df[x])
+    df['C/E'] = df[y]/df['Exp']
+    e_min = e_intervals[0]
+    for e_max in e_intervals[1:]:
+        red = df[e_min < df[x]]
+        red = red[red[x] < e_max]
+        mean = red['C/E'].mean()
+        std = red['C/E'].std()
+        row = {'C/E': mean, 'Standard Deviation (σ)': std,
+               'Max E': e_max, 'Min E': e_min}
+        rows.append(row)
+        # adjourn min energy
+        e_min = e_max
+    
+    return pd.DataFrame(rows)
+    
+    
+    

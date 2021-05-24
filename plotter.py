@@ -120,7 +120,7 @@ class Plotter():
         ylabel = self.quantity+' ['+self.unit+']'
         
         # Grid info
-        gridspec_kw = {'height_ratios': [4, 1], 'hspace': 0.13}
+        gridspec_kw = {'height_ratios': [3, 1], 'hspace': 0.13}
         figsize = (18, 13.5)
 
         # Initialize plot
@@ -159,11 +159,13 @@ class Plotter():
         ax1.set_ylabel(ylabel).set_fontsize(fontsize)
         ax1.legend(loc='best', prop={'size': fontsize-5})
         
-        # limit the ax 2 to +- 50%
-        ax2.set_ylim(bottom=0.5, top=1.5)
+        # limit the ax 2 to [0, 2]
+        ax2.set_ylim(bottom=0, top=2)
         ax2.set_ylabel('C/E').set_fontsize(fontsize)
         ax2.set_xlabel(self.xlabel).set_fontsize(fontsize)
         ax2.axhline(y=1, linestyle='--', color='black')
+        # # Draw the exp error
+        # ax2.fill_between(ref['x'], 1+ref['err'], 1-ref['err'], alpha=0.2)
         
         # Common for all axes
         for ax in axes:

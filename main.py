@@ -168,6 +168,8 @@ if __name__ == "__main__":
     warnings.filterwarnings('ignore',
                             r'overflow encountered in power')
     warnings.filterwarnings('ignore', module=r'plotter')
+    warnings.filterwarnings('ignore',
+                            message=r'Warning: converting a masked element to nan.')
 
     session = Session()
     gui.mainloop(session)

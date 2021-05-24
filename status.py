@@ -322,7 +322,7 @@ class Status():
 
         return test_runned
 
-    def check_pp_single(self, lib, session, tree='single'):
+    def check_pp_single(self, lib, session, tree='single', exp=False):
         """
         Check if the post processing of a single library or a comparison has
         been already done. To consider it done, all benchmarks must have been
@@ -337,6 +337,8 @@ class Status():
         tree : string, optional
             Either 'single' to check in the single pp tree or 'comparison'
             to check into the comparison one. The default is 'single'.
+        exp: boolean
+            if True checks the experimental benchmarks. Default is False
 
         Returns
         -------
@@ -350,7 +352,7 @@ class Status():
         try:
             library_tests = trees[tree][lib]
             # Get both experimental and computational benchmark
-            to_pp = session.check_active_tests('Post-Processing')
+            to_pp = session.check_active_tests('Post-Processing', exp=exp)
             # to_pp_exp = session.check_active_tests('Post-Processing', exp=True)
             # to_pp.extend(to_pp_exp)
 
@@ -382,6 +384,8 @@ class Status():
             Library/ies to post process
         ans: Boolean
             True if the PP can begin (Possible override has been accepted).
+        exp: boolean
+            if True checks the experimental benchmarks. Default is False
 
         """
         lib_input = input(' Libraries to post-process (e.g. 31c-71c): ')
@@ -457,7 +461,7 @@ class Status():
 
                 # print(name)
                 override = self.check_pp_single(name, session,
-                                                tree='comparison')
+                                                tree='comparison', exp=exp)
                 # Ask for override
                 if override:
 

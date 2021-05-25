@@ -15,8 +15,8 @@ import testInstallation as tinstall
 from tqdm import tqdm
 from status import EXP_TAG
 
-date = '17/02/2021'
-version = 'v1.0.0'
+date = '25/05/2021'
+version = 'v1.1.0'
 
 
 def clear_screen():

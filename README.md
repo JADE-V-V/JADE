@@ -1,7 +1,7 @@
 <img src="https://user-images.githubusercontent.com/25747626/118662537-5f124900-b7f0-11eb-8d69-282305f795c4.png" width="300" />
 
 # JADE
-Version: 1.0.0
+Version: 1.1.0
 A new tool for nuclear libraries V&V.
 Brought to you by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E).
 

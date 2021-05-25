@@ -16,6 +16,7 @@ import atlas as at
 import numpy as np
 import string
 from outputFile import OutputFile
+from meshtal import Meshtal
 import pickle
 
 
@@ -48,7 +49,12 @@ class BenchmarkOutput:
         self.session = session
 
         # Read specific configuration
-        self.cnf_path = os.path.join(session.path_cnf, testname+'.xlsx')
+        cnf_path = os.path.join(session.path_cnf, testname+'.xlsx')
+        if os.path.isfile(cnf_path):
+            self.cnf_path = cnf_path
+        # It can be assumed that there is a folder containing multiple files
+        else:
+            self.cnf_path = os.path.join(session.path_cnf, testname)
 
         # COMPARISON
         if type(lib) == list and len(lib) > 1:
@@ -137,7 +143,7 @@ class BenchmarkOutput:
         # Printing Atlas
         template = os.path.join(self.code_path, 'Templates',
                                 'AtlasTemplate.docx')
-        atlas = at.Atlas(template, self.lib)
+        atlas = at.Atlas(template, self.testname+' '+self.lib)
 
         # Iterate over each type of plot (first one is quantity
         # and second one the measure unit)
@@ -225,7 +231,7 @@ class BenchmarkOutput:
         template = os.path.join(self.code_path, 'Templates',
                                 'AtlasTemplate.docx')
 
-        atlas = at.Atlas(template, self.name)
+        atlas = at.Atlas(template, self.testname+' '+self.name)
 
         # Recover data
         outputs_dic = {}
@@ -325,15 +331,17 @@ class BenchmarkOutput:
         # errors = []
         results_path = self.test_path
 
-        # Get mfile and outfile
+        # Get mfile and outfile and possibly meshtal file
+        meshtalfile = None
         for file in os.listdir(results_path):
             if file[-1] == 'm':
-                mfile = file
+                mfile = os.path.join(results_path, file)
             elif file[-1] == 'o':
-                ofile = file
+                ofile = os.path.join(results_path, file)
+            elif file[-4:] == 'msht':
+                meshtalfile = os.path.join(results_path, file)
         # Parse output
-        mcnp_output = MCNPoutput(os.path.join(results_path, mfile),
-                                 os.path.join(results_path, ofile))
+        mcnp_output = MCNPoutput(mfile, ofile, meshtal_file=meshtalfile)
         mctal = mcnp_output.mctal
         # Adjourn raw Data
         self.raw_data = mcnp_output.tallydata
@@ -346,8 +354,10 @@ class BenchmarkOutput:
             for tally in mctal.tallies:
                 num = tally.tallyNumber
                 key = tally.tallyComment[0]
+                print(num, key)
                 # keys[num] = key  # Memorize tally descriptions
                 tdata = mcnp_output.tallydata[num].copy()  # Full tally data
+                print(ex_cnf)
                 try:
                     tally_settings = ex_cnf.loc[num]
                 except KeyError:
@@ -390,6 +400,7 @@ class BenchmarkOutput:
                     # memorize for atlas
                     outputs[num][label] = main_value_df
                     # insert the df in pieces
+                    print(main_value_df)
                     ex.insert_cutted_df('B', main_value_df, label+'s', ylim,
                                         header=(key, 'Tally n.'+str(num)),
                                         index_name=x_tag, cols_name=y_tag,
@@ -463,7 +474,7 @@ class BenchmarkOutput:
         iteration = 0
         for reflib, tarlib, name in self.couples:
             iteration = iteration+1
-            outpath = os.path.join(self.excel_path, self.name+'_Comparison_' +
+            outpath = os.path.join(self.excel_path, self.testname+'_Comparison_' +
                                    name+'.xlsx')
             ex = ExcelOutputSheet(template, outpath)
             # Get results
@@ -475,15 +486,18 @@ class BenchmarkOutput:
             for lib in to_read:
                 results_path = self.test_path[lib]
 
-                # Get mfile and outfile
+                # Get mfile and outfile and possibly meshtal file
+                meshtalfile = None
                 for file in os.listdir(results_path):
                     if file[-1] == 'm':
-                        mfile = file
+                        mfile = os.path.join(results_path, file)
                     elif file[-1] == 'o':
-                        ofile = file
+                        ofile = os.path.join(results_path, file)
+                    elif file[-4:] == 'msht':
+                        meshtalfile = os.path.join(results_path, file)
                 # Parse output
-                mcnp_output = MCNPoutput(os.path.join(results_path, mfile),
-                                         os.path.join(results_path, ofile))
+                mcnp_output = MCNPoutput(mfile, ofile,
+                                         meshtal_file=meshtalfile)
                 mcnp_outputs[lib] = mcnp_output
 
             # Build the comparison
@@ -577,14 +591,15 @@ class BenchmarkOutput:
 
 
 class MCNPoutput:
-    def __init__(self, mctal_file, output_file):
+    def __init__(self, mctal_file, output_file, meshtal_file=None):
         """
         Class handling an MCNP run Output
 
         mctal_file: (str/path) path to the mctal file
         """
-        self.mctal_file = mctal_file  # path to mctal file
+        self.mctal_file = mctal_file  # path to mcnp mctal file
         self.output_file = output_file  # path to mcnp output file
+        self.meshtal_file = meshtal_file # path to mcnp meshtal file
 
         # Read and parse the mctal file
         mctal = mtal.MCTAL(mctal_file)
@@ -596,6 +611,21 @@ class MCNPoutput:
         self.out = OutputFile(output_file)
         self.out.assign_tally_description(self.mctal.tallies)
         self.stat_checks = self.out.stat_checks
+
+        # Read the meshtal file
+        if meshtal_file is not None:
+            self.meshtal = Meshtal(meshtal_file)
+            # Extract the available 1D to be merged with normal tallies
+            fmesh1D = self.meshtal.extract_1D()
+            for tallynum, data in fmesh1D.items():
+                # Add them to the tallly data
+                self.tallydata[tallynum] = data['data'] 
+                self.totalbin[tallynum] = None
+
+                # Create fake tallies to be added to the mctal
+                faketally = mtal.Tally(tallynum)
+                faketally.tallyComment = [data['desc']]
+                self.mctal.tallies.append(faketally)
 
     def organize_mctal(self):
         """

@@ -1,7 +1,12 @@
+<img src="https://user-images.githubusercontent.com/25747626/118662537-5f124900-b7f0-11eb-8d69-282305f795c4.png" width="300" />
+
 # JADE
-Version: 1.0.0
+Version: 1.1.0
 A new tool for nuclear libraries V&V.
 Brought to you by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E).
+
+JADE is an open-source software licensed under the [GNU GPLv3](./LICENSE) license. When using JADE for scientific publications you are kindly encouraged to cite the following papers:
+- Davide Laghi et al, 2020, "JADE, a new software tool for nuclear fusion data libraries verification & validation", Fusion Engineering and Design, doi: https://doi.org/10.1016/j.fusengdes.2020.112075.
 
 For additional information contact: d.laghi@nier.it
 
@@ -9,12 +14,17 @@ For additional information contact: d.laghi@nier.it
 - Windows operative system (Linux or MacOS compatibility has not been tested);
 - Up-to-date Anaconda distribution (Python 3);
 - Microsoft Office suite (Excel and Word);
-- Addtional Python packages to Anaconda distribution:
+- Additional Python packages to Anaconda distribution:
   - python-docx.
 
 ## Installation
 The procedure to install JADE is the following:
-1) install/update Anaconda;
+1) install/update Anaconda, you can update all packages in your current environment using:
+  ```
+  conda update --all
+  ```
+   However, if bugs or problems are encuntered, a fresh Anaconda re-installation may solve the issues
+
 2) install additional packages. It may be necessary to activate the conda-forge channel. It can be done typing in an anaconda prompt shell:
   ```
   conda config --add channels conda-forge
@@ -35,7 +45,8 @@ The procedure to install JADE is the following:
 ###### N.B.
 A limitator has been inserted in the code in order to test it before using JADE for production (this will be eliminated when a proper function testing the installation will be produced). To remove it, open <JADE_root>\Code\testrun.py and comment out line 239 and 298 while de-commenting line 238 and 297.
 
-## Usage
+## Usage!
+
 JADE is a consolle based software where different menu can be accessed through direct typing into the shell.
 ### Main Menu
 The main menu is divided into two sections, the first one let the user open the specific 2nd level menus of one of the main JADE functions, while the second one allows to directly execute some auxiliary functions.
@@ -61,5 +72,7 @@ The main menu is divided into two sections, the first one let the user open the 
 - pp: post-process a single selected library, the results can be found in <JADE_root>\Tests\Post-Processing\Single Libraries;
 - compare: compare two or more selected libraries, the first indicated will be considered as the reference one; the results can be found in <JADE_root>\Tests\Post-Processing\Comparisons
 - back: go back to the main menu;
-- 'exit': leave the application freezing the log file that is saved in <JADE_root>\Utilities\Log Files.
+- 'exit': leave the application freezing the log file that is saved in <JADE_root>\Utilities\Log Files
 
+## LICENSE
+JADE is an open-source software licensed under the [GNU GPLv3](./LICENSE) license.

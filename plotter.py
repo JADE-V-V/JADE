@@ -12,6 +12,7 @@ from matplotlib.ticker import (LogLocator, AutoMinorLocator, MultipleLocator,
 from matplotlib.markers import CARETUPBASE
 from matplotlib.markers import CARETDOWNBASE
 from matplotlib.lines import Line2D
+from scipy.interpolate import interp1d
 
 
 class Plotter():
@@ -33,7 +34,7 @@ class Plotter():
         outname : str
             name of the image file
         quantity : str
-            quantity of the y axis of the y axes
+            quantity of the y axis
         unit : str
             unit of the y axis
         xlabel : str
@@ -71,6 +72,7 @@ class Plotter():
         # --- Binned Plot ---
         if plot_type == 'Binned graph':
             outp = self._binned_plot()
+
         # --- Ratio Plot ---
         elif plot_type == 'Ratio graph':
             if self.testname == 'ITER_1D':  # Special actions for ITER 1D
@@ -84,10 +86,106 @@ class Plotter():
                 outp = self._ratio_plot(additional_labels=a_l, v_lines=v_lines)
             else:
                 outp = self._ratio_plot()
+        
+        # --- Experimental Points Plot ---
+        elif plot_type == 'Experimental points':
+            outp = self._exp_points_plot()
         else:
             raise ValueError(plot_type+' is not an admissible plot type')
 
         return outp
+
+    def _exp_points_plot(self):
+        """
+        Plot a simple plot that compares experimental data points with
+        computational calculation.
+        
+        Also a C/E plot is added
+
+        Parameters
+        ----------
+
+
+        Returns
+        -------
+        outpath : str/path
+            path to the saved image
+
+        """
+        data = self.data
+        fontsize = self.fontsize
+
+        ref = data[0]
+        # Adjounrn ylabel
+        ylabel = self.quantity+' ['+self.unit+']'
+        
+        # Grid info
+        gridspec_kw = {'height_ratios': [3, 1], 'hspace': 0.13}
+        figsize = (18, 13.5)
+
+        # Initialize plot
+        fig, axes = plt.subplots(nrows=2, ncols=1, sharex=True,
+                                 figsize=figsize,
+                                 gridspec_kw=gridspec_kw)
+        
+        ax1 = axes[0]
+        ax2 = axes[1]
+        
+        # Plot referece
+        ax1.plot(ref['x'], ref['y'], 's', color=self.colors[0],
+                 label=ref['ylabel'])
+        # Get the linear interpolation for C/E
+        interpolate = interp1d(ref['x'], ref['y'], fill_value=0,
+                               bounds_error=False)
+
+        # Plot all data
+        try:
+            for i, dic in enumerate(data[1:]):
+                # Plot the flux
+                ax1.plot(dic['x'], dic['y'], color=self.colors[i+1],
+                         drawstyle='steps-mid', label=dic['ylabel'])
+                # plot the C/E
+                interp_ref = interpolate(dic['x'])
+                ax2.plot(dic['x'], dic['y']/interp_ref, color=self.colors[i+1],
+                         drawstyle='steps-mid', label=dic['ylabel'])
+        except KeyError:
+            # it is a single pp
+            return self._save()
+
+        # --- Plot details ---
+        # ax 1 details
+        ax1.set_yscale('log')
+        ax1.set_title(self.title, fontsize=fontsize+4)
+        ax1.set_ylabel(ylabel).set_fontsize(fontsize)
+        ax1.legend(loc='best', prop={'size': fontsize-5})
+        
+        # limit the ax 2 to [0, 2]
+        ax2.set_ylim(bottom=0, top=2)
+        ax2.set_ylabel('C/E').set_fontsize(fontsize)
+        ax2.set_xlabel(self.xlabel).set_fontsize(fontsize)
+        ax2.axhline(y=1, linestyle='--', color='black')
+        # # Draw the exp error
+        # ax2.fill_between(ref['x'], 1+ref['err'], 1-ref['err'], alpha=0.2)
+        
+        # Common for all axes
+        for ax in axes:
+            ax.set_xscale('log')
+
+        # # Tiks positioning and dimensions
+        # ax.xaxis.set_major_locator(AutoLocator())
+        # ax.yaxis.set_major_locator(AutoLocator())
+        # ax.xaxis.set_minor_locator(AutoMinorLocator())
+        # ax.yaxis.set_minor_locator(AutoMinorLocator())
+
+            ax.tick_params(which='major', width=1.00, length=5,
+                           labelsize=fontsize-2)
+            ax.tick_params(which='minor', width=0.75, length=2.50)
+    
+            # Grid
+            ax.grid('True', which='major', linewidth=0.50)
+            ax.grid('True', which='minor', linewidth=0.20)
+
+        return self._save()
 
     def _ratio_plot(self, additional_labels=None, v_lines=None):
         """

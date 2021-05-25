@@ -100,7 +100,7 @@ class Test():
         self.inp.translate(self.lib, libmanager)
         self.inp.update_zaidinfo(libmanager)
 
-    def generate_test(self, lib_directory, libmanager):
+    def generate_test(self, lib_directory, libmanager, MCNP_dir=None):
         """
         Generate the test input files
 
@@ -111,6 +111,9 @@ class Test():
 
         libmanager : libmanager.LibManager
             Manager dealing with libraries operations.
+
+        MCNPdir : str or path
+            allows to ovewrite the MCNP dir if needed. The default is None
 
         Returns
         -------
@@ -125,7 +128,10 @@ class Test():
 
         # Identify working directory
         testname = self.inp.name
-        motherdir = os.path.join(lib_directory, testname)
+        if MCNP_dir is None:
+            motherdir = os.path.join(lib_directory, testname)
+        else:
+            motherdir = MCNP_dir
         self.MCNPdir = motherdir
         # If previous results are present they are canceled
         if os.path.exists(motherdir):
@@ -201,6 +207,32 @@ class Test():
         return flagnotrun
 
 
+class MultipleTest:
+    def __init__(self, inpsfolder, lib, config, log, VRTpath, confpath):
+        """
+        This simply a collection of Test objects, see the single Test object,
+        for methods and attributes descriptions
+        """
+        tests = []
+        for folder in os.listdir(inpsfolder):
+            inp = os.path.join(inpsfolder, folder)
+            test = Test(inp, lib, config, log, VRTpath, confpath)
+            tests.append(test)
+        self.tests = tests
+        self.name = os.path.basename(inpsfolder)
+
+    def generate_test(self, lib_directory, libmanager):
+        self.MCNPdir = os.path.join(lib_directory, self.name)
+        safe_override(self.MCNPdir)
+        for test in self.tests:
+            mcnp_dir = os.path.join(self.MCNPdir, test.name)
+            test.generate_test(lib_directory, libmanager, MCNP_dir=mcnp_dir)
+
+    def run(self, cpu=1, timeout=None):
+        for test in tqdm(self.tests):
+            test.run(cpu=cpu, timeout=timeout)
+
+
 class SphereTest(Test):
     """
     Class handling the sphere test
@@ -228,9 +260,15 @@ class SphereTest(Test):
             shutil.rmtree(motherdir)
         os.mkdir(motherdir)
 
-        # Get densities
+        # GET SETTINGS
+        # Zaids
         settings = os.path.join(self.test_conf_path, 'ZaidSettings.csv')
         settings = pd.read_csv(settings, sep=';').set_index('Z')
+        # Materials
+        settings_mat = os.path.join(self.test_conf_path,
+                                    'MaterialsSettings.csv')
+        settings_mat = pd.read_csv(settings_mat, sep=';').set_index('Symbol')
+        
 
         self.MCNPdir = motherdir
 
@@ -296,9 +334,11 @@ class SphereTest(Test):
         print(' Materials:')
         # for material in tqdm(matlist.materials):
         for material in tqdm(matlist.materials[:2]):
+            # Get density
+            density = settings_mat.loc[material.name.upper(), 'Density [g/cc]']
 
-            self.generate_material_test(material, libmanager, testname,
-                                        motherdir)
+            self.generate_material_test(material, -1*density, libmanager,
+                                        testname, motherdir)
 
     def generate_zaid_test(self, zaid, libmanager, testname, motherdir,
                            density, nps, ctme, precision):
@@ -366,7 +406,7 @@ class SphereTest(Test):
             outwwfile = os.path.join(outpath, 'wwinp')
             shutil.copyfile(ww_file, outwwfile)
 
-    def generate_material_test(self, material, libmanager, testname,
+    def generate_material_test(self, material, density, libmanager, testname,
                                motherdir):
         """
         Generate a sphere leakage benchmark input for a single typical
@@ -374,8 +414,10 @@ class SphereTest(Test):
 
         Parameters
         ----------
-        material : str
-            Name of the material (e.g. m101).
+        material : matreader.Material
+            material object to be used for the new input.
+        density : float
+            densitiy value in g/cc
         libmanager : Libmanager
             Jade Libmanager.
         testname : str
@@ -403,8 +445,8 @@ class SphereTest(Test):
         # Generate the new input
         newinp = deepcopy(self.inp)
         newinp.matlist = matlist  # Assign material
-        # # adjourn density
-        # newinp.change_density(zaid)
+        # adjourn density
+        newinp.change_density(density)
         # add stop card
         newinp.add_stopCard(self.nps, self.ctme, self.precision)
 
@@ -453,6 +495,12 @@ class SphereTest(Test):
 def safe_mkdir(directory):
     if not os.path.exists(directory):
         os.mkdir(directory)
+
+
+def safe_override(directory):
+    if os.path.exists(directory):
+        shutil.rmtree(directory)
+    os.mkdir(directory)
 
 
 def check_true(obj):

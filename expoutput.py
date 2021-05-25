@@ -9,8 +9,15 @@ import MCTAL_READER as mctal
 import numpy as np
 import math
 import os
+import atlas as at
+import shutil
 
 from output import BenchmarkOutput
+from output import MCNPoutput
+from tqdm import tqdm
+from status import EXP_TAG
+from plotter import Plotter
+from scipy.interpolate import interp1d
 
 
 class ExperimentalOutput(BenchmarkOutput):
@@ -19,173 +26,346 @@ class ExperimentalOutput(BenchmarkOutput):
         # The experimental data needs to be loaded
         self.path_exp_res = os.path.join(session.path_exp_res, testname)
 
+        # Add the raw path data (not created because it is a comparison)
+        out = os.path.dirname(self.atlas_path)
+        raw_path = os.path.join(out, 'Raw Data')
+        os.mkdir(raw_path)
+        self.raw_path = raw_path
+
     def single_postprocess(self):
-        # Shall be implemented in the specific output
-        pass
+        raise AttributeError('No single pp is foreseen for exp benchmark')
 
     def compare(self):
         # Shall be implemented in the specific output
         pass
-
-    @staticmethod
-    def _convert_TOF_to_E(distance, times, p_mass):
-        """
-        Given a distance, the Time of flight are converted to energies in [eV]
-
-        Parameters
-        ----------
-        distance : float
-            distance in [m].
-        times : array
-            times to be converted in MCNP shakes.
-        mass : float
-            mass of the particle under study in [Kg]
-
-        Returns
-        -------
-        energies : array
-            result of the time conversion in energies.
-
-        """
-        # --- Additional constants ---
-        shakes2time = 1e-8  # s/shake
-        j2eV = 6.242e+18  # eV/J
-
-        # Convert TOF MCNP tally into energies
-        velocities = distance/(times*shakes2time)  # m/s
-        energies = 1/2*p_mass*velocities**2*j2eV
-
-        return energies
-
-    @staticmethod
-    def _get_Espectrum(flux, energies, overLethargy=False, let_ratio=None):
-        """
-        Normalize the flux over the integral in order to obtain the energy
-        spectrum. The spectrum per lethargy unit can be also obtained
-
-        Parameters
-        ----------
-        flux : array
-            flux values to normalize.
-        energies : array
-            correspondent energy values.
-        overLethargy : bool, optional
-            If True the spectrum is given by unit lethargy.
-            The default is False.
-        let_ratio : float, optional
-            ratio between max and min energy to use for lethargy normalization.
-            The default is None.
-
-        Returns
-        -------
-        y : array
-            energy spectrum.
-
-        """
-        # Normalize the flux respect to the integral to obtain the spectrum
-        tot_area = np.trapz(flux, x=energies)
-        y = flux/(tot_area)
-
-        # Normalize and divide for lethargy
-        if overLethargy:
-            if let_ratio is None:
-                norm = math.log(min(energies)/max(energies))
-            else:
-                norm = math.log(let_ratio)
-
-            y = y/(-norm)
-
-        return y
 
 
 class OktavianOutput(ExperimentalOutput):
-    def single_postprocess(self):
-        pass
-
     def compare(self):
-        pass
+        """
+        Produce the C/E excel file and the ATLAS containing the comparison
+        of the tested libraries with the experimental results
 
-    def _processMCNPdata(self):
-        # --- Main constants ---
-        distance = 9.5  # m
-        # E0 = 15  # MeV
-        mass = 1.67e-27   # kg
+        Returns
+        -------
+        None.
 
-        # Load ref results
-        file = os.path.join(self.path_exp_res, 'Energy spectrum.xlsx')
-        lowE = pd.read_excel(file, sheet_name='Low Energy')
-        highE = pd.read_excel(file, sheet_name='High Energy')
+        """
+        self._extract_outputs()
+        self._print_raw()
+        # # print(' Generating Excel Recap...')
+        # # self.pp_excel_comparison()
 
-        # Read tally TOF
-        TOF_tally = mctal.tallies[0]
-        times = TOF_tally.tim
-        values = []
-        for i, t in enumerate(times):
-            val = TOF_tally.getValue(0, 0, 0, 0, 0, 0, 0, i, 0, 0, 0, 0)
-            values.append(val)
+        print(' Creating Atlas...')
+        outpath = os.path.join(self.atlas_path, 'tmp')
+        os.mkdir(outpath)
 
-        # Read tally energy
-        E_tally = mctal.tallies[1]
-        energies_e = E_tally.erg
-        values_e = []
-        for i, t in enumerate(energies_e):
-            val = E_tally.getValue(0, 0, 0, 0, 0, 0, i, 0, 0, 0, 0, 0)
-            values_e.append(val)
+        globalname = ''
+        for lib in self.lib:
+            globalname = globalname + lib + '_Vs_'
+        globalname = globalname[:-4]
 
-        # Infinity problem given by the time = 0
-        # To have negative times is a no-sense
-        values = np.flip(np.array(values[2:]))  # mid values
-        times = np.flip(np.array(times[2:]))  # bin limits
-        # Convert TOF MCNP tally into energies in MeV
-        energies_TOF = self._convert_TOF_to_E(distance, times, mass)*10**-6
-        spectrum_TOF = self._getEspectrum(values, energies_TOF,
-                                          overLethargy=True)
-        spectrum_E = self._getEspectrum(values_e, energies_e,
-                                        overLethargy=True)
+        # Initialize the atlas
+        template = os.path.join(self.code_path, 'Templates',
+                                'AtlasTemplate.docx')
+        atlas = at.Atlas(template, globalname)
+        
+        maintitle = ' Oktavian Experiment: '
+        unit = '$ 1/cm^2\cdot n_s\cdot u$'
+        xlabel = 'Energy [MeV]'
+        
+        tables = []  # All C/E tables will be stored here and then concatenated
+
+        # Tally numbers should be fixed
+        for tallynum in ['21', '41']:
+            if tallynum == '21':
+                particle = 'Neutron'
+            else:
+                particle = 'Photon'
+
+            print(' Printing the '+particle+' Letharghy flux...')
+            tit_tag = particle+'  Leakage Current per Unit Lethargy'
+            quantity = particle+' Leakage Current'
+            
+            atlas.doc.add_heading(quantity, level=1)
+
+            for material in tqdm(self.materials, desc='Materials: '):
+
+                atlas.doc.add_heading('Material: '+material, level=2)
+
+                title = material+maintitle+tit_tag
+
+                # Get the experimental data
+                file = 'oktavian_'+material+'_tal'+tallynum+'.exp'
+                filepath = os.path.join(self.path_exp_res, material, file)
+                if os.path.isfile(filepath):
+                    x, y, err = self._read_Oktavian_expresult(filepath)
+                else:
+                    # Skip the tally if no experimental data is available
+                    continue
+                # lib will be passed to the plotter
+                lib = {'x': x, 'y': y, 'err': err,
+                       'ylabel': material +' (Experiment)'}
+                # Get also the interpolator
+                interpolator = interp1d(x, y, fill_value=0, bounds_error=False)
+
+                # Collect the data to be plotted
+                data = [lib]  #  The first one should be the exp one
+                for lib_tag in self.lib[1:]:  # Avoid exp
+                    lib_name = self.session.conf.get_lib_name(lib_tag)
+                    try:  # The tally may not be defined
+                        # Data for the plotter
+                        values = self.results[material, lib_tag][tallynum]
+                        lib = {'x': values['Energy [MeV]'],
+                               'y': values['Lethargy'], 'err': values['Error'],
+                               'ylabel': material +' ('+lib_name+')'}
+                        data.append(lib)
+                        # data for the table
+                        table = _get_tablevalues(values, interpolator)
+                        table['Particle'] = particle
+                        table['Material'] = material
+                        table['Library'] = lib_name
+                        tables.append(table)
+                    except KeyError:
+                        # The tally is not defined
+                        pass
+
+                # Once the data is collected it is passed to the plotter
+                outname = material+'-'+globalname+'-'+tallynum
+                plot = Plotter(data, title, outpath, outname, quantity, unit,
+                               xlabel, self.testname)
+                img_path = plot.plot('Experimental points')
+                # Insert the image in the atlas
+                atlas.insert_img(img_path)
+
+        # Dump the global C/E table
+        print(' Dump the C/E table in Excel...')
+        final_table = pd.concat(tables)
+        todump = final_table.set_index(['Material', 'Particle', 'Library'])
+        ex_outpath = os.path.join(self.excel_path, 'C over E table.xlsx')
+        
+        # Create a Pandas Excel writer using XlsxWriter as the engine.
+        writer = pd.ExcelWriter(ex_outpath, engine='xlsxwriter')
+        # dump global table
+        todump.to_excel(writer, sheet_name='Global')
+        
+        # Elaborate table for better output format
+        ft = final_table.set_index(['Material'])
+        ft['Energy Range [MeV]'] = (ft['Min E'].astype(str) + ' - ' +
+                                    ft['Max E'].astype(str))
+        ft['C/E (mean +/- σ)'] = (ft['C/E'].round(2).astype(str) + ' +/- ' +
+                                  ft['Standard Deviation (σ)'].round(2).astype(str))
+        # Delete all confusing columns
+        for column in ['C/E', 'Standard Deviation (σ)', 'Max E', 'Min E']:
+            del ft[column]
+
+        # Dump also table material by material
+        for material in self.materials:
+            # dump material table
+            todump = ft.loc[material]
+            todump = todump.pivot(index=['Particle', 'Energy Range [MeV]'],
+                                  columns='Library', values='C/E (mean +/- σ)')
+            todump.to_excel(writer, sheet_name=material, startrow=2)
+            ws = writer.sheets[material]
+            ws.write_string(0, 0, '"C/E (mean +/- σ)"')
+            
+            # adjust columns' width
+            writer.sheets[material].set_column(0, 4, 18)
+        # Close the Pandas Excel writer and output the Excel file.
+        writer.save()
+
+        # atlas.insert_df(final_table)
+                
+        # Save Atlas
+        print(' Producing the PDF...')
+        atlas.save(self.atlas_path)
+        # Remove tmp images
+        shutil.rmtree(outpath)
+
+    def _extract_outputs(self):
+        # Get results
+        # results = []
+        # errors = []
+        # stat_checks = []
+        outputs = {}
+        results = {}
+        materials = []
+        # Iterate on the different libraries results except 'Exp'
+        for lib, test_path in self.test_path.items():
+            if lib != EXP_TAG:                
+                for folder in os.listdir(test_path):
+                    results_path = os.path.join(test_path, folder)
+                    pieces = folder.split('_')
+                    # Get zaid
+                    material = pieces[-1]
+        
+                    # Get mfile
+                    for file in os.listdir(results_path):
+                        if file[-1] == 'm':
+                            mfile = file
+                        elif file[-1] == 'o':
+                            ofile = file
+                    # Parse output
+                    output = MCNPoutput(os.path.join(results_path, mfile),
+                                        os.path.join(results_path, ofile))
+                    outputs[material, lib] = output
+                    # Adjourn raw Data
+                    self.raw_data[material, lib] = output.tallydata
+                    # Get the meaningful results
+                    results[material, lib] = self._processMCNPdata(output.mctal)
+                    if material not in materials:
+                        materials.append(material)
+                
+        self.outputs = outputs
+        self.results = results
+        self.materials = materials
+
+    def _print_raw(self):
+        # Generate a folder for each library
+        for lib_name in self.lib[1:]:  # Avoid Exp
+            cd_lib = os.path.join(self.raw_path, lib_name)
+            os.mkdir(cd_lib)
+            # result for each material
+            for material in self.materials:
+                for key, data in self.raw_data[material, lib_name].items():
+                    file = os.path.join(cd_lib, material+' '+str(key)+'.csv')
+                    data.to_csv(file, header=True, index=False)
+            
+
+    # def pp_excel_comparison():
+    #     pass
+
+    @staticmethod
+    def _processMCNPdata(mtal):
+        """
+        given the mctal file the lethargy flux and energies are returned
+        both for the neutron and photon tally
+
+        Parameters
+        ----------
+        mtal : mctal.MCTAL
+            mctal object file containing the results.
+
+        Returns
+        -------
+        res : dic
+            contains the extracted lethargy flux and energies.
+
+        """
+        res = {}
+        # Read tally energy binned fluxes
+        for tally in mtal.tallies:
+            res2 = res[str(tally.tallyNumber)] = {}
+
+            energies = tally.erg
+            flux = []
+            errors = []
+            for i, t in enumerate(energies):
+                val = tally.getValue(0, 0, 0, 0, 0, 0, i, 0, 0, 0, 0, 0)
+                err = tally.getValue(0, 0, 0, 0, 0, 0, i, 0, 0, 0, 0, 1)
+                flux.append(val)
+                errors.append(err)
+
+            # Energies for lethargy computation
+            ergs = [1e-10]  # Additional "zero" energy for lethargy computation
+            ergs.extend(energies.tolist())
+            ergs = np.array(ergs)
+
+            flux = flux/np.log((ergs[1:]/ergs[:-1]))
+            res2['Energy [MeV]'] = energies
+            res2['Lethargy'] = flux
+            res2['Error'] = errors
+
+        return res
+    
+    @staticmethod
+    def _read_Oktavian_expresult(file):
+        """
+        Given a file containing the Oktavian experimental results read it and
+        return the values to plot.
+    
+        The values equal to 1e-38 are eliminated since it appears that they
+        are the zero values of the instrument used.
+
+        Parameters
+        ----------
+        file : os.Path or str
+            path to the file to be read.
+
+        Returns
+        -------
+        x : np.array
+            energy values.
+        y : np.array
+            lethargy flux values.
+
+        """
+        columns =  ['Upper Energy [MeV]', 'Nominal Energy [MeV]',
+                    'Lower Energy [MeV]', 'Lethargy Flux', 'Error']
+        # First of all understand how many comment lines there are
+        with open(file, 'r') as infile:
+            counter = 0
+            for line in infile:
+                if line[0] == '#':
+                    counter += 1
+                else:
+                    break
+        # then read the file accordingly
+        df = pd.read_csv(file, skiprows=counter, skipfooter=1, engine='python',
+                         header=None, sep='\s+')
+        df.columns = columns
+        
+        df = df[df['Lethargy Flux'] > 2e-38]
+
+        x = df['Nominal Energy [MeV]'].values
+        y = df['Lethargy Flux'].values
+        err = df['Error'].values
+
+        return x, y, err
 
 
-        # # Plot MCNP results
-        # fix, ax = plt.subplots(figsize=(16,9))
+def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='Lethargy',
+                     e_intervals = [0.1, 1, 5, 10, 20]):
+    """
+    Given the benchmark and experimental results returns a df to compile the
+    C/E table for energy intervals
 
-        # Normalize the flux respect to the integral to obtain the spectrum
-        y = values
-        tot_area = np.trapz(y, x=energies)
-        y = y/(tot_area)
+    Parameters
+    ----------
+    df : pd.DataFrame
+        benchmark data.
+    interpolator : func
+        interpolator from experimental data.
+    x : str, optional
+        x column. The default is 'Energy [MeV]'.
+    y : str, optional
+        y columns. The default is 'Lethargy'.
+    e_intervals : list, optional
+        energy intervals to be used. The default is [0, 0.1, 1, 5, 10, 20].
 
-        # # Convert the spectrum into lethargy
-        # # norm will be the log between min and reference energy
-        # norm = math.log(min(data['Energy [MeV]'])/E0)
-        # # norm will be the log between min and max energy
-        # #norm = math.log(min(data['Energy [MeV]'])/max(data['Energy [MeV]']))
-        # y = y/(-norm)
+    Returns
+    -------
+    pd.DataFrame
+        C/E table per energy interval.
 
-        # ax.plot(energies, y, label='MCNP TOF', color='black')
-        # #ax.plot(data['Energy [MeV]'], data['Value'], label='Experiment')
-
-        # ax.plot(data['Energy [MeV]'], data['Value'], '.', label='Experiment', color='green')
-        # plus_error = (1+data['Error']/100)*data['Value']
-        # minus_error = (1-data['Error']/100)*data['Value']
-
-        # # normalize energy bin
-        # y = values_e
-        # tot_area = np.trapz(y, x=energies_e)
-        # y = y/(tot_area)
-
-        # norm = math.log(min(data['Energy [MeV]'])/E0)
-        # y = y/(-norm)
-
-        # ax.plot(energies_e, y, '--', label='MCNP energy', alpha=0.5, color='red')
-
-
-
-    # ax.fill_between(data['Energy [MeV]'], plus_error, minus_error, color='green', alpha=0.2)
-
-    # ax.set_yscale('log')
-    # ax.set_xscale('log')
-    # ax.set_xlabel('Energy [MeV]')
-    # ax.set_ylabel('Neutrons spectrum (n/Lethargy)')
-    # ax.set_title('Time of Flight')
-    # ax.grid()
-
-    # ax.legend()
-
+    """
+    rows = []
+    df = pd.DataFrame(df)
+    df['Exp'] = interpolator(df[x])
+    df['C/E'] = df[y]/df['Exp']
+    e_min = e_intervals[0]
+    for e_max in e_intervals[1:]:
+        red = df[e_min < df[x]]
+        red = red[red[x] < e_max]
+        mean = red['C/E'].mean()
+        std = red['C/E'].std()
+        row = {'C/E': mean, 'Standard Deviation (σ)': std,
+               'Max E': e_max, 'Min E': e_min}
+        rows.append(row)
+        # adjourn min energy
+        e_min = e_max
+    
+    return pd.DataFrame(rows)
+    
+    
+    

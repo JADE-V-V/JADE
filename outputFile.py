@@ -81,7 +81,7 @@ class OutputFile:
 
         return stat_checks
 
-    def assign_tally_description(self, tallylist):
+    def assign_tally_description(self, tallylist, warning=False):
         """
         Include the tally descriptions in the statistical checks dictionary
 
@@ -89,6 +89,9 @@ class OutputFile:
         ----------
         tallylist : list
             List of tallies.
+        warning : bool
+            if True a warning is printed to video when the tally description
+            is not found
 
         Returns
         -------
@@ -103,7 +106,8 @@ class OutputFile:
                     try:
                         tdescr = tally.tallyComment[0]
                     except IndexError:
-                        print('No description t. '+str(tnumber))
+                        if warning:
+                            print(' WARNING: No description t. '+str(tnumber))
                         tdescr = ''
             newkey = tdescr+' ['+str(tnumber)+']'
             new_stat_check[newkey] = result

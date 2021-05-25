@@ -486,7 +486,10 @@ class MCTAL:
                 if self.verbose:
                         print("\n\033[1;34m[Parsing file: %s...]\033[0m" % self.mctalFileName)
  
-                self.getHeaders()
+                header = self.getHeaders()
+                if header == 'NoHeader':
+                    return
+
                 self.getTallies()
  
                 if self.thereAreNaNs and self.verbose:
@@ -523,8 +526,9 @@ class MCTAL:
                 self.header.ntal = int(self.line[1])
  
                 if self.header.ntal == 0:
-                        print("\n \033[1;31mNo tallies in this MCTAL file. Exiting.\033[0m\n", file=sys.stderr)
-                        sys.exit(1)
+                    return 'NoHeader'
+                        # print("\n \033[1;31mNo tallies in this MCTAL file. Exiting.\033[0m\n", file=sys.stderr)
+                        # sys.exit(1)
  
                 if len(self.line) == 4:
                         self.header.npert = int(self.line[3])

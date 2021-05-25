@@ -12,6 +12,7 @@ import status
 import warnings
 import time
 import shutil
+import sys
 
 
 class Session:
@@ -40,21 +41,7 @@ class Session:
 
         cp = os.path.dirname(cp)
 
-        # --- Read or initialize the configuration file ---
-        self.path_cnf = os.path.join(cp, 'Configuration')
-        # Copy default settings if it is the first initialization
-        if not os.path.exists(self.path_cnf):
-            files = self.path_default_settings
-            shutil.copytree(files, self.path_cnf)
-        # Read global configuration file. All vital variables are stored here
-        self.conf = cnf.Configuration(os.path.join(self.path_cnf,
-                                                   'Config.xlsx'))
-
-        # --- Create the library manager ---
-        dl = self.conf.default_lib
-        self.lib_manager = libmanager.LibManager(self.conf.xsdir_path,
-                                                 defaultlib=dl)
-
+        # --- INITIALIZATION ---
         # --- Create/memorize JADE folder structure ---
         # Future implementation
         self.path_quality = os.path.join(cp, 'Quality')
@@ -79,6 +66,28 @@ class Session:
         for path in keypaths:
             if not os.path.exists(path):
                 os.mkdir(path)
+        
+        # Configuration
+        self.path_cnf = os.path.join(cp, 'Configuration')
+        # Copy default settings if it is the first initialization
+        if not os.path.exists(self.path_cnf):
+            print("""
+ Welcome to JADE
+ During this first run the entire JADE tree has been initialized.
+ The application will be now closed. Before restarting the application, please
+ configure at least the variables contained in the "MAIN Config." sheet of the
+ Configuration/Config.xlsx file.
+ 
+""")
+            files = self.path_default_settings
+            shutil.copytree(files, self.path_cnf)
+            # the application needs to be closed
+            sys.exit()
+            
+        # Read global configuration file. All vital variables are stored here
+        self.conf = cnf.Configuration(os.path.join(self.path_cnf,
+                                                   'Config.xlsx'))
+        
 
         # Copy files into benchmark inputs folder
         path_inputs = os.path.join(cp, 'Benchmarks inputs')
@@ -104,6 +113,11 @@ class Session:
         log = os.path.join(self.path_logs,
                            'Log '+time.ctime().replace(':', '-')+'.txt')
         self.log = cnf.Log(log)
+        
+        # --- Create the library manager ---
+        dl = self.conf.default_lib
+        self.lib_manager = libmanager.LibManager(self.conf.xsdir_path,
+                                                 defaultlib=dl)
 
         # --- Initialize status ---
         self.state = status.Status(self)
@@ -154,6 +168,8 @@ if __name__ == "__main__":
     warnings.filterwarnings('ignore',
                             r'overflow encountered in power')
     warnings.filterwarnings('ignore', module=r'plotter')
+    warnings.filterwarnings('ignore',
+                            message=r'Warning: converting a masked element to nan.')
 
     session = Session()
     gui.mainloop(session)

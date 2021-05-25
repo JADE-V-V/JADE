@@ -6,6 +6,9 @@ Created on Thu Jan 16 11:57:26 2020
 """
 import os
 
+MULTI_TEST = ['Sphere', 'Oktavian']
+EXP_TAG = 'Exp'
+
 
 class Status():
     def __init__(self, session):
@@ -38,7 +41,7 @@ class Status():
             libraries[lib] = {}
             cp = os.path.join(self.run_path, lib)
             for test in os.listdir(cp):
-                if test == 'Sphere':
+                if test in MULTI_TEST:
                     libraries[lib][test] = {}
                     cp1 = os.path.join(cp, test)
                     for zaid in os.listdir(cp1):
@@ -289,7 +292,7 @@ class Status():
                 # Check if benchmark folder exists
                 try:
                     test = self.run_tree[lib][testname]
-                    if testname == 'Sphere':
+                    if testname in MULTI_TEST:
                         flag_test_run = True
                         for zaid, files in test.items():
                             # Check if output is present
@@ -304,7 +307,7 @@ class Status():
                                 flag_test_run = False
 
                         if flag_test_run:
-                            test_runned.append('Sphere')
+                            test_runned.append(testname)
                     else:
                         # Check if output is present
                         for file in test:
@@ -319,7 +322,7 @@ class Status():
 
         return test_runned
 
-    def check_pp_single(self, lib, session, tree='single'):
+    def check_pp_single(self, lib, session, tree='single', exp=False):
         """
         Check if the post processing of a single library or a comparison has
         been already done. To consider it done, all benchmarks must have been
@@ -334,6 +337,8 @@ class Status():
         tree : string, optional
             Either 'single' to check in the single pp tree or 'comparison'
             to check into the comparison one. The default is 'single'.
+        exp: boolean
+            if True checks the experimental benchmarks. Default is False
 
         Returns
         -------
@@ -347,9 +352,9 @@ class Status():
         try:
             library_tests = trees[tree][lib]
             # Get both experimental and computational benchmark
-            to_pp = session.check_active_tests('Post-Processing')
-            to_pp_exp = session.check_active_tests('Post-Processing', exp=True)
-            to_pp.extend(to_pp_exp)
+            to_pp = session.check_active_tests('Post-Processing', exp=exp)
+            # to_pp_exp = session.check_active_tests('Post-Processing', exp=True)
+            # to_pp.extend(to_pp_exp)
 
             ans = True
             for test in to_pp:
@@ -360,7 +365,7 @@ class Status():
             # print('entered in key error')
             return False
 
-    def check_override_pp(self, session):
+    def check_override_pp(self, session, exp=False):
         """
         Asks for the library/ies to post-process and checks which tests have
         already been performed and would be overidden according to the
@@ -379,20 +384,26 @@ class Status():
             Library/ies to post process
         ans: Boolean
             True if the PP can begin (Possible override has been accepted).
+        exp: boolean
+            if True checks the experimental benchmarks. Default is False
 
         """
         lib_input = input(' Libraries to post-process (e.g. 31c-71c): ')
         # Individuate libraries to pp
         libs = lib_input.split('-')
-        if len(libs) == 1:
-            tagpp = 'Single Libraries'
-        else:
+        if exp:
             tagpp = 'Comparison'
+        else:
+            if len(libs) == 1:
+                tagpp = 'Single Libraries'
+            else:
+                tagpp = 'Comparison'
 
         # Check if libraries have been run
         flag_not_run = False
         for lib in libs:
-            test_run = self.check_lib_run(lib, session, 'Post-Processing')
+            test_run = self.check_lib_run(lib, session, 'Post-Processing',
+                                          exp=exp)
             if len(test_run) == 0:  # TODO not checking for each benchmark
                 flag_not_run = True
                 lib_not_run = lib
@@ -403,10 +414,11 @@ class Status():
             ans = False
             print(' '+lib_not_run+' was not run. Please run it first.')
         else:
-            # Check if single pp has been done
-            for lib in libs:
-                if not self.check_pp_single(lib, session):
-                    to_single_pp.append(lib)
+            # Check if single pp has been done (if not experimantal benchmark)
+            if not exp:
+                for lib in libs:
+                    if not self.check_pp_single(lib, session):
+                        to_single_pp.append(lib)
 
             # Single Library PP
             if tagpp == 'Single Libraries':
@@ -438,13 +450,18 @@ class Status():
             # Libraries comparison PP
             elif tagpp == 'Comparison':
                 # Check if comparisons have been done
-                name = libs[0]
-                for lib in libs[1:]:
-                    name = name+'_Vs_'+lib
+                if exp:
+                    name = EXP_TAG
+                    for lib in libs:
+                        name = name+'_Vs_'+lib
+                else:
+                    name = libs[0]
+                    for lib in libs[1:]:
+                        name = name+'_Vs_'+lib
 
                 # print(name)
                 override = self.check_pp_single(name, session,
-                                                tree='comparison')
+                                                tree='comparison', exp=exp)
                 # Ask for override
                 if override:
 

@@ -11,6 +11,8 @@ import pandas as pd
 import os
 import shutil
 import plotter
+import pythoncom
+
 from tqdm import tqdm
 import atlas as at
 import numpy as np
@@ -19,6 +21,17 @@ from output import MCNPoutput
 
 
 class SphereOutput(BenchmarkOutput):
+
+    def __init__(self, lib, testname, session):
+        super().__init__(lib, testname, session)
+
+        # Load the settings for zaids and materials
+        mat_path = os.path.join(self.cnf_path, 'MaterialsSettings.csv')
+        self.mat_settings = pd.read_csv(mat_path, sep=';').set_index('Symbol')
+
+        zaid_path = os.path.join(self.cnf_path, 'ZaidSettings.csv')
+        self.zaid_settings = pd.read_csv(zaid_path, sep=';').set_index('Z')
+        
 
     def single_postprocess(self):
         """
@@ -63,8 +76,8 @@ class SphereOutput(BenchmarkOutput):
         # Printing Atlas
         template = os.path.join(self.code_path, 'Templates',
                                 'AtlasTemplate.docx')
-        atlas = at.Atlas(template, self.lib)
-        atlas.build(outpath, self.session.lib_manager)
+        atlas = at.Atlas(template, 'Sphere '+self.lib)
+        atlas.build(outpath, self.session.lib_manager, self.mat_settings)
         atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(outpath)
@@ -72,6 +85,15 @@ class SphereOutput(BenchmarkOutput):
         print(' Single library post-processing completed')
 
     def compare(self):
+        """
+        Execute the full post-processing of a comparison of libraries
+        (i.e. excel, and atlas)
+
+        Returns
+        -------
+        None.
+
+        """
         print(' Generating Excel Recap...')
         self.pp_excel_comparison()
         print(' Creating Atlas...')
@@ -131,8 +153,8 @@ class SphereOutput(BenchmarkOutput):
         # Printing Atlas
         template = os.path.join(self.code_path, 'Templates',
                                 'AtlasTemplate.docx')
-        atlas = at.Atlas(template, globalname)
-        atlas.build(outpath, self.session.lib_manager)
+        atlas = at.Atlas(template, 'Sphere '+globalname)
+        atlas.build(outpath, self.session.lib_manager, self.mat_settings)
         atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(outpath)
@@ -163,8 +185,8 @@ class SphereOutput(BenchmarkOutput):
             zaidnum = pieces[-2]
             # Check for material exception
             if zaidnum == 'Sphere':
-                zaidnum = pieces[-1]
-                zaidname = 'Typical Material'
+                zaidnum = pieces[-1].upper()
+                zaidname = self.mat_settings.loc[zaidnum, 'Name']
             else:
                 zaidname = pieces[-1]
             # Get mfile
@@ -252,8 +274,8 @@ class SphereOutput(BenchmarkOutput):
                     zaidnum = pieces[-2]
                     # Check for material exception
                     if zaidnum == 'Sphere':
-                        zaidnum = pieces[-1]
-                        zaidname = 'Typical Material'
+                        zaidnum = pieces[-1].upper()
+                        zaidname = self.mat_settings.loc[zaidnum, 'Name']
                     else:
                         zaidname = pieces[-1]
 
@@ -305,16 +327,18 @@ class SphereOutput(BenchmarkOutput):
 
             # Build the final excel data
             final = (dfs[0].loc[newidx]-dfs[1].loc[newidx])/dfs[0].loc[newidx]
+            absdiff = (dfs[0].loc[newidx]-dfs[1].loc[newidx]) 
 
             self.diff_data = final
+            self.absdiff = absdiff
 
             # Correct sorting
-            final.reset_index(inplace=True)
-            final['index'] = pd.to_numeric(final['Zaid'].values,
-                                           errors='coerce')
-            final.sort_values('index', inplace=True)
-            del final['index']
-            final.set_index(['Zaid', 'Zaid Name'], inplace=True)
+            for df in [final, absdiff]:
+                df.reset_index(inplace=True)
+                df['index'] = pd.to_numeric(df['Zaid'].values, errors='coerce')
+                df.sort_values('index', inplace=True)
+                del df['index']
+                df.set_index(['Zaid', 'Zaid Name'], inplace=True)
 
             # Create and concat the summary
             old_l = 0
@@ -351,17 +375,30 @@ class SphereOutput(BenchmarkOutput):
             summary.set_index('Range', inplace=True)
 
             # If it is zero the CS are equal! (NaN if both zeros)
-            final[final == np.nan] = 'Not Available'
-            final[final == 0] = 'Identical'
+            for df in [final, absdiff]:
+                df[df == np.nan] = 'Not Available'
+                df[df == 0] = 'Identical'
 
-            # Write excel
+            # --- Write excel ---
+            # Generate the excel
             ex = SphereExcelOutputSheet(template, outpath)
-            # Results
-            rangeex = ex.wb.sheets[0].range('B10')
+            # Prepare the copy of the comparison sheet
+            template_sheet = 'Comparison'
+            template_absdiff = 'Comparison (Abs diff)'
+            ws_comp = ex.wb.sheets[template_sheet]
+            ws_diff = ex.wb.sheets[template_absdiff]
+
+            # WRITE RESULTS
+            # Percentage comparison            
+            rangeex = ws_comp.range('B10')
             rangeex.options(index=True, header=True).value = final
-            ex.wb.sheets[0].range('D1').value = name
-            rangeex2 = ex.wb.sheets[0].range('V10')
+            ws_comp.range('D1').value = name
+            rangeex2 = ws_comp.range('V10')
             rangeex2.options(index=True, header=True).value = summary
+            # Absolute difference comparison
+            rangeex = ws_diff.range('B10')
+            rangeex.options(index=True, header=True).value = absdiff
+            ws_diff.range('D1').value = name
 
             # Add single pp sheets
             for lib in [reflib, tarlib]:
@@ -643,6 +680,39 @@ class SphereExcelOutputSheet:
             # copy to an existing workbook by putting it in front of a
             # worksheet object
             sheet.api.Copy(Before=self.wb.sheets[0].api)
+
+    def copy_internal_sheet(self, template_sheet, newname):
+        """
+        Return a renamed copy of a particular sheet
+
+        Parameters
+        ----------
+        template_sheet : xw.Sheet
+            sheet to copy.
+        newname : str
+            name of the new sheet.
+
+        Returns
+        -------
+        ws : xw.Sheet
+            copied sheet.
+
+        """
+        # Copy the template sheet
+        try:  # Should work from v0.22 of xlwings
+            template_sheet.copy(before=template_sheet)
+        except AttributeError:
+            # Fall Back onto the native object
+            template_sheet.api.Copy(Before=template_sheet.api)
+        try:
+            ws = self.wb.sheets(template_sheet.name+' (2)')
+        except pythoncom.com_error:
+            print('The available sheets are :'+str(self.wb.sheets))
+        try:
+            ws.name = newname
+        except pythoncom.com_error:
+            ws.Name = newname
+        return ws
 
     def save(self):
         """

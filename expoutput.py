@@ -165,8 +165,12 @@ class OktavianOutput(ExperimentalOutput):
             todump = ft.loc[material]
             todump = todump.pivot(index=['Particle', 'Energy Range [MeV]'],
                                   columns='Library', values='C/E (mean +/- σ)')
-            todump.style.set_caption("C/E (mean +/- σ)")
-            todump.to_excel(writer, sheet_name=material)
+            todump.to_excel(writer, sheet_name=material, startrow=2)
+            ws = writer.sheets[material]
+            ws.write_string(0, 0, '"C/E (mean +/- σ)"')
+            
+            # adjust columns' width
+            writer.sheets[material].set_column(0, 4, 18)
         # Close the Pandas Excel writer and output the Excel file.
         writer.save()
 

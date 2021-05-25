@@ -225,6 +225,9 @@ class Fmesh:
         """
         Access the fmesh results and get the data columns compatible with the
         mctal classic tallies ones
+        
+        Parameters
+        ----------
 
         Returns
         -------
@@ -234,13 +237,29 @@ class Fmesh:
             data with compatible columns name.
 
         """
-        data = self.data
+        # First of all check if the tally is 1D, in that case reduce the data
+        flag1D, ax = self.is1D()
+
+        data = self.data.copy()
         newcols = []
         for column in data.columns:
-            try:
-                newcols.append(CONV[column])
-            except KeyError:
-                print('Key: "'+column+'" is not yet convertible')
+            if flag1D:
+                # Add to the new data only the necessary if is 1D
+                if column in [ax, self._values_tag, self._error_tag]:
+                    try:
+                        newcols.append(CONV[column])
+                    except KeyError:
+                        print('Key: "'+column+'" is not yet convertible')
+                else:
+                    # If it not to keep just drop the column
+                    del data[column]
+
+            # If it is not a 1D just convert the columns names
+            else:
+                try:
+                    newcols.append(CONV[column])
+                except KeyError:
+                    print('Key: "'+column+'" is not yet convertible')
 
         data.columns = newcols
         

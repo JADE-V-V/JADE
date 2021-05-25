@@ -17,6 +17,7 @@ import numpy as np
 import string
 from outputFile import OutputFile
 from meshtal import Meshtal
+from main import fatal_exception
 import pickle
 
 
@@ -153,7 +154,11 @@ class BenchmarkOutput:
             # Keep only tallies to plot
             atl_cnf_plot = atl_cnf[atl_cnf[plot_type]]
             for tally_num in tqdm(atl_cnf_plot.index, desc='Tallies'):
-                output = self.outputs[tally_num]
+                try:
+                    output = self.outputs[tally_num]
+                except KeyError:
+                    fatal_exception('tally n. '+str(tally_num) + 
+                                    ' is in config but not in the MCNP output')
                 vals_df = output['Value']
                 err_df = output['Error']
                 quantity = str(atl_cnf_plot['Quantity'].loc[tally_num])
@@ -354,10 +359,8 @@ class BenchmarkOutput:
             for tally in mctal.tallies:
                 num = tally.tallyNumber
                 key = tally.tallyComment[0]
-                print(num, key)
                 # keys[num] = key  # Memorize tally descriptions
                 tdata = mcnp_output.tallydata[num].copy()  # Full tally data
-                print(ex_cnf)
                 try:
                     tally_settings = ex_cnf.loc[num]
                 except KeyError:
@@ -618,6 +621,7 @@ class MCNPoutput:
             # Extract the available 1D to be merged with normal tallies
             fmesh1D = self.meshtal.extract_1D()
             for tallynum, data in fmesh1D.items():
+                tallynum = int(tallynum)  # Coherence with tallies
                 # Add them to the tallly data
                 self.tallydata[tallynum] = data['data'] 
                 self.totalbin[tallynum] = None

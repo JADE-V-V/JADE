@@ -14,6 +14,10 @@ import time
 import shutil
 import sys
 
+# RED color
+CRED = '\033[91m'
+CEND = '\033[0m'
+
 
 class Session:
     """
@@ -158,6 +162,29 @@ class Session:
                 to_perform.append(testname)
 
         return to_perform
+
+
+def fatal_exception(message=None):
+    """
+    Use this function to exit with a code error from a handled exception
+
+    Parameters
+    ----------
+    message : str, optional
+        Message to display. The default is None.
+
+    Returns
+    -------
+    None.
+
+    """
+    if message is None:
+        message = 'A Fatal exception have occured'
+    
+    message = message+', the application will now exit'
+    print(CRED+' FATAL EXCEPTION: \n'+message+CEND)
+    sys.exit()
+    
 
 
 if __name__ == "__main__":

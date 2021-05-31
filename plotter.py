@@ -7,14 +7,48 @@ Created on Tue Jan 14 16:44:45 2020
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from matplotlib.ticker import (LogLocator, AutoMinorLocator, MultipleLocator,
                                AutoLocator)
 from matplotlib.markers import CARETUPBASE
 from matplotlib.markers import CARETDOWNBASE
+from matplotlib.patches import Patch
 from matplotlib.lines import Line2D
 from scipy.interpolate import interp1d
+from matplotlib.patches import Rectangle
 
 
+# ============================================================================
+#                   Specific data for benchmarks plots
+# ============================================================================
+
+# --- TBM HCPB ---
+TBM_HCPB_RECT = [['Void', 'White', 840, 850.3],
+                 ['Eurofer97', '#377eb8', 850.3, 850.6],
+                 ['Water cooled Eurofer97', '#ff7f00', 850.6, 851.3],
+                 ['Eurofer97', '#377eb8', 851.3, 853.3],
+                 ['Breeding Area pt1', '#4daf4a', 853.3, 855.4],
+                 ['Breeding Area pt2', '#f781bf',  855.4, 859.9],
+                 ['Breeding Area pt3', '#a65628', 859.9, 893.3],
+                 ['Breeding Unit Pipework', '#984ea3', 893.3, 918.8],
+                 ['Gap', '#999999', 918.8, 946.3],
+                 ['SS316L(N)-IG/Water', '#e41a1c', 946.3, 1084.2]]
+TBM_HCPB_RECT = pd.DataFrame(TBM_HCPB_RECT)
+TBM_HCPB_RECT.columns = ['name', 'color', 'xmin', 'xmax']
+XLIM_HCPB = (830, 1090)
+
+# --- ITER 1D ---
+ADD_LABELS_ITER1D = {'major': [('INBOARD', 0.21), ('PLASMA', 0.45),
+                               ('OUTBOARD', 0.70)],
+                     'minor': [('TF Coil', 0.1), ('VV', 0.26),
+                               ('FW/B/S', 0.37), ('FW/B/S', 0.55),
+                               ('VV', 0.70), ('TF Coil', 0.87)]}
+VERT_LINES_ITER1D = {'major': [49, 53], 'minor': [23, 32, 70, 84]}
+
+
+# ============================================================================
+#                   Plotter Class
+# ============================================================================
 class Plotter():
     def __init__(self, data, title, outpath, outname, quantity, unit, xlabel,
                  testname, ext='.png', fontsize=20):
@@ -76,17 +110,14 @@ class Plotter():
         # --- Ratio Plot ---
         elif plot_type == 'Ratio graph':
             if self.testname == 'ITER_1D':  # Special actions for ITER 1D
-                a_l = {'major': [('INBOARD', 0.21), ('PLASMA', 0.45),
-                                 ('OUTBOARD', 0.70)],
-                       'minor': [('TF Coil', 0.1), ('VV', 0.26),
-                                 ('FW/B/S', 0.37), ('FW/B/S', 0.55),
-                                 ('VV', 0.70), ('TF Coil', 0.87)]}
-                v_lines = {'major': [49, 53], 'minor': [23, 32, 70, 84]}
-
-                outp = self._ratio_plot(additional_labels=a_l, v_lines=v_lines)
+                outp = self._ratio_plot(additional_labels=ADD_LABELS_ITER1D,
+                                        v_lines=VERT_LINES_ITER1D)
+            elif self.testname == 'HCPB_TBM_1D':
+                outp = self._ratio_plot(recs=TBM_HCPB_RECT, xlimits=XLIM_HCPB,
+                                        markers=True)
             else:
                 outp = self._ratio_plot()
-        
+
         # --- Experimental Points Plot ---
         elif plot_type == 'Experimental points':
             outp = self._exp_points_plot()
@@ -99,7 +130,7 @@ class Plotter():
         """
         Plot a simple plot that compares experimental data points with
         computational calculation.
-        
+
         Also a C/E plot is added
 
         Parameters
@@ -118,7 +149,7 @@ class Plotter():
         ref = data[0]
         # Adjounrn ylabel
         ylabel = self.quantity+' ['+self.unit+']'
-        
+
         # Grid info
         gridspec_kw = {'height_ratios': [3, 1], 'hspace': 0.13}
         figsize = (18, 13.5)
@@ -127,10 +158,10 @@ class Plotter():
         fig, axes = plt.subplots(nrows=2, ncols=1, sharex=True,
                                  figsize=figsize,
                                  gridspec_kw=gridspec_kw)
-        
+
         ax1 = axes[0]
         ax2 = axes[1]
-        
+
         # Plot referece
         ax1.plot(ref['x'], ref['y'], 's', color=self.colors[0],
                  label=ref['ylabel'])
@@ -158,7 +189,7 @@ class Plotter():
         ax1.set_title(self.title, fontsize=fontsize+4)
         ax1.set_ylabel(ylabel).set_fontsize(fontsize)
         ax1.legend(loc='best', prop={'size': fontsize-5})
-        
+
         # limit the ax 2 to [0, 2]
         ax2.set_ylim(bottom=0, top=2)
         ax2.set_ylabel('C/E').set_fontsize(fontsize)
@@ -166,7 +197,7 @@ class Plotter():
         ax2.axhline(y=1, linestyle='--', color='black')
         # # Draw the exp error
         # ax2.fill_between(ref['x'], 1+ref['err'], 1-ref['err'], alpha=0.2)
-        
+
         # Common for all axes
         for ax in axes:
             ax.set_xscale('log')
@@ -180,28 +211,37 @@ class Plotter():
             ax.tick_params(which='major', width=1.00, length=5,
                            labelsize=fontsize-2)
             ax.tick_params(which='minor', width=0.75, length=2.50)
-    
+
             # Grid
             ax.grid('True', which='major', linewidth=0.50)
             ax.grid('True', which='minor', linewidth=0.20)
 
         return self._save()
 
-    def _ratio_plot(self, additional_labels=None, v_lines=None):
+    def _ratio_plot(self, additional_labels=None, v_lines=None, recs=None,
+                    xlimits=None, markers=False):
         """
         Plot a ratio plot where all data dictionaries are plotted against the
         first one which is used as reference
 
         Parameters
         ----------
-        additional_labels : dic
+        additional_labels : dic, optional
             contains additional tags to print in the plot.
             {'major': [(label, xpos), ...], 'minor': [(label, xpos), ...]}.
-            The default is None
-        v_lines : dic
+            The default is None.
+        v_lines : dic, optional
             contains additional vertical lines to plot.
             {'major': [xpos, ...], 'minor': [xpos, ...]}.
-            The default is None
+            The default is None.
+        recs : pd.DataFrame, optional
+            contains the data to draw rectangles on the plot. Columns values
+            are ['name', 'color', 'xmin', 'xmax']. The default is None
+        xlimits : tuple
+            (xmin, xmax). The default is None.
+        markers : bool
+            if True markers are applied to the line plots.
+            The default is False.
 
         Returns
         -------
@@ -220,10 +260,28 @@ class Plotter():
         fig, ax = plt.subplots(figsize=(16, 9))
 
         # Plot all data
+        y_max = 0
+        y_min = 0
         try:
             for i, dic in enumerate(data[1:]):
-                ax.plot(dic['x'], dic['y']/ref['y'], color=self.colors[i],
-                        drawstyle='steps-mid', label=dic['ylabel'])
+                y = dic['y']/ref['y']
+                # Adjourn y max and min
+                if i == 0:
+                    y_max = max(y)
+                    y_min = min(y)
+                else:
+                    if max(y) > y_max:
+                        y_max = max(y)
+                    if min(y) < y_min:
+                        y_min = y_min
+                # Plot
+                if markers:
+                    marker = self.markers[i]
+                else:
+                    marker = None
+                ax.plot(dic['x'], y, color=self.colors[i],
+                        drawstyle='steps-mid', label=dic['ylabel'],
+                        marker=marker)
 
         except KeyError:
             # it is a single pp
@@ -277,6 +335,37 @@ class Plotter():
             for line in lines:
                 ax.axvline(line, color='black', ymin=0.10, ymax=0.90,
                            linestyle='--', linewidth=1)
+
+        # Add Rectangles if requested
+        if recs is not None:
+            # Plot the rects
+            height = y_max-y_min
+            _add_recs(ax, recs, height, y_origin=y_min)
+
+            # Build the additional legend
+            # Drop duplicates
+            df = TBM_HCPB_RECT[['color', 'name']].drop_duplicates()
+            legend_elements = []
+            for key, row in df.iterrows():
+                patch = Patch(facecolor=row['color'], edgecolor='black',
+                              label=row['name'], alpha=0.2)
+                legend_elements.append(patch)
+
+            additional_legend = ax.legend(handles=legend_elements,
+                                          loc='upper center',
+                                          bbox_to_anchor=(0.5, -0.1),
+                                          fancybox=True,
+                                          ncol=5,
+                                          shadow=True,
+                                          prop={'size': fontsize-5})
+            # Normal legend needs to be reprinted
+            ax.legend(loc='best', prop={'size': fontsize-5})
+            # And now the custom one
+            ax.add_artist(additional_legend)
+
+        # Limit the x-axis if needed
+        if xlimits is not None:
+            ax.set_xlim(xlimits[0], xlimits[1])
 
         return self._save()
 
@@ -445,7 +534,46 @@ class Plotter():
     def _save(self):
         plt.tight_layout()
 
-        plt.savefig(self.outpath)
+        plt.savefig(self.outpath, bbox_inches='tight')
         plt.close()
 
         return self.outpath
+
+
+# ============================================================================
+#                   Useful Plotting Functions
+# ============================================================================
+# colors = ['white', '#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628',
+#           '#984ea3', '#999999', '#e41a1c', '#dede00', '#b83739', '#7d751d',
+#           '#00ffee', '#96448a', '#b6fcd5', '#ff7f50', '#4b3832', '#cccc00',
+#           '#660066']
+def _add_recs(ax, rec_data, height, y_origin=0):
+    """
+    Given rectangles data add them to a specific pyplot.Ax
+
+    Parameters
+    ----------
+    ax : matplotlib.pyplot.Ax
+        Ax onto which add the rectangles.
+    rec_data : pd.DataFrame
+        table data for the rectangles.
+    height : float
+        height of the rectangles (in ax y-unit).
+    y_origin : float, optional
+        y origin for the rectangles (in ax y-unit). The default is 0.
+
+    Returns
+    -------
+    None.
+
+    """
+
+    for _, rec in rec_data.iterrows():
+        # Create the rectangle
+        width = rec['xmax']-rec['xmin']
+        origin = (rec['xmin'], y_origin)
+        color = rec['color']
+
+        rectangle = Rectangle(origin, width=width, height=height,
+                              color=color, alpha=0.2)
+        ax.add_patch(rectangle)

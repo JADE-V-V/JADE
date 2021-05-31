@@ -17,7 +17,7 @@ PAT_PARTICLE = re.compile('(?=<mesh tally).+')
 # Meshtal to mctal conversion
 # COLUMNS = ['Cells', 'Dir', 'User', 'Segments', 'Multiplier', 'Cosine',
 #            'Energy', 'Time', 'Cor C', 'Cor B', 'Cor A', 'Value', 'Error']
-CONV = {'Result': 'Value', 'Rel Error': 'Error', 'R': 'Cor A', 'Z': 'Cor B',
+CONV = {'Result': 'Value', 'Rel': 'Error', 'R': 'Cor A', 'Z': 'Cor B',
         'Th': 'Cor C'}
 
 
@@ -65,7 +65,7 @@ class Meshtal:
                                 'desc': fmesh.description}
 
         self.fmesh1D = fmesh1D
-        
+
         return fmesh1D
 
     def _read_file(self):
@@ -83,11 +83,11 @@ class Meshtal:
             flag_inheader = True
             flag_intally = False
             flag_inmesh = False
-            
+
             # default values
             particle = None
             description = None
-            
+
             fmeshes = {}
 
             for idx, line in enumerate(infile):
@@ -95,14 +95,14 @@ class Meshtal:
                 if flag_inheader:
                     # Things to look for
                     tally_num = PAT_NUM.search(line)
-                    
+
                     # Finding a tally num triggers the exit from header
                     if tally_num is not None:
                         flag_inheader = False
                         flag_intally = True
                         # New Fmesh initialized
                         current_num = tally_num.group().strip()
-                        
+
                 # --- Operations while reading the tally header ---
                 elif flag_intally:
                     # Things to look for
@@ -122,26 +122,27 @@ class Meshtal:
                         flag_inmesh = True
                         skiprows = idx  # Memorize where reading should start
                         nrows = 1
-                        
+
                 # --- Operations while reading the tally values ---
                 elif flag_inmesh:
                     # Just check when the data finishes (blank line)
                     if len(line.strip()) == 0:
-                        flag_intally = True
+                        flag_inheader = True
                         flag_inmesh = False
                         # Blank line, read and adjourn fmesh
-                        fmesh_data = pd.read_fwf(self.filepath,
+                        fmesh_data = pd.read_csv(self.filepath,
+                                                 sep='\s+',
                                                  skiprows=skiprows,
-                                                 nrows=nrows)
+                                                 nrows=nrows-1)
                         # Generate the FMESH and update the dic
                         fmesh = Fmesh(fmesh_data, current_num, description,
                                       particle)
                         fmeshes[current_num] = fmesh
-                        
+
                         # Reistantiate default values
                         particle = None
                         description = None
-                        
+
                     else:
                         # one more line to read
                         nrows += 1
@@ -149,13 +150,15 @@ class Meshtal:
             # --- At the end of file some more operation may be needed ---
             # If we were still reading tally add it
             if flag_inmesh:
-                fmesh_data = pd.read_fwf(self.filepath, skiprows=skiprows,
+                fmesh_data = pd.read_csv(self.filepath, sep='\s+',
+                                         skiprows=skiprows,
                                          nrows=nrows)
                 # Generate the FMESH and update the dic
                 fmesh = Fmesh(fmesh_data, current_num, description, particle)
                 fmeshes[current_num] = fmesh
 
         return fmeshes
+
 
 class Fmesh:
     def __init__(self, data, tallynum, description, particle):
@@ -178,14 +181,14 @@ class Fmesh:
         None.
 
         """
-        self.data = data
+        self.data = data.dropna(axis=1)
         self.tallynum = tallynum
         self.description = description
         self.particle = particle
-        
+
         self._values_tag = 'Result'
-        self._error_tag = 'Rel Error'
-    
+        self._error_tag = 'Rel'
+
     def is1D(self):
         """
         This method checks if an fmesh tally can be compressed into 1D
@@ -200,7 +203,7 @@ class Fmesh:
             returned.
 
         """
-        df = self.data
+        df = self.data.copy()
         axes = []
         for column in df.columns:
             # Iterate on all columns except the results and errors
@@ -218,14 +221,14 @@ class Fmesh:
         else:
             flag_1D = False
             ax = None
-        
+
         return flag_1D, ax
 
     def convert2tally(self):
         """
         Access the fmesh results and get the data columns compatible with the
         mctal classic tallies ones
-        
+
         Parameters
         ----------
 
@@ -262,7 +265,5 @@ class Fmesh:
                     print('Key: "'+column+'" is not yet convertible')
 
         data.columns = newcols
-        
-        return self.tallynum, data
-                
 
+        return self.tallynum, data

@@ -57,7 +57,7 @@ class Atlas():
         self.doc.add_picture(img, width=width)
         last_paragraph = self.doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        
+
     def insert_df(self, df, caption=None, highlight=False, template_idx=None,
                   tablestyle=None):
         """
@@ -128,7 +128,7 @@ class Atlas():
                         self._highlightCell(cell)
                     elif cell.text == 'OK' and flag_almost:
                         self._highlightCell(cell, color='FFFF46')
-        
+
         if caption is not None:
             paragraph = self.doc.add_paragraph('Table ', style='Didascalia')
             self._wrapper(paragraph, 'table')
@@ -136,8 +136,6 @@ class Atlas():
         # paragraph = doc.add_paragraph('Figure Text', style='Didascalia')
 
         return table
-
-    
 
     def build(self, images_path, libmanager, mat_settings):
         """
@@ -152,7 +150,7 @@ class Atlas():
 
         lib_manager : libmanager.LibManager
             Library manager for conversions and name recovery.
-        
+
         mat_settings : pd.DataFrame
             contains settings for Materials
 
@@ -235,7 +233,7 @@ class Atlas():
 
             doc.Close()
             word.Quit()
-    
+
     @staticmethod
     def _wrapper(paragraph, ptype):
         """

@@ -509,7 +509,6 @@ Additional Post-Processing of library:"""+lib+' completed\n', spacing=False)
                 t = 'Post-Processing completed'
                 session.log.bar_adjourn(t, spacing=False)
 
-
         elif option == 'back':
             mainloop(session)
 

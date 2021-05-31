@@ -31,7 +31,6 @@ class SphereOutput(BenchmarkOutput):
 
         zaid_path = os.path.join(self.cnf_path, 'ZaidSettings.csv')
         self.zaid_settings = pd.read_csv(zaid_path, sep=';').set_index('Z')
-        
 
     def single_postprocess(self):
         """
@@ -327,7 +326,7 @@ class SphereOutput(BenchmarkOutput):
 
             # Build the final excel data
             final = (dfs[0].loc[newidx]-dfs[1].loc[newidx])/dfs[0].loc[newidx]
-            absdiff = (dfs[0].loc[newidx]-dfs[1].loc[newidx]) 
+            absdiff = (dfs[0].loc[newidx]-dfs[1].loc[newidx])
 
             self.diff_data = final
             self.absdiff = absdiff
@@ -389,7 +388,7 @@ class SphereOutput(BenchmarkOutput):
             ws_diff = ex.wb.sheets[template_absdiff]
 
             # WRITE RESULTS
-            # Percentage comparison            
+            # Percentage comparison
             rangeex = ws_comp.range('B10')
             rangeex.options(index=True, header=True).value = final
             ws_comp.range('D1').value = name

@@ -157,7 +157,7 @@ class BenchmarkOutput:
                 try:
                     output = self.outputs[tally_num]
                 except KeyError:
-                    fatal_exception('tally n. '+str(tally_num) + 
+                    fatal_exception('tally n. '+str(tally_num) +
                                     ' is in config but not in the MCNP output')
                 vals_df = output['Value']
                 err_df = output['Error']
@@ -403,7 +403,6 @@ class BenchmarkOutput:
                     # memorize for atlas
                     outputs[num][label] = main_value_df
                     # insert the df in pieces
-                    print(main_value_df)
                     ex.insert_cutted_df('B', main_value_df, label+'s', ylim,
                                         header=(key, 'Tally n.'+str(num)),
                                         index_name=x_tag, cols_name=y_tag,
@@ -477,8 +476,8 @@ class BenchmarkOutput:
         iteration = 0
         for reflib, tarlib, name in self.couples:
             iteration = iteration+1
-            outpath = os.path.join(self.excel_path, self.testname+'_Comparison_' +
-                                   name+'.xlsx')
+            outpath = os.path.join(self.excel_path, self.testname +
+                                   '_Comparison_'+name+'.xlsx')
             ex = ExcelOutputSheet(template, outpath)
             # Get results
             if iteration == 1:
@@ -602,7 +601,7 @@ class MCNPoutput:
         """
         self.mctal_file = mctal_file  # path to mcnp mctal file
         self.output_file = output_file  # path to mcnp output file
-        self.meshtal_file = meshtal_file # path to mcnp meshtal file
+        self.meshtal_file = meshtal_file  # path to mcnp meshtal file
 
         # Read and parse the mctal file
         mctal = mtal.MCTAL(mctal_file)
@@ -623,7 +622,7 @@ class MCNPoutput:
             for tallynum, data in fmesh1D.items():
                 tallynum = int(tallynum)  # Coherence with tallies
                 # Add them to the tallly data
-                self.tallydata[tallynum] = data['data'] 
+                self.tallydata[tallynum] = data['data']
                 self.totalbin[tallynum] = None
 
                 # Create fake tallies to be added to the mctal
@@ -700,7 +699,9 @@ class MCNPoutput:
             # Sub DF containing only total bins
             try:
                 dftotal = df[df[total] == 'total']
-            except KeyError:
+            except (KeyError, NameError):
+                # KeyError : there is no total bin in df
+                # NameError: total variable was not defined
                 dftotal = None
 
             tallydata[t.tallyNumber] = df

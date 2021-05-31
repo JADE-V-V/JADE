@@ -70,7 +70,7 @@ class Session:
         for path in keypaths:
             if not os.path.exists(path):
                 os.mkdir(path)
-        
+
         # Configuration
         self.path_cnf = os.path.join(cp, 'Configuration')
         # Copy default settings if it is the first initialization
@@ -81,17 +81,16 @@ class Session:
  The application will be now closed. Before restarting the application, please
  configure at least the variables contained in the "MAIN Config." sheet of the
  Configuration/Config.xlsx file.
- 
+
 """)
             files = self.path_default_settings
             shutil.copytree(files, self.path_cnf)
             # the application needs to be closed
             sys.exit()
-            
+
         # Read global configuration file. All vital variables are stored here
         self.conf = cnf.Configuration(os.path.join(self.path_cnf,
                                                    'Config.xlsx'))
-        
 
         # Copy files into benchmark inputs folder
         path_inputs = os.path.join(cp, 'Benchmarks inputs')
@@ -117,7 +116,7 @@ class Session:
         log = os.path.join(self.path_logs,
                            'Log '+time.ctime().replace(':', '-')+'.txt')
         self.log = cnf.Log(log)
-        
+
         # --- Create the library manager ---
         dl = self.conf.default_lib
         self.lib_manager = libmanager.LibManager(self.conf.xsdir_path,
@@ -180,11 +179,10 @@ def fatal_exception(message=None):
     """
     if message is None:
         message = 'A Fatal exception have occured'
-    
+
     message = message+', the application will now exit'
     print(CRED+' FATAL EXCEPTION: \n'+message+CEND)
     sys.exit()
-    
 
 
 if __name__ == "__main__":

@@ -37,6 +37,21 @@ TBM_HCPB_RECT = pd.DataFrame(TBM_HCPB_RECT)
 TBM_HCPB_RECT.columns = ['name', 'color', 'xmin', 'xmax']
 XLIM_HCPB = (830, 1090)
 
+# --- TBM WCLL ---
+TBM_WCLL_RECT = [['Void', 'White', 840, 850.3],
+                 ['Eurofer97', '#377eb8', 850.3, 850.6],
+                 ['Water cooled Eurofer97', '#ff7f00', 850.6, 851.3],
+                 ['Eurofer97', '#377eb8', 851.3, 853.3],
+                 ['Breeding Area pt1', '#4daf4a', 853.3, 854.3],
+                 ['Breeding Area pt2', '#f781bf',  854.3, 862.5],
+                 ['Breeding Area pt3', '#a65628', 862.5, 903.4],
+                 ['Breeding Unit Pipework', '#984ea3', 903.4, 918.8],
+                 ['Gap', '#999999', 918.8, 946.3],
+                 ['SS316L(N)-IG/Water', '#e41a1c', 946.3, 1084.2]]
+TBM_WCLL_RECT = pd.DataFrame(TBM_WCLL_RECT)
+TBM_WCLL_RECT.columns = ['name', 'color', 'xmin', 'xmax']
+XLIM_WCLL = (830, 1090)
+
 # --- ITER 1D ---
 ADD_LABELS_ITER1D = {'major': [('INBOARD', 0.21), ('PLASMA', 0.45),
                                ('OUTBOARD', 0.70)],
@@ -114,6 +129,9 @@ class Plotter():
                                         v_lines=VERT_LINES_ITER1D)
             elif self.testname == 'HCPB_TBM_1D':
                 outp = self._ratio_plot(recs=TBM_HCPB_RECT, xlimits=XLIM_HCPB,
+                                        markers=True)
+            elif self.testname == 'WCLL_TBM_1D':
+                outp = self._ratio_plot(recs=TBM_WCLL_RECT, xlimits=XLIM_WCLL,
                                         markers=True)
             else:
                 outp = self._ratio_plot()

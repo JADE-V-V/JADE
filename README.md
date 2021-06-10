@@ -16,6 +16,7 @@ For additional information contact: d.laghi@nier.it
 - Microsoft Office suite (Excel and Word);
 - Additional Python packages to Anaconda distribution:
   - python-docx.
+  - numjuggler
 
 ## Installation
 The procedure to install JADE is the following:
@@ -32,6 +33,10 @@ The procedure to install JADE is the following:
   then use:
   ```
   conda install python-docx
+  ```
+  The second package needed is numjuggler for parsing of MCNP inputs. Unfortunately this is not available for conda installation and should be installed with pip instead:
+  ```
+  pip install numjuggler
   ```
 3) extract the zip into a folder of choice (from now on <JADE_root>);
 4) rename the folder containing the Python scripts as 'Code' (<JADE_root>\Code);

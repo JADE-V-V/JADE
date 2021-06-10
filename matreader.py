@@ -11,10 +11,13 @@ Support classes for MCNP material card reader/writer
 # -------------------------------------
 import re
 import pandas as pd
-import Parser as par
+from numjuggler import parser as par
 from collections import Sequence
 from decimal import Decimal
 import copy
+import sys
+import os
+from contextlib import contextmanager
 
 
 # -------------------------------------
@@ -704,8 +707,10 @@ class MatCardsList(Sequence):
         commentPat = re.compile('[cC]')
         # Using parser the data cards are extracted from the input.
         # Comment section are interpreted as cards by the parser
-        cards = par.get_cards_from_input(inputfile)
-        cardsDic = par.get_blocks(cards)
+        with suppress_stdout():
+            # Suppress output from tab replacing
+            cards = par.get_cards_from_input(inputfile)
+            cardsDic = par.get_blocks(cards)
         datacards = cardsDic[5]
 
         materials = []
@@ -883,3 +888,14 @@ class MatCardsList(Sequence):
             return df_complete, df_elem
         else:
             return df, df_elem
+
+
+@contextmanager
+def suppress_stdout():
+    with open(os.devnull, "w") as devnull:
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+        try:  
+            yield
+        finally:
+            sys.stdout = old_stdout

@@ -72,7 +72,8 @@ class Session:
                 os.mkdir(path)
 
         # Configuration
-        self.path_cnf = os.path.join(cp, 'Configuration')
+        self.path_cnf = os.path.join(cp, 'Configuration',
+                                     'Benchmarks Configuration')
         # Copy default settings if it is the first initialization
         if not os.path.exists(self.path_cnf):
             print("""
@@ -89,7 +90,7 @@ class Session:
             sys.exit()
 
         # Read global configuration file. All vital variables are stored here
-        self.conf = cnf.Configuration(os.path.join(self.path_cnf,
+        self.conf = cnf.Configuration(os.path.join(cp, 'Configuration',
                                                    'Config.xlsx'))
 
         # Copy files into benchmark inputs folder

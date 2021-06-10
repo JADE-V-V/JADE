@@ -6,8 +6,10 @@ Created on Mon Nov  4 17:21:24 2019
 """
 import re
 import matreader as mat
-import Parser as par
+from numjuggler import parser as par
 import os
+import sys
+from contextlib import contextmanager
 
 
 class InputFile:
@@ -37,8 +39,10 @@ class InputFile:
         commentPat = re.compile('[cC]')
         # Using parser the data cards are extracted from the input.
         # Comment sections are interpreted as cards by the parser
-        cards = par.get_cards_from_input(inputfile)
-        cardsDic = par.get_blocks(cards)
+        with suppress_stdout():
+            # Suppress output from tab replacing
+            cards = par.get_cards_from_input(inputfile)
+            cardsDic = par.get_blocks(cards)
         datacards = cardsDic[5]
 
         cards = {'cells': cardsDic[3],  # Parser cards
@@ -211,3 +215,14 @@ class InputFile:
         newsettings.extend(wwp)
 
         self.cards['settings'] = newsettings
+
+
+@contextmanager
+def suppress_stdout():
+    with open(os.devnull, "w") as devnull:
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+        try:  
+            yield
+        finally:
+            sys.stdout = old_stdout

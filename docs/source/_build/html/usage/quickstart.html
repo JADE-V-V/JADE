@@ -34,6 +34,97 @@
             
   <div class="section" id="quickstart">
 <h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
+<p>&lt;img src=”<a class="reference external" href="https://user-images.githubusercontent.com/25747626/118662537-5f124900-b7f0-11eb-8d69-282305f795c4.png">https://user-images.githubusercontent.com/25747626/118662537-5f124900-b7f0-11eb-8d69-282305f795c4.png</a>” width=”300” /&gt;</p>
+<p># JADE
+Version: 1.1.0
+A new tool for nuclear libraries V&amp;V.
+Brought to you by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E).</p>
+<p>JADE is an open-source software licensed under the [GNU GPLv3](./LICENSE) license. When using JADE for scientific publications you are kindly encouraged to cite the following papers:
+- Davide Laghi et al, 2020, “JADE, a new software tool for nuclear fusion data libraries verification &amp; validation”, Fusion Engineering and Design, doi: <a class="reference external" href="https://doi.org/10.1016/j.fusengdes.2020.112075">https://doi.org/10.1016/j.fusengdes.2020.112075</a>.</p>
+<p>For additional information contact: <a class="reference external" href="mailto:d&#46;laghi&#37;&#52;&#48;nier&#46;it">d<span>&#46;</span>laghi<span>&#64;</span>nier<span>&#46;</span>it</a></p>
+<p>## Requirements
+- Windows operative system (Linux or MacOS compatibility has not been tested);
+- Up-to-date Anaconda distribution (Python 3);
+- Microsoft Office suite (Excel and Word);
+- Additional Python packages to Anaconda distribution:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>python-docx.</p></li>
+<li><p>numjuggler</p></li>
+</ul>
+</div></blockquote>
+<p>## Installation
+The procedure to install JADE is the following:
+1) install/update Anaconda, you can update all packages in your current environment using:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">conda</span> <span class="pre">update</span> <span class="pre">--all</span>
+<span class="pre">`</span></code></p>
+<blockquote>
+<div><p>However, if bugs or problems are encuntered, a fresh Anaconda re-installation may solve the issues</p>
+</div></blockquote>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>install additional packages. It may be necessary to activate the conda-forge channel. It can be done typing in an anaconda prompt shell:</p></li>
+</ol>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">conda</span> <span class="pre">config</span> <span class="pre">--add</span> <span class="pre">channels</span> <span class="pre">conda-forge</span>
+<span class="pre">`</span></code>
+then use:
+<code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">conda</span> <span class="pre">install</span> <span class="pre">python-docx</span>
+<span class="pre">`</span></code>
+The second package needed is numjuggler for parsing of MCNP inputs. Unfortunately this is not available for conda installation and should be installed with pip instead:
+<code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">pip</span> <span class="pre">install</span> <span class="pre">numjuggler</span>
+<span class="pre">`</span></code></p>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p>extract the zip into a folder of choice (from now on &lt;JADE_root&gt;);</p></li>
+<li><p>rename the folder containing the Python scripts as ‘Code’ (&lt;JADE_root&gt;Code);</p></li>
+<li><p>open the global configuration file: &lt;JADE_root&gt;CodeConfigurationConfig.xlsx; here you need to properly set the environment variables specified in the ‘MAIN Config.’ sheet (i.e. xsdir Path, and multithread options);</p></li>
+<li><p>open an anaconda prompt shell and change directory to &lt;JADE_root&gt;Code. Then type:</p></li>
+</ol>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">python</span> <span class="pre">main.py</span>
+<span class="pre">`</span></code></p>
+</div></blockquote>
+<ol class="arabic simple" start="7">
+<li><p>on the first usage the rest of the folders architecture is initialized.</p></li>
+</ol>
+<p>###### N.B.
+A limitator has been inserted in the code in order to test it before using JADE for production (this will be eliminated when a proper function testing the installation will be produced). To remove it, open &lt;JADE_root&gt;Codetestrun.py and comment out line 239 and 298 while de-commenting line 238 and 297.</p>
+<p>## Usage!</p>
+<p>JADE is a consolle based software where different menu can be accessed through direct typing into the shell.
+### Main Menu
+The main menu is divided into two sections, the first one let the user open the specific 2nd level menus of one of the main JADE functions, while the second one allows to directly execute some auxiliary functions.
+#### Main Functions
+- ‘qual’: open the quality checks menu (not implemented);
+- ‘comp’: open the computational benchmarks menu;
+- ‘exp’: open the experimental benchmark menu (not implemented);
+- ‘post’: open the post-processing menu.
+#### Utilities
+- ‘printlib’: print to video all the libreries available in the xsdir file specified in the &lt;JADE_root&gt;CodeConfigurationConfig.xlsx file. Those are the libraries that can be assessed;
+- ‘trans’: select an MCNP input file (absolute full path is required) and translate it to a selected library among the available ones; the results can be found in &lt;JADE_root&gt;UtilitiesTranslations;
+- ‘printmat’: select an MCNP input file (absolute full path is required) and print an excel that summarizes its material cards information; the results can be found in &lt;JADE_root&gt;UtilitiesMaterials Infos;
+- ‘generate’: select an MCNP input file (absolute full path is required); from this file, a number of materials can be selected and a new material will be created using user-specified fraction of them; the resulting material (in MCNP format) can be found in &lt;JADE_root&gt;UtilitiesGenerated Materials;
+- ‘exit’: leave the application freezing the log file that is saved in &lt;JADE_root&gt;UtilitiesLog Files
+### Computational Benchmark Menu
+- printlib: print to video all the libreries available in the xsdir file specified in the &lt;JADE_root&gt;CodeConfigurationConfig.xlsx file. Those are the libraries that can be assessed;
+- assess: assess the selected library, the suite is run following the corresponding setup sheet in &lt;JADE_root&gt;CodeConfigurationConfig.xlsx; The MCNP input and output files can be found in &lt;JADE_root&gt;TestsMCNP simulations
+- continue: continue an unfinished assessesment of the selected library;
+- back: go back to the main menu;
+- ‘exit’: leave the application freezing the log file that is saved in &lt;JADE_root&gt;UtilitiesLog Files
+### Post Processing Menu
+- printlib: print to video all the libreries that have been already assessed and can be post-processed.
+- pp: post-process a single selected library, the results can be found in &lt;JADE_root&gt;TestsPost-ProcessingSingle Libraries;
+- compare: compare two or more selected libraries, the first indicated will be considered as the reference one; the results can be found in &lt;JADE_root&gt;TestsPost-ProcessingComparisons
+- back: go back to the main menu;
+- ‘exit’: leave the application freezing the log file that is saved in &lt;JADE_root&gt;UtilitiesLog Files</p>
+<p>## LICENSE
+JADE is an open-source software licensed under the [GNU GPLv3](./LICENSE) license.</p>
 </div>
 
 

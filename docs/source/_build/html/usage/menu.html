@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Usage &#8212; JADE 1.1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Default Benchmarks" href="../benchmarks/benchmarks.html" />
+    <link rel="prev" title="Configuration" href="configuration.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>Once JADE is correctly configured
+(for additional details see <a class="reference internal" href="configuration.html#config"><span class="std std-ref">Configuration</span></a>), the application can be started
+with:</p>
+<p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span></code></p>
+<p>The main menu is loaded at this point:</p>
+<a class="reference internal image-reference" href="../_images/main_menu.png"><img alt="../_images/main_menu.png" src="../_images/main_menu.png" style="width: 400px;" /></a>
+<p>This menu allows users to interact with the tool directly from the
+command prompt via pre-defined commands.
+The following main option are available typing from the main menu:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">qual</span></code> not currently supported;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">comp</span></code> opens the <a class="reference internal" href="#compmenu"><span class="std std-ref">Computational Benchmark menu</span></a>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exp</span></code> opens the <a class="reference internal" href="#expmenu"><span class="std std-ref">Experimental Benchmark menu</span></a>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">post</span></code> opens the <a class="reference internal" href="#postmenu"><span class="std std-ref">Post-processing menu</span></a>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exit</span></code> exit the application.</p></li>
+</ul>
+<p>Additionaly to these main options, a series of “utilities” can be also accessed
+from the main menu. These are a collection of side-tools initially developed
+for JADE that nevertheless can be useful also as stand-alone tools.
+A detailed description of these functionalities can be found in <a class="reference internal" href="utilities.html#uty"><span class="std std-ref">Utilities</span></a>.</p>
+<div class="section" id="quality-check-menu">
+<h2>Quality check menu<a class="headerlink" href="#quality-check-menu" title="Permalink to this headline">¶</a></h2>
+<p>Not implemented.</p>
+</div>
+<div class="section" id="computational-benchmark-menu">
+<span id="compmenu"></span><h2>Computational Benchmark menu<a class="headerlink" href="#computational-benchmark-menu" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="../_images/compmenu.png"><img alt="../_images/compmenu.png" src="../_images/compmenu.png" style="width: 400px;" /></a>
+<p>The following options are available from the computational benchmark menu:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">printlib</span></code> print to video all the available nuclear data libraries
+in the xsdir file selected during JADE configuration;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">assess</span></code> start the assessment of a selected library. The library is
+specified directly from the console when the selection is prompted to
+video. The library must be contained in the xsdir file (available libraries
+can be explored using <code class="docutils literal notranslate"><span class="pre">printlib</span></code>);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">continue</span></code> continue a previously interrupted assessment for a selected
+library. Currently, this option is implemented only for the Sphere Leakage
+benchmark.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">back</span></code> go back to the main menu;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exit</span></code> exit the application;</p></li>
+</ul>
+</div>
+<div class="section" id="experimental-benchmark-menu">
+<span id="expmenu"></span><h2>Experimental Benchmark menu<a class="headerlink" href="#experimental-benchmark-menu" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="../_images/expmenu.png"><img alt="../_images/expmenu.png" src="../_images/expmenu.png" style="width: 400px;" /></a>
+</div>
+<div class="section" id="post-processing-menu">
+<span id="postmenu"></span><h2>Post-processing menu<a class="headerlink" href="#post-processing-menu" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="../_images/postmenu.png"><img alt="../_images/postmenu.png" src="../_images/postmenu.png" style="width: 400px;" /></a>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">JADE</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#quality-check-menu">Quality check menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#computational-benchmark-menu">Computational Benchmark menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#experimental-benchmark-menu">Experimental Benchmark menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#post-processing-menu">Post-processing menu</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/benchmarks.html">Default Benchmarks</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="configuration.html" title="previous chapter">Configuration</a></li>
+      <li>Next: <a href="../benchmarks/benchmarks.html" title="next chapter">Default Benchmarks</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Davide Laghi.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/usage/menu.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

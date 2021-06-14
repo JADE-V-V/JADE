@@ -10,8 +10,13 @@ Welcome to JADE's documentation!
    :maxdepth: 2
    :caption: Contents:
    
-   usage/installation
    usage/quickstart
+   usage/installation
+   usage/folders
+   usage/configuration
+   usage/menu
+   benchmarks/benchmarks
+   
 
 
 

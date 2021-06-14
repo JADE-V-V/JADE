@@ -1,4 +1,4 @@
 {
-    "restructuredtext.confPath": "${workspaceFolder}",
-    "python.pythonPath": "C:\\Users\\d.laghi\\Anaconda3\\python.exe"
+    "python.pythonPath": "C:\\Users\\d.laghi\\Anaconda3\\python.exe",
+    "restructuredtext.confPath": "${workspaceFolder}"
 }

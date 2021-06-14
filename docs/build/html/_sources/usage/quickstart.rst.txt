@@ -1,2 +1,3 @@
 Quickstart
 ==========
+.. include:: ../../../README.md

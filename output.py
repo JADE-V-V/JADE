@@ -17,7 +17,6 @@ import numpy as np
 import string
 from outputFile import OutputFile
 from meshtal import Meshtal
-from main import fatal_exception
 import pickle
 
 
@@ -643,8 +642,11 @@ class MCNPoutput:
             rows = []
 
             # --- Reorganize values ---
+            # You cannot recover the following from the mctal
             nDir = t.getNbins("d", False)
             nMul = t.getNbins("m", False)
+            nSeg = t.getNbins("s", False)  # this can be used
+
             # Some checks for voids
             binnings = {'cells': t.cells, 'user': t.usr, 'segments': t.seg,
                         'cosine': t.cos, 'energy': t.erg, 'time': t.tim,
@@ -657,7 +659,7 @@ class MCNPoutput:
             for f, fn in enumerate(binnings['cells']):
                 for d in range(nDir):  # Unused
                     for u, un in enumerate(binnings['user']):
-                        for s, sn in enumerate(binnings['segments']):
+                        for sn in range(1, nSeg+1):
                             for m in range(nMul):  # (unused)
                                 for c, cn in enumerate(binnings['cosine']):
                                     for e, en in enumerate(binnings['energy']):
@@ -665,8 +667,8 @@ class MCNPoutput:
                                             for k, kn in enumerate(binnings['cor C']):
                                                 for j, jn in enumerate(binnings['cor B']):
                                                     for i, ina in enumerate(binnings['cor A']):
-                                                        val = t.getValue(f, d, u, s, m, c, e, nt, i, j, k, 0)
-                                                        err = t.getValue(f, d, u, s, m, c, e, nt, i, j, k, 1)
+                                                        val = t.getValue(f, d, u, sn-1, m, c, e, nt, i, j, k, 0)
+                                                        err = t.getValue(f, d, u, sn-1, m, c, e, nt, i, j, k, 1)
                                                         rows.append([fn, d, un, sn, m, cn, en, ntn, ina, jn, kn, val,err])
 
                 # Only one total bin per cell is admitted
@@ -676,14 +678,26 @@ class MCNPoutput:
                     rows.append([fn, d, un, sn, m, cn, en, 'total', ina, jn,
                                  kn, val, err])
                     total = 'Time'
+
                 elif t.ergTC is not None:
                     rows.append([fn, d, un, sn, m, cn, 'total', ntn, ina, jn,
                                  kn, val, err])
                     total = 'Energy'
+
+                elif t.segTC is not None:
+                    rows.append([fn, d, un, 'total', m, cn, en, ntn, ina, jn,
+                                 kn, val, err])
+                    total = 'Segments'
+
                 elif t.cosTC is not None:
                     rows.append([fn, d, un, sn, m, 'total', en, ntn, ina, jn,
                                  kn, val, err])
                     total = 'Cosine'
+                
+                elif t.usrTC is not None:
+                    rows.append([fn, d, 'total', sn, m, cn, en, ntn, ina, jn,
+                                 kn, val, err])
+                    total = 'User'
 
             # --- Build the tally DataFrame ---
             columns = ['Cells', 'Dir', 'User', 'Segments',
@@ -975,3 +989,25 @@ class ExcelOutputSheet:
         self.wb.save()
         self.wb.close()
         self.app.quit()
+
+
+def fatal_exception(message=None):
+    """
+    Use this function to exit with a code error from a handled exception
+
+    Parameters
+    ----------
+    message : str, optional
+        Message to display. The default is None.
+
+    Returns
+    -------
+    None.
+
+    """
+    if message is None:
+        message = 'A Fatal exception have occured'
+
+    message = message+', the application will now exit'
+    print(CRED+' FATAL EXCEPTION: \n'+message+CEND)
+    sys.exit()

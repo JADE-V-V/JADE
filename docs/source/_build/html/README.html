@@ -1,0 +1,332 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>JADE &mdash; JADE v1.1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> JADE
+          
+
+          
+            
+            <img src="_static/Jade_white.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/folders.html">Folders Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/menu.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks/benchmarks.html">Default Benchmarks</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">JADE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>JADE</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/README.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <a class="reference internal image-reference" href="_images/Jade.png"><img alt="_images/Jade.png" src="_images/Jade.png" style="width: 400px;" /></a>
+<div class="section" id="jade">
+<h1>JADE<a class="headerlink" href="#jade" title="Permalink to this headline">¶</a></h1>
+<p>Version: v1.1.0</p>
+<p>A new tool for nuclear libraries V&amp;V.
+Brought to you by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E).</p>
+<p>JADE is an open-source software licensed under the GNU GPLv3 <a class="reference internal" href="LICENSE.html#license"><span class="std std-ref">License</span></a>.
+When using JADE for scientific publications you are kindly encouraged to cite the following papers:</p>
+<ul class="simple">
+<li><p>Davide Laghi et al, 2020, “JADE, a new software tool for nuclear fusion data libraries verification &amp; validation”,
+Fusion Engineering and Design, doi: <a class="reference external" href="https://doi.org/10.1016/j.fusengdes.2020.112075">https://doi.org/10.1016/j.fusengdes.2020.112075</a>.</p></li>
+</ul>
+<p>For additional information contact: <a class="reference external" href="mailto:d&#46;laghi&#37;&#52;&#48;nier&#46;it">d<span>&#46;</span>laghi<span>&#64;</span>nier<span>&#46;</span>it</a></p>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Windows operative system (Linux or MacOS compatibility has not been tested);</p></li>
+<li><p>Up-to-date Anaconda distribution (Python 3);</p></li>
+<li><p>Microsoft Office suite (Excel and Word);</p></li>
+<li><dl class="simple">
+<dt>Additional Python packages to Anaconda distribution:</dt><dd><ul>
+<li><p>python-docx.</p></li>
+<li><p>numjuggler</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>The procedure to install JADE is the following:</p>
+<ol class="arabic">
+<li><p>Install/update Anaconda, you can update all packages in your current environment using:</p>
+<p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">update</span> <span class="pre">--all</span></code></p>
+<p>However, if bugs or problems are encountered, a fresh Anaconda re-installation may solve the issues</p>
+</li>
+<li><p>Install additional packages. It may be necessary to activate the conda-forge channel. It can be done typing in an anaconda prompt shell:</p>
+<p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">config</span> <span class="pre">--add</span> <span class="pre">channels</span> <span class="pre">conda-forge</span></code></p>
+<p>then use:</p>
+<p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">python-docx</span></code></p>
+<p>The second package that is needed is numjuggler for parsing of MCNP inputs.
+Unfortunately, this is not available for conda installation and pip should be used instead:</p>
+<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">numjuggler</span></code></p>
+</li>
+<li><p>Extract the zip into a folder of choice (from now on &lt;JADE_root&gt;);</p></li>
+<li><p>Rename the folder containing the Python scripts as ‘Code’ (&lt;JADE_root&gt;\Code);</p></li>
+<li><p>Open the global configuration file: &lt;JADE_root&gt;\Code\Configuration\Config.xlsx;
+here you need to properly set the environment variables specified in the ‘MAIN Config.’ sheet (i.e. xsdir Path, and multithread options);</p></li>
+<li><p>Open an anaconda prompt shell and change directory to &lt;JADE_root&gt;\Code. Then type:</p>
+<p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span></code></p>
+</li>
+<li><p>On the first usage the rest of the folders architecture is initialized.</p></li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>A limitator has been inserted in the code in order to test it before using JADE for production
+(this will be eliminated when a proper function testing the installation will be produced).
+To remove it, open &lt;JADE_root&gt;\Code\testrun.py and comment out line 239 and 298 while de-commenting line 238 and 297.</p>
+</div>
+</div>
+<div class="section" id="quick-usage-overview">
+<h2>Quick Usage Overview<a class="headerlink" href="#quick-usage-overview" title="Permalink to this headline">¶</a></h2>
+<p>JADE is a consolle based software where different menus can be accessed through direct typing into the shell.
+The following is a quick overview on the available JADE functionalities, a more detailed description of the tool
+usage can be found in the <a class="reference internal" href="usage/menu.html#menu"><span class="std std-ref">Usage</span></a> section.</p>
+<div class="section" id="main-menu">
+<h3>Main Menu<a class="headerlink" href="#main-menu" title="Permalink to this headline">¶</a></h3>
+<p>The main menu is divided into two sections, the first one let the user open the specific 2nd level menus of one of the main JADE functions, while the second one allows to directly execute some auxiliary functions.</p>
+<div class="section" id="main-functions">
+<h4>Main Functions<a class="headerlink" href="#main-functions" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>‘qual’: open the quality checks menu (not implemented);</p></li>
+<li><p>‘comp’: open the computational benchmarks menu;</p></li>
+<li><p>‘exp’: open the experimental benchmark menu (not implemented);</p></li>
+<li><p>‘post’: open the post-processing menu.</p></li>
+</ul>
+</div>
+<div class="section" id="utilities">
+<h4>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>‘printlib’: print to video all the libreries available in the xsdir file specified in the
+&lt;JADE_root&gt;\Code\Configuration\Config.xlsx file. Those are the libraries that can be assessed;</p></li>
+<li><p>‘trans’: select an MCNP input file (absolute full path is required) and translate it to a selected
+library among the available ones; the results can be found in &lt;JADE_root&gt;\Utilities\Translations;</p></li>
+<li><p>‘printmat’: select an MCNP input file (absolute full path is required) and print an excel that
+summarizes its material cards information; the results can be found in &lt;JADE_root&gt;\Utilities\Materials Infos;</p></li>
+<li><p>‘generate’: select an MCNP input file (absolute full path is required);
+from this file, a number of materials can be selected and a new material will be created using user-specified fraction of them;
+the resulting material (in MCNP format) can be found in &lt;JADE_root&gt;\Utilities\Generated Materials;</p></li>
+<li><p>‘exit’: leave the application freezing the log file that is saved in &lt;JADE_root&gt;\Utilities\Log Files.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="computational-benchmark-menu">
+<h3>Computational Benchmark Menu<a class="headerlink" href="#computational-benchmark-menu" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>printlib: print to video all the libreries available in the xsdir file specified in the
+&lt;JADE_root&gt;\Code\Configuration\Config.xlsx file. Those are the libraries that can be assessed;</p></li>
+<li><p>assess: assess the selected library, the suite is run following the corresponding setup sheet in
+&lt;JADE_root&gt;\Code\Configuration\Config.xlsx; The MCNP input and output files can be found in &lt;JADE_root&gt;\Tests\MCNP simulations;</p></li>
+<li><p>continue: continue an unfinished assessesment of the selected library;</p></li>
+<li><p>back: go back to the main menu;</p></li>
+<li><p>‘exit’: leave the application freezing the log file that is saved in &lt;JADE_root&gt;UtilitiesLog Files.</p></li>
+</ul>
+</div>
+<div class="section" id="post-processing-menu">
+<h3>Post Processing Menu<a class="headerlink" href="#post-processing-menu" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>printlib: print to video all the libreries that have been already assessed and can be post-processed.</p></li>
+<li><p>pp: post-process a single selected library, the results can be found in &lt;JADE_root&gt;\Tests\Post-Processing\Single Libraries;</p></li>
+<li><p>compare: compare two or more selected libraries, the first indicated will be considered as the reference one;
+the results can be found in &lt;JADE_root&gt;\Tests\Post-Processing\Comparisons;</p></li>
+<li><p>back: go back to the main menu;</p></li>
+<li><p>‘exit’: leave the application freezing the log file that is saved in &lt;JADE_root&gt;\Utilities\Log Files.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="license">
+<h2>LICENSE<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p>JADE is an open-source software licensed under the GNU GPLv3 <a class="reference internal" href="LICENSE.html#license"><span class="std std-ref">License</span></a>.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Davide Laghi.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

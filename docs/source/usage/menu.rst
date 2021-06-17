@@ -1,3 +1,5 @@
+.. _menu:
+
 #######################
 Usage
 #######################
@@ -39,7 +41,7 @@ Computational Benchmark menu
 .. image:: ../img/compmenu.png
     :width: 400
 
-The following options are available from the computational benchmark menu:
+The following options are available in the computational benchmark menu:
 
 * ``printlib`` print to video all the available nuclear data libraries
   in the xsdir file selected during JADE configuration;
@@ -60,6 +62,8 @@ Experimental Benchmark menu
 
 .. image:: ../img/expmenu.png
     :width: 400
+
+The following option are available in the experimental benchmark menu:
 
 .. _postmenu:
 

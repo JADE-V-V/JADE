@@ -18,8 +18,6 @@ Welcome to JADE's documentation!
    benchmarks/benchmarks
    
 
-
-
 Indices and tables
 ==================
 

@@ -18,6 +18,23 @@ import sys
 CRED = '\033[91m'
 CEND = '\033[0m'
 
+# Long messages
+FIRST_INITIALIZATION = """
+ Welcome to JADE
+ During this first run the entire JADE tree has been initialized.
+ The application will be now closed. Before restarting the application, please
+ configure at least the variables contained in the "MAIN Config." sheet of the
+ Configuration/Config.xlsx file.
+
+"""
+
+DEFAULT_SETTINGS_RESTORATION = """
+ Default configurations were restored successfully.
+ The application will be now closed. Before restarting the application, please
+ configure at least the variables contained in the "MAIN Config." sheet of the
+ Configuration/Config.xlsx file.
+"""
+
 
 class Session:
     """
@@ -26,6 +43,9 @@ class Session:
     """
 
     def __init__(self):
+        self.initialize()
+    
+    def initialize(self):
         """
         Initialize JADE session:
             - folders structure is created if absent
@@ -76,16 +96,9 @@ class Session:
                                      'Benchmarks Configuration')
         # Copy default settings if it is the first initialization
         if not os.path.exists(self.path_cnf):
-            print("""
- Welcome to JADE
- During this first run the entire JADE tree has been initialized.
- The application will be now closed. Before restarting the application, please
- configure at least the variables contained in the "MAIN Config." sheet of the
- Configuration/Config.xlsx file.
-
-""")
+            print(FIRST_INITIALIZATION)
             files = self.path_default_settings
-            shutil.copytree(files, self.path_cnf)
+            shutil.copytree(files, os.path.dirname(self.path_cnf))
             # the application needs to be closed
             sys.exit()
 
@@ -162,6 +175,24 @@ class Session:
                 to_perform.append(testname)
 
         return to_perform
+    
+    def restore_default_settings(self):
+        """
+        Reset the configuration files to installation default. The session
+        is re-initialized.
+
+        Returns
+        -------
+        None.
+
+        """
+        files = self.path_default_settings
+        # Remove the user configurations
+        shutil.rmtree(os.path.dirname(self.path_cnf))
+        # Copy default configurations
+        shutil.copytree(files, os.path.dirname(self.path_cnf))
+        print(DEFAULT_SETTINGS_RESTORATION)
+        sys.exit()  # exit to allow for settings of key ambient variables
 
 
 def fatal_exception(message=None):

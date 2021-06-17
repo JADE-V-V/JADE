@@ -262,6 +262,31 @@ def switch_fractions(session, sourcefile, fraction_type, outpath=None):
     return True
 
 
+def restore_default_config(session):
+    """
+    Restore the configuration default files.
+
+    Parameters
+    ----------
+    session : main.Session
+        JADE session.
+
+    Returns
+    -------
+    None.
+
+    """
+    msg = """
+ Are you sure you want to restore the default configuration?
+ All user modification will be lost [y/n] -> """
+    ans = input_with_options(msg, ['y', 'n'])
+
+    if ans == 'y':
+        session.restore_default_settings()
+    else:
+        print('\n The operation was canceled.\n')
+
+
 def select_inputfile(message):
     """
     Safe inputfile selector

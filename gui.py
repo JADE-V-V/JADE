@@ -49,6 +49,7 @@ principal_menu = header+"""
  UTILITIES
 
  * Print available libraries          (printlib)
+ * Restore default configurations      (restore)
  * Translate an MCNP input               (trans)
  * Print materials info               (printmat)
  * Generate material                  (generate)
@@ -87,6 +88,9 @@ def mainloop(session):
 
         elif option == 'printlib':
             uty.print_libraries(session.lib_manager)
+        
+        elif option == 'restore':
+            uty.restore_default_config(session)
 
         elif option == 'trans':
             newlib = input(' Library to use: ')

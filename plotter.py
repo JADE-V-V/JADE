@@ -139,10 +139,134 @@ class Plotter():
         # --- Experimental Points Plot ---
         elif plot_type == 'Experimental points':
             outp = self._exp_points_plot()
+
+        # --- Grouped bars chart ---
+        elif plot_type == 'Grouped bars':
+            if self.testname == 'C_Model':
+                log = True
+            else:
+                log = False
+            outp = self._grouped_bar(log=log)
         else:
             raise ValueError(plot_type+' is not an admissible plot type')
 
         return outp
+
+    def  _grouped_bar(self, log=False, maxgroups=35):
+        """
+        Plot a grouped bar chart on a "categorical" x axis.
+
+        Parameters
+        ----------
+        log : Bool, optional
+            if True the y-axis is set to be logaritimic. The default is False.
+        maxgroups : int
+            indicated the maximum number of grouped bars to plot in a single
+            axis. In case the data to plot is higher, new axis are created
+            vertically. The default is 30.
+
+        Returns
+        -------
+        outpath : str/path
+            path to the saved image
+
+        """
+        # General variables
+        fontsize = self.fontsize
+        labels = self.data[0]['x']
+        single_width = 0.35  # the width of the bars
+        tot_width = single_width*len(self.data)
+        
+        # Check if the data is higher than max
+        if len(labels) > maxgroups:
+            nrows = int(len(labels)/maxgroups)+1  # rows of the plot
+            nlabels = maxgroups  # number of labels in first row
+        else:
+            nlabels = len(labels)  # number of labels in first row
+            nrows = 1
+        
+        # Compute the position of the labels in the different rows
+        # and the datasets
+        x_array = []
+        datasets = []
+        label_chunks = []
+        added_labels = 0
+        for i in range(nrows):
+            x = np.arange(nlabels)  # the label locations
+            x_array.append(x)
+            lab_chunk = labels[added_labels: added_labels+nlabels]
+            label_chunks.append(lab_chunk)
+            # Select the correspondent dataset
+            data = []
+            for libdata in self.data:
+                chunks = {}
+                for key, item in libdata.items():
+                    if key == 'ylabel':
+                        chunks[key] = item
+                    else:
+                        chunks[key] = item[added_labels: added_labels+nlabels]
+
+                data.append(chunks)
+            datasets.append(data)
+
+            # Adjourn nlabels
+            added_labels += nlabels
+            if len(labels)-added_labels > maxgroups:
+                nlabels = maxgroups
+            else:
+                nlabels = len(labels)-added_labels
+
+        # Initialize plot
+        fig, axes = plt.subplots(figsize=(18, 13.5), nrows=nrows)
+        
+        # Always want axes as a list even if it is only one
+        try:
+            iterator = iter(axes)
+        except TypeError:
+            # not iterable
+            axes = [axes]
+
+        # --- Plotting ---
+        # Set the title only in the top ax
+        axes[0].set_title(self.title, fontsize=fontsize+4)
+        
+        # Plot everything
+        for ax, datachunk, x, labels in zip(axes, datasets, x_array,
+                                            label_chunks):
+            pos = -tot_width/2
+            for dataset in datachunk:
+                ax.bar(x + pos, dataset['y'], single_width,
+                       label=dataset['ylabel'],
+                       yerr=dataset['err']*dataset['y'],
+                       align='edge')
+                pos = pos+single_width  # Adourn relative position
+            
+            # log scale optional
+            if log:
+                ax.set_yscale('log')
+            
+            # --- Plot details ---
+            # Legend and ticks
+            ax.legend(loc='best', prop={'size': fontsize-5})
+            ax.tick_params(which='major', width=1.00, length=5,
+                                       labelsize=fontsize-2)
+            ax.tick_params(which='minor', width=0.75, length=2.50,
+                           labelsize=fontsize-4)
+
+            # title and labels
+            ylabel = self.quantity+' ['+self.unit+']'
+            ax.set_ylabel(ylabel).set_fontsize(fontsize)
+            ax.set_xlabel(self.xlabel).set_fontsize(fontsize)
+            # ax.yaxis.set_major_locator(AutoLocator())
+            # Special for x labels
+            ax.set_xticks(x)
+            ax.set_xticklabels(labels, rotation=60)
+            
+            # Grid
+            ax.grid('True', which='major', linewidth=0.75, axis='y')
+            ax.grid('True', which='minor', linewidth=0.30, axis='y')
+        
+        return self._save()
 
     def _exp_points_plot(self):
         """

@@ -172,8 +172,13 @@ class BenchmarkOutput:
 
                 for column in tqdm(columns):
                     if len(columns) > 1:
-                        atlas.doc.add_heading(str(int(column)), level=3)
-                        newtitle = title+' ('+str(int(column))+')'
+                        try:
+                            txt = str(int(column))
+                        except ValueError:
+                            # it is not convertible to int
+                            txt = str(column)
+                        atlas.doc.add_heading(txt, level=3)
+                        newtitle = title+' ('+txt+')'
                     else:
                         newtitle = title
 
@@ -271,8 +276,13 @@ class BenchmarkOutput:
 
                 for column in tqdm(columns):
                     if len(columns) > 1:
-                        atlas.doc.add_heading(str(int(column)), level=3)
-                        newtitle = title+' ('+str(int(column))+')'
+                        try:
+                            txt = str(int(column))
+                        except ValueError:
+                            # it is not convertible to int
+                            txt = str(column)
+                        atlas.doc.add_heading(txt, level=3)
+                        newtitle = title+' ('+txt+')'
 
                     else:
                         newtitle = title
@@ -652,6 +662,20 @@ class MCNPoutput:
                         'cosine': t.cos, 'energy': t.erg, 'time': t.tim,
                         'cor A': t.cora, 'cor B': t.corb, 'cor C': t.corc}
 
+            # Cells may have a series of zeros, the last one may be for the 
+            # total
+            cells = []
+            last_idx = len(binnings['cells'])-1
+            for i, cell in enumerate(binnings['cells']):
+                if int(cell) == 0:
+                    newval = 'Input '+str(i+1)
+                    cells.append(newval)
+                
+                # Everything is fine, nothing to modify
+                else:
+                    cells.append(cell)
+            binnings['cells'] = cells
+
             for name, binning in binnings.items():
                 if len(binning) == 0:
                     binnings[name] = [np.nan]
@@ -708,7 +732,18 @@ class MCNPoutput:
             # Default drop of multiplier and Dir
             del df['Dir']
             del df['Multiplier']
-            df.dropna(axis=1, inplace=True)  # Keep only meaningful binning
+            # --- Keep only meaningful binning ---
+            # Drop NA
+            df.dropna(axis=1, inplace=True)
+            # Drop constant axes (if len is > 1)
+            if len(df) > 1:
+                for column in df.columns:
+                    if column not in ['Value', 'Error']:
+                        firstval = df[column].values[0]
+                        # Should work as long as they are the exact same value
+                        allequal = (df[column] == firstval).all() 
+                        if allequal:
+                            del df[column]
 
             # Sub DF containing only total bins
             try:

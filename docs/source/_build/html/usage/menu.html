@@ -90,7 +90,6 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="folders.html">Folders Structure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
@@ -173,7 +172,7 @@
 <span id="menu"></span><h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
 <p>Once JADE is correctly configured
 (for additional details see <a class="reference internal" href="configuration.html#config"><span class="std std-ref">Configuration</span></a>), the application can be started
-with:</p>
+from the ‘Code’ folder with:</p>
 <p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span></code></p>
 <p>The main menu is loaded at this point:</p>
 <a class="reference internal image-reference" href="../_images/main_menu.png"><img alt="../_images/main_menu.png" src="../_images/main_menu.png" style="width: 400px;" /></a>
@@ -202,25 +201,104 @@ A detailed description of these functionalities can be found in <a class="refere
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">printlib</span></code> print to video all the available nuclear data libraries
 in the xsdir file selected during JADE configuration;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">assess</span></code> start the assessment of a selected library. The library is
+<li><p><code class="docutils literal notranslate"><span class="pre">assess</span></code> start the assessment of a selected library on the computational benchmarks. The library is
 specified directly from the console when the selection is prompted to
 video. The library must be contained in the xsdir file (available libraries
 can be explored using <code class="docutils literal notranslate"><span class="pre">printlib</span></code>);</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">continue</span></code> continue a previously interrupted assessment for a selected
-library. Currently, this option is implemented only for the Sphere Leakage
-benchmark.</p></li>
+library. <strong>Currently, this option is implemented only for the Sphere Leakage
+benchmark.</strong></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">back</span></code> go back to the main menu;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">exit</span></code> exit the application;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exit</span></code> exit the application.</p></li>
 </ul>
+<p>The selection of the libraries is done indicating their correspondent suffix specified in the xsdir file
+(e.g. <code class="docutils literal notranslate"><span class="pre">31c</span></code>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Whenever an assessment is requested, all the benchmarks selected in the main configuration file will be considered.
+In case the requested library was already assesed on one or more of the active benchmarks,
+the user will be asked for permission before overriding the results.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="configuration.html#config"><span class="std std-ref">Configuration</span></a> for additional details on the benchmark selection.</p>
+</div>
 </div>
 <div class="section" id="experimental-benchmark-menu">
 <span id="expmenu"></span><h2>Experimental Benchmark menu<a class="headerlink" href="#experimental-benchmark-menu" title="Permalink to this headline">¶</a></h2>
 <a class="reference internal image-reference" href="../_images/expmenu.png"><img alt="../_images/expmenu.png" src="../_images/expmenu.png" style="width: 400px;" /></a>
-<p>The following option are available in the experimental benchmark menu:</p>
+<p>The following options are available in the experimental benchmark menu:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">printlib</span></code> print to video all the available nuclear data libraries
+in the xsdir file selected during JADE configuration;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">assess</span></code> start the assessment of a selected library on the experimental benchmarks. The library is
+specified directly from the console when the selection is prompted to
+video. The library must be contained in the xsdir file (available libraries
+can be explored using <code class="docutils literal notranslate"><span class="pre">printlib</span></code>);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">continue</span></code> <strong>[not implemented]</strong></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">back</span></code> go back to the main menu;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exit</span></code> exit the application.</p></li>
+</ul>
+<p>The selection of the libraries is done indicating their correspondent suffix specified in the xsdir file
+(e.g. <code class="docutils literal notranslate"><span class="pre">31c</span></code>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Whenever an assessment is requested, all the benchmarks selected in the main configuration file will be considered.
+In case the requested library was already assesed on one or more of the active benchmarks,
+the user will be asked for permission before overriding the results.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="configuration.html#config"><span class="std std-ref">Configuration</span></a> for additional details on the benchmark selection.</p>
+</div>
 </div>
 <div class="section" id="post-processing-menu">
 <span id="postmenu"></span><h2>Post-processing menu<a class="headerlink" href="#post-processing-menu" title="Permalink to this headline">¶</a></h2>
 <a class="reference internal image-reference" href="../_images/postmenu.png"><img alt="../_images/postmenu.png" src="../_images/postmenu.png" style="width: 400px;" /></a>
+<p>The following options are available in the post-processing menu:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">printlib</span></code> print all libraries that were tested and that are available for post-processing;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pp</span></code> post-process a single library;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compare</span></code> compare different libraries results on computational benchmarks;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compexp</span></code> compare different libraries results on experimental benchmarks;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">back</span></code> go back to the main menu;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exit</span></code> exit the application.</p></li>
+</ul>
+<p>For the <code class="docutils literal notranslate"><span class="pre">pp</span></code>, <code class="docutils literal notranslate"><span class="pre">compare</span></code> and <code class="docutils literal notranslate"><span class="pre">compexp</span></code> the selection of the libraries will be directly prompt to video.
+The selection of the libraries is done indicating their correspondent suffix specified in the xsdir file
+(e.g. <code class="docutils literal notranslate"><span class="pre">31c</span></code>). When comparing more than one library, the suffixes should be separated by a ‘-‘ (e.g. <code class="docutils literal notranslate"><span class="pre">31c-32c</span></code>).
+The first library that is indicated is always considered as the <em>reference library</em> for the post-processing.
+There may be a limitation on the number of libraries that can be compared at once depending on the post-processing settings.</p>
+<p>Only one library at the time can be post-processed with the <code class="docutils literal notranslate"><span class="pre">pp</span></code> option. Nevertheless, when a comparison is requested that
+includes libraries that were not singularly post-processed, an automatic <code class="docutils literal notranslate"><span class="pre">pp</span></code> operation is conducted on them.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Please note that <code class="docutils literal notranslate"><span class="pre">printlib</span></code> will simply show all libraries for which at least one benchmark has been run.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Please note that part of the single post-processing of the libraries is used in the comparisons. Also, JADE does not perform
+any checks on the consistency between the two. This responsability is left to the user.
+The following is an example of incorrect usage that can lead to erroneous results:</p>
+<ol class="arabic simple">
+<li><p>a first assessment is run;</p></li>
+<li><p>single post-processing is completed;</p></li>
+<li><p>some configuration settings are changed and the assessment is re-run;</p></li>
+<li><p>a comparison is requested.</p></li>
+</ol>
+<p>In this case, JADE cannot know that the first single post-processing was done on a different benchmark run wiith respect
+to the requested comparison. As a result, the outputs coming from different assessments will be mixed up.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Whenever a post-processing is requested, all the benchmarks selected in the main configuration file will be considered.
+In case one or more of the requested libraries were already post-processed on one or more of the active benchmarks,
+the user will be asked for permission before overriding the post-processing results.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="configuration.html#config"><span class="std std-ref">Configuration</span></a> for additional details on the benchmark selection.</p>
+</div>
 </div>
 </div>
 

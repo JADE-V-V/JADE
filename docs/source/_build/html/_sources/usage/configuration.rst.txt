@@ -4,11 +4,38 @@
 Configuration
 #############
 
+All configuration files are included in the ``<JADE_root>\Configuration`` directory.
+In principle, **the general user should only operate on the** :ref:`mainconfig` **file**, while
+all other configuration files simply guarantee an additional level of personalization for the user.
+
+.. note::
+    In case of user-defined benchmarks suitable :ref:`runconf` and :ref:`ppconf` files need
+    to be produced.
+
+.. _mainconfig:
+
 Main Configuration
 ==================
+The most important configuration file is ``<JADE_root>\Configuration\Config.xlsx``
+
+MAIN Config.
+------------
+
+Computational benchmarks
+------------------------
+
+Experimental benchmarks
+-----------------------
+
+Libraries
+---------
+
+.. _runconf:
 
 Benchmark run configuration
 ===========================
+
+.. _ppconf:
 
 Benchmark post-processing configuration
 =======================================

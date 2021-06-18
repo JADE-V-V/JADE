@@ -8,12 +8,14 @@ Welcome to JADE's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: JADE User Guide:
    
    usage/installation
-   usage/quickstart
-
-
+   usage/folders
+   usage/configuration
+   usage/menu
+   benchmarks/benchmarks
+   
 
 Indices and tables
 ==================

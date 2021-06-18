@@ -38,9 +38,7 @@
 
     
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Installation" href="installation.html" />
-    <link rel="prev" title="Welcome to JADE’s documentation!" href="../index.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -88,14 +86,24 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a></li>
+              <p class="caption"><span class="caption-text">JADE User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../nutshell.html">JADE in a nutshell</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="folders.html">Folders Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="folders.html">Folder Structure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="menu.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../benchmarks/benchmarks.html">Default Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postprocessing.html">Post-Processing Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contibutors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">List of Publications and Contributions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">JADE Developer Guide (TBD):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 </ul>
 
             
@@ -165,97 +173,98 @@
             
   <div class="section" id="quickstart">
 <h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
-<p>&lt;img src=”<a class="reference external" href="https://user-images.githubusercontent.com/25747626/118662537-5f124900-b7f0-11eb-8d69-282305f795c4.png">https://user-images.githubusercontent.com/25747626/118662537-5f124900-b7f0-11eb-8d69-282305f795c4.png</a>” width=”300” /&gt;</p>
-<p># JADE
-Version: 1.1.0
-A new tool for nuclear libraries V&amp;V.
+<p>Version: v1.1.0</p>
+<p>JADE is a new tool for nuclear libraries V&amp;V.
 Brought to you by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E).</p>
-<p>JADE is an open-source software licensed under the [GNU GPLv3](./LICENSE) license. When using JADE for scientific publications you are kindly encouraged to cite the following papers:
-- Davide Laghi et al, 2020, “JADE, a new software tool for nuclear fusion data libraries verification &amp; validation”, Fusion Engineering and Design, doi: <a class="reference external" href="https://doi.org/10.1016/j.fusengdes.2020.112075">https://doi.org/10.1016/j.fusengdes.2020.112075</a>.</p>
+<p>JADE is an open-source software licensed under the GNU GPLv3 <a class="reference internal" href="../LICENSE.html#license"><span class="std std-ref">License</span></a>.
+When using JADE for scientific publications you are kindly encouraged to cite the following papers:</p>
+<ul class="simple">
+<li><p>Davide Laghi et al, 2020, “JADE, a new software tool for nuclear fusion data libraries verification &amp; validation”,
+Fusion Engineering and Design, doi: <a class="reference external" href="https://doi.org/10.1016/j.fusengdes.2020.112075">https://doi.org/10.1016/j.fusengdes.2020.112075</a>.</p></li>
+</ul>
 <p>For additional information contact: <a class="reference external" href="mailto:d&#46;laghi&#37;&#52;&#48;nier&#46;it">d<span>&#46;</span>laghi<span>&#64;</span>nier<span>&#46;</span>it</a></p>
-<p>## Requirements
-- Windows operative system (Linux or MacOS compatibility has not been tested);
-- Up-to-date Anaconda distribution (Python 3);
-- Microsoft Office suite (Excel and Word);
-- Additional Python packages to Anaconda distribution:</p>
-<blockquote>
-<div><ul class="simple">
+</div>
+<div class="section" id="requirements">
+<h1>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>Windows operative system (Linux or MacOS compatibility has not been tested);</p></li>
+<li><p>Up-to-date Anaconda distribution (Python 3);</p></li>
+<li><p>Microsoft Office suite (Excel and Word);</p></li>
+<li><dl class="simple">
+<dt>Additional Python packages to Anaconda distribution:</dt><dd><ul>
 <li><p>python-docx.</p></li>
 <li><p>numjuggler</p></li>
 </ul>
-</div></blockquote>
-<p>## Installation
-The procedure to install JADE is the following:
-1) install/update Anaconda, you can update all packages in your current environment using:</p>
-<blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">conda</span> <span class="pre">update</span> <span class="pre">--all</span>
-<span class="pre">`</span></code></p>
-<blockquote>
-<div><p>However, if bugs or problems are encuntered, a fresh Anaconda re-installation may solve the issues</p>
-</div></blockquote>
-</div></blockquote>
-<ol class="arabic simple" start="2">
-<li><p>install additional packages. It may be necessary to activate the conda-forge channel. It can be done typing in an anaconda prompt shell:</p></li>
-</ol>
-<blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">conda</span> <span class="pre">config</span> <span class="pre">--add</span> <span class="pre">channels</span> <span class="pre">conda-forge</span>
-<span class="pre">`</span></code>
-then use:
-<code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">conda</span> <span class="pre">install</span> <span class="pre">python-docx</span>
-<span class="pre">`</span></code>
-The second package needed is numjuggler for parsing of MCNP inputs. Unfortunately this is not available for conda installation and should be installed with pip instead:
-<code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">pip</span> <span class="pre">install</span> <span class="pre">numjuggler</span>
-<span class="pre">`</span></code></p>
-</div></blockquote>
-<ol class="arabic simple" start="3">
-<li><p>extract the zip into a folder of choice (from now on &lt;JADE_root&gt;);</p></li>
-<li><p>rename the folder containing the Python scripts as ‘Code’ (&lt;JADE_root&gt;Code);</p></li>
-<li><p>open the global configuration file: &lt;JADE_root&gt;CodeConfigurationConfig.xlsx; here you need to properly set the environment variables specified in the ‘MAIN Config.’ sheet (i.e. xsdir Path, and multithread options);</p></li>
-<li><p>open an anaconda prompt shell and change directory to &lt;JADE_root&gt;Code. Then type:</p></li>
-</ol>
-<blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">python</span> <span class="pre">main.py</span>
-<span class="pre">`</span></code></p>
-</div></blockquote>
-<ol class="arabic simple" start="7">
-<li><p>on the first usage the rest of the folders architecture is initialized.</p></li>
-</ol>
-<p>###### N.B.
-A limitator has been inserted in the code in order to test it before using JADE for production (this will be eliminated when a proper function testing the installation will be produced). To remove it, open &lt;JADE_root&gt;Codetestrun.py and comment out line 239 and 298 while de-commenting line 238 and 297.</p>
-<p>## Usage!</p>
-<p>JADE is a consolle based software where different menu can be accessed through direct typing into the shell.
-### Main Menu
-The main menu is divided into two sections, the first one let the user open the specific 2nd level menus of one of the main JADE functions, while the second one allows to directly execute some auxiliary functions.
-#### Main Functions
-- ‘qual’: open the quality checks menu (not implemented);
-- ‘comp’: open the computational benchmarks menu;
-- ‘exp’: open the experimental benchmark menu (not implemented);
-- ‘post’: open the post-processing menu.
-#### Utilities
-- ‘printlib’: print to video all the libreries available in the xsdir file specified in the &lt;JADE_root&gt;CodeConfigurationConfig.xlsx file. Those are the libraries that can be assessed;
-- ‘trans’: select an MCNP input file (absolute full path is required) and translate it to a selected library among the available ones; the results can be found in &lt;JADE_root&gt;UtilitiesTranslations;
-- ‘printmat’: select an MCNP input file (absolute full path is required) and print an excel that summarizes its material cards information; the results can be found in &lt;JADE_root&gt;UtilitiesMaterials Infos;
-- ‘generate’: select an MCNP input file (absolute full path is required); from this file, a number of materials can be selected and a new material will be created using user-specified fraction of them; the resulting material (in MCNP format) can be found in &lt;JADE_root&gt;UtilitiesGenerated Materials;
-- ‘exit’: leave the application freezing the log file that is saved in &lt;JADE_root&gt;UtilitiesLog Files
-### Computational Benchmark Menu
-- printlib: print to video all the libreries available in the xsdir file specified in the &lt;JADE_root&gt;CodeConfigurationConfig.xlsx file. Those are the libraries that can be assessed;
-- assess: assess the selected library, the suite is run following the corresponding setup sheet in &lt;JADE_root&gt;CodeConfigurationConfig.xlsx; The MCNP input and output files can be found in &lt;JADE_root&gt;TestsMCNP simulations
-- continue: continue an unfinished assessesment of the selected library;
-- back: go back to the main menu;
-- ‘exit’: leave the application freezing the log file that is saved in &lt;JADE_root&gt;UtilitiesLog Files
-### Post Processing Menu
-- printlib: print to video all the libreries that have been already assessed and can be post-processed.
-- pp: post-process a single selected library, the results can be found in &lt;JADE_root&gt;TestsPost-ProcessingSingle Libraries;
-- compare: compare two or more selected libraries, the first indicated will be considered as the reference one; the results can be found in &lt;JADE_root&gt;TestsPost-ProcessingComparisons
-- back: go back to the main menu;
-- ‘exit’: leave the application freezing the log file that is saved in &lt;JADE_root&gt;UtilitiesLog Files</p>
-<p>## LICENSE
-JADE is an open-source software licensed under the [GNU GPLv3](./LICENSE) license.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="quick-usage-overview">
+<h1>Quick Usage Overview<a class="headerlink" href="#quick-usage-overview" title="Permalink to this headline">¶</a></h1>
+<p>JADE is a consolle based software where different menus can be accessed through direct typing into the shell.
+The following is a quick overview on the available JADE functionalities, a more detailed description of the tool
+usage can be found in the <a class="reference internal" href="menu.html#menu"><span class="std std-ref">Usage</span></a> section.</p>
+<div class="section" id="main-menu">
+<h2>Main Menu<a class="headerlink" href="#main-menu" title="Permalink to this headline">¶</a></h2>
+<p>The main menu is divided into two sections, the first one let the user open the specific 2nd level menus of one of the main JADE functions, while the second one allows to directly execute some auxiliary functions.</p>
+<div class="section" id="main-functions">
+<h3>Main Functions<a class="headerlink" href="#main-functions" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">qual</span></code>: open the quality checks menu (not implemented);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">comp</span></code>: open the computational benchmarks menu;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exp</span></code>: open the experimental benchmark menu (not implemented);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">post</span></code>: open the post-processing menu.</p></li>
+</ul>
+</div>
+<div class="section" id="utilities">
+<h3>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">printlib</span></code>: print to video all the libreries available in the xsdir file specified in the
+<code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code\Configuration\Config.xlsx</span></code> file. Those are the libraries that can be assessed;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trans</span></code>: select an MCNP input file (absolute full path is required) and translate it to a selected
+library among the available ones; the results can be found in <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Utilities\Translations</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">printmat</span></code>: select an MCNP input file (absolute full path is required) and print an excel that
+summarizes its material cards information; the results can be found in <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Utilities\Materials</span> <span class="pre">Infos</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">generate</span></code>: select an MCNP input file (absolute full path is required);
+from this file, a number of materials can be selected and a new material will be created using user-specified fraction of them;
+the resulting material (in MCNP format) can be found in <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Utilities\Generated</span> <span class="pre">Materials</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exit</span></code>: leave the application freezing the log file that is saved in <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Utilities\Log</span> <span class="pre">Files</span></code>.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="computational-benchmark-menu">
+<h2>Computational Benchmark Menu<a class="headerlink" href="#computational-benchmark-menu" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">printlib</span></code>: print to video all the libreries available in the xsdir file specified in the
+<code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code\Configuration\Config.xlsx</span></code> file. Those are the libraries that can be assessed;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">assess</span></code>: assess the selected library, the suite is run following the corresponding setup sheet in
+<code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code\Configuration\Config.xlsx</span></code>;
+The MCNP input and output files can be found in <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Tests\MCNP</span> <span class="pre">simulations</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">continue</span></code>: continue an unfinished assessesment of the selected library;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">back</span></code>: go back to the main menu;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exit</span></code>: leave the application freezing the log file that is saved in <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Utilities\Log</span> <span class="pre">Files</span></code>.</p></li>
+</ul>
+</div>
+<div class="section" id="post-processing-menu">
+<h2>Post Processing Menu<a class="headerlink" href="#post-processing-menu" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">printlib</span></code>: print to video all the libreries that have been already assessed and can be post-processed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pp</span></code>: post-process a single selected library, the results can be found in
+<code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Tests\Post-Processing\Single</span> <span class="pre">Libraries</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compare</span></code>: compare two or more selected libraries, the first indicated will be considered as the reference one;
+the results can be found in <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Tests\Post-Processing\Comparisons</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">back</span></code>: go back to the main menu;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exit</span></code>: leave the application freezing the log file that is saved in <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Utilities\Log</span> <span class="pre">Files</span></code>.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="license">
+<h1>LICENSE<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
+<p>JADE is an open-source software licensed under the GNU GPLv3 <a class="reference internal" href="../LICENSE.html#license"><span class="std std-ref">License</span></a>.</p>
 </div>
 
 
@@ -263,10 +272,6 @@ JADE is an open-source software licensed under the [GNU GPLv3](./LICENSE) licens
            
           </div>
           <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to JADE’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-    </div>
 
   <hr/>
 

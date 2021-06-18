@@ -1,3 +1,5 @@
+.. _install:
+
 ############
 Installation
 ############
@@ -31,5 +33,10 @@ The procedure to install JADE is the following:
    ``python main.py``
 
 #. On the first usage the rest of the folders architecture is initialized.
+
+.. warning::
+   A limitator has been inserted in the code in order to test it before using JADE for production
+   (this will be eliminated when a proper function testing the installation will be produced).
+   To remove it, open <JADE_root>\\Code\\testrun.py and comment out line 239 and 298 while de-commenting line 238 and 297.
 
 

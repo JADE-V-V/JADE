@@ -176,7 +176,7 @@ class Plotter():
         labels = self.data[0]['x']
         single_width = 0.35  # the width of the bars
         tot_width = single_width*len(self.data)
-        
+
         # Check if the data is higher than max
         if len(labels) > maxgroups:
             nrows = int(len(labels)/maxgroups)+1  # rows of the plot
@@ -184,7 +184,7 @@ class Plotter():
         else:
             nlabels = len(labels)  # number of labels in first row
             nrows = 1
-        
+
         # Compute the position of the labels in the different rows
         # and the datasets
         x_array = []
@@ -218,7 +218,7 @@ class Plotter():
 
         # Initialize plot
         fig, axes = plt.subplots(figsize=(18, 13.5), nrows=nrows)
-        
+
         # Always want axes as a list even if it is only one
         try:
             iterator = iter(axes)
@@ -229,7 +229,7 @@ class Plotter():
         # --- Plotting ---
         # Set the title only in the top ax
         axes[0].set_title(self.title, fontsize=fontsize+4)
-        
+
         # Plot everything
         for ax, datachunk, x, labels in zip(axes, datasets, x_array,
                                             label_chunks):
@@ -240,16 +240,16 @@ class Plotter():
                        yerr=dataset['err']*dataset['y'],
                        align='edge')
                 pos = pos+single_width  # Adourn relative position
-            
+
             # log scale optional
             if log:
                 ax.set_yscale('log')
-            
+
             # --- Plot details ---
             # Legend and ticks
             ax.legend(loc='best', prop={'size': fontsize-5})
             ax.tick_params(which='major', width=1.00, length=5,
-                                       labelsize=fontsize-2)
+                           labelsize=fontsize-2)
             ax.tick_params(which='minor', width=0.75, length=2.50,
                            labelsize=fontsize-4)
 
@@ -261,11 +261,11 @@ class Plotter():
             # Special for x labels
             ax.set_xticks(x)
             ax.set_xticklabels(labels, rotation=60)
-            
+
             # Grid
             ax.grid('True', which='major', linewidth=0.75, axis='y')
             ax.grid('True', which='minor', linewidth=0.30, axis='y')
-        
+
         return self._save()
 
     def _exp_points_plot(self):

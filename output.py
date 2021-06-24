@@ -18,6 +18,7 @@ import string
 from outputFile import OutputFile
 from meshtal import Meshtal
 import pickle
+import sys
 
 
 class BenchmarkOutput:
@@ -662,15 +663,14 @@ class MCNPoutput:
                         'cosine': t.cos, 'energy': t.erg, 'time': t.tim,
                         'cor A': t.cora, 'cor B': t.corb, 'cor C': t.corc}
 
-            # Cells may have a series of zeros, the last one may be for the 
+            # Cells may have a series of zeros, the last one may be for the
             # total
             cells = []
-            last_idx = len(binnings['cells'])-1
+            # last_idx = len(binnings['cells'])-1
             for i, cell in enumerate(binnings['cells']):
                 if int(cell) == 0:
                     newval = 'Input '+str(i+1)
                     cells.append(newval)
-                
                 # Everything is fine, nothing to modify
                 else:
                     cells.append(cell)
@@ -717,7 +717,7 @@ class MCNPoutput:
                     rows.append([fn, d, un, sn, m, 'total', en, ntn, ina, jn,
                                  kn, val, err])
                     total = 'Cosine'
-                
+
                 elif t.usrTC is not None:
                     rows.append([fn, d, 'total', sn, m, cn, en, ntn, ina, jn,
                                  kn, val, err])
@@ -741,7 +741,7 @@ class MCNPoutput:
                     if column not in ['Value', 'Error']:
                         firstval = df[column].values[0]
                         # Should work as long as they are the exact same value
-                        allequal = (df[column] == firstval).all() 
+                        allequal = (df[column] == firstval).all()
                         if allequal:
                             del df[column]
 
@@ -1040,6 +1040,10 @@ def fatal_exception(message=None):
     None.
 
     """
+    # RED color
+    CRED = '\033[91m'
+    CEND = '\033[0m'
+
     if message is None:
         message = 'A Fatal exception have occured'
 

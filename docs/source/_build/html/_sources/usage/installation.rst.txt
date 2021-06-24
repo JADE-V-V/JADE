@@ -9,7 +9,7 @@ The procedure to install JADE is the following:
    
    ``conda update --all``
 
-   However, if bugs or problems are encountered, a fresh Anaconda re-installation may solve the issues
+   However, if bugs or problems are encountered, a fresh Anaconda re-installation may solve the issues.
 
 #. Install additional packages. It may be necessary to activate the conda-forge channel. It can be done typing in an anaconda prompt shell:
     
@@ -24,19 +24,19 @@ The procedure to install JADE is the following:
 
    ``pip install numjuggler``
 
-#. Extract the zip into a folder of choice (from now on <JADE_root>);
-#. Rename the folder containing the Python scripts as 'Code' (<JADE_root>\\Code);
-#. Open the global configuration file: <JADE_root>\\Code\\Configuration\\Config.xlsx;
+#. Extract the zip into a folder of choice (from now on ``<JADE_root>``);
+#. Rename the folder containing the Python scripts as 'Code' (``<JADE_root>\Code``);
+#. Open the global configuration file: ``<JADE_root>\Code\Configuration\Config.xlsx``;
    here you need to properly set the environment variables specified in the 'MAIN Config.' sheet (i.e. xsdir Path, and multithread options);
-#. Open an anaconda prompt shell and change directory to <JADE_root>\\Code. Then type:
+#. Open an anaconda prompt shell and change directory to ``<JADE_root>\Code``. Then type:
 
    ``python main.py``
 
 #. On the first usage the rest of the folders architecture is initialized.
 
-.. warning::
+.. important::
    A limitator has been inserted in the code in order to test it before using JADE for production
    (this will be eliminated when a proper function testing the installation will be produced).
-   To remove it, open <JADE_root>\\Code\\testrun.py and comment out line 239 and 298 while de-commenting line 238 and 297.
+   To remove it, open ``<JADE_root>\Code\testrun.py`` and comment out line 239 and 298 while de-commenting line 238 and 297.
 
 

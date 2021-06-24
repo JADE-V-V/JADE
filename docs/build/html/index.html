@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Welcome to JADE’s documentation! &mdash; JADE v1.1.0 documentation</title>
+  <title>Welcome to JADE’s documentation! &mdash; JADE v1.2.0 documentation</title>
   
 
   
@@ -33,13 +33,15 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installation" href="usage/installation.html" /> 
+    <link rel="next" title="JADE in a nutshell" href="nutshell.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -89,11 +91,26 @@
             
               <p class="caption"><span class="caption-text">JADE User Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="nutshell.html">JADE in a nutshell</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage/folders.html">Folder Structure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage/configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage/menu.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="benchmarks/benchmarks.html">Default Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/benchmarks.html">Default Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/postprocessing.html">Post-Processing Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/utilities.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/tipstricks.html">Tips &amp; Tricks</a></li>
+</ul>
+<p class="caption"><span class="caption-text">More on JADE:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="testing/testing.html">JADE Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LICENSE.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="publications.html">List of Publications and Contributions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">JADE Developer Guide (TBD):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="LICENSE.html">License</a></li>
 </ul>
 
             
@@ -163,9 +180,22 @@
             
   <div class="section" id="welcome-to-jade-s-documentation">
 <h1>Welcome to JADE’s documentation!<a class="headerlink" href="#welcome-to-jade-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Version: v1.2.0</p>
+<p>JADE is a new tool for nuclear libraries V&amp;V.
+Brought to you by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E).</p>
+<p>JADE is an open-source software licensed under the GNU GPLv3 <a class="reference internal" href="LICENSE.html#license"><span class="std std-ref">License</span></a>.
+When using JADE for scientific publications you are kindly encouraged to cite the following papers:</p>
+<ul class="simple">
+<li><p>Davide Laghi et al, 2020, “JADE, a new software tool for nuclear fusion data libraries verification &amp; validation”,
+Fusion Engineering and Design, <strong>161</strong> 112075, doi: <a class="reference external" href="https://doi.org/10.1016/j.fusengdes.2020.112075">https://doi.org/10.1016/j.fusengdes.2020.112075</a>.</p></li>
+</ul>
+<p>For additional information contact: <a class="reference external" href="mailto:d&#46;laghi&#37;&#52;&#48;nier&#46;it">d<span>&#46;</span>laghi<span>&#64;</span>nier<span>&#46;</span>it</a></p>
+<p>For additional information on future developments please check the issues list on the
+GitHub repository [link].</p>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">JADE User Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="nutshell.html">JADE in a nutshell</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage/installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage/folders.html">Folder Structure</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage/folders.html#benchmark-inputs">Benchmark inputs</a></li>
@@ -190,11 +220,49 @@
 <li class="toctree-l2"><a class="reference internal" href="usage/menu.html#post-processing-menu">Post-processing menu</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="benchmarks/benchmarks.html">Default Benchmarks</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="benchmarks/benchmarks.html#computational-benchmarks">Computational Benchmarks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="benchmarks/benchmarks.html#experimental-benchmarks">Experimental Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/benchmarks.html">Default Benchmarks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage/benchmarks.html#computational-benchmarks">Computational Benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/benchmarks.html#experimental-benchmarks">Experimental Benchmarks</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="usage/postprocessing.html">Post-Processing Gallery</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage/postprocessing.html#excel-output">Excel output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/postprocessing.html#plots-atlas">Plots Atlas</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage/utilities.html">Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage/utilities.html#print-available-libraries">Print available libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/utilities.html#restore-default-configurations">Restore default configurations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/utilities.html#translate-an-mcnp-input">Translate an MCNP input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/utilities.html#print-materials-info">Print materials info</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/utilities.html#generate-material-mixture">Generate material mixture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/utilities.html#switch-material-fractions">Switch material fractions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage/tipstricks.html">Tips &amp; Tricks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage/tipstricks.html#external-run-of-a-benchmark">External Run of a benchmark</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">More on JADE:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="testing/testing.html">JADE Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="LICENSE.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="publications.html">List of Publications and Contributions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="publications.html#publications-featuring-jade">Publications featuring JADE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="publications.html#benchmarks-related-publications">Benchmarks Related Publications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="publications.html#miscellaneous">Miscellaneous</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">JADE Developer Guide (TBD):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="LICENSE.html">License</a></li>
 </ul>
 </div>
 </div>
@@ -213,7 +281,7 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="usage/installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="nutshell.html" class="btn btn-neutral float-right" title="JADE in a nutshell" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

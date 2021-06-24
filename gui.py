@@ -15,8 +15,8 @@ import testInstallation as tinstall
 from tqdm import tqdm
 from status import EXP_TAG
 
-date = '25/05/2021'
-version = 'v1.1.0'
+date = 'TBD'
+version = 'v1.2.0'
 
 
 def clear_screen():
@@ -88,7 +88,7 @@ def mainloop(session):
 
         elif option == 'printlib':
             uty.print_libraries(session.lib_manager)
-        
+
         elif option == 'restore':
             uty.restore_default_config(session)
 
@@ -262,7 +262,8 @@ def comploop(session):
                     flag = testrun.Test._run(name, path, cpu=session.conf.cpu)
                     if flag:
                         flagOk = False
-                        session.log.adjourn(name +' reached timeout, eliminate folder')
+                        session.log.adjourn(name +
+                                            ' reached timeout, eliminate folder')
 
                 if not flagOk:
                     print("""
@@ -480,7 +481,8 @@ Additional Post-Processing of library:"""+lib+' completed\n', spacing=False)
                 print('\n ########################### COMPARISON STARTED ###########################\n')
 
                 # Check active tests
-                to_perform = session.check_active_tests('Post-Processing', exp=True)
+                to_perform = session.check_active_tests('Post-Processing',
+                                                        exp=True)
 
 #                 # Execut single pp
 #                 for lib in to_single_pp:

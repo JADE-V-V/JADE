@@ -34,13 +34,13 @@ class Configuration:
         # Computational
         comp_default = pd.read_excel(conf_file,
                                      sheet_name='Computational benchmarks',
-                                     skiprows=2, nrows=8)
+                                     skiprows=2)
         self.comp_default = comp_default.dropna(subset=['File Name'])
 
         # Experimental
         comp_default = pd.read_excel(conf_file,
                                      sheet_name='Experimental benchmarks',
-                                     skiprows=2, nrows=8)
+                                     skiprows=2)
         self.exp_default = comp_default.dropna(subset=['File Name'])
 
         # Libraries

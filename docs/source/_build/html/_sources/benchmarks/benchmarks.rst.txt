@@ -4,8 +4,13 @@ Default Benchmarks
 
 Computational Benchmarks
 ========================
-* :ref:`sphere`
-* :ref:`iter1D`
+.. toctree::
+    :caption: Computational Benchmarks
+    sphere
+    iter1D
+
+.. * :ref:`sphere`
+.. * :ref:`iter1D`
 
 Experimental Benchmarks
 =======================

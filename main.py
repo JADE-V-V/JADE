@@ -44,7 +44,7 @@ class Session:
 
     def __init__(self):
         self.initialize()
-    
+
     def initialize(self):
         """
         Initialize JADE session:
@@ -175,7 +175,7 @@ class Session:
                 to_perform.append(testname)
 
         return to_perform
-    
+
     def restore_default_settings(self):
         """
         Reset the configuration files to installation default. The session

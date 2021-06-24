@@ -1,9 +1,10 @@
 <img src="https://user-images.githubusercontent.com/25747626/118662537-5f124900-b7f0-11eb-8d69-282305f795c4.png" width="300" />
 
 # JADE
-Version: 1.1.0
 A new tool for nuclear libraries V&V.
 Brought to you by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E).
+
+A more detailed documentation can be accessed from [\docs\build\html\index.html](./docs/build/html/index.html).
 
 JADE is an open-source software licensed under the [GNU GPLv3](./LICENSE) license. When using JADE for scientific publications you are kindly encouraged to cite the following papers:
 - Davide Laghi et al, 2020, "JADE, a new software tool for nuclear fusion data libraries verification & validation", Fusion Engineering and Design, doi: https://doi.org/10.1016/j.fusengdes.2020.112075.

@@ -18,7 +18,7 @@ Benchmarks Related Publications
 * A. Milocco, A. Trkov and I. A. Kodeli, 2010, "The OKTAVIAN TOF experiments in SINBAD: Evaluation of the
   experimental uncertainties", *Annals of Nuclear Energy*, **37** 443-449
 * I.Kodeli, E. Sartori and B. Kirk, “SINBAD - Shielding Benchmark Experiments - Status and Planned Activities”,
-  Proceedings of the ANS 14th Biennial Topical Meeting of Radiation Protection and Shielding Division*,
+  *Proceedings of the ANS 14th Biennial Topical Meeting of Radiation Protection and Shielding Division*,
   Carlsbad, New Mexico (April 3-6, 2006)
 * D. Leichtle, B. Colling, M. Fabbri, R. Juarez, M. Loughlin,
   R. Pampin, E. Polunovskiy, A. Serikov, A. Turner and L. Bertalot, 2018,

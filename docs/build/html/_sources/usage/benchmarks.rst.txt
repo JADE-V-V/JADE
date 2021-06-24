@@ -104,6 +104,13 @@ WCLL TBM in ITER 1D
 
 C-Model
 ^^^^^^^
+This benchmark input cannot be distributed directly with JADE. The user must request to obtain it
+from ITER organization and insert it in the ``<JADE root>\Benchmarks inputs`` directory renaming it
+'C_Model.i'.
+
+.. important::
+    The NPS card needs to be removed from the input. It is recommended to also delete total bins
+    from standard tallies for a clearer post-processing results.
 
 .. figure:: ../img/benchmarks/cmodel.png
     :width: 600
@@ -143,5 +150,5 @@ by the RSICC and jointly mantained with the NEA data bank.
     * A. Milocco, A. Trkov and I. A. Kodeli, 2010, "The OKTAVIAN TOF experiments in SINBAD: Evaluation of the
       experimental uncertainties", *Annals of Nuclear Energy*, **37** 443-449
     * I.Kodeli, E. Sartori and B. Kirk, “SINBAD - Shielding Benchmark Experiments - Status and Planned Activities”,
-      Proceedings of the ANS 14th Biennial Topical Meeting of Radiation Protection and Shielding Division*,
+      *Proceedings of the ANS 14th Biennial Topical Meeting of Radiation Protection and Shielding Division*,
       Carlsbad, New Mexico (April 3-6, 2006)

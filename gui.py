@@ -32,7 +32,7 @@ import testInstallation as tinstall
 from tqdm import tqdm
 from status import EXP_TAG
 
-date = 'TBD'
+date = '24/06/2021'
 version = 'v1.2.0'
 
 

@@ -33,6 +33,8 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -95,7 +97,7 @@
 <li class="toctree-l1"><a class="reference internal" href="usage/folders.html">Folder Structure</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage/configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage/menu.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="benchmarks/benchmarks.html">Default Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/benchmarks.html">Default Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage/postprocessing.html">Post-Processing Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage/utilities.html">Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage/tipstricks.html">Tips &amp; Tricks</a></li>
@@ -103,13 +105,17 @@
 <p class="caption"><span class="caption-text">More on JADE:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="testing/testing.html">JADE Testing</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">License</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">License</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#gnu-gplv3-license">GNU GPLv3 License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pyne-license">Pyne License</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="publications.html">List of Publications and Contributions</a></li>
 </ul>
 <p class="caption"><span class="caption-text">JADE Developer Guide (TBD):</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">License</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev/intro.html">Introduction</a></li>
 </ul>
 
             
@@ -178,8 +184,16 @@
            <div itemprop="articleBody">
             
   <div class="section" id="license">
-<span id="id1"></span><h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
-<p>Check Pyne per propagazione di licenses</p>
+<h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
+<p>JADE software is licensed under the <a class="reference internal" href="#gnulicense"><span class="std std-ref">GNU GPLv3 License</span></a>.</p>
+<p>The following external python modules are re-distributed toghether with
+JADE and their licenses needs to be propagated:</p>
+<ul class="simple">
+<li><p><strong>MCTAL_READER.py</strong>, licensed under the <a class="reference internal" href="#gnulicense"><span class="std std-ref">GNU GPLv3 License</span></a>;</p></li>
+<li><p><strong>xsdirpyne.py</strong>, licensed under the <a class="reference internal" href="#pynelicense"><span class="std std-ref">Pyne License</span></a>.</p></li>
+</ul>
+<div class="section" id="gnu-gplv3-license">
+<span id="gnulicense"></span><h2>GNU GPLv3 License<a class="headerlink" href="#gnu-gplv3-license" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                    GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
@@ -855,6 +869,71 @@ the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 &lt;https://www.gnu.org/licenses/why-not-lgpl.html&gt;.
 </pre></div>
+</div>
+</div>
+<div class="section" id="pyne-license">
+<span id="pynelicense"></span><h2>Pyne License<a class="headerlink" href="#pyne-license" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Copyright 2011-2020, the PyNE Development Team. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are
+permitted provided that the following conditions are met:
+
+   1. Redistributions of source code must retain the above copyright notice, this list of
+      conditions and the following disclaimer.
+
+   2. Redistributions in binary form must reproduce the above copyright notice, this list
+      of conditions and the following disclaimer in the documentation and/or other materials
+      provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE PYNE DEVELOPMENT TEAM ``AS IS&#39;&#39; AND ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL &lt;COPYRIGHT HOLDER&gt; OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+The views and conclusions contained in the software and documentation are those of the
+authors and should not be interpreted as representing official policies, either expressed
+or implied, of the stakeholders of the PyNE project or the employers of PyNE developers.
+
+-------------------------------------------------------------------------------
+The files cpp/measure.cpp and cpp/measure.hpp are covered by:
+
+Copyright 2004 Sandia Corporation.  Under the terms of Contract
+DE-AC04-94AL85000 with Sandia Coroporation, the U.S. Government
+retains certain rights in this software.
+
+https://press3.mcs.anl.gov/sigma/moab-library
+
+-------------------------------------------------------------------------------
+The files in fortranformat/ are covered by: 
+
+The MIT License. Copyright (c) 2011 Brendan Arnold
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+https://bitbucket.org/brendanarnold/py-fortranformat/src/
+</pre></div>
+</div>
 </div>
 </div>
 

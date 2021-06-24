@@ -74,7 +74,7 @@
 
 
 \title{JADE}
-\date{Jun 22, 2021}
+\date{Jun 24, 2021}
 \release{v1.2.0}
 \author{Davide Laghi}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -95,7 +95,7 @@ Version: v1.2.0
 JADE is a new tool for nuclear libraries V\&V.
 Brought to you by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E).
 
-JADE is an open\sphinxhyphen{}source software licensed under the GNU GPLv3 {\hyperref[\detokenize{LICENSE:license}]{\sphinxcrossref{\DUrole{std,std-ref}{License}}}}.
+JADE is an open\sphinxhyphen{}source software licensed under the {\hyperref[\detokenize{LICENSE:gnulicense}]{\sphinxcrossref{\DUrole{std,std-ref}{GNU GPLv3 License}}}}.
 When using JADE for scientific publications you are kindly encouraged to cite the following papers:
 \begin{itemize}
 \item {} 
@@ -114,6 +114,8 @@ GitHub repository {[}link{]}.
 \label{\detokenize{nutshell:jade-in-a-nutshell}}\label{\detokenize{nutshell::doc}}
 \noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{scheme}.png}
 
+JADE is a new tool for nuclear libraries V\&V.
+Brought to you by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E).
 JADE is an open source, Python 3 based software able to:
 \begin{itemize}
 \item {} 
@@ -157,6 +159,19 @@ print a recap of the material composition of an MCNP input.
 
 \end{itemize}
 
+When using JADE for scientific publications you are kindly encouraged to cite the following papers:
+\begin{itemize}
+\item {} 
+Davide Laghi et al, 2020, “JADE, a new software tool for nuclear fusion data libraries verification \& validation”,
+Fusion Engineering and Design, \sphinxstylestrong{161} 112075, doi: \sphinxurl{https://doi.org/10.1016/j.fusengdes.2020.112075}.
+
+\end{itemize}
+
+For additional information contact: \sphinxhref{mailto:d.laghi@nier.it}{d.laghi@nier.it}
+
+For additional information on future developments please check the issues list on the
+GitHub repository {[}link{]}.
+
 
 \chapter{Installation}
 \label{\detokenize{usage/installation:installation}}\label{\detokenize{usage/installation:install}}\label{\detokenize{usage/installation::doc}}
@@ -168,7 +183,7 @@ Install/update Anaconda, you can update all packages in your current environment
 
 \sphinxcode{\sphinxupquote{conda update \sphinxhyphen{}\sphinxhyphen{}all}}
 
-However, if bugs or problems are encountered, a fresh Anaconda re\sphinxhyphen{}installation may solve the issues
+However, if bugs or problems are encountered, a fresh Anaconda re\sphinxhyphen{}installation may solve the issues.
 
 \item {} 
 Install additional packages. It may be necessary to activate the conda\sphinxhyphen{}forge channel. It can be done typing in an anaconda prompt shell:
@@ -185,17 +200,17 @@ Unfortunately, this is not available for conda installation and pip should be us
 \sphinxcode{\sphinxupquote{pip install numjuggler}}
 
 \item {} 
-Extract the zip into a folder of choice (from now on \textless{}JADE\_root\textgreater{});
+Extract the zip into a folder of choice (from now on \sphinxcode{\sphinxupquote{\textless{}JADE\_root\textgreater{}}});
 
 \item {} 
-Rename the folder containing the Python scripts as ‘Code’ (\textless{}JADE\_root\textgreater{}\textbackslash{}Code);
+Rename the folder containing the Python scripts as ‘Code’ (\sphinxcode{\sphinxupquote{\textless{}JADE\_root\textgreater{}\textbackslash{}Code}});
 
 \item {} 
-Open the global configuration file: \textless{}JADE\_root\textgreater{}\textbackslash{}Code\textbackslash{}Configuration\textbackslash{}Config.xlsx;
+Open the global configuration file: \sphinxcode{\sphinxupquote{\textless{}JADE\_root\textgreater{}\textbackslash{}Code\textbackslash{}Configuration\textbackslash{}Config.xlsx}};
 here you need to properly set the environment variables specified in the ‘MAIN Config.’ sheet (i.e. xsdir Path, and multithread options);
 
 \item {} 
-Open an anaconda prompt shell and change directory to \textless{}JADE\_root\textgreater{}\textbackslash{}Code. Then type:
+Open an anaconda prompt shell and change directory to \sphinxcode{\sphinxupquote{\textless{}JADE\_root\textgreater{}\textbackslash{}Code}}. Then type:
 
 \sphinxcode{\sphinxupquote{python main.py}}
 
@@ -204,10 +219,10 @@ On the first usage the rest of the folders architecture is initialized.
 
 \end{enumerate}
 
-\begin{sphinxadmonition}{warning}{Warning:}
+\begin{sphinxadmonition}{important}{Important:}
 A limitator has been inserted in the code in order to test it before using JADE for production
 (this will be eliminated when a proper function testing the installation will be produced).
-To remove it, open \textless{}JADE\_root\textgreater{}\textbackslash{}Code\textbackslash{}testrun.py and comment out line 239 and 298 while de\sphinxhyphen{}commenting line 238 and 297.
+To remove it, open \sphinxcode{\sphinxupquote{\textless{}JADE\_root\textgreater{}\textbackslash{}Code\textbackslash{}testrun.py}} and comment out line 239 and 298 while de\sphinxhyphen{}commenting line 238 and 297.
 \end{sphinxadmonition}
 
 
@@ -626,6 +641,14 @@ Different columns can be added where it can be specified if a plot in the style 
 should be generated (\sphinxcode{\sphinxupquote{true}}) or not (\sphinxcode{\sphinxupquote{false}}). The available plot styles are \sphinxstyleemphasis{Binned graph}, \sphinxstyleemphasis{Ratio Graph},
 \sphinxstyleemphasis{Experimental points} and \sphinxstyleemphasis{Grouped bars}.
 
+
+\sphinxstrong{See also:}
+
+
+{\hyperref[\detokenize{usage/postprocessing:plotstyles}]{\sphinxcrossref{\DUrole{std,std-ref}{Plots Atlas}}}} for an additional description of the available plot styles.
+
+
+
 \end{description}
 
 
@@ -844,25 +867,219 @@ the user will be asked for permission before overriding the post\sphinxhyphen{}p
 
 
 \chapter{Default Benchmarks}
-\label{\detokenize{benchmarks/benchmarks:default-benchmarks}}\label{\detokenize{benchmarks/benchmarks::doc}}
+\label{\detokenize{usage/benchmarks:default-benchmarks}}\label{\detokenize{usage/benchmarks::doc}}
 
 \section{Computational Benchmarks}
-\label{\detokenize{benchmarks/benchmarks:computational-benchmarks}}\begin{itemize}
+\label{\detokenize{usage/benchmarks:computational-benchmarks}}
+
+\subsection{Sphere Leakage}
+\label{\detokenize{usage/benchmarks:sphere-leakage}}
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics{{sphere}.png}
+\caption{Sphere Leakage geometrical model}\label{\detokenize{usage/benchmarks:id1}}\end{figure}
+
+The Sphere Leakage benchmark is arguably the most important
+benchmark included in the JADE suite. Indeed, it allows to test
+individually each single isotope of the nuclear data library under assessment
+plus some typically used material in the ITER project namely:
+\begin{itemize}
 \item {} 
-\DUrole{xref,std,std-ref}{sphere}
+Water;
 
 \item {} 
-\DUrole{xref,std,std-ref}{iter1D}
+Ordinary Concrete;
+
+\item {} 
+Boron Carbide;
+
+\item {} 
+SS316L(N)\sphinxhyphen{}IG;
+
+\item {} 
+Natural Silicon;
+
+\item {} 
+Polyethylene (non\sphinxhyphen{}borated).
 
 \end{itemize}
+
+The Sphere Lekage geometry consists of actually three
+concentric spheres. The inner one is void and has a radius of 5 cm. Here
+is located the uniform probability 0\sphinxhyphen{}14 MeV neutron point source. The second sphere
+has a radius of 50 cm and it is composed entirely by a single isotope
+or a typical ITER material. Finally,
+the last 60 cm radius sphere acts as a graveyard where particles importance is
+set to zero and the boundary of the model is defined.
+
+\sphinxstylestrong{TBD: Describe tallies}
+
+
+\sphinxstrong{See also:}
+
+
+\sphinxstylestrong{Related papers and contributions:}
+\begin{itemize}
+\item {} 
+D. Laghi, M. Fabbri, L. Isolan, R. Pampin, M. Sumini, A. Portone and
+A. Trkov, 2020,
+“JADE, a new software tool for nuclear fusion data libraries verification \&
+validation”, \sphinxstyleemphasis{Fusion Engineering and Design}, \sphinxstylestrong{161} 112075
+
+\end{itemize}
+
+
+
+
+\subsection{ITER 1D}
+\label{\detokenize{usage/benchmarks:iter-1d}}
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{iter1D}.png}
+\caption{ITER 1D MCNP geometry (quarter)}\label{\detokenize{usage/benchmarks:id2}}\end{figure}
+
+
+\sphinxstrong{See also:}
+
+
+\sphinxstylestrong{Related papers and contributions:}
+\begin{itemize}
+\item {} 
+M. Sawan, 1994,  “FENDL Neutronics Benchmark: Specifications for the calculational and shielding benchmark”,
+(Vienna: INDC(NDS)\sphinxhyphen{}316)
+
+\end{itemize}
+
+
+
+
+\subsection{Test Blanket Module}
+\label{\detokenize{usage/benchmarks:test-blanket-module}}
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{ITERCAD}.png}
+\caption{Position of the MCNP model in the ITER tokamak}\label{\detokenize{usage/benchmarks:id3}}\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{tbmCAD}.png}
+\caption{CAD model of the TBM component}\label{\detokenize{usage/benchmarks:id4}}\end{figure}
+
+
+\subsubsection{HCPB TBM in ITER 1D}
+\label{\detokenize{usage/benchmarks:hcpb-tbm-in-iter-1d}}
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{HCPBcad}.png}
+\caption{Section of the CAD model of the HCPB TBM set}\label{\detokenize{usage/benchmarks:id5}}\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{HCPBmcnp}.png}
+\caption{Visualization of the TBM and and shielding section in the 1D MCNP geometry}\label{\detokenize{usage/benchmarks:id6}}\end{figure}
+
+
+\subsubsection{WCLL TBM in ITER 1D}
+\label{\detokenize{usage/benchmarks:wcll-tbm-in-iter-1d}}
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{WCLLcad}.png}
+\caption{Section of the CAD model of the WCLL TBM set}\label{\detokenize{usage/benchmarks:id7}}\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{WCLLmcnp}.png}
+\caption{Visualization of the TBM and shielding section in the 1D MCNP geometry}\label{\detokenize{usage/benchmarks:id8}}\end{figure}
+
+
+\subsubsection{C\sphinxhyphen{}Model}
+\label{\detokenize{usage/benchmarks:c-model}}
+This benchmark input cannot be distributed directly with JADE. The user must request to obtain it
+from ITER organization and insert it in the \sphinxcode{\sphinxupquote{\textless{}JADE root\textgreater{}\textbackslash{}Benchmarks inputs}} directory renaming it
+‘C\_Model.i’.
+
+\begin{sphinxadmonition}{important}{Important:}
+The NPS card needs to be removed from the input. It is recommended to also delete total bins
+from standard tallies for a clearer post\sphinxhyphen{}processing results.
+\end{sphinxadmonition}
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{cmodel}.png}
+\caption{C\sphinxhyphen{}model R181031. Origin (1050,200,0). Basis (0.982339, 0.187112, 0.000000)
+(0,0,1). Extent (1000,1000)}\label{\detokenize{usage/benchmarks:id9}}\end{figure}
+
+
+\sphinxstrong{See also:}
+
+
+\sphinxstylestrong{Related papers and contributions:}
+\begin{itemize}
+\item {} 
+D. Leichtle, B. Colling, M. Fabbri, R. Juarez, M. Loughlin,
+R. Pampin, E. Polunovskiy, A. Serikov, A. Turner and L. Bertalot, 2018,
+“The ITER tokamak neutronics reference model C\sphinxhyphen{}Model”,
+\sphinxstyleemphasis{Fusion Engineering and Design}, \sphinxstylestrong{136} 742\sphinxhyphen{}746
+
+\end{itemize}
+
+
 
 
 \section{Experimental Benchmarks}
-\label{\detokenize{benchmarks/benchmarks:experimental-benchmarks}}\begin{itemize}
+\label{\detokenize{usage/benchmarks:experimental-benchmarks}}
+
+\subsection{Oktavian}
+\label{\detokenize{usage/benchmarks:oktavian}}
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{oktaviansimplified}.png}
+\caption{Simplified layout of the OKTAVIAN Fe experimental setup (not on scale).}\label{\detokenize{usage/benchmarks:id10}}\end{figure}
+
+Experimental results derived from Oktavian experiments are publicly accessible at the
+\sphinxhref{https://www-nds.iaea.org/conderc/oktavian}{CoNDERC database} which is mantained by the
+IAEA Nuclear Data Section and built upon the
+\sphinxhref{https://rsicc.ornl.gov/Benchmarks.aspx}{database of shielding experiments} (SINBAD), hosted
+by the RSICC and jointly mantained with the NEA data bank.
+
+
+\sphinxstrong{See also:}
+
+
+\sphinxstylestrong{Related papers and contributions:}
+\begin{itemize}
 \item {} 
-\DUrole{xref,std,std-ref}{oktavian}
+A. Milocco, A. Trkov and I. A. Kodeli, 2010, “The OKTAVIAN TOF experiments in SINBAD: Evaluation of the
+experimental uncertainties”, \sphinxstyleemphasis{Annals of Nuclear Energy}, \sphinxstylestrong{37} 443\sphinxhyphen{}449
+
+\item {} 
+I.Kodeli, E. Sartori and B. Kirk, “SINBAD \sphinxhyphen{} Shielding Benchmark Experiments \sphinxhyphen{} Status and Planned Activities”,
+\sphinxstyleemphasis{Proceedings of the ANS 14th Biennial Topical Meeting of Radiation Protection and Shielding Division},
+Carlsbad, New Mexico (April 3\sphinxhyphen{}6, 2006)
 
 \end{itemize}
+
+
 
 
 \chapter{Post\sphinxhyphen{}Processing Gallery}
@@ -874,8 +1091,77 @@ the user will be asked for permission before overriding the post\sphinxhyphen{}p
 \subsection{Benchmark specific}
 \label{\detokenize{usage/postprocessing:benchmark-specific}}
 
+\subsubsection{Sphere Leakage}
+\label{\detokenize{usage/postprocessing:sphere-leakage}}
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{statchecks_sphere}.png}
+\caption{10 MCNP statistical checks for each zaid and tally}\label{\detokenize{usage/postprocessing:id1}}\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{errors_sphere}.png}
+\caption{Statistical error associated with each tally for each zaid}\label{\detokenize{usage/postprocessing:id2}}\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{consistencysphere}.png}
+\caption{Consistency checks on zaid tally results}\label{\detokenize{usage/postprocessing:id3}}\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{comparisonsphere}.png}
+\caption{Comparison of tally results for each zaid}\label{\detokenize{usage/postprocessing:id4}}\end{figure}
+
+
+\subsubsection{Oktavian}
+\label{\detokenize{usage/postprocessing:oktavian}}
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{oktavexcel}.png}
+\caption{C/E table summarized per energy range}\label{\detokenize{usage/postprocessing:id5}}\end{figure}
+
+
 \subsection{General output}
 \label{\detokenize{usage/postprocessing:general-output}}
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{statchecksgeneral}.png}
+\caption{10 MCNP statistical checks recap}\label{\detokenize{usage/postprocessing:id6}}\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{errors}.png}
+\caption{Statistical errors associated with the tally results}\label{\detokenize{usage/postprocessing:id7}}\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{column}.png}
+\caption{Print of a single binned tally}\label{\detokenize{usage/postprocessing:id8}}\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{matrix}.png}
+\caption{Print of a double binned tally}\label{\detokenize{usage/postprocessing:id9}}\end{figure}
+
 
 \section{Plots Atlas}
 \label{\detokenize{usage/postprocessing:plots-atlas}}\label{\detokenize{usage/postprocessing:plotstyles}}
@@ -904,7 +1190,209 @@ the user will be asked for permission before overriding the post\sphinxhyphen{}p
 
 \chapter{Utilities}
 \label{\detokenize{usage/utilities:utilities}}\label{\detokenize{usage/utilities:uty}}\label{\detokenize{usage/utilities::doc}}
-TBD
+During the development of JADE, many useful classes and methods were developed
+which could be used for small stand\sphinxhyphen{}alone tools, mostly
+operating on MCNP inputs.
+
+A description of these \sphinxstyleemphasis{utilities}, accessible from the JADE main menu,
+is here provided.
+
+The outputs (if generated) of these utilities can be found in specific subfolders
+of the \sphinxcode{\sphinxupquote{\textless{}JADE root\textgreater{}\textbackslash{}Utilities}} directory.
+
+
+\section{Print available libraries}
+\label{\detokenize{usage/utilities:print-available-libraries}}
+\sphinxcode{\sphinxupquote{printlib}}
+
+This function allows to print to video all libraries (suffixes) that are
+available in xsdir file indicated in the main configuration file.
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{printlib}.png}
+\caption{Screenshot of the execution of the \sphinxcode{\sphinxupquote{printlib}} command}\label{\detokenize{usage/utilities:id1}}\end{figure}
+
+
+\section{Restore default configurations}
+\label{\detokenize{usage/utilities:restore-default-configurations}}
+\sphinxcode{\sphinxupquote{restore}}
+
+This function allows to restore the JADE configuration default settings.
+In other words, the content of the \sphinxcode{\sphinxupquote{\textless{}JADE root\textgreater{}\textbackslash{}Configuration}} directory
+is restored to “factory installation” and all user modifications to the
+configuration files are lost.
+
+\begin{sphinxadmonition}{note}{Note:}
+When the the restoration is completed, the application will be terminated.
+The main configuration file ambient variable will need to be reconfigured
+before running another JADE instance.
+\end{sphinxadmonition}
+
+
+\sphinxstrong{See also:}
+
+
+{\hyperref[\detokenize{usage/configuration:mainconfig}]{\sphinxcrossref{\DUrole{std,std-ref}{Main Configuration}}}}
+
+
+
+
+\section{Translate an MCNP input}
+\label{\detokenize{usage/utilities:translate-an-mcnp-input}}
+\sphinxcode{\sphinxupquote{trans}}
+
+This function allows to translate a material section of an MCNP input to
+a whatever nuclear data library available in the xsdir file.
+
+The translation is carried out basically by the \sphinxstylestrong{convertZaid()} method of the
+\sphinxstylestrong{LibManager} class and by the \sphinxstylestrong{translate()} method of the \sphinxstylestrong{SubMaterial} class.
+The \sphinxstylestrong{convertZaid} method:
+\begin{enumerate}
+\sphinxsetlistlabels{\arabic}{enumi}{enumii}{}{.}%
+\item {} 
+asks for a zaid (to translate) and for a library (to translate to);
+
+\item {} 
+checks if the library selected for the translation is available in the xsdir of
+the user;
+
+\item {} \begin{description}
+\item[{select the type of translation:}] \leavevmode\begin{enumerate}
+\sphinxsetlistlabels{\alph}{enumii}{enumiii}{}{.}%
+\item {} 
+zaid not available in library: the default lib is used, no other changes
+applied;
+
+\item {} 
+zaid available in library: the zaid is converted to the selected library,
+no other changes applied;
+
+\item {} 
+the zaid is natural (i.e. it ends with 000).
+
+\end{enumerate}
+
+\end{description}
+
+\end{enumerate}
+
+For case c, at first, the selected library is checked for exact correspondence,
+i.e., it is checked if also in the selected library the zaid is expressed as natural.
+In this case, the behavior is identical to case b. If this is not true, the zaid needs
+to be expanded: all zaids of the same elements are returned with their atomic mass (m)
+and natural abundance (NA).
+
+At this point, the \sphinxstylestrong{translate()} method completes the translation. No particular actions
+are required if there is no zaid expansion.
+In case of expansion, if the original natural zaid fraction is an atomic one
+(\(x^A_N\)), the new zaids deriving from the expansion will have as fraction their
+natural abundance (NA) multiplied for the original natural zaid fraction:
+\begin{equation*}
+\begin{split}x^A_{zaid} = \text{NA}_{zaid}\cdot x^A_N\end{split}
+\end{equation*}
+If, instead, the original natural zaid fraction is a mass one (\(x^M_N\)),
+the \sphinxstyleemphasis{equivalent mass} \(m_N\) of the natural zaid can be computed as:
+\begin{equation*}
+\begin{split}m_N = \sum_{zaids} \text{NA}_{zaid}\cdot m_{zaid}\end{split}
+\end{equation*}
+and then the mass fraction of each expanded new zaid (\(x^M_\text{zaid}\))
+can be calculated as:
+\begin{equation*}
+\begin{split}x^M_\text{zaid}=x^M_N\cdot (\text{NA}_{zaid}\cdot m_{zaid})/M_N\end{split}
+\end{equation*}
+where \((\text{NA}_{zaid}\cdot m_{zaid})/M_N\)
+is basically the natural abundance in mass of the zaid.
+
+The new input will be dumped in the
+\sphinxcode{\sphinxupquote{\textless{}JADE root\textgreater{}\textbackslash{}Utilities\textbackslash{}Translation}} folder.
+The following scheme summarizes the JADE translation logic.
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{Translation_logic}.jpg}
+\caption{Zaid translation logic}\label{\detokenize{usage/utilities:id2}}\end{figure}
+
+
+\section{Print materials info}
+\label{\detokenize{usage/utilities:print-materials-info}}
+\sphinxcode{\sphinxupquote{printmat}}
+
+This function is used to print a summary of an MCNP input material section.
+The information is contained in two sheets of an Excel file dumped into the
+\sphinxcode{\sphinxupquote{\textless{}JADE root\textgreater{}\textbackslash{}Utilities\textbackslash{}Materials Infos}} folder.
+The first sheet summarizes information at the single isotope level.
+Here both the atom and mass fraction for each zaid is reported divided by
+material and submaterial. It may happen that the original fraction appearing
+in the MCNP input is not normalized. JADE prints this fraction as it is and
+only the alternative fraction is normalized during its calculation.
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{printmat1}.png}
+\caption{Extract of the isotope sheet. In the example, the material card was
+expressed in mass fraction and not normalized.}\label{\detokenize{usage/utilities:id3}}\end{figure}
+
+The second sheet summarizes information at the element level.
+Three fractions are here listed for each element:
+* the MCNP fraction of the element in the material;
+* the normalized fraction of the element in the submaterial;
+* the normalized fraction of the element in the material.
+
+Depending on the orginal MCNP input, these three fraction need to be
+interpreted as either \sphinxstyleemphasis{mass} or \sphinxstyleemphasis{atom} fraction.
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics[width=600\sphinxpxdimen]{{printmat2}.png}
+\caption{Extract of the element sheet. In the example, the material card was
+expressed in mass fraction and not normalized.}\label{\detokenize{usage/utilities:id4}}\end{figure}
+
+
+\section{Generate material mixture}
+\label{\detokenize{usage/utilities:generate-material-mixture}}
+\sphinxcode{\sphinxupquote{generate}}
+
+This function is used to generate a material mixture starting from two or
+more materials contained in a single MCNP input. The user will be asked for:
+\begin{itemize}
+\item {} 
+absolute path to the MCNP input;
+
+\item {} 
+if the zaids need to have a mass or atom fraction;
+
+\item {} 
+material names (e.g. m1) to be used in the mixture;
+
+\item {} 
+percentages to be used in the mixture for each material;
+
+\item {} 
+nuclear data library to use for the new material mixture.
+
+\end{itemize}
+
+Each material will be transformed in a submaterial of the newly generated mixture
+retaining its header if present. The new material will be dumped in the
+\sphinxcode{\sphinxupquote{\textless{}JADE root\textgreater{}\textbackslash{}Utilities\textbackslash{}Generated Materials}} folder.
+
+
+\section{Switch material fractions}
+\label{\detokenize{usage/utilities:switch-material-fractions}}
+\sphinxcode{\sphinxupquote{switch}}
+
+This function can be used to switch an MCNP input from having atom fractions
+to mass fractions and viceversa. The new input will be dumped in the
+\sphinxcode{\sphinxupquote{\textless{}JADE root\textgreater{}\textbackslash{}Utilities\textbackslash{}Fraction switch}} folder.
 
 
 \chapter{Tips \& Tricks}
@@ -944,11 +1432,27 @@ normally run the post\sphinxhyphen{}processing.
 
 \chapter{JADE Testing}
 \label{\detokenize{testing/testing:jade-testing}}\label{\detokenize{testing/testing::doc}}
+TBD
+
 
 \chapter{License}
-\label{\detokenize{LICENSE:license}}\label{\detokenize{LICENSE:id1}}\label{\detokenize{LICENSE::doc}}
-Check Pyne per propagazione di licenses
+\label{\detokenize{LICENSE:license}}\label{\detokenize{LICENSE::doc}}
+JADE software is licensed under the {\hyperref[\detokenize{LICENSE:gnulicense}]{\sphinxcrossref{\DUrole{std,std-ref}{GNU GPLv3 License}}}}.
 
+The following external python modules are re\sphinxhyphen{}distributed toghether with
+JADE and their licenses needs to be propagated:
+\begin{itemize}
+\item {} 
+\sphinxstylestrong{MCTAL\_READER.py}, licensed under the {\hyperref[\detokenize{LICENSE:gnulicense}]{\sphinxcrossref{\DUrole{std,std-ref}{GNU GPLv3 License}}}};
+
+\item {} 
+\sphinxstylestrong{xsdirpyne.py}, licensed under the {\hyperref[\detokenize{LICENSE:pynelicense}]{\sphinxcrossref{\DUrole{std,std-ref}{Pyne License}}}}.
+
+\end{itemize}
+
+
+\section{GNU GPLv3 License}
+\label{\detokenize{LICENSE:gnu-gplv3-license}}\label{\detokenize{LICENSE:gnulicense}}
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
@@ -1627,11 +2131,192 @@ Public License instead of this License.  But first, please read
 \end{sphinxVerbatim}
 
 
+\section{Pyne License}
+\label{\detokenize{LICENSE:pyne-license}}\label{\detokenize{LICENSE:pynelicense}}
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+Copyright 2011\PYGZhy{}2020, the PyNE Development Team. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are
+permitted provided that the following conditions are met:
+
+   1. Redistributions of source code must retain the above copyright notice, this list of
+      conditions and the following disclaimer.
+
+   2. Redistributions in binary form must reproduce the above copyright notice, this list
+      of conditions and the following disclaimer in the documentation and/or other materials
+      provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE PYNE DEVELOPMENT TEAM ``AS IS\PYGZsq{}\PYGZsq{} AND ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL \PYGZlt{}COPYRIGHT HOLDER\PYGZgt{} OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+The views and conclusions contained in the software and documentation are those of the
+authors and should not be interpreted as representing official policies, either expressed
+or implied, of the stakeholders of the PyNE project or the employers of PyNE developers.
+
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+The files cpp/measure.cpp and cpp/measure.hpp are covered by:
+
+Copyright 2004 Sandia Corporation.  Under the terms of Contract
+DE\PYGZhy{}AC04\PYGZhy{}94AL85000 with Sandia Coroporation, the U.S. Government
+retains certain rights in this software.
+
+https://press3.mcs.anl.gov/sigma/moab\PYGZhy{}library
+
+\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}\PYGZhy{}
+The files in fortranformat/ are covered by: 
+
+The MIT License. Copyright (c) 2011 Brendan Arnold
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the \PYGZdq{}Software\PYGZdq{}), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED \PYGZdq{}AS IS\PYGZdq{}, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+https://bitbucket.org/brendanarnold/py\PYGZhy{}fortranformat/src/
+\end{sphinxVerbatim}
+
+
 \chapter{Contributors}
 \label{\detokenize{contributors:contributors}}\label{\detokenize{contributors::doc}}
+JADE is the results of a joint effort between \sphinxhref{https://www.niering.it/}{NIER ingegneria},
+\sphinxhref{https://ingegneriaindustriale.unibo.it/it}{Università di Bologna (UNIBO)}
+and \sphinxhref{https://fusionforenergy.europa.eu/}{Fusion For Energy (F4E)}.
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{nier}.png}
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{unibo}.jpg}
+
+\noindent\sphinxincludegraphics[width=400\sphinxpxdimen]{{f4e}.jpg}
+
+\sphinxstylestrong{Key People:}
+
+
+\begin{savenotes}\sphinxattablestart
+\centering
+\begin{tabular}[t]{|\X{50}{200}|\X{50}{200}|\X{50}{200}|\X{50}{200}|}
+\hline
+\sphinxstyletheadfamily 
+Name
+&\sphinxstyletheadfamily 
+Contribution
+&\sphinxstyletheadfamily 
+Institution/Company
+&\sphinxstyletheadfamily 
+Contacts
+\\
+\hline
+Davide Laghi
+&
+Main developer
+&
+NIER and UNIBO
+&
+\sphinxhref{mailto:d.laghi@nier.it}{d.laghi@nier.it}
+\\
+\hline
+Marco Fabbri
+&
+Project manager and expert
+&
+F4E
+&
+\sphinxhref{mailto:marco.fabbri@f4e.europa.eu}{marco.fabbri@f4e.europa.eu}
+\\
+\hline
+Lorenzo Isolan
+&
+Tester
+&
+UNIBO
+&
+\sphinxhref{mailto:lorenzo.isolan2@unibo.it}{lorenzo.isolan2@unibo.it}
+\\
+\hline
+Marco Sumini
+&
+Expert
+&
+UNIBO
+&
+\sphinxhref{mailto:marco.sumini@unibo.it}{marco.sumini@unibo.it}
+\\
+\hline
+\end{tabular}
+\par
+\sphinxattableend\end{savenotes}
+
 
 \chapter{List of Publications and Contributions}
 \label{\detokenize{publications:list-of-publications-and-contributions}}\label{\detokenize{publications::doc}}
+
+\section{Publications featuring JADE}
+\label{\detokenize{publications:publications-featuring-jade}}\begin{itemize}
+\item {} 
+D. Laghi, M. Fabbri, L. Isolan, R. Pampin, M. Sumini, A. Portone and
+A. Trkov, 2020,
+“JADE, a new software tool for nuclear fusion data libraries verification \&
+validation”, \sphinxstyleemphasis{Fusion Engineering and Design}, \sphinxstylestrong{161} 112075,
+doi: \sphinxurl{https://doi.org/10.1016/j.fusengdes.2020.112075}
+
+\item {} 
+D. Laghi, M. Fabbri, L. Isolan, M. Sumini, G. Shnabel and A. Trkov, 2021,
+“Application Of JADE V\&V Capabilities To The New FENDL v3.2 Beta Release”,
+\sphinxstyleemphasis{Nuclear Fusion}, {[}Under minor review{]}
+
+\end{itemize}
+
+
+\section{Benchmarks Related Publications}
+\label{\detokenize{publications:benchmarks-related-publications}}\begin{itemize}
+\item {} 
+A. Milocco, A. Trkov and I. A. Kodeli, 2010, “The OKTAVIAN TOF experiments in SINBAD: Evaluation of the
+experimental uncertainties”, \sphinxstyleemphasis{Annals of Nuclear Energy}, \sphinxstylestrong{37} 443\sphinxhyphen{}449
+
+\item {} 
+I.Kodeli, E. Sartori and B. Kirk, “SINBAD \sphinxhyphen{} Shielding Benchmark Experiments \sphinxhyphen{} Status and Planned Activities”,
+\sphinxstyleemphasis{Proceedings of the ANS 14th Biennial Topical Meeting of Radiation Protection and Shielding Division},
+Carlsbad, New Mexico (April 3\sphinxhyphen{}6, 2006)
+
+\item {} 
+D. Leichtle, B. Colling, M. Fabbri, R. Juarez, M. Loughlin,
+R. Pampin, E. Polunovskiy, A. Serikov, A. Turner and L. Bertalot, 2018,
+“The ITER tokamak neutronics reference model C\sphinxhyphen{}Model”,
+\sphinxstyleemphasis{Fusion Engineering and Design}, \sphinxstylestrong{136} 742\sphinxhyphen{}746
+
+\item {} 
+M. Sawan, 1994,  “FENDL Neutronics Benchmark: Specifications for the calculational and shielding benchmark”,
+(Vienna: INDC(NDS)\sphinxhyphen{}316)
+
+\end{itemize}
+
+
+\section{Miscellaneous}
+\label{\detokenize{publications:miscellaneous}}
+
+\chapter{Introduction}
+\label{\detokenize{dev/intro:introduction}}\label{\detokenize{dev/intro::doc}}
+TBD
+
 
 \chapter{Indices and tables}
 \label{\detokenize{index:indices-and-tables}}\begin{itemize}

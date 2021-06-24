@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6) (preloaded format=pdflatex 2021.6.22)  22 JUN 2021 09:20
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6) (preloaded format=pdflatex 2021.6.22)  24 JUN 2021 15:31
 entering extended mode
 **./jade.tex
 (jade.tex
@@ -691,8 +691,8 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 
 ]
 
-LaTeX Warning: Hyper reference `LICENSE:license' on page 1 undefined on input l
-ine 98.
+LaTeX Warning: Hyper reference `LICENSE:gnulicense' on page 1 undefined on inpu
+t line 98.
 
 LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 1
 01.
@@ -725,16 +725,16 @@ Chapter 3.
 [7]
 
 LaTeX Warning: Hyper reference `usage/installation:install' on page 8 undefined
- on input line 270.
+ on input line 285.
 
 [8]
 
 LaTeX Warning: Hyper reference `usage/configuration:config' on page 9 undefined
- on input line 317.
+ on input line 332.
 
 
 LaTeX Warning: Hyper reference `usage/utilities:uty' on page 9 undefined on inp
-ut line 350.
+ut line 365.
 
 [9] [10
 
@@ -742,189 +742,337 @@ ut line 350.
 Chapter 4.
 
 LaTeX Warning: Hyper reference `usage/configuration:mainconfig' on page 11 unde
-fined on input line 358.
+fined on input line 373.
 
 
 LaTeX Warning: Hyper reference `usage/configuration:runconf' on page 11 undefin
-ed on input line 362.
+ed on input line 377.
 
 
 LaTeX Warning: Hyper reference `usage/configuration:ppconf' on page 11 undefine
-d on input line 362.
+d on input line 377.
 
-<main.png, id=97, 778.70924pt x 87.32625pt>
+<main.png, id=99, 778.70924pt x 87.32625pt>
 File: main.png Graphic file (type png)
 <use main.png>
-Package pdftex.def Info: main.png  used on input line 376.
+Package pdftex.def Info: main.png  used on input line 391.
 (pdftex.def)             Requested size: 451.68457pt x 50.65324pt.
 [11 <./main.png>]
-<comp.png, id=106, 781.11826pt x 232.4685pt>
+<comp.png, id=108, 781.11826pt x 232.4685pt>
 File: comp.png Graphic file (type png)
 <use comp.png>
-Package pdftex.def Info: comp.png  used on input line 396.
+Package pdftex.def Info: comp.png  used on input line 411.
 (pdftex.def)             Requested size: 451.68457pt x 134.42743pt.
 
 
 LaTeX Warning: Hyper reference `usage/tipstricks:externalrun' on page 12 undefi
-ned on input line 418.
+ned on input line 433.
 
 [12 <./comp.png>]
-<exp.png, id=113, 773.89125pt x 203.5605pt>
+<exp.png, id=115, 773.89125pt x 203.5605pt>
 File: exp.png Graphic file (type png)
 <use exp.png>
-Package pdftex.def Info: exp.png  used on input line 461.
+Package pdftex.def Info: exp.png  used on input line 476.
 (pdftex.def)             Requested size: 451.68457pt x 118.81062pt.
 
 
 LaTeX Warning: Hyper reference `usage/configuration:compsheet' on page 13 undef
-ined on input line 463.
+ined on input line 478.
 
-<lib.png, id=114, 195.73125pt x 102.3825pt>
+<lib.png, id=116, 195.73125pt x 102.3825pt>
 File: lib.png Graphic file (type png)
 <use lib.png>
-Package pdftex.def Info: lib.png  used on input line 469.
+Package pdftex.def Info: lib.png  used on input line 484.
 (pdftex.def)             Requested size: 301.12305pt x 157.51956pt.
 [13 <./exp.png> <./lib.png>]
-<excelbench.png, id=125, 317.988pt x 348.1005pt>
+<excelbench.png, id=127, 317.988pt x 348.1005pt>
 File: excelbench.png Graphic file (type png)
 <use excelbench.png>
-Package pdftex.def Info: excelbench.png  used on input line 498.
+Package pdftex.def Info: excelbench.png  used on input line 513.
 (pdftex.def)             Requested size: 451.68457pt x 494.48143pt.
  [14 <./excelbench.png>] [15]
-<atlasbench.png, id=139, 402.90524pt x 348.1005pt>
+<atlasbench.png, id=141, 402.90524pt x 348.1005pt>
 File: atlasbench.png Graphic file (type png)
 <use atlasbench.png>
-Package pdftex.def Info: atlasbench.png  used on input line 602.
+Package pdftex.def Info: atlasbench.png  used on input line 617.
 (pdftex.def)             Requested size: 451.68457pt x 390.26826pt.
- [16 <./atlasbench.png>]
-Chapter 5.
-
-LaTeX Warning: Hyper reference `usage/configuration:config' on page 17 undefine
-d on input line 635.
-
-<main_menu.png, id=146, 483.60675pt x 574.5465pt>
-File: main_menu.png Graphic file (type png)
-<use main_menu.png>
-Package pdftex.def Info: main_menu.png  used on input line 642.
-(pdftex.def)             Requested size: 301.12305pt x 357.74934pt.
-
-LaTeX Warning: Hyper reference `usage/menu:compmenu' on page 17 undefined on in
-put line 652.
 
 
-LaTeX Warning: Hyper reference `usage/menu:expmenu' on page 17 undefined on inp
-ut line 655.
+LaTeX Warning: Hyper reference `usage/postprocessing:plotstyles' on page 16 und
+efined on input line 648.
 
-[17
-
- <./main_menu.png>]
-
-LaTeX Warning: Hyper reference `usage/menu:postmenu' on page 18 undefined on in
-put line 658.
-
-
-LaTeX Warning: Hyper reference `usage/utilities:uty' on page 18 undefined on in
-put line 668.
-
-<compmenu.png, id=153, 451.6875pt x 355.92975pt>
-File: compmenu.png Graphic file (type png)
-<use compmenu.png>
-Package pdftex.def Info: compmenu.png  used on input line 678.
-(pdftex.def)             Requested size: 301.12305pt x 237.29858pt.
-[18 <./compmenu.png>]
-
-LaTeX Warning: Hyper reference `usage/configuration:config' on page 19 undefine
-d on input line 718.
-
-<expmenu.png, id=161, 448.074pt x 350.5095pt>
-File: expmenu.png Graphic file (type png)
-<use expmenu.png>
-Package pdftex.def Info: expmenu.png  used on input line 725.
-(pdftex.def)             Requested size: 301.12305pt x 235.55682pt.
-
-LaTeX Warning: Hyper reference `usage/configuration:config' on page 19 undefine
-d on input line 763.
-
-[19 <./expmenu.png>]
-<postmenu.png, id=168, 452.892pt x 367.97475pt>
-File: postmenu.png Graphic file (type png)
-<use postmenu.png>
-Package pdftex.def Info: postmenu.png  used on input line 770.
-(pdftex.def)             Requested size: 301.12305pt x 244.66644pt.
- [20 <./postmenu.png>]
-
-LaTeX Warning: Hyper reference `usage/configuration:config' on page 21 undefine
-d on input line 841.
-
-[21] [22
+[16 <./atlasbench.png>] [17] [18
 
 ]
-Chapter 6.
+Chapter 5.
+
+LaTeX Warning: Hyper reference `usage/configuration:config' on page 19 undefine
+d on input line 658.
+
+<main_menu.png, id=156, 483.60675pt x 574.5465pt>
+File: main_menu.png Graphic file (type png)
+<use main_menu.png>
+Package pdftex.def Info: main_menu.png  used on input line 665.
+(pdftex.def)             Requested size: 301.12305pt x 357.74934pt.
+
+LaTeX Warning: Hyper reference `usage/menu:compmenu' on page 19 undefined on in
+put line 675.
+
+
+LaTeX Warning: Hyper reference `usage/menu:expmenu' on page 19 undefined on inp
+ut line 678.
+
+[19 <./main_menu.png>]
+
+LaTeX Warning: Hyper reference `usage/menu:postmenu' on page 20 undefined on in
+put line 681.
+
+
+LaTeX Warning: Hyper reference `usage/utilities:uty' on page 20 undefined on in
+put line 691.
+
+<compmenu.png, id=163, 451.6875pt x 355.92975pt>
+File: compmenu.png Graphic file (type png)
+<use compmenu.png>
+Package pdftex.def Info: compmenu.png  used on input line 701.
+(pdftex.def)             Requested size: 301.12305pt x 237.29858pt.
+[20 <./compmenu.png>]
+
+LaTeX Warning: Hyper reference `usage/configuration:config' on page 21 undefine
+d on input line 741.
+
+<expmenu.png, id=171, 448.074pt x 350.5095pt>
+File: expmenu.png Graphic file (type png)
+<use expmenu.png>
+Package pdftex.def Info: expmenu.png  used on input line 748.
+(pdftex.def)             Requested size: 301.12305pt x 235.55682pt.
+
+LaTeX Warning: Hyper reference `usage/configuration:config' on page 21 undefine
+d on input line 786.
+
+[21 <./expmenu.png>]
+<postmenu.png, id=179, 452.892pt x 367.97475pt>
+File: postmenu.png Graphic file (type png)
+<use postmenu.png>
+Package pdftex.def Info: postmenu.png  used on input line 793.
+(pdftex.def)             Requested size: 301.12305pt x 244.66644pt.
+ [22 <./postmenu.png>]
+
+LaTeX Warning: Hyper reference `usage/configuration:config' on page 23 undefine
+d on input line 864.
+
 [23] [24
 
 ]
+Chapter 6.
+<sphere.png, id=198, 224.037pt x 222.5916pt>
+File: sphere.png Graphic file (type png)
+<use sphere.png>
+Package pdftex.def Info: sphere.png  used on input line 881.
+(pdftex.def)             Requested size: 224.03644pt x 222.59105pt.
+[25 <./sphere.png>]
+<iter1D.png, id=208, 542.5068pt x 542.025pt>
+File: iter1D.png Graphic file (type png)
+<use iter1D.png>
+Package pdftex.def Info: iter1D.png  used on input line 942.
+(pdftex.def)             Requested size: 451.68457pt x 451.28664pt.
+<ITERCAD.png, id=209, 561.59813pt x 542.025pt>
+File: ITERCAD.png Graphic file (type png)
+<use ITERCAD.png>
+Package pdftex.def Info: ITERCAD.png  used on input line 966.
+(pdftex.def)             Requested size: 451.68457pt x 435.93636pt.
+<tbmCAD.png, id=210, 523.9575pt x 510.10574pt>
+File: tbmCAD.png Graphic file (type png)
+<use tbmCAD.png>
+Package pdftex.def Info: tbmCAD.png  used on input line 973.
+(pdftex.def)             Requested size: 451.68457pt x 439.75652pt.
+<HCPBcad.png, id=211, 604.659pt x 267.399pt>
+File: HCPBcad.png Graphic file (type png)
+<use HCPBcad.png>
+Package pdftex.def Info: HCPBcad.png  used on input line 983.
+(pdftex.def)             Requested size: 451.68457pt x 199.74904pt.
+<HCPBmcnp.png, id=212, 474.573pt x 140.9265pt>
+File: HCPBmcnp.png Graphic file (type png)
+<use HCPBmcnp.png>
+Package pdftex.def Info: HCPBmcnp.png  used on input line 990.
+(pdftex.def)             Requested size: 451.68457pt x 134.131pt.
+<WCLLcad.png, id=213, 531.1845pt x 391.4625pt>
+File: WCLLcad.png Graphic file (type png)
+<use WCLLcad.png>
+Package pdftex.def Info: WCLLcad.png  used on input line 1000.
+(pdftex.def)             Requested size: 451.68457pt x 332.88805pt.
+<WCLLmcnp.png, id=214, 404.10976pt x 107.2005pt>
+File: WCLLmcnp.png Graphic file (type png)
+<use WCLLmcnp.png>
+Package pdftex.def Info: WCLLmcnp.png  used on input line 1007.
+(pdftex.def)             Requested size: 451.68457pt x 119.8249pt.
+<cmodel.png, id=215, 384.25247pt x 476.16191pt>
+File: cmodel.png Graphic file (type png)
+<use cmodel.png>
+Package pdftex.def Info: cmodel.png  used on input line 1026.
+(pdftex.def)             Requested size: 451.68457pt x 559.72282pt.
+ [26] [27 <./iter1D.png>] [28 <./ITERCAD.png>] [29 <./tbmCAD.png>] [30 <./HCPBc
+ad.png> <./HCPBmcnp.png>] [31 <./WCLLcad.png> <./WCLLmcnp.png>] [32 <./cmodel.p
+ng>]
+<oktaviansimplified.png, id=266, 785.334pt x 264.38776pt>
+File: oktaviansimplified.png Graphic file (type png)
+<use oktaviansimplified.png>
+Package pdftex.def Info: oktaviansimplified.png  used on input line 1056.
+(pdftex.def)             Requested size: 451.68457pt x 152.06615pt.
+ [33 <./oktaviansimplified.png>] [34
+
+]
 Chapter 7.
-<binned.png, id=199, 542.025pt x 406.1574pt>
+<statchecks_sphere.png, id=282, 508.90125pt x 100.12407pt>
+File: statchecks_sphere.png Graphic file (type png)
+<use statchecks_sphere.png>
+Package pdftex.def Info: statchecks_sphere.png  used on input line 1100.
+(pdftex.def)             Requested size: 451.68457pt x 88.87027pt.
+<errors_sphere.png, id=283, 506.6428pt x 99.37125pt>
+File: errors_sphere.png Graphic file (type png)
+<use errors_sphere.png>
+Package pdftex.def Info: errors_sphere.png  used on input line 1107.
+(pdftex.def)             Requested size: 451.68457pt x 88.59479pt.
+<consistencysphere.png, id=284, 507.39563pt x 102.3825pt>
+File: consistencysphere.png Graphic file (type png)
+<use consistencysphere.png>
+Package pdftex.def Info: consistencysphere.png  used on input line 1114.
+(pdftex.def)             Requested size: 451.68457pt x 91.14357pt.
+<comparisonsphere.png, id=285, 508.90125pt x 82.05656pt>
+File: comparisonsphere.png Graphic file (type png)
+<use comparisonsphere.png>
+Package pdftex.def Info: comparisonsphere.png  used on input line 1121.
+(pdftex.def)             Requested size: 451.68457pt x 72.83351pt.
+[35 <./statchecks_sphere.png> <./errors_sphere.png> <./consistencysphere.png>]
+<oktavexcel.png, id=300, 410.13225pt x 166.221pt>
+File: oktavexcel.png Graphic file (type png)
+<use oktavexcel.png>
+Package pdftex.def Info: oktavexcel.png  used on input line 1131.
+(pdftex.def)             Requested size: 451.68457pt x 183.06429pt.
+<statchecksgeneral.png, id=301, 652.839pt x 395.076pt>
+File: statchecksgeneral.png Graphic file (type png)
+<use statchecksgeneral.png>
+Package pdftex.def Info: statchecksgeneral.png  used on input line 1141.
+(pdftex.def)             Requested size: 451.68457pt x 273.35025pt.
+<errors.png, id=302, 844.3545pt x 318.59026pt>
+File: errors.png Graphic file (type png)
+<use errors.png>
+Package pdftex.def Info: errors.png  used on input line 1148.
+(pdftex.def)             Requested size: 451.68457pt x 170.42708pt.
+<column.png, id=303, 280.6485pt x 309.5565pt>
+File: column.png Graphic file (type png)
+<use column.png>
+Package pdftex.def Info: column.png  used on input line 1155.
+(pdftex.def)             Requested size: 451.68457pt x 498.24794pt.
+<matrix.png, id=304, 1075.6185pt x 343.88475pt>
+File: matrix.png Graphic file (type png)
+<use matrix.png>
+Package pdftex.def Info: matrix.png  used on input line 1162.
+(pdftex.def)             Requested size: 451.68457pt x 144.40962pt.
+<binned.png, id=305, 542.025pt x 406.1574pt>
 File: binned.png Graphic file (type png)
 <use binned.png>
-Package pdftex.def Info: binned.png  used on input line 885.
+Package pdftex.def Info: binned.png  used on input line 1171.
 (pdftex.def)             Requested size: 451.68457pt x 338.47398pt.
-[25 <./binned.png>]
-<ratio.png, id=211, 380.1402pt x 213.9192pt>
+
+[36 <./comparisonsphere.png> <./oktavexcel.png>] [37 <./statchecksgeneral.png> 
+<./errors.png>] [38 <./column.png>] [39 <./matrix.png> <./binned.png>]
+<ratio.png, id=340, 380.1402pt x 213.9192pt>
 File: ratio.png Graphic file (type png)
 <use ratio.png>
-Package pdftex.def Info: ratio.png  used on input line 890.
+Package pdftex.def Info: ratio.png  used on input line 1176.
 (pdftex.def)             Requested size: 451.68457pt x 254.18835pt.
-<ratio2.png, id=212, 542.025pt x 332.442pt>
+<ratio2.png, id=341, 542.025pt x 332.442pt>
 File: ratio2.png Graphic file (type png)
 <use ratio2.png>
-Package pdftex.def Info: ratio2.png  used on input line 892.
+Package pdftex.def Info: ratio2.png  used on input line 1178.
 (pdftex.def)             Requested size: 451.68457pt x 277.04276pt.
- [26 <./ratio.png> <./ratio2.png>]
-<exp1.png, id=220, 542.025pt x 406.1574pt>
+ [40 <./ratio.png> <./ratio2.png>]
+<exp1.png, id=349, 542.025pt x 406.1574pt>
 File: exp1.png Graphic file (type png)
 <use exp1.png>
-Package pdftex.def Info: exp1.png  used on input line 897.
+Package pdftex.def Info: exp1.png  used on input line 1183.
 (pdftex.def)             Requested size: 451.68457pt x 338.47398pt.
-<grouped.png, id=221, 542.025pt x 405.4347pt>
+<grouped.png, id=350, 542.025pt x 405.4347pt>
 File: grouped.png Graphic file (type png)
 <use grouped.png>
-Package pdftex.def Info: grouped.png  used on input line 902.
+Package pdftex.def Info: grouped.png  used on input line 1188.
 (pdftex.def)             Requested size: 451.68457pt x 337.87172pt.
- [27 <./exp1.png>]
-[28 <./grouped.png>]
+ [41 <./exp1.png>] [42 <./grouped.png>]
 Chapter 8.
-[29
+<printlib.png, id=363, 523.35526pt x 127.07475pt>
+File: printlib.png Graphic file (type png)
+<use printlib.png>
+Package pdftex.def Info: printlib.png  used on input line 1215.
+(pdftex.def)             Requested size: 451.68457pt x 109.67383pt.
 
-] [30
+LaTeX Warning: Hyper reference `usage/configuration:mainconfig' on page 43 unde
+fined on input line 1238.
+
+[43
+
+ <./printlib.png>]
+<Translation_logic.jpg, id=373, 588.1975pt x 974.64125pt>
+File: Translation_logic.jpg Graphic file (type jpg)
+<use Translation_logic.jpg>
+Package pdftex.def Info: Translation_logic.jpg  used on input line 1317.
+(pdftex.def)             Requested size: 392.53757pt x 650.43343pt.
+
+
+LaTeX Warning: Float too large for page by 24.16492pt on input line 1318.
+
+[44] [45 <./Translation_logic.jpg>]
+<printmat1.png, id=396, 483.0045pt x 474.573pt>
+File: printmat1.png Graphic file (type png)
+<use printmat1.png>
+Package pdftex.def Info: printmat1.png  used on input line 1338.
+(pdftex.def)             Requested size: 451.68457pt x 443.79591pt.
+<printmat2.png, id=397, 546.24075pt x 263.18324pt>
+File: printmat2.png Graphic file (type png)
+<use printmat2.png>
+Package pdftex.def Info: printmat2.png  used on input line 1355.
+(pdftex.def)             Requested size: 451.68457pt x 217.63083pt.
+ [46 <./printmat1.png>] [47 <./printmat2.png>] [48
 
 ]
 Chapter 9.
-[31] [32
+[49] [50
 
 ]
 Chapter 10.
-[33] [34
+[51] [52
 
 ]
 Chapter 11.
-LaTeX Font Info:    Trying to load font information for TS1+pcr on input line 9
-96.
+
+LaTeX Warning: Hyper reference `LICENSE:gnulicense' on page 53 undefined on inp
+ut line 1440.
+
+
+LaTeX Warning: Hyper reference `LICENSE:gnulicense' on page 53 undefined on inp
+ut line 1446.
+
+
+LaTeX Warning: Hyper reference `LICENSE:pynelicense' on page 53 undefined on in
+put line 1449.
+
+LaTeX Font Info:    Trying to load font information for TS1+pcr on input line 1
+500.
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ts1pcr.fd
 File: ts1pcr.fd 2001/06/04 font definitions for TS1/pcr.
 )
 
 Package textcomp Warning: Symbol \textasciigrave not provided by
 (textcomp)                font family pcr in TS1 encoding.
-(textcomp)                Default family used instead on input line 1608.
+(textcomp)                Default family used instead on input line 2112.
 
-LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 1
-608.
+LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 2
+112.
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/base\t1cmtt.fd
 File: t1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
 LaTeX Font Info:    Trying to load font information for TS1+cmtt on input line 
-1608.
+2112.
 
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/base\ts1cmtt.fd
 File: ts1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
@@ -932,120 +1080,155 @@ File: ts1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 
 Package textcomp Warning: Symbol \textasciigrave not provided by
 (textcomp)                font family pcr in TS1 encoding.
-(textcomp)                Default family used instead on input line 1610.
+(textcomp)                Default family used instead on input line 2114.
 
 
 Package textcomp Warning: Symbol \textasciigrave not provided by
 (textcomp)                font family pcr in TS1 encoding.
-(textcomp)                Default family used instead on input line 1612.
+(textcomp)                Default family used instead on input line 2116.
 
 
 Package textcomp Warning: Symbol \textasciigrave not provided by
 (textcomp)                font family pcr in TS1 encoding.
-(textcomp)                Default family used instead on input line 1612.
+(textcomp)                Default family used instead on input line 2116.
 
-[35]
-Underfull \vbox (badness 10000) detected at line 1627
+[53]
+Underfull \vbox (badness 10000) detected at line 2131
  []
 
 
-Overfull \vbox (2.68169pt too high) detected at line 1627
+Overfull \vbox (2.68169pt too high) detected at line 2131
  []
 
-[36]
-Underfull \vbox (badness 10000) detected at line 1627
- []
-
-
-Overfull \vbox (2.68169pt too high) detected at line 1627
- []
-
-[37]
-Underfull \vbox (badness 10000) detected at line 1627
+[54]
+Underfull \vbox (badness 10000) detected at line 2131
  []
 
 
-Overfull \vbox (2.68169pt too high) detected at line 1627
+Overfull \vbox (2.68169pt too high) detected at line 2131
  []
 
-[38]
-Underfull \vbox (badness 10000) detected at line 1627
- []
-
-
-Overfull \vbox (2.68169pt too high) detected at line 1627
- []
-
-[39]
-Underfull \vbox (badness 10000) detected at line 1627
+[55]
+Underfull \vbox (badness 10000) detected at line 2131
  []
 
 
-Overfull \vbox (2.68169pt too high) detected at line 1627
+Overfull \vbox (2.68169pt too high) detected at line 2131
  []
 
-[40]
-Underfull \vbox (badness 10000) detected at line 1627
- []
-
-
-Overfull \vbox (2.68169pt too high) detected at line 1627
- []
-
-[41]
-Underfull \vbox (badness 10000) detected at line 1627
+[56]
+Underfull \vbox (badness 10000) detected at line 2131
  []
 
 
-Overfull \vbox (2.68169pt too high) detected at line 1627
+Overfull \vbox (2.68169pt too high) detected at line 2131
  []
 
-[42]
-Underfull \vbox (badness 10000) detected at line 1627
- []
-
-
-Overfull \vbox (2.68169pt too high) detected at line 1627
- []
-
-[43]
-Underfull \vbox (badness 10000) detected at line 1627
+[57]
+Underfull \vbox (badness 10000) detected at line 2131
  []
 
 
-Overfull \vbox (2.68169pt too high) detected at line 1627
+Overfull \vbox (2.68169pt too high) detected at line 2131
  []
 
-[44]
-Underfull \vbox (badness 10000) detected at line 1627
- []
-
-
-Overfull \vbox (2.68169pt too high) detected at line 1627
- []
-
-[45]
-Underfull \vbox (badness 10000) detected at line 1627
+[58]
+Underfull \vbox (badness 10000) detected at line 2131
  []
 
 
-Overfull \vbox (2.68169pt too high) detected at line 1627
+Overfull \vbox (2.68169pt too high) detected at line 2131
  []
 
-[46] [47] [48
+[59]
+Underfull \vbox (badness 10000) detected at line 2131
+ []
 
-]
+
+Overfull \vbox (2.68169pt too high) detected at line 2131
+ []
+
+[60]
+Underfull \vbox (badness 10000) detected at line 2131
+ []
+
+
+Overfull \vbox (2.68169pt too high) detected at line 2131
+ []
+
+[61]
+Underfull \vbox (badness 10000) detected at line 2131
+ []
+
+
+Overfull \vbox (2.68169pt too high) detected at line 2131
+ []
+
+[62]
+Underfull \vbox (badness 10000) detected at line 2131
+ []
+
+
+Overfull \vbox (2.68169pt too high) detected at line 2131
+ []
+
+[63]
+Underfull \vbox (badness 10000) detected at line 2131
+ []
+
+
+Overfull \vbox (2.68169pt too high) detected at line 2131
+ []
+
+[64]
+
+Package textcomp Warning: Symbol \textasciigrave not provided by
+(textcomp)                font family pcr in TS1 encoding.
+(textcomp)                Default family used instead on input line 2149.
+
+
+Package textcomp Warning: Symbol \textasciigrave not provided by
+(textcomp)                font family pcr in TS1 encoding.
+(textcomp)                Default family used instead on input line 2149.
+
+[65] [66]
 Chapter 12.
-[49] [50
+<nier.png, id=506, 502.87875pt x 201.00093pt>
+File: nier.png Graphic file (type png)
+<use nier.png>
+Package pdftex.def Info: nier.png  used on input line 2205.
+(pdftex.def)             Requested size: 301.12305pt x 120.35918pt.
+<unibo.jpg, id=507, 466.1415pt x 171.64125pt>
+File: unibo.jpg Graphic file (type jpg)
+<use unibo.jpg>
+Package pdftex.def Info: unibo.jpg  used on input line 2207.
+(pdftex.def)             Requested size: 301.12305pt x 110.8819pt.
+<f4e.jpg, id=508, 360.8682pt x 155.1396pt>
+File: f4e.jpg Graphic file (type jpg)
+<use f4e.jpg>
+Package pdftex.def Info: f4e.jpg  used on input line 2209.
+(pdftex.def)             Requested size: 301.12305pt x 129.46179pt.
 
-]
+Overfull \hbox (9.96034pt too wide) in paragraph at lines 2--2245
+[]|[][]\T1/ptm/m/n/10 marco.fabbri@f4e.europa.eu[][]| 
+ []
+
+[67
+
+ <./nier.png> <./unibo.jpg> <./f4e.jpg>] [68]
 Chapter 13.
-[51] [52
+[69
+
+] [70
 
 ]
 Chapter 14.
+[71] [72
+
+]
+Chapter 15.
 No file jade.ind.
-[53] (jade.aux)
+[73] (jade.aux)
 
 LaTeX Warning: There were undefined references.
 
@@ -1059,31 +1242,37 @@ Package rerunfilecheck Warning: File `jade.out' has changed.
 
 Package rerunfilecheck Info: Checksums for `jade.out':
 (rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  7A9B634855B3A00091E7C830316D8150;4581.
+(rerunfilecheck)             After:  8418F3E709CC88B4456188A00525B19A;6601.
  ) 
 Here is how much of TeX's memory you used:
- 13721 strings out of 478864
- 204406 string characters out of 2847712
- 1218733 words of memory out of 3000000
- 31174 multiletter control sequences out of 15000+600000
- 452355 words of font info for 85 fonts, out of 8000000 for 9000
+ 14053 strings out of 478864
+ 210456 string characters out of 2847712
+ 1212443 words of memory out of 3000000
+ 31407 multiletter control sequences out of 15000+600000
+ 456721 words of font info for 88 fonts, out of 8000000 for 9000
  1142 hyphenation exceptions out of 8191
- 72i,11n,80p,550b,495s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 72i,17n,80p,743b,499s stack positions out of 5000i,500n,10000p,200000b,80000s
  <C:\Users\d.laghi\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tc
 tt0900.pk>{C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/
 8r.enc}<C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfo
-nts/cm/cmmi5.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/pu
-blic/amsfonts/cm/cmsy5.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/font
-s/type1/urw/courier/ucrr8a.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/
-fonts/type1/urw/helvetic/uhvb8a.pfb><C:/Users/d.laghi/AppData/Local/Programs/Mi
-KTeX/fonts/type1/urw/helvetic/uhvbo8a.pfb><C:/Users/d.laghi/AppData/Local/Progr
-ams/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Users/d.laghi/AppData/Local/
-Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/d.laghi/AppData/Loca
-l/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/d.laghi/AppData/Lo
-cal/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on jade.pdf (57 pages, 920581 bytes).
+nts/cm/cmex10.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/p
+ublic/amsfonts/cm/cmmi10.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fo
+nts/type1/public/amsfonts/cm/cmmi5.pfb><C:/Users/d.laghi/AppData/Local/Programs
+/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/d.laghi/AppData/Loca
+l/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/d.laghi/Ap
+pData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users
+/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy5.pfb
+><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrr8a
+.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helvetic/u
+hvb8a.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/urw/helve
+tic/uhvbo8a.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/urw
+/helvetic/uhvr8a.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type
+1/urw/times/utmb8a.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/ty
+pe1/urw/times/utmr8a.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/
+type1/urw/times/utmri8a.pfb>
+Output written on jade.pdf (77 pages, 4568670 bytes).
 PDF statistics:
- 421 PDF objects out of 1000 (max. 8388607)
- 119 named destinations out of 1000 (max. 500000)
- 101 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 652 PDF objects out of 1000 (max. 8388607)
+ 189 named destinations out of 1000 (max. 500000)
+ 231 words of extra memory for PDF output out of 10000 (max. 10000000)
 

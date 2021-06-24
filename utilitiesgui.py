@@ -3,6 +3,23 @@
 Created on Mon Dec  9 11:44:13 2019
 
 @author: Davide Laghi
+
+Copyright 2021, the JADE Development Team. All rights reserved.
+
+This file is part of JADE.
+
+JADE is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+JADE is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
 import inputfile as ipt
@@ -260,6 +277,31 @@ def switch_fractions(session, sourcefile, fraction_type, outpath=None):
     inputfile.write(outfile)
 
     return True
+
+
+def restore_default_config(session):
+    """
+    Restore the configuration default files.
+
+    Parameters
+    ----------
+    session : main.Session
+        JADE session.
+
+    Returns
+    -------
+    None.
+
+    """
+    msg = """
+ Are you sure you want to restore the default configuration?
+ All user modification will be lost [y/n] -> """
+    ans = input_with_options(msg, ['y', 'n'])
+
+    if ans == 'y':
+        session.restore_default_settings()
+    else:
+        print('\n The operation was canceled.\n')
 
 
 def select_inputfile(message):

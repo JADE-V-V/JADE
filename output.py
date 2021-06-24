@@ -3,6 +3,23 @@
 Created on Thu Jan  2 10:36:38 2020
 
 @author: Davide Laghi
+
+Copyright 2021, the JADE Development Team. All rights reserved.
+
+This file is part of JADE.
+
+JADE is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+JADE is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import MCTAL_READER as mtal
@@ -18,6 +35,7 @@ import string
 from outputFile import OutputFile
 from meshtal import Meshtal
 import pickle
+import sys
 
 
 class BenchmarkOutput:
@@ -153,7 +171,11 @@ class BenchmarkOutput:
             # Keep only tallies to plot
             atl_cnf_plot = atl_cnf[atl_cnf[plot_type]]
             for tally_num in tqdm(atl_cnf_plot.index, desc='Tallies'):
-                output = self.outputs[tally_num]
+                try:
+                    output = self.outputs[tally_num]
+                except KeyError:
+                    fatal_exception('tally n. '+str(tally_num) +
+                                    ' is in config but not in the MCNP output')
                 vals_df = output['Value']
                 err_df = output['Error']
                 quantity = str(atl_cnf_plot['Quantity'].loc[tally_num])
@@ -168,8 +190,13 @@ class BenchmarkOutput:
 
                 for column in tqdm(columns):
                     if len(columns) > 1:
-                        atlas.doc.add_heading(str(int(column)), level=3)
-                        newtitle = title+' ('+str(int(column))+')'
+                        try:
+                            txt = str(int(column))
+                        except ValueError:
+                            # it is not convertible to int
+                            txt = str(column)
+                        atlas.doc.add_heading(txt, level=3)
+                        newtitle = title+' ('+txt+')'
                     else:
                         newtitle = title
 
@@ -267,8 +294,13 @@ class BenchmarkOutput:
 
                 for column in tqdm(columns):
                     if len(columns) > 1:
-                        atlas.doc.add_heading(str(int(column)), level=3)
-                        newtitle = title+' ('+str(int(column))+')'
+                        try:
+                            txt = str(int(column))
+                        except ValueError:
+                            # it is not convertible to int
+                            txt = str(column)
+                        atlas.doc.add_heading(txt, level=3)
+                        newtitle = title+' ('+txt+')'
 
                     else:
                         newtitle = title
@@ -354,10 +386,8 @@ class BenchmarkOutput:
             for tally in mctal.tallies:
                 num = tally.tallyNumber
                 key = tally.tallyComment[0]
-                print(num, key)
                 # keys[num] = key  # Memorize tally descriptions
                 tdata = mcnp_output.tallydata[num].copy()  # Full tally data
-                print(ex_cnf)
                 try:
                     tally_settings = ex_cnf.loc[num]
                 except KeyError:
@@ -400,7 +430,6 @@ class BenchmarkOutput:
                     # memorize for atlas
                     outputs[num][label] = main_value_df
                     # insert the df in pieces
-                    print(main_value_df)
                     ex.insert_cutted_df('B', main_value_df, label+'s', ylim,
                                         header=(key, 'Tally n.'+str(num)),
                                         index_name=x_tag, cols_name=y_tag,
@@ -474,8 +503,8 @@ class BenchmarkOutput:
         iteration = 0
         for reflib, tarlib, name in self.couples:
             iteration = iteration+1
-            outpath = os.path.join(self.excel_path, self.testname+'_Comparison_' +
-                                   name+'.xlsx')
+            outpath = os.path.join(self.excel_path, self.testname +
+                                   '_Comparison_'+name+'.xlsx')
             ex = ExcelOutputSheet(template, outpath)
             # Get results
             if iteration == 1:
@@ -599,7 +628,7 @@ class MCNPoutput:
         """
         self.mctal_file = mctal_file  # path to mcnp mctal file
         self.output_file = output_file  # path to mcnp output file
-        self.meshtal_file = meshtal_file # path to mcnp meshtal file
+        self.meshtal_file = meshtal_file  # path to mcnp meshtal file
 
         # Read and parse the mctal file
         mctal = mtal.MCTAL(mctal_file)
@@ -618,8 +647,9 @@ class MCNPoutput:
             # Extract the available 1D to be merged with normal tallies
             fmesh1D = self.meshtal.extract_1D()
             for tallynum, data in fmesh1D.items():
+                tallynum = int(tallynum)  # Coherence with tallies
                 # Add them to the tallly data
-                self.tallydata[tallynum] = data['data'] 
+                self.tallydata[tallynum] = data['data']
                 self.totalbin[tallynum] = None
 
                 # Create fake tallies to be added to the mctal
@@ -640,12 +670,28 @@ class MCNPoutput:
             rows = []
 
             # --- Reorganize values ---
+            # You cannot recover the following from the mctal
             nDir = t.getNbins("d", False)
             nMul = t.getNbins("m", False)
+            nSeg = t.getNbins("s", False)  # this can be used
+
             # Some checks for voids
             binnings = {'cells': t.cells, 'user': t.usr, 'segments': t.seg,
                         'cosine': t.cos, 'energy': t.erg, 'time': t.tim,
                         'cor A': t.cora, 'cor B': t.corb, 'cor C': t.corc}
+
+            # Cells may have a series of zeros, the last one may be for the
+            # total
+            cells = []
+            # last_idx = len(binnings['cells'])-1
+            for i, cell in enumerate(binnings['cells']):
+                if int(cell) == 0:
+                    newval = 'Input '+str(i+1)
+                    cells.append(newval)
+                # Everything is fine, nothing to modify
+                else:
+                    cells.append(cell)
+            binnings['cells'] = cells
 
             for name, binning in binnings.items():
                 if len(binning) == 0:
@@ -654,7 +700,7 @@ class MCNPoutput:
             for f, fn in enumerate(binnings['cells']):
                 for d in range(nDir):  # Unused
                     for u, un in enumerate(binnings['user']):
-                        for s, sn in enumerate(binnings['segments']):
+                        for sn in range(1, nSeg+1):
                             for m in range(nMul):  # (unused)
                                 for c, cn in enumerate(binnings['cosine']):
                                     for e, en in enumerate(binnings['energy']):
@@ -662,8 +708,8 @@ class MCNPoutput:
                                             for k, kn in enumerate(binnings['cor C']):
                                                 for j, jn in enumerate(binnings['cor B']):
                                                     for i, ina in enumerate(binnings['cor A']):
-                                                        val = t.getValue(f, d, u, s, m, c, e, nt, i, j, k, 0)
-                                                        err = t.getValue(f, d, u, s, m, c, e, nt, i, j, k, 1)
+                                                        val = t.getValue(f, d, u, sn-1, m, c, e, nt, i, j, k, 0)
+                                                        err = t.getValue(f, d, u, sn-1, m, c, e, nt, i, j, k, 1)
                                                         rows.append([fn, d, un, sn, m, cn, en, ntn, ina, jn, kn, val,err])
 
                 # Only one total bin per cell is admitted
@@ -673,14 +719,26 @@ class MCNPoutput:
                     rows.append([fn, d, un, sn, m, cn, en, 'total', ina, jn,
                                  kn, val, err])
                     total = 'Time'
+
                 elif t.ergTC is not None:
                     rows.append([fn, d, un, sn, m, cn, 'total', ntn, ina, jn,
                                  kn, val, err])
                     total = 'Energy'
+
+                elif t.segTC is not None:
+                    rows.append([fn, d, un, 'total', m, cn, en, ntn, ina, jn,
+                                 kn, val, err])
+                    total = 'Segments'
+
                 elif t.cosTC is not None:
                     rows.append([fn, d, un, sn, m, 'total', en, ntn, ina, jn,
                                  kn, val, err])
                     total = 'Cosine'
+
+                elif t.usrTC is not None:
+                    rows.append([fn, d, 'total', sn, m, cn, en, ntn, ina, jn,
+                                 kn, val, err])
+                    total = 'User'
 
             # --- Build the tally DataFrame ---
             columns = ['Cells', 'Dir', 'User', 'Segments',
@@ -691,12 +749,25 @@ class MCNPoutput:
             # Default drop of multiplier and Dir
             del df['Dir']
             del df['Multiplier']
-            df.dropna(axis=1, inplace=True)  # Keep only meaningful binning
+            # --- Keep only meaningful binning ---
+            # Drop NA
+            df.dropna(axis=1, inplace=True)
+            # Drop constant axes (if len is > 1)
+            if len(df) > 1:
+                for column in df.columns:
+                    if column not in ['Value', 'Error']:
+                        firstval = df[column].values[0]
+                        # Should work as long as they are the exact same value
+                        allequal = (df[column] == firstval).all()
+                        if allequal:
+                            del df[column]
 
             # Sub DF containing only total bins
             try:
                 dftotal = df[df[total] == 'total']
-            except KeyError:
+            except (KeyError, NameError):
+                # KeyError : there is no total bin in df
+                # NameError: total variable was not defined
                 dftotal = None
 
             tallydata[t.tallyNumber] = df
@@ -970,3 +1041,29 @@ class ExcelOutputSheet:
         self.wb.save()
         self.wb.close()
         self.app.quit()
+
+
+def fatal_exception(message=None):
+    """
+    Use this function to exit with a code error from a handled exception
+
+    Parameters
+    ----------
+    message : str, optional
+        Message to display. The default is None.
+
+    Returns
+    -------
+    None.
+
+    """
+    # RED color
+    CRED = '\033[91m'
+    CEND = '\033[0m'
+
+    if message is None:
+        message = 'A Fatal exception have occured'
+
+    message = message+', the application will now exit'
+    print(CRED+' FATAL EXCEPTION: \n'+message+CEND)
+    sys.exit()

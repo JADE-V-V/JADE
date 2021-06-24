@@ -1,0 +1,367 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Usage &mdash; JADE v1.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Default Benchmarks" href="../benchmarks/benchmarks.html" />
+    <link rel="prev" title="Configuration" href="configuration.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> JADE
+          
+
+          
+            
+            <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">JADE User Guide:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../nutshell.html">JADE in a nutshell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="folders.html">Folder Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#quality-check-menu">Quality check menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#computational-benchmark-menu">Computational Benchmark menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#experimental-benchmark-menu">Experimental Benchmark menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#post-processing-menu">Post-processing menu</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/benchmarks.html">Default Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postprocessing.html">Post-Processing Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">Utilities</a></li>
+</ul>
+<p class="caption"><span class="caption-text">More on JADE:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">List of Publications and Contributions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">JADE Developer Guide (TBD):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">JADE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Usage</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/usage/menu.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="usage">
+<span id="menu"></span><h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>Once JADE is correctly configured
+(for additional details see <a class="reference internal" href="configuration.html#config"><span class="std std-ref">Configuration</span></a>), the application can be started
+from the ‘Code’ folder with:</p>
+<p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span></code></p>
+<p>The main menu is loaded at this point:</p>
+<a class="reference internal image-reference" href="../_images/main_menu.png"><img alt="../_images/main_menu.png" src="../_images/main_menu.png" style="width: 400px;" /></a>
+<p>This menu allows users to interact with the tool directly from the
+command prompt via pre-defined commands.
+The following main option are available typing from the main menu:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">qual</span></code> not currently supported;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">comp</span></code> opens the <a class="reference internal" href="#compmenu"><span class="std std-ref">Computational Benchmark menu</span></a>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exp</span></code> opens the <a class="reference internal" href="#expmenu"><span class="std std-ref">Experimental Benchmark menu</span></a>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">post</span></code> opens the <a class="reference internal" href="#postmenu"><span class="std std-ref">Post-processing menu</span></a>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exit</span></code> exit the application.</p></li>
+</ul>
+<p>Additionaly to these main options, a series of “utilities” can be also accessed
+from the main menu. These are a collection of side-tools initially developed
+for JADE that nevertheless can be useful also as stand-alone tools.
+A detailed description of these functionalities can be found in <a class="reference internal" href="utilities.html#uty"><span class="std std-ref">Utilities</span></a>.</p>
+<div class="section" id="quality-check-menu">
+<h2>Quality check menu<a class="headerlink" href="#quality-check-menu" title="Permalink to this headline">¶</a></h2>
+<p>Not implemented.</p>
+</div>
+<div class="section" id="computational-benchmark-menu">
+<span id="compmenu"></span><h2>Computational Benchmark menu<a class="headerlink" href="#computational-benchmark-menu" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="../_images/compmenu.png"><img alt="../_images/compmenu.png" src="../_images/compmenu.png" style="width: 400px;" /></a>
+<p>The following options are available in the computational benchmark menu:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">printlib</span></code> print to video all the available nuclear data libraries
+in the xsdir file selected during JADE configuration;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">assess</span></code> start the assessment of a selected library on the computational benchmarks. The library is
+specified directly from the console when the selection is prompted to
+video. The library must be contained in the xsdir file (available libraries
+can be explored using <code class="docutils literal notranslate"><span class="pre">printlib</span></code>);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">continue</span></code> continue a previously interrupted assessment for a selected
+library. <strong>Currently, this option is implemented only for the Sphere Leakage
+benchmark.</strong></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">back</span></code> go back to the main menu;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exit</span></code> exit the application.</p></li>
+</ul>
+<p>The selection of the libraries is done indicating their correspondent suffix specified in the xsdir file
+(e.g. <code class="docutils literal notranslate"><span class="pre">31c</span></code>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Whenever an assessment is requested, all the benchmarks selected in the main configuration file will be considered.
+In case the requested library was already assesed on one or more of the active benchmarks,
+the user will be asked for permission before overriding the results.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="configuration.html#config"><span class="std std-ref">Configuration</span></a> for additional details on the benchmark selection.</p>
+</div>
+</div>
+<div class="section" id="experimental-benchmark-menu">
+<span id="expmenu"></span><h2>Experimental Benchmark menu<a class="headerlink" href="#experimental-benchmark-menu" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="../_images/expmenu.png"><img alt="../_images/expmenu.png" src="../_images/expmenu.png" style="width: 400px;" /></a>
+<p>The following options are available in the experimental benchmark menu:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">printlib</span></code> print to video all the available nuclear data libraries
+in the xsdir file selected during JADE configuration;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">assess</span></code> start the assessment of a selected library on the experimental benchmarks. The library is
+specified directly from the console when the selection is prompted to
+video. The library must be contained in the xsdir file (available libraries
+can be explored using <code class="docutils literal notranslate"><span class="pre">printlib</span></code>);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">continue</span></code> <strong>[not implemented]</strong></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">back</span></code> go back to the main menu;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exit</span></code> exit the application.</p></li>
+</ul>
+<p>The selection of the libraries is done indicating their correspondent suffix specified in the xsdir file
+(e.g. <code class="docutils literal notranslate"><span class="pre">31c</span></code>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Whenever an assessment is requested, all the benchmarks selected in the main configuration file will be considered.
+In case the requested library was already assesed on one or more of the active benchmarks,
+the user will be asked for permission before overriding the results.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="configuration.html#config"><span class="std std-ref">Configuration</span></a> for additional details on the benchmark selection.</p>
+</div>
+</div>
+<div class="section" id="post-processing-menu">
+<span id="postmenu"></span><h2>Post-processing menu<a class="headerlink" href="#post-processing-menu" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="../_images/postmenu.png"><img alt="../_images/postmenu.png" src="../_images/postmenu.png" style="width: 400px;" /></a>
+<p>The following options are available in the post-processing menu:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">printlib</span></code> print all libraries that were tested and that are available for post-processing;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pp</span></code> post-process a single library;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compare</span></code> compare different libraries results on computational benchmarks;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compexp</span></code> compare different libraries results on experimental benchmarks;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">back</span></code> go back to the main menu;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exit</span></code> exit the application.</p></li>
+</ul>
+<p>For the <code class="docutils literal notranslate"><span class="pre">pp</span></code>, <code class="docutils literal notranslate"><span class="pre">compare</span></code> and <code class="docutils literal notranslate"><span class="pre">compexp</span></code> the selection of the libraries will be directly prompt to video.
+The selection of the libraries is done indicating their correspondent suffix specified in the xsdir file
+(e.g. <code class="docutils literal notranslate"><span class="pre">31c</span></code>). When comparing more than one library, the suffixes should be separated by a ‘-‘ (e.g. <code class="docutils literal notranslate"><span class="pre">31c-32c</span></code>).
+The first library that is indicated is always considered as the <em>reference library</em> for the post-processing.
+There may be a limitation on the number of libraries that can be compared at once depending on the post-processing settings.</p>
+<p>Only one library at the time can be post-processed with the <code class="docutils literal notranslate"><span class="pre">pp</span></code> option. Nevertheless, when a comparison is requested that
+includes libraries that were not singularly post-processed, an automatic <code class="docutils literal notranslate"><span class="pre">pp</span></code> operation is conducted on them.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Please note that <code class="docutils literal notranslate"><span class="pre">printlib</span></code> will simply show all libraries for which at least one benchmark has been run.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Please note that part of the single post-processing of the libraries is used in the comparisons. Also, JADE does not perform
+any checks on the consistency between the two. This responsability is left to the user.
+The following is an example of incorrect usage that can lead to erroneous results:</p>
+<ol class="arabic simple">
+<li><p>a first assessment is run;</p></li>
+<li><p>single post-processing is completed;</p></li>
+<li><p>some configuration settings are changed and the assessment is re-run;</p></li>
+<li><p>a comparison is requested.</p></li>
+</ol>
+<p>In this case, JADE cannot know that the first single post-processing was done on a different benchmark run wiith respect
+to the requested comparison. As a result, the outputs coming from different assessments will be mixed up.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Whenever a post-processing is requested, all the benchmarks selected in the main configuration file will be considered.
+In case one or more of the requested libraries were already post-processed on one or more of the active benchmarks,
+the user will be asked for permission before overriding the post-processing results.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="configuration.html#config"><span class="std std-ref">Configuration</span></a> for additional details on the benchmark selection.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../benchmarks/benchmarks.html" class="btn btn-neutral float-right" title="Default Benchmarks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="configuration.html" class="btn btn-neutral float-left" title="Configuration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Davide Laghi.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

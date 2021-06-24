@@ -1,9 +1,10 @@
 <img src="https://user-images.githubusercontent.com/25747626/118662537-5f124900-b7f0-11eb-8d69-282305f795c4.png" width="300" />
 
 # JADE
-Version: 1.1.0
 A new tool for nuclear libraries V&V.
 Brought to you by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E).
+
+A more detailed documentation can be accessed from [\docs\build\html\index.html](./docs/build/html/index.html).
 
 JADE is an open-source software licensed under the [GNU GPLv3](./LICENSE) license. When using JADE for scientific publications you are kindly encouraged to cite the following papers:
 - Davide Laghi et al, 2020, "JADE, a new software tool for nuclear fusion data libraries verification & validation", Fusion Engineering and Design, doi: https://doi.org/10.1016/j.fusengdes.2020.112075.
@@ -16,6 +17,7 @@ For additional information contact: d.laghi@nier.it
 - Microsoft Office suite (Excel and Word);
 - Additional Python packages to Anaconda distribution:
   - python-docx.
+  - numjuggler
 
 ## Installation
 The procedure to install JADE is the following:
@@ -32,6 +34,10 @@ The procedure to install JADE is the following:
   then use:
   ```
   conda install python-docx
+  ```
+  The second package needed is numjuggler for parsing of MCNP inputs. Unfortunately this is not available for conda installation and should be installed with pip instead:
+  ```
+  pip install numjuggler
   ```
 3) extract the zip into a folder of choice (from now on <JADE_root>);
 4) rename the folder containing the Python scripts as 'Code' (<JADE_root>\Code);

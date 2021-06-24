@@ -1,0 +1,383 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Utilities &mdash; JADE v1.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tips &amp; Tricks" href="tipstricks.html" />
+    <link rel="prev" title="Post-Processing Gallery" href="postprocessing.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> JADE
+          
+
+          
+            
+            <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">JADE User Guide:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../nutshell.html">JADE in a nutshell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="folders.html">Folder Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="menu.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/benchmarks.html">Default Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postprocessing.html">Post-Processing Gallery</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#print-available-libraries">Print available libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#restore-default-configurations">Restore default configurations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#translate-an-mcnp-input">Translate an MCNP input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#print-materials-info">Print materials info</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generate-material-mixture">Generate material mixture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#switch-material-fractions">Switch material fractions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tipstricks.html">Tips &amp; Tricks</a></li>
+</ul>
+<p class="caption"><span class="caption-text">More on JADE:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">List of Publications and Contributions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">JADE Developer Guide (TBD):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">JADE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Utilities</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/usage/utilities.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="utilities">
+<span id="uty"></span><h1>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h1>
+<p>During the development of JADE, many useful classes and methods were developed
+which could be used for small stand-alone tools, mostly
+operating on MCNP inputs.</p>
+<p>A description of these <em>utilities</em>, accessible from the JADE main menu,
+is here provided.</p>
+<p>The outputs (if generated) of these utilities can be found in specific subfolders
+of the <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Utilities</span></code> directory.</p>
+<div class="section" id="print-available-libraries">
+<h2>Print available libraries<a class="headerlink" href="#print-available-libraries" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">printlib</span></code></p>
+<p>This function allows to print to video all libraries (suffixes) that are
+available in xsdir file indicated in the main configuration file.</p>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/printlib.png"><img alt="../_images/printlib.png" src="../_images/printlib.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">Screenshot of the execution of the <code class="docutils literal notranslate"><span class="pre">printlib</span></code> command</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="restore-default-configurations">
+<h2>Restore default configurations<a class="headerlink" href="#restore-default-configurations" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">restore</span></code></p>
+<p>This function allows to restore the JADE configuration default settings.
+In other words, the content of the <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Configuration</span></code> directory
+is restored to “factory installation” and all user modifications to the
+configuration files are lost.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When the the restoration is completed, the application will be terminated.
+The main configuration file ambient variable will need to be reconfigured
+before running another JADE instance.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="configuration.html#mainconfig"><span class="std std-ref">Main Configuration</span></a></p>
+</div>
+</div>
+<div class="section" id="translate-an-mcnp-input">
+<h2>Translate an MCNP input<a class="headerlink" href="#translate-an-mcnp-input" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">trans</span></code></p>
+<p>This function allows to translate a material section of an MCNP input to
+a whatever nuclear data library available in the xsdir file.</p>
+<p>The translation is carried out basically by the <strong>convertZaid()</strong> method of the
+<strong>LibManager</strong> class and by the <strong>translate()</strong> method of the <strong>SubMaterial</strong> class.
+The <strong>convertZaid</strong> method:</p>
+<ol class="arabic simple">
+<li><p>asks for a zaid (to translate) and for a library (to translate to);</p></li>
+<li><p>checks if the library selected for the translation is available in the xsdir of
+the user;</p></li>
+<li><dl class="simple">
+<dt>select the type of translation:</dt><dd><ol class="loweralpha simple">
+<li><p>zaid not available in library: the default lib is used, no other changes
+applied;</p></li>
+<li><p>zaid available in library: the zaid is converted to the selected library,
+no other changes applied;</p></li>
+<li><p>the zaid is natural (i.e. it ends with 000).</p></li>
+</ol>
+</dd>
+</dl>
+</li>
+</ol>
+<p>For case c, at first, the selected library is checked for exact correspondence,
+i.e., it is checked if also in the selected library the zaid is expressed as natural.
+In this case, the behavior is identical to case b. If this is not true, the zaid needs
+to be expanded: all zaids of the same elements are returned with their atomic mass (m)
+and natural abundance (NA).</p>
+<p>At this point, the <strong>translate()</strong> method completes the translation. No particular actions
+are required if there is no zaid expansion.
+In case of expansion, if the original natural zaid fraction is an atomic one
+(<span class="math notranslate nohighlight">\(x^A_N\)</span>), the new zaids deriving from the expansion will have as fraction their
+natural abundance (NA) multiplied for the original natural zaid fraction:</p>
+<div class="math notranslate nohighlight">
+\[x^A_{zaid} = \text{NA}_{zaid}\cdot x^A_N\]</div>
+<p>If, instead, the original natural zaid fraction is a mass one (<span class="math notranslate nohighlight">\(x^M_N\)</span>),
+the <em>equivalent mass</em> <span class="math notranslate nohighlight">\(m_N\)</span> of the natural zaid can be computed as:</p>
+<div class="math notranslate nohighlight">
+\[m_N = \sum_{zaids} \text{NA}_{zaid}\cdot m_{zaid}\]</div>
+<p>and then the mass fraction of each expanded new zaid (<span class="math notranslate nohighlight">\(x^M_\text{zaid}\)</span>)
+can be calculated as:</p>
+<div class="math notranslate nohighlight">
+\[x^M_\text{zaid}=x^M_N\cdot (\text{NA}_{zaid}\cdot m_{zaid})/M_N\]</div>
+<p>where <span class="math notranslate nohighlight">\((\text{NA}_{zaid}\cdot m_{zaid})/M_N\)</span>
+is basically the natural abundance in mass of the zaid.</p>
+<p>The new input will be dumped in the
+<code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Utilities\Translation</span></code> folder.
+The following scheme summarizes the JADE translation logic.</p>
+<div class="figure align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/Translation_logic.jpg"><img alt="../_images/Translation_logic.jpg" src="../_images/Translation_logic.jpg" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">Zaid translation logic</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="print-materials-info">
+<h2>Print materials info<a class="headerlink" href="#print-materials-info" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">printmat</span></code></p>
+<p>This function is used to print a summary of an MCNP input material section.
+The information is contained in two sheets of an Excel file dumped into the
+<code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Utilities\Materials</span> <span class="pre">Infos</span></code> folder.
+The first sheet summarizes information at the single isotope level.
+Here both the atom and mass fraction for each zaid is reported divided by
+material and submaterial. It may happen that the original fraction appearing
+in the MCNP input is not normalized. JADE prints this fraction as it is and
+only the alternative fraction is normalized during its calculation.</p>
+<div class="figure align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/printmat1.png"><img alt="../_images/printmat1.png" src="../_images/printmat1.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">Extract of the isotope sheet. In the example, the material card was
+expressed in mass fraction and not normalized.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>The second sheet summarizes information at the element level.
+Three fractions are here listed for each element:
+* the MCNP fraction of the element in the material;
+* the normalized fraction of the element in the submaterial;
+* the normalized fraction of the element in the material.</p>
+<p>Depending on the orginal MCNP input, these three fraction need to be
+interpreted as either <em>mass</em> or <em>atom</em> fraction.</p>
+<div class="figure align-center" id="id4">
+<a class="reference internal image-reference" href="../_images/printmat2.png"><img alt="../_images/printmat2.png" src="../_images/printmat2.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">Extract of the element sheet. In the example, the material card was
+expressed in mass fraction and not normalized.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="generate-material-mixture">
+<h2>Generate material mixture<a class="headerlink" href="#generate-material-mixture" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">generate</span></code></p>
+<p>This function is used to generate a material mixture starting from two or
+more materials contained in a single MCNP input. The user will be asked for:</p>
+<ul class="simple">
+<li><p>absolute path to the MCNP input;</p></li>
+<li><p>if the zaids need to have a mass or atom fraction;</p></li>
+<li><p>material names (e.g. m1) to be used in the mixture;</p></li>
+<li><p>percentages to be used in the mixture for each material;</p></li>
+<li><p>nuclear data library to use for the new material mixture.</p></li>
+</ul>
+<p>Each material will be transformed in a submaterial of the newly generated mixture
+retaining its header if present. The new material will be dumped in the
+<code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Utilities\Generated</span> <span class="pre">Materials</span></code> folder.</p>
+</div>
+<div class="section" id="switch-material-fractions">
+<h2>Switch material fractions<a class="headerlink" href="#switch-material-fractions" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">switch</span></code></p>
+<p>This function can be used to switch an MCNP input from having atom fractions
+to mass fractions and viceversa. The new input will be dumped in the
+<code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Utilities\Fraction</span> <span class="pre">switch</span></code> folder.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="tipstricks.html" class="btn btn-neutral float-right" title="Tips &amp; Tricks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="postprocessing.html" class="btn btn-neutral float-left" title="Post-Processing Gallery" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Davide Laghi.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

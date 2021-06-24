@@ -3,6 +3,23 @@
 Created on Wed Oct 30 09:24:06 2019
 
 @author: Davide Laghi
+
+Copyright 2021, the JADE Development Team. All rights reserved.
+
+This file is part of JADE.
+
+JADE is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+JADE is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
 import sys
@@ -15,8 +32,8 @@ import testInstallation as tinstall
 from tqdm import tqdm
 from status import EXP_TAG
 
-date = '25/05/2021'
-version = 'v1.1.0'
+date = '24/06/2021'
+version = 'v1.2.0'
 
 
 def clear_screen():
@@ -49,6 +66,7 @@ principal_menu = header+"""
  UTILITIES
 
  * Print available libraries          (printlib)
+ * Restore default configurations      (restore)
  * Translate an MCNP input               (trans)
  * Print materials info               (printmat)
  * Generate material                  (generate)
@@ -87,6 +105,9 @@ def mainloop(session):
 
         elif option == 'printlib':
             uty.print_libraries(session.lib_manager)
+
+        elif option == 'restore':
+            uty.restore_default_config(session)
 
         elif option == 'trans':
             newlib = input(' Library to use: ')
@@ -258,7 +279,8 @@ def comploop(session):
                     flag = testrun.Test._run(name, path, cpu=session.conf.cpu)
                     if flag:
                         flagOk = False
-                        session.log.adjourn(name +' reached timeout, eliminate folder')
+                        session.log.adjourn(name +
+                                            ' reached timeout, eliminate folder')
 
                 if not flagOk:
                     print("""
@@ -391,9 +413,10 @@ def pploop(session):
                 lib = to_single_pp[0]
                 # Check active tests
                 to_perform = session.check_active_tests('Post-Processing')
-                to_perf_exp = session.check_active_tests('Post-Processing',
-                                                         exp=True)
-                to_perform.extend(to_perf_exp)
+                # For the moment no pp is foreseen for experimental benchmarks
+                # to_perf_exp = session.check_active_tests('Post-Processing',
+                #                                          exp=True)
+                # to_perform.extend(to_perf_exp)
 
                 # Logging
                 bartext = 'Post-Processing started'
@@ -475,7 +498,8 @@ Additional Post-Processing of library:"""+lib+' completed\n', spacing=False)
                 print('\n ########################### COMPARISON STARTED ###########################\n')
 
                 # Check active tests
-                to_perform = session.check_active_tests('Post-Processing', exp=True)
+                to_perform = session.check_active_tests('Post-Processing',
+                                                        exp=True)
 
 #                 # Execut single pp
 #                 for lib in to_single_pp:
@@ -507,7 +531,6 @@ Additional Post-Processing of library:"""+lib+' completed\n', spacing=False)
                 print('\n ######################### COMPARISON ENDED ###############################\n')
                 t = 'Post-Processing completed'
                 session.log.bar_adjourn(t, spacing=False)
-
 
         elif option == 'back':
             mainloop(session)

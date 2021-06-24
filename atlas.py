@@ -3,6 +3,23 @@
 Created on Wed Jan 15 14:30:18 2020
 
 @author: Davide Laghi
+
+Copyright 2021, the JADE Development Team. All rights reserved.
+
+This file is part of JADE.
+
+JADE is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+JADE is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import docx
 import win32com.client
@@ -57,7 +74,7 @@ class Atlas():
         self.doc.add_picture(img, width=width)
         last_paragraph = self.doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        
+
     def insert_df(self, df, caption=None, highlight=False, template_idx=None,
                   tablestyle=None):
         """
@@ -128,7 +145,7 @@ class Atlas():
                         self._highlightCell(cell)
                     elif cell.text == 'OK' and flag_almost:
                         self._highlightCell(cell, color='FFFF46')
-        
+
         if caption is not None:
             paragraph = self.doc.add_paragraph('Table ', style='Didascalia')
             self._wrapper(paragraph, 'table')
@@ -136,8 +153,6 @@ class Atlas():
         # paragraph = doc.add_paragraph('Figure Text', style='Didascalia')
 
         return table
-
-    
 
     def build(self, images_path, libmanager, mat_settings):
         """
@@ -152,7 +167,7 @@ class Atlas():
 
         lib_manager : libmanager.LibManager
             Library manager for conversions and name recovery.
-        
+
         mat_settings : pd.DataFrame
             contains settings for Materials
 
@@ -235,7 +250,7 @@ class Atlas():
 
             doc.Close()
             word.Quit()
-    
+
     @staticmethod
     def _wrapper(paragraph, ptype):
         """

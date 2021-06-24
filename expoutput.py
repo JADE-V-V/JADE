@@ -3,11 +3,26 @@
 Created on Wed Oct 21 17:18:07 2020
 
 @author: Davide Laghi
+
+Copyright 2021, the JADE Development Team. All rights reserved.
+
+This file is part of JADE.
+
+JADE is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+JADE is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import pandas as pd
-import MCTAL_READER as mctal
 import numpy as np
-import math
 import os
 import atlas as at
 import shutil
@@ -69,11 +84,11 @@ class OktavianOutput(ExperimentalOutput):
         template = os.path.join(self.code_path, 'Templates',
                                 'AtlasTemplate.docx')
         atlas = at.Atlas(template, globalname)
-        
+
         maintitle = ' Oktavian Experiment: '
         unit = '$ 1/cm^2\cdot n_s\cdot u$'
         xlabel = 'Energy [MeV]'
-        
+
         tables = []  # All C/E tables will be stored here and then concatenated
 
         # Tally numbers should be fixed
@@ -86,7 +101,7 @@ class OktavianOutput(ExperimentalOutput):
             print(' Printing the '+particle+' Letharghy flux...')
             tit_tag = particle+'  Leakage Current per Unit Lethargy'
             quantity = particle+' Leakage Current'
-            
+
             atlas.doc.add_heading(quantity, level=1)
 
             for material in tqdm(self.materials, desc='Materials: '):
@@ -105,12 +120,12 @@ class OktavianOutput(ExperimentalOutput):
                     continue
                 # lib will be passed to the plotter
                 lib = {'x': x, 'y': y, 'err': err,
-                       'ylabel': material +' (Experiment)'}
+                       'ylabel': material + ' (Experiment)'}
                 # Get also the interpolator
                 interpolator = interp1d(x, y, fill_value=0, bounds_error=False)
 
                 # Collect the data to be plotted
-                data = [lib]  #  The first one should be the exp one
+                data = [lib]  # The first one should be the exp one
                 for lib_tag in self.lib[1:]:  # Avoid exp
                     lib_name = self.session.conf.get_lib_name(lib_tag)
                     try:  # The tally may not be defined
@@ -118,7 +133,7 @@ class OktavianOutput(ExperimentalOutput):
                         values = self.results[material, lib_tag][tallynum]
                         lib = {'x': values['Energy [MeV]'],
                                'y': values['Lethargy'], 'err': values['Error'],
-                               'ylabel': material +' ('+lib_name+')'}
+                               'ylabel': material + ' ('+lib_name+')'}
                         data.append(lib)
                         # data for the table
                         table = _get_tablevalues(values, interpolator)
@@ -143,12 +158,12 @@ class OktavianOutput(ExperimentalOutput):
         final_table = pd.concat(tables)
         todump = final_table.set_index(['Material', 'Particle', 'Library'])
         ex_outpath = os.path.join(self.excel_path, 'C over E table.xlsx')
-        
+
         # Create a Pandas Excel writer using XlsxWriter as the engine.
         writer = pd.ExcelWriter(ex_outpath, engine='xlsxwriter')
         # dump global table
         todump.to_excel(writer, sheet_name='Global')
-        
+
         # Elaborate table for better output format
         ft = final_table.set_index(['Material'])
         ft['Energy Range [MeV]'] = (ft['Min E'].astype(str) + ' - ' +
@@ -168,14 +183,14 @@ class OktavianOutput(ExperimentalOutput):
             todump.to_excel(writer, sheet_name=material, startrow=2)
             ws = writer.sheets[material]
             ws.write_string(0, 0, '"C/E (mean +/- σ)"')
-            
+
             # adjust columns' width
             writer.sheets[material].set_column(0, 4, 18)
         # Close the Pandas Excel writer and output the Excel file.
         writer.save()
 
         # atlas.insert_df(final_table)
-                
+
         # Save Atlas
         print(' Producing the PDF...')
         atlas.save(self.atlas_path)
@@ -192,13 +207,13 @@ class OktavianOutput(ExperimentalOutput):
         materials = []
         # Iterate on the different libraries results except 'Exp'
         for lib, test_path in self.test_path.items():
-            if lib != EXP_TAG:                
+            if lib != EXP_TAG:
                 for folder in os.listdir(test_path):
                     results_path = os.path.join(test_path, folder)
                     pieces = folder.split('_')
                     # Get zaid
                     material = pieces[-1]
-        
+
                     # Get mfile
                     for file in os.listdir(results_path):
                         if file[-1] == 'm':
@@ -215,7 +230,7 @@ class OktavianOutput(ExperimentalOutput):
                     results[material, lib] = self._processMCNPdata(output.mctal)
                     if material not in materials:
                         materials.append(material)
-                
+
         self.outputs = outputs
         self.results = results
         self.materials = materials
@@ -230,7 +245,6 @@ class OktavianOutput(ExperimentalOutput):
                 for key, data in self.raw_data[material, lib_name].items():
                     file = os.path.join(cd_lib, material+' '+str(key)+'.csv')
                     data.to_csv(file, header=True, index=False)
-            
 
     # def pp_excel_comparison():
     #     pass
@@ -277,13 +291,13 @@ class OktavianOutput(ExperimentalOutput):
             res2['Error'] = errors
 
         return res
-    
+
     @staticmethod
     def _read_Oktavian_expresult(file):
         """
         Given a file containing the Oktavian experimental results read it and
         return the values to plot.
-    
+
         The values equal to 1e-38 are eliminated since it appears that they
         are the zero values of the instrument used.
 
@@ -300,8 +314,8 @@ class OktavianOutput(ExperimentalOutput):
             lethargy flux values.
 
         """
-        columns =  ['Upper Energy [MeV]', 'Nominal Energy [MeV]',
-                    'Lower Energy [MeV]', 'Lethargy Flux', 'Error']
+        columns = ['Upper Energy [MeV]', 'Nominal Energy [MeV]',
+                   'Lower Energy [MeV]', 'Lethargy Flux', 'Error']
         # First of all understand how many comment lines there are
         with open(file, 'r') as infile:
             counter = 0
@@ -314,7 +328,7 @@ class OktavianOutput(ExperimentalOutput):
         df = pd.read_csv(file, skiprows=counter, skipfooter=1, engine='python',
                          header=None, sep='\s+')
         df.columns = columns
-        
+
         df = df[df['Lethargy Flux'] > 2e-38]
 
         x = df['Nominal Energy [MeV]'].values
@@ -325,7 +339,7 @@ class OktavianOutput(ExperimentalOutput):
 
 
 def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='Lethargy',
-                     e_intervals = [0.1, 1, 5, 10, 20]):
+                     e_intervals=[0.1, 1, 5, 10, 20]):
     """
     Given the benchmark and experimental results returns a df to compile the
     C/E table for energy intervals
@@ -364,8 +378,5 @@ def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='Lethargy',
         rows.append(row)
         # adjourn min energy
         e_min = e_max
-    
+
     return pd.DataFrame(rows)
-    
-    
-    

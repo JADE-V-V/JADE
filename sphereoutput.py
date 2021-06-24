@@ -3,6 +3,23 @@
 Created on Thu Jan  2 10:36:38 2020
 
 @author: Davide Laghi
+
+Copyright 2021, the JADE Development Team. All rights reserved.
+
+This file is part of JADE.
+
+JADE is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+JADE is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import xlwings as xw
@@ -31,7 +48,6 @@ class SphereOutput(BenchmarkOutput):
 
         zaid_path = os.path.join(self.cnf_path, 'ZaidSettings.csv')
         self.zaid_settings = pd.read_csv(zaid_path, sep=';').set_index('Z')
-        
 
     def single_postprocess(self):
         """
@@ -327,7 +343,7 @@ class SphereOutput(BenchmarkOutput):
 
             # Build the final excel data
             final = (dfs[0].loc[newidx]-dfs[1].loc[newidx])/dfs[0].loc[newidx]
-            absdiff = (dfs[0].loc[newidx]-dfs[1].loc[newidx]) 
+            absdiff = (dfs[0].loc[newidx]-dfs[1].loc[newidx])
 
             self.diff_data = final
             self.absdiff = absdiff
@@ -389,7 +405,7 @@ class SphereOutput(BenchmarkOutput):
             ws_diff = ex.wb.sheets[template_absdiff]
 
             # WRITE RESULTS
-            # Percentage comparison            
+            # Percentage comparison
             rangeex = ws_comp.range('B10')
             rangeex.options(index=True, header=True).value = final
             ws_comp.range('D1').value = name

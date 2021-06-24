@@ -5,16 +5,36 @@ Created on 24/10/2019
 @author: Davide laghi
 
 Support classes for MCNP material card reader/writer
+
+Copyright 2021, the JADE Development Team. All rights reserved.
+
+This file is part of JADE.
+
+JADE is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+JADE is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 # -------------------------------------
 #         == IMPORTS ==
 # -------------------------------------
 import re
 import pandas as pd
-import Parser as par
+from numjuggler import parser as par
 from collections import Sequence
 from decimal import Decimal
 import copy
+import sys
+import os
+from contextlib import contextmanager
 
 
 # -------------------------------------
@@ -704,8 +724,10 @@ class MatCardsList(Sequence):
         commentPat = re.compile('[cC]')
         # Using parser the data cards are extracted from the input.
         # Comment section are interpreted as cards by the parser
-        cards = par.get_cards_from_input(inputfile)
-        cardsDic = par.get_blocks(cards)
+        with suppress_stdout():
+            # Suppress output from tab replacing
+            cards = par.get_cards_from_input(inputfile)
+            cardsDic = par.get_blocks(cards)
         datacards = cardsDic[5]
 
         materials = []
@@ -883,3 +905,14 @@ class MatCardsList(Sequence):
             return df_complete, df_elem
         else:
             return df, df_elem
+
+
+@contextmanager
+def suppress_stdout():
+    with open(os.devnull, "w") as devnull:
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+        try:  
+            yield
+        finally:
+            sys.stdout = old_stdout

@@ -285,7 +285,6 @@ class SphereTest(Test):
         settings_mat = os.path.join(self.test_conf_path,
                                     'MaterialsSettings.csv')
         settings_mat = pd.read_csv(settings_mat, sep=';').set_index('Symbol')
-        
 
         self.MCNPdir = motherdir
 

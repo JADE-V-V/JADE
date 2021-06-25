@@ -29,7 +29,7 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import re
 import pandas as pd
 from numjuggler import parser as par
-from collections import Sequence
+from collections.abc import Sequence
 from decimal import Decimal
 import copy
 import sys
@@ -912,7 +912,7 @@ def suppress_stdout():
     with open(os.devnull, "w") as devnull:
         old_stdout = sys.stdout
         sys.stdout = devnull
-        try:  
+        try:
             yield
         finally:
             sys.stdout = old_stdout

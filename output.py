@@ -37,8 +37,6 @@ from meshtal import Meshtal
 import pickle
 import sys
 
-import abc
-
 
 class BenchmarkOutput:
 

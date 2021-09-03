@@ -25,6 +25,10 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 sys.path.insert(1, '../')
 from matreader import (Zaid, MatCardsList)
+import os
+
+
+INP = os.path.join('TestFiles', 'mat_test.i')
 
 
 class TestZaid:
@@ -63,7 +67,7 @@ class TestMatCardList:
         None.
 
         """
-        matcard = MatCardsList.from_input('mat_test.i')
+        matcard = MatCardsList.from_input(INP)
 
         assert len(matcard.materials) == 3
         assert len(matcard.matdic) == 3
@@ -77,7 +81,7 @@ class TestMatCardList:
         None.
 
         """
-        matcard = MatCardsList.from_input('mat_test.i')
+        matcard = MatCardsList.from_input(INP)
 
         headers = {'m1': 'C Header M1\n', 'm2': 'C Header M2\n', 'm102': ''}
         for key, header in headers.items():
@@ -92,7 +96,7 @@ class TestMatCardList:
         None.
 
         """
-        matcard = MatCardsList.from_input('mat_test.i')
+        matcard = MatCardsList.from_input(INP)
 
         headers = {'m1': ['C M1-submat1', 'C M1-Submat 2'],
                    'm2': ['', 'C M2-submat1\nC second line'],
@@ -111,7 +115,7 @@ class TestMatCardList:
         None.
 
         """
-        matcard = MatCardsList.from_input('mat_test.i')
+        matcard = MatCardsList.from_input(INP)
 
         zaids = {'m1': [2, 1],
                  'm2': [1, 1],

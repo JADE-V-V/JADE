@@ -65,7 +65,7 @@ class Zaid:
         Generate a Zaid object from its characteristic string
         """
         # Divide fraction from zaid
-        patSpacing = re.compile('[\s\t]+')
+        patSpacing = re.compile(r'[\s\t]+')
         items = patSpacing.split(string)
 
         # ZAID
@@ -208,9 +208,9 @@ class SubMaterial:
         text: (list) list of strings (lines)
         """
         # Useful patterns
-        patSpacing = re.compile('[\s\t]+')
-        patComment = re.compile('[cC][\s\t]+')
-        patName = re.compile('[mM]\d+')
+        patSpacing = re.compile(r'[\s\t]+')
+        patComment = re.compile(r'[cC][\s\t]+')
+        patName = re.compile(r'[mM]\d+')
         searchHeader = True
         header = ''
         zaidList = []
@@ -414,9 +414,9 @@ class SubMaterial:
 
 # Support function for Submaterial
 def readLine(string):
-    patSpacing = re.compile('[\s\t]+')
-    patComment = re.compile('\$')
-    patnumber = re.compile('\d+')
+    patSpacing = re.compile(r'[\s\t]+')
+    patComment = re.compile(r'\$')
+    patnumber = re.compile(r'\d+')
 
     pieces = patSpacing.split(string)
     # kill first piece if it is void
@@ -490,7 +490,7 @@ class Material:
         """
         # split the different submaterials
         patC = re.compile('[cC]')
-        pat_matHeader = re.compile('[mM]\d+')
+        pat_matHeader = re.compile(r'[mM]\d+')
         inHeader = True
         subtext = []
         submaterials = []
@@ -719,8 +719,8 @@ class MatCardsList(Sequence):
 
         inputfile: (str) path to the MCNP input file
         """
-        matPat = re.compile('[mM]\d+')
-        mxPat = re.compile('mx\d+', re.IGNORECASE)
+        matPat = re.compile(r'[mM]\d+')
+        mxPat = re.compile(r'mx\d+', re.IGNORECASE)
         commentPat = re.compile('[cC]')
         # Using parser the data cards are extracted from the input.
         # Comment section are interpreted as cards by the parser

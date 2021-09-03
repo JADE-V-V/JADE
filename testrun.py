@@ -72,6 +72,14 @@ class Test():
         # Get the configuration files path
         self.test_conf_path = confpath
 
+        # Chek for valid code
+        code = config['Code']
+        if code not in ['mcnp6', 'D1S6']:
+            raise ValueError(code+' is not an admissible value for code.\n' +
+                             'Please double check the configuration file.')
+        else:
+            self.code = code  # transport code to be used for the benchmark
+
         # Add the stop card according to config
         config = config.dropna()
         try:
@@ -175,10 +183,13 @@ class Test():
     def run(self, cpu=1, timeout=None):
         name = self.name
         directory = self.MCNPdir
-        self._run(name, directory, cpu=cpu, timeout=timeout)
+        if self.code == 'mcnp6':
+            self._run(name, directory, cpu=cpu, timeout=timeout)
+        elif self.code == 'D1S6':
+            self._runD1S6()  # TODO
 
     @staticmethod
-    def _run(name, directory, cpu=1, timeout=None):
+    def _runMCNP6(name, directory, cpu=1, timeout=None):
         """
         Run or continue test execution
 
@@ -222,6 +233,11 @@ class Test():
             pass
 
         return flagnotrun
+
+    @staticmethod
+    def _runD1S6():
+        # TODO
+        pass
 
 
 class MultipleTest:
@@ -285,7 +301,6 @@ class SphereTest(Test):
         settings_mat = os.path.join(self.test_conf_path,
                                     'MaterialsSettings.csv')
         settings_mat = pd.read_csv(settings_mat, sep=';').set_index('Symbol')
-        
 
         self.MCNPdir = motherdir
 

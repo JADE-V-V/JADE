@@ -73,7 +73,7 @@ def executeBenchmarksRoutines(session, lib, exp=False):
             confpath = os.path.join(session.path_cnf, fname.split('.')[0])
 
             # Generate test
-            # Special case for sphere leak
+            # Handle special cases
             if testname == 'Sphere Leakage Test':
                 test = testrun.SphereTest(inpfile, lib, row, log, VRTpath,
                                           confpath)

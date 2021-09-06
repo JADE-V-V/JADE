@@ -110,7 +110,7 @@ def mainloop(session):
             uty.restore_default_config(session)
 
         elif option == 'trans':
-            newlib = input(' Library to use: ')
+            newlib = session.lib_manager.select_lib()
             inputfile = input(' Input to translate: ')
 
             if newlib in session.lib_manager.libraries:

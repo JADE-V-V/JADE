@@ -309,9 +309,16 @@ class SubMaterial:
         """
         newzaids = []
         for zaid in self.zaidList:
+            # Implement the capability to translate to different libraries
+            # depending on the starting one
+            if type(newlib) == dict:
+                newtag = newlib[zaid.library]
+            else:
+                newtag = newlib
+
             try:
                 translation = lib_manager.convertZaid(zaid.element +
-                                                      zaid.isotope, newlib)
+                                                      zaid.isotope, newtag)
             except ValueError:
                 # No Available translation was found, ignore zaid
                 # Only video warning, to propagate to the log would be too much

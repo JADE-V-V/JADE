@@ -22,6 +22,7 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import re
+import json
 import matreader as mat
 from numjuggler import parser as par
 import os
@@ -142,6 +143,9 @@ class InputFile:
         newlib: (str) suffix of the new lib to translate to
         lib_manager: (LibManager) Library manager for the conversion
         """
+        if newlib[0] == '{':
+            # covert the dic
+            newlib = json.loads(newlib)
 
         self.matlist.translate(newlib, libmanager)
 

@@ -24,17 +24,80 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 import os
 sys.path.insert(1, '../')
-from parsersD1S import (Reaction, ReactionFile, Irradiation)
+from parsersD1S import (Reaction, ReactionFile, Irradiation, IrradiationFile)
 
 
-INP = os.path.join('TestFiles', 'reac_fe')
+INP = os.path.join('TestFiles', 'parserD1S', 'reac_fe')
+
+
+class TestIrradiationFile:
+
+    def test_fromtext(self):
+        """
+        Test parsing irradiation file 1
+        """
+        filepath = os.path.join('TestFiles', 'parserD1S', 'irr_test')
+        irrfile = IrradiationFile.from_text(filepath)
+        self._assert_file1(irrfile)
+
+    @staticmethod
+    def _assert_file1(irrfile):
+        assert len(irrfile.irr_schedules) == 4
+        TestIrradiation.assert_irr(irrfile.irr_schedules[0])
+
+    def test_fromtext2(self):
+        """
+        Test parsing irradiation file 2
+        """
+        filepath = os.path.join('TestFiles', 'parserD1S', 'irr_test2')
+        irrfile = IrradiationFile.from_text(filepath)
+        self._assert_file2(irrfile)
+
+    @staticmethod
+    def _assert_file2(irrfile):
+        assert len(irrfile.irr_schedules) == 4
+        TestIrradiation.assert_irr(irrfile.irr_schedules[0])
+
+    def test_write(self):
+        """
+        Test writing irradiation file 1
+        """
+        infile = os.path.join('TestFiles', 'parserD1S', 'irr_test')
+        outfile = 'tmp_irr_test'
+        irrfile = IrradiationFile.from_text(infile)
+        irrfile.write(outfile)
+        irrfile = IrradiationFile.from_text(outfile)
+        self._assert_file1(irrfile)
+        os.remove(outfile)
+
+    def test_write2(self):
+        """
+        Test writing irradiation file 2
+        """
+        infile = os.path.join('TestFiles', 'parserD1S', 'irr_test2')
+        outfile = 'tm_irr_test'
+        irrfile = IrradiationFile.from_text(infile)
+        irrfile.write(outfile)
+        irrfile = IrradiationFile.from_text(outfile)
+        self._assert_file2(irrfile)
+        os.remove(outfile)
 
 
 class TestIrradiation:
 
     def test_reading(self):
+        """
+        Test the reading of irradiation line
+        """
         text = '   24051     2.896e-07    5.982e+00    5.697e+00     Cr51'
         irr = Irradiation.from_text(text, 2)
+        self.assert_irr(irr)
+
+    @staticmethod
+    def assert_irr(irr):
+        """
+        Assert irradiation
+        """
         assert irr.daughter == '24051'
         assert irr.lambd == '2.896e-07'
         assert irr.times[0] == '5.982e+00'

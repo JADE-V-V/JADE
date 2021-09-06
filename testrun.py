@@ -163,22 +163,29 @@ class Test():
             shutil.rmtree(motherdir)
         os.mkdir(motherdir)
 
-        # Get VRT files if available
-        directoryVRT = os.path.join(self.path_VRT, testname)
-        edits_file = os.path.join(directoryVRT, 'inp_edits.txt')
-        ww_file = os.path.join(directoryVRT, 'wwinp')
-        if os.path.exists(directoryVRT):
-            # This was tested only for sphere... be careful
-            self.inp.add_edits(edits_file)  # Add variance reduction
+        # edits_file = os.path.join(directoryVRT, 'inp_edits.txt')
+        # ww_file = os.path.join(directoryVRT, 'wwinp')
+        # if os.path.exists(directoryVRT):
+        #     # This was tested only for sphere... be careful
+        #     self.inp.add_edits(edits_file)  # Add variance reduction
 
         # Write new input file
         outinpfile = os.path.join(motherdir, testname)
         self.inp.write(outinpfile)
 
-        # Copy also wwinp file if available
+        # Get VRT files if available
+        directoryVRT = os.path.join(self.path_VRT, testname)
+        # if it exists copy all files in the run folder
         if os.path.exists(directoryVRT):
-            outwwfile = os.path.join(motherdir, 'wwinp')
-            shutil.copyfile(ww_file, outwwfile)
+            for file in os.listdir(directoryVRT):
+                infile = os.path.join(directoryVRT, file)
+                outfile = os.path.join(motherdir, file)
+                shutil.copyfile(infile, outfile)
+
+        # # Copy also wwinp file if available
+        # if os.path.exists(directoryVRT):
+        #     outwwfile = os.path.join(motherdir, 'wwinp')
+        #     shutil.copyfile(ww_file, outwwfile)
 
     def run(self, cpu=1, timeout=None):
         name = self.name

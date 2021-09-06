@@ -24,11 +24,13 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import re
 
 PAT_BLANK = re.compile(r'[\s\tCc]*\n')
+PAT_COMMENT = re.compile('[Cc]+')
 PAT_SPACE = re.compile(r'[\s\t]+')
 
 
 class IrradiationFile:
-    def __init__(self, nsc, irr_schedules, header=None):
+    def __init__(self, nsc, irr_schedules, header=None,
+                 formatting=[8, 14, 13, 9]):
         """
         Object representing an irradiation D1S file
 
@@ -40,15 +42,32 @@ class IrradiationFile:
             contains all irradiation objects.
         header : str, optional
             Header of the file. The default is None.
+        formatting : list of int
+            fwf values for the output columns
 
         Returns
         -------
         None.
 
         """
-        self.nsc
+        self.nsc = nsc
         self.irr_schedules = irr_schedules
         self.header = header
+        self.formatting = formatting
+
+        # Compute irradiation header
+        w1 = str(formatting[0])
+        w2 = str(formatting[1])
+        w3 = str(formatting[2])
+        w4 = str(formatting[3])
+
+        head = '{:>'+w1+'s}{:>'+w2+'s}{:>'
+        for i in range(nsc):
+            head += w3+'s}{:>'
+
+        head += w4+'s}'
+
+        self.irrformat = head
 
     @classmethod
     def from_text(cls, filepath):
@@ -67,7 +86,7 @@ class IrradiationFile:
         None.
 
         """
-        pat_nsc = re.compile('nsc=')
+        pat_nsc = re.compile('(?i)(nsc)')
         pat_num = re.compile(r'\d+')
         with open(filepath, 'r') as infile:
             inheader = True
@@ -75,6 +94,7 @@ class IrradiationFile:
             irr_schedules = []
             for line in infile:
                 # check if we need to exit header mode
+                # it my also happen that there is no header
                 if pat_nsc.match(line) is not None:
                     nsc = int(pat_num.search(line).group())
                     inheader = False
@@ -83,9 +103,46 @@ class IrradiationFile:
                     header += line
                 # data
                 else:
-                    # Avoid comments
-                    if PAT_BLANK.match(line) is None:
+                    # Avoid comments and blank lines
+                    if (PAT_BLANK.match(line) is None and
+                            PAT_COMMENT.match(line) is None):
+
                         irr_schedules.append(Irradiation.from_text(line, nsc))
+
+        return cls(nsc, irr_schedules, header=header)
+
+    def write(self, filepath):
+        """
+        Write the D1S irradiation file
+
+        Parameters
+        ----------
+        filepath : str or path
+            output path of the irradiation file (includes file name).
+
+        Returns
+        -------
+        None.
+
+        """
+        with open(filepath, 'w') as outfile:
+            if self.header is not None:
+                outfile.write(self.header)
+            # write nsc
+            outfile.write('nsc='+str(self.nsc)+'\n')
+
+            # --- Write irradiation schedules ---
+            # write header
+            args = ['Daught.', 'lambda(1/s)']
+            for i in range(self.nsc):
+                args.append('time_fact_'+str(i+1))
+            args.append('comments')
+            outfile.write('C '+self.irrformat.format(*args)+'\n')
+
+            # write schedules
+            for schedule in self.irr_schedules:
+                args = schedule._get_format_args()
+                outfile.write(self.irrformat.format(*args)+'\n')
 
 
 class Irradiation:
@@ -162,6 +219,13 @@ class Irradiation:
 
         return cls(daughter, lambd, times, comment=comment)
 
+    def _get_format_args(self):
+        args = [self.daughter, self.lambd]
+        for time in self.times:
+            args.append(time)
+        args.append(self.comment)
+        return args
+
 
 class ReactionFile:
     def __init__(self, reactions):
@@ -169,12 +233,29 @@ class ReactionFile:
 
     @classmethod
     def from_text(cls, filepath):
+        """
+        Generate a reaction file directly from text file
+
+        Parameters
+        ----------
+        cls : TYPE
+            DESCRIPTION.
+        filepath : str or path
+            file to read.
+
+        Returns
+        -------
+        ReactionFile
+            Reaction File Object.
+
+        """
         # read all reactions
         reactions = []
         with open(filepath, 'r') as infile:
             for line in infile:
-                # Ignore if it is a blank line
-                if PAT_BLANK.match(line) is None:
+                # Ignore if it is a blank line or a full line comment
+                if (PAT_BLANK.match(line) is None and
+                        PAT_COMMENT.match(line) is None):
                     # parse reactions
                     reaction = Reaction.from_text(line)
                     reactions.append(reaction)

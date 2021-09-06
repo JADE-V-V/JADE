@@ -24,6 +24,7 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import testrun
 import os
 import datetime
+import re
 
 
 def executeBenchmarksRoutines(session, lib, exp=False):
@@ -35,8 +36,10 @@ def executeBenchmarksRoutines(session, lib, exp=False):
     ----------
     session : jade.Session
         Current JADE session.
-    lib : str
-        library to assess (e.g. 31c).
+    lib : str (or dic string)
+        library to assess (e.g. 31c)
+        or dic string like '{"31c":"21c", "32c":"99c"}'.
+        Double quotes are needed.
     exp : bool
         if True the experimental Benchmarks are selected. The default is False
 
@@ -65,7 +68,17 @@ def executeBenchmarksRoutines(session, lib, exp=False):
             # --- Input Generation ---
             # Collect infos
             libmanager = session.lib_manager
-            outpath = os.path.join(session.path_run, lib)  # get path to libdir
+
+            # Handle dic string as lib
+            pat_libs = re.compile(r'"\d\d[a-zA-Z]"')
+            if lib[0] == '{':
+                libs = pat_libs.findall(lib)
+                libpath = libs[1][1:-1]
+            else:
+                libpath = lib
+
+            # get path to libdir
+            outpath = os.path.join(session.path_run, libpath)
             safemkdir(outpath)
             fname = row['File Name']
             inpfile = os.path.join(session.path_inputs, fname)

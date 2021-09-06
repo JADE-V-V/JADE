@@ -23,6 +23,8 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import xsdirpyne as xs
 import pandas as pd
+import json
+from main import (CRED, CEND)
 
 
 class LibManager:
@@ -50,8 +52,13 @@ class LibManager:
         self.XS = xs.Xsdir(xsdir_file)
 
         # Identify different libraries installed. This is done checking H
-        libraries = self.check4zaid('1001')
-        libraries.extend(self.check4zaid('1000'))  # photons
+        # libraries = self.check4zaid('1001')
+        # libraries.extend(self.check4zaid('1000'))  # photons
+        libraries = []
+        for table in self.XS:
+            lib = table.name.split('.')[1]
+            if lib not in libraries:
+                libraries.append(lib)
 
         self.libraries = libraries
 
@@ -190,15 +197,26 @@ class LibManager:
             Library to assess.
 
         """
+        error = CRED+'''
+ Error: {}
+ The selected library is not available.
+ '''+CEND
         while True:
-            lib = input(' Select library (e.g. 31c): ')
+            lib = input(' Select library (e.g. 31c or {"99c":"98c", "21c":"31c"}): ')
             if lib in self.libraries:
                 break
+
+            elif lib[0] == '{':
+                libs = json.loads(lib)
+                # all libraries should be available
+                for val in libs.values():
+                    if val not in self.libraries:
+                        print(error.format(val))
+                        continue
+                # If this point is reached, all libs are available
+                break
             else:
-                print('''
-                  Error:
-                  The selected library is not available.
-                  ''')
+                print(error.format(lib))
         return lib
 
     def get_zaid_mass(self, zaid):

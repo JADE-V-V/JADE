@@ -25,10 +25,15 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 sys.path.insert(1, '../')
 from matreader import (Zaid, MatCardsList)
+from libmanager import LibManager
 import os
 
-
-INP = os.path.join('TestFiles', 'mat_test.i')
+# Files
+INP = os.path.join('TestFiles', 'matreader', 'mat_test.i')
+ACTIVATION_INP = os.path.join('TestFiles', 'matreader', 'activation.i')
+XSDIR = os.path.join('TestFiles', 'matreader', 'xsdir_mcnp6.2')
+# Other
+LIBMAN = LibManager(XSDIR)
 
 
 class TestZaid:
@@ -124,3 +129,18 @@ class TestMatCardList:
         for key, zaids in zaids.items():
             for i, submat in enumerate(matcard[key].submaterials):
                 assert len(submat.zaidList) == zaids[i]
+
+    def test_translation(self):
+        """
+        Test that translation works (both single and multiple)
+        """
+        newlib = {'21c': '31c', '99c': '81c'}
+        matcard = MatCardsList.from_input(ACTIVATION_INP)
+        matcard.translate(newlib, LIBMAN)
+        translation = matcard.to_text()
+        assert translation.count('31c') == 3
+        assert translation.count('81c') == 3
+
+        matcard.translate('21c', LIBMAN)
+        translation = matcard.to_text()
+        assert translation.count('21c') == 6

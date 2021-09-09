@@ -28,6 +28,7 @@ from numjuggler import parser as par
 import os
 import sys
 from contextlib import contextmanager
+import warnings
 
 
 class InputFile:
@@ -52,8 +53,8 @@ class InputFile:
 
         inputfile: (str) path to the MCNP input file
         """
-        matPat = re.compile('[mM]\d+')
-        mxPat = re.compile('mx\d+', re.IGNORECASE)
+        matPat = re.compile(r'[mM]\d+')
+        mxPat = re.compile(r'mx\d+', re.IGNORECASE)
         commentPat = re.compile('[cC]')
         # Using parser the data cards are extracted from the input.
         # Comment sections are interpreted as cards by the parser
@@ -236,6 +237,41 @@ class InputFile:
         newsettings.extend(wwp)
 
         self.cards['settings'] = newsettings
+
+
+class D1S5_InputFile(InputFile):
+
+    def add_stopCard(self, nps, ctme, precision):
+        """
+        STOP card is not supported in MCNP 5. This simply is translated to a
+        nps card. Warnings are prompt to the user if ctme or precision are
+        specified.
+
+        Parameters
+        ----------
+        nps : int
+            number of particles to simulate
+        ctme = int
+            computer time
+        precision = (str, float)
+            tuple indicating the tally number and the precision requested
+
+        Returns
+        -------
+        None.
+
+        """
+        if ctme is not None or precision is not None:
+            warnings.warn('''
+STOP card is substituted with normal NPS card for MCNP5.
+specified ctme or precision parameters will be ignored
+''')
+        elif nps is None:
+            raise ValueError(' NPS value is mandatory for MCNP 5 inputs')
+
+        line = 'NPS '+str(nps)+'\n'
+        card = par.Card([line], 5, -1)
+        self.cards['settings'].append(card)
 
 
 @contextmanager

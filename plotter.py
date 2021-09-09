@@ -77,6 +77,13 @@ ADD_LABELS_ITER1D = {'major': [('INBOARD', 0.21), ('PLASMA', 0.45),
                                ('VV', 0.70), ('TF Coil', 0.87)]}
 VERT_LINES_ITER1D = {'major': [49, 53], 'minor': [23, 32, 70, 84]}
 
+# --- ITER CYLINDER SDDR ---
+CYL_SDDR_XTICKS = {'(22.0,1)': 'Center (SS/H2O Front)',
+          '(22.0,2)': 'Lat (SS/H2O Front)',
+          '(23.0,1)': 'Center (SS/H2O End)',
+          '(23.0,2)': 'Lat (SS/H2O End)',
+          '(24.0,1)': 'Center (SS/H2O End)'}
+
 
 # ============================================================================
 #                   Plotter Class
@@ -169,7 +176,7 @@ class Plotter():
 
         return outp
 
-    def  _grouped_bar(self, log=False, maxgroups=35):
+    def _grouped_bar(self, log=False, maxgroups=35, xlegend=None):
         """
         Plot a grouped bar chart on a "categorical" x axis.
 
@@ -177,10 +184,13 @@ class Plotter():
         ----------
         log : Bool, optional
             if True the y-axis is set to be logaritimic. The default is False.
-        maxgroups : int
+        maxgroups : int, optional
             indicated the maximum number of grouped bars to plot in a single
             axis. In case the data to plot is higher, new axis are created
             vertically. The default is 30.
+        xlegend : dic, optional
+            allows to change the x ticks labels for better plot clarity.
+            The default is None.
 
         Returns
         -------
@@ -190,7 +200,15 @@ class Plotter():
         """
         # General variables
         fontsize = self.fontsize
-        labels = self.data[0]['x']
+        # Override x ticks labels if requested
+        if xlegend is None:
+            labels = self.data[0]['x']
+        else:
+            labels = []
+            for lab in self.data[0]['x']:
+                lab = repr(lab)
+                labels.append(xlegend[lab])
+
         single_width = 0.35  # the width of the bars
         tot_width = single_width*len(self.data)
 

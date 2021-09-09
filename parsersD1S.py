@@ -22,15 +22,17 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import re
+import os
 
 PAT_BLANK = re.compile(r'[\s\tCc]*\n')
 PAT_COMMENT = re.compile('[Cc]+')
 PAT_SPACE = re.compile(r'[\s\t]+')
+REACFORMAT = '{:>13s}{:>7s}{:>9s}{:>15s}'
 
 
 class IrradiationFile:
     def __init__(self, nsc, irr_schedules, header=None,
-                 formatting=[8, 14, 13, 9]):
+                 formatting=[8, 14, 13, 9], name='irrad'):
         """
         Object representing an irradiation D1S file
 
@@ -42,8 +44,10 @@ class IrradiationFile:
             contains all irradiation objects.
         header : str, optional
             Header of the file. The default is None.
-        formatting : list of int
-            fwf values for the output columns
+        formatting : list of int, optional
+            fwf values for the output columns. The default is [8, 14, 13, 9].
+        name : str, optional
+            name of the file. The default is 'irrad'.
 
         Returns
         -------
@@ -68,6 +72,7 @@ class IrradiationFile:
         head += w4+'s}'
 
         self.irrformat = head
+        self.name = name
 
     @classmethod
     def from_text(cls, filepath):
@@ -88,6 +93,7 @@ class IrradiationFile:
         """
         pat_nsc = re.compile('(?i)(nsc)')
         pat_num = re.compile(r'\d+')
+        name = os.path.basename(filepath)
         with open(filepath, 'r') as infile:
             inheader = True
             header = ''
@@ -109,27 +115,28 @@ class IrradiationFile:
 
                         irr_schedules.append(Irradiation.from_text(line, nsc))
 
-        return cls(nsc, irr_schedules, header=header)
+        return cls(nsc, irr_schedules, header=header, name=name)
 
-    def write(self, filepath):
+    def write(self, path):
         """
         Write the D1S irradiation file
 
         Parameters
         ----------
-        filepath : str or path
-            output path of the irradiation file (includes file name).
+        path : str or path
+            output path where to save the file (only directory).
 
         Returns
         -------
         None.
 
         """
+        filepath = os.path.join(path, 'irrad')
         with open(filepath, 'w') as outfile:
             if self.header is not None:
                 outfile.write(self.header)
             # write nsc
-            outfile.write('nsc='+str(self.nsc)+'\n')
+            outfile.write('nsc '+str(self.nsc)+'\n')
 
             # --- Write irradiation schedules ---
             # write header
@@ -228,8 +235,24 @@ class Irradiation:
 
 
 class ReactionFile:
-    def __init__(self, reactions):
+    def __init__(self, reactions, name='react'):
+        """
+        Reaction file object
+
+        Parameters
+        ----------
+        reactions : list
+            contains all reaction objects contained in the file.
+        name : name, optional
+            file name. The default is 'react'.
+
+        Returns
+        -------
+        None.
+
+        """
         self.reactions = reactions
+        self.name = name
 
     @classmethod
     def from_text(cls, filepath):
@@ -260,7 +283,7 @@ class ReactionFile:
                     reaction = Reaction.from_text(line)
                     reactions.append(reaction)
 
-        return cls(reactions)
+        return cls(reactions, name=os.path.basename(filepath))
 
     def change_lib(self, newlib):
         """
@@ -276,26 +299,36 @@ class ReactionFile:
         None.
 
         """
-        for reaction in self.reactions:
-            reaction.change_lib(newlib)
+        # Correctly parse the lib input. It may be a dic than only the
+        # first dic value needs to be cosidered
+        pat_libs = re.compile(r'"\d\d[a-zA-Z]"')
+        if newlib[0] == '{':
+            libs = pat_libs.findall(newlib)
+            lib = libs[1][1:-1]
+        else:
+            lib = newlib
 
-    def write(self, outpath):
+        for reaction in self.reactions:
+            reaction.change_lib(lib)
+
+    def write(self, path):
         """
         write formatted reaction file
 
         Parameters
         ----------
-        outpath : str/path
-            path to the output file. Includes file name.
+        path : str/path
+            path to the output file (only dir). Includes file name.
 
         Returns
         -------
         None.
 
         """
-        with open(outpath, 'w') as outfile:
+        filepath = os.path.join(path, 'react')
+        with open(filepath, 'w') as outfile:
             for reaction in self.reactions:
-                outfile.write(reaction.write()+'\n')
+                outfile.write(REACFORMAT.format(*reaction.write())+'\n')
 
 
 class Reaction:
@@ -357,10 +390,14 @@ class Reaction:
 
         """
         # compute text
-        text = self.parent+' '+self.MT+' '+self.daughter
-        if self.comment is not None and self.comment != '':
-            text = text+' '+self.comment
-        return text
+        textpieces = [self.parent, self.MT, self.daughter]
+        if self.comment is None:
+            comment = ''
+        else:
+            comment = self.comment
+        textpieces.append(comment)
+
+        return textpieces
 
     @classmethod
     def from_text(cls, text):
@@ -381,7 +418,7 @@ class Reaction:
 
         """
         # Split the reaction in its components
-        pieces = PAT_SPACE.split(text)
+        pieces = PAT_SPACE.split(text.strip())
         parent = pieces[0].strip()
         MT = pieces[1]
         daughter = pieces[2]

@@ -22,7 +22,7 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import MCTAL_READER as mtal
+import MCTAL_READER2 as mtal
 import xlwings as xw
 import pandas as pd
 import os
@@ -36,6 +36,10 @@ from outputFile import OutputFile
 from meshtal import Meshtal
 import pickle
 import sys
+
+# RED color
+CRED = '\033[91m'
+CEND = '\033[0m'
 
 
 class BenchmarkOutput:
@@ -194,7 +198,15 @@ class BenchmarkOutput:
                             txt = str(int(column))
                         except ValueError:
                             # it is not convertible to int
-                            txt = str(column)
+                            try:
+                                txt = str(column)
+                            except TypeError:
+                                # it is not covertible to string either
+                                txt = repr(column)
+                        except TypeError:
+                            # it is not covertible to int
+                            txt = repr(column)
+
                         atlas.doc.add_heading(txt, level=3)
                         newtitle = title+' ('+txt+')'
                     else:
@@ -298,7 +310,15 @@ class BenchmarkOutput:
                             txt = str(int(column))
                         except ValueError:
                             # it is not convertible to int
-                            txt = str(column)
+                            try:
+                                txt = str(column)
+                            except TypeError:
+                                # it is not covertible to string either
+                                txt = repr(column)
+                        except TypeError:
+                            # it is not covertible to int
+                            txt = repr(column)
+
                         atlas.doc.add_heading(txt, level=3)
                         newtitle = title+' ('+txt+')'
 
@@ -418,10 +438,31 @@ class BenchmarkOutput:
                     y_set = list(set(tdata[y_name].values))
                     rows = []
                     for xval in x_set:
-                        row = tdata.loc[xval, label].values
+                        try:
+                            row = tdata.loc[xval, label].values
+                            prev_len = len(row)
+                        except AttributeError:
+                            # There is only one total value, fill the rest with
+                            # nan
+                            row = []
+                            for i in range(prev_len-1):
+                                row.append(np.nan)
+                            row.append(tdata.loc[xval, label])
+
                         rows.append(row)
-                    main_value_df = pd.DataFrame(rows, columns=y_set,
-                                                 index=x_set)
+
+                    try:
+                        main_value_df = pd.DataFrame(rows, columns=y_set,
+                                                     index=x_set)
+                    except ValueError:
+                        print(CRED+"""
+ A ValueError was triggered, a probable cause may be that more than 2 binnings
+ are defined in tally {}. This is a fatal exception,  application will now
+ close""".format(str(num))+CEND)
+                        # Safely exit from excel and from application
+                        ex.save()
+                        sys.exit()
+
                     # reorder index
                     main_value_df['index'] = pd.to_numeric(x_set,
                                                            errors='coerce')
@@ -436,8 +477,17 @@ class BenchmarkOutput:
                                         index_num_format=idx_format)
                 else:
                     # reorder df
-                    tdata['index'] = pd.to_numeric(tdata[x_name],
-                                                   errors='coerce')
+                    try:
+                        tdata['index'] = pd.to_numeric(tdata[x_name],
+                                                       errors='coerce')
+                    except KeyError:
+                        print(CRED+'''
+ {} is not available in tally {}. PLease check the configuration file.
+ The application will now exit '''.format(x_name, str(num))+CEND)
+                        # Safely exit from excel and from application
+                        ex.save()
+                        sys.exit()
+
                     tdata.sort_values('index', inplace=True)
                     del tdata['index']
 
@@ -761,6 +811,23 @@ class MCNPoutput:
                         allequal = (df[column] == firstval).all()
                         if allequal:
                             del df[column]
+
+            # Drop rows if they are exactly the same values
+            # (untraced behaviour)
+            df.drop_duplicates(inplace=True)
+
+            # The double binning Surfaces/cells with segments can create
+            # issues for JADE since if another binning is added
+            # (such as energy) it is not supported. Nevertheless,
+            # the additional segmentation can be quite useful and this can be
+            # collapsed de facto in a single geometrical binning
+
+            if 'Cells' in df.columns and 'Segments' in df.columns:
+                # Then we can collapse this in a single geometrical binning
+                df['Cells-Segments'] = list(zip(df.Cells, df.Segments))
+                # delete the collapsed columns
+                del df['Cells']
+                del df['Segments']
 
             # Sub DF containing only total bins
             try:

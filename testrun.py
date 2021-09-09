@@ -31,6 +31,10 @@ import numpy as np
 
 from copy import deepcopy
 from tqdm import tqdm
+from parsersD1S import (IrradiationFile, ReactionFile)
+
+
+CODE_TAGS = {'mcnp6': 'mcnp6', 'D1S5': 'd1suned3.1.2'}
 
 
 class Test():
@@ -57,12 +61,6 @@ class Test():
         # MCNP original input
         self.original_inp = inp
 
-        # Generate input file template
-        self.inp = ipt.InputFile.from_text(inp)
-
-        # Name of input file
-        self.name = self.inp.name
-
         # Log for warnings
         self.log = log
 
@@ -74,11 +72,30 @@ class Test():
 
         # Chek for valid code
         code = config['Code']
-        if code not in ['mcnp6', 'D1S6']:
+        if code not in CODE_TAGS.keys():
             raise ValueError(code+' is not an admissible value for code.\n' +
                              'Please double check the configuration file.')
         else:
             self.code = code  # transport code to be used for the benchmark
+
+        # Generate input file template according to code
+        if code == 'D1S5':
+            self.inp = ipt.D1S5_InputFile.from_text(inp)
+            # It also have additional files then that must be in the
+            # VRT folder (irradiation and reaction files)
+            irrfile = os.path.join(VRTpath, self.inp.name,
+                                   self.inp.name+'_irrad')
+            reacfile = os.path.join(VRTpath, self.inp.name,
+                                    self.inp.name+'_react')
+            self.irrad = IrradiationFile.from_text(irrfile)
+            self.react = ReactionFile.from_text(reacfile)
+        else:
+            self.inp = ipt.InputFile.from_text(inp)
+            self.irrad = None
+            self.react = None
+
+        # Name of input file
+        self.name = self.inp.name
 
         # Add the stop card according to config
         config = config.dropna()
@@ -124,6 +141,8 @@ class Test():
         """
         self.inp.translate(self.lib, libmanager)
         self.inp.update_zaidinfo(libmanager)
+        if self.react is not None:
+            self.react.change_lib(self.lib)
 
     def generate_test(self, lib_directory, libmanager, MCNP_dir=None):
         """
@@ -172,36 +191,34 @@ class Test():
         # Write new input file
         outinpfile = os.path.join(motherdir, testname)
         self.inp.write(outinpfile)
+        # And accessory files if needed
+        if self.irrad is not None:
+            self.irrad.write(motherdir)
+        if self.react is not None:
+            self.react.write(motherdir)
 
         # Get VRT files if available
-        directoryVRT = os.path.join(self.path_VRT, testname)
-        # if it exists copy all files in the run folder
-        if os.path.exists(directoryVRT):
-            for file in os.listdir(directoryVRT):
-                infile = os.path.join(directoryVRT, file)
-                outfile = os.path.join(motherdir, file)
-                shutil.copyfile(infile, outfile)
-
-        # # Copy also wwinp file if available
-        # if os.path.exists(directoryVRT):
-        #     outwwfile = os.path.join(motherdir, 'wwinp')
-        #     shutil.copyfile(ww_file, outwwfile)
+        wwinp = os.path.join(self.path_VRT, testname, 'wwinp')
+        if os.path.exists(wwinp):
+            outfile = os.path.join(motherdir, 'wwinp')
+            shutil.copyfile(wwinp, outfile)
 
     def run(self, cpu=1, timeout=None):
         name = self.name
         directory = self.MCNPdir
-        if self.code == 'mcnp6':
-            self._run(name, directory, cpu=cpu, timeout=timeout)
-        elif self.code == 'D1S6':
-            self._runD1S6()  # TODO
+        code_tag = CODE_TAGS[self.code]
+
+        self._runMCNP(code_tag, name, directory, cpu=cpu, timeout=timeout)
 
     @staticmethod
-    def _runMCNP6(name, directory, cpu=1, timeout=None):
+    def _runMCNP(code, name, directory, cpu=1, timeout=None):
         """
         Run or continue test execution
 
         Parameters
         ----------
+        code : str
+            tag of the code to be used (e.g. mcnp6)
         name : str
             MCNP inputfile name.
         directory : str/path
@@ -217,7 +234,6 @@ class Test():
             If true the timeout was reached.
 
         """
-        code = 'mcnp6'
         command = 'name='+name+' wwinp=wwinp tasks '+str(cpu)
         flagnotrun = False
         try:
@@ -232,7 +248,7 @@ class Test():
                 command = command+' runtpe='+name+'r'
 
             # Execution
-            subprocess.run([code, command], cwd=directory,
+            subprocess.run([shutil.which(code), command], cwd=directory,
                            creationflags=subprocess.CREATE_NEW_CONSOLE,
                            timeout=timeout)
 
@@ -240,11 +256,6 @@ class Test():
             pass
 
         return flagnotrun
-
-    @staticmethod
-    def _runD1S6():
-        # TODO
-        pass
 
 
 class MultipleTest:

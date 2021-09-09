@@ -22,6 +22,7 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
+import re
 
 MULTI_TEST = ['Sphere', 'Oktavian']
 EXP_TAG = 'Exp'
@@ -289,6 +290,13 @@ class Status():
             True if all benchmark have been run for the library.
 
         """
+        # Correctly parse the lib input. It may be a dic than only the first
+        # dic value needs to be cosidered
+        pat_libs = re.compile(r'"\d\d[a-zA-Z]"')
+        if lib[0] == '{':
+            libs = pat_libs.findall(lib)
+            lib = libs[1][1:-1]
+
         # Update Tree
         self.update_run_status()
         # Check if/what is already run

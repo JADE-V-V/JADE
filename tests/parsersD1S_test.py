@@ -24,7 +24,8 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 import os
 sys.path.insert(1, '../')
-from parsersD1S import (Reaction, ReactionFile, Irradiation, IrradiationFile)
+from parsersD1S import (Reaction, ReactionFile, Irradiation, IrradiationFile,
+                        REACFORMAT)
 
 
 INP = os.path.join('TestFiles', 'parserD1S', 'reac_fe')
@@ -63,9 +64,9 @@ class TestIrradiationFile:
         Test writing irradiation file 1
         """
         infile = os.path.join('TestFiles', 'parserD1S', 'irr_test')
-        outfile = 'tmp_irr_test'
+        outfile = 'irrad'
         irrfile = IrradiationFile.from_text(infile)
-        irrfile.write(outfile)
+        irrfile.write(os.getcwd())
         irrfile = IrradiationFile.from_text(outfile)
         self._assert_file1(irrfile)
         os.remove(outfile)
@@ -75,9 +76,9 @@ class TestIrradiationFile:
         Test writing irradiation file 2
         """
         infile = os.path.join('TestFiles', 'parserD1S', 'irr_test2')
-        outfile = 'tm_irr_test'
+        outfile = 'irrad'
         irrfile = IrradiationFile.from_text(infile)
-        irrfile.write(outfile)
+        irrfile.write(os.getcwd())
         irrfile = IrradiationFile.from_text(outfile)
         self._assert_file2(irrfile)
         os.remove(outfile)
@@ -111,7 +112,7 @@ class TestReaction:
         """
         Test different formatting possibilities
         """
-        text = '26054.99c  102  26055     Fe55'
+        text = '   26054.99c  102  26055     Fe55'
         reaction = Reaction.from_text(text)
         assert reaction.parent == '26054.99c'
         assert reaction.MT == '102'
@@ -144,7 +145,7 @@ class TestReaction:
         text = '26054.99c  102  26055     Fe55 and  some'
         reaction = Reaction.from_text(text)
         ftext = reaction.write()
-        comptext = '26054.99c 102 26055 Fe55 and some'
+        comptext = ['26054.99c', '102', '26055', 'Fe55 and some']
         assert comptext == ftext
 
 
@@ -161,9 +162,9 @@ class TestReactionFile:
         """
         writing works
         """
-        outpath = 'tmp'
+        outpath = 'react'
         reac_file = ReactionFile.from_text(INP)
-        reac_file.write(outpath)
+        reac_file.write(os.getcwd())
         newfile = ReactionFile.from_text(outpath)
         # Remove the temporary file
         os.remove(outpath)

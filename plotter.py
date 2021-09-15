@@ -36,6 +36,21 @@ from matplotlib.patches import Rectangle
 
 
 # ============================================================================
+#                   Specify parameters for plots
+# ============================================================================
+SMALL_SIZE = 24
+MEDIUM_SIZE = 26
+BIGGER_SIZE = 30
+
+plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
+plt.rc('axes', titlesize=BIGGER_SIZE)     # fontsize of the axes title
+plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
+plt.rc('xtick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
+plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
+plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
+
+# ============================================================================
 #                   Specific data for benchmarks plots
 # ============================================================================
 
@@ -78,11 +93,22 @@ ADD_LABELS_ITER1D = {'major': [('INBOARD', 0.21), ('PLASMA', 0.45),
 VERT_LINES_ITER1D = {'major': [49, 53], 'minor': [23, 32, 70, 84]}
 
 # --- ITER CYLINDER SDDR ---
-CYL_SDDR_XTICKS = {'(22.0,1)': 'Center (SS/H2O Front)',
-          '(22.0,2)': 'Lat (SS/H2O Front)',
-          '(23.0,1)': 'Center (SS/H2O End)',
-          '(23.0,2)': 'Lat (SS/H2O End)',
-          '(24.0,1)': 'Center (SS/H2O End)'}
+CYL_SDDR_XTICKS = {"'22-1'": 'Hole Front',
+                   "'22-2'": 'Cyl. Front',
+                   "'22-3'": 'Gap Front',
+                   "'22-4'": 'SS Front',
+                   "'23-1'": 'Hole Rear',
+                   "'23-2'": 'Cyl. Rear',
+                   "'23-3'": 'Gap Rear',
+                   "'23-4'": 'SS Rear',
+                   "'24-1'": 'P. Front (Hole)',
+                   "'24-2'": 'P. Front (Cyl.)',
+                   "'24-3'": 'P. Front (Gap)',
+                   "'24-4'": 'SS Back Front',
+                   "'25-1'": 'P. Rear (Hole)',
+                   "'25-2'": 'P. Rear (Cyl.)',
+                   "'25-3'": 'P. Rear (Gap)',
+                   "'25-4'": 'SS Back Rear'}
 
 
 # ============================================================================
@@ -90,7 +116,7 @@ CYL_SDDR_XTICKS = {'(22.0,1)': 'Center (SS/H2O Front)',
 # ============================================================================
 class Plotter():
     def __init__(self, data, title, outpath, outname, quantity, unit, xlabel,
-                 testname, ext='.png', fontsize=20):
+                 testname, ext='.png'):
         """
         Object Handling plots
 
@@ -116,9 +142,6 @@ class Plotter():
             name of the benchmark
         ext : str
             extension of the image to save. Default is '.png'
-        fontsize : int
-            reference fontsize to be used throughout the plot. The Default is
-            20
 
         Returns
         -------
@@ -131,7 +154,6 @@ class Plotter():
         self.xlabel = xlabel
         self.unit = unit
         self.quantity = quantity
-        self.fontsize = fontsize
         self.testname = testname
 
         # --- Useful plots parameters ---
@@ -168,9 +190,15 @@ class Plotter():
         elif plot_type == 'Grouped bars':
             if self.testname == 'C_Model':
                 log = True
+                xlegend = None
+            elif self.testname == 'ITER_Cyl_SDDR':
+                log = True
+                xlegend = CYL_SDDR_XTICKS
             else:
                 log = False
-            outp = self._grouped_bar(log=log)
+                xlegend = None
+
+            outp = self._grouped_bar(log=log, xlegend=xlegend)
         else:
             raise ValueError(plot_type+' is not an admissible plot type')
 
@@ -198,8 +226,6 @@ class Plotter():
             path to the saved image
 
         """
-        # General variables
-        fontsize = self.fontsize
         # Override x ticks labels if requested
         if xlegend is None:
             labels = self.data[0]['x']
@@ -207,7 +233,10 @@ class Plotter():
             labels = []
             for lab in self.data[0]['x']:
                 lab = repr(lab)
-                labels.append(xlegend[lab])
+                try:
+                    labels.append(xlegend[lab])
+                except KeyError:
+                    labels.append(lab)
 
         single_width = 0.35  # the width of the bars
         tot_width = single_width*len(self.data)
@@ -263,7 +292,7 @@ class Plotter():
 
         # --- Plotting ---
         # Set the title only in the top ax
-        axes[0].set_title(self.title, fontsize=fontsize+4)
+        axes[0].set_title(self.title)
 
         # Plot everything
         for ax, datachunk, x, labels in zip(axes, datasets, x_array,
@@ -282,16 +311,14 @@ class Plotter():
 
             # --- Plot details ---
             # Legend and ticks
-            ax.legend(loc='best', prop={'size': fontsize-5})
-            ax.tick_params(which='major', width=1.00, length=5,
-                           labelsize=fontsize-2)
-            ax.tick_params(which='minor', width=0.75, length=2.50,
-                           labelsize=fontsize-4)
+            ax.legend(loc='best')
+            ax.tick_params(which='major', width=1.00, length=5)
+            ax.tick_params(which='minor', width=0.75, length=2.50)
 
             # title and labels
             ylabel = self.quantity+' ['+self.unit+']'
-            ax.set_ylabel(ylabel).set_fontsize(fontsize)
-            ax.set_xlabel(self.xlabel).set_fontsize(fontsize)
+            ax.set_ylabel(ylabel)
+            ax.set_xlabel(self.xlabel)
             # ax.yaxis.set_major_locator(AutoLocator())
             # Special for x labels
             ax.set_xticks(x)
@@ -321,7 +348,6 @@ class Plotter():
 
         """
         data = self.data
-        fontsize = self.fontsize
 
         ref = data[0]
         # Adjounrn ylabel
@@ -363,14 +389,14 @@ class Plotter():
         # --- Plot details ---
         # ax 1 details
         ax1.set_yscale('log')
-        ax1.set_title(self.title, fontsize=fontsize+4)
-        ax1.set_ylabel(ylabel).set_fontsize(fontsize)
-        ax1.legend(loc='best', prop={'size': fontsize-5})
+        ax1.set_title(self.title)
+        ax1.set_ylabel(ylabel)
+        ax1.legend(loc='best')
 
         # limit the ax 2 to [0, 2]
         ax2.set_ylim(bottom=0, top=2)
-        ax2.set_ylabel('C/E').set_fontsize(fontsize)
-        ax2.set_xlabel(self.xlabel).set_fontsize(fontsize)
+        ax2.set_ylabel('C/E')
+        ax2.set_xlabel(self.xlabel)
         ax2.axhline(y=1, linestyle='--', color='black')
         # # Draw the exp error
         # ax2.fill_between(ref['x'], 1+ref['err'], 1-ref['err'], alpha=0.2)
@@ -385,8 +411,7 @@ class Plotter():
         # ax.xaxis.set_minor_locator(AutoMinorLocator())
         # ax.yaxis.set_minor_locator(AutoMinorLocator())
 
-            ax.tick_params(which='major', width=1.00, length=5,
-                           labelsize=fontsize-2)
+            ax.tick_params(which='major', width=1.00, length=5)
             ax.tick_params(which='minor', width=0.75, length=2.50)
 
             # Grid
@@ -427,7 +452,6 @@ class Plotter():
 
         """
         data = self.data
-        fontsize = self.fontsize
 
         ref = data[0]
         # Adjounrn ylabel
@@ -465,10 +489,10 @@ class Plotter():
             return self._save()
 
         # Plot details
-        ax.set_title(self.title, fontsize=fontsize+4)
-        ax.legend(loc='best', prop={'size': fontsize-5})
-        ax.set_xlabel(self.xlabel).set_fontsize(fontsize)
-        ax.set_ylabel(ylabel).set_fontsize(fontsize)
+        ax.set_title(self.title)
+        ax.legend(loc='best')
+        ax.set_xlabel(self.xlabel)
+        ax.set_ylabel(ylabel)
 
         # Tiks positioning and dimensions
         ax.xaxis.set_major_locator(AutoLocator())
@@ -476,8 +500,7 @@ class Plotter():
         ax.xaxis.set_minor_locator(AutoMinorLocator())
         ax.yaxis.set_minor_locator(AutoMinorLocator())
 
-        ax.tick_params(which='major', width=1.00, length=5,
-                       labelsize=fontsize-2)
+        ax.tick_params(which='major', width=1.00, length=5)
         ax.tick_params(which='minor', width=0.75, length=2.50)
 
         # Grid
@@ -491,14 +514,13 @@ class Plotter():
             for label, xpos in labels:
                 bbox_dic = {'boxstyle': 'round,pad=0.5', 'facecolor': 'white',
                             'alpha': 1}
-                ax.text(xpos, 0.95, label, fontsize=fontsize-5,
+                ax.text(xpos, 0.95, label,
                         bbox=bbox_dic, transform=ax.transAxes)
 
             # minor labels
             labels = additional_labels['minor']
             for label, xpos in labels:
-                ax.text(xpos, 0.87, label, fontsize=fontsize-6,
-                        transform=ax.transAxes)
+                ax.text(xpos, 0.87, label, transform=ax.transAxes)
 
         # Add vertical lines if requested
         if v_lines is not None:
@@ -533,10 +555,9 @@ class Plotter():
                                           bbox_to_anchor=(0.5, -0.1),
                                           fancybox=True,
                                           ncol=5,
-                                          shadow=True,
-                                          prop={'size': fontsize-5})
+                                          shadow=True)
             # Normal legend needs to be reprinted
-            ax.legend(loc='best', prop={'size': fontsize-5})
+            ax.legend(loc='best')
             # And now the custom one
             ax.add_artist(additional_legend)
 
@@ -568,7 +589,6 @@ class Plotter():
         title = self.title
         colors = self.colors
         ylabel = self.quantity+' ['+self.unit+']'
-        fontsize = 30  # fontsize for text in plot
         if len(data) > 1:
             nrows = 3
         else:
@@ -586,9 +606,9 @@ class Plotter():
 
         # --- Main plot ---
         ax1 = axes[0]
-        ax1.set_title(title, fontsize=fontsize+4)
+        ax1.set_title(title)
         # Labels
-        ax1.set_ylabel(ylabel).set_fontsize(fontsize)  # Y axis label
+        ax1.set_ylabel(ylabel)
 
         # Ticks
         subs = (0.2, 0.4, 0.6, 0.8)
@@ -605,7 +625,7 @@ class Plotter():
         # --- Error Plot ---
         ax2 = axes[1]
         ax2.axhline(y=10, linestyle='--', color='black')
-        ax2.set_ylabel('1σ [%]', labelpad=35).set_fontsize(fontsize)
+        ax2.set_ylabel('1σ [%]', labelpad=35)
         ax2.set_yscale('log')
         ax2.set_ylim(bottom=0, top=100)
         ax2.yaxis.set_major_locator(LogLocator(base=10, numticks=15))
@@ -616,7 +636,7 @@ class Plotter():
         if len(data) > 1:
             ax3 = axes[2]
             ax3.axhline(y=1, linestyle='--', color='black')
-            ax3.set_ylabel('$T_i/R$', labelpad=30).set_fontsize(fontsize)
+            ax3.set_ylabel('$T_i/R$', labelpad=30)
             ax3.yaxis.set_major_locator(MultipleLocator(0.5))
             ax3.yaxis.set_minor_locator(AutoMinorLocator(5))
             ax3.axhline(y=2, linestyle='--', color='red', linewidth=0.5)
@@ -689,12 +709,11 @@ class Plotter():
                        Line2D([0], [0], marker=CARETDOWNBASE,
                               color='black', label='< 0.5',
                               markerfacecolor='black', markersize=8, lw=0)]
-                ax3.legend(handles=leg, loc='best',
-                           prop={'size': fontsize-15})
+                ax3.legend(handles=leg, loc='best')
 
         # Final operations
-        ax1.legend(loc='best', prop={'size': fontsize-5})
-        axes[-1].set_xlabel(self.xlabel).set_fontsize(fontsize)
+        ax1.legend(loc='best')
+        axes[-1].set_xlabel(self.xlabel)
 
         # --- Common Features ---
         for ax in axes:
@@ -702,8 +721,7 @@ class Plotter():
             ax.grid()
             ax.grid('True', which='minor', linewidth=0.25)
             # Ticks
-            ax.tick_params(which='major', width=1.00, length=5,
-                           labelsize=fontsize-2)
+            ax.tick_params(which='major', width=1.00, length=5)
             ax.tick_params(which='minor', width=0.75, length=2.50)
 
         return self._save()

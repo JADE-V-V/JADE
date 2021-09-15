@@ -198,14 +198,7 @@ class BenchmarkOutput:
                             txt = str(int(column))
                         except ValueError:
                             # it is not convertible to int
-                            try:
-                                txt = str(column)
-                            except TypeError:
-                                # it is not covertible to string either
-                                txt = repr(column)
-                        except TypeError:
-                            # it is not covertible to int
-                            txt = repr(column)
+                            txt = str(column)
 
                         atlas.doc.add_heading(txt, level=3)
                         newtitle = title+' ('+txt+')'
@@ -310,14 +303,7 @@ class BenchmarkOutput:
                             txt = str(int(column))
                         except ValueError:
                             # it is not convertible to int
-                            try:
-                                txt = str(column)
-                            except TypeError:
-                                # it is not covertible to string either
-                                txt = repr(column)
-                        except TypeError:
-                            # it is not covertible to int
-                            txt = repr(column)
+                            txt = str(column)
 
                         atlas.doc.add_heading(txt, level=3)
                         newtitle = title+' ('+txt+')'
@@ -365,6 +351,32 @@ class BenchmarkOutput:
         atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(outpath)
+
+    @staticmethod
+    def _reorder_df(df, x_set):
+
+        # First of all try order by number
+        df['index'] = pd.to_numeric(df[x_set], errors='coerce')
+
+        # If they are all nan try with a normal sort
+        if df['index'].isnull().values.all():
+            df.sort_values(x_set, inplace=True)
+
+        # Otherwise keep on with the number sorting
+        else:
+            df.sort_values('index', inplace=True)
+
+        del df['index']
+
+        # Try to reorder the columns
+        try:
+            df = df.reindex(sorted(df.columns), axis=1)
+        except TypeError:
+            # They are a mix of strings and ints, let's ignore it for
+            # the time being
+            pass
+
+        return df
 
     def _generate_single_excel_output(self):
 
@@ -454,6 +466,7 @@ class BenchmarkOutput:
                     try:
                         main_value_df = pd.DataFrame(rows, columns=y_set,
                                                      index=x_set)
+                        main_value_df.index.name = x_name
                     except ValueError:
                         print(CRED+"""
  A ValueError was triggered, a probable cause may be that more than 2 binnings
@@ -463,11 +476,12 @@ class BenchmarkOutput:
                         ex.save()
                         sys.exit()
 
-                    # reorder index
-                    main_value_df['index'] = pd.to_numeric(x_set,
-                                                           errors='coerce')
-                    main_value_df.sort_values('index', inplace=True)
-                    del main_value_df['index']
+                    # reorder index (quick reset of the index)
+                    main_value_df.reset_index(inplace=True)
+                    main_value_df = self._reorder_df(main_value_df,
+                                                     x_name)
+                    main_value_df.set_index(x_name, inplace=True)
+
                     # memorize for atlas
                     outputs[num][label] = main_value_df
                     # insert the df in pieces
@@ -478,8 +492,7 @@ class BenchmarkOutput:
                 else:
                     # reorder df
                     try:
-                        tdata['index'] = pd.to_numeric(tdata[x_name],
-                                                       errors='coerce')
+                        tdata = self._reorder_df(tdata, x_name)
                     except KeyError:
                         print(CRED+'''
  {} is not available in tally {}. PLease check the configuration file.
@@ -488,17 +501,15 @@ class BenchmarkOutput:
                         ex.save()
                         sys.exit()
 
-                    tdata.sort_values('index', inplace=True)
-                    del tdata['index']
-
                     if label == 'Value':
                         del tdata['Error']
                     elif label == 'Error':
                         del tdata['Value']
-                    # memorize for atlas
-                    outputs[num][label] = tdata.set_index(x_name)
+                    # memorize for atlas and set index
+                    tdata.set_index(x_name, inplace=True)
+                    outputs[num][label] = tdata
                     # Insert DF
-                    ex.insert_df('B', tdata, label+'s', print_index=False,
+                    ex.insert_df('B', tdata, label+'s', print_index=True,
                                  header=(key, 'Tally n.'+str(num)))
 
             # memorize data for atlas
@@ -614,19 +625,35 @@ class BenchmarkOutput:
                     y_set = list(set(tdata_ref[y_name].values))
                     rows = []
                     for xval in x_set:
-                        # !!! True divide warnings are suppressed !!!
-                        with np.errstate(divide='ignore', invalid='ignore'):
-                            row = ((tdata_ref.loc[xval, 'Value'].values -
-                                   tdata_tar.loc[xval, 'Value'].values) /
-                                   tdata_ref.loc[xval, 'Value'].values)
+                        try:
+                            ref = tdata_ref.loc[xval, 'Value'].values
+                            tar = tdata_tar.loc[xval, 'Value'].values
+                            # !!! True divide warnings are suppressed !!!
+                            with np.errstate(divide='ignore', invalid='ignore'):
+                                row = (ref-tar)/ref
+                            prev_len = len(ref)
+                        except AttributeError:
+                            # This is raised when total values are
+                            # collected only for one bin.
+                            # the rest needs to be filled by nan
+                            ref = tdata_ref.loc[xval, 'Value']
+                            tar = tdata_tar.loc[xval, 'Value']
+                            row = []
+                            for i in range(prev_len-1):
+                                row.append(np.nan)
+                            row.append((ref-tar)/ref)
+
                         rows.append(row)
+
                     main_value_df = pd.DataFrame(rows, columns=y_set,
                                                  index=x_set)
-                    # reorder index
-                    main_value_df['index'] = pd.to_numeric(x_set,
-                                                           errors='coerce')
-                    main_value_df.sort_values('index', inplace=True)
-                    del main_value_df['index']
+                    main_value_df.index.name = x_name
+                    # reorder index and quick index reset
+                    main_value_df.reset_index(inplace=True)
+                    main_value_df = self._reorder_df(main_value_df,
+                                                     x_name)
+                    main_value_df.set_index(x_name, inplace=True)
+
                     # insert the df in pieces
                     ex.insert_cutted_df('B', main_value_df, 'Comparison', ylim,
                                         header=(key, 'Tally n.'+str(num)),
@@ -634,14 +661,14 @@ class BenchmarkOutput:
                                         index_num_format=idx_format,
                                         values_format='0.00%')
                 else:
-                    # reorder df
-                    for tdata in [tdata_ref, tdata_tar]:
-                        tdata['index'] = pd.to_numeric(tdata[x_name],
-                                                       errors='coerce')
-                        tdata.sort_values('index', inplace=True)
-                        del tdata['index']
-                        del tdata['Error']
-                        tdata.set_index(x_name, inplace=True)
+                    # reorder dfs
+                    tdata_ref = self._reorder_df(tdata_ref, x_name)
+                    del tdata_ref['Error']
+                    tdata_ref.set_index(x_name, inplace=True)
+
+                    tdata_tar = self._reorder_df(tdata_tar, x_name)
+                    del tdata_tar['Error']
+                    tdata_tar.set_index(x_name, inplace=True)
 
                     # !!! True divide warnings are suppressed !!!
                     with np.errstate(divide='ignore', invalid='ignore'):
@@ -824,7 +851,11 @@ class MCNPoutput:
 
             if 'Cells' in df.columns and 'Segments' in df.columns:
                 # Then we can collapse this in a single geometrical binning
-                df['Cells-Segments'] = list(zip(df.Cells, df.Segments))
+                values = []
+                for cell, segment in zip(df.Cells, df.Segments):
+                    val = str(int(cell))+'-'+str(int(segment))
+                    values.append(val)
+                df['Cells-Segments'] = values
                 # delete the collapsed columns
                 del df['Cells']
                 del df['Segments']
@@ -927,14 +958,16 @@ class ExcelOutputSheet:
         None
 
         '''
+        # Select the worksheet as first thing in order to have the correct
+        # Free rows computed
+        ws = self._switch_ws(ws)
+
         if startrow is None:
             startrow = self.free_row
             # adjourn free row
             add_space = 3  # Includes header
             self.free_row = self.free_row + len(df) + add_space
 
-        ws = self._switch_ws(ws)
-        # ws = self.wb.sheets[ws]
         # Start column can be provided as a letter or number (up to Z)
         if type(startcolumn) is str:
             startcolumn = ord(startcolumn.lower())-96
@@ -1014,6 +1047,10 @@ class ExcelOutputSheet:
         None.
 
         """
+        # First of all we need to switch ws or all calculation of free row
+        # will be wrongly affected
+        self._switch_ws(ws)
+
         res_len = len(df.columns)
         start_col = 0
         ylim = int(ylim)

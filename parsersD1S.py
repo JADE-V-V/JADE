@@ -29,6 +29,11 @@ PAT_COMMENT = re.compile('[Cc]+')
 PAT_SPACE = re.compile(r'[\s\t]+')
 REACFORMAT = '{:>13s}{:>7s}{:>9s}{:>15s}'
 
+# colors
+CRED = '\033[91m'
+CORANGE = '\033[93m'
+CEND = '\033[0m'
+
 
 class IrradiationFile:
     def __init__(self, nsc, irr_schedules, header=None,
@@ -285,14 +290,18 @@ class ReactionFile:
 
         return cls(reactions, name=os.path.basename(filepath))
 
-    def change_lib(self, newlib):
+    def change_lib(self, newlib, libmanager=None):
         """
-        change the parent library tag of the reactions
+        change the parent library tag of the reactions. If no libmanager is
+        provided, the check on the availability of the parent in the xsdir
+        file will be not performed.
 
         Parameters
         ----------
         newlib : str
             (e.g. 31c).
+        libmanager : LibManager, optional
+            Object managing library operations. The default is None.
 
         Returns
         -------
@@ -308,8 +317,21 @@ class ReactionFile:
         else:
             lib = newlib
 
+        # actual translation
         for reaction in self.reactions:
-            reaction.change_lib(lib)
+            # Insert here a check that the parent isotope is available
+            if libmanager is None:
+                reaction.change_lib(lib)
+            else:
+                # get the available libraries for the parent
+                zaid = reaction.parent.split('.')[0]
+                libs = libmanager.check4zaid(zaid)
+                if newlib in libs:
+                    reaction.change_lib(lib)
+                else:
+                    print(CORANGE+"""
+ Warning: {} is not available in xsdir, it will be not translated
+ """.format(zaid)+CEND)
 
     def write(self, path):
         """
@@ -318,7 +340,7 @@ class ReactionFile:
         Parameters
         ----------
         path : str/path
-            path to the output file (only dir). Includes file name.
+            path to the output file (only dir).
 
         Returns
         -------
@@ -357,7 +379,7 @@ class Reaction:
 
         """
         self.parent = parent
-        self.MT = MT
+        self.MT = str(int(MT))
         self.daughter = daughter
         self.comment = comment
 

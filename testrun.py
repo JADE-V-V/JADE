@@ -28,13 +28,20 @@ import subprocess
 import shutil
 import pandas as pd
 import numpy as np
+import sys
 
 from copy import deepcopy
 from tqdm import tqdm
-from parsersD1S import (IrradiationFile, ReactionFile)
+from parsersD1S import (IrradiationFile, ReactionFile, Reaction)
 
 
 CODE_TAGS = {'mcnp6': 'mcnp6', 'D1S5': 'd1suned3.1.2'}
+D1S_CODES = ['D1S5']
+
+# colors
+CRED = '\033[91m'
+CORANGE = '\033[93m'
+CEND = '\033[0m'
 
 
 class Test():
@@ -87,8 +94,15 @@ class Test():
                                    self.inp.name+'_irrad')
             reacfile = os.path.join(VRTpath, self.inp.name,
                                     self.inp.name+'_react')
-            self.irrad = IrradiationFile.from_text(irrfile)
-            self.react = ReactionFile.from_text(reacfile)
+            try:
+                self.irrad = IrradiationFile.from_text(irrfile)
+                self.react = ReactionFile.from_text(reacfile)
+            except FileNotFoundError:
+                # For instance in sphere test they are not provided
+                # There may be reasons why these files are not provided, it is
+                # responsability of the user to make them available or not.
+                self.irrad = None
+                self.react = None
         else:
             self.inp = ipt.InputFile.from_text(inp)
             self.irrad = None
@@ -289,13 +303,25 @@ class SphereTest(Test):
     Class handling the sphere test
     """
 
-    def generate_test(self, directory, libmanager):
-        '''
-        Generate all sphere test for a selected library
+    def generate_test(self, directory, libmanager, limit=None):
+        """
+        Generated all the sphere test for a selected library
 
-        libmanager: (LibManager) libraries handler
-        directory: (str) path to sphere input folder
-        '''
+        Parameters
+        ----------
+        directory : str or path
+            path to the sphere input folder.
+        libmanager : LibManager
+            manager of the nuclear data operations.
+        limit : int, optional
+            limit the test to the first n zaids and materials.
+            The default is None.
+
+        Returns
+        -------
+        None.
+
+        """
         # Get typical materials input
         dirmat = os.path.dirname(self.original_inp)
         matpath = os.path.join(dirmat, 'TypicalMaterials')
@@ -324,7 +350,7 @@ class SphereTest(Test):
 
         print(' Zaids:')
         # for zaid in tqdm(zaids):
-        for zaid in tqdm(zaids[:10]):
+        for zaid in tqdm(zaids[:limit]):
             Z = int(zaid[:-3])
             # Get Density
             if zaid[-3:] == '235':  # Special treatment for U235
@@ -383,7 +409,7 @@ class SphereTest(Test):
 
         print(' Materials:')
         # for material in tqdm(matlist.materials):
-        for material in tqdm(matlist.materials[:2]):
+        for material in tqdm(matlist.materials[:limit]):
             # Get density
             density = settings_mat.loc[material.name.upper(), 'Density [g/cc]']
 
@@ -391,7 +417,8 @@ class SphereTest(Test):
                                         testname, motherdir)
 
     def generate_zaid_test(self, zaid, libmanager, testname, motherdir,
-                           density, nps, ctme, precision):
+                           density, nps, ctme, precision, addtag=None,
+                           parentlist=None):
         """
         Generate input for a single zaid sphere leakage benchmark run.
 
@@ -413,6 +440,11 @@ class SphereTest(Test):
             computer time cut-off
         precision : float
             precision cut-off
+        addtag : str, optional
+            add tag at the end of the single zaid test name. The default is
+            None
+        parentlist : list, optional
+            add the PIKMT if requested (list of parent zaids)
 
         Returns
         -------
@@ -439,13 +471,16 @@ class SphereTest(Test):
         newinp.change_density(density)
         # assign stop card
         newinp.add_stopCard(nps, ctme, precision)
+        # add PIKMT if requested
+        if parentlist is not None:
+            newinp.add_PIKMT_card(parentlist)
 
         if os.path.exists(directoryVRT):
             newinp.add_edits(edits_file)  # Add variance reduction
 
         # Write new input file
-        outfile = testname+'_'+zaid.element+zaid.isotope+'_'+formula+'_'
-        outdir = testname+'_'+zaid.element+zaid.isotope+'_'+formula
+        outfile, outdir = self._get_zaidtestname(testname, zaid, formula,
+                                                 addtag=addtag)
         outpath = os.path.join(motherdir, outdir)
         os.mkdir(outpath)
         outinpfile = os.path.join(outpath, outfile)
@@ -456,8 +491,20 @@ class SphereTest(Test):
             outwwfile = os.path.join(outpath, 'wwinp')
             shutil.copyfile(ww_file, outwwfile)
 
+    @staticmethod
+    def _get_zaidtestname(testname, zaid, formula, addtag=None):
+        if addtag is None:
+            add = ''
+        else:
+            add = addtag
+
+        outfile = (testname+'_'+zaid.element+zaid.isotope+'_'+formula+'_'+add +
+                   '_')
+        outdir = testname+'_'+zaid.element+zaid.isotope+'_'+formula+'_'+add
+        return outfile, outdir
+
     def generate_material_test(self, material, density, libmanager, testname,
-                               motherdir):
+                               motherdir, parentlist=None):
         """
         Generate a sphere leakage benchmark input for a single typical
         material.
@@ -474,6 +521,8 @@ class SphereTest(Test):
             name of the benchmark.
         motherdir : str/path
             Path to the benchmark folder.
+        parentlist : list, optional
+            add the PIKMT if requested (list of parent zaids)
 
         Returns
         -------
@@ -499,6 +548,9 @@ class SphereTest(Test):
         newinp.change_density(density)
         # add stop card
         newinp.add_stopCard(self.nps, self.ctme, self.precision)
+        # Add PIKMT card if required
+        if parentlist is not None:
+            newinp.add_PIKMT_card(parentlist)
 
         if os.path.exists(directoryVRT):
             newinp.add_edits(edits_file)  # Add variance reduction
@@ -540,6 +592,190 @@ class SphereTest(Test):
             print("""
  Some MCNP run reached timeout, they are listed in the log file.
  Please remove their folders before attempting to postprocess the library""")
+
+
+class SphereTestSDDR(SphereTest):
+
+    def generate_zaid_test(self, zaid, libmanager, testname, motherdir,
+                           density, nps, ctme, precision):
+        """
+        Generate input for a single zaid sphere SDDR benchmark run.
+        Depending on the number of reactions, multiple inputs may be generated
+        from a single zaid.
+
+        Parameters
+        ----------
+        zaid : str
+            zaid in string format.
+        libmanager : Libmanager
+            Jade Libmanager.
+        testname : str
+            name of the benchmark.
+        motherdir : str/path
+            Path to the benchmark folder.
+        density : (str/float)
+            Density value for the sphere.
+        nps : float
+            number of particles cut-off
+        ctme : float
+            computer time cut-off
+        precision : float
+            precision cut-off
+
+        Returns
+        -------
+        None.
+        """
+
+        # Recover the available reactions
+        reactions = libmanager.get_reactions(self.lib, zaid)
+
+        # Genearate a different test for each reaction
+        for reaction in reactions:
+            MT = reaction[0]
+            daughter = reaction[1]
+            # generate the input file
+            super().generate_zaid_test(zaid, libmanager, testname,
+                                       motherdir, density, nps, ctme,
+                                       precision, addtag=MT,
+                                       parentlist=[zaid])
+
+            # --- Add the irradiation file ---
+            # generate file
+            reacfile = self._generate_reaction_file([(zaid, MT, daughter)])
+            # Recover ouput directory
+            name, formula = libmanager.get_zaidname(zaid)
+            zaidob = mat.Zaid(1, zaid[:-3], zaid[-3:], self.lib)
+            _, outdir = self._get_zaidtestname(testname, zaidob, formula,
+                                               addtag=MT)
+            outpath = os.path.join(motherdir, outdir)
+            reacfile.write(outpath)
+
+            # --- Add the irradiation file ---
+            irrfile = self._generate_irradiation_file([daughter])
+            irrfile.write(outpath)
+
+    def generate_material_test(self, material, density, libmanager, testname,
+                               motherdir):
+        """
+        Generate a sphere leakage benchmark input for a single typical
+        material.
+
+        Parameters
+        ----------
+        material : matreader.Material
+            material object to be used for the new input.
+        density : float
+            densitiy value in g/cc
+        libmanager : Libmanager
+            Jade Libmanager.
+        testname : str
+            name of the benchmark.
+        motherdir : str/path
+            Path to the benchmark folder.
+
+        Returns
+        -------
+        None.
+
+        """
+        # there will only be one test for each material that includes
+        # all the possible reactions
+        truename = material.name
+
+        # --- Add the reaction file ---
+        # Recover all the reactions (for each isotope) in the material
+        reactions = []
+        parentlist = []
+        daughterlist = []
+        for submat in material.submaterials:
+            for zaid in submat.zaidList:
+                parent = zaid.element+zaid.isotope
+                parentlist.append(parent)
+                zaidreactions = libmanager.get_reactions(self.lib, parent)
+                for MT, daughter in zaidreactions:
+                    reactions.append((parent, MT, daughter))
+                    daughterlist.append(daughter)
+
+        # generate the input
+        super().generate_material_test(material, density, libmanager, testname,
+                                       motherdir, parentlist=parentlist)
+        # Generate the reaction file
+        reac_file = self._generate_reaction_file(reactions)
+        # recover output directory and write file
+        outdir = testname+'_'+truename
+        outpath = os.path.join(motherdir, outdir)
+        reac_file.write(outpath)
+
+        # --- Add the irradiation file ---
+        irrfile = self._generate_irradiation_file(set(daughterlist))
+        irrfile.write(outpath)
+
+    def _generate_reaction_file(self, reactions):
+        """
+        Generate a reaction file object given the parents and reactions
+        selected
+
+        Parameters
+        ----------
+        parent : str
+            parent zaid num (e.g. 1001).
+        reactions : list
+            list of reactions (parent, MT, daughter) to be used.
+
+        Returns
+        -------
+        ReactionFile
+            Reaction file associated with the test.
+
+        """
+        reaction_list = []
+        for parent, MT, daughter in reactions:
+            parent = parent+'.'+self.lib
+            rx = Reaction(parent, MT, daughter)
+            reaction_list.append(rx)
+
+        return ReactionFile(reaction_list)
+
+    def _generate_irradiation_file(self, daughters):
+        """
+        Generate a D1S irradiation file selecting irradiation schedules from
+        an existing file.
+
+        Parameters
+        ----------
+        daughters : list.
+            daughter zaids to be selected
+
+        Returns
+        -------
+        irradfile : IrradiationFile
+            newly generated irradiation file
+
+        """
+        try:
+            filepath = os.path.join(self.test_conf_path, 'irrad_'+self.lib)
+        except FileNotFoundError:
+            print(CRED+"""
+ Please provide an irradiation file summary for lib {}. Check the documentation
+ for additional details. The application will now exit.
+                  """.format(self.lib)+CEND)
+            sys.exit()
+
+        irradfile = IrradiationFile.from_text(filepath)
+        # Keep only useful irradiations
+        new_irradiations = []
+        for irradiation in irradfile.irr_schedules:
+            if irradiation.daughter in daughters:
+                new_irradiations.append(irradiation)
+
+        if len(new_irradiations) != len(daughters):
+            print(CORANGE+"""
+ Warning: irradiations schedules were not find for all specified daughters
+ """+CEND)
+
+        irradfile.irr_schedules = new_irradiations
+        return irradfile
 
 
 def safe_mkdir(directory):

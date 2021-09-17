@@ -262,7 +262,8 @@ class D1S5_InputFile(InputFile):
 
         """
         if ctme is not None or precision is not None:
-            warnings.warn('''
+            if self.name != 'SphereSDDR':
+                warnings.warn('''
 STOP card is substituted with normal NPS card for MCNP5.
 specified ctme or precision parameters will be ignored
 ''')
@@ -271,6 +272,27 @@ specified ctme or precision parameters will be ignored
 
         line = 'NPS '+str(nps)+'\n'
         card = par.Card([line], 5, -1)
+        self.cards['settings'].append(card)
+
+    def add_PIKMT_card(self, parent_list):
+        """
+        Add a PIKMT card to the input file
+
+        Parameters
+        ----------
+        parent_list : list
+            list of parent zaids.
+
+        Returns
+        -------
+        None.
+
+        """
+        lines = ['PIKMT\n']
+        for parent in parent_list:
+            lines.append('         {}    {}\n'.format(parent, 0))
+
+        card = par.Card(lines, 5, -1)
         self.cards['settings'].append(card)
 
 

@@ -26,6 +26,7 @@ import os
 sys.path.insert(1, '../')
 from parsersD1S import (Reaction, ReactionFile, Irradiation, IrradiationFile,
                         REACFORMAT)
+from libmanager import LibManager
 
 
 INP = os.path.join('TestFiles', 'parserD1S', 'reac_fe')
@@ -177,3 +178,37 @@ class TestReactionFile:
         assert rx.MT == '102'
         assert rx.daughter == '26055'
         assert rx.comment == 'Fe55'
+
+    def test_translation(self):
+        """
+        test translation with libmanager where parents are available
+
+        """
+        xsdirpath = os.path.join('TestFiles', 'libmanager', 'xsdir')
+        lm = LibManager(xsdirpath)
+
+        newlib = '98c'
+
+        reac_file = ReactionFile.from_text(INP)
+        reac_file.change_lib(newlib, libmanager=lm)
+
+        for reaction in reac_file.reactions:
+            assert reaction.parent[-3:] == newlib
+
+    def test_translation2(self):
+        """
+        test translation with libmanager where parents are not available
+
+        """
+        xsdirpath = os.path.join('TestFiles', 'libmanager', 'xsdir')
+        lm = LibManager(xsdirpath)
+
+        filepath = os.path.join('TestFiles', 'parserD1S', 'reac2')
+
+        newlib = '99c'
+
+        reac_file = ReactionFile.from_text(filepath)
+        reac_file.change_lib(newlib, libmanager=lm)
+
+        for reaction in reac_file.reactions:
+            assert reaction.parent[-3:] != newlib

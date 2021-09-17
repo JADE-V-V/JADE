@@ -71,6 +71,7 @@ principal_menu = header+"""
  * Print materials info               (printmat)
  * Generate material                  (generate)
  * Switch fractions                     (switch)
+ * Change ACE lib suffix                (acelib)
  -----------------------------------------------
  * Test installation                      (test)
 
@@ -193,6 +194,10 @@ def mainloop(session):
         elif option == 'test':
             tinstall.test_installation(session)
             print('\n Installation test completed\n')
+
+        elif option == 'acelib':
+            uty.change_ACElib_suffix()
+            print('\n Suffix change was completed\n')
 
         elif option == 'exit':
             session.log.adjourn('\nSession concluded normally \n')

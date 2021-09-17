@@ -31,8 +31,9 @@ import time
 import shutil
 import sys
 
-# RED color
+# colors
 CRED = '\033[91m'
+CORANGE = '\033[93m'
 CEND = '\033[0m'
 
 # Long messages
@@ -150,8 +151,10 @@ class Session:
 
         # --- Create the library manager ---
         dl = self.conf.default_lib
+        activationfile = os.path.join(cp, 'Configuration', 'Activation.xlsx')
         self.lib_manager = libmanager.LibManager(self.conf.xsdir_path,
-                                                 defaultlib=dl)
+                                                 defaultlib=dl,
+                                                 activationfile=activationfile)
 
         # --- Initialize status ---
         self.state = status.Status(self)

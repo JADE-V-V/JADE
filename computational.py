@@ -86,18 +86,30 @@ def executeBenchmarksRoutines(session, lib, exp=False):
             confpath = os.path.join(session.path_cnf, fname.split('.')[0])
 
             # Generate test
+            args = (inpfile, lib, row, log, VRTpath, confpath)
             # Handle special cases
             if testname == 'Sphere Leakage Test':
-                test = testrun.SphereTest(inpfile, lib, row, log, VRTpath,
-                                          confpath)
-            elif testname == 'Oktavian Experiment':
-                test = testrun.MultipleTest(inpfile, lib, row, log, VRTpath,
-                                            confpath)
-            else:
-                test = testrun.Test(inpfile, lib, row, log, VRTpath,
-                                    confpath)
+                test = testrun.SphereTest(*args)
 
-            test.generate_test(outpath, libmanager)
+            elif testname == 'Sphere SDDR':
+                test = testrun.SphereTestSDDR(*args)
+
+            elif testname == 'Oktavian Experiment':
+                test = testrun.MultipleTest(*args)
+
+            else:
+                test = testrun.Test(*args)
+
+            # write the input(s)
+            if testname in ['Sphere Leakage Test', 'Sphere SDDR']:
+                try:
+                    limit = int(row['Custom Input'])
+                except ValueError:
+                    # go back do the default which is None
+                    limit = None
+                test.generate_test(outpath, libmanager, limit=limit)
+            else:
+                test.generate_test(outpath, libmanager)
             # Adjourn log
             log.adjourn(testname.upper()+' test input generated with success' +
                         '    ' + str(datetime.datetime.now()))

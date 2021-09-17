@@ -27,6 +27,8 @@ import pandas as pd
 import xlsxwriter
 import matreader as mat
 
+from tqdm import tqdm
+
 
 ###############################################################################
 # ------------------------ UTILITIES ------------------------------------------
@@ -302,6 +304,50 @@ def restore_default_config(session):
         session.restore_default_settings()
     else:
         print('\n The operation was canceled.\n')
+
+
+def change_ACElib_suffix():
+    """
+    This function changes the suffix of the ACE files contained in a specific
+    directory. The modification occurs in the first line of the file. Often
+    libraries are distributed toghether with the necessary edits for the
+    xsdir file. If these are provided as single files, the suffix will be
+    changed in them as well.
+
+    Returns
+    -------
+    None.
+
+    """
+    # Ask for the directory where files are contained
+    message = ' Select directory containing ACE files: '
+    folder = select_inputfile(message)
+
+    # Ask for the suffix
+    old = input(' Suffix to be changed (e.g. 99c): ')
+    new = input(' New suffix to be applied (e.g. 98c): ')
+
+    newfolder = os.path.join(os.path.dirname(folder),
+                             os.path.basename(folder)+'new')
+    # Create new folder
+    if not os.path.exists(newfolder):
+        os.mkdir(newfolder)
+
+    for file in tqdm(os.listdir(folder)):
+        oldfile = os.path.join(folder, file)
+        newfile = os.path.join(newfolder, file)
+        with open(oldfile, 'r') as infile, open(newfile, 'w') as outfile:
+            counter = 0
+            try:
+                for line in infile:
+                    counter += 1
+                    if counter == 1:
+                        newline = line.replace(old, new)
+                        outfile.write(newline)
+                    else:
+                        outfile.write(line)
+            except UnicodeDecodeError:
+                print('Decode error in '+file)
 
 
 def select_inputfile(message):

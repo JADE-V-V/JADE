@@ -31,14 +31,11 @@ def compareBenchmark(session, lib_input, testname):
     print('\n Comparing '+testname+':' +
           '    '+str(datetime.datetime.now()))
     lib = lib_input.split('-')
-    if testname == 'Sphere':
-        out = spho.SphereOutput(lib, testname, session)
-    elif testname == 'Oktavian':
-        out = expo.OktavianOutput(lib, testname, session)
-    else:
-        out = bencho.BenchmarkOutput(lib, testname, session)
+    # get the correct output object
+    out = _get_output('compare', testname, lib, session)
+    if out:
+        out.compare()
 
-    out.compare()
     session.log.adjourn(testname+' benchmark comparison completed' +
                         '    ' + str(datetime.datetime.now()))
 
@@ -46,14 +43,33 @@ def compareBenchmark(session, lib_input, testname):
 def postprocessBenchmark(session, lib, testname):
     print('\n Post-Processing '+testname+':' +
           '    '+str(datetime.datetime.now()))
+    # get the correct output object
+    out = _get_output('pp', testname, lib, session)
+    if out:
+        out.single_postprocess()
+
+    session.log.adjourn(testname+' benchmark post-processing completed' +
+                        '    ' + str(datetime.datetime.now()))
+
+
+def _get_output(action, testname, lib, session):
+
+    exp_pp_message = '\n No single pp is foreseen for experimental benchmarks'
+
     if testname == 'Sphere':
         out = spho.SphereOutput(lib, testname, session)
+
+    elif testname == 'SphereSDDR':
+        out = spho.SphereSDDRoutput(lib, testname, session)
+
     elif testname == 'Oktavian':
-        print('\n No single pp is foreseen for experimental benchmarks')
-        return
+        if action == 'compare':
+            out = expo.OktavianOutput(lib, testname, session)
+        elif action == 'pp':
+            print(exp_pp_message)
+            return False
+
     else:
         out = bencho.BenchmarkOutput(lib, testname, session)
 
-    out.single_postprocess()
-    session.log.adjourn(testname+' benchmark post-processing completed' +
-                        '    ' + str(datetime.datetime.now()))
+    return out

@@ -652,8 +652,12 @@ class SphereTestSDDR(SphereTest):
             reacfile.write(outpath)
 
             # --- Add the irradiation file ---
-            irrfile = self._generate_irradiation_file([daughter])
+            irrfile, ans = self._generate_irradiation_file([daughter])
             irrfile.write(outpath)
+            if not ans:
+                print(CORANGE +
+                      ' Warning: {} irr file was not generated'.format(outdir)+
+                      CEND)
 
     def generate_material_test(self, material, density, libmanager, testname,
                                motherdir):
@@ -691,25 +695,40 @@ class SphereTestSDDR(SphereTest):
         for submat in material.submaterials:
             for zaid in submat.zaidList:
                 parent = zaid.element+zaid.isotope
-                parentlist.append(parent)
                 zaidreactions = libmanager.get_reactions(self.lib, parent)
+                if len(zaidreactions) > 0:
+                    # it is a parent only if reactions are available
+                    parentlist.append(parent)
                 for MT, daughter in zaidreactions:
                     reactions.append((parent, MT, daughter))
                     daughterlist.append(daughter)
 
-        # generate the input
-        super().generate_material_test(material, density, libmanager, testname,
-                                       motherdir, parentlist=parentlist)
-        # Generate the reaction file
-        reac_file = self._generate_reaction_file(reactions)
-        # recover output directory and write file
-        outdir = testname+'_'+truename
-        outpath = os.path.join(motherdir, outdir)
-        reac_file.write(outpath)
+        # eliminate duplicates
+        daughterlist = list(set(daughterlist))
 
-        # --- Add the irradiation file ---
-        irrfile = self._generate_irradiation_file(set(daughterlist))
-        irrfile.write(outpath)
+        # The generation of the inputs has to be done only if there is at
+        # least one parent
+        if len(parentlist) == 0:
+            return
+        else:
+            # generate the input
+            super().generate_material_test(material, density, libmanager,
+                                           testname,
+                                           motherdir, parentlist=parentlist)
+            # Generate the reaction file
+            reac_file = self._generate_reaction_file(reactions)
+            # recover output directory and write file
+            outdir = testname+'_'+truename
+            outpath = os.path.join(motherdir, outdir)
+            reac_file.write(outpath)
+
+            # --- Add the irradiation file ---
+            irrfile, ans = self._generate_irradiation_file(set(daughterlist))
+            irrfile.write(outpath)
+            if not ans:
+                print(CORANGE +
+                      ' Warning: {} irr file was not generated'.format(outdir)+
+                      CEND)
 
     def _generate_reaction_file(self, reactions):
         """
@@ -751,6 +770,8 @@ class SphereTestSDDR(SphereTest):
         -------
         irradfile : IrradiationFile
             newly generated irradiation file
+        ans : bool
+            the object was created without issues
 
         """
         try:
@@ -771,11 +792,14 @@ class SphereTestSDDR(SphereTest):
 
         if len(new_irradiations) != len(daughters):
             print(CORANGE+"""
- Warning: irradiations schedules were not find for all specified daughters
+ Warning: irradiations schedules were not find for all specified daughters.
  """+CEND)
+            ans = False
+        else:
+            ans = True
 
         irradfile.irr_schedules = new_irradiations
-        return irradfile
+        return irradfile, ans
 
 
 def safe_mkdir(directory):

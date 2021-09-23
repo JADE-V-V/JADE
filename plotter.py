@@ -38,15 +38,15 @@ from matplotlib.patches import Rectangle
 # ============================================================================
 #                   Specify parameters for plots
 # ============================================================================
-SMALL_SIZE = 24
+SMALL_SIZE = 22
 MEDIUM_SIZE = 26
 BIGGER_SIZE = 30
 
 plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
 plt.rc('axes', titlesize=BIGGER_SIZE)     # fontsize of the axes title
 plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
-plt.rc('xtick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
-plt.rc('ytick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
+plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
 plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
 plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
@@ -158,7 +158,7 @@ class Plotter():
 
         # --- Useful plots parameters ---
         # plot decorators
-        self.markers = ['o', 's', 'X', 'p', 'D', '^', 'd', '*']
+        self.markers = ['o', 's', '^', 'D', 'X', 'p', 'd', '*']
         # Color-blind saver palette
         self.colors = ['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628',
                        '#984ea3', '#999999', '#e41a1c', '#dede00']
@@ -199,10 +199,65 @@ class Plotter():
                 xlegend = None
 
             outp = self._grouped_bar(log=log, xlegend=xlegend)
+
+        # --- Waves plot ---
+        elif plot_type == 'Waves':
+            outp = self._waves()
+
+        # --- Deafault ---
         else:
             raise ValueError(plot_type+' is not an admissible plot type')
 
         return outp
+
+    def _waves(self):
+        """
+        Built a multirow ratio that correlates different results on the same
+        x bin
+
+        Returns
+        -------
+        outpath
+            path to the saved image.
+
+        """
+        nrows = len(self.quantity)
+        fig, axes = plt.subplots(figsize=(18, 13.5), nrows=nrows, sharex=True)
+        fig.suptitle(self.title)
+
+        # common to all axes
+        for i, ax in enumerate(axes):
+            # Plot
+            refy = np.array(self.data[0]['y'][i])
+            for j, libdata in enumerate(self.data[1:]):
+                y = np.array(libdata['y'][i])
+                axes[i].scatter(libdata['x'], y/refy, color=self.colors[j],
+                                marker=self.markers[i],
+                                label=libdata['ylabel'])
+            # Write title
+            ax.set_title('{} [{}]'.format(self.quantity[i], self.unit[i]))
+            # Draw the ratio line
+            ax.axhline(1, color='black', linestyle='--')
+            # Get minor ticks on the y axis
+            ax.yaxis.set_minor_locator(AutoMinorLocator())
+            # Ticks style
+            ax.tick_params(which='major', width=1.00, length=5)
+            ax.tick_params(which='minor', width=0.75, length=2.50)
+            # Grid stylying
+            ax.grid('True', which='major', linewidth=0.75, axis='y')
+            ax.grid('True', which='minor', linewidth=0.30, axis='y')
+            # limits
+            ax.set_ylim(0, 2)
+
+        # Add the legend
+        axes[0].legend(loc='upper center', bbox_to_anchor=(0.88, 1.5),
+                       fancybox=True, shadow=True)
+        # Handle x and y global axes
+        plt.setp(axes[2].get_xticklabels(), rotation=45, ha="right",
+                 rotation_mode="anchor")
+        axes[-1].set_xlabel(self.xlabel)
+
+        return self._save()
 
     def _grouped_bar(self, log=False, maxgroups=35, xlegend=None):
         """
@@ -772,3 +827,25 @@ def _add_recs(ax, rec_data, height, y_origin=0):
         rectangle = Rectangle(origin, width=width, height=height,
                               color=color, alpha=0.2)
         ax.add_patch(rectangle)
+
+    # def _get_limits(lowerlimit, upperlimit, data):
+    #     # ensure data is array
+    #     data = np.array(data)
+    #     # Uniform plots actions
+    #     starmap1 = data > upperlimit
+    #     starmap2 = data < lowerlimit
+    #     normalmap = np.logical_and(np.logical_not(starmap1),
+    #                                np.logical_not(starmap2))
+    #     normalY = data[normalmap]
+    #     normalX = newX[normalmap]
+    #     starX1 = newX[starmap1]
+    #     starY1 = np.full(len(starX1), 2)
+    #     starX2 = newX[starmap2]
+    #     starY2 = np.full(len(starX2), 0.5)
+
+    #     ax3.plot(normalX, normalY, 'o', markersize=2,
+    #              color=colors[idx+1])
+    #     ax3.scatter(starX1, starY1, marker=CARETUPBASE, s=50,
+    #                 c=colors[idx+1])
+    #     ax3.scatter(starX2, starY2, marker=CARETDOWNBASE, s=50,
+    #                 c=colors[idx+1])

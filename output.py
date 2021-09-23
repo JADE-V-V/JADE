@@ -65,6 +65,7 @@ class BenchmarkOutput:
 
         """
         self.raw_data = {}  # Raw data
+        self.outputs = {}  # outputs linked to the benchmark
         self.testname = testname  # test name
         self.code_path = os.getcwd()  # path to code
         self.state = session.state
@@ -85,17 +86,22 @@ class BenchmarkOutput:
             couples = []
             tp = os.path.join(session.path_run, lib[0], testname)
             self.test_path = {lib[0]: tp}
-            name = lib[0]
+            refname = session.conf.get_lib_name(lib[0])
+            name = refname
+            dirname = lib[0]
             for library in lib[1:]:
+                libname = session.conf.get_lib_name(library)
+                # name_couple = lib[0]+'_Vs_'+library
                 name_couple = lib[0]+'_Vs_'+library
-                name = name+'_Vs_'+library
+                name = name+'_Vs_'+libname
+                dirname = dirname+'_Vs_'+library
                 couples.append((lib[0], library, name_couple))
                 tp = os.path.join(session.path_run, library, testname)
                 self.test_path[library] = tp
 
             self.name = name
             # Generate library output path
-            out = os.path.join(session.path_comparison, name)
+            out = os.path.join(session.path_comparison, dirname)
             if not os.path.exists(out):
                 os.mkdir(out)
 
@@ -849,7 +855,7 @@ class MCNPoutput:
             # the additional segmentation can be quite useful and this can be
             # collapsed de facto in a single geometrical binning
 
-            if 'Cells' in df.columns and 'Segments' in df.columns:
+            if 'Cells' in df.columns and 'Segments' in df.columns and len(df) > 1:
                 # Then we can collapse this in a single geometrical binning
                 values = []
                 for cell, segment in zip(df.Cells, df.Segments):

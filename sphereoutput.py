@@ -29,6 +29,7 @@ import os
 import shutil
 import plotter
 import pythoncom
+import math
 
 from tqdm import tqdm
 import atlas as at
@@ -61,16 +62,33 @@ class SphereOutput(BenchmarkOutput):
         """
         print(' Generating Excel Recap...')
         self.pp_excel_single()
+        print(' Dumping Raw Data...')
         self.print_raw()
-        print(' Creating Atlas...')
+        print(' Generating plots...')
         outpath = os.path.join(self.atlas_path, 'tmp')
         os.mkdir(outpath)
+        self._generate_single_plots(outpath)
+        print(' Single library post-processing completed')
 
+    def _generate_single_plots(self, outpath):
+        """
+        Generate all the requested plots in a temporary folder
+
+        Parameters
+        ----------
+        outpath : str or path
+            path to the temporary folder where to store plots.
+
+        Returns
+        -------
+        None.
+
+        """
         for tally, title, quantity, unit in \
             [(2, 'Leakage Neutron Flux (175 groups)',
-              'Neutron Flux', '$\#/cm^2$'),
+              'Neutron Flux', r'$\#/cm^2$'),
              (32, 'Leakage Gamma Flux (24 groups)',
-              'Gamma Flux', '$\#/cm^2$')]:
+              'Gamma Flux', r'$\#/cm^2$')]:
 
             print(' Plotting tally n.'+str(tally))
             for zaidnum, output in tqdm(self.outputs.items()):
@@ -88,7 +106,22 @@ class SphereOutput(BenchmarkOutput):
                                        unit, 'Energy [MeV]', self.testname)
                 plot.plot('Binned graph')
 
-        print(' Generating Plots Atlas...')
+        self._build_atlas(outpath)
+
+    def _build_atlas(self, outpath):
+        """
+        Build the atlas using all plots contained in directory
+
+        Parameters
+        ----------
+        outpath : str or path
+            temporary folder containing all plots.
+
+        Returns
+        -------
+        None.
+
+        """
         # Printing Atlas
         template = os.path.join(self.code_path, 'Templates',
                                 'AtlasTemplate.docx')
@@ -97,8 +130,6 @@ class SphereOutput(BenchmarkOutput):
         atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(outpath)
-
-        print(' Single library post-processing completed')
 
     def compare(self):
         """
@@ -115,32 +146,27 @@ class SphereOutput(BenchmarkOutput):
         print(' Creating Atlas...')
         outpath = os.path.join(self.atlas_path, 'tmp')
         os.mkdir(outpath)
-
-        libraries = []
-        outputs = []
-        zaids = []
-        for libname, outputslib in self.outputs.items():
-            libraries.append(libname)
-            outputs.append(outputslib)
-            zaids.append(list(outputslib.keys()))
-
-        # Extend list to all zaids
-        allzaids = zaids[0]
-        for zaidlist in zaids[1:]:
-            allzaids.extend(zaidlist)
-        allzaids = set(allzaids)  # no duplicates
+        # Recover all libraries and zaids involved
+        allzaids, libraries, outputs = self._get_organized_output()
 
         globalname = ''
-        for lib in libraries:
+        for lib in self.lib:
             globalname = globalname + lib + '_Vs_'
 
         globalname = globalname[:-4]
 
-        for tally, title, quantity, unit in \
-            [(2, 'Leakage Neutron Flux (175 groups)',
-              'Neutron Flux', '$\#/cm^2$'),
-             (32, 'Leakage Gamma Flux (24 groups)',
-              'Gamma Flux', '$\#/cm^2$')]:
+        # Plot everything
+        print(' Generating Plots Atlas...')
+        self._generate_plots(libraries, allzaids, outputs, globalname, outpath)
+        print(' Comparison post-processing completed')
+
+    def _generate_plots(self, libraries, allzaids, outputs, globalname,
+                        outpath):
+
+        for tally, title, quantity, unit in [(2, 'Leakage Neutron Flux (175 groups)',
+                                             'Neutron Flux', r'$\#/cm^2$'),
+                                             (32, 'Leakage Gamma Flux (24 groups)',
+                                             'Gamma Flux', r'$\#/cm^2$')]:
 
             print(' Plotting tally n.'+str(tally))
             for zaidnum in tqdm(allzaids):
@@ -165,17 +191,24 @@ class SphereOutput(BenchmarkOutput):
                                        unit, 'Energy [MeV]', self.testname)
                 plot.plot('Binned graph')
 
-        print(' Generating Plots Atlas...')
-        # Printing Atlas
-        template = os.path.join(self.code_path, 'Templates',
-                                'AtlasTemplate.docx')
-        atlas = at.Atlas(template, 'Sphere '+globalname)
-        atlas.build(outpath, self.session.lib_manager, self.mat_settings)
-        atlas.save(self.atlas_path)
-        # Remove tmp images
-        shutil.rmtree(outpath)
+        self._build_atlas(outpath)
 
-        # print(' Single library post-processing completed')
+    def _get_organized_output(self):
+        libraries = []
+        outputs = []
+        zaids = []
+        for libname, outputslib in self.outputs.items():
+            libraries.append(libname)
+            outputs.append(outputslib)
+            zaids.append(list(outputslib.keys()))
+
+        # Extend list to all zaids
+        allzaids = zaids[0]
+        for zaidlist in zaids[1:]:
+            allzaids.extend(zaidlist)
+        allzaids = set(allzaids)  # no duplicates
+
+        return libraries, zaids, outputs
 
     def pp_excel_single(self):
         """
@@ -254,7 +287,8 @@ class SphereOutput(BenchmarkOutput):
         ex.insert_df(9, 2, results, 0)
         ex.insert_df(9, 2, errors, 1)
         ex.insert_df(9, 2, stat_checks, 2)
-        ex.wb.sheets[0].range('D1').value = self.lib
+        lib_name = self.session.conf.get_lib_name(self.lib)
+        ex.wb.sheets[0].range('D1').value = lib_name
         ex.save()
 
     def pp_excel_comparison(self):
@@ -652,6 +686,548 @@ class SphereMCNPoutput(MCNPoutput):
         return results, columns
 
 
+class SphereSDDRoutput(SphereOutput):
+
+    times = ['0s', '2.7h', '24h', '11.6d', '30d', '10y']
+    timecols = {'0s': '1.0', '2.7h': '2.0', '24h': '3.0',
+                '11.6d': '4.0', '30d': '5.0', '10y': '6.0'}
+
+    def pp_excel_single(self):
+        """
+        Generate the single library results excel
+
+        Returns
+        -------
+        None.
+
+        """
+        template = os.path.join(os.getcwd(), 'Templates',
+                                'SphereSDDR_single.xlsx')
+        outpath = os.path.join(self.excel_path, 'SphereSDDR_single_' +
+                               self.lib+'.xlsx')
+        # compute the results
+        results, errors, stat_checks = self._compute_single_results()
+
+        # Write excel
+        ex = SphereExcelOutputSheet(template, outpath)
+        # Results
+        ex.insert_df(11, 2, results, 0, header=False)
+        ex.insert_df(11, 2, errors, 1, header=False)
+        ex.insert_df(9, 2, stat_checks, 2, header=True)
+        lib_name = self.session.conf.get_lib_name(self.lib)
+        ex.wb.sheets[0].range('E1').value = lib_name
+        ex.save()
+
+    def pp_excel_comparison(self):
+        """
+        Generate the excel comparison output
+
+        Returns
+        -------
+        None.
+
+        """
+        template = os.path.join(os.getcwd(), 'Templates',
+                                'SphereSDDR_comparison.xlsx')
+
+        for reflib, tarlib, name in self.couples:
+            outpath = os.path.join(self.excel_path, 'Sphere_comparison_' +
+                                   name+'.xlsx')
+            final, absdiff = self._compute_compare_result(reflib, tarlib)
+
+            # --- Write excel ---
+            # Generate the excel
+            ex = SphereExcelOutputSheet(template, outpath)
+            # Prepare the copy of the comparison sheet
+            ws_comp = ex.wb.sheets['Comparison']
+            ws_diff = ex.wb.sheets['Comparison (Abs diff)']
+
+            # WRITE RESULTS
+            # Percentage comparison
+            rangeex = ws_comp.range('B11')
+            rangeex.options(index=True, header=False).value = final
+            ws_comp.range('E1').value = name
+
+            # Absolute difference comparison
+            rangeex = ws_diff.range('B11')
+            rangeex.options(index=True, header=False).value = absdiff
+
+            # Add single pp sheets
+            for lib in [reflib, tarlib]:
+                cp = self.session.state.get_path('single',
+                                                 [lib, 'SphereSDDR', 'Excel'])
+                file = os.listdir(cp)[0]
+                cp = os.path.join(cp, file)
+                ex.copy_sheets(cp)
+
+            ex.save()
+
+    def _get_organized_output(self):
+        """
+        Simply recover a list of the zaids and libraries involved
+        """
+        zaids = []
+        for (zaidnum, mt, lib), _ in self.outputs.items():
+            zaids.append((zaidnum, mt))
+
+        zaids = list(set(zaids))
+        libs = []  # Not used
+        outputs = []  # Not used
+
+        return zaids, libs, outputs
+
+    def _generate_single_plots(self, outpath):
+        allzaids, libs, outputs = self._get_organized_output()
+        globalname = self.lib
+        self._generate_plots(libs, allzaids, outputs, globalname, outpath)
+
+    def _generate_plots(self, libraries, allzaids, outputs, globalname,
+                        outpath):
+        """
+        Generate all the plots requested by the Sphere SDDR benchmark
+
+        Parameters
+        ----------
+        libraries : dummy
+            here only for compatibility issues.
+        allzaids : list
+            list of all zaids resulting from the union of the results from
+            both libraries.
+        outputs : dummy
+            here only for compatibility reasons.
+        globalname : str
+            name for the output.
+        outpath : str
+            path to use for the dumping of imgs.
+
+        Returns
+        -------
+        None.
+
+        """
+        # Check if self libraries is already a list
+        if type(self.lib) != list:
+            libraries = [self.lib]
+        else:
+            libraries = self.lib
+
+        # Initialize atlas
+        template = os.path.join(self.code_path, 'Templates',
+                                'AtlasTemplate.docx')
+        atlas = at.Atlas(template, 'Sphere SDDR '+globalname)
+        libmanager = self.session.lib_manager
+
+        # # ------------- Binned plots of gamma flux ------------
+        # atlas.doc.add_heading('Photon Flux (32)', level=1)
+        # fluxquantity = 'Photon Flux'
+        # fluxunit = r'$p/(cm^2\cdot\#_S)$'
+        # allzaids.sort()
+        # # --- Binned plots of the gamma flux ---
+        # for (zaidnum, mt) in tqdm(allzaids, desc=' Binned flux plots'):
+        #     # Get everything for the title of the zaid
+        #     try:
+        #         name, formula = libmanager.get_zaidname(zaidnum)
+        #         args = [zaidnum, name, formula, mt]
+        #         title = 'Zaid: {} ({} {}), MT={}'.format(*args)
+        #     except ValueError:  # A material is passed instead of zaid
+        #         matname = self.mat_settings.loc[zaidnum, 'Name']
+        #         title = zaidnum+' ('+matname+')'
+        #     atlas.doc.add_heading(title, level=2)
+
+        #     # Now create a plot for each time
+        #     for time in self.times:
+        #         atlas.doc.add_heading('Cooldown time = {}'.format(time),
+        #                               level=3)
+        #         title = 'Gamma Leakage flux after a {} cooldown'.format(time)
+        #         data = []
+        #         for lib in libraries:
+        #             try:  # Zaid could not be common to the libraries
+        #                 outp = self.outputs[zaidnum, mt, lib]
+        #             except KeyError:
+        #                 # It is ok, simply nothing to plot here since zaid was
+        #                 # not in library
+        #                 continue
+        #             # Get the zaid flux
+        #             tally_data = outp.tallydata[32].set_index('Time')
+        #             # Select the correct time
+        #             t = 'F'+self.timecols[time]
+        #             tally_data = tally_data.loc[t]
+        #             energy = tally_data['Energy'].values
+        #             values = tally_data['Value'].values
+        #             error = tally_data['Error'].values
+        #             lib_name = self.session.conf.get_lib_name(lib)
+        #             ylabel = '{}_{} ({})'.format(formula, mt, lib_name)
+        #             libdata = {'x': energy, 'y': values, 'err': error,
+        #                        'ylabel': ylabel}
+        #             data.append(libdata)
+
+        #         outname = '{}-{}-{}-{}-{}'.format(zaidnum, mt, globalname,
+        #                                           32, t)
+        #         plot = plotter.Plotter(data, title, outpath, outname,
+        #                                fluxquantity, fluxunit, 'Energy [MeV]',
+        #                                self.testname)
+        #         outfile = plot.plot('Binned graph')
+        #         atlas.insert_img(outfile)
+
+        # --- Wave plots flux ---
+        # Do this block only if libs are more than one
+        lim = 35  # limit of zaids to be in a single plot
+        # Plot parameters which are not going to change
+        quantity = ['Neutron Flux', 'Photon Flux', 'SDDR']
+        unit = [r'$n/(cm^2\cdot n_S)$', r'$p/(cm^2\cdot n_S)$', 'Sv/h']
+        xlabel = 'Zaid/Material and MT value'
+        if len(libraries) > 1:
+            atlas.doc.add_heading('Flux and SDDR ratio plots', level=1)
+            # 1) collect zaid-mt couples in libraries and keep only the ones
+            #    that appears on the reference + at least one lib
+            # Build a df will all possible zaid, mt, lib combination
+            allkeys = list(self.outputs.keys())
+            df = pd.DataFrame(allkeys)
+            df.columns = ['zaid', 'mt', 'lib']
+            df['zaid-mt'] = df['zaid'].astype(str)+'-'+df['mt'].astype(str)
+            df.set_index('lib', inplace=True)
+            # get the reference zaids
+            refzaids = set(df.loc[self.lib[0]]['zaid-mt'].values)
+            otherzaids = set(df.drop(self.lib[0])['zaid-mt'].values)
+            # Get the final zaid-mt couples to consider
+            couples = []
+            for zaidmt in refzaids:
+                if zaidmt in otherzaids:
+                    zaid, mt = zaidmt.split('-')
+                    couples.append((zaid, mt))
+            # sort it
+            couples.sort()
+
+            # There is going to be a plot for each cooldown time
+            for i, time in enumerate(tqdm(self.times, desc=' Ratio plots')):
+                atlas.doc.add_heading('Cooldown time = {}'.format(time),
+                                      level=2)
+                # 2) Recover/compute the data tha needs to be plot for each lib
+                data = []
+                for lib in self.lib:
+                    nfluxs = []
+                    pfluxs = []
+                    sddrs = []
+                    xlabels = []
+                    ylabel = self.session.conf.get_lib_name(lib)
+                    for zaid, mt in couples:
+                        tallies = self.outputs[zaid, mt, lib].tallydata
+                        # Extract values
+                        nflux = tallies[12].set_index('Energy').drop('total')
+                        nflux = nflux.sum().loc['Value']
+                        pflux = tallies[22].groupby('Time').sum().loc[i+1,
+                                                                      'Value']
+                        sddr = tallies[104].set_index('Time')
+                        sddr = sddr.loc['D'+self.timecols[time], 'Value']
+                        # Memorize values
+                        nfluxs.append(nflux)
+                        pfluxs.append(pflux)
+                        sddrs.append(sddr)
+                        try:
+                            name, formula = libmanager.get_zaidname(zaid)
+                        except ValueError:
+                            formula = zaid
+                        xlabels.append(formula+' '+mt)
+
+                    # Split the data if its length is more then the limit
+                    datalenght = len(xlabels)
+                    sets = math.ceil(datalenght/lim)
+                    last_idx = 0
+                    idxs = []
+                    step = int(datalenght/sets)
+                    for i in range(sets):
+                        newidx = last_idx+step
+                        idxs.append((last_idx, newidx))
+                        last_idx = newidx
+
+                    for j, (start, end) in enumerate(idxs):
+                        # build the dic
+                        ydata = [nfluxs[start:end],
+                                 pfluxs[start:end],
+                                 sddrs[start:end]]
+                        libdata = {'x': xlabels, 'y': ydata, 'err': [],
+                                   'ylabel': ylabel}
+                        # try to append it to the data in the correct index
+                        # if the index is not found, then the list still needs
+                        # to be initialized
+                        try:
+                            data[j].append(libdata)
+                        except IndexError:
+                            data.append([libdata])
+
+                # 3) Compute parameters for the plotter init
+                for datapiece in data:
+                    title = 'Ratio Vs FENDL3.1 (T0 + {})'.format(time)
+                    outname = 'dummy'  # Does not matter if plot is added imm.
+                    testname = self.testname
+                    plot = plotter.Plotter(datapiece, title, outpath, outname,
+                                           quantity, unit, xlabel, testname)
+                    outfile = plot.plot('Waves')
+                    atlas.insert_img(outfile)
+
+        ########
+        print(' Building...')
+        atlas.save(self.atlas_path)
+        # Remove tmp images
+        shutil.rmtree(outpath)
+
+    def _compute_single_results(self):
+        """
+        Compute the excel single post processing results and memorize them
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+        results : pd.DataFrame
+            global excel datataframe of all values.
+        errors : pd.DataFrame
+            global excel dataframe of all errors.
+        stat_checks : pd.DataFrame
+            global excel dataframe of all statistical checks.
+
+        """
+        # Get results
+        results = []
+        errors = []
+        stat_checks = []
+        for folder in os.listdir(self.test_path):
+            res, err, st_ck = self._parserun(self.test_path, folder, self.lib)
+            results.append(res)
+            errors.append(err)
+            stat_checks.append(st_ck)
+
+        # Generate DataFrames
+        results = pd.concat(results, axis=1).T
+        errors = pd.concat(errors, axis=1).T
+        stat_checks = pd.DataFrame(stat_checks)
+
+        # Swap Columns and correct zaid sorting
+        # results
+        for df in [results, errors, stat_checks]:
+            self._sort_df(df)  # it is sorted in place
+
+        # self.outputs = outputs
+        self.results = results
+        self.errors = errors
+        self.stat_checks = stat_checks
+
+        return results, errors, stat_checks
+
+    def _compute_compare_result(self, reflib, tarlib):
+        """
+        Given a refere4nce lib and a target lib, both absolute and relative
+        comparison are computed
+
+        Parameters
+        ----------
+        reflib : str
+            reference library suffix.
+        tarlib : str
+            target library suffix.
+
+        Returns
+        -------
+        final : pd.DataFrame
+            relative comparison table.
+        absdiff : pd.DataFrame
+            absolute comparison table.
+
+        """
+        # Get results both of the reflib and tarlib
+        dfs = []
+        test_paths = [self.test_path[reflib], self.test_path[tarlib]]
+        libs = [reflib, tarlib]
+        for test_path, lib in zip(test_paths, libs):
+            results = []
+            # Extract all the series from the different reactions
+            for folder in os.listdir(test_path):
+                # Collect the data
+                res, _, _ = self._parserun(test_path, folder, lib)
+                results.append(res)
+
+            # Build the df and sort
+            df = pd.concat(results, axis=1).T
+            self._sort_df(df)
+            # They need to be indexed
+            df.set_index(['Parent', 'Parent Name', 'MT'], inplace=True)
+            # Add the df to the list
+            dfs.append(df)
+
+        # Consider only common zaids
+        idx1 = dfs[0].index
+        idx2 = dfs[1].index
+        newidx = idx1.intersection(idx2)
+        # For some reason they arrive here as objects triggering
+        # a ZeroDivisionError
+        ref = dfs[0].loc[newidx].astype(float)
+        tar = dfs[1].loc[newidx].astype(float)
+
+        # Build the final excel data
+        absdiff = ref-tar
+        final = absdiff/ref
+
+        # If it is zero the CS are equal! (NaN if both zeros)
+        for df in [final, absdiff]:
+            df[df == np.nan] = 'Not Available'
+            df[df == 0] = 'Identical'
+
+        return final, absdiff
+
+    @staticmethod
+    def _sort_df(df):
+        df['index'] = pd.to_numeric(df['Parent'].values, errors='coerce')
+        df.sort_values('index', inplace=True)
+        del df['index']
+
+        df.set_index(['Parent', 'Parent Name', 'MT'], inplace=True)
+        df.reset_index(inplace=True)
+
+    def _parserun(self, test_path, folder, lib):
+        """
+        given a MCNP run folder the parsing of the different outputs is
+        performed
+
+        Parameters
+        ----------
+        test_path : path or str
+            path to the test.
+        folder : str
+            name of the folder to parse inside test_path.
+        lib : str
+            library.
+
+        Returns
+        -------
+        res : TYPE
+            DESCRIPTION.
+        err : TYPE
+            DESCRIPTION.
+        st_ck : TYPE
+            DESCRIPTION.
+
+        """
+        results_path = os.path.join(test_path, folder)
+        pieces = folder.split('_')
+        # Get zaid
+        zaidnum = pieces[1]
+        # Check for material exception
+        try:
+            zaidname = self.mat_settings.loc[zaidnum, 'Name']
+            mt = 'All'
+        except KeyError:
+            # it is a simple zaid
+            zaidname = pieces[2]
+            mt = pieces[3]
+        # Get mfile
+        for file in os.listdir(results_path):
+            if file[-1] == 'm':
+                mfile = file
+            elif file[-1] == 'o':
+                ofile = file
+        # Parse output
+        output = SphereSDDRMCNPoutput(os.path.join(results_path, mfile),
+                                      os.path.join(results_path, ofile))
+        self.outputs[zaidnum, mt, lib] = output
+        # Adjourn raw Data
+        self.raw_data[zaidnum, mt, lib] = output.tallydata
+        # Recover statistical checks
+        st_ck = output.stat_checks
+        # Recover results and precisions
+        res, err = output.get_single_excel_data()
+        for series in [res, err, st_ck]:
+            series['Parent'] = zaidnum
+            series['Parent Name'] = zaidname
+            series['MT'] = mt
+
+        return res, err, st_ck
+
+    def print_raw(self):
+        for key, data in self.raw_data.items():
+            # build a folder containing each tally of the reaction
+            foldername = '{}_{}'.format(key[0], key[1])
+            folder = os.path.join(self.raw_path, foldername)
+            os.mkdir(folder)
+            # Dump all tallies
+            for tallynum, df in data.items():
+                filename = '{}_{}_{}.csv'.format(key[0], key[1], tallynum)
+                file = os.path.join(folder, filename)
+                df.to_csv(file, header=True, index=False)
+
+
+class SphereSDDRMCNPoutput(SphereMCNPoutput):
+    def organize_mctal(self):
+        """
+        Reorganize the MCTAL data in dataframes
+
+        Returns
+        -------
+        tallydata : dic of DataFrame
+            contains the tally data in a df format.
+        totalbin : dic of DataFrame
+            contain the total bin data.
+        """
+        # This should use the original MCNPotput organization of
+        # MCTAL
+        tallydata, totalbin = super(SphereMCNPoutput, self).organize_mctal()
+
+        return tallydata, totalbin
+
+    def get_single_excel_data(self):
+        """
+        Return the data that will be used in the single
+        post-processing excel output for a single reaction
+
+        Returns
+        -------
+        vals : pd.Series
+            series reporting the result of a single reaction.
+        errors : pd.Series
+            series containing the errors associated with the
+            reactions.
+
+        """
+        # 32 -> fine gamma flux
+        # 104 -> Dose rate
+        flux = self.tallydata[32]
+        sddr = self.tallydata[104]
+        heat = self.tallydata[46]
+
+        # Differentiate time labels
+        flux['Time'] = 'F' + flux['Time'].astype(str)
+        sddr['Time'] = 'D' + sddr['Time'].astype(str)
+        heat['Time'] = 'H' + heat['Time'].astype(str)
+
+        # Get the total values of the flux at different cooling times
+        fluxvals = flux.groupby('Time').sum()['Value']
+        del fluxvals['Ftotal']
+        # Get the mean error of the flux at different cooling times
+        fluxerrors = flux.groupby('Time').mean()['Error']
+        del fluxerrors['Ftotal']
+
+        # Get the total values of the SDDR at different cooling times
+        sddrvals = sddr.groupby('Time').sum()['Value']
+        del sddrvals['Dtotal']
+        # Get the mean error of the SDDR at different cooling times
+        sddrerrors = sddr.groupby('Time').mean()['Error']
+        del sddrerrors['Dtotal']
+
+        # Get the total Heating at different cooling times
+        heatvals = heat.set_index('Time')['Value']
+        del heatvals['Htotal']
+        # Get the Heating mean error at different cooling times
+        heaterrors = heat.set_index('Time')['Error']
+        del heaterrors['Htotal']
+
+        # 2 series need to be built here, one for values and one for errors
+        vals = pd.concat([fluxvals, sddrvals, heatvals], axis=0)
+        errors = pd.concat([fluxerrors, sddrerrors, heaterrors],
+                           axis=0)
+
+        return vals, errors
+
+
 class SphereExcelOutputSheet:
     def __init__(self, template, outpath):
         """
@@ -665,13 +1241,13 @@ class SphereExcelOutputSheet:
         self.app = xw.App(visible=False)
         self.wb = self.app.books.open(outpath)
 
-    def insert_df(self, startrow, startcolumn, df, ws):
+    def insert_df(self, startrow, startcolumn, df, ws, header=True):
         '''
         Insert a DataFrame (df) into a Worksheet (ws) using openpyxl.
         (startrow) and (startcolumn) identify the starting data entry
         '''
         ws = self.wb.sheets[ws]
-        exsupp.insert_df(startrow, startcolumn, df, ws)
+        exsupp.insert_df(startrow, startcolumn, df, ws, header=header)
 
     def copy_sheets(self, wb_origin_path):
         """

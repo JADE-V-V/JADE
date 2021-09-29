@@ -72,6 +72,7 @@ principal_menu = header+"""
  * Generate material                  (generate)
  * Switch fractions                     (switch)
  * Change ACE lib suffix                (acelib)
+ * Produce D1S Reaction file             (react)
  -----------------------------------------------
  * Test installation                      (test)
 
@@ -198,6 +199,10 @@ def mainloop(session):
         elif option == 'acelib':
             uty.change_ACElib_suffix()
             print('\n Suffix change was completed\n')
+
+        elif option == 'react':
+            uty.get_reaction_file(session)
+            print('\n Reaction file has been dumped\n')
 
         elif option == 'exit':
             session.log.adjourn('\nSession concluded normally \n')

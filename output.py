@@ -169,7 +169,7 @@ class BenchmarkOutput:
         atl_cnf.set_index('Tally', inplace=True)
 
         # Printing Atlas
-        template = os.path.join(self.code_path, 'Templates',
+        template = os.path.join(self.code_path, 'templates',
                                 'AtlasTemplate.docx')
         atlas = at.Atlas(template, self.testname+' '+self.lib)
 
@@ -266,7 +266,7 @@ class BenchmarkOutput:
         atl_cnf.set_index('Tally', inplace=True)
 
         # Printing Atlas
-        template = os.path.join(self.code_path, 'Templates',
+        template = os.path.join(self.code_path, 'templates',
                                 'AtlasTemplate.docx')
 
         atlas = at.Atlas(template, self.testname+' '+self.name)
@@ -392,7 +392,7 @@ class BenchmarkOutput:
 
         # Open the excel file
         name = 'Generic_single.xlsx'
-        template = os.path.join(os.getcwd(), 'Templates', name)
+        template = os.path.join(os.getcwd(), 'templates', name)
         outpath = os.path.join(self.excel_path, self.testname + '_' +
                                self.lib+'.xlsx')
         ex = ExcelOutputSheet(template, outpath)
@@ -564,7 +564,7 @@ class BenchmarkOutput:
 
         # Open the excel file
         name_tag = 'Generic_comparison.xlsx'
-        template = os.path.join(os.getcwd(), 'Templates', name_tag)
+        template = os.path.join(os.getcwd(), 'templates', name_tag)
 
         mcnp_outputs = {}
         iteration = 0

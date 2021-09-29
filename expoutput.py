@@ -81,12 +81,12 @@ class OktavianOutput(ExperimentalOutput):
         globalname = globalname[:-4]
 
         # Initialize the atlas
-        template = os.path.join(self.code_path, 'Templates',
+        template = os.path.join(self.code_path, 'templates',
                                 'AtlasTemplate.docx')
         atlas = at.Atlas(template, globalname)
 
         maintitle = ' Oktavian Experiment: '
-        unit = '$ 1/cm^2\cdot n_s\cdot u$'
+        unit = r'$ 1/cm^2\cdot n_s\cdot u$'
         xlabel = 'Energy [MeV]'
 
         tables = []  # All C/E tables will be stored here and then concatenated
@@ -326,7 +326,7 @@ class OktavianOutput(ExperimentalOutput):
                     break
         # then read the file accordingly
         df = pd.read_csv(file, skiprows=counter, skipfooter=1, engine='python',
-                         header=None, sep='\s+')
+                         header=None, sep=r'\s+')
         df.columns = columns
 
         df = df[df['Lethargy Flux'] > 2e-38]

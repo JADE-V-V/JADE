@@ -29,6 +29,7 @@ import os
 import sys
 from contextlib import contextmanager
 import warnings
+from parsersD1S import (ReactionFile, Reaction)
 
 
 class InputFile:
@@ -239,7 +240,81 @@ class InputFile:
         self.cards['settings'] = newsettings
 
 
-class D1S5_InputFile(InputFile):
+class D1S_Input(InputFile):
+
+    def add_PIKMT_card(self, parent_list):
+        """
+        Add a PIKMT card to the input file
+
+        Parameters
+        ----------
+        parent_list : list
+            list of parent zaids.
+
+        Returns
+        -------
+        None.
+
+        """
+        lines = ['PIKMT\n']
+        for parent in parent_list:
+            lines.append('         {}    {}\n'.format(parent, 0))
+
+        card = par.Card(lines, 5, -1)
+        self.cards['settings'].append(card)
+
+    def get_reaction_file(self, libmanager, lib):
+        """
+        Collect all the possible reactions that are allowed amnong all the
+        materials in the input
+
+        Parameters
+        ----------
+        libmanager : LibManager
+            Object handling all cross-sections related operations.
+        lib : str
+            library suffix to be used.
+
+        Returns
+        -------
+        ReactionFile
+            Object representing the react file for D1S.
+
+        """
+        # parentlist = []
+        # daughterlist = []
+        # REcover all possible reactions
+        reactions = []
+        for material in self.matlist:
+            for submat in material.submaterials:
+                for zaid in submat.zaidList:
+                    parent = zaid.element+zaid.isotope
+                    zaidreactions = libmanager.get_reactions(lib, parent)
+                    # if len(zaidreactions) > 0:
+                    #     # it is a parent only if reactions are available
+                    #     parentlist.append(parent)
+                    for MT, daughter in zaidreactions:
+                        reactions.append((parent, MT, daughter))
+                        # daughterlist.append(daughter)
+
+        reactions = list(set(reactions))
+        reactions.sort()
+        # --- Build the reactions and reaction file ---
+        reaction_list = []
+        for parent, MT, daughter in reactions:
+            parent = parent+'.'+lib
+            # Build a comment
+            _, parent_formula = libmanager.get_zaidname(parent)
+            _, daughter_formula = libmanager.get_zaidname(daughter)
+            comment = '{} -> {}'.format(parent_formula, daughter_formula)
+
+            rx = Reaction(parent, MT, daughter, comment=comment)
+            reaction_list.append(rx)
+
+        return ReactionFile(reaction_list)
+
+
+class D1S5_InputFile(D1S_Input):
 
     def add_stopCard(self, nps, ctme, precision):
         """
@@ -272,27 +347,6 @@ specified ctme or precision parameters will be ignored
 
         line = 'NPS '+str(nps)+'\n'
         card = par.Card([line], 5, -1)
-        self.cards['settings'].append(card)
-
-    def add_PIKMT_card(self, parent_list):
-        """
-        Add a PIKMT card to the input file
-
-        Parameters
-        ----------
-        parent_list : list
-            list of parent zaids.
-
-        Returns
-        -------
-        None.
-
-        """
-        lines = ['PIKMT\n']
-        for parent in parent_list:
-            lines.append('         {}    {}\n'.format(parent, 0))
-
-        card = par.Card(lines, 5, -1)
         self.cards['settings'].append(card)
 
 

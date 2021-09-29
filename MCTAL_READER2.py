@@ -217,7 +217,7 @@ class Tally:
                 particleNames = []
 
                 if self.typeNumber > 0:
-                        particleNames.append(particleListShort[self.typeNumber])
+                        particleNames.append(self.particleListShort[self.typeNumber])
                 else:
                         for i,name in enumerate(self.particleList):
                                 try:
@@ -781,10 +781,18 @@ class MCTAL:
                                                                                                                 f = 0
 
                                                                                                         if self.line[0:3] != "tfc":
-                                                                                                                if math.isnan(float(Fld[f])) or math.isnan(float(Fld[f+1])):
+                                                                                                                # This needs to handle the bug like '8.23798-100'
+                                                                                                                try:
+                                                                                                                    val = float(Fld[f])
+                                                                                                                    err = float(Fld[f+1])
+                                                                                                                except ValueError:
+                                                                                                                    val = 0
+                                                                                                                    err = 0
+                                                                                                                    
+                                                                                                                if math.isnan(val) or math.isnan(err):
                                                                                                                         self.thereAreNaNs = True
-                                                                                                                tally.insertValue(c,d,u,s,m,a,e,t,i,j,k,0,float(Fld[f]))
-                                                                                                                tally.insertValue(c,d,u,s,m,a,e,t,i,j,k,1,float(Fld[f+1]))
+                                                                                                                tally.insertValue(c,d,u,s,m,a,e,t,i,j,k,0,val)
+                                                                                                                tally.insertValue(c,d,u,s,m,a,e,t,i,j,k,1,err)
 
                                                                                                                 f += 2
 

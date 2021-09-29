@@ -28,6 +28,7 @@ import xlsxwriter
 import matreader as mat
 
 from tqdm import tqdm
+from inputfile import D1S_Input
 
 
 ###############################################################################
@@ -348,6 +349,39 @@ def change_ACElib_suffix():
                         outfile.write(line)
             except UnicodeDecodeError:
                 print('Decode error in '+file)
+
+
+def get_reaction_file(session):
+    """
+    Given a D1S input file the utility dumps a reaction file that includes
+    all possible reactions that can generate for the requested libraries in
+    the materials of the input.
+
+    Parameters
+    ----------
+    session : Session
+        JADE session.
+
+    Returns
+    -------
+    None.
+
+    """
+    # Select the input file
+    message = ' Please select a D1S input file: '
+    filepath = select_inputfile(message)
+    # Select the library
+    lib = session.lib_manager.select_lib()
+
+    # Generate a D1S input
+    inputfile = D1S_Input.from_text(filepath)
+    reactionfile = inputfile.get_reaction_file(session.lib_manager, lib)
+    reactionfile.name = inputfile.name+'_react'+lib
+    outpath = os.path.join(session.path_uti, 'Reactions')
+    # Dump it
+    if not os.path.exists(outpath):  # first time the utilities is used
+        os.mkdir(outpath)
+    reactionfile.write(outpath)
 
 
 def select_inputfile(message):

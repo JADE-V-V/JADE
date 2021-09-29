@@ -79,7 +79,7 @@ class Session:
 
         cp = os.getcwd()
 
-        self.path_default_settings = os.path.join(cp, 'Default Settings')
+        self.path_default_settings = os.path.join(cp, 'default_settings')
 
         cp = os.path.dirname(cp)
 
@@ -127,20 +127,20 @@ class Session:
         # Copy files into benchmark inputs folder
         path_inputs = os.path.join(cp, 'Benchmarks inputs')
         if not os.path.exists(path_inputs):
-            files = os.path.join('Installation Files', 'Benchmarks inputs')
+            files = os.path.join('install_files', 'Benchmarks inputs')
             shutil.copytree(files, path_inputs)
         self.path_inputs = path_inputs
 
         # Copy input files for testing
         path_inputs = os.path.join(self.path_test_install, 'Inputs')
         if not os.path.exists(path_inputs):
-            files = os.path.join('Installation Files', 'Inputs install')
+            files = os.path.join('install_files', 'Inputs install')
             shutil.copytree(files, path_inputs)
 
         # Copy experimental results folder
         path_exp_res = os.path.join(cp, 'Experimental Results')
         if not os.path.exists(path_exp_res):
-            files = os.path.join('Installation Files', 'Experimental Results')
+            files = os.path.join('install_files', 'Experimental Results')
             shutil.copytree(files, path_exp_res)
         self.path_exp_res = path_exp_res
 

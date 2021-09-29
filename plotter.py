@@ -49,6 +49,7 @@ plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
 plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
 plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
 plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
+plt.rc('lines', markersize=12)          # Marker default size
 
 # ============================================================================
 #                   Specific data for benchmarks plots
@@ -158,7 +159,7 @@ class Plotter():
 
         # --- Useful plots parameters ---
         # plot decorators
-        self.markers = ['o', 's', '^', 'D', 'X', 'p', 'd', '*']
+        self.markers = ['o', 's', 'D', '^', 'X', 'p', 'd', '*']
         # Color-blind saver palette
         self.colors = ['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628',
                        '#984ea3', '#999999', '#e41a1c', '#dede00']
@@ -210,7 +211,7 @@ class Plotter():
 
         return outp
 
-    def _waves(self):
+    def _waves(self, upperlimit=1.5, lowerlimit=0.5):
         """
         Built a multirow ratio that correlates different results on the same
         x bin
@@ -230,10 +231,20 @@ class Plotter():
             # Plot
             refy = np.array(self.data[0]['y'][i])
             for j, libdata in enumerate(self.data[1:]):
-                y = np.array(libdata['y'][i])
-                axes[i].scatter(libdata['x'], y/refy, color=self.colors[j],
+                tary = np.array(libdata['y'][i])
+                y = tary/refy
+                # Compute the plot limits
+                norm, upper, lower = _get_limits(lowerlimit, upperlimit,
+                                                 y, libdata['x'])
+                # Plot everything
+                axes[i].scatter(norm[0], norm[1], color=self.colors[j],
                                 marker=self.markers[i],
                                 label=libdata['ylabel'])
+                axes[i].scatter(upper[0], upper[1], marker=CARETUPBASE,
+                                c=self.colors[j])
+                axes[i].scatter(lower[0], lower[1], marker=CARETDOWNBASE,
+                                c=self.colors[j])
+
             # Write title
             ax.set_title('{} [{}]'.format(self.quantity[i], self.unit[i]))
             # Draw the ratio line
@@ -247,7 +258,10 @@ class Plotter():
             ax.grid('True', which='major', linewidth=0.75, axis='y')
             ax.grid('True', which='minor', linewidth=0.30, axis='y')
             # limits
-            ax.set_ylim(0, 2)
+            toadd = (upperlimit-lowerlimit)/8
+            ax.set_ylim(lowerlimit-toadd, upperlimit+toadd)
+            ax.axhline(lowerlimit, color='red', linewidth=0.5)
+            ax.axhline(upperlimit, color='red', linewidth=0.5)
 
         # Add the legend
         axes[0].legend(loc='upper center', bbox_to_anchor=(0.88, 1.5),
@@ -739,22 +753,13 @@ class Plotter():
                 for idx, dic_data in enumerate(data[1:]):
                     ratio = np.array(dic_data['y'])/np.array(data[0]['y'])
                     # Uniform plots actions
-                    starmap1 = ratio > 2
-                    starmap2 = ratio < 0.5
-                    normalmap = np.logical_and(np.logical_not(starmap1),
-                                               np.logical_not(starmap2))
-                    normalY = ratio[normalmap]
-                    normalX = newX[normalmap]
-                    starX1 = newX[starmap1]
-                    starY1 = np.full(len(starX1), 2)
-                    starX2 = newX[starmap2]
-                    starY2 = np.full(len(starX2), 0.5)
+                    norm, upper, lower = _get_limits(0.5, 2, ratio, newX)
 
-                    ax3.plot(normalX, normalY, 'o', markersize=2,
+                    ax3.plot(norm[0], norm[1], 'o', markersize=2,
                              color=colors[idx+1])
-                    ax3.scatter(starX1, starY1, marker=CARETUPBASE, s=50,
+                    ax3.scatter(upper[0], upper[1], marker=CARETUPBASE, s=50,
                                 c=colors[idx+1])
-                    ax3.scatter(starX2, starY2, marker=CARETDOWNBASE, s=50,
+                    ax3.scatter(lower[0], lower[1], marker=CARETDOWNBASE, s=50,
                                 c=colors[idx+1])
 
                 # Build ax3 legend
@@ -828,24 +833,51 @@ def _add_recs(ax, rec_data, height, y_origin=0):
                               color=color, alpha=0.2)
         ax.add_patch(rectangle)
 
-    # def _get_limits(lowerlimit, upperlimit, data):
-    #     # ensure data is array
-    #     data = np.array(data)
-    #     # Uniform plots actions
-    #     starmap1 = data > upperlimit
-    #     starmap2 = data < lowerlimit
-    #     normalmap = np.logical_and(np.logical_not(starmap1),
-    #                                np.logical_not(starmap2))
-    #     normalY = data[normalmap]
-    #     normalX = newX[normalmap]
-    #     starX1 = newX[starmap1]
-    #     starY1 = np.full(len(starX1), 2)
-    #     starX2 = newX[starmap2]
-    #     starY2 = np.full(len(starX2), 0.5)
 
-    #     ax3.plot(normalX, normalY, 'o', markersize=2,
-    #              color=colors[idx+1])
-    #     ax3.scatter(starX1, starY1, marker=CARETUPBASE, s=50,
-    #                 c=colors[idx+1])
-    #     ax3.scatter(starX2, starY2, marker=CARETDOWNBASE, s=50,
-    #                 c=colors[idx+1])
+def _get_limits(lowerlimit, upperlimit, ydata, xdata):
+    """
+    Given an X, Y dataset and bounding y limits it returns three datasets
+    couples containing the sets to be normally plotted and the upper and
+    lower set.
+
+    Parameters
+    ----------
+    lowerlimit : float
+        bounding lower y limit.
+    upperlimit : float
+        bounding upper x limit.
+    ydata : list or array
+        Y axis data.
+    xdata : list or array
+        X axis data.
+
+    Returns
+    -------
+    (normalX, normalY)
+        x, y sets to be normally plotted
+    (upperX, upperY)
+        x, y sets that are above upperlimit
+    (lowerX, lowerY)
+        x, y sets that are below upper limit.
+
+    """
+    # ensure data is array
+    ydata = np.array(ydata)
+    xdata = np.array(xdata)
+    # Get the three logical maps
+    upmap = ydata > upperlimit
+    lowmap = ydata < lowerlimit
+    normalmap = np.logical_and(np.logical_not(upmap),
+                               np.logical_not(lowmap))
+
+    # Apply maps to divide the original sets
+    normalY = ydata[normalmap]
+    normalX = xdata[normalmap]
+
+    upperX = xdata[upmap]
+    upperY = np.full(len(upperX), upperlimit)
+
+    lowerX = xdata[lowmap]
+    lowerY = np.full(len(lowerX), lowerlimit)
+
+    return (normalX, normalY), (upperX, upperY), (lowerX, lowerY)

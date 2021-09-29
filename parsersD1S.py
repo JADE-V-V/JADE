@@ -36,6 +36,7 @@ CEND = '\033[0m'
 
 
 class IrradiationFile:
+
     def __init__(self, nsc, irr_schedules, header=None,
                  formatting=[8, 14, 13, 9], name='irrad'):
         """
@@ -98,7 +99,7 @@ class IrradiationFile:
         """
         pat_nsc = re.compile('(?i)(nsc)')
         pat_num = re.compile(r'\d+')
-        name = os.path.basename(filepath)
+        # name = os.path.basename(filepath)
         with open(filepath, 'r') as infile:
             inheader = True
             header = ''
@@ -120,7 +121,7 @@ class IrradiationFile:
 
                         irr_schedules.append(Irradiation.from_text(line, nsc))
 
-        return cls(nsc, irr_schedules, header=header, name=name)
+        return cls(nsc, irr_schedules, header=header)
 
     def write(self, path):
         """
@@ -136,7 +137,7 @@ class IrradiationFile:
         None.
 
         """
-        filepath = os.path.join(path, 'irrad')
+        filepath = os.path.join(path, self.name)
         with open(filepath, 'w') as outfile:
             if self.header is not None:
                 outfile.write(self.header)
@@ -288,7 +289,7 @@ class ReactionFile:
                     reaction = Reaction.from_text(line)
                     reactions.append(reaction)
 
-        return cls(reactions, name=os.path.basename(filepath))
+        return cls(reactions)  # , name=os.path.basename(filepath))
 
     def change_lib(self, newlib, libmanager=None):
         """
@@ -347,7 +348,7 @@ class ReactionFile:
         None.
 
         """
-        filepath = os.path.join(path, 'react')
+        filepath = os.path.join(path, self.name)
         with open(filepath, 'w') as outfile:
             for reaction in self.reactions:
                 outfile.write(REACFORMAT.format(*reaction.write())+'\n')

@@ -36,6 +36,13 @@ import sys
 import os
 from contextlib import contextmanager
 
+# -------------------------------------
+#         == COMMON PATTERNS ==
+# -------------------------------------
+PAT_COMMENT = re.compile(r'[cC][\s\t]+')
+PAT_MAT = re.compile(r'[\s\t]+[mM]\d+')
+PAT_MX = re.compile(r'mx\d+', re.IGNORECASE)
+
 
 # -------------------------------------
 # == CLASSES FOR MATERIAL READING ==
@@ -186,7 +193,7 @@ class SubMaterial:
         self.zaidList = zaidList
 
         # Name of the material
-        self.name = name
+        self.name = name.strip()  # Be sure to strip spaces
 
         # List of elements in material
         if elemList is None:
@@ -209,8 +216,8 @@ class SubMaterial:
         """
         # Useful patterns
         patSpacing = re.compile(r'[\s\t]+')
-        patComment = re.compile(r'[cC][\s\t]+')
-        patName = re.compile(r'[mM]\d+')
+        patComment = PAT_COMMENT
+        patName = PAT_MAT
         searchHeader = True
         header = ''
         zaidList = []
@@ -470,7 +477,7 @@ class Material:
         self.zaids = zaids
         self.elem = elem
         self.submaterials = submaterials
-        self.name = name
+        self.name = name.strip()
         self.mx_cards = mx_cards
         self.header = header
 
@@ -496,8 +503,8 @@ class Material:
         text: (list)(string) list of input lines for the material
         """
         # split the different submaterials
-        patC = re.compile('[cC]')
-        pat_matHeader = re.compile(r'[mM]\d+')
+        patC = PAT_COMMENT
+        pat_matHeader = PAT_MAT
         inHeader = True
         subtext = []
         submaterials = []
@@ -726,9 +733,9 @@ class MatCardsList(Sequence):
 
         inputfile: (str) path to the MCNP input file
         """
-        matPat = re.compile(r'[mM]\d+')
-        mxPat = re.compile(r'mx\d+', re.IGNORECASE)
-        commentPat = re.compile('[cC]')
+        matPat = PAT_MAT
+        mxPat = PAT_MX
+        commentPat = PAT_COMMENT
         # Using parser the data cards are extracted from the input.
         # Comment section are interpreted as cards by the parser
         with suppress_stdout():

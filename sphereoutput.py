@@ -123,7 +123,7 @@ class SphereOutput(BenchmarkOutput):
 
         """
         # Printing Atlas
-        template = os.path.join(self.code_path, 'Templates',
+        template = os.path.join(self.code_path, 'templates',
                                 'AtlasTemplate.docx')
         atlas = at.Atlas(template, 'Sphere '+self.lib)
         atlas.build(outpath, self.session.lib_manager, self.mat_settings)
@@ -219,7 +219,7 @@ class SphereOutput(BenchmarkOutput):
         None.
 
         """
-        template = os.path.join(os.getcwd(), 'Templates', 'Sphere_single.xlsx')
+        template = os.path.join(os.getcwd(), 'templates', 'Sphere_single.xlsx')
         outpath = os.path.join(self.excel_path, 'Sphere_single_' +
                                self.lib+'.xlsx')
         # Get results
@@ -302,7 +302,7 @@ class SphereOutput(BenchmarkOutput):
         None.
 
         """
-        template = os.path.join(os.getcwd(), 'Templates',
+        template = os.path.join(os.getcwd(), 'templates',
                                 'Sphere_comparison.xlsx')
 
         outputs = {}
@@ -701,7 +701,7 @@ class SphereSDDRoutput(SphereOutput):
         None.
 
         """
-        template = os.path.join(os.getcwd(), 'Templates',
+        template = os.path.join(os.getcwd(), 'templates',
                                 'SphereSDDR_single.xlsx')
         outpath = os.path.join(self.excel_path, 'SphereSDDR_single_' +
                                self.lib+'.xlsx')
@@ -727,7 +727,7 @@ class SphereSDDRoutput(SphereOutput):
         None.
 
         """
-        template = os.path.join(os.getcwd(), 'Templates',
+        template = os.path.join(os.getcwd(), 'templates',
                                 'SphereSDDR_comparison.xlsx')
 
         for reflib, tarlib, name in self.couples:
@@ -812,62 +812,66 @@ class SphereSDDRoutput(SphereOutput):
             libraries = self.lib
 
         # Initialize atlas
-        template = os.path.join(self.code_path, 'Templates',
+        template = os.path.join(self.code_path, 'templates',
                                 'AtlasTemplate.docx')
         atlas = at.Atlas(template, 'Sphere SDDR '+globalname)
         libmanager = self.session.lib_manager
 
-        # # ------------- Binned plots of gamma flux ------------
-        # atlas.doc.add_heading('Photon Flux (32)', level=1)
-        # fluxquantity = 'Photon Flux'
-        # fluxunit = r'$p/(cm^2\cdot\#_S)$'
-        # allzaids.sort()
-        # # --- Binned plots of the gamma flux ---
-        # for (zaidnum, mt) in tqdm(allzaids, desc=' Binned flux plots'):
-        #     # Get everything for the title of the zaid
-        #     try:
-        #         name, formula = libmanager.get_zaidname(zaidnum)
-        #         args = [zaidnum, name, formula, mt]
-        #         title = 'Zaid: {} ({} {}), MT={}'.format(*args)
-        #     except ValueError:  # A material is passed instead of zaid
-        #         matname = self.mat_settings.loc[zaidnum, 'Name']
-        #         title = zaidnum+' ('+matname+')'
-        #     atlas.doc.add_heading(title, level=2)
+        # ------------- Binned plots of gamma flux ------------
+        atlas.doc.add_heading('Photon Flux (32)', level=1)
+        fluxquantity = 'Photon Flux'
+        fluxunit = r'$p/(cm^2\cdot\#_S)$'
+        allzaids.sort()
+        # --- Binned plots of the gamma flux ---
+        for (zaidnum, mt) in tqdm(allzaids, desc=' Binned flux plots'):
+            # Get everything for the title of the zaid
+            try:
+                name, formula = libmanager.get_zaidname(zaidnum)
+                args = [zaidnum, name, formula, mt]
+                title = 'Zaid: {} ({} {}), MT={}'.format(*args)
+            except ValueError:  # A material is passed instead of zaid
+                matname = self.mat_settings.loc[zaidnum, 'Name']
+                title = zaidnum+' ('+matname+')'
+            atlas.doc.add_heading(title, level=2)
 
-        #     # Now create a plot for each time
-        #     for time in self.times:
-        #         atlas.doc.add_heading('Cooldown time = {}'.format(time),
-        #                               level=3)
-        #         title = 'Gamma Leakage flux after a {} cooldown'.format(time)
-        #         data = []
-        #         for lib in libraries:
-        #             try:  # Zaid could not be common to the libraries
-        #                 outp = self.outputs[zaidnum, mt, lib]
-        #             except KeyError:
-        #                 # It is ok, simply nothing to plot here since zaid was
-        #                 # not in library
-        #                 continue
-        #             # Get the zaid flux
-        #             tally_data = outp.tallydata[32].set_index('Time')
-        #             # Select the correct time
-        #             t = 'F'+self.timecols[time]
-        #             tally_data = tally_data.loc[t]
-        #             energy = tally_data['Energy'].values
-        #             values = tally_data['Value'].values
-        #             error = tally_data['Error'].values
-        #             lib_name = self.session.conf.get_lib_name(lib)
-        #             ylabel = '{}_{} ({})'.format(formula, mt, lib_name)
-        #             libdata = {'x': energy, 'y': values, 'err': error,
-        #                        'ylabel': ylabel}
-        #             data.append(libdata)
+            # Now create a plot for each time
+            for time in self.times:
+                atlas.doc.add_heading('Cooldown time = {}'.format(time),
+                                      level=3)
+                title = 'Gamma Leakage flux after a {} cooldown'.format(time)
+                data = []
+                for lib in libraries:
+                    try:  # Zaid could not be common to the libraries
+                        outp = self.outputs[zaidnum, mt, lib]
+                    except KeyError:
+                        # It is ok, simply nothing to plot here since zaid was
+                        # not in library
+                        continue
+                    # Get the zaid flux
+                    tally_data = outp.tallydata[32].set_index('Time')
 
-        #         outname = '{}-{}-{}-{}-{}'.format(zaidnum, mt, globalname,
-        #                                           32, t)
-        #         plot = plotter.Plotter(data, title, outpath, outname,
-        #                                fluxquantity, fluxunit, 'Energy [MeV]',
-        #                                self.testname)
-        #         outfile = plot.plot('Binned graph')
-        #         atlas.insert_img(outfile)
+                    # Select the correct time
+                    t = 'F'+self.timecols[time]
+                    tally_data = tally_data.loc[t]
+                    # If for some reason a total survived just kill him
+                    tally_data = tally_data[tally_data.Energy != 'total']
+
+                    energy = tally_data['Energy'].values
+                    values = tally_data['Value'].values
+                    error = tally_data['Error'].values
+                    lib_name = self.session.conf.get_lib_name(lib)
+                    ylabel = '{}_{} ({})'.format(formula, mt, lib_name)
+                    libdata = {'x': energy, 'y': values, 'err': error,
+                               'ylabel': ylabel}
+                    data.append(libdata)
+
+                outname = '{}-{}-{}-{}-{}'.format(zaidnum, mt, globalname,
+                                                  32, t)
+                plot = plotter.Plotter(data, title, outpath, outname,
+                                       fluxquantity, fluxunit, 'Energy [MeV]',
+                                       self.testname)
+                outfile = plot.plot('Binned graph')
+                atlas.insert_img(outfile)
 
         # --- Wave plots flux ---
         # Do this block only if libs are more than one
@@ -896,7 +900,7 @@ class SphereSDDRoutput(SphereOutput):
                     zaid, mt = zaidmt.split('-')
                     couples.append((zaid, mt))
             # sort it
-            couples.sort()
+            couples.sort(key=self._sortfunc_zaidMTcouples)
 
             # There is going to be a plot for each cooldown time
             for i, time in enumerate(tqdm(self.times, desc=' Ratio plots')):
@@ -992,7 +996,8 @@ class SphereSDDRoutput(SphereOutput):
         results = []
         errors = []
         stat_checks = []
-        for folder in os.listdir(self.test_path):
+        desc = ' Parsing Outputs: '
+        for folder in tqdm(os.listdir(self.test_path), desc=desc):
             res, err, st_ck = self._parserun(self.test_path, folder, self.lib)
             results.append(res)
             errors.append(err)
@@ -1083,6 +1088,24 @@ class SphereSDDRoutput(SphereOutput):
 
         df.set_index(['Parent', 'Parent Name', 'MT'], inplace=True)
         df.reset_index(inplace=True)
+
+    @staticmethod
+    def _sortfunc_zaidMTcouples(item):
+        try:
+            zaid = int(item[0])
+        except ValueError:
+            zaid = (item[0])
+        try:
+            mt = int(item[1])
+        except ValueError:
+            mt = item[1]
+
+        if isinstance(zaid, str):
+            flag = True
+        else:
+            flag = False
+
+        return (flag, zaid, mt)
 
     def _parserun(self, test_path, folder, lib):
         """
@@ -1201,24 +1224,28 @@ class SphereSDDRMCNPoutput(SphereMCNPoutput):
 
         # Get the total values of the flux at different cooling times
         fluxvals = flux.groupby('Time').sum()['Value']
-        del fluxvals['Ftotal']
         # Get the mean error of the flux at different cooling times
         fluxerrors = flux.groupby('Time').mean()['Error']
-        del fluxerrors['Ftotal']
 
         # Get the total values of the SDDR at different cooling times
         sddrvals = sddr.groupby('Time').sum()['Value']
-        del sddrvals['Dtotal']
         # Get the mean error of the SDDR at different cooling times
         sddrerrors = sddr.groupby('Time').mean()['Error']
-        del sddrerrors['Dtotal']
 
         # Get the total Heating at different cooling times
         heatvals = heat.set_index('Time')['Value']
-        del heatvals['Htotal']
         # Get the Heating mean error at different cooling times
         heaterrors = heat.set_index('Time')['Error']
-        del heaterrors['Htotal']
+
+        # Delete the total row in case it is there
+        for df, tag in zip([fluxvals, fluxerrors, sddrvals, sddrerrors,
+                            heatvals, heaterrors],
+                           ['F', 'F', 'D', 'D', 'H', 'H']):
+            try:
+                del df[tag+'total']
+            except KeyError:
+                # If total value is not there it is ok
+                pass
 
         # 2 series need to be built here, one for values and one for errors
         vals = pd.concat([fluxvals, sddrvals, heatvals], axis=0)

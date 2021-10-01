@@ -25,7 +25,11 @@ import xsdirpyne as xs
 import pandas as pd
 import json
 import re
+import warnings
 from main import (CRED, CEND)
+
+
+MSG_DEFLIB = ' The Deafult library {} was used for zaid {}'
 
 
 class LibManager:
@@ -135,6 +139,7 @@ class LibManager:
                         newlib = lib
                     elif self.XS.find_table(idx+'.'+self.defaultlib,
                                             mode='exact'):
+                        warnings.warn(MSG_DEFLIB.format(self.defaultlib, zaid))
                         newlib = self.defaultlib
                     else:
                         raise ValueError('No available translation for zaid :' +
@@ -154,6 +159,7 @@ class LibManager:
                 translation = {natzaid: (lib, 1, 1)}  # mass not important
             # Check if default lib is available
             elif self.XS.find_table(zaid+'.'+self.defaultlib, mode='exact'):
+                warnings.warn(MSG_DEFLIB.format(self.defaultlib, zaid))
                 translation = {zaid: (self.defaultlib, 1, 1)}  # mass not imp
             else:
                 # Check if any zaid cross section is available
@@ -284,6 +290,16 @@ class LibManager:
                         continue
                 # If this point is reached, all libs are available
                 break
+
+            elif '-' in lib:
+                libs = lib.split('-')
+                for val in libs:
+                    if val not in self.libraries:
+                        print(error.format(val))
+                        continue
+                # If this point is reached, all libs are available
+                break
+
             else:
                 print(error.format(lib))
         return lib

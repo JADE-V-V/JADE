@@ -236,6 +236,9 @@ class Plotter():
                 # Compute the plot limits
                 norm, upper, lower = _get_limits(lowerlimit, upperlimit,
                                                  y, libdata['x'])
+                # This Should ensure that the x labels order is kept fixed
+                axes[i].scatter(libdata['x'], np.ones(len(libdata['x'])),
+                                alpha=0)
                 # Plot everything
                 axes[i].scatter(norm[0], norm[1], color=self.colors[j],
                                 marker=self.markers[i],

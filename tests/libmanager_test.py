@@ -39,8 +39,8 @@ class TestLibManger:
     lm = LibManager(XSDIR_FILE, activationfile=ACTIVATION_FILE)
 
     def test_reactionfilereading(self):
-        assert len(self.lm.reactions['99c']) == 102
-        assert len(self.lm.reactions['98c']) == 42
+        assert len(self.lm.reactions['99c']) == 100
+        assert len(self.lm.reactions['98c']) == 34
 
     def test_get_reactions1(self):
         """
@@ -63,7 +63,7 @@ class TestLibManger:
 
         assert reaction1[0] == '16'
         assert reaction1[1] == '11022'
-        assert reaction2[0] == '(102 402)'
+        assert reaction2[0] == '102'
         assert reaction2[1] == '11024'
 
     def test_formula_conversion(self):

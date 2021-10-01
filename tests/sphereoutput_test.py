@@ -47,6 +47,7 @@ class MockSphereSDDRoutput(sout.SphereSDDRoutput):
                         {'num': 'dummy', 'Name': 'dummy', 'dummy': 1}]
         self.mat_settings = pd.DataFrame(mat_settings).set_index('num')
         self.raw_data = {}
+        self.outputs = {}
 
 
 class TestSphereSDDRoutput:

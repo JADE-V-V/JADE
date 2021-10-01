@@ -347,7 +347,14 @@ def exploop(session):
         elif option == 'assess':
             # Select and check library
             lib = session.lib_manager.select_lib()
-            ans = session.state.check_override_run(lib, session, exp=True)
+            # it may happen that lib are two but only the first is the assessed
+            pieces = lib.split('-')
+            if len(pieces) > 1:
+                libtocheck = pieces[0]
+            else:
+                libtocheck = lib
+            ans = session.state.check_override_run(libtocheck,
+                                                   session, exp=True)
             # If checks are ok perform assessment
             if ans:
                 # Logging

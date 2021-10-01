@@ -90,7 +90,7 @@
 ;;F32-0.0005;10.07;Actinium;Ac;89;True
 ;;F32-0.0005;11.724;Thorium;Th;90;True
 ;;F32-0.0005;15.4;Protactinium;Pa;91;True
-;2000;;1;Uranium;U;92;False
+;2000;;1;Uranium;U;92;True
 ;;F32-0.0005;20.2;Neptunium;Np;93;True
 ;;F32-0.0005;1;Plutonium;Pu;94;True
 ;;F32-0.0005;1;Americium;Am;95;True

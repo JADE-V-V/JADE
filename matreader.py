@@ -35,13 +35,14 @@ import copy
 import sys
 import os
 from contextlib import contextmanager
+import warnings
 
 # -------------------------------------
 #         == COMMON PATTERNS ==
 # -------------------------------------
 PAT_COMMENT = re.compile(r'[cC][\s\t]+')
-PAT_MAT = re.compile(r'[\s\t]+[mM]\d+')
-PAT_MX = re.compile(r'mx\d+', re.IGNORECASE)
+PAT_MAT = re.compile(r'[\s\t]*[mM]\d+')
+PAT_MX = re.compile(r'[\s\t]*mx\d+', re.IGNORECASE)
 
 
 # -------------------------------------
@@ -193,7 +194,10 @@ class SubMaterial:
         self.zaidList = zaidList
 
         # Name of the material
-        self.name = name.strip()  # Be sure to strip spaces
+        if name is not None:
+            self.name = name.strip()  # Be sure to strip spaces
+        else:
+            self.name = None
 
         # List of elements in material
         if elemList is None:
@@ -309,17 +313,50 @@ class SubMaterial:
 
     def translate(self, newlib, lib_manager):
         """
-        This method allows to translate the submaterial to another library
+        This method implements the translation logic of JADE. All zaids are
+        translated accordingly to the newlib specified.
 
-        newlib: (str) suffix of the new lib to translate to
-        lib_manager: (LibManager) Library manager for the conversion
+        Parameters
+        ----------
+        newlib : dict or str
+            There are a few ways that newlib can be provided:
+                - str (e.g. 31c), the new library to translate to will be the
+                    one indicated;
+                - dic (e.g. {'98c' : '99c', '31c: 32c'}), the new library is
+                    determined based on the old library of the zaid
+                - dic (e.g. {'98c': [list of zaids], '31c': [list of zaids]}),
+                    the new library to be used is explicitly stated depending
+                    on the zaidnum.
+        lib_manager : LibManager
+            Object handling libraries operation.
+
+        Returns
+        -------
+        None.
+
         """
         newzaids = []
         for zaid in self.zaidList:
             # Implement the capability to translate to different libraries
             # depending on the starting one
             if type(newlib) == dict:
-                newtag = newlib[zaid.library]
+                # Check for which kind of dic it is
+                if type(list(newlib.values())[0]) == str:
+                    # The assignment is based on old lib
+                    newtag = newlib[zaid.library]
+                else:
+                    # The assignment is explicit, all libs need to be searched
+                    newtag = None
+                    zaidnum = zaid.element+zaid.isotope
+                    for lib, zaids in newlib.items():
+                        if zaidnum in zaids:
+                            newtag = lib
+                            break
+                    # Check that a library has been actually found
+                    if newtag is None:
+                        # the zaid should have been assigned to a library
+                        raise ValueError('''
+ Zaid {} was not assigned to any library'''.format(zaid))
             else:
                 newtag = newlib
 

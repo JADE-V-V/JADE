@@ -831,12 +831,18 @@ class MCTAL:
                                 tfcDat = []
 
                                 tfcDat.append(int(self.line[0]))
-                                if math.isnan(float(self.line[1])) or math.isnan(float(self.line[2])):
+                                try:
+                                    val1 = float(self.line[1])
+                                except ValueError:
+                                    val1 = 0
+
+                                if math.isnan(val1) or math.isnan(float(self.line[2])):
                                         self.thereAreNaNs = True
-                                tfcDat.append(float(self.line[1]))
+
+                                tfcDat.append(val1)
                                 tfcDat.append(float(self.line[2]))
                                 if len(self.line) == 4:
-                                        if math.isnan(float(self.line[1])):
+                                        if math.isnan(val1):
                                                 self.thereAreNaNs = True
                                         tfcDat.append(float(self.line[3]))
 

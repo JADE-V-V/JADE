@@ -862,14 +862,14 @@ class SphereSDDRoutput(SphereOutput):
                     lib_name = self.session.conf.get_lib_name(lib)
                     ylabel = '{}_{} ({})'.format(formula, mt, lib_name)
                     libdata = {'x': energy, 'y': values, 'err': error,
-                               'ylabel': ylabel}
+                                'ylabel': ylabel}
                     data.append(libdata)
 
                 outname = '{}-{}-{}-{}-{}'.format(zaidnum, mt, globalname,
                                                   32, t)
                 plot = plotter.Plotter(data, title, outpath, outname,
-                                       fluxquantity, fluxunit, 'Energy [MeV]',
-                                       self.testname)
+                                        fluxquantity, fluxunit, 'Energy [MeV]',
+                                        self.testname)
                 outfile = plot.plot('Binned graph')
                 atlas.insert_img(outfile)
 
@@ -939,7 +939,7 @@ class SphereSDDRoutput(SphereOutput):
                     last_idx = 0
                     idxs = []
                     step = int(datalenght/sets)
-                    for i in range(sets):
+                    for _ in range(sets):
                         newidx = last_idx+step
                         idxs.append((last_idx, newidx))
                         last_idx = newidx
@@ -949,7 +949,8 @@ class SphereSDDRoutput(SphereOutput):
                         ydata = [nfluxs[start:end],
                                  pfluxs[start:end],
                                  sddrs[start:end]]
-                        libdata = {'x': xlabels, 'y': ydata, 'err': [],
+                        xlab = xlabels[start:end]
+                        libdata = {'x': xlab, 'y': ydata, 'err': [],
                                    'ylabel': ylabel}
                         # try to append it to the data in the correct index
                         # if the index is not found, then the list still needs

@@ -145,9 +145,13 @@ class InputFile:
         newlib: (str) suffix of the new lib to translate to
         lib_manager: (LibManager) Library manager for the conversion
         """
-        if newlib[0] == '{':
-            # covert the dic
-            newlib = json.loads(newlib)
+        try:
+            if newlib[0] == '{':
+                # covert the dic
+                newlib = json.loads(newlib)
+        except KeyError:
+            # It is already a dict, pass
+            pass
 
         self.matlist.translate(newlib, libmanager)
 

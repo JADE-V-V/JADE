@@ -74,6 +74,8 @@ def executeBenchmarksRoutines(session, lib, exp=False):
             if lib[0] == '{':
                 libs = pat_libs.findall(lib)
                 libpath = libs[1][1:-1]
+            elif '-' in lib:
+                libpath = lib[:3]
             else:
                 libpath = lib
 
@@ -96,6 +98,9 @@ def executeBenchmarksRoutines(session, lib, exp=False):
 
             elif testname == 'Oktavian Experiment':
                 test = testrun.MultipleTest(*args)
+
+            elif fname == 'FNG':
+                test = testrun.FNG_Test(*args)
 
             else:
                 test = testrun.Test(*args)

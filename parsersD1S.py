@@ -80,6 +80,45 @@ class IrradiationFile:
         self.irrformat = head
         self.name = name
 
+    def get_daughters(self):
+        """
+        Get a list of all daughters among all irradiation files
+
+        Returns
+        -------
+        list
+            list of daughters.
+
+        """
+        # Get the list of daughters
+        daughters = []
+        for irradiation in self.irr_schedules:
+            daughters.append(irradiation.daughter)
+
+        return daughters
+
+    def get_irrad(self, daughter):
+        """
+        Return the irradiation correspondent to the daughter
+
+        Parameters
+        ----------
+        daughter : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        Irradiation
+            Returns the irradiation corresponding to the daughter.
+            If no irradiation is found returns None.
+
+        """
+        for irradiation in self.irr_schedules:
+            if daughter == irradiation.daughter:
+                return irradiation
+
+        return None
+
     @classmethod
     def from_text(cls, filepath):
         """
@@ -183,6 +222,20 @@ class Irradiation:
         self.lambd = lambd
         self.times = times
         self.comment = comment
+
+    def __eq__(self, other):
+        """
+        Get a more appropriate equivalence function. Two irradiation are equal
+        if they have the same daughter, lambda and correction factors
+
+        """
+        if isinstance(other, Irradiation):
+            condition = (self.daughter == other.daughter and
+                         self.lambd == other.lambd and
+                         self.times == other.times)
+            return condition
+        else:
+            return False
 
     @classmethod
     def from_text(cls, text, nsc):

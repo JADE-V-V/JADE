@@ -139,7 +139,7 @@ class Test():
         # Directory where the MCNP run will be performed
         self.MCNPdir = None
 
-    def _translate_input(self, libmanager):
+    def _translate_input(self, libmanager, translate_all=True):
         """
         Translate the input template to selected library
 
@@ -147,6 +147,9 @@ class Test():
         ----------
         libmanager : libmanager.LibManager
             Manager dealing with libraries operations.
+        translate_all : bool
+            If true, all eventual file linked to the input will be translated.
+            Default is True.
 
         Returns
         -------
@@ -155,10 +158,11 @@ class Test():
         """
         self.inp.translate(self.lib, libmanager)
         self.inp.update_zaidinfo(libmanager)
-        if self.react is not None:
+        if self.react is not None and translate_all:
             self.react.change_lib(self.lib)
 
-    def generate_test(self, lib_directory, libmanager, MCNP_dir=None):
+    def generate_test(self, lib_directory, libmanager, MCNP_dir=None,
+                      translate_all=True):
         """
         Generate the test input files
 
@@ -166,12 +170,13 @@ class Test():
         ----------
         lib_directory : path or string
             Path to lib benchmarks input folders.
-
         libmanager : libmanager.LibManager
             Manager dealing with libraries operations.
-
         MCNPdir : str or path
             allows to ovewrite the MCNP dir if needed. The default is None
+        translate_all : bool
+            If true, all eventual file linked to the input will be translated.
+            Default is True.
 
         Returns
         -------
@@ -179,7 +184,7 @@ class Test():
 
         """
         # Translate the input
-        self._translate_input(libmanager)
+        self._translate_input(libmanager, translate_all=translate_all)
 
         # Add stop card
         self.inp.add_stopCard(self.nps, self.ctme, self.precision)
@@ -270,32 +275,6 @@ class Test():
             pass
 
         return flagnotrun
-
-
-class MultipleTest:
-    def __init__(self, inpsfolder, lib, config, log, VRTpath, confpath):
-        """
-        This simply a collection of Test objects, see the single Test object,
-        for methods and attributes descriptions
-        """
-        tests = []
-        for folder in os.listdir(inpsfolder):
-            inp = os.path.join(inpsfolder, folder)
-            test = Test(inp, lib, config, log, VRTpath, confpath)
-            tests.append(test)
-        self.tests = tests
-        self.name = os.path.basename(inpsfolder)
-
-    def generate_test(self, lib_directory, libmanager):
-        self.MCNPdir = os.path.join(lib_directory, self.name)
-        safe_override(self.MCNPdir)
-        for test in self.tests:
-            mcnp_dir = os.path.join(self.MCNPdir, test.name)
-            test.generate_test(lib_directory, libmanager, MCNP_dir=mcnp_dir)
-
-    def run(self, cpu=1, timeout=None):
-        for test in tqdm(self.tests):
-            test.run(cpu=cpu, timeout=timeout)
 
 
 class SphereTest(Test):
@@ -800,6 +779,116 @@ class SphereTestSDDR(SphereTest):
 
         irradfile.irr_schedules = new_irradiations
         return irradfile, ans
+
+
+class MultipleTest:
+    def __init__(self, inpsfolder, lib, config, log, VRTpath, confpath):
+        """
+        This simply a collection of Test objects, see the single Test object,
+        for methods and attributes descriptions
+        """
+        tests = []
+        for folder in os.listdir(inpsfolder):
+            inp = os.path.join(inpsfolder, folder)
+            test = Test(inp, lib, config, log, VRTpath, confpath)
+            tests.append(test)
+        self.tests = tests
+        self.name = os.path.basename(inpsfolder)
+
+    def generate_test(self, lib_directory, libmanager, translate_all=True):
+        self.MCNPdir = os.path.join(lib_directory, self.name)
+        safe_override(self.MCNPdir)
+        for test in self.tests:
+            mcnp_dir = os.path.join(self.MCNPdir, test.name)
+            test.generate_test(lib_directory, libmanager, MCNP_dir=mcnp_dir,
+                               translate_all=translate_all)
+
+    def run(self, cpu=1, timeout=None):
+        for test in tqdm(self.tests):
+            test.run(cpu=cpu, timeout=timeout)
+
+
+class FNG_Test(MultipleTest):
+    def generate_test(self, *args, **kwargs):
+        """
+        This extends the method of the MultipleTest class only to handle the
+        modifications of the irradiation and reaction files
+
+        Parameters
+        ----------
+        *args : see Test documentation
+        **kwargs : see Test documentation
+
+        Returns
+        -------
+        None.
+
+        """
+        libmanager = args[1]
+        # Informations on irr file and reac file need to be overridden
+        for test in self.tests:
+            # Operate on the newlib, should arrive in the 99c-31c format
+            errmsg = """
+ Please define the pair activation-transport lib for the FNG benchmark
+ (e.g. 99c-31c). See additional details on the documentation.
+            """
+            try:
+                activationlib = test.lib.split('-')[0]
+                transportlib = test.lib.split('-')[1]
+            except IndexError:
+                raise ValueError(errmsg)
+            # Check that libraries have been correctly defined
+            if activationlib+'-'+transportlib != test.lib:
+                raise ValueError(errmsg)
+            active_zaids = []
+            transp_zaids = []
+
+            # Get the general reaction file
+            reacfile = test.inp.get_reaction_file(libmanager, activationlib)
+
+            # --- Check which daughters are available in the irr file ---
+            # --- Modify irr file, react file and lib accordingly ---
+            newreactions = []
+            newirradiations = []
+            available_daughters = test.irrad.get_daughters()
+            for reaction in reacfile.reactions:
+                # strip the lib from the parent
+                parent = reaction.parent.split('.')[0]
+                if reaction.daughter in available_daughters:
+                    # add the parent to the activation lib
+                    active_zaids.append(parent)
+                    # add the reaction to the one to use
+                    reaction.change_lib(activationlib)
+                    newreactions.append(reaction)
+                    # add the correspondent irradiation
+                    irr = test.irrad.get_irrad(reaction.daughter)
+                    if irr not in newirradiations:
+                        newirradiations.append(irr)
+                else:
+                    # Add the zaid to the transport lib
+                    transp_zaids.append(parent)
+
+            # Now check for the remaing materials in the input to be assigned
+            # to transport
+            for material in test.inp.matlist:
+                for submaterial in material.submaterials:
+                    for zaid in submaterial.zaidList:
+                        zaidnum = zaid.element+zaid.isotope
+                        if (zaidnum not in active_zaids and
+                                zaidnum not in transp_zaids):
+                            transp_zaids.append(zaidnum)
+
+            # Modify the test attributes
+            test.irrad.irr_schedules = newirradiations
+            test.react.reactions = newreactions
+            test.lib = {activationlib: active_zaids,
+                        transportlib: transp_zaids}
+            # Add the PIKMT card
+            test.inp.add_PIKMT_card(active_zaids)
+
+        # Run normal generate test MultipleTests
+        kwargs['translate_all'] = False
+        super().generate_test(*args, **kwargs)
 
 
 def safe_mkdir(directory):

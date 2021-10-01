@@ -33,7 +33,7 @@ INP = os.path.join('TestFiles', 'matreader', 'mat_test.i')
 ACTIVATION_INP = os.path.join('TestFiles', 'matreader', 'activation.i')
 XSDIR = os.path.join('TestFiles', 'matreader', 'xsdir_mcnp6.2')
 # Other
-LIBMAN = LibManager(XSDIR)
+LIBMAN = LibManager(XSDIR, defaultlib='81c')
 
 
 class TestZaid:
@@ -132,8 +132,9 @@ class TestMatCardList:
 
     def test_translation(self):
         """
-        Test that translation works (both single and multiple)
+        Test that translation works (all possile modes)
         """
+        # Dic mode 1
         newlib = {'21c': '31c', '99c': '81c'}
         matcard = MatCardsList.from_input(ACTIVATION_INP)
         matcard.translate(newlib, LIBMAN)
@@ -141,6 +142,27 @@ class TestMatCardList:
         assert translation.count('31c') == 3
         assert translation.count('81c') == 3
 
+        # dic mode 2 - test 1
+        matcard = MatCardsList.from_input(ACTIVATION_INP)
+        newlib = {'99c': ['1001'], '21c': ['28061', '28062', '28064', '29063',
+                                           '5010']}
+        matcard.translate(newlib, LIBMAN)
+        translation = matcard.to_text()
+        assert translation.count('99c') == 0
+        assert translation.count('21c') == 5
+        assert translation.count('81c') == 1
+
+        # dic mode 2 - test 2
+        matcard = MatCardsList.from_input(ACTIVATION_INP)
+        newlib = {'99c': ['1001'], '21c': ['28061', '28062', '28064', '29063']}
+        try:
+            matcard.translate(newlib, LIBMAN)
+            assert False
+        except ValueError:
+            assert True
+
+        # classic mode
+        matcard = MatCardsList.from_input(ACTIVATION_INP)
         matcard.translate('21c', LIBMAN)
         translation = matcard.to_text()
         assert translation.count('21c') == 6

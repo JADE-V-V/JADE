@@ -1148,7 +1148,13 @@ class ExcelOutputSheet:
         Save Excel
         """
         self.app.calculate()
-        self.wb.save()
+        try:
+            self.wb.save()
+        except FileNotFoundError as e:
+            print(' The following is the original exception:')
+            print(e)
+            print('\n it may be due to invalid characters in the file name')
+
         self.wb.close()
         self.app.quit()
 

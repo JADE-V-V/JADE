@@ -345,6 +345,8 @@ def exploop(session):
             uty.print_libraries(session.lib_manager)
 
         elif option == 'assess':
+            # Update the configuration file
+            session.conf.read_settings()
             # Select and check library
             lib = session.lib_manager.select_lib()
             # it may happen that lib are two but only the first is the assessed
@@ -374,6 +376,8 @@ def exploop(session):
                 print(' Assessment canceled.')
 
         elif option == 'continue':
+            # Update the configuration file
+            session.conf.read_settings()
             clear_screen()
             print(principal_menu)
             print(' Currently not developed. Please select another option')
@@ -423,6 +427,8 @@ def pploop(session):
             print(lib_tested)
 
         elif option == 'pp':
+            # Update the configuration file
+            session.conf.read_settings()
             # Select and check library
             ans, to_single_pp, lib_input = session.state.check_override_pp(session)
             # If checks are ok perform assessment
@@ -456,6 +462,8 @@ def pploop(session):
                 session.log.bar_adjourn(t, spacing=False)
 
         elif option == 'compare':
+            # Update the configuration file
+            session.conf.read_settings()
 
             # Select and check library
             ans, to_single_pp, lib_input = session.state.check_override_pp(session)
@@ -502,6 +510,8 @@ Additional Post-Processing of library:"""+lib+' completed\n', spacing=False)
                 session.log.bar_adjourn(t, spacing=False)
 
         elif option == 'compexp':
+            # Update the configuration file
+            session.conf.read_settings()
 
             # Select and check library
             ans, to_single_pp, lib_input = session.state.check_override_pp(session, exp=True)

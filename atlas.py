@@ -230,7 +230,12 @@ class Atlas():
         outpath_word = os.path.join(outpath, self.outname+'.docx')
         outpath_pdf = os.path.join(outpath, self.outname+'.pdf')
 
-        self.doc.save(outpath_word)
+        try:
+            self.doc.save(outpath_word)
+        except FileNotFoundError as e:
+            print(' The following is the original exception:')
+            print(e)
+            print('\n it may be due to invalid characters in the file name')
 
         if pdfprint:
             in_file = outpath_word

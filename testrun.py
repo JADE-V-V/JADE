@@ -139,12 +139,15 @@ class Test():
         # Directory where the MCNP run will be performed
         self.MCNPdir = None
 
-    def _translate_input(self, libmanager, translate_all=True):
+    def _translate_input(self, lib, libmanager, translate_all=True):
         """
         Translate the input template to selected library
 
         Parameters
         ----------
+        lib : str or dic
+            There are many ways to provide a librart to be translated
+            check the matreader doc for more details.
         libmanager : libmanager.LibManager
             Manager dealing with libraries operations.
         translate_all : bool
@@ -156,10 +159,10 @@ class Test():
         None.
 
         """
-        self.inp.translate(self.lib, libmanager)
+        self.inp.translate(lib, libmanager)
         self.inp.update_zaidinfo(libmanager)
         if self.react is not None and translate_all:
-            self.react.change_lib(self.lib)
+            self.react.change_lib(lib)
 
     def generate_test(self, lib_directory, libmanager, MCNP_dir=None,
                       translate_all=True):
@@ -184,7 +187,8 @@ class Test():
 
         """
         # Translate the input
-        self._translate_input(libmanager, translate_all=translate_all)
+        self._translate_input(self.lib, libmanager,
+                              translate_all=translate_all)
 
         # Add stop card
         self.inp.add_stopCard(self.nps, self.ctme, self.precision)
@@ -842,6 +846,12 @@ class FNG_Test(MultipleTest):
                 raise ValueError(errmsg)
             active_zaids = []
             transp_zaids = []
+
+            # Give a first translation with the transport lib. This will
+            # correctly expand all natural zaid before the actual translation
+            # that also uses the activation lib
+            test._translate_input(transportlib, libmanager,
+                                  translate_all=False)
 
             # Get the general reaction file
             reacfile = test.inp.get_reaction_file(libmanager, activationlib)

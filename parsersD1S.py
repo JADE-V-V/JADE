@@ -27,7 +27,7 @@ import os
 PAT_BLANK = re.compile(r'[\s\tCc]*\n')
 PAT_COMMENT = re.compile('[Cc]+')
 PAT_SPACE = re.compile(r'[\s\t]+')
-REACFORMAT = '{:>13s}{:>7s}{:>9s}{:>15s}'
+REACFORMAT = '{:>13s}{:>7s}{:>9s}{:>40s}'
 
 # colors
 CRED = '\033[91m'

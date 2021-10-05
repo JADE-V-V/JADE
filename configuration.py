@@ -37,7 +37,12 @@ class Configuration:
         con_file: (str) path to configuration file
         """
         # ############ load conf file sheets ############
+        self.conf_file = conf_file
+        self.read_settings()
 
+    def read_settings(self):
+
+        conf_file = self.conf_file
         # Main
         main = pd.read_excel(conf_file, sheet_name='MAIN Config.', skiprows=1,
                              header=None)

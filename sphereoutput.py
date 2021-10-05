@@ -862,14 +862,14 @@ class SphereSDDRoutput(SphereOutput):
                     lib_name = self.session.conf.get_lib_name(lib)
                     ylabel = '{}_{} ({})'.format(formula, mt, lib_name)
                     libdata = {'x': energy, 'y': values, 'err': error,
-                                'ylabel': ylabel}
+                               'ylabel': ylabel}
                     data.append(libdata)
 
                 outname = '{}-{}-{}-{}-{}'.format(zaidnum, mt, globalname,
                                                   32, t)
                 plot = plotter.Plotter(data, title, outpath, outname,
-                                        fluxquantity, fluxunit, 'Energy [MeV]',
-                                        self.testname)
+                                       fluxquantity, fluxunit, 'Energy [MeV]',
+                                       self.testname)
                 outfile = plot.plot('Binned graph')
                 atlas.insert_img(outfile)
 
@@ -961,8 +961,9 @@ class SphereSDDRoutput(SphereOutput):
                             data.append([libdata])
 
                 # 3) Compute parameters for the plotter init
+                refname = self.session.conf.get_lib_name(self.lib[0])
                 for datapiece in data:
-                    title = 'Ratio Vs FENDL3.1 (T0 + {})'.format(time)
+                    title = 'Ratio Vs {} (T0 + {})'.format(refname, time)
                     outname = 'dummy'  # Does not matter if plot is added imm.
                     testname = self.testname
                     plot = plotter.Plotter(datapiece, title, outpath, outname,

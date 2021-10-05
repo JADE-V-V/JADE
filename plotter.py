@@ -224,7 +224,7 @@ class Plotter():
         """
         nrows = len(self.quantity)
         fig, axes = plt.subplots(figsize=(18, 13.5), nrows=nrows, sharex=True)
-        fig.suptitle(self.title)
+        fig.suptitle(self.title, weight='bold')
 
         # common to all axes
         for i, ax in enumerate(axes):
@@ -249,7 +249,7 @@ class Plotter():
                                 c=self.colors[j])
 
             # Write title
-            ax.set_title('{} [{}]'.format(self.quantity[i], self.unit[i]))
+            ax.set_title('{}'.format(self.quantity[i]))
             # Draw the ratio line
             ax.axhline(1, color='black', linestyle='--')
             # Get minor ticks on the y axis

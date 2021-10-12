@@ -69,6 +69,13 @@ def _get_output(action, testname, lib, session):
             print(exp_pp_message)
             return False
 
+    elif testname == 'FNG':
+        if action == 'compare':
+            out = expo.FNGOutput(lib, testname, session, multiplerun=True)
+        elif action == 'pp':
+            print(exp_pp_message)
+            return False
+
     else:
         out = bencho.BenchmarkOutput(lib, testname, session)
 

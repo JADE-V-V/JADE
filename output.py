@@ -36,13 +36,73 @@ from outputFile import OutputFile
 from meshtal import Meshtal
 import pickle
 import sys
+import abc
 
 # RED color
 CRED = '\033[91m'
 CEND = '\033[0m'
 
 
-class BenchmarkOutput:
+class AbstractOutput(abc.ABC):
+
+    @abc.abstractmethod
+    def single_postprocess(self):
+        '''
+        To be executed when a single pp is requested
+        '''
+        pass
+
+    @abc.abstractmethod
+    def compare(self):
+        '''
+        To be executed when a comparison is requested
+        '''
+
+    @staticmethod
+    def _get_output_files(results_path):
+        '''
+        Recover the meshtal and outp file from a directory
+
+        Parameters
+        ----------
+        results_path : str or path
+            path where the MCNP results are contained.
+
+        Raises
+        ------
+        FileNotFoundError
+            if either meshtal or outp are not found.
+
+        Returns
+        -------
+        mfile : path
+            path to the meshtal file
+        ofile : path
+            path to the outp file
+
+        '''
+        # Get mfile
+        mfile = None
+        ofile = None
+
+        for file in os.listdir(results_path):
+            if file[-1] == 'm':
+                mfile = file
+            elif file[-1] == 'o':
+                ofile = file
+
+        if mfile is None or ofile is None:
+            raise FileNotFoundError('''
+ The followig path does not contain either the .m or .o file:
+ {}'''.format(results_path))
+
+        mfile = os.path.join(results_path, mfile)
+        ofile = os.path.join(results_path, ofile)
+
+        return mfile, ofile
+
+
+class BenchmarkOutput(AbstractOutput):
 
     def __init__(self, lib, testname, session):
         """

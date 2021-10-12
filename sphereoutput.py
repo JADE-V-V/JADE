@@ -829,13 +829,16 @@ class SphereSDDRoutput(SphereOutput):
                 name, formula = libmanager.get_zaidname(zaidnum)
                 args = [zaidnum, name, formula, mt]
                 title = 'Zaid: {} ({} {}), MT={}'.format(*args)
+                # For zaids cooldown time does not change anything
+                # Keep the multiple times only for materials
+                times = [self.times[0]]
             except ValueError:  # A material is passed instead of zaid
                 matname = self.mat_settings.loc[zaidnum, 'Name']
                 title = zaidnum+' ('+matname+')'
+                times = self.times
             atlas.doc.add_heading(title, level=2)
 
-            # Now create a plot for each time
-            for time in self.times:
+            for time in times:
                 atlas.doc.add_heading('Cooldown time = {}'.format(time),
                                       level=3)
                 title = 'Gamma Leakage flux after a {} cooldown'.format(time)
@@ -894,88 +897,136 @@ class SphereSDDRoutput(SphereOutput):
             refzaids = set(df.loc[self.lib[0]]['zaid-mt'].values)
             otherzaids = set(df.drop(self.lib[0])['zaid-mt'].values)
             # Get the final zaid-mt couples to consider
-            couples = []
+            zaid_couples = []
+            mat_couples = []
             for zaidmt in refzaids:
                 if zaidmt in otherzaids:
                     zaid, mt = zaidmt.split('-')
-                    couples.append((zaid, mt))
+                    if zaid[0] in 'mM':
+                        mat_couples.append((zaid, mt))
+                    else:
+                        zaid_couples.append((zaid, mt))
             # sort it
-            couples.sort(key=self._sortfunc_zaidMTcouples)
+            zaid_couples.sort(key=self._sortfunc_zaidMTcouples)
+            mat_couples.sort(key=self._sortfunc_zaidMTcouples)
 
-            # There is going to be a plot for each cooldown time
-            for i, time in enumerate(tqdm(self.times, desc=' Ratio plots')):
-                atlas.doc.add_heading('Cooldown time = {}'.format(time),
-                                      level=2)
-                # 2) Recover/compute the data tha needs to be plot for each lib
+            # # There is going to be a plot for each cooldown time
+            # Only one plot necessary for zaids at cd=0
+
+            # 2) Recover/compute the data that needs to be plot for each lib
+            data = []
+            time = self.times[0]
+            for lib in self.lib:
+                nfluxs = []
+                pfluxs = []
+                sddrs = []
+                xlabels = []
+                ylabel = self.session.conf.get_lib_name(lib)
+                for zaid, mt in zaid_couples:
+                    # Extract values
+                    nflux, pflux, sddr = self._extract_data4plots(zaid, mt,
+                                                                  lib, time)
+                    # Memorize values
+                    nfluxs.append(nflux)
+                    pfluxs.append(pflux)
+                    sddrs.append(sddr)
+                    name, formula = libmanager.get_zaidname(zaid)
+                    xlabels.append(formula+' '+mt)
+
+                # Split the data if its length is more then the limit
+                datalenght = len(xlabels)
+                sets = math.ceil(datalenght/lim)
+                last_idx = 0
+                idxs = []
+                step = int(datalenght/sets)
+                for _ in range(sets):
+                    newidx = last_idx+step
+                    idxs.append((last_idx, newidx))
+                    last_idx = newidx
+
+                for j, (start, end) in enumerate(idxs):
+                    # build the dic
+                    ydata = [nfluxs[start:end],
+                             pfluxs[start:end],
+                             sddrs[start:end]]
+                    xlab = xlabels[start:end]
+                    libdata = {'x': xlab, 'y': ydata, 'err': [],
+                               'ylabel': ylabel}
+                    # try to append it to the data in the correct index
+                    # if the index is not found, then the list still needs
+                    # to be initialized
+                    try:
+                        data[j].append(libdata)
+                    except IndexError:
+                        data.append([libdata])
+
+            # 3) Compute parameters for the plotter init
+            refname = self.session.conf.get_lib_name(self.lib[0])
+            for datapiece in data:
+                title = 'Ratio Vs {} (T0 + {})'.format(refname, time)
+                outname = 'dummy'  # Does not matter if plot is added imm.
+                testname = self.testname
+                plot = plotter.Plotter(datapiece, title, outpath, outname,
+                                       quantity, unit, xlabel, testname)
+                outfile = plot.plot('Waves')
+                atlas.insert_img(outfile)
+
+            # --- Single wave plot for each material ---
+            atlas.doc.add_heading('Materials ratio plot', level=1)
+            xlab = self.times
+            quantity = ['Neutron Flux', 'Photon Flux', 'SDDR']
+            unit = ['', '', '']
+            xlabel = 'Cooldown time'
+            for material, _ in tqdm(mat_couples, desc=' Materials: '):
+                atlas.doc.add_heading(material, level=2)
                 data = []
                 for lib in self.lib:
+                    ylabel = self.session.conf.get_lib_name(lib)
                     nfluxs = []
                     pfluxs = []
                     sddrs = []
-                    xlabels = []
-                    ylabel = self.session.conf.get_lib_name(lib)
-                    for zaid, mt in couples:
-                        tallies = self.outputs[zaid, mt, lib].tallydata
-                        # Extract values
-                        nflux = tallies[12].set_index('Energy').drop('total')
-                        nflux = nflux.sum().loc['Value']
-                        pflux = tallies[22].groupby('Time').sum().loc[i+1,
-                                                                      'Value']
-                        sddr = tallies[104].set_index('Time')
-                        sddr = sddr.loc['D'+self.timecols[time], 'Value']
-                        # Memorize values
+                    for time in self.times:
+                        nflux, pflux, sddr = self._extract_data4plots(material, 'All',
+                                                                      lib, time)
+                        # Memorize
                         nfluxs.append(nflux)
                         pfluxs.append(pflux)
                         sddrs.append(sddr)
-                        try:
-                            name, formula = libmanager.get_zaidname(zaid)
-                        except ValueError:
-                            formula = zaid
-                        xlabels.append(formula+' '+mt)
 
-                    # Split the data if its length is more then the limit
-                    datalenght = len(xlabels)
-                    sets = math.ceil(datalenght/lim)
-                    last_idx = 0
-                    idxs = []
-                    step = int(datalenght/sets)
-                    for _ in range(sets):
-                        newidx = last_idx+step
-                        idxs.append((last_idx, newidx))
-                        last_idx = newidx
+                    # Build the lib data
+                    ydata = [nfluxs, pfluxs, sddrs]
 
-                    for j, (start, end) in enumerate(idxs):
-                        # build the dic
-                        ydata = [nfluxs[start:end],
-                                 pfluxs[start:end],
-                                 sddrs[start:end]]
-                        xlab = xlabels[start:end]
-                        libdata = {'x': xlab, 'y': ydata, 'err': [],
-                                   'ylabel': ylabel}
-                        # try to append it to the data in the correct index
-                        # if the index is not found, then the list still needs
-                        # to be initialized
-                        try:
-                            data[j].append(libdata)
-                        except IndexError:
-                            data.append([libdata])
+                    libdata = {'x': xlab, 'y': ydata, 'err': [],
+                               'ylabel': ylabel}
+                    data.append(libdata)
 
-                # 3) Compute parameters for the plotter init
+                # Plot
                 refname = self.session.conf.get_lib_name(self.lib[0])
-                for datapiece in data:
-                    title = 'Ratio Vs {} (T0 + {})'.format(refname, time)
-                    outname = 'dummy'  # Does not matter if plot is added imm.
-                    testname = self.testname
-                    plot = plotter.Plotter(datapiece, title, outpath, outname,
-                                           quantity, unit, xlabel, testname)
-                    outfile = plot.plot('Waves')
-                    atlas.insert_img(outfile)
+                matname = self.mat_settings.loc[material, 'Name']
+                title = 'Ratio Vs {} ({})'.format(refname, matname)
+                outname = 'dummy'  # Does not matter if plot is added imm.
+                testname = self.testname
+                plot = plotter.Plotter(data, title, outpath, outname,
+                                       quantity, unit, xlabel, testname)
+                outfile = plot.plot('Waves')
+                atlas.insert_img(outfile)
 
         ########
         print(' Building...')
         atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(outpath)
+
+    def _extract_data4plots(self, zaid, mt, lib, time):
+        tallies = self.outputs[zaid, mt, lib].tallydata
+        # Extract values
+        nflux = tallies[12].set_index('Energy').drop('total')
+        nflux = nflux.sum().loc['Value']
+        pflux = tallies[22].groupby('Time').sum().loc[1, 'Value']
+        sddr = tallies[104].set_index('Time')
+        sddr = sddr.loc['D'+self.timecols[time], 'Value']
+        # Memorize values
+        return nflux, pflux, sddr
 
     def _compute_single_results(self):
         """
@@ -1215,19 +1266,20 @@ class SphereSDDRMCNPoutput(SphereMCNPoutput):
         """
         # 32 -> fine gamma flux
         # 104 -> Dose rate
-        flux = self.tallydata[32]
+        nflux = self.tallydata[12]
+        pflux = self.tallydata[32]
         sddr = self.tallydata[104]
         heat = self.tallydata[46]
 
         # Differentiate time labels
-        flux['Time'] = 'F' + flux['Time'].astype(str)
+        pflux['Time'] = 'F' + pflux['Time'].astype(str)
         sddr['Time'] = 'D' + sddr['Time'].astype(str)
         heat['Time'] = 'H' + heat['Time'].astype(str)
 
         # Get the total values of the flux at different cooling times
-        fluxvals = flux.groupby('Time').sum()['Value']
+        pfluxvals = pflux.groupby('Time').sum()['Value']
         # Get the mean error of the flux at different cooling times
-        fluxerrors = flux.groupby('Time').mean()['Error']
+        pfluxerrors = pflux.groupby('Time').mean()['Error']
 
         # Get the total values of the SDDR at different cooling times
         sddrvals = sddr.groupby('Time').sum()['Value']
@@ -1239,8 +1291,13 @@ class SphereSDDRMCNPoutput(SphereMCNPoutput):
         # Get the Heating mean error at different cooling times
         heaterrors = heat.set_index('Time')['Error']
 
+        # Neutron flux binned in energy
+        nfluxvals = nflux.set_index('Energy')['Value']
+        # Errors of the neutron flux
+        nfluxerrors = nflux.set_index('Energy')['Error']
+
         # Delete the total row in case it is there
-        for df, tag in zip([fluxvals, fluxerrors, sddrvals, sddrerrors,
+        for df, tag in zip([pfluxvals, pfluxerrors, sddrvals, sddrerrors,
                             heatvals, heaterrors],
                            ['F', 'F', 'D', 'D', 'H', 'H']):
             try:
@@ -1249,9 +1306,17 @@ class SphereSDDRMCNPoutput(SphereMCNPoutput):
                 # If total value is not there it is ok
                 pass
 
+        # Do the same for the flux
+        for df in [nfluxvals, nfluxerrors]:
+            try:
+                del df['total']
+            except KeyError:
+                # If total value is not there it is ok
+                pass
+
         # 2 series need to be built here, one for values and one for errors
-        vals = pd.concat([fluxvals, sddrvals, heatvals], axis=0)
-        errors = pd.concat([fluxerrors, sddrerrors, heaterrors],
+        vals = pd.concat([pfluxvals, sddrvals, heatvals, nfluxvals], axis=0)
+        errors = pd.concat([pfluxerrors, sddrerrors, heaterrors, nfluxerrors],
                            axis=0)
 
         return vals, errors

@@ -187,6 +187,10 @@ class Plotter():
         elif plot_type == 'Experimental points':
             outp = self._exp_points_plot()
 
+        # --- Experimental Points Plot ---
+        elif plot_type == 'Discreet Experimental points':
+            outp = self._exp_points_discreet_plot()
+
         # --- Grouped bars chart ---
         elif plot_type == 'Grouped bars':
             if self.testname == 'C_Model':
@@ -215,6 +219,13 @@ class Plotter():
         """
         Built a multirow ratio that correlates different results on the same
         x bin
+
+        Parameters
+        ----------
+        upperlimit: float
+            set the y upper limit for the ratio plot
+        lowerlimit: float
+            set the y lower limit for the ratio plot
 
         Returns
         -------
@@ -380,6 +391,9 @@ class Plotter():
             # log scale optional
             if log:
                 ax.set_yscale('log')
+                ax.yaxis.set_major_locator(LogLocator())
+            else:
+                ax.yaxis.set_major_locator(AutoLocator())
 
             # --- Plot details ---
             # Legend and ticks
@@ -391,7 +405,7 @@ class Plotter():
             ylabel = self.quantity+' ['+self.unit+']'
             ax.set_ylabel(ylabel)
             ax.set_xlabel(self.xlabel)
-            # ax.yaxis.set_major_locator(AutoLocator())
+
             # Special for x labels
             ax.set_xticks(x)
             ax.set_xticklabels(labels, rotation=60)
@@ -402,7 +416,7 @@ class Plotter():
 
         return self._save()
 
-    def _exp_points_plot(self):
+    def _exp_points_plot(self, y_scale='log'):
         """
         Plot a simple plot that compares experimental data points with
         computational calculation.
@@ -411,7 +425,9 @@ class Plotter():
 
         Parameters
         ----------
-
+        y_scale: str
+            acceppted values are the ones of matplotlib.axes.Axes.set_yscale
+            e.g. "linear", "log", "symlog", "logit", ... The default is 'log'.
 
         Returns
         -------
@@ -460,7 +476,7 @@ class Plotter():
 
         # --- Plot details ---
         # ax 1 details
-        ax1.set_yscale('log')
+        ax1.set_yscale(y_scale)
         ax1.set_title(self.title)
         ax1.set_ylabel(ylabel)
         ax1.legend(loc='best')
@@ -482,6 +498,111 @@ class Plotter():
         # ax.yaxis.set_major_locator(AutoLocator())
         # ax.xaxis.set_minor_locator(AutoMinorLocator())
         # ax.yaxis.set_minor_locator(AutoMinorLocator())
+
+            ax.tick_params(which='major', width=1.00, length=5)
+            ax.tick_params(which='minor', width=0.75, length=2.50)
+
+            # Grid
+            ax.grid('True', which='major', linewidth=0.50)
+            ax.grid('True', which='minor', linewidth=0.20)
+
+        return self._save()
+
+    def _exp_points_discreet_plot(self, y_scale='log', lowerlimit=0.5,
+                                  upperlimit=1.5):
+        """
+        Plot a simple plot that compares experimental data points with
+        computational calculation. Differently from _exp_points_plot here
+        the computational results are reported in a descreet format.
+
+        Also a C/E plot is added
+
+        Parameters
+        ----------
+        y_scale: str
+            acceppted values are the ones of matplotlib.axes.Axes.set_yscale
+            e.g. "linear", "log", "symlog", "logit", ... The default is 'log'.
+        upperlimit: float
+            set the y upper limit for the ratio plot
+        lowerlimit: float
+            set the y lower limit for the ratio plot
+
+        Returns
+        -------
+        outpath : str/path
+            path to the saved image
+
+        """
+        data = self.data
+
+        # Adjourn ylabel
+        ylabel = self.quantity+' ['+self.unit+']'
+
+        # Grid info
+        gridspec_kw = {'height_ratios': [3, 1], 'hspace': 0.13}
+        figsize = (18, 13.5)
+
+        # Initialize plot
+        fig, axes = plt.subplots(nrows=2, ncols=1, sharex=True,
+                                 figsize=figsize,
+                                 gridspec_kw=gridspec_kw)
+
+        ax1 = axes[0]
+        ax2 = axes[1]
+
+        ref_x = data[0]['x']
+        ref_y = data[0]['y']
+
+        # -- Main plot --
+        for i, libdata in enumerate(data):
+            x = libdata['x']
+            y = libdata['y']
+            err = libdata['err']
+            label = libdata['ylabel']
+
+            ax1.errorbar(x, y, yerr=err, marker=self.markers[i], linestyle='',
+                         capsize=10, color=self.colors[i], label=label)
+
+        # -- C/E --
+        for i, libdata in enumerate(data[1:]):
+            x = libdata['x']
+            y = libdata['y']
+            label = libdata['ylabel']
+            assert x == ref_x
+
+            # Compute the plot limits
+            norm, upper, lower = _get_limits(lowerlimit, upperlimit,
+                                             y/ref_y, x)
+            # This Should ensure that the x labels order is kept fixed
+            ax2.scatter(x, np.ones(len(x)), alpha=0)
+            # Plot everything
+            ax2.scatter(norm[0], norm[1], color=self.colors[i+1],
+                        marker=self.markers[i+1], label=label)
+            ax2.scatter(upper[0], upper[1], marker=CARETUPBASE,
+                        c=self.colors[i+1])
+            ax2.scatter(lower[0], lower[1], marker=CARETDOWNBASE,
+                        c=self.colors[i+1])
+
+        # --- Plot details ---
+        # ax 1 details
+        ax1.set_yscale(y_scale)
+        ax1.set_title(self.title)
+        ax1.set_ylabel(ylabel)
+        ax1.legend(loc='best')
+
+        # ax 2 details
+        toadd = (upperlimit-lowerlimit)/8
+        ax2.set_ylim(bottom=lowerlimit-toadd, top=upperlimit+toadd)
+        ax2.set_ylabel('C/E')
+        ax2.set_xlabel(self.xlabel)
+        ax2.axhline(y=1, linestyle='--', color='black')
+        plt.setp(ax2.get_xticklabels(), rotation=45, ha="right",
+                 rotation_mode="anchor")
+        ax2.axhline(lowerlimit, color='red', linewidth=0.5)
+        ax2.axhline(upperlimit, color='red', linewidth=0.5)
+
+        # Common for all axes
+        for ax in axes:
 
             ax.tick_params(which='major', width=1.00, length=5)
             ax.tick_params(which='minor', width=0.75, length=2.50)

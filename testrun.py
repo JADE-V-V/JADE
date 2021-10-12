@@ -286,7 +286,7 @@ class SphereTest(Test):
     Class handling the sphere test
     """
 
-    def generate_test(self, directory, libmanager, limit=None):
+    def generate_test(self, directory, libmanager, limit=None, lib=None):
         """
         Generated all the sphere test for a selected library
 
@@ -305,13 +305,15 @@ class SphereTest(Test):
         None.
 
         """
+        if lib is None:
+            lib = self.lib
         # Get typical materials input
         dirmat = os.path.dirname(self.original_inp)
         matpath = os.path.join(dirmat, 'TypicalMaterials')
         inpmat = ipt.InputFile.from_text(matpath)
         matlist = inpmat.matlist
         # Get zaids available into the selected library
-        zaids = libmanager.get_libzaids(self.lib)
+        zaids = libmanager.get_libzaids(lib)
 
         testname = self.inp.name
         motherdir = os.path.join(directory, testname)
@@ -401,7 +403,7 @@ class SphereTest(Test):
 
     def generate_zaid_test(self, zaid, libmanager, testname, motherdir,
                            density, nps, ctme, precision, addtag=None,
-                           parentlist=None):
+                           parentlist=None, lib=None):
         """
         Generate input for a single zaid sphere leakage benchmark run.
 
@@ -434,13 +436,16 @@ class SphereTest(Test):
         None.
 
         """
+        if lib is None:
+            lib = self.lib
+
         # Get VRT files
         directoryVRT = os.path.join(self.path_VRT, zaid)
         edits_file = os.path.join(directoryVRT, 'inp_edits.txt')
         ww_file = os.path.join(directoryVRT, 'wwinp')
 
         # Adjourn the material cards for the zaid
-        zaid = mat.Zaid(1, zaid[:-3], zaid[-3:], self.lib)
+        zaid = mat.Zaid(1, zaid[:-3], zaid[-3:], lib)
         name, formula = libmanager.get_zaidname(zaid)
         submat = mat.SubMaterial('M1', [zaid],
                                  header='C '+name+' '+formula)
@@ -487,7 +492,7 @@ class SphereTest(Test):
         return outfile, outdir
 
     def generate_material_test(self, material, density, libmanager, testname,
-                               motherdir, parentlist=None):
+                               motherdir, parentlist=None, lib=None):
         """
         Generate a sphere leakage benchmark input for a single typical
         material.
@@ -512,6 +517,8 @@ class SphereTest(Test):
         None.
 
         """
+        if lib is None:
+            lib = self.lib
         truename = material.name
         # Get VRT file
         directoryVRT = os.path.join(self.path_VRT, truename)
@@ -519,7 +526,7 @@ class SphereTest(Test):
         ww_file = os.path.join(directoryVRT, 'wwinp')
 
         # Translate and assign the material
-        material.translate(self.lib, libmanager)
+        material.translate(lib, libmanager)
         material.header = material.header+'C\nC True name:'+truename
         material.name = 'M1'
         matlist = mat.MatCardsList([material])
@@ -579,6 +586,18 @@ class SphereTest(Test):
 
 class SphereTestSDDR(SphereTest):
 
+    def __init__(self, *args, **keyargs):
+        super().__init__(*args, **keyargs)
+        # Lib needs to be provided in the {activation lib}-{transportlib}
+        activationlib, transportlib = check_transport_activation(self.lib)
+        self.activationlib = activationlib
+        self.transportlib = transportlib
+
+    def generate_test(self, directory, libmanager, limit=None, lib=None):
+
+        super().generate_test(directory, libmanager, limit=limit,
+                              lib=self.activationlib)
+
     def generate_zaid_test(self, zaid, libmanager, testname, motherdir,
                            density, nps, ctme, precision):
         """
@@ -611,7 +630,7 @@ class SphereTestSDDR(SphereTest):
         """
 
         # Recover the available reactions
-        reactions = libmanager.get_reactions(self.lib, zaid)
+        reactions = libmanager.get_reactions(self.activationlib, zaid)
 
         # Genearate a different test for each reaction
         for reaction in reactions:
@@ -621,14 +640,15 @@ class SphereTestSDDR(SphereTest):
             super().generate_zaid_test(zaid, libmanager, testname,
                                        motherdir, density, nps, ctme,
                                        precision, addtag=MT,
-                                       parentlist=[zaid])
+                                       parentlist=[zaid],
+                                       lib=self.activationlib)
 
             # --- Add the irradiation file ---
             # generate file
             reacfile = self._generate_reaction_file([(zaid, MT, daughter)])
             # Recover ouput directory
             name, formula = libmanager.get_zaidname(zaid)
-            zaidob = mat.Zaid(1, zaid[:-3], zaid[-3:], self.lib)
+            zaidob = mat.Zaid(1, zaid[:-3], zaid[-3:], self.activationlib)
             _, outdir = self._get_zaidtestname(testname, zaidob, formula,
                                                addtag=MT)
             outpath = os.path.join(motherdir, outdir)
@@ -675,19 +695,27 @@ class SphereTestSDDR(SphereTest):
         reactions = []
         parentlist = []
         daughterlist = []
+        transportlist = []
         for submat in material.submaterials:
             for zaid in submat.zaidList:
                 parent = zaid.element+zaid.isotope
-                zaidreactions = libmanager.get_reactions(self.lib, parent)
+                zaidreactions = libmanager.get_reactions(self.activationlib,
+                                                         parent)
                 if len(zaidreactions) > 0:
                     # it is a parent only if reactions are available
                     parentlist.append(parent)
+                else:
+                    # normal transport
+                    transportlist.append(parent)
+
                 for MT, daughter in zaidreactions:
                     reactions.append((parent, MT, daughter))
                     daughterlist.append(daughter)
 
         # eliminate duplicates
         daughterlist = list(set(daughterlist))
+        parentlist = list(set(parentlist))
+        transportlist = list(set(transportlist))
 
         # The generation of the inputs has to be done only if there is at
         # least one parent
@@ -695,9 +723,12 @@ class SphereTestSDDR(SphereTest):
             return
         else:
             # generate the input
+            libs = {self.activationlib: parentlist,
+                    self.transportlib: transportlist}
             super().generate_material_test(material, density, libmanager,
                                            testname,
-                                           motherdir, parentlist=parentlist)
+                                           motherdir, parentlist=parentlist,
+                                           lib=libs)
             # Generate the reaction file
             reac_file = self._generate_reaction_file(reactions)
             # recover output directory and write file
@@ -733,7 +764,7 @@ class SphereTestSDDR(SphereTest):
         """
         reaction_list = []
         for parent, MT, daughter in reactions:
-            parent = parent+'.'+self.lib
+            parent = parent+'.'+self.activationlib
             rx = Reaction(parent, MT, daughter)
             reaction_list.append(rx)
 
@@ -758,12 +789,12 @@ class SphereTestSDDR(SphereTest):
 
         """
         try:
-            filepath = os.path.join(self.test_conf_path, 'irrad_'+self.lib)
+            filepath = os.path.join(self.test_conf_path, 'irrad_'+self.activationlib)
         except FileNotFoundError:
             print(CRED+"""
  Please provide an irradiation file summary for lib {}. Check the documentation
  for additional details. The application will now exit.
-                  """.format(self.lib)+CEND)
+                  """.format(self.activationlib)+CEND)
             sys.exit()
 
         irradfile = IrradiationFile.from_text(filepath)
@@ -831,19 +862,7 @@ class FNG_Test(MultipleTest):
         libmanager = args[1]
         # Informations on irr file and reac file need to be overridden
         for test in self.tests:
-            # Operate on the newlib, should arrive in the 99c-31c format
-            errmsg = """
- Please define the pair activation-transport lib for the FNG benchmark
- (e.g. 99c-31c). See additional details on the documentation.
-            """
-            try:
-                activationlib = test.lib.split('-')[0]
-                transportlib = test.lib.split('-')[1]
-            except IndexError:
-                raise ValueError(errmsg)
-            # Check that libraries have been correctly defined
-            if activationlib+'-'+transportlib != test.lib:
-                raise ValueError(errmsg)
+            activationlib, transportlib = self.check_transport_activation(test.lib)
             active_zaids = []
             transp_zaids = []
 
@@ -922,3 +941,21 @@ def check_true(obj):
         return True
     else:
         return False
+
+
+def check_transport_activation(lib):
+    # Operate on the newlib, should arrive in the 99c-31c format
+    errmsg = """
+ Please define the pair activation-transport lib for the FNG benchmark
+ (e.g. 99c-31c). See additional details on the documentation.
+            """
+    try:
+        activationlib = lib.split('-')[0]
+        transportlib = lib.split('-')[1]
+    except IndexError:
+        raise ValueError(errmsg)
+    # Check that libraries have been correctly defined
+    if activationlib+'-'+transportlib != lib:
+        raise ValueError(errmsg)
+
+    return activationlib, transportlib

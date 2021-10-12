@@ -106,6 +106,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#print-materials-info">Print materials info</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#generate-material-mixture">Generate material mixture</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#switch-material-fractions">Switch material fractions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#change-ace-libraries-suffix">Change .ace libraries suffix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#produce-d1s-uned-reaction-files">Produce D1S-UNED reaction files</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tipstricks.html">Tips &amp; Tricks</a></li>
@@ -277,6 +279,22 @@ The following scheme summarizes the JADE translation logic.</p>
 <a class="reference internal image-reference" href="../_images/Translation_logic.jpg"><img alt="../_images/Translation_logic.jpg" src="../_images/Translation_logic.jpg" style="width: 600px;" /></a>
 <p class="caption"><span class="caption-text">Zaid translation logic</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
 </div>
+<p>There are few format that can be used to request a translation:</p>
+<dl class="simple">
+<dt>Default (e.g. <code class="docutils literal notranslate"><span class="pre">31c</span></code>)</dt><dd><p>Only one library is provided and the above described translation
+procedure is followed</p>
+</dd>
+<dt>ExactMode (e.g. <code class="docutils literal notranslate"><span class="pre">{99c:</span> <span class="pre">[1001,</span> <span class="pre">1002],</span> <span class="pre">31c:</span> <span class="pre">[8016]}</span></code>)</dt><dd><p>This mode is used in the autoatic translation of D1S inputs where
+the mix between zaids to be used for transport and zaids to be used
+for activation result in additional complexity during the translation.
+The use of such mode is discourauged in the <code class="docutils literal notranslate"><span class="pre">trans</span></code> utility.</p>
+</dd>
+<dt>1to1Mode (e.g. <code class="docutils literal notranslate"><span class="pre">{99c:</span> <span class="pre">98c,</span> <span class="pre">31c:</span> <span class="pre">21c}</span></code>)</dt><dd><p>In case more than one library have been used in the original input the
+user can provide a dictionary which specifies for each original library
+(e.g. 99c and 31c) to which new library the zaids should be translated to
+(e.g. 31c and 21c).</p>
+</dd>
+</dl>
 </div>
 <div class="section" id="print-materials-info">
 <h2>Print materials info<a class="headerlink" href="#print-materials-info" title="Permalink to this headline">¶</a></h2>
@@ -329,6 +347,29 @@ retaining its header if present. The new material will be dumped in the
 <p>This function can be used to switch an MCNP input from having atom fractions
 to mass fractions and viceversa. The new input will be dumped in the
 <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Utilities\Fraction</span> <span class="pre">switch</span></code> folder.</p>
+</div>
+<div class="section" id="change-ace-libraries-suffix">
+<h2>Change .ace libraries suffix<a class="headerlink" href="#change-ace-libraries-suffix" title="Permalink to this headline">¶</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version v1.3.0: </span><code class="docutils literal notranslate"><span class="pre">acelib</span></code></p>
+</div>
+<p>This function asks for a directory absolute path and for a new library suffix
+(e.g. <code class="docutils literal notranslate"><span class="pre">98c</span></code>). All .ace files contained in the folder will have their original
+suffix changed to the new one. This function operates in a non-destructive way,
+that is, the switch is not implemented on the original file but on copies of
+them instead.</p>
+</div>
+<div class="section" id="produce-d1s-uned-reaction-files">
+<h2>Produce D1S-UNED reaction files<a class="headerlink" href="#produce-d1s-uned-reaction-files" title="Permalink to this headline">¶</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version v1.3.0: </span><code class="docutils literal notranslate"><span class="pre">react</span></code></p>
+</div>
+<p>This function, given a D1S input file, produce a correspondent reaction file
+where all possible reactions that can originate from the input materials are
+listed. The complete list of available reactions for each D1S activation
+library is provided (and may be modified) in the <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Activation.xlsx</span></code>
+file.</p>
+<p>The generated reaction files are dumped in the <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Utilities\Reactions</span></code> folder</p>
 </div>
 </div>
 

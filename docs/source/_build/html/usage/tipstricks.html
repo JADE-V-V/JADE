@@ -102,6 +102,7 @@
 <li class="toctree-l1"><a class="reference internal" href="utilities.html">Utilities</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tips &amp; Tricks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#external-run-of-a-benchmark">External Run of a benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#change-the-plots-fontsizes">Change the plots fontsizes</a></li>
 </ul>
 </li>
 </ul>
@@ -204,6 +205,30 @@ when launching the simulation in order to obtain consistently named outputs;</p>
 <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Tests\MCNP</span> <span class="pre">simulation\&lt;lib</span> <span class="pre">suffix&gt;\&lt;Benchmark</span> <span class="pre">name&gt;</span></code> folder;</p></li>
 <li><p>normally run the post-processing.</p></li>
 </ol>
+</div>
+<div class="section" id="change-the-plots-fontsizes">
+<h2>Change the plots fontsizes<a class="headerlink" href="#change-the-plots-fontsizes" title="Permalink to this headline">¶</a></h2>
+<p>Font size in plots is hardcoded in JADE. Nevertheless to change these value globally
+for all plots it is quite easy since they are all defined at the beginning of the
+<code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Code\plotter.py</span></code> file trough the matplotlib.pyplot.rc attribute:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="c1"># ============================================================================</span>
+<span class="c1">#                   Specify parameters for plots</span>
+<span class="c1"># ============================================================================</span>
+<span class="n">SMALL_SIZE</span> <span class="o">=</span> <span class="mi">22</span>
+<span class="n">MEDIUM_SIZE</span> <span class="o">=</span> <span class="mi">26</span>
+<span class="n">BIGGER_SIZE</span> <span class="o">=</span> <span class="mi">30</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;font&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">SMALL_SIZE</span><span class="p">)</span>          <span class="c1"># controls default text sizes</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;axes&#39;</span><span class="p">,</span> <span class="n">titlesize</span><span class="o">=</span><span class="n">BIGGER_SIZE</span><span class="p">)</span>     <span class="c1"># fontsize of the axes title</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;axes&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="n">MEDIUM_SIZE</span><span class="p">)</span>    <span class="c1"># fontsize of the x and y labels</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;xtick&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="n">SMALL_SIZE</span><span class="p">)</span>    <span class="c1"># fontsize of the tick labels</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;ytick&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="n">SMALL_SIZE</span><span class="p">)</span>    <span class="c1"># fontsize of the tick labels</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;legend&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">SMALL_SIZE</span><span class="p">)</span>    <span class="c1"># legend fontsize</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;figure&#39;</span><span class="p">,</span> <span class="n">titlesize</span><span class="o">=</span><span class="n">BIGGER_SIZE</span><span class="p">)</span>  <span class="c1"># fontsize of the figure title</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;lines&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>          <span class="c1"># Marker default size</span>
+</pre></div>
+</div>
 </div>
 </div>
 

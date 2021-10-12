@@ -10,12 +10,18 @@ The following is a scheme of the JADE folder structure:
 
     <JADE_root>
         |--------- Benchmark inputs
+        |            |----- <inputfile>.i
+        |            |----- ...
+        |            |----- <Inputfolder>
+        |            |----- ...
+        |            |----- VRT
         |
         |--------- Code
-        |            |----- Default Settings
+        |            |----- default_settings
         |            |----- docs
-        |            |----- Installation Files
-        |            |----- Templates
+        |            |----- install_files
+        |            |----- templates
+        |            |----- tests
         |
         |--------- Configuration
         |                |----------- Benchmarks Configuration
@@ -73,24 +79,31 @@ This is the folder where eventual user defined benchmark inputs should be positi
 In case of benchmarks that are composed by more than one run, all the inputs are reunited in a sub-folder
 (e.g. ``<JADE_root>\Benchmark inputs\Oktavian``.
 
+``<JADE_root>\Benchmark inputs\VRT`` folder is especially important. Here, in specific subfolders, can be found
+all additional files required by the benchmark inputs (e.g. weight window files, irradiation files, reactions file,
+etc.)
+
 Code
 ====
 ``<JADE_root>\Code`` contains the JADE GitHub repo itself. All the source code is contained here toghether with the
 following subfolders:
 
-Default Settings
+default_settings
    Contains all JADE default settings. On the first JADE instance these are copied to the ``<JADE_root>\Configuration``
    folder. They can be restored by a dedicated utility function available from the main menu.
 
 docs
    Contains all files related to this documentation. Here, local version of the documentations can be found.
 
-Installation Files
+install_files
     Contains files to be used during the first JADE run. They have not any appeal to the general user.
 
-Templates
+templates
     Contains all the Microsoft Office and Word templates to be used during post-processing. In case of user-defined
-    benchmarks that are based on specific templates, these need to be added here. 
+    benchmarks that are based on specific templates, these need to be added here.
+
+tests
+    Contains all the .py files to be run with pytest and folder containing files useful for the testing activity
 
 Configuration
 =============

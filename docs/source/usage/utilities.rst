@@ -105,6 +105,24 @@ The following scheme summarizes the JADE translation logic.
 
     Zaid translation logic
 
+There are few format that can be used to request a translation:
+
+Default (e.g. ``31c``)
+    Only one library is provided and the above described translation 
+    procedure is followed
+
+ExactMode (e.g. ``{99c: [1001, 1002], 31c: [8016]}``)
+    This mode is used in the autoatic translation of D1S inputs where
+    the mix between zaids to be used for transport and zaids to be used
+    for activation result in additional complexity during the translation.
+    The use of such mode is discourauged in the ``trans`` utility. 
+
+1to1Mode (e.g. ``{99c: 98c, 31c: 21c}``)
+    In case more than one library have been used in the original input the
+    user can provide a dictionary which specifies for each original library
+    (e.g. 99c and 31c) to which new library the zaids should be translated to
+    (e.g. 31c and 21c).
+
 Print materials info
 ====================
 ``printmat``
@@ -165,3 +183,27 @@ Switch material fractions
 This function can be used to switch an MCNP input from having atom fractions
 to mass fractions and viceversa. The new input will be dumped in the
 ``<JADE root>\Utilities\Fraction switch`` folder.
+
+Change .ace libraries suffix
+============================
+.. versionadded:: v1.3.0
+    ``acelib``
+
+This function asks for a directory absolute path and for a new library suffix
+(e.g. ``98c``). All .ace files contained in the folder will have their original
+suffix changed to the new one. This function operates in a non-destructive way,
+that is, the switch is not implemented on the original file but on copies of
+them instead.
+
+Produce D1S-UNED reaction files
+===============================
+.. versionadded:: v1.3.0
+    ``react``
+
+This function, given a D1S input file, produce a correspondent reaction file
+where all possible reactions that can originate from the input materials are
+listed. The complete list of available reactions for each D1S activation
+library is provided (and may be modified) in the ``<JADE_root>\Configuration\Activation.xlsx``
+file. 
+
+The generated reaction files are dumped in the ``<JADE root>\Utilities\Reactions`` folder

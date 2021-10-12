@@ -11,6 +11,9 @@ all other configuration files simply guarantee an additional level of personaliz
 .. note::
     In case of user-defined benchmarks suitable :ref:`runconf` and :ref:`ppconf` files need
     to be produced.
+.. note::
+    Every time a new D1S library is added to the user xsdir, in order to use it in JADE a specific
+    sheet must be added in the :ref:`activationfile`.
 
 .. _mainconfig:
 
@@ -30,6 +33,9 @@ This sheet contains the JADE *ambient variables*:
 
 xsdir Path
     Absolute path to the xsdir file that has been set to be used during MCNP simulations.
+    If different codes are used that use different xsdir file (e.g. mcnp5 and mcnp6) the
+    user should make sure that all libraries of interest are included in the xsdir file
+    indicated in this variable.
 
 multithread
     Under Windows operative system, MCNP allows to run on multithread using the ``tasks``
@@ -115,6 +121,19 @@ Libraries
 This table simply consists of a glossary where the user can associate more explicit
 names to the nuclear data libraries suffixes available in the xsdir file. This
 allows for a clearer post-processing output.
+
+.. _activationfile:
+
+Activation File
+===============
+
+.. image:: ../img/conf/activation.jpg
+    :width: 600
+
+The ``<JADE_root>\Configuration\Activation.xlsx`` file stores all the reactions available in the different versions of the D1S-UNED
+activation libraries. For each library a sheet needs to be added having as name the 
+suffix used in the xsdir file for the library. Only three columns in the table are mandatory
+and these are the **Parent**, **MT** and **Daughter** ones.
 
 .. _runconf:
 

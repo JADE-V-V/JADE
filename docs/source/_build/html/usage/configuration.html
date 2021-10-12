@@ -103,6 +103,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#libraries">Libraries</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#activation-file">Activation File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#benchmark-run-configuration">Benchmark run configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#benchmark-post-processing-configuration">Benchmark post-processing configuration</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#excel">Excel</a></li>
@@ -204,6 +205,11 @@ all other configuration files simply guarantee an additional level of personaliz
 <p>In case of user-defined benchmarks suitable <a class="reference internal" href="#runconf"><span class="std std-ref">Benchmark run configuration</span></a> and <a class="reference internal" href="#ppconf"><span class="std std-ref">Benchmark post-processing configuration</span></a> files need
 to be produced.</p>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Every time a new D1S library is added to the user xsdir, in order to use it in JADE a specific
+sheet must be added in the <a class="reference internal" href="#activationfile"><span class="std std-ref">Activation File</span></a>.</p>
+</div>
 <div class="section" id="main-configuration">
 <span id="mainconfig"></span><h2>Main Configuration<a class="headerlink" href="#main-configuration" title="Permalink to this headline">¶</a></h2>
 <p>The most important configuration file is <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Config.xlsx</span></code>.
@@ -214,7 +220,10 @@ Herafter, a description of the different sheets included in the file is given.</
 <a class="reference internal image-reference" href="../_images/main.png"><img alt="../_images/main.png" src="../_images/main.png" style="width: 600px;" /></a>
 <p>This sheet contains the JADE <em>ambient variables</em>:</p>
 <dl class="simple">
-<dt>xsdir Path</dt><dd><p>Absolute path to the xsdir file that has been set to be used during MCNP simulations.</p>
+<dt>xsdir Path</dt><dd><p>Absolute path to the xsdir file that has been set to be used during MCNP simulations.
+If different codes are used that use different xsdir file (e.g. mcnp5 and mcnp6) the
+user should make sure that all libraries of interest are included in the xsdir file
+indicated in this variable.</p>
 </dd>
 <dt>multithread</dt><dd><p>Under Windows operative system, MCNP allows to run on multithread using the <code class="docutils literal notranslate"><span class="pre">tasks</span></code>
 keyword. Setting this variable to <code class="docutils literal notranslate"><span class="pre">True</span></code> enables this capability.</p>
@@ -285,6 +294,14 @@ in this table are indicated the settings for the experimental benchmarks.</p>
 names to the nuclear data libraries suffixes available in the xsdir file. This
 allows for a clearer post-processing output.</p>
 </div>
+</div>
+<div class="section" id="activation-file">
+<span id="activationfile"></span><h2>Activation File<a class="headerlink" href="#activation-file" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="../_images/activation.jpg"><img alt="../_images/activation.jpg" src="../_images/activation.jpg" style="width: 600px;" /></a>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Activation.xlsx</span></code> file stores all the reactions available in the different versions of the D1S-UNED
+activation libraries. For each library a sheet needs to be added having as name the
+suffix used in the xsdir file for the library. Only three columns in the table are mandatory
+and these are the <strong>Parent</strong>, <strong>MT</strong> and <strong>Daughter</strong> ones.</p>
 </div>
 <div class="section" id="benchmark-run-configuration">
 <span id="runconf"></span><h2>Benchmark run configuration<a class="headerlink" href="#benchmark-run-configuration" title="Permalink to this headline">¶</a></h2>

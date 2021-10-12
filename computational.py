@@ -96,11 +96,8 @@ def executeBenchmarksRoutines(session, lib, exp=False):
             elif testname == 'Sphere SDDR':
                 test = testrun.SphereTestSDDR(*args)
 
-            elif testname == 'Oktavian Experiment':
+            elif fname in ['Oktavian', 'FNG']:
                 test = testrun.MultipleTest(*args)
-
-            elif fname == 'FNG':
-                test = testrun.FNG_Test(*args)
 
             else:
                 test = testrun.Test(*args)

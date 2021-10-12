@@ -246,6 +246,69 @@ class InputFile:
 
 class D1S_Input(InputFile):
 
+    def translate(self, newlib, libmanager, original_irradfile=None,
+                  original_reacfile=None):
+        # Generally, an activation lib and transport lib are expected
+        try:
+            activationlib, transportlib = check_transport_activation(newlib)
+        except AttributeError:
+            # Then the passed library was already a dict
+            # Default translation can be operated
+            super().translate(newlib, libmanager)
+            return None
+
+        active_zaids = []
+        transp_zaids = []
+
+        # Give a first translation with the transport lib. This will
+        # correctly expand all natural zaid before the actual translation
+        # that also uses the activation lib
+        self.matlist.translate(transportlib, libmanager)
+
+        # Get the general reaction file
+        reacfile = self.get_reaction_file(libmanager, activationlib)
+
+        # --- Check which daughters are available in the irr file ---
+        # --- Modify irr file, react file and lib accordingly ---
+        newreactions = []
+        newirradiations = []
+        available_daughters = original_irradfile.get_daughters()
+        for reaction in reacfile.reactions:
+            # strip the lib from the parent
+            parent = reaction.parent.split('.')[0]
+            if reaction.daughter in available_daughters:
+                # add the parent to the activation lib
+                active_zaids.append(parent)
+                # add the reaction to the one to use
+                reaction.change_lib(activationlib)
+                newreactions.append(reaction)
+                # add the correspondent irradiation
+                irr = original_irradfile.get_irrad(reaction.daughter)
+                if irr not in newirradiations:
+                    newirradiations.append(irr)
+            else:
+                # Add the zaid to the transport lib
+                transp_zaids.append(parent)
+
+        # Now check for the remaing materials in the input to be assigned
+        # to transport
+        for material in self.matlist:
+            for submaterial in material.submaterials:
+                for zaid in submaterial.zaidList:
+                    zaidnum = zaid.element+zaid.isotope
+                    if (zaidnum not in active_zaids and
+                            zaidnum not in transp_zaids):
+                        transp_zaids.append(zaidnum)
+
+        newlib = {activationlib: active_zaids, transportlib: transp_zaids}
+        # Add the PIKMT card
+        self.add_PIKMT_card(active_zaids)
+        # Translate the input with the new lib
+        self.matlist.translate(newlib, libmanager)
+
+        # Parameters to modify the test attributes
+        return newirradiations, newreactions
+
     def add_PIKMT_card(self, parent_list):
         """
         Add a PIKMT card to the input file
@@ -363,3 +426,21 @@ def suppress_stdout():
             yield
         finally:
             sys.stdout = old_stdout
+
+
+def check_transport_activation(lib):
+    # Operate on the newlib, should arrive in the 99c-31c format
+    errmsg = """
+ Please define the pair activation-transport lib for the FNG benchmark
+ (e.g. 99c-31c). See additional details on the documentation.
+            """
+    try:
+        activationlib = lib.split('-')[0]
+        transportlib = lib.split('-')[1]
+    except IndexError:
+        raise ValueError(errmsg)
+    # Check that libraries have been correctly defined
+    if activationlib+'-'+transportlib != lib:
+        raise ValueError(errmsg)
+
+    return activationlib, transportlib

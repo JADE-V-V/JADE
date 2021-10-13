@@ -463,8 +463,8 @@ class FNGOutput(ExperimentalOutput):
         atlas.doc.add_heading('Shut Down Dose Rate', level=1)
         xlabel = 'Cooldown time'
         # Only two plots, one for each irradiation campaign
-        for folder, title in zip(self.names, ['1st FNG Iraddiation campaign',
-                                              '2nd FNG Irradiaiton campaign']):
+        for folder, title in zip(self.names, ['1st FNG Irradiation campaign',
+                                              '2nd FNG Irradiation campaign']):
             atlas.doc.add_heading(title, level=2)
             # -- Recover data to plot --
             data = []

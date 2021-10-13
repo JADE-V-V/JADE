@@ -22,6 +22,7 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
+import math
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -287,7 +288,8 @@ class Plotter():
 
         return self._save()
 
-    def _grouped_bar(self, log=False, maxgroups=35, xlegend=None):
+    def _grouped_bar(self, log=False, maxgroups=35, xlegend=None,
+                     minspread=2):
         """
         Plot a grouped bar chart on a "categorical" x axis.
 
@@ -302,6 +304,9 @@ class Plotter():
         xlegend : dic, optional
             allows to change the x ticks labels for better plot clarity.
             The default is None.
+        minspread: float
+            minimum spread necessary to keep the log option on the y axis.
+            expressed in order of magnitudes. The default is 2.
 
         Returns
         -------
@@ -309,6 +314,12 @@ class Plotter():
             path to the saved image
 
         """
+        # Override log parameter if variation is low on y axis
+        if log:
+            spread = checkYspread(self.data)
+            if spread <= minspread:
+                log = False
+
         # Override x ticks labels if requested
         if xlegend is None:
             labels = self.data[0]['x']
@@ -1005,3 +1016,41 @@ def _get_limits(lowerlimit, upperlimit, ydata, xdata):
     lowerY = np.full(len(lowerX), lowerlimit)
 
     return (normalX, normalY), (upperX, upperY), (lowerX, lowerY)
+
+
+def checkYspread(datadics):
+    """
+    All data must be positive! or spread cannot be compute correctly
+
+    """
+    maxval = 0
+    minval = 1e36
+
+    for data in datadics:
+        ymin = data['y'].min()
+        ymax = data['y'].max()
+
+        # If min is a negative value, spread computation loses meaning.
+        if ymin < 0:
+            return 1e36
+
+        # adjourn max and min val across dataset
+        if ymin < minval:
+            minval = ymin
+        if ymax > maxval:
+            maxval = ymax
+
+    # min val or max val could be 0 -> ValueError
+    try:
+        up = math.log10(ymax)
+    except ValueError:
+        up = 0
+
+    try:
+        down = math.log10(ymin)
+    except ValueError:
+        down = 0
+
+    spread = up-down
+
+    return spread

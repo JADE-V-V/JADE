@@ -213,6 +213,8 @@ class Test():
         #     # This was tested only for sphere... be careful
         #     self.inp.add_edits(edits_file)  # Add variance reduction
 
+        # Allow space for personalization getting additional modification
+        self.custom_inp_modifications()
         # Write new input file
         outinpfile = os.path.join(motherdir, testname)
         self.inp.write(outinpfile)
@@ -227,6 +229,10 @@ class Test():
         if os.path.exists(wwinp):
             outfile = os.path.join(motherdir, 'wwinp')
             shutil.copyfile(wwinp, outfile)
+
+    def custom_inp_modifications(self):
+        # It does not do anything in the default benchmark
+        pass
 
     def run(self, cpu=1, timeout=None):
         name = self.name
@@ -818,16 +824,29 @@ class SphereTestSDDR(SphereTest):
         return irradfile, ans
 
 
+class FNGTest(Test):
+    def custom_inp_modifications(self):
+        # Add the tracking for daughters in tally 14
+        zaids = self.irrad.get_daughters()
+        self.inp.add_track_contribution('F14:p', zaids, who='daughter')
+        # Add the tracking for daughters in tally 24
+        zaids = self.react.get_parents()
+        self.inp.add_track_contribution('F24:p', zaids, who='parent')
+
+
 class MultipleTest:
-    def __init__(self, inpsfolder, lib, config, log, VRTpath, confpath):
+    def __init__(self, inpsfolder, lib, config, log, VRTpath, confpath,
+                 TestOb=Test):
         """
         This simply a collection of Test objects, see the single Test object,
         for methods and attributes descriptions
+
+        addeed TestOb so a custom test may be provided if needed
         """
         tests = []
         for folder in os.listdir(inpsfolder):
             inp = os.path.join(inpsfolder, folder)
-            test = Test(inp, lib, config, log, VRTpath, confpath)
+            test = TestOb(inp, lib, config, log, VRTpath, confpath)
             tests.append(test)
         self.tests = tests
         self.name = os.path.basename(inpsfolder)

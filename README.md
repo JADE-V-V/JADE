@@ -48,9 +48,6 @@ The procedure to install JADE is the following:
   ```
 7) on the first usage the rest of the folders architecture is initialized.
 
-###### N.B.
-A limitator has been inserted in the code in order to test it before using JADE for production (this will be eliminated when a proper function testing the installation will be produced). To remove it, open <JADE_root>\Code\testrun.py and comment out line 239 and 298 while de-commenting line 238 and 297.
-
 ## Usage!
 
 JADE is a consolle based software where different menu can be accessed through direct typing into the shell.

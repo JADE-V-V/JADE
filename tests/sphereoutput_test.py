@@ -64,7 +64,7 @@ class TestSphereSDDRoutput:
             assert len(df) == 2
 
         for df in [results, errors]:
-            assert list(df.columns) == cols
+            assert list(df.columns[:-5]) == cols
 
         # print(results)
         # print(errors)
@@ -80,5 +80,5 @@ class TestSphereSDDRMCNPoutput:
         vals, errors = self.out.get_single_excel_data()
         assert isinstance(vals, pd.Series)
         assert isinstance(errors, pd.Series)
-        assert len(vals) == 18
-        assert len(errors) == 18
+        assert len(vals) == 23
+        assert len(errors) == 23

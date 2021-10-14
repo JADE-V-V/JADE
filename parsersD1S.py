@@ -344,6 +344,22 @@ class ReactionFile:
 
         return cls(reactions)  # , name=os.path.basename(filepath))
 
+    def get_parents(self):
+        """
+        Get a list of all parents
+
+        Returns
+        -------
+        None.
+
+        """
+        parents = []
+        for reaction in self.reactions:
+            parent = reaction.parent.split('.')[0]
+            if parent not in parents:
+                parents.append(parent)
+        return parents
+
     def change_lib(self, newlib, libmanager=None):
         """
         change the parent library tag of the reactions. If no libmanager is

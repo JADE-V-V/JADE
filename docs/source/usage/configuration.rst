@@ -99,6 +99,14 @@ Relative Error cut-off
     This stops the calculation when the tally fluctuation chart of tally *k* has reached a
     relative error lower than *e*.
 
+Custom input
+    .. versionadded:: v1.3.0
+        This columns allows to provide custom inputs to the different benchmarks. For the
+        moment, this is used only in the *Sphere Leakage* and *Sphere SDDR* benchmarks where,
+        if a number *n* is specified, this will limit the test to the first *n* isotope and 
+        material simulations (useful for testing).
+
+
 .. note::
     All three STOP parameters can be simultaneously defined during a simulation. The first
     cut-off criteria reached will be the one triggering the end of the calculation.
@@ -194,7 +202,7 @@ x, y
         * - Cor B
         * - Cor C
 
-    As a result of the selcted **x** and **y** option, the results of the post-processed tally will be display in a
+    As a result of the selected **x** and **y** option, the results of the post-processed tally will be display in a
     matrix format. In case only a single binning is defined in the MCNP input, the ``tally`` keyword should be used to
     signal to JADE to just to print the results in a column format.
 

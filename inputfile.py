@@ -23,6 +23,7 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import re
 import json
+import textwrap
 import matreader as mat
 from numjuggler import parser as par
 import os
@@ -243,11 +244,154 @@ class InputFile:
 
         self.cards['settings'] = newsettings
 
+    def get_card_byID(self, blockID, cardID):
+        """
+        Get a card of the input based on its ID
+
+        Parameters
+        ----------
+        blockID : str
+            either 'cell', 'surf', 'settings' or 'title'.
+        cardID : str or int
+            card ID (e.g. FC22).
+
+        Raises
+        ------
+        ValueError
+            if blockID is not allowed.
+
+        Returns
+        -------
+        card : numjuggler.parser.Card
+            Selected card. If the card is not found, None is returned
+
+        """
+        # pattern of card IDs
+        patCardID = re.compile(r'{}\s+'.format(str(cardID)), re.IGNORECASE)
+        # Try to get the correct block of cards
+        try:
+            block = self.cards[blockID]
+        except KeyError:
+            raise ValueError(blockID+' is not a valid block')
+
+        # Try to find the card
+        for card in block:
+            for line in card.lines:
+                check = patCardID.match(line)
+                if check is not None:
+                    return card
+
+        # If card is not found just return None
+        return None
+
+    def addlines2card(self, lines, blockID, cardID, offset_all=True):
+        """
+        Append some lines to one of the cards in the input
+
+        Parameters
+        ----------
+        lines : list or str
+            list of lines to be appended to the card. If a string is given,
+            this is wrapped
+        blockID : str
+            either 'cell', 'surf', 'settings' or 'title'.
+        cardID : str or int
+            card ID (e.g. FC22).
+        offset_all : bool, optional
+            if True all the lines are off-setted with whitespace. If False
+            the first line will have no offset (new card)
+
+        Returns
+        -------
+        bool
+        if lines have been successfully added return True, otherwise False.
+
+        """
+        card = self.get_card_byID(blockID, cardID)
+        if card is not None:
+            # If it is not already a list of str wrap it
+            if type(lines) != list:
+                lines = self.mcnp_wrap(lines, offset_all=offset_all)
+
+            card.lines.extend(lines)
+            return True
+        return False
+
+    @staticmethod
+    def mcnp_wrap(text, maxchars=80, whitespace='      ', offset_all=True):
+        """
+        Wrap the text of a card in MCNP style
+
+        Parameters
+        ----------
+        text : str
+            text of the card to be formatted.
+        maxchars : int, optional
+            max limit of chars in one line. The default is 80.
+        whitespace : str, optional
+            whitespace to be put in front of newlines. The default is '      '.
+        offset_all : bool, optional
+            if True all the lines are off-setted with whitespace. If False
+            the first line will have no offset (new card)
+
+        Returns
+        -------
+        list
+            list of correctly wrapped line of a card expressing the initial
+            text.
+
+        """
+        text = text.strip('\n')
+        if len(text) <= maxchars:
+            if offset_all:
+                text = whitespace+text+'\n'
+            else:
+                text = text+'\n'
+            return [text]
+        else:
+            # init the list with the first line
+            wrapped = textwrap.wrap(text, maxchars-len(whitespace))
+            # first line does not need whitespace
+            if offset_all:
+                fl = whitespace+wrapped[0]+'\n'
+            else:
+                fl = wrapped[0]+'\n'
+            lines = [fl]
+            # add the white space for each line and a newline char
+            for line in wrapped[1:]:
+                lines.append(whitespace+line+'\n')
+
+        return lines
+
 
 class D1S_Input(InputFile):
 
     def translate(self, newlib, libmanager, original_irradfile=None,
                   original_reacfile=None):
+        """
+        Translate the input to another library. This methods ovverride the
+        parent one since often two different libraries must be considered in
+        a D1S input: a tranport and an activation library
+
+        Parameters
+        ----------
+        newlib : str
+            suffix of the new lib to translate to.
+        libmanager : LibManager
+            Library manager for the conversion.
+        original_irradfile : d1s_parser.IrradiationFile, optional
+            original irradiation file. The default is None.
+        original_reacfile : d1s_parser.ReactionFile, optional
+            original reaction file. The default is None.
+
+        Returns
+        -------
+        newirradiations : list
+            list of Irradiation objects coming from the translation.
+        newreactions : list
+            list of Reactions objects coming from the translation.
+
+        """
         # Generally, an activation lib and transport lib are expected
         try:
             activationlib, transportlib = check_transport_activation(newlib)
@@ -379,6 +523,52 @@ class D1S_Input(InputFile):
             reaction_list.append(rx)
 
         return ReactionFile(reaction_list)
+
+    def add_track_contribution(self, tallyID, zaids, who='parent'):
+        """
+        Given a list of zaid add the FU bin in the requested tallies in order
+        to collect the contribution of them to the tally.
+
+        Parameters
+        ----------
+        tallyID : str
+            ID of the tally onto which to operate (e.g. F4:p).
+        zaids : str
+            zaid number of the parent/daughter (e.g. 1001).
+        who : str, optional
+            either 'parent' or 'daughter' specifies the types of zaids to
+            be tracked. The default is 'parent'.
+
+        Raises
+        ------
+        ValueError
+            check for admissible who parameter.
+
+        Returns
+        -------
+        bool
+            return True if lines were added correctly
+
+        """
+        patnum = re.compile(r'\d+')
+        try:
+            num = patnum.search(tallyID).group()
+        except AttributeError:
+            # The pattern was not found
+            raise ValueError(tallyID+' is not a valid tally ID')
+
+        text = 'FU'+num+' 0'
+        if who == 'parent':
+            for zaid in zaids:
+                text = text+' -'+zaid
+        elif who == 'daughter':
+            for zaid in zaids:
+                text = text+' '+zaid
+        else:
+            raise ValueError(who+' is not an admissible "who" parameters')
+
+        res = self.addlines2card(text, 'settings', tallyID, offset_all=False)
+        return res
 
 
 class D1S5_InputFile(D1S_Input):

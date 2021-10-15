@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Folder Structure &mdash; JADE v1.2.0 documentation</title>
+  <title>Folder Structure &mdash; JADE v1.3.0 documentation</title>
   
 
   
@@ -121,6 +121,11 @@
 <p class="caption"><span class="caption-text">JADE Developer Guide (TBD):</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../dev/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
+</ul>
+<p class="caption"><span class="caption-text">JADE API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/autoapi.html">JADE API</a></li>
 </ul>
 
             
@@ -193,12 +198,18 @@
 <p>The following is a scheme of the JADE folder structure:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">JADE_root</span><span class="o">&gt;</span>
     <span class="o">|---------</span> <span class="n">Benchmark</span> <span class="n">inputs</span>
+    <span class="o">|</span>            <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">inputfile</span><span class="o">&gt;.</span><span class="n">i</span>
+    <span class="o">|</span>            <span class="o">|-----</span> <span class="o">...</span>
+    <span class="o">|</span>            <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">Inputfolder</span><span class="o">&gt;</span>
+    <span class="o">|</span>            <span class="o">|-----</span> <span class="o">...</span>
+    <span class="o">|</span>            <span class="o">|-----</span> <span class="n">VRT</span>
     <span class="o">|</span>
     <span class="o">|---------</span> <span class="n">Code</span>
-    <span class="o">|</span>            <span class="o">|-----</span> <span class="n">Default</span> <span class="n">Settings</span>
+    <span class="o">|</span>            <span class="o">|-----</span> <span class="n">default_settings</span>
     <span class="o">|</span>            <span class="o">|-----</span> <span class="n">docs</span>
-    <span class="o">|</span>            <span class="o">|-----</span> <span class="n">Installation</span> <span class="n">Files</span>
-    <span class="o">|</span>            <span class="o">|-----</span> <span class="n">Templates</span>
+    <span class="o">|</span>            <span class="o">|-----</span> <span class="n">install_files</span>
+    <span class="o">|</span>            <span class="o">|-----</span> <span class="n">templates</span>
+    <span class="o">|</span>            <span class="o">|-----</span> <span class="n">tests</span>
     <span class="o">|</span>
     <span class="o">|---------</span> <span class="n">Configuration</span>
     <span class="o">|</span>                <span class="o">|-----------</span> <span class="n">Benchmarks</span> <span class="n">Configuration</span>
@@ -252,21 +263,26 @@ the JADE GitHub repo should be renamed and placed inside the root directory as <
 This is the folder where eventual user defined benchmark inputs should be positioned.
 In case of benchmarks that are composed by more than one run, all the inputs are reunited in a sub-folder
 (e.g. <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Benchmark</span> <span class="pre">inputs\Oktavian</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Benchmark</span> <span class="pre">inputs\VRT</span></code> folder is especially important. Here, in specific subfolders, can be found
+all additional files required by the benchmark inputs (e.g. weight window files, irradiation files, reactions file,
+etc.)</p>
 </div>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code</span></code> contains the JADE GitHub repo itself. All the source code is contained here toghether with the
 following subfolders:</p>
 <dl class="simple">
-<dt>Default Settings</dt><dd><p>Contains all JADE default settings. On the first JADE instance these are copied to the <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration</span></code>
+<dt>default_settings</dt><dd><p>Contains all JADE default settings. On the first JADE instance these are copied to the <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration</span></code>
 folder. They can be restored by a dedicated utility function available from the main menu.</p>
 </dd>
 <dt>docs</dt><dd><p>Contains all files related to this documentation. Here, local version of the documentations can be found.</p>
 </dd>
-<dt>Installation Files</dt><dd><p>Contains files to be used during the first JADE run. They have not any appeal to the general user.</p>
+<dt>install_files</dt><dd><p>Contains files to be used during the first JADE run. They have not any appeal to the general user.</p>
 </dd>
-<dt>Templates</dt><dd><p>Contains all the Microsoft Office and Word templates to be used during post-processing. In case of user-defined
+<dt>templates</dt><dd><p>Contains all the Microsoft Office and Word templates to be used during post-processing. In case of user-defined
 benchmarks that are based on specific templates, these need to be added here.</p>
+</dd>
+<dt>tests</dt><dd><p>Contains all the .py files to be run with pytest and folder containing files useful for the testing activity</p>
 </dd>
 </dl>
 </div>

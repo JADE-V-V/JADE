@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Configuration &mdash; JADE v1.2.0 documentation</title>
+  <title>Configuration &mdash; JADE v1.3.0 documentation</title>
   
 
   
@@ -103,6 +103,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#libraries">Libraries</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#activation-file">Activation File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#benchmark-run-configuration">Benchmark run configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#benchmark-post-processing-configuration">Benchmark post-processing configuration</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#excel">Excel</a></li>
@@ -127,6 +128,12 @@
 <p class="caption"><span class="caption-text">JADE Developer Guide (TBD):</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../dev/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
+</ul>
+<p class="caption"><span class="caption-text">JADE API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/inputgeneration.html">Input Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/postprocessing.html">Post-Processing</a></li>
 </ul>
 
             
@@ -204,6 +211,11 @@ all other configuration files simply guarantee an additional level of personaliz
 <p>In case of user-defined benchmarks suitable <a class="reference internal" href="#runconf"><span class="std std-ref">Benchmark run configuration</span></a> and <a class="reference internal" href="#ppconf"><span class="std std-ref">Benchmark post-processing configuration</span></a> files need
 to be produced.</p>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Every time a new D1S library is added to the user xsdir, in order to use it in JADE a specific
+sheet must be added in the <a class="reference internal" href="#activationfile"><span class="std std-ref">Activation File</span></a>.</p>
+</div>
 <div class="section" id="main-configuration">
 <span id="mainconfig"></span><h2>Main Configuration<a class="headerlink" href="#main-configuration" title="Permalink to this headline">¶</a></h2>
 <p>The most important configuration file is <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Config.xlsx</span></code>.
@@ -214,7 +226,10 @@ Herafter, a description of the different sheets included in the file is given.</
 <a class="reference internal image-reference" href="../_images/main.png"><img alt="../_images/main.png" src="../_images/main.png" style="width: 600px;" /></a>
 <p>This sheet contains the JADE <em>ambient variables</em>:</p>
 <dl class="simple">
-<dt>xsdir Path</dt><dd><p>Absolute path to the xsdir file that has been set to be used during MCNP simulations.</p>
+<dt>xsdir Path</dt><dd><p>Absolute path to the xsdir file that has been set to be used during MCNP simulations.
+If different codes are used that use different xsdir file (e.g. mcnp5 and mcnp6) the
+user should make sure that all libraries of interest are included in the xsdir file
+indicated in this variable.</p>
 </dd>
 <dt>multithread</dt><dd><p>Under Windows operative system, MCNP allows to run on multithread using the <code class="docutils literal notranslate"><span class="pre">tasks</span></code>
 keyword. Setting this variable to <code class="docutils literal notranslate"><span class="pre">True</span></code> enables this capability.</p>
@@ -265,6 +280,23 @@ time after which the simulation will be interrupted. Only integers are allowed.<
 <p>This stops the calculation when the tally fluctuation chart of tally <em>k</em> has reached a
 relative error lower than <em>e</em>.</p>
 </dd>
+<dt>Custom input</dt><dd><div class="versionadded">
+<p><span class="versionmodified added">New in version v1.3.0: </span>This columns allows to provide custom inputs to the different benchmarks. For the
+moment, this is used only in the <em>Sphere Leakage</em> and <em>Sphere SDDR</em> benchmarks where,
+if a number <em>n</em> is specified, this will limit the test to the first <em>n</em> isotope and
+material simulations (useful for testing).</p>
+</div>
+</dd>
+<dt>Code</dt><dd><div class="versionadded">
+<p><span class="versionmodified added">New in version v1.3.0: </span>This column is needed to specify which kind of code needs to be used for each benchmark.
+The available codes are defined at the very beginning of the <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Code\testrun.py</span></code>
+by a dictionary linking tags to be used in the config. file and actual names of the executables
+to be used.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CODE_TAGS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mcnp6&#39;</span><span class="p">:</span> <span class="s1">&#39;mcnp6&#39;</span><span class="p">,</span> <span class="s1">&#39;D1S5&#39;</span><span class="p">:</span> <span class="s1">&#39;d1suned3.1.2&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+</dd>
 </dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -284,7 +316,20 @@ in this table are indicated the settings for the experimental benchmarks.</p>
 <p>This table simply consists of a glossary where the user can associate more explicit
 names to the nuclear data libraries suffixes available in the xsdir file. This
 allows for a clearer post-processing output.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Do not use invalid filename characters (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;\&quot;</span></code>) in the names assigned to the
+libraries!</p>
 </div>
+</div>
+</div>
+<div class="section" id="activation-file">
+<span id="activationfile"></span><h2>Activation File<a class="headerlink" href="#activation-file" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="../_images/activation.jpg"><img alt="../_images/activation.jpg" src="../_images/activation.jpg" style="width: 600px;" /></a>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Activation.xlsx</span></code> file stores all the reactions available in the different versions of the D1S-UNED
+activation libraries. For each library a sheet needs to be added having as name the
+suffix used in the xsdir file for the library. Only three columns in the table are mandatory
+and these are the <strong>Parent</strong>, <strong>MT</strong> and <strong>Daughter</strong> ones.</p>
 </div>
 <div class="section" id="benchmark-run-configuration">
 <span id="runconf"></span><h2>Benchmark run configuration<a class="headerlink" href="#benchmark-run-configuration" title="Permalink to this headline">¶</a></h2>
@@ -349,7 +394,7 @@ they can be accessed using the tags reported in the table below.</p>
 </tr>
 </tbody>
 </table>
-<p>As a result of the selcted <strong>x</strong> and <strong>y</strong> option, the results of the post-processed tally will be display in a
+<p>As a result of the selected <strong>x</strong> and <strong>y</strong> option, the results of the post-processed tally will be display in a
 matrix format. In case only a single binning is defined in the MCNP input, the <code class="docutils literal notranslate"><span class="pre">tally</span></code> keyword should be used to
 signal to JADE to just to print the results in a column format.</p>
 <div class="admonition important">

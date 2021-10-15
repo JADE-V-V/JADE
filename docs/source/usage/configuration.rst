@@ -106,6 +106,18 @@ Custom input
         if a number *n* is specified, this will limit the test to the first *n* isotope and 
         material simulations (useful for testing).
 
+Code
+    .. versionadded:: v1.3.0
+        This column is needed to specify which kind of code needs to be used for each benchmark.
+        The available codes are defined at the very beginning of the ``<JADE root>\Code\testrun.py``
+        by a dictionary linking tags to be used in the config. file and actual names of the executables
+        to be used.
+
+    .. code-block:: python
+
+        CODE_TAGS = {'mcnp6': 'mcnp6', 'D1S5': 'd1suned3.1.2'}
+
+
 
 .. note::
     All three STOP parameters can be simultaneously defined during a simulation. The first
@@ -129,6 +141,10 @@ Libraries
 This table simply consists of a glossary where the user can associate more explicit
 names to the nuclear data libraries suffixes available in the xsdir file. This
 allows for a clearer post-processing output.
+
+.. warning::
+    Do not use invalid filename characters (e.g. ``"\"``) in the names assigned to the
+    libraries!
 
 .. _activationfile:
 

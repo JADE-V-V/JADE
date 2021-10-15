@@ -11,6 +11,9 @@ all other configuration files simply guarantee an additional level of personaliz
 .. note::
     In case of user-defined benchmarks suitable :ref:`runconf` and :ref:`ppconf` files need
     to be produced.
+.. note::
+    Every time a new D1S library is added to the user xsdir, in order to use it in JADE a specific
+    sheet must be added in the :ref:`activationfile`.
 
 .. _mainconfig:
 
@@ -30,6 +33,9 @@ This sheet contains the JADE *ambient variables*:
 
 xsdir Path
     Absolute path to the xsdir file that has been set to be used during MCNP simulations.
+    If different codes are used that use different xsdir file (e.g. mcnp5 and mcnp6) the
+    user should make sure that all libraries of interest are included in the xsdir file
+    indicated in this variable.
 
 multithread
     Under Windows operative system, MCNP allows to run on multithread using the ``tasks``
@@ -93,6 +99,26 @@ Relative Error cut-off
     This stops the calculation when the tally fluctuation chart of tally *k* has reached a
     relative error lower than *e*.
 
+Custom input
+    .. versionadded:: v1.3.0
+        This columns allows to provide custom inputs to the different benchmarks. For the
+        moment, this is used only in the *Sphere Leakage* and *Sphere SDDR* benchmarks where,
+        if a number *n* is specified, this will limit the test to the first *n* isotope and 
+        material simulations (useful for testing).
+
+Code
+    .. versionadded:: v1.3.0
+        This column is needed to specify which kind of code needs to be used for each benchmark.
+        The available codes are defined at the very beginning of the ``<JADE root>\Code\testrun.py``
+        by a dictionary linking tags to be used in the config. file and actual names of the executables
+        to be used.
+
+    .. code-block:: python
+
+        CODE_TAGS = {'mcnp6': 'mcnp6', 'D1S5': 'd1suned3.1.2'}
+
+
+
 .. note::
     All three STOP parameters can be simultaneously defined during a simulation. The first
     cut-off criteria reached will be the one triggering the end of the calculation.
@@ -115,6 +141,23 @@ Libraries
 This table simply consists of a glossary where the user can associate more explicit
 names to the nuclear data libraries suffixes available in the xsdir file. This
 allows for a clearer post-processing output.
+
+.. warning::
+    Do not use invalid filename characters (e.g. ``"\"``) in the names assigned to the
+    libraries!
+
+.. _activationfile:
+
+Activation File
+===============
+
+.. image:: ../img/conf/activation.jpg
+    :width: 600
+
+The ``<JADE_root>\Configuration\Activation.xlsx`` file stores all the reactions available in the different versions of the D1S-UNED
+activation libraries. For each library a sheet needs to be added having as name the 
+suffix used in the xsdir file for the library. Only three columns in the table are mandatory
+and these are the **Parent**, **MT** and **Daughter** ones.
 
 .. _runconf:
 
@@ -175,7 +218,7 @@ x, y
         * - Cor B
         * - Cor C
 
-    As a result of the selcted **x** and **y** option, the results of the post-processed tally will be display in a
+    As a result of the selected **x** and **y** option, the results of the post-processed tally will be display in a
     matrix format. In case only a single binning is defined in the MCNP input, the ``tally`` keyword should be used to
     signal to JADE to just to print the results in a column format.
 

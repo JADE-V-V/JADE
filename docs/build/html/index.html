@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Welcome to JADE’s documentation! &mdash; JADE v1.2.0 documentation</title>
+  <title>Welcome to JADE’s documentation! &mdash; JADE v1.3.0 documentation</title>
   
 
   
@@ -111,6 +111,12 @@
 <p class="caption"><span class="caption-text">JADE Developer Guide (TBD):</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dev/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
+</ul>
+<p class="caption"><span class="caption-text">JADE API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/inputgeneration.html">Input Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/postprocessing.html">Post-Processing</a></li>
 </ul>
 
             
@@ -180,7 +186,7 @@
             
   <div class="section" id="welcome-to-jade-s-documentation">
 <h1>Welcome to JADE’s documentation!<a class="headerlink" href="#welcome-to-jade-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>Version: v1.2.0</p>
+<p>Version: v1.3.0</p>
 <p>JADE is a new tool for nuclear libraries V&amp;V.
 Brought to you by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E).</p>
 <p>JADE is an open-source software licensed under the <a class="reference internal" href="LICENSE.html#gnulicense"><span class="std std-ref">GNU GPLv3 License</span></a>.
@@ -209,6 +215,7 @@ GitHub repository [link].</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="usage/configuration.html">Configuration</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage/configuration.html#main-configuration">Main Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/configuration.html#activation-file">Activation File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/configuration.html#benchmark-run-configuration">Benchmark run configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/configuration.html#benchmark-post-processing-configuration">Benchmark post-processing configuration</a></li>
 </ul>
@@ -237,10 +244,13 @@ GitHub repository [link].</p>
 <li class="toctree-l2"><a class="reference internal" href="usage/utilities.html#print-materials-info">Print materials info</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/utilities.html#generate-material-mixture">Generate material mixture</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/utilities.html#switch-material-fractions">Switch material fractions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/utilities.html#change-ace-libraries-suffix">Change .ace libraries suffix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/utilities.html#produce-d1s-uned-reaction-files">Produce D1S-UNED reaction files</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="usage/tipstricks.html">Tips &amp; Tricks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage/tipstricks.html#external-run-of-a-benchmark">External Run of a benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/tipstricks.html#change-the-plots-fontsizes">Change the plots fontsizes</a></li>
 </ul>
 </li>
 </ul>
@@ -267,6 +277,29 @@ GitHub repository [link].</p>
 <p class="caption"><span class="caption-text">JADE Developer Guide (TBD):</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dev/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/insertbenchmarks.html">Insert Custom Benchmarks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/insertbenchmarks.html#insert-custom-computational-benchmark">Insert Custom Computational Benchmark</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/insertbenchmarks.html#insert-custom-experimental-benchmark">Insert Custom Experimental Benchmark</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">JADE API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/inputgeneration.html">Input Generation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/inputgeneration.html#matreader-module">matreader module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/inputgeneration.html#testrun-module">testrun module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/inputgeneration.html#inputfile-module">inputfile module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/inputgeneration.html#parsersd1s-module">parsersD1S module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/postprocessing.html">Post-Processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/postprocessing.html#output-module">output module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/postprocessing.html#expoutput-module">expoutput module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/postprocessing.html#plotter-module">plotter module</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>

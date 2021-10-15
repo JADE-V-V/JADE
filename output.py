@@ -1,26 +1,26 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Jan  2 10:36:38 2020
 
-@author: Davide Laghi
+# Created on Thu Jan  2 10:36:38 2020
 
-Copyright 2021, the JADE Development Team. All rights reserved.
+# @author: Davide Laghi
 
-This file is part of JADE.
+# Copyright 2021, the JADE Development Team. All rights reserved.
 
-JADE is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+# This file is part of JADE.
 
-JADE is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+# JADE is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
-You should have received a copy of the GNU General Public License
-along with JADE.  If not, see <http://www.gnu.org/licenses/>.
-"""
+# JADE is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with JADE.  If not, see <http://www.gnu.org/licenses/>.
+
 
 import MCTAL_READER2 as mtal
 import xlwings as xw
@@ -765,9 +765,21 @@ class BenchmarkOutput(AbstractOutput):
 class MCNPoutput:
     def __init__(self, mctal_file, output_file, meshtal_file=None):
         """
-        Class handling an MCNP run Output
+        Class representing all outputs coming from and MCNP run
 
-        mctal_file: (str/path) path to the mctal file
+        Parameters
+        ----------
+        mctal_file : path like object
+            path to the mctal file.
+        output_file : path like object
+            path to the outp file.
+        meshtal_file : path like object, optional
+            path to the meshtal file. The default is None.
+
+        Returns
+        -------
+        None.
+
         """
         self.mctal_file = mctal_file  # path to mcnp mctal file
         self.output_file = output_file  # path to mcnp output file
@@ -804,7 +816,13 @@ class MCNPoutput:
         """
         Retrieve and organize mctal data into a DataFrame.
 
-        Returns: DataFrame containing the organized data
+        Returns
+        -------
+        tallydata : pd.DataFrame
+            organized tally data.
+        totalbin : pd.DataFrame
+            organized tally data (only total bins).
+
         """
         tallydata = {}
         totalbin = {}
@@ -946,9 +964,19 @@ class ExcelOutputSheet:
 
     def __init__(self, template, outpath):
         """
-        Excel sheet reporting the outcome of an MCNP test
+        Excel workbook containing the post-processed results
 
-        template: (str/path) path to the sheet template
+        Parameters
+        ----------
+        template : path like object
+            path to the sheet template.
+        outpath : path like object
+            dump path for the excel.
+
+        Returns
+        -------
+        None.
+
         """
         self.outpath = outpath  # Path to the excel file
         # Open template

@@ -1,26 +1,25 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Oct 21 17:18:07 2020
+# Created on Wed Oct 21 17:18:07 2020
 
-@author: Davide Laghi
+# @author: Davide Laghi
 
-Copyright 2021, the JADE Development Team. All rights reserved.
+# Copyright 2021, the JADE Development Team. All rights reserved.
 
-This file is part of JADE.
+# This file is part of JADE.
 
-JADE is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+# JADE is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
-JADE is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+# JADE is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with JADE.  If not, see <http://www.gnu.org/licenses/>.
-"""
+# You should have received a copy of the GNU General Public License
+# along with JADE.  If not, see <http://www.gnu.org/licenses/>.
+
 import pandas as pd
 import numpy as np
 import os
@@ -79,6 +78,20 @@ class ExperimentalOutput(BenchmarkOutput):
         self.multiplerun = multiplerun
 
     def single_postprocess(self):
+        """
+        Always raise an Attribute Error since no single post-processing is
+        foreseen for experimental benchmarks
+
+        Raises
+        ------
+        AttributeError
+            DESCRIPTION.
+
+        Returns
+        -------
+        None.
+
+        """
         raise AttributeError('\n No single pp is foreseen for exp benchmark')
 
     def compare(self):
@@ -112,6 +125,10 @@ class ExperimentalOutput(BenchmarkOutput):
         to be implemented in each child class. Some standard procedures may be
         added in the feature in order to reduce the amount of ex-novo coding
         necessary to implement a new experimental benchmark.
+
+        Returns
+        -------
+        None.
         """
         self._pp_excel_comparison()
 
@@ -193,22 +210,11 @@ class ExperimentalOutput(BenchmarkOutput):
         """
         Read all experimental results and organize it in the self.exp_results
         dictionary.
-
-        if multirun:
-            folder1:
-                filename1: DataFrame
-                filename2: DataFrame
-                ...
-            folder2:
-                ...
-            ...
-
-        if not multirun:
-            filename1: DataFrame
-            filename2: DataFrame
-            ...
-
-        all files need to be in .csv format. If a more complex format is
+        If multirun is set to true the first layer of the dictionary will
+        consist in the different folders and the second layer will be the
+        different files. If it is not multirun, insetead, only one layer of the
+        different files will be generated.
+        All files need to be in .csv format. If a more complex format is
         provided, the user should ovveride the _read_exp_file method.
 
         Returns
@@ -241,6 +247,20 @@ class ExperimentalOutput(BenchmarkOutput):
 
     @staticmethod
     def _read_exp_file(filepath):
+        """
+        Default way of reading a csv file
+
+        Parameters
+        ----------
+        filepath : path/str
+            experimental file results to be read.
+
+        Returns
+        -------
+        pd.DataFrame
+            Contain the data read.
+
+        """
         return pd.read_csv(filepath)
 
     def _print_raw(self):
@@ -304,6 +324,9 @@ class ExperimentalOutput(BenchmarkOutput):
     def _pp_excel_comparison(self):
         '''
         Responsible for producing excel outputs
+
+        Returns
+        -------
         '''
         pass
 

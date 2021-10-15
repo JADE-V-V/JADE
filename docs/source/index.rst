@@ -49,8 +49,15 @@ GitHub repository [link].
    :caption: JADE Developer Guide (TBD):
 
    dev/intro
+   dev/insertbenchmarks
 
-   
+.. toctree::
+   :maxdepth: 2
+   :caption: JADE API
+
+   api/inputgeneration
+   api/postprocessing
+
 
 Indices and tables
 ==================

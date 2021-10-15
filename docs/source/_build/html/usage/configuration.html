@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Configuration &mdash; JADE v1.2.0 documentation</title>
+  <title>Configuration &mdash; JADE v1.3.0 documentation</title>
   
 
   
@@ -128,6 +128,12 @@
 <p class="caption"><span class="caption-text">JADE Developer Guide (TBD):</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../dev/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
+</ul>
+<p class="caption"><span class="caption-text">JADE API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/inputgeneration.html">Input Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/postprocessing.html">Post-Processing</a></li>
 </ul>
 
             
@@ -275,10 +281,20 @@ time after which the simulation will be interrupted. Only integers are allowed.<
 relative error lower than <em>e</em>.</p>
 </dd>
 <dt>Custom input</dt><dd><div class="versionadded">
-<p><span class="versionmodified added">New in version v1.3.0: </span>This columns allows to provide customm inputs to the different benchmarks. For the
+<p><span class="versionmodified added">New in version v1.3.0: </span>This columns allows to provide custom inputs to the different benchmarks. For the
 moment, this is used only in the <em>Sphere Leakage</em> and <em>Sphere SDDR</em> benchmarks where,
 if a number <em>n</em> is specified, this will limit the test to the first <em>n</em> isotope and
 material simulations (useful for testing).</p>
+</div>
+</dd>
+<dt>Code</dt><dd><div class="versionadded">
+<p><span class="versionmodified added">New in version v1.3.0: </span>This column is needed to specify which kind of code needs to be used for each benchmark.
+The available codes are defined at the very beginning of the <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Code\testrun.py</span></code>
+by a dictionary linking tags to be used in the config. file and actual names of the executables
+to be used.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CODE_TAGS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mcnp6&#39;</span><span class="p">:</span> <span class="s1">&#39;mcnp6&#39;</span><span class="p">,</span> <span class="s1">&#39;D1S5&#39;</span><span class="p">:</span> <span class="s1">&#39;d1suned3.1.2&#39;</span><span class="p">}</span>
+</pre></div>
 </div>
 </dd>
 </dl>
@@ -300,6 +316,10 @@ in this table are indicated the settings for the experimental benchmarks.</p>
 <p>This table simply consists of a glossary where the user can associate more explicit
 names to the nuclear data libraries suffixes available in the xsdir file. This
 allows for a clearer post-processing output.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Do not use invalid filename characters (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;\&quot;</span></code>) for name of the libraries!</p>
+</div>
 </div>
 </div>
 <div class="section" id="activation-file">
@@ -373,7 +393,7 @@ they can be accessed using the tags reported in the table below.</p>
 </tr>
 </tbody>
 </table>
-<p>As a result of the selcted <strong>x</strong> and <strong>y</strong> option, the results of the post-processed tally will be display in a
+<p>As a result of the selected <strong>x</strong> and <strong>y</strong> option, the results of the post-processed tally will be display in a
 matrix format. In case only a single binning is defined in the MCNP input, the <code class="docutils literal notranslate"><span class="pre">tally</span></code> keyword should be used to
 signal to JADE to just to print the results in a column format.</p>
 <div class="admonition important">

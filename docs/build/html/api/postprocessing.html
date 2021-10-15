@@ -1,0 +1,800 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Post-Processing &mdash; JADE v1.3.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Input Generation" href="inputgeneration.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> JADE
+          
+
+          
+            
+            <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">JADE User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../nutshell.html">JADE in a nutshell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/folders.html">Folder Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/menu.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/benchmarks.html">Default Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/postprocessing.html">Post-Processing Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/utilities.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/tipstricks.html">Tips &amp; Tricks</a></li>
+</ul>
+<p class="caption"><span class="caption-text">More on JADE:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">List of Publications and Contributions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">JADE Developer Guide (TBD):</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
+</ul>
+<p class="caption"><span class="caption-text">JADE API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="inputgeneration.html">Input Generation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Post-Processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#output-module">output module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#abstractoutput">AbstractOutput</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#benchmarkoutput">BenchmarkOutput</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mcnpoutput">MCNPOutput</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exceloutputsheet">ExcelOutputSheet</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#expoutput-module">expoutput module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#experimentaloutput">ExperimentalOutput</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#plotter-module">plotter module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#plotter">Plotter</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">JADE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Post-Processing</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/api/postprocessing.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="post-processing">
+<h1>Post-Processing<a class="headerlink" href="#post-processing" title="Permalink to this headline">¶</a></h1>
+<p>In this section the most useful classes that can be used during benchmark
+post-processing are described.</p>
+<div class="section" id="output-module">
+<h2>output module<a class="headerlink" href="#output-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="abstractoutput">
+<h3>AbstractOutput<a class="headerlink" href="#abstractoutput" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="output.AbstractOutput">
+<em class="property">class </em><code class="sig-prename descclassname">output.</code><code class="sig-name descname">AbstractOutput</code><a class="headerlink" href="#output.AbstractOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<dl class="py method">
+<dt id="output.AbstractOutput._get_output_files">
+<em class="property">static </em><code class="sig-name descname">_get_output_files</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">results_path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#output.AbstractOutput._get_output_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recover the meshtal and outp file from a directory</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>results_path</strong> (<em>str</em><em> or </em><em>path</em>) – path where the MCNP results are contained.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>FileNotFoundError</strong> – if either meshtal or outp are not found.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>mfile</strong> (<em>path</em>) – path to the meshtal file</p></li>
+<li><p><strong>ofile</strong> (<em>path</em>) – path to the outp file</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="output.AbstractOutput.compare">
+<em class="property">abstract </em><code class="sig-name descname">compare</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#output.AbstractOutput.compare" title="Permalink to this definition">¶</a></dt>
+<dd><p>To be executed when a comparison is requested</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="output.AbstractOutput.single_postprocess">
+<em class="property">abstract </em><code class="sig-name descname">single_postprocess</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#output.AbstractOutput.single_postprocess" title="Permalink to this definition">¶</a></dt>
+<dd><p>To be executed when a single pp is requested</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="benchmarkoutput">
+<h3>BenchmarkOutput<a class="headerlink" href="#benchmarkoutput" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="output.BenchmarkOutput">
+<em class="property">class </em><code class="sig-prename descclassname">output.</code><code class="sig-name descname">BenchmarkOutput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lib</span></em>, <em class="sig-param"><span class="n">testname</span></em>, <em class="sig-param"><span class="n">session</span></em><span class="sig-paren">)</span><a class="headerlink" href="#output.BenchmarkOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#output.AbstractOutput" title="output.AbstractOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">output.AbstractOutput</span></code></a></p>
+<p>General class for a Benchmark output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lib</strong> (<em>str</em>) – library to post-process</p></li>
+<li><p><strong>testname</strong> (<em>str</em>) – Name of the benchmark</p></li>
+<li><p><strong>session</strong> (<em>Session</em>) – Jade Session</p></li>
+<li><p><strong>exp</strong> (<em>str</em>) – the benchmark is an experimental one</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="output.BenchmarkOutput.compare">
+<code class="sig-name descname">compare</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#output.BenchmarkOutput.compare" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the full comparison post-processing (excel and atlas)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="output.BenchmarkOutput.single_postprocess">
+<code class="sig-name descname">single_postprocess</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#output.BenchmarkOutput.single_postprocess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the full post-processing of a single library (i.e. excel,
+raw data and atlas)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="mcnpoutput">
+<h3>MCNPOutput<a class="headerlink" href="#mcnpoutput" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="output.MCNPoutput">
+<em class="property">class </em><code class="sig-prename descclassname">output.</code><code class="sig-name descname">MCNPoutput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mctal_file</span></em>, <em class="sig-param"><span class="n">output_file</span></em>, <em class="sig-param"><span class="n">meshtal_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#output.MCNPoutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class representing all outputs coming from and MCNP run</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mctal_file</strong> (<em>path like object</em>) – path to the mctal file.</p></li>
+<li><p><strong>output_file</strong> (<em>path like object</em>) – path to the outp file.</p></li>
+<li><p><strong>meshtal_file</strong> (<em>path like object</em><em>, </em><em>optional</em>) – path to the meshtal file. The default is None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="output.MCNPoutput.organize_mctal">
+<code class="sig-name descname">organize_mctal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#output.MCNPoutput.organize_mctal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve and organize mctal data into a DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>tallydata</strong> (<em>pd.DataFrame</em>) – organized tally data.</p></li>
+<li><p><strong>totalbin</strong> (<em>pd.DataFrame</em>) – organized tally data (only total bins).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="exceloutputsheet">
+<h3>ExcelOutputSheet<a class="headerlink" href="#exceloutputsheet" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="output.ExcelOutputSheet">
+<em class="property">class </em><code class="sig-prename descclassname">output.</code><code class="sig-name descname">ExcelOutputSheet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">template</span></em>, <em class="sig-param"><span class="n">outpath</span></em><span class="sig-paren">)</span><a class="headerlink" href="#output.ExcelOutputSheet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Excel workbook containing the post-processed results</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>template</strong> (<em>path like object</em>) – path to the sheet template.</p></li>
+<li><p><strong>outpath</strong> (<em>path like object</em>) – dump path for the excel.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="output.ExcelOutputSheet.copy_sheets">
+<code class="sig-name descname">copy_sheets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">wb_origin_path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#output.ExcelOutputSheet.copy_sheets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy all sheets of the selected excel file into the current one</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>wb_origin_path</strong> (<em>str/path</em>) – Path to excel file containing sheets to add.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="output.ExcelOutputSheet.insert_cutted_df">
+<code class="sig-name descname">insert_cutted_df</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">startcolumn</span></em>, <em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">ws</span></em>, <em class="sig-param"><span class="n">ylim</span></em>, <em class="sig-param"><span class="n">startrow</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">index_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cols_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">index_num_format</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">values_format</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#output.ExcelOutputSheet.insert_cutted_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a DataFrame in the excel cutting its columns</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>startcolumn</strong> (<em>str/int</em>) – Excel column where to put the first DF column.</p></li>
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – global DF to insert.</p></li>
+<li><p><strong>ws</strong> (<em>str</em>) – Excel worksheet where to insert the DF.</p></li>
+<li><p><strong>ylim</strong> (<em>int</em>) – limit of columns to use to cut the DF.</p></li>
+<li><p><strong>startrow</strong> (<em>int</em><em>, </em><em>optional</em>) – initial Excel row. The default is None,
+the first available is used.</p></li>
+<li><p><strong>header</strong> (<em>tuple</em><em> (</em><em>str</em><em>, </em><em>value</em><em>)</em>) – contains the tag of the header and the header value. DEAFAULT is
+None</p></li>
+<li><p><strong>index_name</strong> (<em>str</em>) – Name of the Index. DEAFAULT is None</p></li>
+<li><p><strong>cols_name</strong> (<em>str</em>) – Name of the columns. DEFAULT is None</p></li>
+<li><p><strong>index_num_format</strong> (<em>str</em>) – format of index numbers</p></li>
+<li><p><strong>values_format</strong> (<em>str</em>) – how to format the values. DEAFAULT is None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="output.ExcelOutputSheet.insert_df">
+<code class="sig-name descname">insert_df</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">startcolumn</span></em>, <em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">ws</span></em>, <em class="sig-param"><span class="n">startrow</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">print_index</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">idx_format</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">cols_head_size</span><span class="o">=</span><span class="default_value">12</span></em>, <em class="sig-param"><span class="n">values_format</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#output.ExcelOutputSheet.insert_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a DataFrame (df) into a Worksheet (ws) using xlwings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>startcolumn</strong> (<em>int</em><em> or </em><em>str</em>) – Starting column where to insert the DataFrame. It can be expressed
+both as an integer as a letter in Excel fashion.</p></li>
+<li><p><strong>df</strong> (<em>pandas.DataFrame</em>) – DataFrame to insert in the excel sheet</p></li>
+<li><p><strong>ws</strong> (<em>str</em>) – name of the Excel worksheet where to put the DataFrame.</p></li>
+<li><p><strong>startrow</strong> (<em>int</em>) – starting row where to put the DataFrame. Default is None that
+triggers the use of the memorized first free row in the excel sheet</p></li>
+<li><p><strong>header</strong> (<em>tuple</em><em> (</em><em>str</em><em>, </em><em>value</em><em>)</em>) – contains the tag of the header and the header value. DEAFAULT is
+None</p></li>
+<li><p><strong>print_index</strong> (<em>bool</em>) – if True the DataFrame index is printed. DEAFAULT is True.</p></li>
+<li><p><strong>idx_format</strong> (<em>str</em>) – how to format the index values. DEAFAULT is ‘0’ (integer)</p></li>
+<li><p><strong>cols_head_size</strong> (<em>int</em>) – Font size for columns header. DEAFAULT is 12</p></li>
+<li><p><strong>values_format</strong> (<em>str</em>) – how to format the values. DEAFAULT is None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="output.ExcelOutputSheet.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#output.ExcelOutputSheet.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save Excel</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="expoutput-module">
+<h2>expoutput module<a class="headerlink" href="#expoutput-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="experimentaloutput">
+<span id="expoutputclass"></span><h3>ExperimentalOutput<a class="headerlink" href="#experimentaloutput" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="expoutput.ExperimentalOutput">
+<em class="property">class </em><code class="sig-prename descclassname">expoutput.</code><code class="sig-name descname">ExperimentalOutput</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#output.BenchmarkOutput" title="output.BenchmarkOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">output.BenchmarkOutput</span></code></a></p>
+<p>This extends the Benchmark Output and creates an abstract class
+for all experimental outputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> (<em>TYPE</em>) – see BenchmarkOutput doc.</p></li>
+<li><p><strong>**kwargs</strong> (<em>TYPE</em>) – see BenchmarkOutput doc.</p></li>
+<li><p><strong>multiplerun</strong> (<em>bool</em>) – this additional keyword specifies if the benchmark is composed
+by more than one MCNP run. It defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="expoutput.ExperimentalOutput._build_atlas">
+<em class="property">abstract </em><code class="sig-name descname">_build_atlas</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tmp_path</span></em>, <em class="sig-param"><span class="n">atlas</span></em><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput._build_atlas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill the atlas with the customized plots. Creation and saving of the
+atlas are handled elsewhere.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tmp_path</strong> (<em>path</em>) – path to the temporary folder where to dump images.</p></li>
+<li><p><strong>atlas</strong> (<em>Atlas</em>) – Object representing the plot Atlas.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>atlas</strong> – After being filled the atlas is returned.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Atlas</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="expoutput.ExperimentalOutput._extract_outputs">
+<code class="sig-name descname">_extract_outputs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput._extract_outputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract, organize and store the results coming from the MCNP runs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="expoutput.ExperimentalOutput._pp_excel_comparison">
+<em class="property">abstract </em><code class="sig-name descname">_pp_excel_comparison</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput._pp_excel_comparison" title="Permalink to this definition">¶</a></dt>
+<dd><p>Responsible for producing excel outputs</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="expoutput.ExperimentalOutput._print_raw">
+<code class="sig-name descname">_print_raw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput._print_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump all the raw data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="expoutput.ExperimentalOutput._processMCNPdata">
+<em class="property">abstract </em><code class="sig-name descname">_processMCNPdata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mctal</span></em><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput._processMCNPdata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an mctal file object return the meaningful data extracted. Some
+post-processing on the data may be foreseen at this stage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mctal</strong> (<em>MCTAL</em>) – object representing an MCTAL file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the type of item can vary based on what the user intends to do
+whith it. It will be stored in an organized way in the self.results
+dictionary</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>item</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="expoutput.ExperimentalOutput._read_exp_file">
+<em class="property">static </em><code class="sig-name descname">_read_exp_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filepath</span></em><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput._read_exp_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default way of reading a csv file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>path/str</em>) – experimental file results to be read.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Contain the data read.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="expoutput.ExperimentalOutput._read_exp_results">
+<code class="sig-name descname">_read_exp_results</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput._read_exp_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read all experimental results and organize it in the self.exp_results
+dictionary.
+If multirun is set to true the first layer of the dictionary will
+consist in the different folders and the second layer will be the
+different files. If it is not multirun, insetead, only one layer of the
+different files will be generated.
+All files need to be in .csv format. If a more complex format is
+provided, the user should ovveride the _read_exp_file method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="expoutput.ExperimentalOutput.build_atlas">
+<code class="sig-name descname">build_atlas</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput.build_atlas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creation and saving of the atlas are handled by this function while
+the actual filling of the atlas is left to _build_atlas which needs
+to be implemented for each child class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="expoutput.ExperimentalOutput.compare">
+<code class="sig-name descname">compare</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput.compare" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complete the routines that perform the comparison of one or more
+libraries results with the experimental ones.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="expoutput.ExperimentalOutput.pp_excel_comparison">
+<code class="sig-name descname">pp_excel_comparison</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput.pp_excel_comparison" title="Permalink to this definition">¶</a></dt>
+<dd><p>At the moment everything is handled by _pp_excel_comparison that needs
+to be implemented in each child class. Some standard procedures may be
+added in the feature in order to reduce the amount of ex-novo coding
+necessary to implement a new experimental benchmark.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="expoutput.ExperimentalOutput.single_postprocess">
+<code class="sig-name descname">single_postprocess</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput.single_postprocess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Always raise an Attribute Error since no single post-processing is
+foreseen for experimental benchmarks</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>AttributeError</strong> – DESCRIPTION.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="plotter-module">
+<h2>plotter module<a class="headerlink" href="#plotter-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="plotter">
+<h3>Plotter<a class="headerlink" href="#plotter" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="plotter.Plotter">
+<em class="property">class </em><code class="sig-prename descclassname">plotter.</code><code class="sig-name descname">Plotter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">title</span></em>, <em class="sig-param"><span class="n">outpath</span></em>, <em class="sig-param"><span class="n">outname</span></em>, <em class="sig-param"><span class="n">quantity</span></em>, <em class="sig-param"><span class="n">unit</span></em>, <em class="sig-param"><span class="n">xlabel</span></em>, <em class="sig-param"><span class="n">testname</span></em>, <em class="sig-param"><span class="n">ext</span><span class="o">=</span><span class="default_value">'.png'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#plotter.Plotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Object Handling plots</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>list</em>) – data = [data1, data2, …]
+data1 = {‘x’: x data, ‘y’: y data, ‘err’: error data,
+‘ylabel’: data label}</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – plot title</p></li>
+<li><p><strong>outpath</strong> (<em>str/path</em>) – path to save image</p></li>
+<li><p><strong>outname</strong> (<em>str</em>) – name of the image file</p></li>
+<li><p><strong>quantity</strong> (<em>str</em>) – quantity of the y axis</p></li>
+<li><p><strong>unit</strong> (<em>str</em>) – unit of the y axis</p></li>
+<li><p><strong>xlabel</strong> (<em>str</em>) – name of the x axis</p></li>
+<li><p><strong>testname</strong> (<em>str</em>) – name of the benchmark</p></li>
+<li><p><strong>ext</strong> (<em>str</em>) – extension of the image to save. Default is ‘.png’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="plotter.Plotter.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">title</span></em>, <em class="sig-param"><span class="n">outpath</span></em>, <em class="sig-param"><span class="n">outname</span></em>, <em class="sig-param"><span class="n">quantity</span></em>, <em class="sig-param"><span class="n">unit</span></em>, <em class="sig-param"><span class="n">xlabel</span></em>, <em class="sig-param"><span class="n">testname</span></em>, <em class="sig-param"><span class="n">ext</span><span class="o">=</span><span class="default_value">'.png'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#plotter.Plotter.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object Handling plots</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>list</em>) – data = [data1, data2, …]
+data1 = {‘x’: x data, ‘y’: y data, ‘err’: error data,
+‘ylabel’: data label}</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – plot title</p></li>
+<li><p><strong>outpath</strong> (<em>str/path</em>) – path to save image</p></li>
+<li><p><strong>outname</strong> (<em>str</em>) – name of the image file</p></li>
+<li><p><strong>quantity</strong> (<em>str</em>) – quantity of the y axis</p></li>
+<li><p><strong>unit</strong> (<em>str</em>) – unit of the y axis</p></li>
+<li><p><strong>xlabel</strong> (<em>str</em>) – name of the x axis</p></li>
+<li><p><strong>testname</strong> (<em>str</em>) – name of the benchmark</p></li>
+<li><p><strong>ext</strong> (<em>str</em>) – extension of the image to save. Default is ‘.png’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="plotter.Plotter.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">plot_type</span></em><span class="sig-paren">)</span><a class="headerlink" href="#plotter.Plotter.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to be called to actually perform the plot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>plot_type</strong> (<em>str</em>) – plot type. The current available ones are [‘Binned graph’,
+‘Ratio graph’, ‘Experimental points’,
+‘Discreet Experimental points’, ‘Grouped bars’, ‘Waves’].</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if plot type is not among the available ones.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>outp</strong> – path to the saved image.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>path like object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="inputgeneration.html" class="btn btn-neutral float-left" title="Input Generation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Davide Laghi.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

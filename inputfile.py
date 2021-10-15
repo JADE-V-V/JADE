@@ -1,26 +1,26 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Nov  4 17:21:24 2019
 
-@author: Davide Laghi
+# Created on Mon Nov  4 17:21:24 2019
 
-Copyright 2021, the JADE Development Team. All rights reserved.
+# @author: Davide Laghi
 
-This file is part of JADE.
+# Copyright 2021, the JADE Development Team. All rights reserved.
 
-JADE is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+# This file is part of JADE.
 
-JADE is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+# JADE is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
-You should have received a copy of the GNU General Public License
-along with JADE.  If not, see <http://www.gnu.org/licenses/>.
-"""
+# JADE is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with JADE.  If not, see <http://www.gnu.org/licenses/>.
+
 import re
 import json
 import textwrap
@@ -36,6 +36,23 @@ from parsersD1S import (ReactionFile, Reaction)
 class InputFile:
 
     def __init__(self, cards, matlist, name=None):
+        """
+        Object representing an MCNP input file
+
+        Parameters
+        ----------
+        cards : dic
+            contains the cells, surfaces, settings and title cards.
+        matlist : matreader.MatCardList
+            material list in the input.
+        name : str, optional
+            name associated with the file. The default is None.
+
+        Returns
+        -------
+        None.
+
+        """
 
         # All cards from parser epurated by the materials
         self.cards = cards
@@ -53,7 +70,17 @@ class InputFile:
         the input which will usually undergo special treatments in the input
         creation
 
-        inputfile: (str) path to the MCNP input file
+        Parameters
+        ----------
+        cls : TYPE
+            DESCRIPTION.
+        inputfile : path like object
+            path to the MCNP input file.
+
+        Returns
+        -------
+        None.
+
         """
         matPat = re.compile(r'[mM]\d+')
         mxPat = re.compile(r'mx\d+', re.IGNORECASE)
@@ -105,8 +132,17 @@ class InputFile:
         """
         Write the input to a file
 
-        out: (str) path to the output file
+        Parameters
+        ----------
+        out : str
+            path to the output file.
+
+        Returns
+        -------
+        None.
+
         """
+
         if self.cards['title'] is not None:
             lines = self.cards['title'].lines
         else:
@@ -143,8 +179,17 @@ class InputFile:
         """
         Translate the input to another library
 
-        newlib: (str) suffix of the new lib to translate to
-        lib_manager: (LibManager) Library manager for the conversion
+        Parameters
+        ----------
+        newlib : str
+            suffix of the new lib to translate to.
+        libmanager : libmanager.LibManager
+            Library manager for the conversion.
+
+        Returns
+        -------
+        None.
+
         """
         try:
             if newlib[0] == '{':
@@ -161,18 +206,36 @@ class InputFile:
         This methods allows to update the in-line comments for every zaids
         containing additional information
 
-        lib_manager: (LibManager) Library manager for the conversion
+        Parameters
+        ----------
+        lib_manager : libmanager.LibManager
+            Library manager for the conversion.
+
+        Returns
+        -------
+        None.
+
         """
 
         self.matlist.update_info(lib_manager)
 
     def add_stopCard(self, nps, ctme, precision):
         """
-        Add Stop card
+        Add STOP card
 
-        nps = (int) number of particles to simulate
-        ctme = (int) copmuter time
-        precision = (tally (str), error (float)) [tuple]
+        Parameters
+        ----------
+        nps : int
+            number of particles to simulate.
+        ctme : int
+            copmuter time.
+        precision : (str, float)
+            tally number, precision.
+
+        Returns
+        -------
+        None.
+
         """
 
         line = 'STOP '
@@ -201,8 +264,17 @@ class InputFile:
         """
         Change the density of the sphere according to the selected zaid
 
-        density: (str/float) density to apply
-        cellidx: (int) cell index where to modify the density
+        Parameters
+        ----------
+        density : str/float
+            density to apply.
+        cellidx : int, optional
+            cell index where to modify the density. The default is 1.
+
+        Returns
+        -------
+        None.
+
         """
 
         # Change density in sphere cell
@@ -215,7 +287,15 @@ class InputFile:
         """
         Add weight windows and source bias resulted from ADVANTG analysis
 
-        zaid : (str) zaid name (e.g. 1001)
+        Parameters
+        ----------
+        edits_file : path like object
+            file containing the edits.
+
+        Returns
+        -------
+        None.
+
         """
         # Parse edits file
         patBias = re.compile('sb', re.IGNORECASE)

@@ -1,26 +1,26 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Jan 14 16:44:45 2020
 
-@author: Davide Laghi
+# Created on Tue Jan 14 16:44:45 2020
 
-Copyright 2021, the JADE Development Team. All rights reserved.
+# @author: Davide Laghi
 
-This file is part of JADE.
+# Copyright 2021, the JADE Development Team. All rights reserved.
 
-JADE is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+# This file is part of JADE.
 
-JADE is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+# JADE is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
-You should have received a copy of the GNU General Public License
-along with JADE.  If not, see <http://www.gnu.org/licenses/>.
-"""
+# JADE is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with JADE.  If not, see <http://www.gnu.org/licenses/>.
+
 import os
 import math
 import matplotlib.pyplot as plt
@@ -116,7 +116,7 @@ CYL_SDDR_XTICKS = {"'22-1'": 'Hole Front',
 # ============================================================================
 #                   Plotter Class
 # ============================================================================
-class Plotter():
+class Plotter:
     def __init__(self, data, title, outpath, outname, quantity, unit, xlabel,
                  testname, ext='.png'):
         """
@@ -127,7 +127,7 @@ class Plotter():
         data : list
             data = [data1, data2, ...]
             data1 = {'x': x data, 'y': y data, 'err': error data,
-                     'ylabel': data label}
+            'ylabel': data label}
         title : str
             plot title
         outpath : str/path
@@ -166,6 +166,27 @@ class Plotter():
                        '#984ea3', '#999999', '#e41a1c', '#dede00']
 
     def plot(self, plot_type):
+        """
+        Function to be called to actually perform the plot
+
+        Parameters
+        ----------
+        plot_type : str
+            plot type. The current available ones are ['Binned graph',
+            'Ratio graph', 'Experimental points',
+            'Discreet Experimental points', 'Grouped bars', 'Waves'].
+
+        Raises
+        ------
+        ValueError
+            if plot type is not among the available ones.
+
+        Returns
+        -------
+        outp : path like object
+            path to the saved image.
+
+        """
         # --- Binned Plot ---
         if plot_type == 'Binned graph':
             outp = self._binned_plot()
@@ -1020,9 +1041,22 @@ def _get_limits(lowerlimit, upperlimit, ydata, xdata):
 
 def checkYspread(datadics):
     """
-    All data must be positive! or spread cannot be compute correctly
+    Given a list of data dictionaries compute the maximum spread among the
+    data['y'].
+    All data must be positive or it makes no sense to compute spread.
+
+    Parameters
+    ----------
+    datadics : list[dic]
+        contains the data to plot for differen libraries.
+
+    Returns
+    -------
+    float
+        max spread in the dataset on y axis (in order of magnitudes).
 
     """
+
     maxval = 0
     minval = 1e36
 

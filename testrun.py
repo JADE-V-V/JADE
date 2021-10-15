@@ -1,26 +1,26 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Nov  4 16:52:09 2019
 
-@author: Davide Laghi
+# Created on Mon Nov  4 16:52:09 2019
 
-Copyright 2021, the JADE Development Team. All rights reserved.
+# @author: Davide Laghi
 
-This file is part of JADE.
+# Copyright 2021, the JADE Development Team. All rights reserved.
 
-JADE is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+# This file is part of JADE.
 
-JADE is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+# JADE is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
-You should have received a copy of the GNU General Public License
-along with JADE.  If not, see <http://www.gnu.org/licenses/>.
-"""
+# JADE is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with JADE.  If not, see <http://www.gnu.org/licenses/>.
+
 import inputfile as ipt
 import matreader as mat
 import os
@@ -45,19 +45,36 @@ CEND = '\033[0m'
 
 
 class Test():
-    """
-    Class representing a general test. This class will have to be extended for
-    specific tests.
-    """
 
     def __init__(self, inp, lib, config, log, VRTpath, confpath):
         """
-        inp: (str) path to inputfile blueprint
-        lib: (str) library suffix to use
-        config: (DataFrame row) configuration options for the test
-        log: (Log) Jade log file access
-        VRTpath: (str/path) path to the variance reduction folder
-        confpath: (str/path) path to the test configuration folder
+        Class representing a general test. This class will have to be extended
+        for specific tests.
+
+        Parameters
+        ----------
+        inp : str
+            path to inputfile blueprint.
+        lib : str
+            library suffix to use (e.g. 31c).
+        config : pd.DataFrame (single row)
+            configuration options for the test.
+        log : Log
+            Jade log file access.
+        VRTpath : path like object
+           path to the variance reduction folder.
+        confpath : path like object
+            path to the test configuration folder.
+
+        Raises
+        ------
+        ValueError
+            if the code specified in config is not admissible.
+
+        Returns
+        -------
+        None.
+
         """
         # Test Library
         self.lib = lib
@@ -231,10 +248,35 @@ class Test():
             shutil.copyfile(wwinp, outfile)
 
     def custom_inp_modifications(self):
+        """
+        Perform additional operation on the input before generation. In this
+        parent object actually does nothing
+
+        Returns
+        -------
+        None.
+
+        """
         # It does not do anything in the default benchmark
         pass
 
     def run(self, cpu=1, timeout=None):
+        """
+        run the input
+
+        Parameters
+        ----------
+        cpu : int, optional
+            number of CPU to be used. The default is 1.
+        timeout : int, optional
+            number of seconds after the simulation should be killed.
+            The default is None.
+
+        Returns
+        -------
+        None.
+
+        """
         name = self.name
         directory = self.MCNPdir
         code_tag = CODE_TAGS[self.code]
@@ -838,10 +880,29 @@ class MultipleTest:
     def __init__(self, inpsfolder, lib, config, log, VRTpath, confpath,
                  TestOb=Test):
         """
-        This simply a collection of Test objects, see the single Test object,
-        for methods and attributes descriptions
+        A collection of Tests
 
-        addeed TestOb so a custom test may be provided if needed
+        Parameters
+        ----------
+        inpsfolder : path-like object
+            folder that contains all inputs of the tests.
+        lib : str
+            library suffix to use (e.g. 31c).
+        config : pd.DataFrame (single row)
+            configuration options for the test.
+        log : Log
+            Jade log file access.
+        VRTpath : path like object
+           path to the variance reduction folder.
+        confpath : path like object
+            path to the test configuration folder.
+        TestOb : testrun.Test, optional
+            type of test object to be used. The default is Test.
+
+        Returns
+        -------
+        None.
+
         """
         tests = []
         for folder in os.listdir(inpsfolder):
@@ -852,6 +913,21 @@ class MultipleTest:
         self.name = os.path.basename(inpsfolder)
 
     def generate_test(self, lib_directory, libmanager):
+        """
+        Generate all the tests of the collection
+
+        Parameters
+        ----------
+        lib_directory : path-like
+            output directory where to generate the tests.
+        libmanager : libmanager.LibManager
+            object handling libraries operations.
+
+        Returns
+        -------
+        None.
+
+        """
         self.MCNPdir = os.path.join(lib_directory, self.name)
         safe_override(self.MCNPdir)
         for test in self.tests:
@@ -859,6 +935,22 @@ class MultipleTest:
             test.generate_test(lib_directory, libmanager, MCNP_dir=mcnp_dir)
 
     def run(self, cpu=1, timeout=None):
+        """
+        Run all the tests
+
+        Parameters
+        ----------
+        cpu : int, optional
+            number of CPU to be used. The default is 1.
+        timeout : int, optional
+            number of seconds after each simulation is killed. The default is
+            None.
+
+        Returns
+        -------
+        None.
+
+        """
         for test in tqdm(self.tests):
             test.run(cpu=cpu, timeout=timeout)
 

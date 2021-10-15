@@ -1,28 +1,28 @@
 # -*- coding: utf-8 -*-
-"""
-Created on 24/10/2019
 
-@author: Davide laghi
+# Created on 24/10/2019
 
-Support classes for MCNP material card reader/writer
+# @author: Davide laghi
 
-Copyright 2021, the JADE Development Team. All rights reserved.
+# Support classes for MCNP material card reader/writer
 
-This file is part of JADE.
+# Copyright 2021, the JADE Development Team. All rights reserved.
 
-JADE is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+# This file is part of JADE.
 
-JADE is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+# JADE is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
-You should have received a copy of the GNU General Public License
-along with JADE.  If not, see <http://www.gnu.org/licenses/>.
-"""
+# JADE is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with JADE.  If not, see <http://www.gnu.org/licenses/>.
+
 # -------------------------------------
 #         == IMPORTS ==
 # -------------------------------------
@@ -53,7 +53,27 @@ class Zaid:
     def __init__(self, fraction, element, isotope,
                  library, ab='', fullname=''):
         """
-        Init default method
+        Object representing a Zaid
+
+        Parameters
+        ----------
+        fraction : str/float
+            fraction of the zaid.
+        element : str
+            element part of the zaid (AA).
+        isotope : str
+            isotope part of the zaid (ZZZ).
+        library : str
+            library suffix (e.g. 99c).
+        ab : str, optional
+            abundance of the zaid in the material. The default is ''.
+        fullname : str, optional
+            formula name (e.g. H1). The default is ''.
+
+        Returns
+        -------
+        None.
+
         """
         self.fraction = float(fraction)
         self.element = element
@@ -70,7 +90,20 @@ class Zaid:
     @classmethod
     def from_string(cls, string):
         """
-        Generate a Zaid object from its characteristic string
+        Generate a zaid object from an MCNP string
+
+        Parameters
+        ----------
+        cls : matreader.Zaid
+            zaid to be created.
+        string : str
+            original MCNP string.
+
+        Returns
+        -------
+        Zaid
+            created zaid.
+
         """
         # Divide fraction from zaid
         patSpacing = re.compile(r'[\s\t]+')
@@ -95,7 +128,13 @@ class Zaid:
 
     def to_text(self):
         """
-        Get the zaid string ready for MCNP material card
+         Get the zaid string ready for MCNP material card
+
+        Returns
+        -------
+        str
+            zaid string.
+
         """
         fraction = "{:.6E}".format(Decimal(self.fraction))
         if self.library is None:
@@ -116,7 +155,18 @@ class Zaid:
 
     def get_fullname(self, libmanager):
         """
-        Get zaid fullname through a libmanager
+        Get the formula name of the zaid (e.g. H1)
+
+        Parameters
+        ----------
+        libmanager : libmanager.LibManager
+            libmanager handling the libraries operations.
+
+        Returns
+        -------
+        formula : str
+            zaid formula name.
+
         """
         name, formula = libmanager.get_zaidname(self)
 
@@ -138,7 +188,15 @@ class Element:
         Generate an Element object starting from a list of zaids.
         It will collapse multiple instance of a zaid into a single one
 
-        zaidList: (list) list of zaids constituing the element
+        Parameters
+        ----------
+        zaidList : list
+            list of zaids constituing the element.
+
+        Returns
+        -------
+        None.
+
         """
         zaids = {}
         for zaid in zaidList:
@@ -157,7 +215,18 @@ class Element:
 
     def update_zaidinfo(self, libmanager):
         """
-        Update zaids infos through a libmanager
+        Update zaids infos through a libmanager. Info are the formula name and
+        the abundance in the material.
+
+        Parameters
+        ----------
+        libmanager : libmanager.LibManager
+            libmanager handling the libraries operations.
+
+        Returns
+        -------
+        None.
+
         """
         tot_fraction = 0
         for zaid in self.zaids:
@@ -172,7 +241,13 @@ class Element:
 
     def get_fraction(self):
         """
-        Return the element fraction
+        Get the sum of the fraction of the zaids composing the element
+
+        Returns
+        -------
+        fraction : float
+            element fraction.
+
         """
         fraction = 0
         for zaid in self.zaids:
@@ -189,7 +264,27 @@ class SubMaterial:
         """
         Generate a SubMaterial Object starting from a list of Zaid and
         eventually Elements list
+
+        Parameters
+        ----------
+        name : str
+            if the first submaterial, the name is the name of the material
+            (e.g. m1).
+        zaidList : list[Zaid]
+            list of zaids composing the submaterial.
+        elemList : list[Element], optional
+            list of elements composing the submaterial. The default is None.
+        header : str, optional
+            Header of the submaterial. The default is None.
+        additional_keys : list[str], optional
+            list of additional keywords in the submaterial. The default is [].
+
+        Returns
+        -------
+        None.
+
         """
+
         # List of zaids object of the submaterial
         self.zaidList = zaidList
 
@@ -214,9 +309,20 @@ class SubMaterial:
     @classmethod
     def from_text(cls, text):
         """
-        Generate a material from a text block
+        Generate a submaterial from MCNP input text
 
-        text: (list) list of strings (lines)
+        Parameters
+        ----------
+        cls : SubMaterial
+            submaterial to be generated.
+        text : list[str]
+            Original text of the MCNP input.
+
+        Returns
+        -------
+        SubMaterial
+            generated submaterial.
+
         """
         # Useful patterns
         patSpacing = re.compile(r'[\s\t]+')
@@ -274,6 +380,11 @@ class SubMaterial:
     def collapse_zaids(self):
         """
         Organize zaids into their elements and collapse mutiple istances
+
+        Returns
+        -------
+        None.
+
         """
         elements = {}
         for zaid in self.zaidList:
@@ -289,6 +400,15 @@ class SubMaterial:
         self.elements = elemList
 
     def to_text(self):
+        """
+        Write to text in MNCP format the submaterial
+
+        Returns
+        -------
+        str
+            formatted submaterial text.
+
+        """
         if self.header is not None:
             text = self.header+'\n'
         else:
@@ -401,7 +521,15 @@ class SubMaterial:
         This methods allows to update the in-line comments for every zaids
         containing additional information
 
-        lib_manager: (LibManager) Library manager for the conversion
+        Parameters
+        ----------
+        lib_manager : libmanager.LibManager
+            Library manager for the conversion.
+
+        Returns
+        -------
+        None.
+
         """
         self.collapse_zaids()  # To be sure to have adjourned elements
 
@@ -417,6 +545,19 @@ class SubMaterial:
         """
         Returns DataFrame containing the different fractions of the elements
         and zaids
+
+        Parameters
+        ----------
+        lib_manager : libmanager.LibManager
+            Library manager for the conversion.
+
+        Returns
+        -------
+        df_el : pd.DataFrame
+            table of information of the submaterial on an elemental level.
+        df_zaids : pd.DataFrame
+            table of information of the submaterial on a zaid level.
+
         """
         # dic_element = {'Element': [], 'Fraction': []}
         # dic_zaids = {'Element': [], 'Zaid': [], 'Fraction': []}
@@ -510,6 +651,29 @@ class Material:
 
     def __init__(self, zaids, elem, name, submaterials=None, mx_cards=[],
                  header=None):
+        """
+        Object representing an MCNP material
+
+        Parameters
+        ----------
+        zaids : list[zaids]
+            zaids composing the material.
+        elem : list[elem]
+            elements composing the material.
+        name : str
+            name of the material (e.g. m1).
+        submaterials : list[Submaterials], optional
+            list of submaterials composing the material. The default is None.
+        mx_cards : list, optional
+            list of mx_cards in the material if present. The default is [].
+        header : str, optional
+            material header. The default is None.
+
+        Returns
+        -------
+        None.
+
+        """
 
         self.zaids = zaids
         self.elem = elem
@@ -535,9 +699,20 @@ class Material:
     @classmethod
     def from_text(cls, text):
         """
-        Create a material Object from text
+        Create a material from MCNP formatted text
 
-        text: (list)(string) list of input lines for the material
+        Parameters
+        ----------
+        cls : TYPE
+            DESCRIPTION.
+        text : list[str]
+            MCNP formatted text.
+
+        Returns
+        -------
+        matreader.Material
+            material object created.
+
         """
         # split the different submaterials
         patC = PAT_COMMENT
@@ -572,6 +747,15 @@ class Material:
                    header=header)
 
     def to_text(self):
+        """
+        Write the material to MCNP formatted text
+
+        Returns
+        -------
+        str
+            MCNP formatte text representing the material.
+
+        """
         if self.header is not None:
             text = self.header.strip('\n')+'\n'+self.name.upper().strip('\n')
         else:
@@ -594,9 +778,25 @@ class Material:
         """
         This method allows to translate all submaterials to another library
 
-        newlib: (str) suffix of the new lib to translate to
-        lib_manager: (LibManager) Library manager for the conversion
-        update: (Bool) if True (default) material infos are updated
+        Parameters
+        ----------
+        newlib : dict or str
+            There are a few ways that newlib can be provided:
+                - str (e.g. 31c), the new library to translate to will be the
+                    one indicated;
+                - dic (e.g. {'98c' : '99c', '31c: 32c'}), the new library is
+                    determined based on the old library of the zaid
+                - dic (e.g. {'98c': [list of zaids], '31c': [list of zaids]}),
+                    the new library to be used is explicitly stated depending
+                    on the zaidnum.
+        lib_manager : libmanager.LibManager
+            object handling all libraries operations.
+        update : bool, optional
+            if True, material infos are updated. The default is True.
+
+        Returns
+        -------
+        None.
         """
         for submat in self.submaterials:
             submat.translate(newlib, lib_manager)
@@ -726,9 +926,18 @@ class MatCardsList(Sequence):
 
     def __init__(self, materials):
         """
-        Initialize MatList
+        Object representing the list of materials included in an MCNP input.
+        This class is a child of the Sequence base class.
 
-        materials: (list)(Material) materials of the list
+        Parameters
+        ----------
+        materials : list[Material]
+            list of materials.
+
+        Returns
+        -------
+        None.
+
         """
         self.materials = materials
         # Build also the dictionary
@@ -768,7 +977,18 @@ class MatCardsList(Sequence):
         the input. Then the mcards are parsed using the classes defined in this
         module
 
-        inputfile: (str) path to the MCNP input file
+        Parameters
+        ----------
+        cls : TYPE
+            DESCRIPTION.
+        inputfile : inputfile.InputFile
+            MCNP input file containing the material section.
+
+        Returns
+        -------
+        MatCardsList
+            new material card list generated.
+
         """
         matPat = PAT_MAT
         mxPat = PAT_MX
@@ -825,6 +1045,12 @@ class MatCardsList(Sequence):
     def to_text(self):
         """
         return text of the material cards in order
+
+        Returns
+        -------
+        str
+            material card list MCNP formatted text.
+
         """
         text = ''
         for material in self.materials:
@@ -837,8 +1063,24 @@ class MatCardsList(Sequence):
         This method allows to translate the material cards to another library.
         The zaid are collapsed again to get the new elements
 
-        newlib: (str) suffix of the new lib to translate to
-        lib_manager: (LibManager) Library manager for the conversion
+        Parameters
+        ----------
+        newlib : dict or str
+            There are a few ways that newlib can be provided:
+                - str (e.g. 31c), the new library to translate to will be the
+                    one indicated;
+                - dic (e.g. {'98c' : '99c', '31c: 32c'}), the new library is
+                    determined based on the old library of the zaid
+                - dic (e.g. {'98c': [list of zaids], '31c': [list of zaids]}),
+                    the new library to be used is explicitly stated depending
+                    on the zaidnum.
+        lib_manager : libmanager.LibManager
+            Library manager for the conversion.
+
+        Returns
+        -------
+        None.
+
         """
         for material in self.materials:
             material.translate(newlib, lib_manager)
@@ -852,7 +1094,15 @@ class MatCardsList(Sequence):
         This methods allows to update the in-line comments for every zaids
         containing additional information
 
-        lib_manager: (LibManager) Library manager for the conversion
+        Parameters
+        ----------
+        lib_manager : libmanager.Libmanager
+            Library manager for the conversion.
+
+        Returns
+        -------
+        None.
+
         """
         for mat in self.materials:
             mat.update_info(lib_manager)

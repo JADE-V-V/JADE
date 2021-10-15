@@ -14,7 +14,6 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../..'))
 
-
 # -- Project information -----------------------------------------------------
 
 project = 'JADE'
@@ -22,7 +21,7 @@ copyright = '2021, Davide Laghi'
 author = 'Davide Laghi'
 
 # The full version, including alpha/beta/rc tags
-release = 'v1.2.0'
+release = 'v1.3.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -30,7 +29,7 @@ release = 'v1.2.0'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['myst_parser']
+extensions = ['myst_parser', 'sphinx.ext.autodoc', 'sphinx.ext.napoleon']
 
 source_suffix = {
     '.rst': 'restructuredtext',
@@ -44,7 +43,12 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
-
+# Option for autodoc
+autodoc_default_options = {
+    'show-inheritance': True,
+    'exclude-members': '__weakref__'
+}
+autoclass_content = 'init'
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for

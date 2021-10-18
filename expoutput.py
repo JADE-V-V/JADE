@@ -33,6 +33,8 @@ from status import EXP_TAG
 from plotter import Plotter
 from scipy.interpolate import interp1d
 from abc import abstractmethod
+from inputfile import D1S_Input
+import re
 
 
 class ExperimentalOutput(BenchmarkOutput):
@@ -363,8 +365,10 @@ class FNGOutput(ExperimentalOutput):
 
     def _processMCNPdata(self, mctal):
         """
-        Read the SDDR tally at the different cooldown times and provide the
-        results as a DF
+        Read All tallies and return them as a dictionary of DataFrames. This
+        aslo needs to ovveride the raw data since unfortunately it appears
+        that the user bins necessary for tracking daughters and parents are
+        not correclty written to the mctal file.
 
         Parameters
         ----------
@@ -377,26 +381,56 @@ class FNGOutput(ExperimentalOutput):
             table of the SDDR at different cooling timesbadi
 
         """
-        res = []
-        # --- Get SDDR ---
-        tallynum = 4
+        res = {}
+        # Cutom of read of tallies due to errors in the mctal file
         for tally in mctal.tallies:
-            # Select the correct tally (only one...)
-            if int(tally.tallyNumber) == tallynum:
+            tallyres = []
+            tnum = int(tally.tallyNumber)
+
+            # -- Get SDDR --
+            if tnum == 4:
                 for i, time in enumerate(tally.tim):
                     val = tally.getValue(0, 0, 0, 0, 0, 0, 0, i, 0, 0, 0, 0)
                     err = tally.getValue(0, 0, 0, 0, 0, 0, 0, i, 0, 0, 0, 1)
 
                     # Store
                     time_res = [i+1, val, err]
-                    res.append(time_res)
+                    tallyres.append(time_res)
 
-                break  # Work has been done
+                # Build and store the taly df
+                df = pd.DataFrame(tallyres)
+                df.columns = ['time', 'sddr', 'err']
+                res[str(tnum)] = df
 
-        df = pd.DataFrame(res)
-        df.columns = ['time', 'sddr', 'err']
+            # -- Parent tracker --
+            if tnum in [14, 24]:
+                for i in range(tally.nTim):
+                    for j in range(tally.nUsr):
+                        val = tally.getValue(0, 0, j, 0, 0, 0, 0, i, 0, 0, 0, 0)
+                        err = tally.getValue(0, 0, j, 0, 0, 0, 0, i, 0, 0, 0, 1)
 
-        return df
+                        # Store
+                        time_res = [i+1, j, val, err]
+                        tallyres.append(time_res)
+
+                # Build and store the taly df
+                df = pd.DataFrame(tallyres)
+                df.columns = ['time', 'tracked', 'sddr', 'err']
+                # The first row is the complementary bin (0) and last row
+                # is the total. They can be dropped
+                df = df.set_index('tracked').drop([0, j]).reset_index()
+                res[str(tnum)] = df
+
+        # --- Override the raw data ---
+        # Get the folder and lib
+        path = mctal.mctalFileName
+        folderpath = os.path.dirname(path)
+        folder = os.path.basename(folderpath)
+        lib = os.path.basename(os.path.dirname(os.path.dirname(folderpath)))
+
+        self.raw_data[folder, lib] = res
+
+        return res
 
     def _pp_excel_comparison(self):
         '''
@@ -407,7 +441,7 @@ class FNGOutput(ExperimentalOutput):
         ex_outpath = os.path.join(self.excel_path, 'C over E table.xlsx')
         # Create a Pandas Excel writer using XlsxWriter as the engine.
         with pd.ExcelWriter(ex_outpath, engine='xlsxwriter') as writer:
-            # build and dump the C/E table
+            # --- build and dump the C/E table ---
             for folder in self.names:
                 # collect all available data
                 alldata = self._get_collected_data(folder)
@@ -438,12 +472,14 @@ class FNGOutput(ExperimentalOutput):
     def _get_collected_data(self, folder):
         """
         Given a campaign it builds a single table containing all experimental
-        and computational data available
+        and computational data available for the total SDDR tally.
 
         Parameters
         ----------
         folder : str
             campaign name.
+        tally : str
+            tally number
 
         Returns
         -------
@@ -458,7 +494,7 @@ class FNGOutput(ExperimentalOutput):
 
         # Avoid exp tag
         for lib in self.lib[1:]:
-            libdf = self.results[folder, lib].set_index('time').sort_index()
+            libdf = self.results[folder, lib]['4'].set_index('time').sort_index()
             # add the SDDR and relative column of each library
             df[lib+'sddr'] = libdf['sddr'].values
             df[lib+'err'] = libdf['err'].values
@@ -483,12 +519,15 @@ class FNGOutput(ExperimentalOutput):
             After being filled the atlas is returned.
 
         """
+        patzaid = re.compile(r'(?<=[\s\-\t])\d+(?=[\s\t\n])')
+
         atlas.doc.add_heading('Shut Down Dose Rate', level=1)
         xlabel = 'Cooldown time'
         # Only two plots, one for each irradiation campaign
         for folder, title in zip(self.names, ['1st FNG Irradiation campaign',
                                               '2nd FNG Irradiation campaign']):
             atlas.doc.add_heading(title, level=2)
+            # --- SDDR PLOT ---
             # -- Recover data to plot --
             data = []
             x = self.times[folder]
@@ -499,7 +538,7 @@ class FNGOutput(ExperimentalOutput):
                     err = (df['Relative Error']*y).values
                     ylabel = 'Experiment'
                 else:
-                    df = self.results[folder, lib].set_index('time').sort_index()
+                    df = self.results[folder, lib]['4'].set_index('time').sort_index()
                     y = df.sddr.values
                     err = df.err.values*y
                     ylabel = self.session.conf.get_lib_name(lib)
@@ -514,6 +553,64 @@ class FNGOutput(ExperimentalOutput):
             img_path = plot.plot('Discreet Experimental points')
             # Insert the image in the atlas
             atlas.insert_img(img_path)
+
+            # --- Tracking PLOTs ---
+            # -- Recover data to plot --
+            # There is the need to recover the tracked parents and daughters
+            zaid_tracked = {}
+            for lib in self.lib[1:]:
+                file = os.path.join(self.test_path[lib], folder, folder)
+                inp = D1S_Input.from_text(file)
+                for tallynum in ['24', '14']:
+                    card = inp.get_card_byID('settings', 'FU'+tallynum)
+                    strings = []
+                    for line in card.lines:
+                        zaids = patzaid.findall(line)
+                        for zaid in zaids:
+                            if zaid != '0':
+                                _, formula = self.session.lib_manager.get_zaidname(zaid)
+                                strings.append(formula)
+
+                    zaid_tracked[tallynum] = strings
+
+            x = self.times[folder]
+            titles = {'parent': title+', parent isotopes contribution ',
+                      'daughter': title+', daughter isotopes contribution '}
+            tallynums = {'parent': '24', 'daughter': '14'}
+
+            for tracked in ['parent', 'daughter']:
+                atlas.doc.add_heading(tracked+' tracking', level=3)
+                for lib in self.lib[1:]:
+                    libname = self.session.conf.get_lib_name(lib)
+
+                    # Recover the data
+                    tallynum = tallynums[tracked]
+                    df = self.results[folder, lib][tallynum]
+                    zaidstracked = set(df.tracked.values)
+                    tot_dose = df.groupby('time').sum().sddr.values
+                    df.set_index('tracked', inplace=True)
+                    data = []
+                    for i, zaid in enumerate(zaidstracked):
+                        subset = df.loc[zaid]
+                        assert len(subset.time.values) == len(x)
+                        formula = zaid_tracked[tallynum][i]
+                        y = subset.sddr.values/tot_dose*100
+                        libdata = {'x': x, 'y': y, 'err': [],
+                                   'ylabel': formula}
+                        data.append(libdata)
+
+                    outname = 'tmp'
+                    newtitle = titles[tracked]+libname
+                    quantity = 'SDDR contribution'
+                    unit = '%'
+                    xlabel = 'Cooldown time'
+
+                    plot = Plotter(data, newtitle, tmp_path, outname,
+                                   quantity, unit, xlabel, self.testname)
+                    img_path = plot._contribution(legend_outside=True)
+
+                    # Insert the image in the atlas
+                    atlas.insert_img(img_path)
 
         return atlas
 

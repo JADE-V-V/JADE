@@ -38,8 +38,11 @@ jobs:
           python -pip install --upgrade pip
           pip install -r requirements.txt
       
+      # Install the plugin for pytest
+      - name: Install plugin
+        run: pip install pytest-github-actions-annotate-failures
+      
       # Run pytest
       - name: Testing
         working-directory: ./tests
-        run: |
-          pytest
+        run: pytest

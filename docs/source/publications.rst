@@ -7,11 +7,11 @@ Publications featuring JADE
 * D. Laghi, M. Fabbri, L. Isolan, R. Pampin, M. Sumini, A. Portone and
   A. Trkov, 2020,
   "JADE, a new software tool for nuclear fusion data libraries verification &
-  validation", *Fusion Engineering and Design*, **161** 112075,
+  validation", *Fusion Engineering and Design*, **161** 112075
   doi: https://doi.org/10.1016/j.fusengdes.2020.112075
 * D. Laghi, M. Fabbri, L. Isolan, M. Sumini, G. Shnabel and A. Trkov, 2021,
   "Application Of JADE V&V Capabilities To The New FENDL v3.2 Beta Release",
-  *Nuclear Fusion*, [Under minor review]
+  *Nuclear Fusion*, **61** 116073
 
 Benchmarks Related Publications
 ===============================
@@ -26,6 +26,19 @@ Benchmarks Related Publications
   *Fusion Engineering and Design*, **136** 742-746
 * M. Sawan, 1994,  "FENDL Neutronics Benchmark: Specifications for the calculational and shielding benchmark",
   (Vienna: INDC(NDS)-316)
+* M. Martone, M. Angelone, and M. Pillon. “The 14 MeV Frascati neutrongenerator”.
+  In:Journal of Nuclear Materials 212-215 (1994). Fusion ReactorMaterials, pp. 1661–1664
+* P. Batistoni, M. Angelone, L. Petrizzi, and M. Pillon. “Benchmark Experimentfor the
+  Validation of Shut Down Activation and Dose Rate in a Fusion Device”.In: Journal of Nuclear
+  Science and Technology 39.sup2 (2002), pp. 974–977.
+* K. Seidel, Y. Chen, U. Fischer, H. Freiesleben, D. Richter, and S. Unholzer.“Measurement
+  and analysis of dose rates and gamma-ray fluxes in an ITERshut-down dose rate experiment”.
+  In:Fusion Engineering and Design 63-64 (2002), pp. 211–215.
+* R. Pampin, A. Davis, R.A. Forrest, D.A. Barnett, I. Davis, and M.Z. Youssef.“Status of novel
+  tools for estimation of activation dose”. In:Fusion Engineeringand Design 85.10 (2010).
+  Proceedings of the Ninth International Symposiumon Fusion Nuclear Technology, pp. 2080–2085.
+* J. Sanz, O. Cabellos, and N. Garcia-Herranz. Inventory Code for Nuclear Applications:
+  User’s Manual V. 2008. RSICC. 2008.
 
 Miscellaneous
 =============

@@ -27,7 +27,8 @@ code is required. The procedure is composed by the following steps:
 .. note::
     It is recommended to provide a comment card (FC) for each tally. These comments are considered the
     extended tally names and are used during post-processing.
-
+.. warning::
+    benchmark input file name cannot end with 'o' or 'm'.
 
 .. _customexpbench:
 

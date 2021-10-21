@@ -37,19 +37,11 @@ GitHub repository [link].
 
 .. toctree::
    :maxdepth: 2
-   :caption: More on JADE:
-
-   testing/testing
-   LICENSE
-   contributors
-   publications
-
-.. toctree::
-   :maxdepth: 2
-   :caption: JADE Developer Guide (TBD):
+   :caption: JADE Developer Guide:
 
    dev/intro
    dev/insertbenchmarks
+   dev/docmodify
 
 .. toctree::
    :maxdepth: 2
@@ -57,6 +49,15 @@ GitHub repository [link].
 
    api/inputgeneration
    api/postprocessing
+
+.. toctree::
+   :maxdepth: 2
+   :caption: More on JADE:
+
+   testing/testing
+   LICENSE
+   contributors
+   publications
 
 
 Indices and tables

@@ -1,0 +1,179 @@
+ITER CYLYNDER SDDR
+------------------
+
+The ITER Cylinder SDDR is a very popular computational benchmark for
+SDDR computation in ITER since it features dimensions, materials and
+streaming characteristics of a typical ITER equatorial port.
+
+Geometry and run parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. figure:: /img/benchmarks/cylSDDR.png
+    :align: center
+    :width: 600
+
+    ITER Cylinder SDDR benchmark geometry visualization
+
+The ITER Cylinder SDDR is a simple yet effective benchmark. The model
+is composed by a 550 cm long, hollowed steel cylinder with internal and
+external radius respectively equal to 50 cm and 100 cm. The rear part of
+the cylinder is closed with a steel disk plate of 48 cm radius and 15 cm thick.
+The inner front part of the cylinder is filled with a smaller cylinder made
+of a water-steel mixture. This internal 48 cm radius cylinder is 210 cm long
+and features a central 15 cm diameter cylindrical hole. As it can be deducted
+from the given measures, a 2 cm gap is left between the main external hollow
+cylinder and its internal components.
+
+A volumetric and isotropic neutron source is also defined. The volume of
+emission is a disk aligned with the front part of the cylinder assembly and
+positioned at a distance of 100 cm. The volume of the disk is 10 cm thick and
+has a radius equal to 100 cm.
+
+A series of cells and surfaces is also defined for tallying purposes.
+The shutdown dose rate due to the activation of the assembly is evaluated in cell
+tallies located 30 cm past the end of the rear plate. The tally cells consist of
+concentric (hollow) disks which are 10 cm thick and are characterized from the
+following radii:
+
+* from 0 cm to 15 cm (MCNP cell n. 10);
+* from 15 cm to 30 cm (MCNP cell n. 11);
+* from 30 cm to 45 cm (MCNP cell n. 12);
+* from 45 cm to 60 cm (MCNP cell n. 13).
+
+For flux tallying purposes, instead, the following cylindrical surfaces have been defined:
+
+* n. 1, coincident with the external surface of the central hole;
+* n. 2, coincident with the external surface of the water/steel cylinder;
+* n. 3, coincident with the internal surface of the main steel cylinder;
+* n. 4, coincident with the external surface of the main steel cylinder;
+
+and the following planes orthogonal to the cylinder length:
+
+* n. 22, coincident with the front of the assembly;
+* n. 23, coincident with the rear of the water/steel cylinder;
+* n. 24, coincident with the front of the rear plate;
+* n. 25, coincident with the rear of the assembly.
+
+SDDR parameters
+^^^^^^^^^^^^^^^
+
+The irradiation schedule considered for ITER Cylinder SDDR benchmark is
+reported hereafter:
+
+.. list-table:: Irradiation schedule (ITER mode SA2)
+    :header-rows: 1
+
+    * - Source Intensity [n/s]
+      - Δt irr.
+      - Multiplicity
+    * - 1.0714E+17
+      - 2 y
+      - 1
+    * - 8.2500E+17
+      - 10 y
+      - 1
+    * - 0
+      - 9 m
+      - 1
+    * - 1.6667E+18
+      - 15 m
+      - 1
+    * - 0
+      - 3290 s
+      - ->
+    * - 2.0000E+19
+      - 400 s
+      - 17
+    * - 0
+      - 3290 s
+      - ->
+    * - 2.8000E+19
+      - 400 s
+      - 4
+
+Two different cool-down times were considered in the photon tallies: 0s and 1e6 s (approx. 11.5 days).
+That is, these are the time interval waited after the irradiation phase has finished before tallying
+the SDDR and the photon flux.
+
+The possible reactions allowed during the simulation are listed in the following table:
+
+.. list-table:: List of possible reactions considered during the ITER Cylinder SDDR benchmark
+    :header-rows: 1
+
+    * - Parent
+      - Daughter
+    * - Cr50
+      - Cr51
+    * - Cr52
+      - Cr51
+    * - Mn55
+      - Mn54
+    * - Fe54
+      - Mn54
+    * - Fe54
+      - Cr51
+    * - Fe56
+      - Mn54
+    * - Fe58
+      - Fe59
+    * - Co59
+      - Co58
+    * - Co59
+      - Co60
+    * - Co59
+      - Fe59
+    * - Ni58
+      - Co58
+    * - Ni60
+      - Co60
+    * - Ni61
+      - Co60
+    * - Ni61
+      - Co60
+    * - Ni62
+      - Fe59
+    * - Cu63
+      - Cu62
+    * - Cu63
+      - Co60
+    * - Cu65
+      - Cu66
+    * - Ta181
+      - Ta182
+    * - W182
+      - Ta182
+    * - W186
+      - W187
+
+Tallies
+^^^^^^^
+
+Neutron flux, (decay) gamma flux and SDDR are the only tallied quantities. The following
+is a description of the tallies defined in the benchmark:
+
+Tally n. 202
+    Neutron flux per energy bin [#/cm^2/s]. The flux is tallied in 16 energy bins ranging between 1E-10 MeV to 20 MeV. The flux is also binned geometrically using all surfaces described in §\ref{sec:cylgeom}.
+Tally n. 242
+    Total neutron flux [#/cm^2/s]. Same as Tally n. 202 but without the energy binning.
+Tally n. 14 
+    Gamma flux per energy bin in cell 10 [#/cm^2/s]. The flux is tallied in 16 energy bins ranging from 0.1 MeV to 20 MeV. The flux is tallied at both cool-down times.
+Tally n. 34
+    Gamma flux per energy bin in cell 11 [#/cm^2/s]. The flux is tallied in 16 energy bins ranging from 0.1 MeV to 20 MeV. The flux is tallied at both cool-down times.
+Tally n. 44
+    Gamma flux per energy bin in cell 12 [#/cm^2/s]. The flux is tallied in 16 energy bins ranging from 0.1 MeV to 20 MeV. The flux is tallied at both cool-down times.
+Tally n. 54
+    Gamma flux per energy bin in cell 13 [#/cm^2/s]. The flux is tallied in 16 energy bins ranging from 0.1 MeV to 20 MeV. The flux is tallied at both cool-down times.
+Tally n. 74
+    Total gamma flux [#/cm^2/s]. The flux is tallied only by cell (i.e. 10, 11, 12 and 13).
+Tally n. 124
+    SSDR behind the plate [Sv/h]. The SDDR is computed at all cell tallies (i.e. 10, 11, 12 and 13) and at both cool-down times.
+
+.. seealso:: **Related papers and contributions**
+
+    * M. Youssef, Feder R., Batistoni P., Fischer U., Jakhar S., Konno C., Lough-lin M.,
+      and Villari R. “Benchmarking of the 3-D CAD-based Discrete Ordinates code “ATTILA”
+      for dose rate calculations against experiments and MonteCarlo calculations”.
+      In: Fusion Engineering and Design 88 (2013), pp. 3033–3040.
+    * R. Pampin, A. Davis, J. Izquierdo, D. Leichtle, M.D. Loughlin, J. Sanz, A.Turner,
+      R. Villari, and P.P.H. Wilson. “Developments and needs in nuclearanalysis of
+      fusion technology”. In: Fusion Engineering and Design 88 (2013), pp. 454–460.

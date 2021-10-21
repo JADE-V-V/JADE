@@ -79,24 +79,33 @@ Plots Atlas
 
 Binned graph
 ------------
-.. image:: ../img/pp/binned.png
+.. image:: /img/pp/binned.png
     :width: 600
 
 Ratio Graph
 -----------
-.. image:: ../img/pp/ratio.png
+.. image:: /img/pp/ratio.png
     :width: 600
 
-.. image:: ../img/pp/ratio2.png
+.. image:: /img/pp/ratio2.png
     :width: 600
 
 Experimental points
 -------------------
-.. image:: ../img/pp/exp.png
+.. image:: /img/pp/exp.png
+    :width: 600
+
+Discreet Experimental points
+----------------------------
+.. image:: /img/pp/descreet.png
     :width: 600
 
 Grouped bars
 ------------
-.. image:: ../img/pp/grouped.png
+.. image:: /img/pp/grouped.png
     :width: 600
 
+Waves
+-----
+.. image:: /img/pp/waves.png
+    :width: 600

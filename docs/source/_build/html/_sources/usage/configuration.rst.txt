@@ -143,7 +143,8 @@ names to the nuclear data libraries suffixes available in the xsdir file. This
 allows for a clearer post-processing output.
 
 .. warning::
-    Do not use invalid filename characters (e.g. ``"\"``) for name of the libraries!
+    Do not use invalid filename characters (e.g. ``"\"``) in the names assigned to the
+    libraries!
 
 .. _activationfile:
 

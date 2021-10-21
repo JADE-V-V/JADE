@@ -33,10 +33,9 @@ jobs:
 
       # Install dependencies
       - name: Install dependencies
-        working-directory: ./tests
         run: |
           python -pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r requirements_pip.txt
       
       # Install the plugin for pytest
       - name: Install plugin

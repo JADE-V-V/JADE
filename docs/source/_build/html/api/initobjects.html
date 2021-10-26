@@ -1,0 +1,488 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>JADE Session &mdash; JADE v1.3.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Input Generation" href="inputgeneration.html" />
+    <link rel="prev" title="General OOP scheme" href="general.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> JADE
+          
+
+          
+            
+            <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">JADE User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../nutshell.html">JADE in a nutshell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/folders.html">Folder Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/menu.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/benchmarks.html">Default Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/postprocessing.html">Post-Processing Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/utilities.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/tipstricks.html">Tips &amp; Tricks</a></li>
+</ul>
+<p class="caption"><span class="caption-text">JADE Developer Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Post-Processing</a></li>
+</ul>
+<p class="caption"><span class="caption-text">JADE API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="general.html">General OOP scheme</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">JADE Session</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#main-module">main module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#session">Session</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#libmanager-module">libmanager module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#libmanager">LibManager</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#state-module">state module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#status">Status</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-module">configuration module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configuration">Configuration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="inputgeneration.html">Input Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postprocessing.html">Post-Processing</a></li>
+</ul>
+<p class="caption"><span class="caption-text">More on JADE:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">List of Publications and Contributions</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">JADE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>JADE Session</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/api/initobjects.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="jade-session">
+<h1>JADE Session<a class="headerlink" href="#jade-session" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="main-module">
+<h2>main module<a class="headerlink" href="#main-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="session">
+<span id="sessionob"></span><h3>Session<a class="headerlink" href="#session" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="libmanager-module">
+<h2>libmanager module<a class="headerlink" href="#libmanager-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="libmanager">
+<span id="libmanagerob"></span><h3>LibManager<a class="headerlink" href="#libmanager" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="state-module">
+<h2>state module<a class="headerlink" href="#state-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="status">
+<span id="statusob"></span><h3>Status<a class="headerlink" href="#status" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="status.Status">
+<em class="property">class </em><code class="sig-prename descclassname">status.</code><code class="sig-name descname">Status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Stores the state of the JADE runs and post-processing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>session</strong> (<em>main.Session</em>) – JADE session.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="status.Status.check_lib_run">
+<code class="sig-name descname">check_lib_run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lib</span></em>, <em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="n">config_option</span><span class="o">=</span><span class="default_value">'Run'</span></em>, <em class="sig-param"><span class="n">exp</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.check_lib_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a library has been run. To be considered run a meshtally or
+meshtal have to be produced. Only active benchmarks (specified in
+the configuration file) are checked.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lib</strong> (<em>str</em>) – Library to check.</p></li>
+<li><p><strong>session</strong> (<em>Session</em>) – Jade Session.</p></li>
+<li><p><strong>config_option</strong> (<em>str</em>) – Specifies the configuration option onto which the check for tests
+“to perform” are registered.</p></li>
+<li><p><strong>exp</strong> (<em>boolean</em>) – if True checks the experimental benchmarks. Default is False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>test_runned</strong> – True if all benchmark have been run for the library.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="status.Status.check_override_pp">
+<code class="sig-name descname">check_override_pp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="n">exp</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.check_override_pp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asks for the library/ies to post-process and checks which tests have
+already been performed and would be overidden according to the
+configuration file.
+This can be used also to check if in a post processing of multiple
+libraries wich single library post processing is missing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>session</strong> (<em>Session</em>) – JADE session</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>lib</strong> (<em>str</em>) – Library/ies to post process</p></li>
+<li><p><strong>ans</strong> (<em>Boolean</em>) – True if the PP can begin (Possible override has been accepted).</p></li>
+<li><p><strong>exp</strong> (<em>boolean</em>) – if True checks the experimental benchmarks. Default is False</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="status.Status.check_override_run">
+<code class="sig-name descname">check_override_run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lib</span></em>, <em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="n">exp</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.check_override_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check status of the requested run. If overridden is required permission
+is requested to the user</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lib</strong> (<em>str</em>) – Library to run.</p></li>
+<li><p><strong>session</strong> (<em>Session</em>) – Jade Session.</p></li>
+<li><p><strong>exp</strong> (<em>False</em>) – if True checks the experimental benchmarks. Default is False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>ans</strong> – if True proceed with the run, if False, abort.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="status.Status.check_pp_single">
+<code class="sig-name descname">check_pp_single</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lib</span></em>, <em class="sig-param"><span class="n">session</span></em>, <em class="sig-param"><span class="n">tree</span><span class="o">=</span><span class="default_value">'single'</span></em>, <em class="sig-param"><span class="n">exp</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.check_pp_single" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the post processing of a single library or a comparison has
+been already done. To consider it done, all benchmarks must have been
+post-processed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lib</strong> (<em>string</em>) – library/ies to check.</p></li>
+<li><p><strong>session</strong> (<em>Session</em>) – JADE session.</p></li>
+<li><p><strong>tree</strong> (<em>string</em><em>, </em><em>optional</em>) – Either ‘single’ to check in the single pp tree or ‘comparison’
+to check into the comparison one. The default is ‘single’.</p></li>
+<li><p><strong>exp</strong> (<em>boolean</em>) – if True checks the experimental benchmarks. Default is False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if PP has been done.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Boolean</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="status.Status.check_test_run">
+<em class="property">static </em><code class="sig-name descname">check_test_run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">files</span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.check_test_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a test has been run</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>files</strong> (<em>list</em>) – file names inside test folder.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>flag_test_run</strong> – True if test has been run.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="status.Status.get_path">
+<code class="sig-name descname">get_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tree</span></em>, <em class="sig-param"><span class="n">itinerary</span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.get_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the resulting path of an itinery on one tree</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tree</strong> (<em>str</em>) – Either ‘comparison’, ‘single’, or ‘run’.</p></li>
+<li><p><strong>itinerary</strong> (<em>list</em>) – list of strings representing the step to take inside the tree.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>KeyError</strong> – if var tree is not among possible strings.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>cp</strong> – path to final step.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str/path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="status.Status.get_unfinished_zaids">
+<code class="sig-name descname">get_unfinished_zaids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lib</span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.get_unfinished_zaids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Identify zaids to run for rerun or continuation purposes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>lib</strong> (<em>str</em>) – library to check.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>unfinished</strong> – zaids/typical materials not run.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="status.Status.update_pp_status">
+<code class="sig-name descname">update_pp_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.update_pp_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read/Update the post processing tree status. All files produced by
+post processing registered</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>comparison_tree</strong> (<em>dic</em>) – Dictionary registering all test post processed for each
+comparison of libraries.</p></li>
+<li><p><strong>single_tree</strong> (<em>dic</em>) – Dictionary registering all test post processed performed for
+single libraries.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="status.Status.update_run_status">
+<code class="sig-name descname">update_run_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.update_run_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read/Update the run tree status. All files produced by runs are
+registered</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>libraries</strong> – dictionary of dictionaries representing the run tree</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dic</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="configuration-module">
+<h2>configuration module<a class="headerlink" href="#configuration-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="configuration">
+<span id="confob"></span><h3>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="inputgeneration.html" class="btn btn-neutral float-right" title="Input Generation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="general.html" class="btn btn-neutral float-left" title="General OOP scheme" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Davide Laghi.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

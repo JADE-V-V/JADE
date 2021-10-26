@@ -48,6 +48,7 @@ GitHub repository [link].
    :caption: JADE API
 
    api/general
+   api/initobjects
    api/inputgeneration
    api/postprocessing
 

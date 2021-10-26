@@ -26,17 +26,17 @@ import pandas as pd
 import json
 import re
 import warnings
-from main import (CRED, CEND)
+
+
+# colors
+CRED = '\033[91m'
+CEND = '\033[0m'
 
 
 MSG_DEFLIB = ' The Deafult library {} was used for zaid {}'
 
 
 class LibManager:
-    """
-    This class initialize the Manager that will address all operations were
-    libraries changes or comparisons are involved
-    """
 
     def __init__(self, xsdir_file, defaultlib='81c', activationfile=None):
         """
@@ -96,6 +96,17 @@ class LibManager:
     def check4zaid(self, zaid):
         """
         Check which libraries are available for the selected zaid and return it
+
+        Parameters
+        ----------
+        zaid : str
+            zaid string (e.g. 1001).
+
+        Returns
+        -------
+        libraries : list
+            list of libraries available for the zaid.
+
         """
         libraries = []
         for table in self.XS.find_table(zaid):
@@ -111,13 +122,26 @@ class LibManager:
             - 1to1: there is one to one correspondence for the zaid
             - natural: the zaids will be expanded using the natural abundance
             - absent: the zaid is not available in the library, a default one
-            will be used
+              will be used
 
-        zaid: (str) zaid name (ex. 1001)
-        lib: (str) library suffix (ex. 21c)
-        defaultlib: (str) library suffix (ex. 21c)
+        Parameters
+        ----------
+        zaid : str
+            zaid name (ex. 1001).
+        lib : str
+            library suffix (ex. 21c).
 
-        returns translation: (dic) {zaidname:(lib,nat_abundance,Atomic mass)}
+        Raises
+        ------
+        ValueError
+            if the library is not available in the xsdir file or if there is
+            no valid translation for the zaid.
+
+        Returns
+        -------
+        translation : dic
+            {zaidname:(lib,nat_abundance,Atomic mass)}.
+
         """
         # Check if library is available in Xsdir
         if lib not in self.libraries:
@@ -183,9 +207,16 @@ class LibManager:
         """
         Given a library, returns all zaids available
 
-        lib: (str) suffix of the library
+        Parameters
+        ----------
+        lib : str
+            suffix of the library.
 
-        returns zaids: (list) of zaid names
+        Returns
+        -------
+        zaids : list
+            list of zaid names available in the library.
+
         """
         zaids = []
 

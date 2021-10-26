@@ -30,6 +30,19 @@ EXP_TAG = 'Exp'
 
 class Status():
     def __init__(self, session):
+        """
+        Stores the state of the JADE runs and post-processing.
+
+        Parameters
+        ----------
+        session : main.Session
+            JADE session.
+
+        Returns
+        -------
+        None.
+
+        """
         # Paths
         self.test_path = session.path_test
         self.run_path = session.path_run

@@ -55,12 +55,17 @@ DEFAULT_SETTINGS_RESTORATION = """
 
 
 class Session:
-    """
-    This object represent a JADE session. All "environment" variables are
-    initialized
-    """
 
     def __init__(self):
+        """
+        This object represent a JADE session. All "environment" variables are
+        initialized
+
+        Returns
+        -------
+        None.
+
+        """
         self.initialize()
 
     def initialize(self):

@@ -15,40 +15,39 @@ For additional information contact: d.laghi@nier.it
 
 ## Requirements
 - Windows operative system (Linux or MacOS compatibility has not been tested);
-- Up-to-date Anaconda distribution (Python 3);
+- Anaconda or Miniconda distribution (Python 3);
 - Microsoft Office suite (Excel and Word);
-- Additional Python packages to Anaconda distribution:
-  - python-docx.
-  - numjuggler
 
 ## Installation
-The procedure to install JADE is the following:
-1) install/update Anaconda, you can update all packages in your current environment using:
-  ```
-  conda update --all
-  ```
-   However, if bugs or problems are encuntered, a fresh Anaconda re-installation may solve the issues
+1) extract the zip into a folder of choice (from now on <JADE_root>);
+2) rename the folder containing the Python scripts as 'Code' (<JADE_root>\Code);
+3) open the global configuration file: <JADE_root>\Code\Configuration\Config.xlsx; here you need to properly set the environment variables specified in the 'MAIN Config.' sheet (i.e. xsdir Path, and multithread options);
+4) Open an anaconda prompt shell and change directory to ``<JADE_root>\Code``. Then create a virtual
+   environment specific for jade:
 
-2) install additional packages. It may be necessary to activate the conda-forge channel. It can be done typing in an anaconda prompt shell:
-  ```
-  conda config --add channels conda-forge
-  ```
-  then use:
-  ```
-  conda install python-docx
-  ```
-  The second package needed is numjuggler for parsing of MCNP inputs. Unfortunately this is not available for conda installation and should be installed with pip instead:
-  ```
-  pip install numjuggler
-  ```
-3) extract the zip into a folder of choice (from now on <JADE_root>);
-4) rename the folder containing the Python scripts as 'Code' (<JADE_root>\Code);
-5) open the global configuration file: <JADE_root>\Code\Configuration\Config.xlsx; here you need to properly set the environment variables specified in the 'MAIN Config.' sheet (i.e. xsdir Path, and multithread options);
-6) open an anaconda prompt shell and change directory to <JADE_root>\Code. Then type:
-  ```
-  python main.py
-  ```
-7) on the first usage the rest of the folders architecture is initialized.
+   ```
+   conda env create --name jade --file=environment.yml
+   ```
+   
+   This ensures that all dependencies are satisfied. The environment can be activated using:
+
+   ```
+   conda activate jade
+   ```
+   
+   And deactivated simply using:
+
+   ```
+   conda deactivate
+   ```
+
+5) Finally, when the environment is activated, in order to start JADE type:
+
+   ```
+   python main.py
+   ```
+
+6) on the first usage the rest of the folders architecture is initialized.
 
 ## Usage!
 

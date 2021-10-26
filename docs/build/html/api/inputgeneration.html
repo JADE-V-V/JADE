@@ -42,7 +42,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Post-Processing" href="postprocessing.html" />
-    <link rel="prev" title="Modify documentation" href="../dev/docmodify.html" /> 
+    <link rel="prev" title="General OOP scheme" href="general.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -110,6 +110,7 @@
 </ul>
 <p class="caption"><span class="caption-text">JADE API</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="general.html">General OOP scheme</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Input Generation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#matreader-module">matreader module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#matcardslist">MatCardsList</a></li>
@@ -221,7 +222,7 @@ input preparation are described.</p>
 <div class="section" id="matreader-module">
 <h2>matreader module<a class="headerlink" href="#matreader-module" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="matcardslist">
-<h3>MatCardsList<a class="headerlink" href="#matcardslist" title="Permalink to this headline">¶</a></h3>
+<span id="matcardob"></span><h3>MatCardsList<a class="headerlink" href="#matcardslist" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt id="matreader.MatCardsList">
 <em class="property">class </em><code class="sig-prename descclassname">matreader.</code><code class="sig-name descname">MatCardsList</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">materials</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.MatCardsList" title="Permalink to this definition">¶</a></dt>
@@ -269,7 +270,7 @@ of the material card</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lib_manager</strong> (<em>libmanager.LibManager</em>) – To handle element name recovering.</p></li>
+<li><p><strong>lib_manager</strong> (<a class="reference internal" href="initobjects.html#libmanager.LibManager" title="libmanager.LibManager"><em>libmanager.LibManager</em></a>) – To handle element name recovering.</p></li>
 <li><p><strong>zaids</strong> (<em>bool</em><em>, </em><em>optional</em>) – Consider or not the zaid level. The default is False.</p></li>
 <li><p><strong>complete</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True both the atom and mass fraction are given in the raw
 table. The default is False.</p></li>
@@ -330,7 +331,7 @@ on the zaidnum.</p>
 </dd>
 </dl>
 </p></li>
-<li><p><strong>lib_manager</strong> (<em>libmanager.LibManager</em>) – Library manager for the conversion.</p></li>
+<li><p><strong>lib_manager</strong> (<a class="reference internal" href="initobjects.html#libmanager.LibManager" title="libmanager.LibManager"><em>libmanager.LibManager</em></a>) – Library manager for the conversion.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -429,7 +430,7 @@ If the material is already switched the command is ignored.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ftype</strong> (<em>str</em>) – Either ‘mass’ or ‘atom’ to chose the type of switch.</p></li>
-<li><p><strong>lib_manager</strong> (<em>libmanager.LibManager</em>) – Handles zaid data.</p></li>
+<li><p><strong>lib_manager</strong> (<a class="reference internal" href="initobjects.html#libmanager.LibManager" title="libmanager.LibManager"><em>libmanager.LibManager</em></a>) – Handles zaid data.</p></li>
 <li><p><strong>inplace</strong> (<em>bool</em>) – if True the densities of the isotopes are changed inplace,
 otherwise a copy of the material is provided. DEFAULT is True</p></li>
 </ul>
@@ -489,7 +490,7 @@ on the zaidnum.</p>
 </dd>
 </dl>
 </p></li>
-<li><p><strong>lib_manager</strong> (<em>libmanager.LibManager</em>) – object handling all libraries operations.</p></li>
+<li><p><strong>lib_manager</strong> (<a class="reference internal" href="initobjects.html#libmanager.LibManager" title="libmanager.LibManager"><em>libmanager.LibManager</em></a>) – object handling all libraries operations.</p></li>
 <li><p><strong>update</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, material infos are updated. The default is True.</p></li>
 </ul>
 </dd>
@@ -580,7 +581,7 @@ eventually Elements list</p>
 and zaids</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>lib_manager</strong> (<em>libmanager.LibManager</em>) – Library manager for the conversion.</p>
+<dd class="field-odd"><p><strong>lib_manager</strong> (<a class="reference internal" href="initobjects.html#libmanager.LibManager" title="libmanager.LibManager"><em>libmanager.LibManager</em></a>) – Library manager for the conversion.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
@@ -653,7 +654,7 @@ on the zaidnum.</p>
 </dd>
 </dl>
 </p></li>
-<li><p><strong>lib_manager</strong> (<em>LibManager</em>) – Object handling libraries operation.</p></li>
+<li><p><strong>lib_manager</strong> (<a class="reference internal" href="initobjects.html#libmanager.LibManager" title="libmanager.LibManager"><em>LibManager</em></a>) – Object handling libraries operation.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -672,7 +673,7 @@ on the zaidnum.</p>
 containing additional information</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>lib_manager</strong> (<em>libmanager.LibManager</em>) – Library manager for the conversion.</p>
+<dd class="field-odd"><p><strong>lib_manager</strong> (<a class="reference internal" href="initobjects.html#libmanager.LibManager" title="libmanager.LibManager"><em>libmanager.LibManager</em></a>) – Library manager for the conversion.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
@@ -726,7 +727,7 @@ It will collapse multiple instance of a zaid into a single one</p>
 the abundance in the material.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>libmanager</strong> (<em>libmanager.LibManager</em>) – libmanager handling the libraries operations.</p>
+<dd class="field-odd"><p><strong>libmanager</strong> (<a class="reference internal" href="initobjects.html#libmanager.LibManager" title="libmanager.LibManager"><em>libmanager.LibManager</em></a>) – libmanager handling the libraries operations.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
@@ -791,7 +792,7 @@ the abundance in the material.</p>
 <dd><p>Get the formula name of the zaid (e.g. H1)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>libmanager</strong> (<em>libmanager.LibManager</em>) – libmanager handling the libraries operations.</p>
+<dd class="field-odd"><p><strong>libmanager</strong> (<a class="reference internal" href="initobjects.html#libmanager.LibManager" title="libmanager.LibManager"><em>libmanager.LibManager</em></a>) – libmanager handling the libraries operations.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>formula</strong> – zaid formula name.</p>
@@ -825,7 +826,7 @@ the abundance in the material.</p>
 <div class="section" id="testrun-module">
 <span id="testrunmodule"></span><h2>testrun module<a class="headerlink" href="#testrun-module" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="test">
-<h3>Test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h3>
+<span id="testob"></span><h3>Test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt id="testrun.Test">
 <em class="property">class </em><code class="sig-prename descclassname">testrun.</code><code class="sig-name descname">Test</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inp</span></em>, <em class="sig-param"><span class="n">lib</span></em>, <em class="sig-param"><span class="n">config</span></em>, <em class="sig-param"><span class="n">log</span></em>, <em class="sig-param"><span class="n">VRTpath</span></em>, <em class="sig-param"><span class="n">confpath</span></em><span class="sig-paren">)</span><a class="headerlink" href="#testrun.Test" title="Permalink to this definition">¶</a></dt>
@@ -876,7 +877,7 @@ parent object actually does nothing</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>lib_directory</strong> (<em>path</em><em> or </em><em>string</em>) – Path to lib benchmarks input folders.</p></li>
-<li><p><strong>libmanager</strong> (<em>libmanager.LibManager</em>) – Manager dealing with libraries operations.</p></li>
+<li><p><strong>libmanager</strong> (<a class="reference internal" href="initobjects.html#libmanager.LibManager" title="libmanager.LibManager"><em>libmanager.LibManager</em></a>) – Manager dealing with libraries operations.</p></li>
 <li><p><strong>MCNPdir</strong> (<em>str</em><em> or </em><em>path</em>) – allows to ovewrite the MCNP dir if needed. The default is None</p></li>
 </ul>
 </dd>
@@ -914,7 +915,7 @@ The default is None.</p></li>
 
 </div>
 <div class="section" id="multipletest">
-<h3>MultipleTest<a class="headerlink" href="#multipletest" title="Permalink to this headline">¶</a></h3>
+<span id="multitestob"></span><h3>MultipleTest<a class="headerlink" href="#multipletest" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt id="testrun.MultipleTest">
 <em class="property">class </em><code class="sig-prename descclassname">testrun.</code><code class="sig-name descname">MultipleTest</code><span class="sig-paren">(</span><em class="sig-param">inpsfolder</em>, <em class="sig-param">lib</em>, <em class="sig-param">config</em>, <em class="sig-param">log</em>, <em class="sig-param">VRTpath</em>, <em class="sig-param">confpath</em>, <em class="sig-param">TestOb=&lt;class 'testrun.Test'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#testrun.MultipleTest" title="Permalink to this definition">¶</a></dt>
@@ -947,7 +948,7 @@ The default is None.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>lib_directory</strong> (<em>path-like</em>) – output directory where to generate the tests.</p></li>
-<li><p><strong>libmanager</strong> (<em>libmanager.LibManager</em>) – object handling libraries operations.</p></li>
+<li><p><strong>libmanager</strong> (<a class="reference internal" href="initobjects.html#libmanager.LibManager" title="libmanager.LibManager"><em>libmanager.LibManager</em></a>) – object handling libraries operations.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -987,7 +988,7 @@ None.</p></li>
 <div class="section" id="inputfile-module">
 <h2>inputfile module<a class="headerlink" href="#inputfile-module" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="inputfile">
-<h3>InputFile<a class="headerlink" href="#inputfile" title="Permalink to this headline">¶</a></h3>
+<span id="inputob"></span><h3>InputFile<a class="headerlink" href="#inputfile" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt id="inputfile.InputFile">
 <em class="property">class </em><code class="sig-prename descclassname">inputfile.</code><code class="sig-name descname">InputFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cards</span></em>, <em class="sig-param"><span class="n">matlist</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile" title="Permalink to this definition">¶</a></dt>
@@ -1168,7 +1169,7 @@ text.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>newlib</strong> (<em>str</em>) – suffix of the new lib to translate to.</p></li>
-<li><p><strong>libmanager</strong> (<em>libmanager.LibManager</em>) – Library manager for the conversion.</p></li>
+<li><p><strong>libmanager</strong> (<a class="reference internal" href="initobjects.html#libmanager.LibManager" title="libmanager.LibManager"><em>libmanager.LibManager</em></a>) – Library manager for the conversion.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1187,7 +1188,7 @@ text.</p>
 containing additional information</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>lib_manager</strong> (<em>libmanager.LibManager</em>) – Library manager for the conversion.</p>
+<dd class="field-odd"><p><strong>lib_manager</strong> (<a class="reference internal" href="initobjects.html#libmanager.LibManager" title="libmanager.LibManager"><em>libmanager.LibManager</em></a>) – Library manager for the conversion.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
@@ -1291,7 +1292,7 @@ materials in the input</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>libmanager</strong> (<em>LibManager</em>) – Object handling all cross-sections related operations.</p></li>
+<li><p><strong>libmanager</strong> (<a class="reference internal" href="initobjects.html#libmanager.LibManager" title="libmanager.LibManager"><em>LibManager</em></a>) – Object handling all cross-sections related operations.</p></li>
 <li><p><strong>lib</strong> (<em>str</em>) – library suffix to be used.</p></li>
 </ul>
 </dd>
@@ -1314,7 +1315,7 @@ a D1S input: a tranport and an activation library</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>newlib</strong> (<em>str</em>) – suffix of the new lib to translate to.</p></li>
-<li><p><strong>libmanager</strong> (<em>LibManager</em>) – Library manager for the conversion.</p></li>
+<li><p><strong>libmanager</strong> (<a class="reference internal" href="initobjects.html#libmanager.LibManager" title="libmanager.LibManager"><em>LibManager</em></a>) – Library manager for the conversion.</p></li>
 <li><p><strong>original_irradfile</strong> (<em>d1s_parser.IrradiationFile</em><em>, </em><em>optional</em>) – original irradiation file. The default is None.</p></li>
 <li><p><strong>original_reacfile</strong> (<em>d1s_parser.ReactionFile</em><em>, </em><em>optional</em>) – original reaction file. The default is None.</p></li>
 </ul>
@@ -1385,7 +1386,7 @@ specified.</p>
 <div class="section" id="parsersd1s-module">
 <h2>parsersD1S module<a class="headerlink" href="#parsersd1s-module" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="irradiationfile">
-<h3>IrradiationFile<a class="headerlink" href="#irradiationfile" title="Permalink to this headline">¶</a></h3>
+<span id="irradfileob"></span><h3>IrradiationFile<a class="headerlink" href="#irradiationfile" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt id="parsersD1S.IrradiationFile">
 <em class="property">class </em><code class="sig-prename descclassname">parsersD1S.</code><code class="sig-name descname">IrradiationFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nsc</span></em>, <em class="sig-param"><span class="n">irr_schedules</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">formatting</span><span class="o">=</span><span class="default_value">[8, 14, 13, 9]</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'irrad'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile" title="Permalink to this definition">¶</a></dt>
@@ -1528,7 +1529,7 @@ If no irradiation is found returns None.</p>
 
 </div>
 <div class="section" id="reactionfile">
-<h3>ReactionFile<a class="headerlink" href="#reactionfile" title="Permalink to this headline">¶</a></h3>
+<span id="reacfileob"></span><h3>ReactionFile<a class="headerlink" href="#reactionfile" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt id="parsersD1S.ReactionFile">
 <em class="property">class </em><code class="sig-prename descclassname">parsersD1S.</code><code class="sig-name descname">ReactionFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reactions</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'react'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile" title="Permalink to this definition">¶</a></dt>
@@ -1558,7 +1559,7 @@ file will be not performed.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>newlib</strong> (<em>str</em>) – (e.g. 31c).</p></li>
-<li><p><strong>libmanager</strong> (<em>LibManager</em><em>, </em><em>optional</em>) – Object managing library operations. The default is None.</p></li>
+<li><p><strong>libmanager</strong> (<a class="reference internal" href="initobjects.html#libmanager.LibManager" title="libmanager.LibManager"><em>LibManager</em></a><em>, </em><em>optional</em>) – Object managing library operations. The default is None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1715,7 +1716,7 @@ type (with integer value) can be used.</p></li>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="postprocessing.html" class="btn btn-neutral float-right" title="Post-Processing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="../dev/docmodify.html" class="btn btn-neutral float-left" title="Modify documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="general.html" class="btn btn-neutral float-left" title="General OOP scheme" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

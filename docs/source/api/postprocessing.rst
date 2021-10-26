@@ -8,6 +8,8 @@ post-processing are described.
 output module
 =============
 
+.. _abstractoutputob:
+
 AbstractOutput
 --------------
 .. autoclass:: output.AbstractOutput
@@ -19,6 +21,8 @@ BenchmarkOutput
 .. autoclass:: output.BenchmarkOutput
     :members:
     :private-members:
+
+.. _mcnpoutputob:
 
 MCNPOutput
 ----------

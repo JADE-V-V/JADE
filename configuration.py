@@ -26,21 +26,34 @@ import datetime
 
 
 class Configuration:
-    """
-    This object deals with all the configuration variables
-    """
 
     def __init__(self, conf_file):
         """
-        Read the configuration excel file and set the configuration
+        Parser of the main configuration file
 
-        con_file: (str) path to configuration file
+        Parameters
+        ----------
+        conf_file : path like object
+            path to configuration file.
+
+        Returns
+        -------
+        None.
+
         """
         # ############ load conf file sheets ############
         self.conf_file = conf_file
         self.read_settings()
 
     def read_settings(self):
+        """
+        Parse the configuration file
+
+        Returns
+        -------
+        None.
+
+        """
 
         conf_file = self.conf_file
         # Main

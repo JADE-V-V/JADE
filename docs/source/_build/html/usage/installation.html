@@ -110,6 +110,7 @@
 </ul>
 <p class="caption"><span class="caption-text">JADE API</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/general.html">General OOP scheme</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/inputgeneration.html">Input Generation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/postprocessing.html">Post-Processing</a></li>
 </ul>
@@ -188,29 +189,31 @@
             
   <div class="section" id="installation">
 <span id="install"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>The procedure to install JADE is the following:</p>
+<p>The preferred way to install JADE is through a conda virtual environment, meaning that an
+Anaconda or Miniconda installation is required.</p>
 <ol class="arabic">
-<li><p>Install/update Anaconda, you can update all packages in your current environment using:</p>
-<p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">update</span> <span class="pre">--all</span></code></p>
-<p>However, if bugs or problems are encountered, a fresh Anaconda re-installation may solve the issues.</p>
-</li>
-<li><p>Install additional packages. It may be necessary to activate the conda-forge channel. It can be done typing in an anaconda prompt shell:</p>
-<p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">config</span> <span class="pre">--add</span> <span class="pre">channels</span> <span class="pre">conda-forge</span></code></p>
-<p>then use:</p>
-<p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">python-docx</span></code></p>
-<p>The second package that is needed is numjuggler for parsing of MCNP inputs.
-Unfortunately, this is not available for conda installation and pip should be used instead:</p>
-<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">numjuggler</span></code></p>
-</li>
 <li><p>Extract the zip into a folder of choice (from now on <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;</span></code>);</p></li>
 <li><p>Rename the folder containing the Python scripts as ‘Code’ (<code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code</span></code>);</p></li>
 <li><p>Open the global configuration file: <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code\Configuration\Config.xlsx</span></code>;
 here you need to properly set the environment variables specified in the ‘MAIN Config.’ sheet (i.e. xsdir Path, and multithread options);</p></li>
-<li><p>Open an anaconda prompt shell and change directory to <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code</span></code>. Then type:</p>
+<li><p>Open an anaconda prompt shell and change directory to <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code</span></code>. Then create a virtual
+environment specific for jade:</p>
+<p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">env</span> <span class="pre">create</span> <span class="pre">--name</span> <span class="pre">jade</span> <span class="pre">--file=environment.yml</span></code></p>
+<p>This ensures that all dependencies are satisfied. The environment can be activated using:</p>
+<p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">activate</span> <span class="pre">jade</span></code></p>
+<p>And deactivated simply using:</p>
+<p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">deactivate</span></code></p>
+</li>
+<li><p>Finally, when the environment is activated, in order to start JADE type:</p>
 <p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span></code></p>
 </li>
 <li><p>On the first usage the rest of the folders architecture is initialized.</p></li>
 </ol>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>check also <a class="reference internal" href="configuration.html#mainconfig"><span class="std std-ref">Main Configuration</span></a> for additional information on the minimum environment variables
+to be set.</p>
+</div>
 </div>
 
 

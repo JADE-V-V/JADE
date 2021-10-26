@@ -277,7 +277,7 @@ class LibManager:
  The selected library is not available.
  '''+CEND
         while True:
-            lib = input(' Select library (e.g. 31c or {"99c":"98c", "21c":"31c"}): ')
+            lib = input(' Select library (e.g. 31c or 99c-31c): ')
             if lib in self.libraries:
                 break
 

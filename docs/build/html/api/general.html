@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Installation &mdash; JADE v1.3.0 documentation</title>
+  <title>General OOP scheme &mdash; JADE v1.3.0 documentation</title>
   
 
   
@@ -41,8 +41,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Folder Structure" href="folders.html" />
-    <link rel="prev" title="JADE in a nutshell" href="../nutshell.html" /> 
+    <link rel="next" title="Input Generation" href="inputgeneration.html" />
+    <link rel="prev" title="Modify documentation" href="../dev/docmodify.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -91,16 +91,16 @@
             
             
               <p class="caption"><span class="caption-text">JADE User Guide:</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../nutshell.html">JADE in a nutshell</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="folders.html">Folder Structure</a></li>
-<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="menu.html">Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="benchmarks.html">Default Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="postprocessing.html">Post-Processing Gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utilities.html">Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tipstricks.html">Tips &amp; Tricks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/folders.html">Folder Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/menu.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/benchmarks.html">Default Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/postprocessing.html">Post-Processing Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/utilities.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/tipstricks.html">Tips &amp; Tricks</a></li>
 </ul>
 <p class="caption"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
@@ -109,9 +109,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Modify documentation</a></li>
 </ul>
 <p class="caption"><span class="caption-text">JADE API</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../api/inputgeneration.html">Input Generation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api/postprocessing.html">Post-Processing</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">General OOP scheme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inputgeneration.html">Input Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="postprocessing.html">Post-Processing</a></li>
 </ul>
 <p class="caption"><span class="caption-text">More on JADE:</span></p>
 <ul>
@@ -167,13 +168,13 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Installation</li>
+      <li>General OOP scheme</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/usage/installation.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/api/general.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -186,31 +187,31 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="installation">
-<span id="install"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>The procedure to install JADE is the following:</p>
-<ol class="arabic">
-<li><p>Install/update Anaconda, you can update all packages in your current environment using:</p>
-<p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">update</span> <span class="pre">--all</span></code></p>
-<p>However, if bugs or problems are encountered, a fresh Anaconda re-installation may solve the issues.</p>
-</li>
-<li><p>Install additional packages. It may be necessary to activate the conda-forge channel. It can be done typing in an anaconda prompt shell:</p>
-<p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">config</span> <span class="pre">--add</span> <span class="pre">channels</span> <span class="pre">conda-forge</span></code></p>
-<p>then use:</p>
-<p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">python-docx</span></code></p>
-<p>The second package that is needed is numjuggler for parsing of MCNP inputs.
-Unfortunately, this is not available for conda installation and pip should be used instead:</p>
-<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">numjuggler</span></code></p>
-</li>
-<li><p>Extract the zip into a folder of choice (from now on <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;</span></code>);</p></li>
-<li><p>Rename the folder containing the Python scripts as ‘Code’ (<code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code</span></code>);</p></li>
-<li><p>Open the global configuration file: <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code\Configuration\Config.xlsx</span></code>;
-here you need to properly set the environment variables specified in the ‘MAIN Config.’ sheet (i.e. xsdir Path, and multithread options);</p></li>
-<li><p>Open an anaconda prompt shell and change directory to <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code</span></code>. Then type:</p>
-<p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span></code></p>
-</li>
-<li><p>On the first usage the rest of the folders architecture is initialized.</p></li>
-</ol>
+  <div class="section" id="general-oop-scheme">
+<h1>General OOP scheme<a class="headerlink" href="#general-oop-scheme" title="Permalink to this headline">¶</a></h1>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/OOPscheme.png"><img alt="../_images/OOPscheme.png" src="../_images/OOPscheme.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">General OOP scheme for the JADE code</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>All user interactions that happen through the command console are handled
+by the <code class="docutils literal notranslate"><span class="pre">gui.py</span> <span class="pre">module</span></code>. When JADE is started, a <code class="docutils literal notranslate"><span class="pre">main.Session()</span></code> object
+is intialized which is a container for a series of information and tools
+that many parts of the code may need to access. In particular it contains:</p>
+<dl class="simple">
+<dt>Paths</dt><dd><p>through <code class="docutils literal notranslate"><span class="pre">main.Session()</span></code> it is possible to recover many paths to the
+different folders that constitutes the JADE tree (see also <a class="reference internal" href="../usage/folders.html#folders"><span class="std std-ref">Folder Structure</span></a>).</p>
+</dd>
+<dt>Status</dt><dd><p>the <code class="docutils literal notranslate"><span class="pre">state.Status()</span></code> object has informations on which libraries have
+been assessed or post-processed.</p>
+</dd>
+<dt>Configuration</dt><dd><p>the <code class="docutils literal notranslate"><span class="pre">configuration.Configuration()</span></code> object is the one that handles the
+parsing of the <a class="reference internal" href="../usage/configuration.html#mainconfig"><span class="std std-ref">Main Configuration</span></a> file.</p>
+</dd>
+<dt>Library Manager</dt><dd><p>the <code class="docutils literal notranslate"><span class="pre">libmanager.LibManager()</span></code> is responsible for all operations related
+to nuclear data libraries. These include for instance checking the
+availability of a library, or handling the translation of a single isotope.</p>
+</dd>
+</dl>
 </div>
 
 
@@ -219,8 +220,8 @@ here you need to properly set the environment variables specified in the ‘MAIN
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="folders.html" class="btn btn-neutral float-right" title="Folder Structure" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="../nutshell.html" class="btn btn-neutral float-left" title="JADE in a nutshell" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="inputgeneration.html" class="btn btn-neutral float-right" title="Input Generation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../dev/docmodify.html" class="btn btn-neutral float-left" title="Modify documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

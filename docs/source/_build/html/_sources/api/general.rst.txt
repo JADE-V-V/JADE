@@ -1,0 +1,12 @@
+##################
+General OOP scheme
+##################
+
+.. figure:: /img/OOPscheme.png
+    :align: center
+    :width: 600
+
+    General OOP scheme for the JADE code
+
+
+    

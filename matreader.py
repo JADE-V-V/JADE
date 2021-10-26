@@ -1134,9 +1134,9 @@ class MatCardsList(Sequence):
         infos = []
         complete_infos = []
         for mat in self.materials:
-            submats_atom = mat.switch_fraction('mass', lib_manager,
+            submats_atom = mat.switch_fraction('atom', lib_manager,
                                                inplace=False)
-            submats_mass = mat.switch_fraction('atom', lib_manager,
+            submats_mass = mat.switch_fraction('mass', lib_manager,
                                                inplace=False)
             i = 0
             for submat, submat_a, submat_m in zip(mat.submaterials,

@@ -9,6 +9,7 @@ dependencies:
   - certifi=2021.10.8=py38haa244fe_0
   - colorama=0.4.4=pyh9f0ad1d_0
   - cycler=0.10.0=py_2
+  - et_xmlfile=1.0.1=py_1001
   - freetype=2.10.4=h546665d_1
   - icu=68.1=h0e60522_0
   - iniconfig=1.1.1=pyh9f0ad1d_0
@@ -44,6 +45,7 @@ dependencies:
   - numpy=1.21.3=py38h089cfbf_0
   - olefile=0.46=pyh9f0ad1d_1
   - openjpeg=2.4.0=hb211442_1
+  - openpyxl=3.0.9=pyhd8ed1ab_0
   - openssl=1.1.1l=h8ffe710_0
   - packaging=21.0=pyhd8ed1ab_0
   - pandas=1.3.4=py38h5d928e2_0

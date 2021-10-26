@@ -148,7 +148,7 @@ class Meshtal:
                         flag_inmesh = False
                         # Blank line, read and adjourn fmesh
                         fmesh_data = pd.read_csv(self.filepath,
-                                                 sep='\s+',
+                                                 sep=r'\s+',
                                                  skiprows=skiprows,
                                                  nrows=nrows-1)
                         # Generate the FMESH and update the dic
@@ -167,7 +167,7 @@ class Meshtal:
             # --- At the end of file some more operation may be needed ---
             # If we were still reading tally add it
             if flag_inmesh:
-                fmesh_data = pd.read_csv(self.filepath, sep='\s+',
+                fmesh_data = pd.read_csv(self.filepath, sep=r'\s+',
                                          skiprows=skiprows,
                                          nrows=nrows)
                 # Generate the FMESH and update the dic

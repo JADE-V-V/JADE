@@ -47,6 +47,7 @@ GitHub repository [link].
    :maxdepth: 2
    :caption: JADE API
 
+   api/general
    api/inputgeneration
    api/postprocessing
 

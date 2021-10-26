@@ -199,12 +199,17 @@ def generate_material(session, sourcefile, materials, percentages, newlib,
         # Scale fractions
         totfraction = material.get_tot_fraction()
         current_submaterials = []
-        for submat in material.submaterials:
+        for j, submat in enumerate(material.submaterials):
             norm_factor = float(percentage)/totfraction  # normalized & scaled
             if fractiontype == 'mass':
                 norm_factor = -norm_factor
             submat.scale_fractions(norm_factor)
             submat.update_info(session.lib_manager)
+            # Add info to the header in order to back-trace the generation
+            submat.header = ('C '+materialname+', submaterial '+str(j+1)+'\n' +
+                             submat.header)
+            # Drop additional keys if present
+            submat.additional_keys = []
             current_submaterials.append(submat)
 
         # Change the header of the first submaterial to include the mat. one

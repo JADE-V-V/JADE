@@ -166,3 +166,12 @@ class TestMatCardList:
         matcard.translate('21c', LIBMAN)
         translation = matcard.to_text()
         assert translation.count('21c') == 6
+    
+    def test_get_info(self):
+        """
+        Barely tests that everything is created
+        """
+        matcard = MatCardsList.from_input(INP)
+        df, df_elem = matcard.get_info(LIBMAN, zaids=True, complete=True)
+        assert len(df) == 8
+        assert len(df_elem) == 7

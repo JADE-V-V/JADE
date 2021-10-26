@@ -1,3 +1,5 @@
+[![Testing](https://github.com/dodu94/JADE/actions/workflows/TestPy38.yml/badge.svg?branch=master)](https://github.com/dodu94/JADE/actions/workflows/TestPy38.yml)
+
 <img src="https://user-images.githubusercontent.com/25747626/118662537-5f124900-b7f0-11eb-8d69-282305f795c4.png" width="300" />
 
 # JADE

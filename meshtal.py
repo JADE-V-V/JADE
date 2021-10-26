@@ -26,10 +26,10 @@ import re
 import pandas as pd
 
 # PATTERNS
-PAT_NUM = re.compile('(?<=Mesh Tally Number)\s+\d+')  # blank spaces to be elim
-PAT_DESC = re.compile('(?<=FMESH\s).+')  # get the tally name
-PAT_CYLYNDER = re.compile('\sR\s+Z\s')  # Start of a cylyndrical tally
-PAT_PARTICLE = re.compile('(?=<mesh tally).+')
+PAT_NUM = re.compile(r'(?<=Mesh Tally Number)\s+\d+')  # blank spaces to be elim
+PAT_DESC = re.compile(r'(?<=FMESH\s).+')  # get the tally name
+PAT_CYLYNDER = re.compile(r'\sR\s+Z\s')  # Start of a cylyndrical tally
+PAT_PARTICLE = re.compile(r'(?=<mesh tally).+')
 
 # Meshtal to mctal conversion
 # COLUMNS = ['Cells', 'Dir', 'User', 'Segments', 'Multiplier', 'Cosine',

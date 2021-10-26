@@ -531,14 +531,15 @@ class SphereTest(Test):
 
     @staticmethod
     def _get_zaidtestname(testname, zaid, formula, addtag=None):
-        if addtag is None:
-            add = ''
-        else:
-            add = addtag
 
-        outfile = (testname+'_'+zaid.element+zaid.isotope+'_'+formula+'_'+add +
-                   '_')
-        outdir = testname+'_'+zaid.element+zaid.isotope+'_'+formula+'_'+add
+        if addtag is None:
+            outfile = (testname+'_'+zaid.element+zaid.isotope+'_'+formula+'_')
+            outdir = testname+'_'+zaid.element+zaid.isotope+'_'+formula
+
+        else:
+            outfile = outfile+addtag+'_'
+            outdir = outdir+'_'+addtag
+
         return outfile, outdir
 
     def generate_material_test(self, material, density, libmanager, testname,

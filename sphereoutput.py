@@ -433,6 +433,8 @@ class SphereOutput(BenchmarkOutput):
             for df in [final, absdiff]:
                 df[df == np.nan] = 'Not Available'
                 df[df == 0] = 'Identical'
+                df.replace(-np.inf, 'Reference = 0', inplace=True)
+                df.replace(1, 'Target = 0', inplace=True)
 
             # --- Write excel ---
             # Generate the excel

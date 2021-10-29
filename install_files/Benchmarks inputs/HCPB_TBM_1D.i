@@ -2087,4 +2087,4 @@ c
 rand gen=1 seed=19073486328213 $ change random number seed (default ends in 5)
 c 
 c nps 160e3             $ number of particles
-prdmp j 1e7 1 1 $ write mctal,save only the last dump 
+prdmp j 2e6 1 1 $ write mctal,save only the last dump 

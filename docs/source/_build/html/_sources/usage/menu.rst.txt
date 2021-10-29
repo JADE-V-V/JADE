@@ -56,7 +56,9 @@ The following options are available in the computational benchmark menu:
 * ``exit`` exit the application.
 
 The selection of the libraries is done indicating their correspondent suffix specified in the xsdir file
-(e.g. ``31c``).
+(e.g. ``31c``). Activation benchmarks need to be run separetly since they require two different libraries
+to be specified: one for activation and one for transport. Activation library must always be specified
+first (e.g. ``99c-31c``).
 
 .. note::
   Whenever an assessment is requested, all the benchmarks selected in the main configuration file will be considered.
@@ -87,7 +89,9 @@ The following options are available in the experimental benchmark menu:
 * ``exit`` exit the application.
 
 The selection of the libraries is done indicating their correspondent suffix specified in the xsdir file
-(e.g. ``31c``).
+(e.g. ``31c``). Activation benchmarks need to be run separetly since they require two different libraries
+to be specified: one for activation and one for transport. Activation library must always be specified
+first (e.g. ``99c-31c``).
 
 .. note::
   Whenever an assessment is requested, all the benchmarks selected in the main configuration file will be considered.

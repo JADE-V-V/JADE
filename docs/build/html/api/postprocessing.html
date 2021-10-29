@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Post-Processing &mdash; JADE v1.3.0 documentation</title>
+  <title>Post-Processing &mdash; JADE v1.4.0 documentation</title>
   
 
   
@@ -104,12 +104,13 @@
 </ul>
 <p class="caption"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../dev/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Modify documentation</a></li>
 </ul>
 <p class="caption"><span class="caption-text">JADE API</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="general.html">General OOP scheme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="initobjects.html">JADE Session</a></li>
 <li class="toctree-l1"><a class="reference internal" href="inputgeneration.html">Input Generation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Post-Processing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#output-module">output module</a><ul>
@@ -210,7 +211,7 @@ post-processing are described.</p>
 <div class="section" id="output-module">
 <h2>output module<a class="headerlink" href="#output-module" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="abstractoutput">
-<h3>AbstractOutput<a class="headerlink" href="#abstractoutput" title="Permalink to this headline">¶</a></h3>
+<span id="abstractoutputob"></span><h3>AbstractOutput<a class="headerlink" href="#abstractoutput" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt id="output.AbstractOutput">
 <em class="property">class </em><code class="sig-prename descclassname">output.</code><code class="sig-name descname">AbstractOutput</code><a class="headerlink" href="#output.AbstractOutput" title="Permalink to this definition">¶</a></dt>
@@ -263,7 +264,7 @@ post-processing are described.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>lib</strong> (<em>str</em>) – library to post-process</p></li>
 <li><p><strong>testname</strong> (<em>str</em>) – Name of the benchmark</p></li>
-<li><p><strong>session</strong> (<em>Session</em>) – Jade Session</p></li>
+<li><p><strong>session</strong> (<a class="reference internal" href="initobjects.html#main.Session" title="main.Session"><em>Session</em></a>) – Jade Session</p></li>
 <li><p><strong>exp</strong> (<em>str</em>) – the benchmark is an experimental one</p></li>
 </ul>
 </dd>
@@ -307,7 +308,7 @@ raw data and atlas)</p>
 
 </div>
 <div class="section" id="mcnpoutput">
-<h3>MCNPOutput<a class="headerlink" href="#mcnpoutput" title="Permalink to this headline">¶</a></h3>
+<span id="mcnpoutputob"></span><h3>MCNPOutput<a class="headerlink" href="#mcnpoutput" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt id="output.MCNPoutput">
 <em class="property">class </em><code class="sig-prename descclassname">output.</code><code class="sig-name descname">MCNPoutput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mctal_file</span></em>, <em class="sig-param"><span class="n">output_file</span></em>, <em class="sig-param"><span class="n">meshtal_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#output.MCNPoutput" title="Permalink to this definition">¶</a></dt>
@@ -537,12 +538,12 @@ atlas are handled elsewhere.</p>
 
 <dl class="py method">
 <dt id="expoutput.ExperimentalOutput._processMCNPdata">
-<em class="property">abstract </em><code class="sig-name descname">_processMCNPdata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mctal</span></em><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput._processMCNPdata" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">_processMCNPdata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span></em><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput._processMCNPdata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given an mctal file object return the meaningful data extracted. Some
 post-processing on the data may be foreseen at this stage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>mctal</strong> (<em>MCTAL</em>) – object representing an MCTAL file.</p>
+<dd class="field-odd"><p><strong>output</strong> (<a class="reference internal" href="#output.MCNPoutput" title="output.MCNPoutput"><em>MCNPoutput</em></a>) – object representing an MCNP output.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the type of item can vary based on what the user intends to do

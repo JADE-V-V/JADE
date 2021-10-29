@@ -1,7 +1,7 @@
 Sphere SDDR
 -----------
 
-The Sphere SDDR benchmark is a variation of the the :ref:`sphere`
+The Sphere SDDR benchmark is a variation of the the :ref:`spheredesc`
 which is focused on isotopes activation and dose rate measurement.
 Once again, these kind of benchmarks allows to test all available
 isotopes in the library under assessment (this time being a D1S activation

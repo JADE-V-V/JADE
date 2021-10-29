@@ -125,7 +125,12 @@ class SphereOutput(BenchmarkOutput):
         # Printing Atlas
         template = os.path.join(self.code_path, 'templates',
                                 'AtlasTemplate.docx')
-        atlas = at.Atlas(template, 'Sphere '+self.lib)
+        if self.single:
+            name = self.lib
+        else:
+            name = self.name
+
+        atlas = at.Atlas(template, 'Sphere '+name)
         atlas.build(outpath, self.session.lib_manager, self.mat_settings)
         atlas.save(self.atlas_path)
         # Remove tmp images
@@ -147,7 +152,7 @@ class SphereOutput(BenchmarkOutput):
         outpath = os.path.join(self.atlas_path, 'tmp')
         os.mkdir(outpath)
         # Recover all libraries and zaids involved
-        allzaids, libraries, outputs = self._get_organized_output()
+        libraries, allzaids, outputs = self._get_organized_output()
 
         globalname = ''
         for lib in self.lib:
@@ -208,7 +213,7 @@ class SphereOutput(BenchmarkOutput):
             allzaids.extend(zaidlist)
         allzaids = set(allzaids)  # no duplicates
 
-        return libraries, zaids, outputs
+        return libraries, allzaids, outputs
 
     def pp_excel_single(self):
         """
@@ -428,6 +433,8 @@ class SphereOutput(BenchmarkOutput):
             for df in [final, absdiff]:
                 df[df == np.nan] = 'Not Available'
                 df[df == 0] = 'Identical'
+                df.replace(-np.inf, 'Reference = 0', inplace=True)
+                df.replace(1, 'Target = 0', inplace=True)
 
             # --- Write excel ---
             # Generate the excel

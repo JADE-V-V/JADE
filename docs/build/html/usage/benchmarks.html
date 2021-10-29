@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Default Benchmarks &mdash; JADE v1.3.0 documentation</title>
+  <title>Default Benchmarks &mdash; JADE v1.4.0 documentation</title>
   
 
   
@@ -153,12 +153,13 @@
 </ul>
 <p class="caption"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../dev/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Modify documentation</a></li>
 </ul>
 <p class="caption"><span class="caption-text">JADE API</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/general.html">General OOP scheme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/initobjects.html">JADE Session</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/inputgeneration.html">Input Generation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/postprocessing.html">Post-Processing</a></li>
 </ul>
@@ -272,7 +273,7 @@ same transport library should be always used.</p></li>
 <div class="section" id="computational-benchmarks">
 <h2>Computational Benchmarks<a class="headerlink" href="#computational-benchmarks" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="sphere-leakage">
-<span id="sphere"></span><h3>Sphere Leakage<a class="headerlink" href="#sphere-leakage" title="Permalink to this headline">¶</a></h3>
+<span id="spheredesc"></span><h3>Sphere Leakage<a class="headerlink" href="#sphere-leakage" title="Permalink to this headline">¶</a></h3>
 <div class="figure align-center" id="id16">
 <img alt="../_images/sphere.png" src="../_images/sphere.png" />
 <p class="caption"><span class="caption-text">Sphere Leakage geometrical model</span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
@@ -366,7 +367,7 @@ validation”, <em>Fusion Engineering and Design</em>, <strong>161</strong> 1120
 </div>
 </div>
 <div class="section" id="iter-1d">
-<span id="iter1d"></span><h3>ITER 1D<a class="headerlink" href="#iter-1d" title="Permalink to this headline">¶</a></h3>
+<span id="iter1ddesc"></span><h3>ITER 1D<a class="headerlink" href="#iter-1d" title="Permalink to this headline">¶</a></h3>
 <div class="figure align-center" id="id17">
 <a class="reference internal image-reference" href="../_images/iter1D.png"><img alt="../_images/iter1D.png" src="../_images/iter1D.png" style="width: 600px;" /></a>
 <p class="caption"><span class="caption-text">ITER 1D MCNP geometry (quarter)</span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
@@ -480,7 +481,7 @@ Helium Cooled Pebbled bed (HCPB) and the Water Cooled Lithium Lead (WCLL).</p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#iter1d"><span class="std std-ref">ITER 1D</span></a></p>
+<p><a class="reference internal" href="#iter1ddesc"><span class="std std-ref">ITER 1D</span></a></p>
 </div>
 <div class="section" id="id3">
 <h4>Geometry and run parameters<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
@@ -526,7 +527,7 @@ were tallied on such grid:</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#iter1d"><span class="std std-ref">ITER 1D</span></a></p>
+<p><a class="reference internal" href="#iter1ddesc"><span class="std std-ref">ITER 1D</span></a></p>
 </div>
 </div>
 <div class="section" id="c-model">
@@ -583,7 +584,7 @@ C-model R181031”. Technical Report [ITER IDM XETSWC v1.5]. Iter Organization, 
 </div>
 <div class="section" id="sphere-sddr">
 <h3>Sphere SDDR<a class="headerlink" href="#sphere-sddr" title="Permalink to this headline">¶</a></h3>
-<p>The Sphere SDDR benchmark is a variation of the the <a class="reference internal" href="#sphere"><span class="std std-ref">Sphere Leakage</span></a>
+<p>The Sphere SDDR benchmark is a variation of the the <a class="reference internal" href="#spheredesc"><span class="std std-ref">Sphere Leakage</span></a>
 which is focused on isotopes activation and dose rate measurement.
 Once again, these kind of benchmarks allows to test all available
 isotopes in the library under assessment (this time being a D1S activation

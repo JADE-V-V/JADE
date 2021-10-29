@@ -9,6 +9,8 @@ input preparation are described.
 matreader module
 ================
 
+.. _matcardob:
+
 MatCardsList
 ------------
 .. autoclass:: matreader.MatCardsList
@@ -40,11 +42,15 @@ Zaid
 testrun module
 ==============
 
+.. _testob:
+
 Test
 ----
 .. autoclass:: testrun.Test
     :members:
-    
+
+.. _multitestob:
+
 MultipleTest
 ------------
 .. autoclass:: testrun.MultipleTest
@@ -53,6 +59,8 @@ MultipleTest
 ================
 inputfile module
 ================
+
+.. _inputob:
 
 InputFile
 ------------
@@ -73,6 +81,8 @@ D1S5_InputFile
 parsersD1S module
 =================
 
+.. _irradfileob:
+
 IrradiationFile
 ---------------
 .. autoclass:: parsersD1S.IrradiationFile
@@ -82,6 +92,8 @@ Irradiation
 -----------
 .. autoclass:: parsersD1S.Irradiation
     :members:
+
+.. _reacfileob:
 
 ReactionFile
 ---------------

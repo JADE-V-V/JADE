@@ -630,7 +630,7 @@ class OktavianOutput(ExperimentalOutput):
         See ExperimentalOutput documentation
         """
         maintitle = ' Oktavian Experiment: '
-        unit = r'$ 1/cm^2\cdot n_s\cdot u$'
+        unit = r'$ 1/MeV\cdot n_s$'
         xlabel = 'Energy [MeV]'
 
         tables = []  # All C/E tables will be stored here and then concatenated
@@ -639,13 +639,17 @@ class OktavianOutput(ExperimentalOutput):
         for tallynum in ['21', '41']:
             if tallynum == '21':
                 particle = 'Neutron'
+                tit_tag = 'Neutron Leakage Current per Unit Lethargy'
+                quantity = 'Neutron Leakage Current'
+                msg = ' Printing the '+particle+' Letharghy flux...'
             else:
                 particle = 'Photon'
+                tit_tag = 'Photon Leakage Spectrum'
+                quantity = 'Photon Spectrum per energy unit'
+                msg = ' Printing the '+particle+' spectrum...'
 
-            print(' Printing the '+particle+' Letharghy flux...')
-            tit_tag = particle+'  Leakage Current per Unit Lethargy'
-            quantity = particle+' Leakage Current'
-
+            print(msg)
+            
             atlas.doc.add_heading(quantity, level=1)
 
             for material in tqdm(self.materials, desc='Materials: '):
@@ -658,7 +662,8 @@ class OktavianOutput(ExperimentalOutput):
                 file = 'oktavian_'+material+'_tal'+tallynum+'.exp'
                 filepath = os.path.join(self.path_exp_res, material, file)
                 if os.path.isfile(filepath):
-                    x, y, err = self._read_Oktavian_expresult(filepath)
+                    x, y, err = self._read_Oktavian_expresult(filepath,
+                                                              tallynum)
                 else:
                     # Skip the tally if no experimental data is available
                     continue
@@ -676,7 +681,7 @@ class OktavianOutput(ExperimentalOutput):
                         # Data for the plotter
                         values = self.results[material, lib_tag][tallynum]
                         lib = {'x': values['Energy [MeV]'],
-                               'y': values['Lethargy'], 'err': values['Error'],
+                               'y': values['C'], 'err': values['Error'],
                                'ylabel': material + ' ('+lib_name+')'}
                         data.append(lib)
                         # data for the table
@@ -805,7 +810,8 @@ class OktavianOutput(ExperimentalOutput):
         res = {}
         # Read tally energy binned fluxes
         for tally in mtal.tallies:
-            res2 = res[str(tally.tallyNumber)] = {}
+            tallynum = str(tally.tallyNumber)
+            res2 = res[tallynum] = {}
 
             energies = tally.erg
             flux = []
@@ -815,21 +821,34 @@ class OktavianOutput(ExperimentalOutput):
                 err = tally.getValue(0, 0, 0, 0, 0, 0, i, 0, 0, 0, 0, 1)
                 flux.append(val)
                 errors.append(err)
+            
+            flux = np.array(flux)
+            
+            # Different behaviour for photons and neutrons
+            if tallynum == '21':
+                # Energies for lethargy computation
+                ergs = [1e-10]  # Additional "zero" energy for lethargy computation
+                ergs.extend(energies.tolist())
+                ergs = np.array(ergs)
+    
+                flux = flux/np.log((ergs[1:]/ergs[:-1]))
 
-            # Energies for lethargy computation
-            ergs = [1e-10]  # Additional "zero" energy for lethargy computation
-            ergs.extend(energies.tolist())
-            ergs = np.array(ergs)
+            elif tallynum == '41':
+                # Energies for lethargy computation
+                ergs = [1e-10]  # Additional "zero" energy for lethargy computation
+                ergs.extend(energies.tolist())
+                ergs = np.array(ergs)
+    
+                flux = flux/(ergs[1:]/ergs[:-1])/flux.sum()
 
-            flux = flux/np.log((ergs[1:]/ergs[:-1]))
             res2['Energy [MeV]'] = energies
-            res2['Lethargy'] = flux
+            res2['C'] = flux
             res2['Error'] = errors
 
         return res
 
     @staticmethod
-    def _read_Oktavian_expresult(file):
+    def _read_Oktavian_expresult(file, tallynum):
         """
         Given a file containing the Oktavian experimental results read it and
         return the values to plot.
@@ -841,6 +860,9 @@ class OktavianOutput(ExperimentalOutput):
         ----------
         file : os.Path or str
             path to the file to be read.
+        tallynum : str
+            either '21' or '41'. the data is different for neutrons and
+            photons
 
         Returns
         -------
@@ -850,8 +872,10 @@ class OktavianOutput(ExperimentalOutput):
             lethargy flux values.
 
         """
-        columns = ['Upper Energy [MeV]', 'Nominal Energy [MeV]',
-                   'Lower Energy [MeV]', 'Lethargy Flux', 'Error']
+        columns = {'21': ['Nominal Energy [MeV]', 'Upper Energy [MeV]',
+                          'Lower Energy [MeV]', 'C', 'Error'],
+                   '41': ['Nominal Energy [MeV]', 'Lower Energy [MeV]',
+                          'Upper Energy [MeV]', 'C', 'Error']}
         # First of all understand how many comment lines there are
         with open(file, 'r') as infile:
             counter = 0
@@ -863,12 +887,12 @@ class OktavianOutput(ExperimentalOutput):
         # then read the file accordingly
         df = pd.read_csv(file, skiprows=counter, skipfooter=1, engine='python',
                          header=None, sep=r'\s+')
-        df.columns = columns
-
-        df = df[df['Lethargy Flux'] > 2e-38]
-
+        df.columns = columns[tallynum]
+        df = df[df['C'] > 2e-38]
+        
         x = df['Nominal Energy [MeV]'].values
-        y = df['Lethargy Flux'].values
+        y = df['C'].values
+        
         err = df['Error'].values
 
         return x, y, err
@@ -882,7 +906,7 @@ class OktavianOutput(ExperimentalOutput):
         pass
 
 
-def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='Lethargy',
+def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='C',
                      e_intervals=[0.1, 1, 5, 10, 20]):
     """
     Given the benchmark and experimental results returns a df to compile the
@@ -897,7 +921,7 @@ def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='Lethargy',
     x : str, optional
         x column. The default is 'Energy [MeV]'.
     y : str, optional
-        y columns. The default is 'Lethargy'.
+        y columns. The default is 'C'.
     e_intervals : list, optional
         energy intervals to be used. The default is [0, 0.1, 1, 5, 10, 20].
 

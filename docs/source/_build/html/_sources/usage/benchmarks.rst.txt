@@ -42,7 +42,7 @@ Computational Benchmarks
 
 .. include:: benchdesc/cmodel.rst
 
-.. include:: benchdesc/spheresddr.rst
+.. include:: benchdesc/sphereSDDR.rst
 
 .. include:: benchdesc/itercylSDDR.rst
 

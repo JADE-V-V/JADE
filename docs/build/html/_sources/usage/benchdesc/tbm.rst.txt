@@ -35,7 +35,7 @@ Helium Cooled Pebbled bed (HCPB) and the Water Cooled Lithium Lead (WCLL).
 
     CAD model of the TBM component
 
-.. seealso:: :ref:`iter1D`
+.. seealso:: :ref:`iter1ddesc`
 
 Geometry and run parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -89,4 +89,4 @@ Tally n. 244
 Tally n. 254
     Photon flux [#/cm^3/n_s].
 
-.. seealso:: :ref:`iter1D`
+.. seealso:: :ref:`iter1ddesc`

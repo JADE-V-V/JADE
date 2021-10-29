@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Input Generation &mdash; JADE v1.3.0 documentation</title>
+  <title>Input Generation &mdash; JADE v1.4.0 documentation</title>
   
 
   
@@ -42,7 +42,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Post-Processing" href="postprocessing.html" />
-    <link rel="prev" title="General OOP scheme" href="general.html" /> 
+    <link rel="prev" title="JADE Session" href="initobjects.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -104,13 +104,13 @@
 </ul>
 <p class="caption"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../dev/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Modify documentation</a></li>
 </ul>
 <p class="caption"><span class="caption-text">JADE API</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="general.html">General OOP scheme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="initobjects.html">JADE Session</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Input Generation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#matreader-module">matreader module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#matcardslist">MatCardsList</a></li>
@@ -309,27 +309,14 @@ The zaid are collapsed again to get the new elements</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>newlib</strong> (<em>dict</em><em> or </em><em>str</em>) – <dl class="simple">
-<dt>There are a few ways that newlib can be provided:</dt><dd><ul>
-<li><dl class="simple">
-<dt>str (e.g. 31c), the new library to translate to will be the</dt><dd><p>one indicated;</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>dic (e.g. {‘98c’<span class="classifier">’99c’, ‘31c: 32c’}), the new library is</span></dt><dd><p>determined based on the old library of the zaid</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>dic (e.g. {‘98c’: [list of zaids], ‘31c’: [list of zaids]}),</dt><dd><p>the new library to be used is explicitly stated depending
+<li><p><strong>newlib</strong> (<em>dict</em><em> or </em><em>str</em>) – <p>There are a few ways that newlib can be provided:</p>
+<p>1) str (e.g. 31c), the new library to translate to will be the
+one indicated;</p>
+<p>2) dic (e.g. {‘98c’ : ‘99c’, ‘31c: 32c’}), the new library is
+determined based on the old library of the zaid</p>
+<p>3) dic (e.g. {‘98c’: [list of zaids], ‘31c’: [list of zaids]}),
+the new library to be used is explicitly stated depending
 on the zaidnum.</p>
-</dd>
-</dl>
-</li>
-</ul>
-</dd>
-</dl>
 </p></li>
 <li><p><strong>lib_manager</strong> (<a class="reference internal" href="initobjects.html#libmanager.LibManager" title="libmanager.LibManager"><em>libmanager.LibManager</em></a>) – Library manager for the conversion.</p></li>
 </ul>
@@ -468,27 +455,14 @@ otherwise a copy of the material is provided. DEFAULT is True</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>newlib</strong> (<em>dict</em><em> or </em><em>str</em>) – <dl class="simple">
-<dt>There are a few ways that newlib can be provided:</dt><dd><ul>
-<li><dl class="simple">
-<dt>str (e.g. 31c), the new library to translate to will be the</dt><dd><p>one indicated;</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>dic (e.g. {‘98c’<span class="classifier">’99c’, ‘31c: 32c’}), the new library is</span></dt><dd><p>determined based on the old library of the zaid</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>dic (e.g. {‘98c’: [list of zaids], ‘31c’: [list of zaids]}),</dt><dd><p>the new library to be used is explicitly stated depending
+<li><p><strong>newlib</strong> (<em>dict</em><em> or </em><em>str</em>) – <p>There are a few ways that newlib can be provided:</p>
+<p>1) str (e.g. 31c), the new library to translate to will be the
+one indicated;</p>
+<p>2) dic (e.g. {‘98c’ : ‘99c’, ‘31c: 32c’}), the new library is
+determined based on the old library of the zaid</p>
+<p>3) dic (e.g. {‘98c’: [list of zaids], ‘31c’: [list of zaids]}),
+the new library to be used is explicitly stated depending
 on the zaidnum.</p>
-</dd>
-</dl>
-</li>
-</ul>
-</dd>
-</dl>
 </p></li>
 <li><p><strong>lib_manager</strong> (<a class="reference internal" href="initobjects.html#libmanager.LibManager" title="libmanager.LibManager"><em>libmanager.LibManager</em></a>) – object handling all libraries operations.</p></li>
 <li><p><strong>update</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, material infos are updated. The default is True.</p></li>
@@ -632,27 +606,14 @@ translated accordingly to the newlib specified.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>newlib</strong> (<em>dict</em><em> or </em><em>str</em>) – <dl class="simple">
-<dt>There are a few ways that newlib can be provided:</dt><dd><ul>
-<li><dl class="simple">
-<dt>str (e.g. 31c), the new library to translate to will be the</dt><dd><p>one indicated;</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>dic (e.g. {‘98c’<span class="classifier">’99c’, ‘31c: 32c’}), the new library is</span></dt><dd><p>determined based on the old library of the zaid</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>dic (e.g. {‘98c’: [list of zaids], ‘31c’: [list of zaids]}),</dt><dd><p>the new library to be used is explicitly stated depending
+<li><p><strong>newlib</strong> (<em>dict</em><em> or </em><em>str</em>) – <p>There are a few ways that newlib can be provided:</p>
+<p>1) str (e.g. 31c), the new library to translate to will be the
+one indicated;</p>
+<p>2) dic (e.g. {‘98c’ : ‘99c’, ‘31c: 32c’}), the new library is
+determined based on the old library of the zaid</p>
+<p>3) dic (e.g. {‘98c’: [list of zaids], ‘31c’: [list of zaids]}),
+the new library to be used is explicitly stated depending
 on the zaidnum.</p>
-</dd>
-</dl>
-</li>
-</ul>
-</dd>
-</dl>
 </p></li>
 <li><p><strong>lib_manager</strong> (<a class="reference internal" href="initobjects.html#libmanager.LibManager" title="libmanager.LibManager"><em>LibManager</em></a>) – Object handling libraries operation.</p></li>
 </ul>
@@ -1716,7 +1677,7 @@ type (with integer value) can be used.</p></li>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="postprocessing.html" class="btn btn-neutral float-right" title="Post-Processing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="general.html" class="btn btn-neutral float-left" title="General OOP scheme" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="initobjects.html" class="btn btn-neutral float-left" title="JADE Session" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

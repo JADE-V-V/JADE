@@ -449,7 +449,7 @@ class Plotter:
 
         return self._save()
 
-    def _exp_points_plot(self, y_scale='log'):
+    def _exp_points_plot(self, y_scale='log', markersize=6):
         """
         Plot a simple plot that compares experimental data points with
         computational calculation.
@@ -461,6 +461,8 @@ class Plotter:
         y_scale: str
             acceppted values are the ones of matplotlib.axes.Axes.set_yscale
             e.g. "linear", "log", "symlog", "logit", ... The default is 'log'.
+        markersize: float
+            size of the markers for experimental plots.
 
         Returns
         -------
@@ -488,7 +490,7 @@ class Plotter:
 
         # Plot referece
         ax1.plot(ref['x'], ref['y'], 's', color=self.colors[0],
-                 label=ref['ylabel'])
+                 label=ref['ylabel'], markersize=markersize)
         # Get the linear interpolation for C/E
         interpolate = interp1d(ref['x'], ref['y'], fill_value=0,
                                bounds_error=False)

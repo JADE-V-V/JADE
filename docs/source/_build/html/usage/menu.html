@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Usage &mdash; JADE v1.3.0 documentation</title>
+  <title>Usage &mdash; JADE v1.4.0 documentation</title>
   
 
   
@@ -108,22 +108,25 @@
 <li class="toctree-l1"><a class="reference internal" href="utilities.html">Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tipstricks.html">Tips &amp; Tricks</a></li>
 </ul>
+<p class="caption"><span class="caption-text">JADE Developer Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Modify documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">JADE API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/general.html">General OOP scheme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/initobjects.html">JADE Session</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/inputgeneration.html">Input Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/postprocessing.html">Post-Processing</a></li>
+</ul>
 <p class="caption"><span class="caption-text">More on JADE:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE Testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../publications.html">List of Publications and Contributions</a></li>
-</ul>
-<p class="caption"><span class="caption-text">JADE Developer Guide (TBD):</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../dev/intro.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-</ul>
-<p class="caption"><span class="caption-text">JADE API</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../api/inputgeneration.html">Input Generation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api/postprocessing.html">Post-Processing</a></li>
 </ul>
 
             
@@ -235,7 +238,9 @@ benchmark.</strong></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">exit</span></code> exit the application.</p></li>
 </ul>
 <p>The selection of the libraries is done indicating their correspondent suffix specified in the xsdir file
-(e.g. <code class="docutils literal notranslate"><span class="pre">31c</span></code>).</p>
+(e.g. <code class="docutils literal notranslate"><span class="pre">31c</span></code>). Activation benchmarks need to be run separetly since they require two different libraries
+to be specified: one for activation and one for transport. Activation library must always be specified
+first (e.g. <code class="docutils literal notranslate"><span class="pre">99c-31c</span></code>).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Whenever an assessment is requested, all the benchmarks selected in the main configuration file will be considered.
@@ -263,7 +268,9 @@ can be explored using <code class="docutils literal notranslate"><span class="pr
 <li><p><code class="docutils literal notranslate"><span class="pre">exit</span></code> exit the application.</p></li>
 </ul>
 <p>The selection of the libraries is done indicating their correspondent suffix specified in the xsdir file
-(e.g. <code class="docutils literal notranslate"><span class="pre">31c</span></code>).</p>
+(e.g. <code class="docutils literal notranslate"><span class="pre">31c</span></code>). Activation benchmarks need to be run separetly since they require two different libraries
+to be specified: one for activation and one for transport. Activation library must always be specified
+first (e.g. <code class="docutils literal notranslate"><span class="pre">99c-31c</span></code>).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Whenever an assessment is requested, all the benchmarks selected in the main configuration file will be considered.

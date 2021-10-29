@@ -538,12 +538,12 @@ atlas are handled elsewhere.</p>
 
 <dl class="py method">
 <dt id="expoutput.ExperimentalOutput._processMCNPdata">
-<em class="property">abstract </em><code class="sig-name descname">_processMCNPdata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mctal</span></em><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput._processMCNPdata" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">_processMCNPdata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output</span></em><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput._processMCNPdata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given an mctal file object return the meaningful data extracted. Some
 post-processing on the data may be foreseen at this stage.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>mctal</strong> (<em>MCTAL</em>) – object representing an MCTAL file.</p>
+<dd class="field-odd"><p><strong>output</strong> (<a class="reference internal" href="#output.MCNPoutput" title="output.MCNPoutput"><em>MCNPoutput</em></a>) – object representing an MCNP output.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the type of item can vary based on what the user intends to do

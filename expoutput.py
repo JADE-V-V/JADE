@@ -193,7 +193,7 @@ class ExperimentalOutput(BenchmarkOutput):
                         # Adjourn raw Data
                         self.raw_data[folder, lib] = output.tallydata
                         # Get the meaningful results
-                        results[folder, lib] = self._processMCNPdata(output.mctal)
+                        results[folder, lib] = self._processMCNPdata(output)
                 # Results are organized just by lib
                 else:
                     mfile, ofile = self._get_output_files(test_path)
@@ -203,7 +203,7 @@ class ExperimentalOutput(BenchmarkOutput):
                     # Adjourn raw Data
                     self.raw_data[lib] = output.tallydata
                     # Get the meaningful results
-                    results[lib] = self._processMCNPdata(output.mctal)
+                    results[lib] = self._processMCNPdata(output)
 
         self.outputs = outputs
         self.results = results
@@ -301,15 +301,15 @@ class ExperimentalOutput(BenchmarkOutput):
                     data.to_csv(file, header=True, index=False)
 
     @abstractmethod
-    def _processMCNPdata(self, mctal):
+    def _processMCNPdata(self, output):
         """
         Given an mctal file object return the meaningful data extracted. Some
         post-processing on the data may be foreseen at this stage.
 
         Parameters
         ----------
-        mctal : MCTAL
-            object representing an MCTAL file.
+        output : MCNPoutput
+            object representing an MCNP output.
 
         Returns
         -------
@@ -363,7 +363,7 @@ class FNGOutput(ExperimentalOutput):
                       '2.46d', '4d', '5.55d', '8.20d', '12.2d', '19.3d',
                       '19.8d']}
 
-    def _processMCNPdata(self, mctal):
+    def _processMCNPdata(self, output):
         """
         Read All tallies and return them as a dictionary of DataFrames. This
         aslo needs to ovveride the raw data since unfortunately it appears
@@ -372,8 +372,8 @@ class FNGOutput(ExperimentalOutput):
 
         Parameters
         ----------
-        mctal : MCTAL
-            object representing the MCTAL file.
+        output : MCNPoutput
+            object representing the MCNP output.
 
         Returns
         -------
@@ -382,6 +382,7 @@ class FNGOutput(ExperimentalOutput):
 
         """
         res = {}
+        mctal = output.mctal
         # Cutom of read of tallies due to errors in the mctal file
         for tally in mctal.tallies:
             tallyres = []
@@ -630,7 +631,6 @@ class OktavianOutput(ExperimentalOutput):
         See ExperimentalOutput documentation
         """
         maintitle = ' Oktavian Experiment: '
-        unit = r'$ 1/MeV\cdot n_s$'
         xlabel = 'Energy [MeV]'
 
         tables = []  # All C/E tables will be stored here and then concatenated
@@ -642,11 +642,13 @@ class OktavianOutput(ExperimentalOutput):
                 tit_tag = 'Neutron Leakage Current per Unit Lethargy'
                 quantity = 'Neutron Leakage Current'
                 msg = ' Printing the '+particle+' Letharghy flux...'
+                unit = r'$ 1/u\cdot n_s$'
             else:
                 particle = 'Photon'
-                tit_tag = 'Photon Leakage Spectrum'
-                quantity = 'Photon Spectrum per energy unit'
+                tit_tag = 'Photon Leakage Current per unit energy'
+                quantity = 'Photon Leakage Current'
                 msg = ' Printing the '+particle+' spectrum...'
+                unit = r'$ 1/MeV\cdot n_s$'
 
             print(msg)
             
@@ -767,7 +769,7 @@ class OktavianOutput(ExperimentalOutput):
                     # Adjourn raw Data
                     self.raw_data[material, lib] = output.tallydata
                     # Get the meaningful results
-                    results[material, lib] = self._processMCNPdata(output.mctal)
+                    results[material, lib] = self._processMCNPdata(output)
                     if material not in materials:
                         materials.append(material)
 
@@ -791,15 +793,15 @@ class OktavianOutput(ExperimentalOutput):
                     data.to_csv(file, header=True, index=False)
 
     @staticmethod
-    def _processMCNPdata(mtal):
+    def _processMCNPdata(output):
         """
         given the mctal file the lethargy flux and energies are returned
         both for the neutron and photon tally
 
         Parameters
         ----------
-        mtal : mctal.MCTAL
-            mctal object file containing the results.
+        output : MCNPoutput
+            object representing the MCNP output.
 
         Returns
         -------
@@ -809,41 +811,34 @@ class OktavianOutput(ExperimentalOutput):
         """
         res = {}
         # Read tally energy binned fluxes
-        for tally in mtal.tallies:
-            tallynum = str(tally.tallyNumber)
+        for tallynum, data in output.tallydata.items():
+            tallynum = str(tallynum)
             res2 = res[tallynum] = {}
-
-            energies = tally.erg
-            flux = []
-            errors = []
-            for i, t in enumerate(energies):
-                val = tally.getValue(0, 0, 0, 0, 0, 0, i, 0, 0, 0, 0, 0)
-                err = tally.getValue(0, 0, 0, 0, 0, 0, i, 0, 0, 0, 0, 1)
-                flux.append(val)
-                errors.append(err)
             
-            flux = np.array(flux)
+            # Delete the total value
+            data = data.set_index('Energy').drop('total').reset_index()
+            
+            flux = data['Value'].values
+            energies = data['Energy'].values
+            errors = data['Error'].values
+
+            # Energies for lethargy computation
+            ergs = [1e-10]  # Additional "zero" energy for lethargy computation
+            ergs.extend(energies.tolist())
+            ergs = np.array(ergs)
             
             # Different behaviour for photons and neutrons
             if tallynum == '21':
-                # Energies for lethargy computation
-                ergs = [1e-10]  # Additional "zero" energy for lethargy computation
-                ergs.extend(energies.tolist())
-                ergs = np.array(ergs)
-    
                 flux = flux/np.log((ergs[1:]/ergs[:-1]))
 
-            elif tallynum == '41':
-                # Energies for lethargy computation
-                ergs = [1e-10]  # Additional "zero" energy for lethargy computation
-                ergs.extend(energies.tolist())
-                ergs = np.array(ergs)
-    
-                flux = flux/(ergs[1:]/ergs[:-1])/flux.sum()
+            elif tallynum == '41':    
+                flux = flux/(ergs[1:]-ergs[:-1])
 
             res2['Energy [MeV]'] = energies
             res2['C'] = flux
             res2['Error'] = errors
+            
+            res[tallynum] = res2
 
         return res
 

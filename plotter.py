@@ -500,11 +500,11 @@ class Plotter:
             for i, dic in enumerate(data[1:]):
                 # Plot the flux
                 ax1.plot(dic['x'], dic['y'], color=self.colors[i+1],
-                         drawstyle='steps-mid', label=dic['ylabel'])
+                         drawstyle='steps-pre', label=dic['ylabel'])
                 # plot the C/E
                 interp_ref = interpolate(dic['x'])
                 ax2.plot(dic['x'], dic['y']/interp_ref, color=self.colors[i+1],
-                         drawstyle='steps-mid', label=dic['ylabel'])
+                         drawstyle='steps-pre', label=dic['ylabel'])
         except KeyError:
             # it is a single pp
             return self._save()

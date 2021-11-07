@@ -38,7 +38,7 @@ def executeBenchmarksRoutines(session, lib, exp=False):
         Current JADE session.
     lib : str (or dic string)
         library to assess (e.g. 31c)
-        or dic string like '{"31c":"21c", "32c":"99c"}'.
+        or couple activation+transport (e.g. 99c-31c).
         Double quotes are needed.
     exp : bool
         if True the experimental Benchmarks are selected. The default is False

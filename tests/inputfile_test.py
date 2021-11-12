@@ -34,6 +34,20 @@ DIS_INP_PATH = 'TestFiles/inputfile/d1stest.i'
 class TestInputFile:
     testInput = InputFile.from_text(INP_PATH)
 
+    def test_read_write(self):
+        oldtext = self.testInput._to_text()
+        print(len(oldtext))
+        # Dump it and re-read it
+        dumpfile = 'tmp2.i'
+        self.testInput.write(dumpfile)
+        newinput = InputFile.from_text(dumpfile)
+        # clear
+        # os.remove(dumpfile)
+        newtext = newinput._to_text()
+        print(len(newtext))
+
+        assert oldtext == newtext
+
     def test_get_card_byID(self):
         """
         Test ability to select cards by block and card ID

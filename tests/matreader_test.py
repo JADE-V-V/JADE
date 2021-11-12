@@ -24,12 +24,14 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
 sys.path.insert(1, '../')
-from matreader import (Zaid, MatCardsList)
+
+from matreader import (Element, Zaid, MatCardsList)
 from libmanager import LibManager
 import os
 
 # Files
 INP = os.path.join('TestFiles', 'matreader', 'mat_test.i')
+INP2 = os.path.join('TestFiles', 'matreader', 'mat_test2.i')
 ACTIVATION_INP = os.path.join('TestFiles', 'matreader', 'activation.i')
 XSDIR = os.path.join('TestFiles', 'matreader', 'xsdir_mcnp6.2')
 # Other
@@ -37,6 +39,10 @@ LIBMAN = LibManager(XSDIR, defaultlib='81c')
 
 
 class TestZaid:
+
+    tests = [{'str': '1001.31c   -2.3', 'res': [-2.3, '1', '001', '31c']},
+             {'str': '1001.31c\t-2.3', 'res': [-2.3, '1', '001', '31c']},
+             {'str': '15205 1', 'res': [1, '15', '205', None]}]
 
     def test_fromstring(self):
         """
@@ -47,11 +53,8 @@ class TestZaid:
         None.
 
         """
-        tests = [{'str': '1001.31c   -2.3', 'res': [-2.3, '1', '001', '31c']},
-                 {'str': '1001.31c\t-2.3', 'res': [-2.3, '1', '001', '31c']},
-                 {'str': '15205 1', 'res': [1, '15', '205', None]}]
 
-        for test in tests:
+        for test in self.tests:
             text = test['str']
             zaid = Zaid.from_string(text)
             res = test['res']
@@ -59,6 +62,78 @@ class TestZaid:
             assert zaid.element == res[1]
             assert zaid.isotope == res[2]
             assert zaid.library == res[3]
+
+
+class TestElement:
+    zaid_strings = ['1001.31c   -1', '1002.31c   -3']
+
+    def _buildElem(self):
+        zaids = []
+        for zaidstr in self.zaid_strings:
+            zaids.append(Zaid.from_string(zaidstr))
+
+        elem = Element(zaids)
+        return elem
+
+    def test_update_zaidinfo(self):
+        """
+        Test ability to get additional info for the zaids
+        """
+
+        elem = self._buildElem()
+
+        # Check for the correct element
+        elem.Z = '1'
+
+        # Check the correct update of infos in element
+        elem.update_zaidinfo(LIBMAN)
+        res = [{'fullname': 'H-1', 'ab': 25},
+               {'fullname': 'H-2', 'ab': 75}]
+        for zaid, checks in zip(elem.zaids, res):
+            assert int(zaid.ab) == checks['ab']
+            assert zaid.fullname == checks['fullname']
+
+    def test_get_fraction(self):
+        """
+        Test correct recovery of element fraction
+        """
+
+        elem = self._buildElem()
+        assert elem.get_fraction() == -4
+
+
+class Testmaterial:
+    def test_switch_fraction(self):
+        # Read a material
+        matcard = MatCardsList.from_input(INP)
+        # Fake translation in order to normalize the fractions
+        material = matcard[0]
+        material.update_info(LIBMAN)
+        original = material.to_text()
+
+        # -- Switch back and forth --
+        # this first one should do nothing
+        material.switch_fraction('atom', LIBMAN)
+        unchanged = material.to_text()
+        assert original == unchanged
+        # switch to mass
+        material.switch_fraction('mass', LIBMAN)
+        mass = material.to_text()
+        # change again, should do nothing
+        material.switch_fraction('mass', LIBMAN)
+        unchanged = material.to_text()
+        assert unchanged == mass
+        # go back to atom
+        material.switch_fraction('atom', LIBMAN)
+        atom = material.to_text()
+        # at last check that the inplace oprion works
+        material.switch_fraction('mass', LIBMAN, inplace=False)
+        inplace = material.to_text()
+        assert inplace == atom
+        # go back to mass
+        material.switch_fraction('mass', LIBMAN)
+        massnorm = material.to_text()
+        assert massnorm == mass
 
 
 class TestMatCardList:
@@ -162,11 +237,11 @@ class TestMatCardList:
             assert True
 
         # classic mode
-        matcard = MatCardsList.from_input(ACTIVATION_INP)
+        matcard = MatCardsList.from_input(INP2)
         matcard.translate('21c', LIBMAN)
         translation = matcard.to_text()
-        assert translation.count('21c') == 6
-    
+        assert translation.count('21c') == 10
+
     def test_get_info(self):
         """
         Barely tests that everything is created

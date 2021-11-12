@@ -440,13 +440,13 @@ class SubMaterial:
         ----------
         newlib : dict or str
             There are a few ways that newlib can be provided:
-            
+
             1) str (e.g. 31c), the new library to translate to will be the
             one indicated;
-            
+
             2) dic (e.g. {'98c' : '99c', '31c: 32c'}), the new library is
             determined based on the old library of the zaid
-            
+
             3) dic (e.g. {'98c': [list of zaids], '31c': [list of zaids]}),
             the new library to be used is explicitly stated depending
             on the zaidnum.
@@ -785,13 +785,13 @@ class Material:
         ----------
         newlib : dict or str
             There are a few ways that newlib can be provided:
-            
+
             1) str (e.g. 31c), the new library to translate to will be the
             one indicated;
-            
+
             2) dic (e.g. {'98c' : '99c', '31c: 32c'}), the new library is
             determined based on the old library of the zaid
-            
+
             3) dic (e.g. {'98c': [list of zaids], '31c': [list of zaids]}),
             the new library to be used is explicitly stated depending
             on the zaidnum.
@@ -1073,13 +1073,13 @@ class MatCardsList(Sequence):
         ----------
         newlib : dict or str
             There are a few ways that newlib can be provided:
-            
+
             1) str (e.g. 31c), the new library to translate to will be the
             one indicated;
-            
+
             2) dic (e.g. {'98c' : '99c', '31c: 32c'}), the new library is
             determined based on the old library of the zaid
-            
+
             3) dic (e.g. {'98c': [list of zaids], '31c': [list of zaids]}),
             the new library to be used is explicitly stated depending
             on the zaidnum.

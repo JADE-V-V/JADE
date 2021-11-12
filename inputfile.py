@@ -142,7 +142,20 @@ class InputFile:
         None.
 
         """
+        to_print = self._to_text()
 
+        with open(out, 'w') as outfile:
+            outfile.write(to_print)
+
+    def _to_text(self):
+        """
+        Get the input in MCNP formatted text
+
+        Returns
+        -------
+        str
+            MCNP formatted text for the input
+        """
         if self.cards['title'] is not None:
             lines = self.cards['title'].lines
         else:
@@ -172,8 +185,7 @@ class InputFile:
         for line in lines:
             toprint = toprint+line
 
-        with open(out, 'w') as outfile:
-            outfile.write(toprint)
+        return toprint
 
     def translate(self, newlib, libmanager):
         """

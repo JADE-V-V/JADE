@@ -84,6 +84,22 @@ class TestIrradiationFile:
         self._assert_file2(irrfile)
         os.remove(outfile)
 
+    def test_get_daughters(self):
+        infile = os.path.join('TestFiles', 'parserD1S', 'irr_test')
+        irrfile = IrradiationFile.from_text(infile)
+        daughters = irrfile.get_daughters()
+        assert daughters == ['24051', '25054', '26055', '26059']
+
+    def test_get_irrad(self):
+        infile = os.path.join('TestFiles', 'parserD1S', 'irr_test')
+        irrfile = IrradiationFile.from_text(infile)
+        # Check the None
+        irradiation = irrfile.get_irrad('20051')
+        assert irradiation is None
+        # Check true value
+        irradiation = irrfile.get_irrad('26055')
+        assert irradiation.daughter == '26055'
+
 
 class TestIrradiation:
 
@@ -105,6 +121,23 @@ class TestIrradiation:
         assert irr.times[0] == '5.982e+00'
         assert irr.times[1] == '5.697e+00'
         assert irr.comment == 'Cr51'
+
+    def test_equivalence(self):
+        # Equivalent
+        text = '   24051     2.896e-07    5.982e+00    5.697e+00     Cr51'
+        irr1 = Irradiation.from_text(text, 2)
+        text = '   24051     2.896e-07    5.982e+00    5.697     '
+        irr2 = Irradiation.from_text(text, 2)
+        assert irr1 == irr2
+
+        # Not equal
+        text = '   24051     2.896e-07    5.697e+00    5.982e+00     Cr51'
+        irr3 = Irradiation.from_text(text, 2)
+        text = '   24051     2.896e-07    5.697e+00    Cr51'
+        irr4 = Irradiation.from_text(text, 1)
+        assert irr1 != irr3
+        assert irr1 != {}
+        assert irr1 != irr4
 
 
 class TestReaction:
@@ -212,3 +245,9 @@ class TestReactionFile:
 
         for reaction in reac_file.reactions:
             assert reaction.parent[-3:] != newlib
+
+    def test_get_parents(self):
+        filepath = os.path.join('TestFiles', 'parserD1S', 'reac_fe')
+        reac_file = ReactionFile.from_text(filepath)
+        parents = reac_file.get_parents()
+        assert parents == ['26054', '26056', '26057', '26058']

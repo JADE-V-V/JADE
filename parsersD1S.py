@@ -229,9 +229,18 @@ class Irradiation:
 
         """
         if isinstance(other, Irradiation):
-            condition = (self.daughter == other.daughter and
-                         self.lambd == other.lambd and
-                         self.times == other.times)
+            daugther_eq = self.daughter == other.daughter
+            lamb_eq = float(self.lambd) == float(other.lambd)
+            if len(self.times) == len(other.times):
+                times_eq = True
+                for time1, time2 in zip(self.times, other.times):
+                    if float(time1) != float(time2):
+                        times_eq = False
+            else:
+                times_eq = False
+
+            condition = (daugther_eq and lamb_eq and times_eq)
+
             return condition
         else:
             return False

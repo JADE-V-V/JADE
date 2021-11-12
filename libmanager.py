@@ -122,7 +122,7 @@ class LibManager:
             - 1to1: there is one to one correspondence for the zaid
             - natural: the zaids will be expanded using the natural abundance
             - absent: the zaid is not available in the library, a default one
-              will be used
+              will be used or the natural one if available.
 
         Parameters
         ----------
@@ -284,8 +284,11 @@ class LibManager:
         # split the name
         patnum = re.compile(r'\d+')
         patname = re.compile(r'[a-zA-Z]+')
-        num = patnum.search(zaidformula).group()
-        name = patname.search(zaidformula).group()
+        try:
+            num = patnum.search(zaidformula).group()
+            name = patname.search(zaidformula).group()
+        except AttributeError:
+            raise ValueError('No correspondent zaid found for '+zaidformula)
 
         atomnumber = newiso.loc[name, 'Z']
 
@@ -307,7 +310,10 @@ class LibManager:
  Error: {}
  The selected library is not available.
  '''+CEND
+        # Add a counter to avoid falling in an endless loop
+        i = 0
         while True:
+            i += 1
             lib = input(' Select library (e.g. 31c or 99c-31c): ')
             if lib in self.libraries:
                 break
@@ -315,24 +321,31 @@ class LibManager:
             elif lib[0] == '{':
                 libs = json.loads(lib)
                 # all libraries should be available
-                for val in libs.values():
+                tocheck = list(libs.values())
+                tocheck.extend(list(libs.keys()))
+                flag = True
+                for val in tocheck:
                     if val not in self.libraries:
                         print(error.format(val))
-                        continue
-                # If this point is reached, all libs are available
-                break
+                        flag = False
+                if flag:
+                    break
 
             elif '-' in lib:
                 libs = lib.split('-')
+                flag = True
                 for val in libs:
                     if val not in self.libraries:
                         print(error.format(val))
-                        continue
-                # If this point is reached, all libs are available
-                break
+                        flag = False
+                if flag:
+                    break
 
             else:
                 print(error.format(lib))
+
+            if i > 20:
+                raise ValueError('Too many wrong inputs')
         return lib
 
     def get_zaid_mass(self, zaid):

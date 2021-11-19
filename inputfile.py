@@ -156,10 +156,10 @@ class InputFile:
         str
             MCNP formatted text for the input
         """
+        lines = []
+
         if self.cards['title'] is not None:
-            lines = self.cards['title'].lines
-        else:
-            lines = []
+            lines.extend(self.cards['title'].lines)
 
         # Add cells
         for card in self.cards['cells']:

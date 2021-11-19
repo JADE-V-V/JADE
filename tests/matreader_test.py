@@ -23,17 +23,21 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import sys
-sys.path.insert(1, '../')
+import os
+
+cp = os.path.dirname(os.path.abspath(__file__))
+modules_path = os.path.dirname(cp)
+sys.path.insert(1, modules_path)
 
 from matreader import (Element, Zaid, MatCardsList)
 from libmanager import LibManager
-import os
+
 
 # Files
-INP = os.path.join('TestFiles', 'matreader', 'mat_test.i')
-INP2 = os.path.join('TestFiles', 'matreader', 'mat_test2.i')
-ACTIVATION_INP = os.path.join('TestFiles', 'matreader', 'activation.i')
-XSDIR = os.path.join('TestFiles', 'matreader', 'xsdir_mcnp6.2')
+INP = os.path.join(cp, 'TestFiles', 'matreader', 'mat_test.i')
+INP2 = os.path.join(cp, 'TestFiles', 'matreader', 'mat_test2.i')
+ACTIVATION_INP = os.path.join(cp, 'TestFiles', 'matreader', 'activation.i')
+XSDIR = os.path.join(cp, 'TestFiles', 'matreader', 'xsdir_mcnp6.2')
 # Other
 LIBMAN = LibManager(XSDIR, defaultlib='81c')
 

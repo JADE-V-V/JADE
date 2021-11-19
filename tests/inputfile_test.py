@@ -23,30 +23,48 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import sys
 import os
-sys.path.insert(1, '../')
+
+cp = os.path.dirname(os.path.abspath(__file__))
+modules_path = os.path.dirname(cp)
+sys.path.insert(1, modules_path)
+
 from inputfile import (InputFile, D1S_Input)
+from libmanager import LibManager
 from copy import deepcopy
 
-INP_PATH = 'TestFiles/inputfile/test.i'
-DIS_INP_PATH = 'TestFiles/inputfile/d1stest.i'
+INP_PATH = os.path.join(cp, 'TestFiles/inputfile/test.i')
+DIS_INP_PATH = os.path.join(cp, 'TestFiles/inputfile/d1stest.i')
+
+ACTIVATION_FILE = os.path.join(cp, 'TestFiles', 'libmanager',
+                               'Activation libs.xlsx')
+XSDIR_FILE = os.path.join(cp, 'TestFiles', 'libmanager', 'xsdir')
 
 
 class TestInputFile:
     testInput = InputFile.from_text(INP_PATH)
+    lm = LibManager(XSDIR_FILE, activationfile=ACTIVATION_FILE)
 
     def test_read_write(self):
         oldtext = self.testInput._to_text()
-        print(len(oldtext))
         # Dump it and re-read it
         dumpfile = 'tmp2.i'
         self.testInput.write(dumpfile)
         newinput = InputFile.from_text(dumpfile)
         # clear
-        # os.remove(dumpfile)
+        os.remove(dumpfile)
         newtext = newinput._to_text()
         print(len(newtext))
 
         assert oldtext == newtext
+
+    def test_translate(self):
+        # The test for a correct translation of material card is already done
+        # in matreader. here we only check that it goes trough without errors
+        newinput = deepcopy(self.testInput)
+        newinput.translate('00c', self.lm)
+        newinput = deepcopy(self.testInput)
+        newinput.translate('{"31c": "00c", "70c": "81c"}', self.lm)
+        assert True
 
     def test_get_card_byID(self):
         """
@@ -158,3 +176,7 @@ class TestD1S_Input:
         # get the new injected card
         card = newinp.get_card_byID('settings', 'FU124')
         assert card.lines[0] == 'FU124 0 1001 1002\n'
+
+
+test = TestInputFile()
+test.test_read_write()

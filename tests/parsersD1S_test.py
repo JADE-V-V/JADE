@@ -23,13 +23,17 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import sys
 import os
-sys.path.insert(1, '../')
+
+cp = os.path.dirname(os.path.abspath(__file__))
+modules_path = os.path.dirname(cp)
+sys.path.insert(1, modules_path)
+
 from parsersD1S import (Reaction, ReactionFile, Irradiation, IrradiationFile,
                         REACFORMAT)
 from libmanager import LibManager
 
 
-INP = os.path.join('TestFiles', 'parserD1S', 'reac_fe')
+INP = os.path.join(cp, 'TestFiles', 'parserD1S', 'reac_fe')
 
 
 class TestIrradiationFile:
@@ -38,7 +42,7 @@ class TestIrradiationFile:
         """
         Test parsing irradiation file 1
         """
-        filepath = os.path.join('TestFiles', 'parserD1S', 'irr_test')
+        filepath = os.path.join(cp, 'TestFiles', 'parserD1S', 'irr_test')
         irrfile = IrradiationFile.from_text(filepath)
         self._assert_file1(irrfile)
 
@@ -51,7 +55,7 @@ class TestIrradiationFile:
         """
         Test parsing irradiation file 2
         """
-        filepath = os.path.join('TestFiles', 'parserD1S', 'irr_test2')
+        filepath = os.path.join(cp, 'TestFiles', 'parserD1S', 'irr_test2')
         irrfile = IrradiationFile.from_text(filepath)
         self._assert_file2(irrfile)
 
@@ -64,7 +68,7 @@ class TestIrradiationFile:
         """
         Test writing irradiation file 1
         """
-        infile = os.path.join('TestFiles', 'parserD1S', 'irr_test')
+        infile = os.path.join(cp, 'TestFiles', 'parserD1S', 'irr_test')
         outfile = 'irrad'
         irrfile = IrradiationFile.from_text(infile)
         irrfile.write(os.getcwd())
@@ -76,7 +80,7 @@ class TestIrradiationFile:
         """
         Test writing irradiation file 2
         """
-        infile = os.path.join('TestFiles', 'parserD1S', 'irr_test2')
+        infile = os.path.join(cp, 'TestFiles', 'parserD1S', 'irr_test2')
         outfile = 'irrad'
         irrfile = IrradiationFile.from_text(infile)
         irrfile.write(os.getcwd())
@@ -85,13 +89,13 @@ class TestIrradiationFile:
         os.remove(outfile)
 
     def test_get_daughters(self):
-        infile = os.path.join('TestFiles', 'parserD1S', 'irr_test')
+        infile = os.path.join(cp, 'TestFiles', 'parserD1S', 'irr_test')
         irrfile = IrradiationFile.from_text(infile)
         daughters = irrfile.get_daughters()
         assert daughters == ['24051', '25054', '26055', '26059']
 
     def test_get_irrad(self):
-        infile = os.path.join('TestFiles', 'parserD1S', 'irr_test')
+        infile = os.path.join(cp, 'TestFiles', 'parserD1S', 'irr_test')
         irrfile = IrradiationFile.from_text(infile)
         # Check the None
         irradiation = irrfile.get_irrad('20051')

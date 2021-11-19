@@ -25,14 +25,17 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 import os
 
-sys.path.insert(1, '../')
+cp = os.path.dirname(os.path.abspath(__file__))
+modules_path = os.path.dirname(cp)
+sys.path.insert(1, modules_path)
+
 from libmanager import LibManager
 from matreader import Zaid
 
 
-ACTIVATION_FILE = os.path.join('TestFiles', 'libmanager',
+ACTIVATION_FILE = os.path.join(cp, 'TestFiles', 'libmanager',
                                'Activation libs.xlsx')
-XSDIR_FILE = os.path.join('TestFiles', 'libmanager', 'xsdir')
+XSDIR_FILE = os.path.join(cp, 'TestFiles', 'libmanager', 'xsdir')
 
 
 class TestLibManger:

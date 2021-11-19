@@ -33,7 +33,7 @@ CRED = '\033[91m'
 CEND = '\033[0m'
 
 
-MSG_DEFLIB = ' The Deafult library {} was used for zaid {}'
+MSG_DEFLIB = ' The Default library {} was used for zaid {}'
 
 
 class LibManager:

@@ -466,7 +466,13 @@ class SubMaterial:
                 # Check for which kind of dic it is
                 if type(list(newlib.values())[0]) == str:
                     # The assignment is based on old lib
-                    newtag = newlib[zaid.library]
+                    try:
+                        newtag = newlib[zaid.library]
+                    except KeyError:
+                        # the zaid should have been assigned to a library
+                        raise ValueError('''
+ Zaid {} was not assigned to any library'''.format(zaid.name))
+
                 else:
                     # The assignment is explicit, all libs need to be searched
                     newtag = None
@@ -479,7 +485,7 @@ class SubMaterial:
                     if newtag is None:
                         # the zaid should have been assigned to a library
                         raise ValueError('''
- Zaid {} was not assigned to any library'''.format(zaid))
+ Zaid {} was not assigned to any library'''.format(zaid.name))
             else:
                 newtag = newlib
 

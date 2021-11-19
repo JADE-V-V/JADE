@@ -267,6 +267,10 @@ class InputFile:
             error = precision[1]
             line = line+str(tally)+' '+str(error)
 
+        if line == 'STOP ':
+            raise ValueError("""
+Specify at least one among nps, ctme or precision""")
+
         line = line+'\n'
 
         card = par.Card([line], 5, -1)
@@ -290,7 +294,10 @@ class InputFile:
         """
 
         # Change density in sphere cell
-        card = self.cards['cells'][cellidx]
+        try:
+            card = self.cards['cells'][cellidx]
+        except IndexError:
+            raise ValueError('cell n. {} is not available')
         card.get_values()
         card.set_d(str(density))
         card.lines = card.card()

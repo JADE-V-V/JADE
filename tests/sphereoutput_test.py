@@ -44,7 +44,7 @@ class MockSphereSDDRoutput(sout.SphereSDDRoutput):
     def __init__(self):
         self.lib = '99c'
         self.testname = 'SphereSDDR'
-        self.test_path = os.path.join('TestFiles', 'sphereoutput',
+        self.test_path = os.path.join(cp, 'TestFiles', 'sphereoutput',
                                       'single_excel_sddr')
         mat_settings = [{'num': 'M203', 'Name': 'material', 'other': 1},
                         {'num': 'dummy', 'Name': 'dummy', 'dummy': 1}]

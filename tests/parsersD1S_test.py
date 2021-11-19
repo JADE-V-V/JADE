@@ -221,7 +221,7 @@ class TestReactionFile:
         test translation with libmanager where parents are available
 
         """
-        xsdirpath = os.path.join('TestFiles', 'libmanager', 'xsdir')
+        xsdirpath = os.path.join(cp, 'TestFiles', 'libmanager', 'xsdir')
         lm = LibManager(xsdirpath)
 
         newlib = '98c'
@@ -237,10 +237,10 @@ class TestReactionFile:
         test translation with libmanager where parents are not available
 
         """
-        xsdirpath = os.path.join('TestFiles', 'libmanager', 'xsdir')
+        xsdirpath = os.path.join(cp, 'TestFiles', 'libmanager', 'xsdir')
         lm = LibManager(xsdirpath)
 
-        filepath = os.path.join('TestFiles', 'parserD1S', 'reac2')
+        filepath = os.path.join(cp, 'TestFiles', 'parserD1S', 'reac2')
 
         newlib = '99c'
 
@@ -251,7 +251,7 @@ class TestReactionFile:
             assert reaction.parent[-3:] != newlib
 
     def test_get_parents(self):
-        filepath = os.path.join('TestFiles', 'parserD1S', 'reac_fe')
+        filepath = os.path.join(cp, 'TestFiles', 'parserD1S', 'reac_fe')
         reac_file = ReactionFile.from_text(filepath)
         parents = reac_file.get_parents()
         assert parents == ['26054', '26056', '26057', '26058']

@@ -26,6 +26,7 @@ import pandas as pd
 import json
 import re
 import warnings
+import os
 
 
 # colors
@@ -38,7 +39,8 @@ MSG_DEFLIB = ' The Default library {} was used for zaid {}'
 
 class LibManager:
 
-    def __init__(self, xsdir_file, defaultlib='81c', activationfile=None):
+    def __init__(self, xsdir_file, defaultlib='81c', activationfile=None,
+                 isotopes_file=None):
         """
         Object dealing with all complex operations that involves nuclear data
 
@@ -50,8 +52,11 @@ class LibManager:
             lib suffix to be used as default in translation operations.
             The default is '81c'.
         activationfile : str or path, optional
-            path to the ocnfig file containing the reactions data for
+            path to the config file containing the reactions data for
             activation libraries. The default is None.
+        isotopes_file : str or path, optional
+            path to the isotopes files. If None (default) the file is searched
+            in the current directory.
 
         Returns
         -------
@@ -59,7 +64,9 @@ class LibManager:
 
         """
         # load the natural abundance file
-        abundances = pd.read_csv('Isotopes.txt', skiprows=2)
+        if isotopes_file is None:
+            isotopes_file = 'Isotopes.txt'
+        abundances = pd.read_csv(isotopes_file, skiprows=2)
         abundances['idx'] = abundances['idx'].astype(str)
         abundances.set_index('idx', inplace=True)
         self.isotopes = abundances

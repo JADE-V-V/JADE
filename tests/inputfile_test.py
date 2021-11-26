@@ -28,7 +28,7 @@ cp = os.path.dirname(os.path.abspath(__file__))
 modules_path = os.path.dirname(cp)
 sys.path.insert(1, modules_path)
 
-from inputfile import (InputFile, D1S_Input)
+from inputfile import (InputFile, D1S_Input, D1S5_InputFile)
 from libmanager import LibManager
 from parsersD1S import (IrradiationFile, ReactionFile)
 from copy import deepcopy
@@ -42,6 +42,7 @@ DIS_GETREACT_PATH = os.path.join(cp, 'TestFiles/inputfile/d1stest_getreact.i')
 ACTIVATION_FILE = os.path.join(cp, 'TestFiles', 'libmanager',
                                'Activation libs.xlsx')
 XSDIR_FILE = os.path.join(cp, 'TestFiles', 'libmanager', 'xsdir')
+ISOTOPES_FILE = os.path.join(modules_path, 'Isotopes.txt')
 
 IRRAD_PATH = os.path.join(cp, 'TestFiles/inputfile/d1stest_irrad')
 REACT_PATH = os.path.join(cp, 'TestFiles/inputfile/d1stest_react')
@@ -49,7 +50,8 @@ REACT_PATH = os.path.join(cp, 'TestFiles/inputfile/d1stest_react')
 
 class TestInputFile:
     testInput = InputFile.from_text(INP_PATH)
-    lm = LibManager(XSDIR_FILE, activationfile=ACTIVATION_FILE)
+    lm = LibManager(XSDIR_FILE, activationfile=ACTIVATION_FILE,
+                    isotopes_file=ISOTOPES_FILE)
 
     def test_read_write(self):
         oldtext = self.testInput._to_text()
@@ -63,6 +65,11 @@ class TestInputFile:
         print(len(newtext))
 
         assert oldtext == newtext
+
+    def test_update_zaidinfo(self):
+        newinput = deepcopy(self.testInput)
+        newinput.update_zaidinfo(self.lm)
+        assert True
 
     def test_add_stopCard(self):
         tests = [(1e3, 500, ('F54', 0.001), 'STOP NPS 1000 CTME 500 F54 0.001\n'),
@@ -135,7 +142,7 @@ class TestInputFile:
         try:
             card = self.testInput.get_card_byID('dummy', 'Fmesh254:')
             assert False
-        except KeyError:
+        except ValueError:
             assert True
 
     def test_addlines2card(self):
@@ -206,12 +213,13 @@ class TestD1S_Input:
     irrad = IrradiationFile.from_text(IRRAD_PATH)
     react = ReactionFile.from_text(REACT_PATH)
 
-    lm = LibManager(XSDIR_FILE, activationfile=ACTIVATION_FILE)
+    lm = LibManager(XSDIR_FILE, activationfile=ACTIVATION_FILE,
+                    isotopes_file=ISOTOPES_FILE)
 
-    def test_translate(self):
+    def test_translated1s(self):
         # This test needs to be improved
         newinp = deepcopy(self.inp)
-        lib = '31c-00c'
+        lib = '99c-00c'
         newinp.translate(lib, self.lm, original_irradfile=self.irrad,
                          original_reacfile=self.react)
         assert True
@@ -229,8 +237,9 @@ class TestD1S_Input:
         lib = '99c'
         reacfile = newinp.get_reaction_file(self.lm, lib)
         parents = ['13027', '22046', '24050']
-        for reaction, test in zip(reacfile.reactions, parents):
-            assert reaction.parent == test+'.'+lib
+        parents_file = reacfile.get_parents()
+        for parent, test in zip(parents_file, parents):
+            assert parent == test
 
     def test_add_track_contribution(self):
         zaids = ['1001', '1002']
@@ -263,3 +272,31 @@ class TestD1S_Input:
         # get the new injected card
         card = newinp.get_card_byID('settings', 'FU124')
         assert card.lines[0] == 'FU124 0 1001 1002\n'
+
+class TestD1S5_Input:
+    inp = D1S5_InputFile.from_text(DIS_INP_PATH)
+    irrad = IrradiationFile.from_text(IRRAD_PATH)
+    react = ReactionFile.from_text(REACT_PATH)
+
+    lm = LibManager(XSDIR_FILE, activationfile=ACTIVATION_FILE,
+                    isotopes_file=ISOTOPES_FILE)
+    
+    def test_add_stopCard(self):
+        precision = 'F5-0.001'
+        ctme = 500
+        nps = 1e4
+        newinp = deepcopy(self.inp)
+        newinp.add_stopCard(nps, ctme, precision)
+        # Verify that the card has been added correctly
+        card = newinp.get_card_byID('settings', 'NPS')
+        assert card.lines[0] == 'NPS 10000\n'
+
+        nps = None
+        newinp = deepcopy(self.inp)
+        try:
+            newinp.add_stopCard(nps, ctme, precision)
+            assert False
+        except ValueError:
+            assert True
+
+

@@ -188,6 +188,10 @@ class TestReaction:
 
 
 class TestReactionFile:
+    xsdirpath = os.path.join(cp, 'TestFiles', 'libmanager', 'xsdir')
+    isotopes_file = os.path.join(modules_path, 'Isotopes.txt')
+    lm = LibManager(xsdirpath, isotopes_file=isotopes_file)
+
     def test_fromtext(self):
         """
         right number of reactions
@@ -221,13 +225,10 @@ class TestReactionFile:
         test translation with libmanager where parents are available
 
         """
-        xsdirpath = os.path.join(cp, 'TestFiles', 'libmanager', 'xsdir')
-        lm = LibManager(xsdirpath)
-
         newlib = '98c'
 
         reac_file = ReactionFile.from_text(INP)
-        reac_file.change_lib(newlib, libmanager=lm)
+        reac_file.change_lib(newlib, libmanager=self.lm)
 
         for reaction in reac_file.reactions:
             assert reaction.parent[-3:] == newlib
@@ -237,15 +238,13 @@ class TestReactionFile:
         test translation with libmanager where parents are not available
 
         """
-        xsdirpath = os.path.join(cp, 'TestFiles', 'libmanager', 'xsdir')
-        lm = LibManager(xsdirpath)
 
         filepath = os.path.join(cp, 'TestFiles', 'parserD1S', 'reac2')
 
         newlib = '99c'
 
         reac_file = ReactionFile.from_text(filepath)
-        reac_file.change_lib(newlib, libmanager=lm)
+        reac_file.change_lib(newlib, libmanager=self.lm)
 
         for reaction in reac_file.reactions:
             assert reaction.parent[-3:] != newlib

@@ -36,11 +36,13 @@ from matreader import Zaid
 ACTIVATION_FILE = os.path.join(cp, 'TestFiles', 'libmanager',
                                'Activation libs.xlsx')
 XSDIR_FILE = os.path.join(cp, 'TestFiles', 'libmanager', 'xsdir')
+ISOTOPES_FILE = os.path.join(modules_path, 'Isotopes.txt')
 
 
 class TestLibManger:
 
-    lm = LibManager(XSDIR_FILE, activationfile=ACTIVATION_FILE)
+    lm = LibManager(XSDIR_FILE, activationfile=ACTIVATION_FILE,
+                    isotopes_file=ISOTOPES_FILE)
 
     def test_reactionfilereading(self):
         assert len(self.lm.reactions['99c']) == 100

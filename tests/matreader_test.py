@@ -38,8 +38,9 @@ INP = os.path.join(cp, 'TestFiles', 'matreader', 'mat_test.i')
 INP2 = os.path.join(cp, 'TestFiles', 'matreader', 'mat_test2.i')
 ACTIVATION_INP = os.path.join(cp, 'TestFiles', 'matreader', 'activation.i')
 XSDIR = os.path.join(cp, 'TestFiles', 'matreader', 'xsdir_mcnp6.2')
+ISOTOPES_FILE = os.path.join(modules_path, 'Isotopes.txt')
 # Other
-LIBMAN = LibManager(XSDIR, defaultlib='81c')
+LIBMAN = LibManager(XSDIR, defaultlib='81c', isotopes_file=ISOTOPES_FILE)
 
 
 class TestZaid:

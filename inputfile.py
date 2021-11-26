@@ -302,46 +302,46 @@ Specify at least one among nps, ctme or precision""")
         card.set_d(str(density))
         card.lines = card.card()
 
-    def add_edits(self, edits_file):
-        """
-        Add weight windows and source bias resulted from ADVANTG analysis
+    # def add_edits(self, edits_file):
+    #     """
+    #     Add weight windows and source bias resulted from ADVANTG analysis
 
-        Parameters
-        ----------
-        edits_file : path like object
-            file containing the edits.
+    #     Parameters
+    #     ----------
+    #     edits_file : path like object
+    #         file containing the edits.
 
-        Returns
-        -------
-        None.
+    #     Returns
+    #     -------
+    #     None.
 
-        """
-        # Parse edits file
-        patBias = re.compile('sb', re.IGNORECASE)
-        patWWP = re.compile('wwp', re.IGNORECASE)
-        patSP = re.compile('sp', re.IGNORECASE)
+    #     """
+    #     # Parse edits file
+    #     patBias = re.compile('sb', re.IGNORECASE)
+    #     patWWP = re.compile('wwp', re.IGNORECASE)
+    #     patSP = re.compile('sp', re.IGNORECASE)
 
-        bias = []
-        wwp = []
-        with open(edits_file, 'r') as infile:
-            for line in infile:
-                if patBias.match(line) is not None:
-                    bias.append(par.Card([line], 5, -1))
-                elif patWWP.match(line) is not None:
-                    wwp.append(par.Card([line], 5, -1))
+    #     bias = []
+    #     wwp = []
+    #     with open(edits_file, 'r') as infile:
+    #         for line in infile:
+    #             if patBias.match(line) is not None:
+    #                 bias.append(par.Card([line], 5, -1))
+    #             elif patWWP.match(line) is not None:
+    #                 wwp.append(par.Card([line], 5, -1))
 
-        newsettings = []
-        for card in self.cards['settings']:
-            # TODO !!!!! this works only if there is only one source card !!!!
-            if patSP.match(card.lines[0]) is not None:
-                newsettings.append(card)
-                newsettings.extend(bias)
-            else:
-                newsettings.append(card)
+    #     newsettings = []
+    #     for card in self.cards['settings']:
+    #         # TODO !!!!! this works only if there is only one source card !!!!
+    #         if patSP.match(card.lines[0]) is not None:
+    #             newsettings.append(card)
+    #             newsettings.extend(bias)
+    #         else:
+    #             newsettings.append(card)
 
-        newsettings.extend(wwp)
+    #     newsettings.extend(wwp)
 
-        self.cards['settings'] = newsettings
+    #     self.cards['settings'] = newsettings
 
     def get_card_byID(self, blockID, cardID):
         """
@@ -698,10 +698,10 @@ class D1S5_InputFile(D1S_Input):
 STOP card is substituted with normal NPS card for MCNP5.
 specified ctme or precision parameters will be ignored
 ''')
-        elif nps is None:
+        if nps is None:
             raise ValueError(' NPS value is mandatory for MCNP 5 inputs')
 
-        line = 'NPS '+str(nps)+'\n'
+        line = 'NPS '+str(int(nps))+'\n'
         card = par.Card([line], 5, -1)
         self.cards['settings'].append(card)
 

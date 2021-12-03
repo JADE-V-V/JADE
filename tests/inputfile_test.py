@@ -102,7 +102,6 @@ class TestInputFile:
         newinp = deepcopy(self.testInput)
         density = 1
         newinp.change_density(density, cellidx=2)
-        cellcard = newinp.get_card_byID('cells', '2')
         modline = '2    13  {}  -128 129 1   -2         \n'.format(str(density))
         assert newinp.cards['cells'][2].lines == modline
 
@@ -273,6 +272,7 @@ class TestD1S_Input:
         card = newinp.get_card_byID('settings', 'FU124')
         assert card.lines[0] == 'FU124 0 1001 1002\n'
 
+
 class TestD1S5_Input:
     inp = D1S5_InputFile.from_text(DIS_INP_PATH)
     irrad = IrradiationFile.from_text(IRRAD_PATH)
@@ -280,7 +280,7 @@ class TestD1S5_Input:
 
     lm = LibManager(XSDIR_FILE, activationfile=ACTIVATION_FILE,
                     isotopes_file=ISOTOPES_FILE)
-    
+
     def test_add_stopCard(self):
         precision = 'F5-0.001'
         ctme = 500
@@ -298,5 +298,3 @@ class TestD1S5_Input:
             assert False
         except ValueError:
             assert True
-
-

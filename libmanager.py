@@ -116,8 +116,8 @@ class LibManager:
 
         """
         libraries = []
-        for table in self.XS.find_table(zaid):
-            libraries.append(table.name.split('.')[-1])
+        for libname in self.XS.find_table(zaid, mode='default-fast'):
+            libraries.append(libname)
 
         return libraries
 

@@ -37,12 +37,14 @@ ACTIVATION_FILE = os.path.join(cp, 'TestFiles', 'libmanager',
 XSDIR_FILE = os.path.join(cp, 'TestFiles', 'libmanager', 'xsdir')
 ISOTOPES_FILE = os.path.join(modules_path, 'Isotopes.txt')
 
+
 class SessionMockup:
-    
+
     def __init__(self):
         self.lib_manager = LibManager(XSDIR_FILE,
                                       activationfile=ACTIVATION_FILE,
                                       isotopes_file=ISOTOPES_FILE)
+
 
 class TestUtilities:
     session = SessionMockup()
@@ -58,7 +60,7 @@ class TestUtilities:
                                   outpath=self.outpath)
         shutil.rmtree(self.outpath)
         assert ans
-    
+
     def test_print_libraries(self):
         """
         This is properly tested in libmanager_test
@@ -101,7 +103,7 @@ class TestUtilities:
         txt_equal(fileA, fileB)
 
         shutil.rmtree(outpath)
-    
+
     def test_switch_fractions(self):
 
         # Switches are properly tested in matreader
@@ -111,7 +113,7 @@ class TestUtilities:
                              outpath=self.outpath)
         shutil.rmtree(self.outpath)
         assert True
-    
+
     def test_change_ACElib_suffix(self, monkeypatch):
         acefolder = os.path.join(cp, 'TestFiles', 'utilitiesgui', 'ACEchange',
                                  '99c')
@@ -133,7 +135,7 @@ class TestUtilities:
                         assert False
                     break
         shutil.rmtree(newfolder)
-    
+
     def test_get_reaction_file(self, monkeypatch):
         # The correctness of the file is already tested in parserD1S
         filepath = os.path.join(cp, 'TestFiles', 'utilitiesgui', 'd1stest.i')
@@ -143,12 +145,21 @@ class TestUtilities:
         shutil.rmtree(self.outpath)
         assert True
 
+    def test_input_with_option(self, monkeypatch):
+        msg = ''
+        options = ['option1', 'option2']
+        inputs = iter(['wrongoption', 'option1'])
+        monkeypatch.setattr('builtins.input', lambda msg: next(inputs))
+        valid_input = uty.input_with_options(msg, options)
+        assert valid_input == 'option1'
+
 
 def excel_equal(fileA, fileB, n_sheets):
     for i in range(n_sheets):
         sheetA = pd.read_excel(fileA, sheet_name=i)
         sheetB = pd.read_excel(fileB, sheet_name=i)
         assert sheetA.equals(sheetB)
+
 
 def txt_equal(fileA, fileB):
     with open(fileA, 'r') as infileA, open(fileB, 'r') as infileB:

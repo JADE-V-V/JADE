@@ -993,7 +993,7 @@ class MatCardsList(Sequence):
         ----------
         cls : TYPE
             DESCRIPTION.
-        inputfile : inputfile.InputFile
+        inputfile : os.PathLike
             MCNP input file containing the material section.
 
         Returns

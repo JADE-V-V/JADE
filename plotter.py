@@ -62,7 +62,7 @@ TBM_HCPB_RECT = [['Void', 'White', 840, 850.3],
                  ['Water cooled Eurofer97', '#ff7f00', 850.6, 851.3],
                  ['Eurofer97', '#377eb8', 851.3, 853.3],
                  ['Breeding Area pt1', '#4daf4a', 853.3, 855.4],
-                 ['Breeding Area pt2', '#f781bf',  855.4, 859.9],
+                 ['Breeding Area pt2', '#f781bf', 855.4, 859.9],
                  ['Breeding Area pt3', '#a65628', 859.9, 893.3],
                  ['Breeding Unit Pipework', '#984ea3', 893.3, 918.8],
                  ['Gap', '#999999', 918.8, 946.3],
@@ -77,7 +77,7 @@ TBM_WCLL_RECT = [['Void', 'White', 840, 850.3],
                  ['Water cooled Eurofer97', '#ff7f00', 850.6, 851.3],
                  ['Eurofer97', '#377eb8', 851.3, 853.3],
                  ['Breeding Area pt1', '#4daf4a', 853.3, 854.3],
-                 ['Breeding Area pt2', '#f781bf',  854.3, 862.5],
+                 ['Breeding Area pt2', '#f781bf', 854.3, 862.5],
                  ['Breeding Area pt3', '#a65628', 862.5, 903.4],
                  ['Breeding Unit Pipework', '#984ea3', 903.4, 918.8],
                  ['Gap', '#999999', 918.8, 946.3],
@@ -267,6 +267,7 @@ class Plotter:
             for j, libdata in enumerate(self.data[1:]):
                 tary = np.array(libdata['y'][i])
                 y = tary/refy
+
                 # Compute the plot limits
                 norm, upper, lower = _get_limits(lowerlimit, upperlimit,
                                                  y, libdata['x'])
@@ -304,7 +305,7 @@ class Plotter:
         axes[0].legend(loc='upper center', bbox_to_anchor=(0.88, 1.5),
                        fancybox=True, shadow=True)
         # Handle x and y global axes
-        plt.setp(axes[2].get_xticklabels(), rotation=45, ha="right",
+        plt.setp(axes[-1].get_xticklabels(), rotation=45, ha="right",
                  rotation_mode="anchor")
         axes[-1].set_xlabel(self.xlabel)
 
@@ -603,7 +604,7 @@ class Plotter:
             x = libdata['x']
             y = libdata['y']
             label = libdata['ylabel']
-            assert x == ref_x
+            assert (x == ref_x).all()
 
             # Compute the plot limits
             norm, upper, lower = _get_limits(lowerlimit, upperlimit,
@@ -1062,6 +1063,7 @@ def _get_limits(lowerlimit, upperlimit, ydata, xdata):
         x, y sets that are below upper limit.
 
     """
+    assert lowerlimit < upperlimit
     # ensure data is array
     ydata = np.array(ydata)
     xdata = np.array(xdata)

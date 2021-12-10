@@ -21,7 +21,59 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import sys
 import os
+import shutil
+import pytest
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
 
 cp = os.path.dirname(os.path.abspath(__file__))
 modules_path = os.path.dirname(cp)
 sys.path.insert(1, modules_path)
+
+from atlas import Atlas
+
+TEMPLATE_PATH = os.path.join(cp, 'TestFiles', 'atlas', 'template.docx')
+KEYARGS_DF = [{'caption': 'yo', 'highlight': True},
+              {}]
+
+
+class TestAtlas:
+
+    atlas = Atlas(TEMPLATE_PATH, 'dummyname')
+    df = pd.DataFrame(np.zeros((3, 3)))
+    df.columns = ['dummy1', 'dummy2', 'dummy3']
+    df['highlight'] = ['OK', 'NOK', 'OK']
+
+    def test_insert_img(self):
+        # dummy plot
+        plt.plot([1, 2], [1, 2])
+        try:
+            os.mkdir('tmp')
+        except FileExistsError:
+            pass
+        pathfig = os.path.join('tmp', 'dummyfig.png')
+        plt.savefig(pathfig)
+        try:
+            self.atlas.insert_img(pathfig)
+            assert True
+        finally:
+            shutil.rmtree('tmp')
+
+    @pytest.mark.parametrize("keyargs", KEYARGS_DF)
+    def test_insert_df(self, keyargs):
+        self.atlas.insert_df(self.df, **keyargs)
+        assert True
+
+    def test_save(self):
+        try:
+            os.mkdir('tmp')
+        except FileExistsError:
+            pass
+        # Unfortunately the pdf creation cannot be tested since it requires
+        # Office
+        try:
+            self.atlas.save('tmp', pdfprint=False)
+            assert True
+        finally:
+            shutil.rmtree('tmp')

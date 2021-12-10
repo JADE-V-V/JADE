@@ -27,7 +27,6 @@ import computational as cmp
 import utilitiesgui as uty
 import postprocess as pp
 import testrun
-import testInstallation as tinstall
 
 from tqdm import tqdm
 from status import EXP_TAG
@@ -74,7 +73,6 @@ principal_menu = header+"""
  * Change ACE lib suffix                (acelib)
  * Produce D1S Reaction file             (react)
  -----------------------------------------------
- * Test installation                      (test)
 
  * Exit                                   (exit)
 """
@@ -191,10 +189,6 @@ def mainloop(session):
                 print('''
     Error:
     Either the input or output files can't be opened''')
-
-        elif option == 'test':
-            tinstall.test_installation(session)
-            print('\n Installation test completed\n')
 
         elif option == 'acelib':
             uty.change_ACElib_suffix()

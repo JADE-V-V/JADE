@@ -75,7 +75,7 @@ class Atlas():
         last_paragraph = self.doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    def insert_df(self, df, caption=None, highlight=False, template_idx=None,
+    def insert_df(self, df, caption=None, highlight=False, #, template_idx=None,
                   tablestyle=None):
         """
         Inser a dataframe as a table in a Word file
@@ -88,8 +88,8 @@ class Atlas():
             caption of the table. The default is None
         highlight : bool, optional
             Very specific for stress assessment. The default is False.
-        template_idx : int, optional
-            index of the template table to use. The default is None
+        # template_idx : int, optional
+        #     index of the template table to use. The default is None
         tablestyle : str, optional
             table word style to apply. The default is None
 
@@ -100,6 +100,7 @@ class Atlas():
 
         """
         # Create the table or inherit a template
+        template_idx = None  # other possibilities not implemented anymore
         if template_idx is None:
             table = self.doc.add_table(1, len(df.columns))
         else:

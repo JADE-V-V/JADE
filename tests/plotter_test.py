@@ -46,6 +46,11 @@ data2 = {'x': x, 'y': np.random.rand(50)*100,
          'err': np.random.rand(50), 'ylabel': 'data2'}
 data = [data1, data2]
 default_testname = 'dummy'
+xlimits = (np.sort(x)[3], np.sort(x)[-5])
+vlines = {'major': [np.sort(x)[10]], 'minor': [np.sort(x)[12]]}
+add_labels = {'major': [('major label', 0.1)],
+              'minor': [('minor label', 0.5)]}
+recs = plotter.TBM_HCPB_RECT
 
 KEYARGS = {'data': data, 'title': title, 'outpath': OUTPATH,
            'outname': outname, 'quantity': quantity, 'unit': unit,
@@ -85,16 +90,9 @@ class TestPlotter:
         except ValueError:
             assert True
 
-        # Create the tmp directory
-        if not os.path.exists(OUTPATH):
-            os.mkdir(OUTPATH)
-
-        try:
-            plotterob.plot(plot_type)
-            assert True
-        finally:
-            # remove the temporary directory
-            shutil.rmtree(OUTPATH)
+        args = [plot_type]
+        keyargs = {}
+        self._plot(plotterob, args, keyargs)
 
     def test_waves(self):
         data1 = {'x': x, 'y': [np.random.rand(50)*100, np.random.rand(50)*100],
@@ -108,14 +106,54 @@ class TestPlotter:
 
         plotterob = Plotter(**keyargs)
 
+        args = ['Waves']
+        keyargs = {}
+        self._plot(plotterob, args, keyargs)
+
+    def test_ratio_special(self):
+        plotterob = Plotter(**KEYARGS)
         # Create the tmp directory
-        if not os.path.exists(OUTPATH):
+        try:
             os.mkdir(OUTPATH)
+        except FileExistsError:
+            pass
 
         try:
-            plotterob.plot('Waves')
+            keyargs = {'additional_labels': add_labels, 'v_lines': vlines,
+                       'xlimits': xlimits, 'recs': recs, 'markers': True}
+            plotterob._ratio_plot(**keyargs)
             assert True
         finally:
             # remove the temporary directory
             shutil.rmtree(OUTPATH)
 
+    def test_grouped_bar_special(self):
+        plotterob = Plotter(**KEYARGS)
+        # Create the tmp directory
+        try:
+            os.mkdir(OUTPATH)
+        except FileExistsError:
+            pass
+
+        try:
+            keyargs = {'log': True}
+            plotterob._grouped_bar(**keyargs)
+            assert True
+        finally:
+            # remove the temporary directory
+            shutil.rmtree(OUTPATH)
+
+    @staticmethod
+    def _plot(plotterob, args, keyargs):
+        # Create the tmp directory
+        try:
+            os.mkdir(OUTPATH)
+        except FileExistsError:
+            pass
+
+        try:
+            plotterob.plot(*args, **keyargs)
+            assert True
+        finally:
+            # remove the temporary directory
+            shutil.rmtree(OUTPATH)

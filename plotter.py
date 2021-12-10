@@ -946,47 +946,47 @@ class Plotter:
 
         return self._save()
 
-    def _contribution(self, yscale='linear', legend_outside='False'):
-        data = self.data
+    # def _contribution(self, yscale='linear', legend_outside='False'):
+    #     data = self.data
 
-        # Adjounrn ylabel
-        ylabel = self.quantity+' ['+self.unit+']'
+    #     # Adjounrn ylabel
+    #     ylabel = self.quantity+' ['+self.unit+']'
 
-        # Grid info
-        # gridspec_kw = {'height_ratios': [3, 1], 'hspace': 0.13}
-        figsize = (22, 15)
+    #     # Grid info
+    #     # gridspec_kw = {'height_ratios': [3, 1], 'hspace': 0.13}
+    #     figsize = (22, 15)
 
-        # Initialize plot
-        fig, ax = plt.subplots(figsize=figsize)
+    #     # Initialize plot
+    #     fig, ax = plt.subplots(figsize=figsize)
 
-        # Plot all data
-        for i, libdata in enumerate(data):
-            ax.plot(libdata['x'], libdata['y'], color=self.colors[i],
-                    marker=self.markers[i], label=libdata['ylabel'])
+    #     # Plot all data
+    #     for i, libdata in enumerate(data):
+    #         ax.plot(libdata['x'], libdata['y'], color=self.colors[i],
+    #                 marker=self.markers[i], label=libdata['ylabel'])
 
-        # --- Plot details ---
-        # ax details
-        ax.set_yscale(yscale)
-        ax.set_title(self.title)
-        ax.set_ylabel(ylabel)
-        ax.set_xlabel(self.xlabel)
+    #     # --- Plot details ---
+    #     # ax details
+    #     ax.set_yscale(yscale)
+    #     ax.set_title(self.title)
+    #     ax.set_ylabel(ylabel)
+    #     ax.set_xlabel(self.xlabel)
 
-        if legend_outside:
-            ax.legend(bbox_to_anchor=(1, 1))
-        else:
-            ax.legend(loc='best')
+    #     if legend_outside:
+    #         ax.legend(bbox_to_anchor=(1, 1))
+    #     else:
+    #         ax.legend(loc='best')
 
-        ax.tick_params(which='major', width=1.00, length=5)
-        ax.tick_params(axis='y', which='minor', width=0.75, length=2.50)
+    #     ax.tick_params(which='major', width=1.00, length=5)
+    #     ax.tick_params(axis='y', which='minor', width=0.75, length=2.50)
 
-        plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
-                 rotation_mode="anchor")
+    #     plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+    #              rotation_mode="anchor")
 
-        # Grid
-        ax.grid('True', axis='y', which='major', linewidth=0.50)
-        ax.grid('True', axis='y', which='minor', linewidth=0.20)
+    #     # Grid
+    #     ax.grid('True', axis='y', which='major', linewidth=0.50)
+    #     ax.grid('True', axis='y', which='minor', linewidth=0.20)
 
-        return self._save()
+    #     return self._save()
 
     def _save(self):
         plt.tight_layout()

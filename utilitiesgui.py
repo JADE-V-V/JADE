@@ -22,7 +22,7 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
-from Code.matreader import SubMaterial
+from matreader import SubMaterial
 import inputfile as ipt
 import pandas as pd
 import xlsxwriter

@@ -17,7 +17,7 @@ dose rate, etc. C-Model is an extremely detailed MCNP input of a 40° sector of 
 the most complete neutronic model available for the ITER machine until 2021, when E-lite was released
 which is a full 360° model of ITER that was conceived to overcome some limitation encountered using
 the C-Model for specific application. Nevertheless, since E-lite is an extremely heavy model, C-model
-is still considered the reference basic model of the ITER TOKAMAK for neutronic analyses.
+is still considered a valid model to compute the possible impact on the nuclear responses over the ITER machine.
 
 Geometry and run parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

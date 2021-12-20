@@ -33,13 +33,13 @@ SDDR parameters
 The cool-down times that have been considered are 0 s, 2.7 h, 24 h, 11.6 d, 30 d
 and 10 y. For the isotopes simulations, since only one reaction is considered, relative
 comparisons at different cool-down times will not lead to different results, hence,
-during post-processing operations only the results at $0s$ are elaborated. This does
+during post-processing operations only the results at 0 s are elaborated. This does
 not apply to materials simulations, where many different reactions are included.
 
 The irradiation schedule considered for the Sphere SDDR benchmark is reported hereafter
-and represents an actual equivalent irradiation scenario foreseen for ITER blanket (mode SA2):
+and represents an actual equivalent irradiation scenario foreseen for ITER blanket (SA2):
 
-.. list-table:: Irradiation schedule (ITER mode SA2)
+.. list-table:: Irradiation schedule (ITER SA2 irradiation scenario)
     :header-rows: 1
 
     * - Source Intensity [n/s]

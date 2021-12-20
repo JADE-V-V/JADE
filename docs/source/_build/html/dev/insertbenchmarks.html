@@ -1,76 +1,34 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>Insert Custom Benchmarks &mdash; JADE v1.4.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>Insert Custom Benchmarks &mdash; JADE v2.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Modify documentation" href="docmodify.html" />
-    <link rel="prev" title="Introduction" href="intro.html" /> 
+    <link rel="prev" title="Troubleshooting" href="../usage/troubleshooting.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> JADE
-          
-
-          
-            
             <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -78,19 +36,8 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">JADE User Guide:</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">JADE User Guide:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../nutshell.html">JADE in a nutshell</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/installation.html">Installation</a></li>
@@ -101,10 +48,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../usage/postprocessing.html">Post-Processing Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/utilities.html">Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/tipstricks.html">Tips &amp; Tricks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/troubleshooting.html">Troubleshooting</a></li>
 </ul>
-<p class="caption"><span class="caption-text">JADE Developer Guide:</span></p>
+<p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Insert Custom Benchmarks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#insert-custom-computational-benchmark">Insert Custom Computational Benchmark</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#insert-custom-experimental-benchmark">Insert Custom Experimental Benchmark</a><ul>
@@ -116,14 +63,14 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="docmodify.html">Modify documentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">JADE API</span></p>
+<p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../api/general.html">General OOP scheme</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/initobjects.html">JADE Session</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/inputgeneration.html">Input Generation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/postprocessing.html">Post-Processing</a></li>
 </ul>
-<p class="caption"><span class="caption-text">More on JADE:</span></p>
+<p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE Testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
@@ -131,78 +78,37 @@
 <li class="toctree-l1"><a class="reference internal" href="../publications.html">List of Publications and Contributions</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">JADE</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Insert Custom Benchmarks</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/dev/insertbenchmarks.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="insert-custom-benchmarks">
-<h1>Insert Custom Benchmarks<a class="headerlink" href="#insert-custom-benchmarks" title="Permalink to this headline">¶</a></h1>
+<h1>Insert Custom Benchmarks<a class="headerlink" href="#insert-custom-benchmarks" title="Permalink to this headline"></a></h1>
 <p>This section of the guide describes how to add custom benchmarks to the JADE suite. The procedures
 necessary to implement new computational and experimental benchmarks are different and are
 described respectively in <a class="reference internal" href="#customcompbench"><span class="std std-ref">Insert Custom Computational Benchmark</span></a> and <a class="reference internal" href="#customexpbench"><span class="std std-ref">Insert Custom Experimental Benchmark</span></a>.</p>
 <div class="section" id="insert-custom-computational-benchmark">
-<span id="customcompbench"></span><h2>Insert Custom Computational Benchmark<a class="headerlink" href="#insert-custom-computational-benchmark" title="Permalink to this headline">¶</a></h2>
+<span id="customcompbench"></span><h2>Insert Custom Computational Benchmark<a class="headerlink" href="#insert-custom-computational-benchmark" title="Permalink to this headline"></a></h2>
 <p>Implementing a new computational benchmark is relatively easy and, theoretically, no additional
 code is required. The procedure is composed by the following steps:</p>
 <ol class="arabic simple">
@@ -230,7 +136,7 @@ extended tally names and are used during post-processing.</p>
 </div>
 </div>
 <div class="section" id="insert-custom-experimental-benchmark">
-<span id="customexpbench"></span><h2>Insert Custom Experimental Benchmark<a class="headerlink" href="#insert-custom-experimental-benchmark" title="Permalink to this headline">¶</a></h2>
+<span id="customexpbench"></span><h2>Insert Custom Experimental Benchmark<a class="headerlink" href="#insert-custom-experimental-benchmark" title="Permalink to this headline"></a></h2>
 <p>Inserting a custom experimental benchmark is slightly more complex, but a significant higher order
 of customization is guaranteed.
 Steps 1) and 2) of the computational benchmarks procedure still need to be followed but then some
@@ -240,7 +146,7 @@ In order to do that, at least the three abstract methods <code class="docutils l
 and <code class="docutils literal notranslate"><span class="pre">_build_atlas()</span></code> need to be implemented in the new class.
 Once this has been done, a few other adjustments need to be done to the code.</p>
 <div class="section" id="call-the-right-output-class">
-<h3>Call the right Output class<a class="headerlink" href="#call-the-right-output-class" title="Permalink to this headline">¶</a></h3>
+<h3>Call the right Output class<a class="headerlink" href="#call-the-right-output-class" title="Permalink to this headline"></a></h3>
 <p>In <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code\postprocess.py</span></code>, the function <code class="docutils literal notranslate"><span class="pre">_get_output()</span></code> controls the creation of the
 benchmark object during post-processing depending on the benchmark. Here an <em>elif</em> statement needs
 to be added to ensure that the newly created custom class is called when generating the output for
@@ -262,7 +168,7 @@ the newly created class. Attention should be paid also to the <code class="docut
 the benchmark is actually composed by more than one input (i.e. multiple MCNP/D1S runs).</p>
 </div>
 <div class="section" id="additional-actions-for-multi-run-benchmarks">
-<h3>Additional actions for multi-run benchmarks<a class="headerlink" href="#additional-actions-for-multi-run-benchmarks" title="Permalink to this headline">¶</a></h3>
+<h3>Additional actions for multi-run benchmarks<a class="headerlink" href="#additional-actions-for-multi-run-benchmarks" title="Permalink to this headline"></a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>these next actions need to be performed <strong>only</strong> if the benchmark is composed by more than one input.</p>
@@ -310,50 +216,33 @@ to what has been done for the FNG benchmark.</p>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../usage/troubleshooting.html" class="btn btn-neutral float-left" title="Troubleshooting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="docmodify.html" class="btn btn-neutral float-right" title="Modify documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="intro.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, Davide Laghi.
-
-    </p>
+    <p>&#169; Copyright 2021, Davide Laghi.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

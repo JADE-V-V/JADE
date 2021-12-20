@@ -10,13 +10,13 @@ computational and experimental benchmarks.
       toghether with JADE due to licensing reasons. In case the user
       provide evidence of licensing rights on specific benchmarks, the
       JADE team will provide the missing input which, once copied 
-      in suitable JADE folders, allow to correctly run them.
+      in the ``<JADE_root>\Benchmark inputs`` folder, allow to correctly run them.
     * For some of the benchmarks, weight windows (WW) have been produced and
       necessary for the benchmark run. Unfortunately, these WW are often too
       heavy for them to be distributed with Git. These files must be downloaded
       separately and inserted in a suitable folder in ``<JADE_root>\Benchmark inputs\VRT``.  
     * The benchmarks included in JADE can be also divided between
-      **transport** benchmarks (ususally associated with classical
+      **transport** benchmarks (usually associated with classical
       MCNP) and **activation** benchmarks (usually associated with
       D1S-UNED). It is recommended to run these two benchmarks
       categories separately, mostly because they require a different

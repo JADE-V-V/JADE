@@ -39,8 +39,8 @@ poorly in terms of tally scoring. This happens due to the substantially lower de
 for gases when compared to solids, resulting in too few interactions of the neutrons and secondary photons 
 with the material. This has been proven to be especially true for hydrogen and helium, leading to the 
 choice of selecting their liquid phase density instead. Another issue was encountered when simulating 
-fissile isotopes like U235. A 1m diameter sphere containing a pure fissile isotopes at NTP density is
-very much super-critical and the high number of secondary particles (i.e. other neutrons) produced 
+fissile isotopes like U235. A 1 m diameter sphere containing a pure fissile isotopes at NTP density is
+an extremely super-critical geometrical configuration and the high number of secondary particles (i.e. other neutrons) produced 
 caused the simulations to fail due to memory limitations. For this reason, the density of these isotopes 
 was imposed equal to 1 g/cc as if an aerosol was considered.
 
@@ -62,11 +62,11 @@ left to the default value of 1 KeV.
 The following MCNP tallies are defined in the Sphere Leakage benchmark:
 
 Tally n. 2
-    Fine neutron flux at the external surface of the filled sphere. The flux is binned in energy using the Vitamin-J \cite{Sartori:vitaminJ} 175 energy group structure.
+    Fine neutron flux at the external surface of the filled sphere. The flux is binned in energy using the Vitamin-J 175 energy group structure.
 Tally n. 12
     Coarse neutron flux at the external surface of the filled sphere. The flux is binned in 5 energy groups: 1e-6, 0.1, 1, 10 and 20 MeV.
 Tally n. 32
-    Fine photon flux at the external surface of the filled sphere. The flux is binned in energy using the 24 group structure described in the FISPACT manual \cite{manual:fispact}.
+    Fine photon flux at the external surface of the filled sphere. The flux is binned in energy using the 24 group structure described in the FISPACT manual.
 Tally n. 22
     Coarse photon flux at the external surface of the filled sphere. The flux is binned in 5 energy groups: 0.01, 0.1, 1, 10 and 20 MeV.
 Tally n. 4
@@ -83,9 +83,6 @@ Tally n. 24
     Tritium (T) ppm production in the filled sphere.
 Tally n. 34
     Displacement Per Atom (DPA) production in the filled sphere.
-
-More details on the MCNP tally definition and especially on the difference between the heating computation
-using the F6 or the F4+FM strategy can be found in §\ref{sec:tallies}.
 
 .. seealso:: **Related papers and contributions:**
 

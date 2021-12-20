@@ -69,7 +69,10 @@ For case c, at first, the selected library is checked for exact correspondence,
 i.e., it is checked if also in the selected library the zaid is expressed as natural.
 In this case, the behavior is identical to case b. If this is not true, the zaid needs
 to be expanded: all zaids of the same elements are returned with their atomic mass (m)
-and natural abundance (NA).
+and natural abundance (NA). All isotopes data is extracted from the
+`Commission on Isotopic Abundances and Atomic Weights (CIAAW) <https://ciaaw.org/isotopic-abundances.html>`_
+and the data is stored locally in JADE distribution in the
+``<JADE root>\Code\Isotopes.txt`` file.
 
 At this point, the **translate()** method completes the translation. No particular actions
 are required if there is no zaid expansion.
@@ -112,7 +115,7 @@ Default (e.g. ``31c``)
     procedure is followed
 
 ExactMode (e.g. ``{99c: [1001, 1002], 31c: [8016]}``)
-    This mode is used in the autoatic translation of D1S inputs where
+    This mode is used in the automatic translation of D1S inputs where
     the mix between zaids to be used for transport and zaids to be used
     for activation result in additional complexity during the translation.
     The use of such mode is discourauged in the ``trans`` utility. 
@@ -136,28 +139,27 @@ material and submaterial. It may happen that the original fraction appearing
 in the MCNP input is not normalized. JADE prints this fraction as it is and
 only the alternative fraction is normalized during its calculation.
 
-.. figure:: ../img/uty/printmat1.png
+.. figure:: ../img/uty/printmat1.jpg
     :width: 600
     :align: center
 
-    Extract of the isotope sheet. In the example, the material card was
-    expressed in mass fraction and not normalized.
+    Extract of the isotope sheet.
 
 The second sheet summarizes information at the element level.
 Three fractions are here listed for each element:
-* the MCNP fraction of the element in the material;
+
+* the fraction of the element in the MCNP material card (often not normalized);
 * the normalized fraction of the element in the submaterial;
 * the normalized fraction of the element in the material.
 
-Depending on the orginal MCNP input, these three fraction need to be
-interpreted as either *mass* or *atom* fraction.
+Depending on which kind of fraction it was used in the orginal MCNP input,
+these three fraction need to be interpreted as either *mass* or *atom* fraction.
 
-.. figure:: ../img/uty/printmat2.png
+.. figure:: ../img/uty/printmat2.jpg
     :width: 600
     :align: center
 
-    Extract of the element sheet. In the example, the material card was
-    expressed in mass fraction and not normalized.
+    Extract of the element sheet.
 
 Generate material mixture
 =========================
@@ -171,6 +173,12 @@ more materials contained in a single MCNP input. The user will be asked for:
 * material names (e.g. m1) to be used in the mixture;
 * percentages to be used in the mixture for each material;
 * nuclear data library to use for the new material mixture.
+
+The following is an example of how all these inputs are provided via console.
+
+.. figure:: ../img/uty/generate.png
+    :width: 600
+    :align: center
 
 Each material will be transformed in a submaterial of the newly generated mixture
 retaining its header if present. The new material will be dumped in the
@@ -193,7 +201,8 @@ This function asks for a directory absolute path and for a new library suffix
 (e.g. ``98c``). All .ace files contained in the folder will have their original
 suffix changed to the new one. This function operates in a non-destructive way,
 that is, the switch is not implemented on the original file but on copies of
-them instead.
+them instead. The copies will be saved in a folder created at the same level of
+the original one. This function does not modify the XSDIR file. 
 
 Produce D1S-UNED reaction files
 ===============================

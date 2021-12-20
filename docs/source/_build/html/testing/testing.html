@@ -1,76 +1,34 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>JADE Testing &mdash; JADE v1.4.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>JADE Testing &mdash; JADE v2.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="License" href="../LICENSE.html" />
+    <link rel="next" title="Future developments" href="../futuredev.html" />
     <link rel="prev" title="Post-Processing" href="../api/postprocessing.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> JADE
-          
-
-          
-            
             <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -78,19 +36,8 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">JADE User Guide:</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">JADE User Guide:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../nutshell.html">JADE in a nutshell</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/installation.html">Installation</a></li>
@@ -101,144 +48,106 @@
 <li class="toctree-l1"><a class="reference internal" href="../usage/postprocessing.html">Post-Processing Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/utilities.html">Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/tipstricks.html">Tips &amp; Tricks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/troubleshooting.html">Troubleshooting</a></li>
 </ul>
-<p class="caption"><span class="caption-text">JADE Developer Guide:</span></p>
+<p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../dev/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Modify documentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">JADE API</span></p>
+<p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../api/general.html">General OOP scheme</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/initobjects.html">JADE Session</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/inputgeneration.html">Input Generation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/postprocessing.html">Post-Processing</a></li>
 </ul>
-<p class="caption"><span class="caption-text">More on JADE:</span></p>
+<p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">JADE Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../publications.html">List of Publications and Contributions</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">JADE</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>JADE Testing</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/testing/testing.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="jade-testing">
-<h1>JADE Testing<a class="headerlink" href="#jade-testing" title="Permalink to this headline">¶</a></h1>
-<p>TBD</p>
+<h1>JADE Testing<a class="headerlink" href="#jade-testing" title="Permalink to this headline"></a></h1>
+<p>Following software developing best practices, JADE supports automating testing
+of its code and continuous integration on GitHub.</p>
+<p>Unit testing is performed through <code class="docutils literal notranslate"><span class="pre">pytest</span></code> while the code test coverage is
+monitored through <code class="docutils literal notranslate"><span class="pre">coverage</span></code>.</p>
+<p>The automatic testing is performed each time there is a merge operation on the
+main JADE branch on GitHub but at anytime the user may test the code throgh the
+following steps:</p>
+<ol class="arabic">
+<li><p>Open an Anaconda prompt and activate jade environment;</p></li>
+<li><p>Change directory to <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code</span></code>;</p></li>
+<li><p>run:</p>
+<p><code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--cov-report</span> <span class="pre">html</span> <span class="pre">--cov=.</span></code></p>
+</li>
+</ol>
+<p>This will automatically collect and run all tests contained in
+<code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code\tests</span></code> while also providing an html index with detailed
+information about the code coverage that can be found in
+<code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code\htmlcov\index.html</span></code>.</p>
+<p>The routine for continuous integration in GitHub are specified in
+<code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code\.github\workflows</span></code>.</p>
 </div>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="../LICENSE.html" class="btn btn-neutral float-right" title="License" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../api/postprocessing.html" class="btn btn-neutral float-left" title="Post-Processing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../futuredev.html" class="btn btn-neutral float-right" title="Future developments" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, Davide Laghi.
-
-    </p>
+    <p>&#169; Copyright 2021, Davide Laghi.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

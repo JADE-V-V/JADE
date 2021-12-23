@@ -1,76 +1,36 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>Default Benchmarks &mdash; JADE v1.4.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>Default Benchmarks &mdash; JADE v2.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Post-Processing Gallery" href="postprocessing.html" />
     <link rel="prev" title="Usage" href="menu.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> JADE
-          
-
-          
-            
             <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -78,19 +38,8 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">JADE User Guide:</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">JADE User Guide:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../nutshell.html">JADE in a nutshell</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
@@ -137,7 +86,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#id13">Tallies</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#frascati-neutron-generator">Frascati Neutron Generator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#frascati-neutron-generator-sddr-experiment">Frascati Neutron Generator SDDR Experiment</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#geometry">Geometry</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id14">SDDR Parameters</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id15">Tallies</a></li>
@@ -150,95 +99,55 @@
 <li class="toctree-l1"><a class="reference internal" href="postprocessing.html">Post-Processing Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utilities.html">Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tipstricks.html">Tips &amp; Tricks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 </ul>
-<p class="caption"><span class="caption-text">JADE Developer Guide:</span></p>
+<p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../dev/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Modify documentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">JADE API</span></p>
+<p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../api/general.html">General OOP scheme</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/initobjects.html">JADE Session</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/inputgeneration.html">Input Generation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/postprocessing.html">Post-Processing</a></li>
 </ul>
-<p class="caption"><span class="caption-text">More on JADE:</span></p>
+<p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../publications.html">List of Publications and Contributions</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">JADE</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Default Benchmarks</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/usage/benchmarks.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="default-benchmarks">
-<h1>Default Benchmarks<a class="headerlink" href="#default-benchmarks" title="Permalink to this headline">¶</a></h1>
+<h1>Default Benchmarks<a class="headerlink" href="#default-benchmarks" title="Permalink to this headline"></a></h1>
 <p>This section describe more in detail all the default benchmarks
 that have been implemented in JADE dividing them between
 computational and experimental benchmarks.</p>
@@ -249,13 +158,13 @@ computational and experimental benchmarks.</p>
 toghether with JADE due to licensing reasons. In case the user
 provide evidence of licensing rights on specific benchmarks, the
 JADE team will provide the missing input which, once copied
-in suitable JADE folders, allow to correctly run them.</p></li>
+in the <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Benchmark</span> <span class="pre">inputs</span></code> folder, allow to correctly run them.</p></li>
 <li><p>For some of the benchmarks, weight windows (WW) have been produced and
 necessary for the benchmark run. Unfortunately, these WW are often too
 heavy for them to be distributed with Git. These files must be downloaded
 separately and inserted in a suitable folder in <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Benchmark</span> <span class="pre">inputs\VRT</span></code>.</p></li>
 <li><p>The benchmarks included in JADE can be also divided between
-<strong>transport</strong> benchmarks (ususally associated with classical
+<strong>transport</strong> benchmarks (usually associated with classical
 MCNP) and <strong>activation</strong> benchmarks (usually associated with
 D1S-UNED). It is recommended to run these two benchmarks
 categories separately, mostly because they require a different
@@ -272,12 +181,12 @@ same transport library should be always used.</p></li>
 </ul>
 </div>
 <div class="section" id="computational-benchmarks">
-<h2>Computational Benchmarks<a class="headerlink" href="#computational-benchmarks" title="Permalink to this headline">¶</a></h2>
+<h2>Computational Benchmarks<a class="headerlink" href="#computational-benchmarks" title="Permalink to this headline"></a></h2>
 <div class="section" id="sphere-leakage">
-<span id="spheredesc"></span><h3>Sphere Leakage<a class="headerlink" href="#sphere-leakage" title="Permalink to this headline">¶</a></h3>
+<span id="spheredesc"></span><h3>Sphere Leakage<a class="headerlink" href="#sphere-leakage" title="Permalink to this headline"></a></h3>
 <div class="figure align-center" id="id16">
 <img alt="../_images/sphere.png" src="../_images/sphere.png" />
-<p class="caption"><span class="caption-text">Sphere Leakage geometrical model</span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Sphere Leakage geometrical model</span><a class="headerlink" href="#id16" title="Permalink to this image"></a></p>
 </div>
 <p>The Sphere Leakage benchmark is arguably the most important
 benchmark included in the JADE suite. Indeed, it allows to test
@@ -292,7 +201,7 @@ plus some typically used material in the ITER project namely:</p>
 <li><p>Polyethylene (non-borated).</p></li>
 </ul>
 <div class="section" id="geometry-and-run-parameters">
-<h4>Geometry and run parameters<a class="headerlink" href="#geometry-and-run-parameters" title="Permalink to this headline">¶</a></h4>
+<h4>Geometry and run parameters<a class="headerlink" href="#geometry-and-run-parameters" title="Permalink to this headline"></a></h4>
 <p>The Sphere Lekage geometry consists of actually three
 concentric spheres. The inner one is void and has a radius of 5 cm. Here
 is located the uniform probability 0-14 MeV neutron point source. The second sphere
@@ -310,8 +219,8 @@ poorly in terms of tally scoring. This happens due to the substantially lower de
 for gases when compared to solids, resulting in too few interactions of the neutrons and secondary photons
 with the material. This has been proven to be especially true for hydrogen and helium, leading to the
 choice of selecting their liquid phase density instead. Another issue was encountered when simulating
-fissile isotopes like U235. A 1m diameter sphere containing a pure fissile isotopes at NTP density is
-very much super-critical and the high number of secondary particles (i.e. other neutrons) produced
+fissile isotopes like U235. A 1 m diameter sphere containing a pure fissile isotopes at NTP density is
+an extremely super-critical geometrical configuration and the high number of secondary particles (i.e. other neutrons) produced
 caused the simulations to fail due to memory limitations. For this reason, the density of these isotopes
 was imposed equal to 1 g/cc as if an aerosol was considered.</p>
 <p>Finally, the STOP card parameters were optimized. MCNP allows to stop a simulation based either on:
@@ -325,16 +234,16 @@ benchmark-specific configuration files. Density values can be modified too. The 
 <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Benchmarks</span> <span class="pre">Configuration\Sphere</span></code>.</p>
 </div>
 <div class="section" id="tallies">
-<h4>Tallies<a class="headerlink" href="#tallies" title="Permalink to this headline">¶</a></h4>
+<h4>Tallies<a class="headerlink" href="#tallies" title="Permalink to this headline"></a></h4>
 <p>Both the transport of neutrons and of secondary photons are active and photons cut-off energy  is
 left to the default value of 1 KeV.
 The following MCNP tallies are defined in the Sphere Leakage benchmark:</p>
 <dl class="simple">
-<dt>Tally n. 2</dt><dd><p>Fine neutron flux at the external surface of the filled sphere. The flux is binned in energy using the Vitamin-J cite{Sartori:vitaminJ} 175 energy group structure.</p>
+<dt>Tally n. 2</dt><dd><p>Fine neutron flux at the external surface of the filled sphere. The flux is binned in energy using the Vitamin-J 175 energy group structure.</p>
 </dd>
 <dt>Tally n. 12</dt><dd><p>Coarse neutron flux at the external surface of the filled sphere. The flux is binned in 5 energy groups: 1e-6, 0.1, 1, 10 and 20 MeV.</p>
 </dd>
-<dt>Tally n. 32</dt><dd><p>Fine photon flux at the external surface of the filled sphere. The flux is binned in energy using the 24 group structure described in the FISPACT manual cite{manual:fispact}.</p>
+<dt>Tally n. 32</dt><dd><p>Fine photon flux at the external surface of the filled sphere. The flux is binned in energy using the 24 group structure described in the FISPACT manual.</p>
 </dd>
 <dt>Tally n. 22</dt><dd><p>Coarse photon flux at the external surface of the filled sphere. The flux is binned in 5 energy groups: 0.01, 0.1, 1, 10 and 20 MeV.</p>
 </dd>
@@ -353,8 +262,6 @@ The following MCNP tallies are defined in the Sphere Leakage benchmark:</p>
 <dt>Tally n. 34</dt><dd><p>Displacement Per Atom (DPA) production in the filled sphere.</p>
 </dd>
 </dl>
-<p>More details on the MCNP tally definition and especially on the difference between the heating computation
-using the F6 or the F4+FM strategy can be found in §ref{sec:tallies}.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><strong>Related papers and contributions:</strong></p>
@@ -368,30 +275,30 @@ validation”, <em>Fusion Engineering and Design</em>, <strong>161</strong> 1120
 </div>
 </div>
 <div class="section" id="iter-1d">
-<span id="iter1ddesc"></span><h3>ITER 1D<a class="headerlink" href="#iter-1d" title="Permalink to this headline">¶</a></h3>
+<span id="iter1ddesc"></span><h3>ITER 1D<a class="headerlink" href="#iter-1d" title="Permalink to this headline"></a></h3>
 <div class="figure align-center" id="id17">
-<a class="reference internal image-reference" href="../_images/iter1D1.png"><img alt="../_images/iter1D1.png" src="../_images/iter1D1.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">ITER 1D MCNP geometry (quarter)</span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
+<a class="reference internal image-reference" href="../_images/iter1D.png"><img alt="../_images/iter1D.png" src="../_images/iter1D.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">ITER 1D MCNP geometry (quarter)</span><a class="headerlink" href="#id17" title="Permalink to this image"></a></p>
 </div>
-<p>The ITER 1D benchmark developed by Sawan M. is a popular 1-Dimensional neutronic model
+<p>The ITER 1D benchmark developed by Prof. Sawan M. is a popular 1-Dimensional neutronic model
 used for nuclear data benchmarking in the fusion community. This consists of a
 simple but realistic model of the ITER TOKAMAK where the inboard and outboard
 portion of the machine and the plasma region are modelled by means of simple
 concentric cylindrical surfaces.</p>
 <div class="section" id="id1">
-<h4>Geometry and run parameters<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<h4>Geometry and run parameters<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h4>
 <p>As visible in the figure, the benchmarks geometry is uniquely composed by concentric
 cylindrical surfaces. A detailed description of the different layers is reported
 hereafter:</p>
 <div class="figure align-center" id="id18">
 <a class="reference internal image-reference" href="../_images/materialsITER1D.png"><img alt="../_images/materialsITER1D.png" src="../_images/materialsITER1D.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Description of the layers composing the ITER 1D benchmark</span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Description of the layers composing the ITER 1D benchmark</span><a class="headerlink" href="#id18" title="Permalink to this image"></a></p>
 </div>
 <p>The plasma region includes a 14.1 MeV isotropic neutron source
 (characteristic of Deuterium-Tritium fusion reaction).</p>
 </div>
 <div class="section" id="id2">
-<h4>Tallies<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<h4>Tallies<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h4>
 <p>Many quantities are tallied in the ITER 1D benchmark, the following is a thorough
 description of them.</p>
 <dl class="simple">
@@ -451,7 +358,7 @@ description of them.</p>
 </div>
 </div>
 <div class="section" id="test-blanket-module">
-<h3>Test Blanket Module<a class="headerlink" href="#test-blanket-module" title="Permalink to this headline">¶</a></h3>
+<h3>Test Blanket Module<a class="headerlink" href="#test-blanket-module" title="Permalink to this headline"></a></h3>
 <p>Tritium and Deuterium are the two main ingredients of the fusion reaction that is
 foreseen to be tested in ITER and that should guarantee sustainable energy production
 in DEMO. Deuterium is abundant in normal sea water and can be extracted relatively
@@ -473,42 +380,42 @@ outboard region. On the contrary, in the new benchmarks, the outboard region was
 substituted with 1D models of the two proposed European concepts for the TBM: the
 Helium Cooled Pebbled bed (HCPB) and the Water Cooled Lithium Lead (WCLL).</p>
 <div class="figure align-center" id="id19">
-<a class="reference internal image-reference" href="../_images/ITERCAD1.png"><img alt="../_images/ITERCAD1.png" src="../_images/ITERCAD1.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Position of the MCNP model in the ITER tokamak</span><a class="headerlink" href="#id19" title="Permalink to this image">¶</a></p>
+<a class="reference internal image-reference" href="../_images/ITERCAD.png"><img alt="../_images/ITERCAD.png" src="../_images/ITERCAD.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">Position of the MCNP model in the ITER tokamak</span><a class="headerlink" href="#id19" title="Permalink to this image"></a></p>
 </div>
 <div class="figure align-center" id="id20">
-<a class="reference internal image-reference" href="../_images/tbmCAD1.png"><img alt="../_images/tbmCAD1.png" src="../_images/tbmCAD1.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">CAD model of the TBM component</span><a class="headerlink" href="#id20" title="Permalink to this image">¶</a></p>
+<a class="reference internal image-reference" href="../_images/tbmCAD.png"><img alt="../_images/tbmCAD.png" src="../_images/tbmCAD.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">CAD model of the TBM component</span><a class="headerlink" href="#id20" title="Permalink to this image"></a></p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#iter1ddesc"><span class="std std-ref">ITER 1D</span></a></p>
 </div>
 <div class="section" id="id3">
-<h4>Geometry and run parameters<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<h4>Geometry and run parameters<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h4>
 <p>The benchmarks are focused on the TBM set (i.e. the actual blanket module) and on
 the shielding section that can be found behind it. While the shield section does
 not really
 change between the two different TBM concepts, the TBM sets do.</p>
 <div class="figure align-center" id="id21">
-<a class="reference internal image-reference" href="../_images/HCPBcad1.png"><img alt="../_images/HCPBcad1.png" src="../_images/HCPBcad1.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Section of the CAD model of the HCPB TBM set</span><a class="headerlink" href="#id21" title="Permalink to this image">¶</a></p>
+<a class="reference internal image-reference" href="../_images/HCPBcad.png"><img alt="../_images/HCPBcad.png" src="../_images/HCPBcad.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">Section of the CAD model of the HCPB TBM set</span><a class="headerlink" href="#id21" title="Permalink to this image"></a></p>
 </div>
 <div class="figure align-center" id="id22">
-<a class="reference internal image-reference" href="../_images/HCPBmcnp1.png"><img alt="../_images/HCPBmcnp1.png" src="../_images/HCPBmcnp1.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Visualization of the TBM and and shielding section in the 1D MCNP geometry</span><a class="headerlink" href="#id22" title="Permalink to this image">¶</a></p>
+<a class="reference internal image-reference" href="../_images/HCPBmcnp.png"><img alt="../_images/HCPBmcnp.png" src="../_images/HCPBmcnp.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">Visualization of the TBM and and shielding section in the 1D MCNP geometry</span><a class="headerlink" href="#id22" title="Permalink to this image"></a></p>
 </div>
 <div class="figure align-center" id="id23">
-<a class="reference internal image-reference" href="../_images/WCLLcad1.png"><img alt="../_images/WCLLcad1.png" src="../_images/WCLLcad1.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Section of the CAD model of the WCLL TBM set</span><a class="headerlink" href="#id23" title="Permalink to this image">¶</a></p>
+<a class="reference internal image-reference" href="../_images/WCLLcad.png"><img alt="../_images/WCLLcad.png" src="../_images/WCLLcad.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">Section of the CAD model of the WCLL TBM set</span><a class="headerlink" href="#id23" title="Permalink to this image"></a></p>
 </div>
 <div class="figure align-center" id="id24">
-<a class="reference internal image-reference" href="../_images/WCLLmcnp1.png"><img alt="../_images/WCLLmcnp1.png" src="../_images/WCLLmcnp1.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Visualization of the TBM and shielding section in the 1D MCNP geometry</span><a class="headerlink" href="#id24" title="Permalink to this image">¶</a></p>
+<a class="reference internal image-reference" href="../_images/WCLLmcnp.png"><img alt="../_images/WCLLmcnp.png" src="../_images/WCLLmcnp.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">Visualization of the TBM and shielding section in the 1D MCNP geometry</span><a class="headerlink" href="#id24" title="Permalink to this image"></a></p>
 </div>
 </div>
 <div class="section" id="id4">
-<h4>Tallies<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<h4>Tallies<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h4>
 <p>All Tritium production tallies that were defined for the ITER 1D benchmark
 were retained also in the TBMs ones.
 Additionally, a 1-dimensional FMESH was placed on the outboard region
@@ -532,7 +439,7 @@ were tallied on such grid:</p>
 </div>
 </div>
 <div class="section" id="c-model">
-<h4>C-Model<a class="headerlink" href="#c-model" title="Permalink to this headline">¶</a></h4>
+<h4>C-Model<a class="headerlink" href="#c-model" title="Permalink to this headline"></a></h4>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>This benchmark input cannot be distributed directly with JADE. The user must request to obtain it
@@ -548,20 +455,20 @@ dose rate, etc. C-Model is an extremely detailed MCNP input of a 40° sector of 
 the most complete neutronic model available for the ITER machine until 2021, when E-lite was released
 which is a full 360° model of ITER that was conceived to overcome some limitation encountered using
 the C-Model for specific application. Nevertheless, since E-lite is an extremely heavy model, C-model
-is still considered the reference basic model of the ITER TOKAMAK for neutronic analyses.</p>
+is still considered a valid model to compute the possible impact on the nuclear responses over the ITER machine.</p>
 </div>
 <div class="section" id="id5">
-<h4>Geometry and run parameters<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<h4>Geometry and run parameters<a class="headerlink" href="#id5" title="Permalink to this headline"></a></h4>
 <div class="figure align-center" id="id25">
-<a class="reference internal image-reference" href="../_images/cmodel1.png"><img alt="../_images/cmodel1.png" src="../_images/cmodel1.png" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="../_images/cmodel.png"><img alt="../_images/cmodel.png" src="../_images/cmodel.png" style="width: 600px;" /></a>
 <p class="caption"><span class="caption-text">C-model R181031. Origin (1050,200,0). Basis (0.982339, 0.187112, 0.000000)
-(0,0,1). Extent (1000,1000)</span><a class="headerlink" href="#id25" title="Permalink to this image">¶</a></p>
+(0,0,1). Extent (1000,1000)</span><a class="headerlink" href="#id25" title="Permalink to this image"></a></p>
 </div>
 <p>Due to its complexity, a thorough description of the C-Model benchmark geometry is considered out of
 the scope of this work and can be found, instead, in a dedicated F4E report.</p>
 </div>
 <div class="section" id="id6">
-<h4>Tallies<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<h4>Tallies<a class="headerlink" href="#id6" title="Permalink to this headline"></a></h4>
 <p>The C-model standard tallies have been used. They include neutron current,
 neutron current and nuclear heating at different locations.</p>
 <div class="admonition seealso">
@@ -584,7 +491,7 @@ C-model R181031”. Technical Report [ITER IDM XETSWC v1.5]. Iter Organization, 
 </div>
 </div>
 <div class="section" id="sphere-sddr">
-<h3>Sphere SDDR<a class="headerlink" href="#sphere-sddr" title="Permalink to this headline">¶</a></h3>
+<h3>Sphere SDDR<a class="headerlink" href="#sphere-sddr" title="Permalink to this headline"></a></h3>
 <p>The Sphere SDDR benchmark is a variation of the the <a class="reference internal" href="#spheredesc"><span class="std std-ref">Sphere Leakage</span></a>
 which is focused on isotopes activation and dose rate measurement.
 Once again, these kind of benchmarks allows to test all available
@@ -594,10 +501,10 @@ single reaction channel (MT) of every isotope will be tested separately while,
 for the typical materials, all possible reactions foreseen by the library will
 be considered.</p>
 <div class="section" id="id7">
-<h4>Geometry and run parameters<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<h4>Geometry and run parameters<a class="headerlink" href="#id7" title="Permalink to this headline"></a></h4>
 <div class="figure align-center" id="id26">
 <a class="reference internal image-reference" href="../_images/sphereSDDRgeom.png"><img alt="../_images/sphereSDDRgeom.png" src="../_images/sphereSDDRgeom.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Schematic view of the Sphere SDDR model</span><a class="headerlink" href="#id26" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Schematic view of the Sphere SDDR model</span><a class="headerlink" href="#id26" title="Permalink to this image"></a></p>
 </div>
 <p>The geometry of the Sphere SDDR benchmarks, is practically the same as the one
 of the Sphere Leakage benchmark. The only difference is that externally to the filled
@@ -608,16 +515,16 @@ the densities to be applied for each element and material (default is set to NTP
 conditions with few exceptions) and control on the STOP parameters to be used.</p>
 </div>
 <div class="section" id="sddr-parameters">
-<h4>SDDR parameters<a class="headerlink" href="#sddr-parameters" title="Permalink to this headline">¶</a></h4>
+<h4>SDDR parameters<a class="headerlink" href="#sddr-parameters" title="Permalink to this headline"></a></h4>
 <p>The cool-down times that have been considered are 0 s, 2.7 h, 24 h, 11.6 d, 30 d
 and 10 y. For the isotopes simulations, since only one reaction is considered, relative
 comparisons at different cool-down times will not lead to different results, hence,
-during post-processing operations only the results at $0s$ are elaborated. This does
+during post-processing operations only the results at 0 s are elaborated. This does
 not apply to materials simulations, where many different reactions are included.</p>
 <p>The irradiation schedule considered for the Sphere SDDR benchmark is reported hereafter
-and represents an actual equivalent irradiation scenario foreseen for ITER blanket (mode SA2):</p>
+and represents an actual equivalent irradiation scenario foreseen for ITER blanket (SA2):</p>
 <table class="docutils align-default" id="id27">
-<caption><span class="caption-text">Irradiation schedule (ITER mode SA2)</span><a class="headerlink" href="#id27" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">Irradiation schedule (ITER SA2 irradiation scenario)</span><a class="headerlink" href="#id27" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -672,7 +579,7 @@ In the second case, all possible reactions that are available in the library and
 originated in the material will be included. The irradiation file will be then generated accordingly.</p>
 </div>
 <div class="section" id="id8">
-<h4>Tallies<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<h4>Tallies<a class="headerlink" href="#id8" title="Permalink to this headline"></a></h4>
 <p>All neutron and photon related tallies defined in Sphere Leakage benchmark have also been imported
 in the Sphere SDDR benchmark. For photons, the time binning necessary to cover all the cool-down
 times of interest have been added. Tally n. 104 have been also defined to tally the contact shut
@@ -681,15 +588,15 @@ specific purpose [Sv/h].</p>
 </div>
 </div>
 <div class="section" id="iter-cylynder-sddr">
-<h3>ITER CYLYNDER SDDR<a class="headerlink" href="#iter-cylynder-sddr" title="Permalink to this headline">¶</a></h3>
+<h3>ITER CYLYNDER SDDR<a class="headerlink" href="#iter-cylynder-sddr" title="Permalink to this headline"></a></h3>
 <p>The ITER Cylinder SDDR is a very popular computational benchmark for
 SDDR computation in ITER since it features dimensions, materials and
 streaming characteristics of a typical ITER equatorial port.</p>
 <div class="section" id="id9">
-<h4>Geometry and run parameters<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
+<h4>Geometry and run parameters<a class="headerlink" href="#id9" title="Permalink to this headline"></a></h4>
 <div class="figure align-center" id="id28">
 <a class="reference internal image-reference" href="../_images/cylSDDR.png"><img alt="../_images/cylSDDR.png" src="../_images/cylSDDR.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">ITER Cylinder SDDR benchmark geometry visualization</span><a class="headerlink" href="#id28" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">ITER Cylinder SDDR benchmark geometry visualization</span><a class="headerlink" href="#id28" title="Permalink to this image"></a></p>
 </div>
 <p>The ITER Cylinder SDDR is a simple yet effective benchmark. The model
 is composed by a 550 cm long, hollowed steel cylinder with internal and
@@ -755,11 +662,11 @@ following radii:</p>
 </ul>
 </div>
 <div class="section" id="id10">
-<h4>SDDR parameters<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
+<h4>SDDR parameters<a class="headerlink" href="#id10" title="Permalink to this headline"></a></h4>
 <p>The irradiation schedule considered for ITER Cylinder SDDR benchmark is
 reported hereafter:</p>
 <table class="docutils align-default" id="id29">
-<caption><span class="caption-text">Irradiation schedule (ITER mode SA2)</span><a class="headerlink" href="#id29" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">Irradiation schedule (ITER SA2 irradiation scenario)</span><a class="headerlink" href="#id29" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -809,9 +716,9 @@ reported hereafter:</p>
 <p>Two different cool-down times were considered in the photon tallies: 0s and 1e6 s (approx. 11.5 days).
 That is, these are the time interval waited after the irradiation phase has finished before tallying
 the SDDR and the photon flux.</p>
-<p>The possible reactions allowed during the simulation are listed in the following table:</p>
+<p>The possible reactions considered during the simulation are listed in the following table:</p>
 <table class="docutils align-default" id="id30">
-<caption><span class="caption-text">List of possible reactions considered during the ITER Cylinder SDDR benchmark</span><a class="headerlink" href="#id30" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">List of parent-daughter couples generated by the considered reactions for the ITER Cylinder SDDR benchmark</span><a class="headerlink" href="#id30" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 50%" />
 <col style="width: 50%" />
@@ -889,11 +796,11 @@ the SDDR and the photon flux.</p>
 </table>
 </div>
 <div class="section" id="id11">
-<h4>Tallies<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
+<h4>Tallies<a class="headerlink" href="#id11" title="Permalink to this headline"></a></h4>
 <p>Neutron flux, (decay) gamma flux and SDDR are the only tallied quantities. The following
 is a description of the tallies defined in the benchmark:</p>
 <dl class="simple">
-<dt>Tally n. 202</dt><dd><p>Neutron flux per energy bin [#/cm^2/s]. The flux is tallied in 16 energy bins ranging between 1E-10 MeV to 20 MeV. The flux is also binned geometrically using all surfaces described in §ref{sec:cylgeom}.</p>
+<dt>Tally n. 202</dt><dd><p>Neutron flux per energy bin [#/cm^2/s]. The flux is tallied in 16 energy bins ranging between 1E-10 MeV to 20 MeV. The flux is also binned geometrically.</p>
 </dd>
 <dt>Tally n. 242</dt><dd><p>Total neutron flux [#/cm^2/s]. Same as Tally n. 202 but without the energy binning.</p>
 </dd>
@@ -927,9 +834,9 @@ fusion technology”. In: Fusion Engineering and Design 88 (2013), pp. 454–460
 </div>
 </div>
 <div class="section" id="experimental-benchmarks">
-<h2>Experimental Benchmarks<a class="headerlink" href="#experimental-benchmarks" title="Permalink to this headline">¶</a></h2>
+<h2>Experimental Benchmarks<a class="headerlink" href="#experimental-benchmarks" title="Permalink to this headline"></a></h2>
 <div class="section" id="oktavian">
-<h3>Oktavian<a class="headerlink" href="#oktavian" title="Permalink to this headline">¶</a></h3>
+<h3>Oktavian<a class="headerlink" href="#oktavian" title="Permalink to this headline"></a></h3>
 <p>Experimental results derived from Oktavian experiments are publicly accessible at the
 <a class="reference external" href="https://www-nds.iaea.org/conderc/oktavian">CoNDERC database</a> which is mantained by the
 IAEA Nuclear Data Section and built upon the
@@ -946,10 +853,10 @@ photon spectra exiting from such sphere with the use of detectors. The photon en
 measure is performed indirectly measuring the time of flight, which is then converted
 into a velocity.</p>
 <div class="section" id="id12">
-<h4>Geometry and run parameters<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
+<h4>Geometry and run parameters<a class="headerlink" href="#id12" title="Permalink to this headline"></a></h4>
 <div class="figure align-center" id="id31">
-<a class="reference internal image-reference" href="../_images/oktaviansimplified1.png"><img alt="../_images/oktaviansimplified1.png" src="../_images/oktaviansimplified1.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Simplified layout of the OKTAVIAN Fe experimental setup (not in scale).</span><a class="headerlink" href="#id31" title="Permalink to this image">¶</a></p>
+<a class="reference internal image-reference" href="../_images/oktaviansimplified.png"><img alt="../_images/oktaviansimplified.png" src="../_images/oktaviansimplified.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">Simplified layout of the OKTAVIAN Fe experimental setup (not in scale).</span><a class="headerlink" href="#id31" title="Permalink to this image"></a></p>
 </div>
 <p>An accelerated deuteron beam is led through a narrow tube to the centre of a sphere
 (every time composed by a different material) where pulsed 14.1 MeV monochromatic
@@ -961,7 +868,7 @@ detectors could not see the entire surface of the sphere, but only the solid ang
 of 17.28° from the sphere centre.</p>
 </div>
 <div class="section" id="id13">
-<h4>Tallies<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h4>
+<h4>Tallies<a class="headerlink" href="#id13" title="Permalink to this headline"></a></h4>
 <p>Only two tallies are defined for each input:</p>
 <dl class="simple">
 <dt>Tally n. 21</dt><dd><p>Neutron leakage current $[#/cm^2]$ per source particle. 134 energy bins were defined spanning from 0.1 MeV to 20.6 MeV.</p>
@@ -985,12 +892,13 @@ Carlsbad, New Mexico (April 3-6, 2006)</p></li>
 </div>
 </div>
 </div>
-<div class="section" id="frascati-neutron-generator">
-<h3>Frascati Neutron Generator<a class="headerlink" href="#frascati-neutron-generator" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="frascati-neutron-generator-sddr-experiment">
+<h3>Frascati Neutron Generator SDDR Experiment<a class="headerlink" href="#frascati-neutron-generator-sddr-experiment" title="Permalink to this headline"></a></h3>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>This benchmark input cannot be distributed directly with JADE. The user must have a valid SINBAD
-license and contact the JADE team in order to obtain the input.</p>
+license and contact the JADE team in order to obtain the instructions on how to modify
+the inputs in order for them to be used in JADE.</p>
 </div>
 <p>The Frascati Neutron Generator (FNG) is an experimental facility designed and built by ENEA
 (the italian New Technology, Energy and Ambient Body) in Frascati, Italy. The installation
@@ -998,19 +906,19 @@ is able to produce 14 MeV neutrons based on the T(d,n)α fusion reaction and it 
 produce up to 5E+11 n/s.</p>
 <p>One of the key experiments that have been conducted at the FNG is the neutron irradiation
 experiment, where a mock-up of the outer vacuum vessel region of ITER was irradiated by
-means of 14 MeV neutrons for a sufficiently long time in order to achieve activation
-levels similar to the ones that are expected to be reached at the ITER end of life. Two
+means of 14 MeV neutrons for a sufficiently long time in order to achieve achieve significative
+activation levels. Two
 distinct irradiation campaigns were conducted in May and August 2000 and, among other
 things, the SDDR values after different cooling time intervals were measured.
 Many benchmarks activities have been performed using the experiment in the past, and the
 benchmark is also included in the SINBAD database (listed as fng_dose).</p>
 <div class="section" id="geometry">
-<h4>Geometry<a class="headerlink" href="#geometry" title="Permalink to this headline">¶</a></h4>
+<h4>Geometry<a class="headerlink" href="#geometry" title="Permalink to this headline"></a></h4>
 <div class="figure align-center" id="id32">
 <a class="reference internal image-reference" href="../_images/fng.jpg"><img alt="../_images/fng.jpg" src="../_images/fng.jpg" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">FNG SDDR experiment layout</span><a class="headerlink" href="#id32" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">FNG SDDR experiment layout</span><a class="headerlink" href="#id32" title="Permalink to this image"></a></p>
 </div>
-<p>In the FNG, a deuterium beam is accelerated up to 300 KeV by means of a linear electro-static
+<p>At the FNG, a deuterium beam is accelerated up to 300 KeV by means of a linear electro-static
 tube towards a target rich in tritium generating a 14 MeV neutron source. These are the
 neutrons that were used to irradiate the experimental assembly which consisted of a block of
 stainless steel and water equivalent material (perspex) with total thickness of 71.4 cm, and
@@ -1022,15 +930,15 @@ Measurements were taken in the cavity, during the irradiation and after shut-dow
 local neutron flux, the decay gamma-ray spectra and the dose rates for different cooling times.</p>
 <p>JADE MCNP input template was realized starting from the MCNP inputs provided in the SINBAD database
 and, for this reason, it cannot be freely distributed together with the JADE source code.
-Cell and surface card were left untouched as well as the material composition. D1S-Uned specific
-cards were suitably added.</p>
+Cell and surface card were left untouched as well as the material composition. D1S-UNED specific
+cards were also added.</p>
 </div>
 <div class="section" id="id14">
-<h4>SDDR Parameters<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
+<h4>SDDR Parameters<a class="headerlink" href="#id14" title="Permalink to this headline"></a></h4>
 <p>The next two tables describe the equivalent schedules considered for respectively the 1st and 2nd
 irradiation campaign conducted at the FNG.</p>
 <table class="docutils align-default" id="id33">
-<caption><span class="caption-text">Equivalent schedule of the 1st FNG irradiation campaign</span><a class="headerlink" href="#id33" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">Equivalent schedule of the 1st FNG irradiation campaign</span><a class="headerlink" href="#id33" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -1074,7 +982,7 @@ irradiation campaign conducted at the FNG.</p>
 </tbody>
 </table>
 <table class="docutils align-default" id="id34">
-<caption><span class="caption-text">Equivalent schedule of the 2nd FNG irradiation campaign</span><a class="headerlink" href="#id34" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">Equivalent schedule of the 2nd FNG irradiation campaign</span><a class="headerlink" href="#id34" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 33%" />
 <col style="width: 33%" />
@@ -1124,7 +1032,7 @@ irradiation campaign conducted at the FNG.</p>
 <p>The experimentally measured SDDR values at different cooling times are reported in
 the next tables for the 1st and 2nd irradiation campaigns.</p>
 <table class="docutils align-default" id="id35">
-<caption><span class="caption-text">Experimental measure of the SDDR during $1^{st}$ FNG irradiation campaign</span><a class="headerlink" href="#id35" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">Experimental measure of the SDDR during 1st FNG irradiation campaign</span><a class="headerlink" href="#id35" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 25%" />
@@ -1167,7 +1075,7 @@ the next tables for the 1st and 2nd irradiation campaigns.</p>
 </tbody>
 </table>
 <table class="docutils align-default" id="id36">
-<caption><span class="caption-text">Experimental measure of the SDDR during $2^{nd}$ FNG irradiation campaign</span><a class="headerlink" href="#id36" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">Experimental measure of the SDDR during 2nd FNG irradiation campaign</span><a class="headerlink" href="#id36" title="Permalink to this table"></a></caption>
 <colgroup>
 <col style="width: 20%" />
 <col style="width: 20%" />
@@ -1304,13 +1212,13 @@ the next tables for the 1st and 2nd irradiation campaigns.</p>
 to individuate the subset of decay isotopes which contribute the most to the dose rate. This
 subset will depend from the unirradiated material composition and the cool-down time that are considered.
 In order to do so, preliminary activation calculation are usually performed with the help of
-activation codes like FISPACT or ACAB. Fortunately these studies have been already conducted
+activation codes like FISPACT or ACAB. These studies have been already conducted
 both during the D1S libraries initial V&amp;V procedure and when the experimental results were tested for
 the first time. The next plot lists the isotopes
 contributing cumulatively to more than 95% of the dose rate during the first irradiation campaign.</p>
 <div class="figure align-center" id="id37">
 <a class="reference internal image-reference" href="../_images/daughtersFNG.png"><img alt="../_images/daughtersFNG.png" src="../_images/daughtersFNG.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Isotope contribution to the the dose during the first FNG irradiation campaign</span><a class="headerlink" href="#id37" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Isotope contribution to the the dose during the first FNG irradiation campaign</span><a class="headerlink" href="#id37" title="Permalink to this image"></a></p>
 </div>
 <p>At this point, the D1S reaction file can be generated: it will include all reactions that can
 originate in the material (i.e. that are also available in the activation library) which result
@@ -1324,7 +1232,7 @@ level among libraries, all other benchmarks have a slightly different scope whic
 big is the impact of these inconsistencies on more realistic applications.</p>
 </div>
 <div class="section" id="id15">
-<h4>Tallies<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h4>
+<h4>Tallies<a class="headerlink" href="#id15" title="Permalink to this headline"></a></h4>
 <p>The only tallied result for the FNG benchmark is the dose rate at the dosimeter location inside the cavity (tally n.4).</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -1352,50 +1260,33 @@ User’s Manual V. 2008. RSICC. 2008.</p></li>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="postprocessing.html" class="btn btn-neutral float-right" title="Post-Processing Gallery" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="menu.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="postprocessing.html" class="btn btn-neutral float-right" title="Post-Processing Gallery" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, Davide Laghi.
-
-    </p>
+    <p>&#169; Copyright 2021, Davide Laghi.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

@@ -1,0 +1,17 @@
+C Material Obtained from test.i
+C Material: M1 Percentage: 50.0%
+C Material: M2 Percentage: 50.0%
+M1
+c    |  materials    section  for FENDL-3.1 benchmark            |
+c    o-----------------------------------------------------------o
+c
+c
+C M1, submaterial 1
+c          r-epoxy   100% t.a.d. = 8.4210e-002
+       1001.31c        1.666667E-1     $ H-1    AB(%) 33.333
+       1002.31c        3.333333E-1     $ H-2    AB(%) 66.667
+c
+C M2, submaterial 1
+       1001.31c        2.283318E-1     $ H-1    AB(%) 49.981
+       1002.31c        2.285073E-1     $ H-2    AB(%) 50.019
+       8016.31c        4.316093E-2     $ O-16   AB(%) 100.0

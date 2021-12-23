@@ -11,8 +11,9 @@ JADE is an open source, Python 3 based software able to:
 
 * automatically build a series of MCNP input file using different nuclear
   data libraries;
-* automatically run simulations on such inputs;
-* automatically parse and post-process all the generated MCNP outputs.
+* sequentially run simulations on such inputs;
+* automatically parse and post-process all the generated MCNP outputs
+  (e.g. mctal and fmesh).
 
 The benchmarks implemented by default are divided between computational
 and experimental benchmarks. The post-processing output includes:
@@ -25,9 +26,12 @@ and experimental benchmarks. The post-processing output includes:
 Additional JADE features are:
 
 * the possibility to implement user-defined benchmarks;
-* operate on the material card of an MCNP input (e.g. create material mixtures
-  or translate it to a different nuclear data library);
-* print a recap of the material composition of an MCNP input.
+* operate on the material card of an MCNP input (e.g. create material mixtures, 
+  translate it to a different nuclear data library or switch between atom and
+  mass fraction);
+* print a recap of the material composition of an MCNP input;
+* modify the suffix of .ace library;
+* produce default reaction file for D1S-UNED MCNP patch inputs.
 
 When using JADE for scientific publications you are kindly encouraged to cite the following papers:
 

@@ -20,7 +20,11 @@ This can be achieved quite easily with the following steps:
    without running it;
 #. copy the generated input file into the hardware selected for the run and start the
    MCNP simulation. The only requirement is to use the MCNP keyword  ``name=``
-   when launching the simulation in order to obtain consistently named outputs;
+   when launching the simulation in order to obtain consistently named outputs,
+   for instance:
+
+   ``mcnp6 name=FNG tasks 32``
+
 #. once the simulation is completed, copy all MCNP outputs to the same 
    ``<JADE root>\Tests\MCNP simulation\<lib suffix>\<Benchmark name>`` folder;
 #. normally run the post-processing.

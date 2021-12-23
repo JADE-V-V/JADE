@@ -62,7 +62,7 @@ TBM_HCPB_RECT = [['Void', 'White', 840, 850.3],
                  ['Water cooled Eurofer97', '#ff7f00', 850.6, 851.3],
                  ['Eurofer97', '#377eb8', 851.3, 853.3],
                  ['Breeding Area pt1', '#4daf4a', 853.3, 855.4],
-                 ['Breeding Area pt2', '#f781bf',  855.4, 859.9],
+                 ['Breeding Area pt2', '#f781bf', 855.4, 859.9],
                  ['Breeding Area pt3', '#a65628', 859.9, 893.3],
                  ['Breeding Unit Pipework', '#984ea3', 893.3, 918.8],
                  ['Gap', '#999999', 918.8, 946.3],
@@ -77,7 +77,7 @@ TBM_WCLL_RECT = [['Void', 'White', 840, 850.3],
                  ['Water cooled Eurofer97', '#ff7f00', 850.6, 851.3],
                  ['Eurofer97', '#377eb8', 851.3, 853.3],
                  ['Breeding Area pt1', '#4daf4a', 853.3, 854.3],
-                 ['Breeding Area pt2', '#f781bf',  854.3, 862.5],
+                 ['Breeding Area pt2', '#f781bf', 854.3, 862.5],
                  ['Breeding Area pt3', '#a65628', 862.5, 903.4],
                  ['Breeding Unit Pipework', '#984ea3', 903.4, 918.8],
                  ['Gap', '#999999', 918.8, 946.3],
@@ -267,6 +267,7 @@ class Plotter:
             for j, libdata in enumerate(self.data[1:]):
                 tary = np.array(libdata['y'][i])
                 y = tary/refy
+
                 # Compute the plot limits
                 norm, upper, lower = _get_limits(lowerlimit, upperlimit,
                                                  y, libdata['x'])
@@ -304,7 +305,7 @@ class Plotter:
         axes[0].legend(loc='upper center', bbox_to_anchor=(0.88, 1.5),
                        fancybox=True, shadow=True)
         # Handle x and y global axes
-        plt.setp(axes[2].get_xticklabels(), rotation=45, ha="right",
+        plt.setp(axes[-1].get_xticklabels(), rotation=45, ha="right",
                  rotation_mode="anchor")
         axes[-1].set_xlabel(self.xlabel)
 
@@ -603,7 +604,7 @@ class Plotter:
             x = libdata['x']
             y = libdata['y']
             label = libdata['ylabel']
-            assert x == ref_x
+            assert (x == ref_x).all()
 
             # Compute the plot limits
             norm, upper, lower = _get_limits(lowerlimit, upperlimit,
@@ -945,47 +946,47 @@ class Plotter:
 
         return self._save()
 
-    def _contribution(self, yscale='linear', legend_outside='False'):
-        data = self.data
+    # def _contribution(self, yscale='linear', legend_outside='False'):
+    #     data = self.data
 
-        # Adjounrn ylabel
-        ylabel = self.quantity+' ['+self.unit+']'
+    #     # Adjounrn ylabel
+    #     ylabel = self.quantity+' ['+self.unit+']'
 
-        # Grid info
-        # gridspec_kw = {'height_ratios': [3, 1], 'hspace': 0.13}
-        figsize = (22, 15)
+    #     # Grid info
+    #     # gridspec_kw = {'height_ratios': [3, 1], 'hspace': 0.13}
+    #     figsize = (22, 15)
 
-        # Initialize plot
-        fig, ax = plt.subplots(figsize=figsize)
+    #     # Initialize plot
+    #     fig, ax = plt.subplots(figsize=figsize)
 
-        # Plot all data
-        for i, libdata in enumerate(data):
-            ax.plot(libdata['x'], libdata['y'], color=self.colors[i],
-                    marker=self.markers[i], label=libdata['ylabel'])
+    #     # Plot all data
+    #     for i, libdata in enumerate(data):
+    #         ax.plot(libdata['x'], libdata['y'], color=self.colors[i],
+    #                 marker=self.markers[i], label=libdata['ylabel'])
 
-        # --- Plot details ---
-        # ax details
-        ax.set_yscale(yscale)
-        ax.set_title(self.title)
-        ax.set_ylabel(ylabel)
-        ax.set_xlabel(self.xlabel)
+    #     # --- Plot details ---
+    #     # ax details
+    #     ax.set_yscale(yscale)
+    #     ax.set_title(self.title)
+    #     ax.set_ylabel(ylabel)
+    #     ax.set_xlabel(self.xlabel)
 
-        if legend_outside:
-            ax.legend(bbox_to_anchor=(1, 1))
-        else:
-            ax.legend(loc='best')
+    #     if legend_outside:
+    #         ax.legend(bbox_to_anchor=(1, 1))
+    #     else:
+    #         ax.legend(loc='best')
 
-        ax.tick_params(which='major', width=1.00, length=5)
-        ax.tick_params(axis='y', which='minor', width=0.75, length=2.50)
+    #     ax.tick_params(which='major', width=1.00, length=5)
+    #     ax.tick_params(axis='y', which='minor', width=0.75, length=2.50)
 
-        plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
-                 rotation_mode="anchor")
+    #     plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+    #              rotation_mode="anchor")
 
-        # Grid
-        ax.grid('True', axis='y', which='major', linewidth=0.50)
-        ax.grid('True', axis='y', which='minor', linewidth=0.20)
+    #     # Grid
+    #     ax.grid('True', axis='y', which='major', linewidth=0.50)
+    #     ax.grid('True', axis='y', which='minor', linewidth=0.20)
 
-        return self._save()
+    #     return self._save()
 
     def _save(self):
         plt.tight_layout()
@@ -1062,6 +1063,7 @@ def _get_limits(lowerlimit, upperlimit, ydata, xdata):
         x, y sets that are below upper limit.
 
     """
+    assert lowerlimit < upperlimit
     # ensure data is array
     ydata = np.array(ydata)
     xdata = np.array(xdata)

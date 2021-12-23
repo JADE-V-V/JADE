@@ -440,13 +440,13 @@ class SubMaterial:
         ----------
         newlib : dict or str
             There are a few ways that newlib can be provided:
-            
+
             1) str (e.g. 31c), the new library to translate to will be the
             one indicated;
-            
+
             2) dic (e.g. {'98c' : '99c', '31c: 32c'}), the new library is
             determined based on the old library of the zaid
-            
+
             3) dic (e.g. {'98c': [list of zaids], '31c': [list of zaids]}),
             the new library to be used is explicitly stated depending
             on the zaidnum.
@@ -466,7 +466,13 @@ class SubMaterial:
                 # Check for which kind of dic it is
                 if type(list(newlib.values())[0]) == str:
                     # The assignment is based on old lib
-                    newtag = newlib[zaid.library]
+                    try:
+                        newtag = newlib[zaid.library]
+                    except KeyError:
+                        # the zaid should have been assigned to a library
+                        raise ValueError('''
+ Zaid {} was not assigned to any library'''.format(zaid.name))
+
                 else:
                     # The assignment is explicit, all libs need to be searched
                     newtag = None
@@ -479,7 +485,7 @@ class SubMaterial:
                     if newtag is None:
                         # the zaid should have been assigned to a library
                         raise ValueError('''
- Zaid {} was not assigned to any library'''.format(zaid))
+ Zaid {} was not assigned to any library'''.format(zaid.name))
             else:
                 newtag = newlib
 
@@ -785,13 +791,13 @@ class Material:
         ----------
         newlib : dict or str
             There are a few ways that newlib can be provided:
-            
+
             1) str (e.g. 31c), the new library to translate to will be the
             one indicated;
-            
+
             2) dic (e.g. {'98c' : '99c', '31c: 32c'}), the new library is
             determined based on the old library of the zaid
-            
+
             3) dic (e.g. {'98c': [list of zaids], '31c': [list of zaids]}),
             the new library to be used is explicitly stated depending
             on the zaidnum.
@@ -987,7 +993,7 @@ class MatCardsList(Sequence):
         ----------
         cls : TYPE
             DESCRIPTION.
-        inputfile : inputfile.InputFile
+        inputfile : os.PathLike
             MCNP input file containing the material section.
 
         Returns
@@ -1073,13 +1079,13 @@ class MatCardsList(Sequence):
         ----------
         newlib : dict or str
             There are a few ways that newlib can be provided:
-            
+
             1) str (e.g. 31c), the new library to translate to will be the
             one indicated;
-            
+
             2) dic (e.g. {'98c' : '99c', '31c: 32c'}), the new library is
             determined based on the old library of the zaid
-            
+
             3) dic (e.g. {'98c': [list of zaids], '31c': [list of zaids]}),
             the new library to be used is explicitly stated depending
             on the zaidnum.

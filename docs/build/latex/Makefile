@@ -24,12 +24,12 @@ all-ps: $(ALLPS)
 
 all-pdf-ja:
 	for f in *.pdf *.png *.gif *.jpg *.jpeg; do extractbb $$f; done
-	for f in *.tex; do platex -kanji=utf8 $(LATEXOPTS) $$f; done
-	for f in *.tex; do platex -kanji=utf8 $(LATEXOPTS) $$f; done
-	for f in *.tex; do platex -kanji=utf8 $(LATEXOPTS) $$f; done
+	for f in *.tex; do pdflatex -kanji=utf8 $(LATEXOPTS) $$f; done
+	for f in *.tex; do pdflatex -kanji=utf8 $(LATEXOPTS) $$f; done
+	for f in *.tex; do pdflatex -kanji=utf8 $(LATEXOPTS) $$f; done
 	-for f in *.idx; do mendex -U -f -d "`basename $$f .idx`.dic" -s python.ist $$f; done
-	for f in *.tex; do platex -kanji=utf8 $(LATEXOPTS) $$f; done
-	for f in *.tex; do platex -kanji=utf8 $(LATEXOPTS) $$f; done
+	for f in *.tex; do pdflatex -kanji=utf8 $(LATEXOPTS) $$f; done
+	for f in *.tex; do pdflatex -kanji=utf8 $(LATEXOPTS) $$f; done
 	for f in *.dvi; do dvipdfmx $$f; done
 
 zip: all-$(FMT)

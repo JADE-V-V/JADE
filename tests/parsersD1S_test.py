@@ -23,13 +23,17 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import sys
 import os
-sys.path.insert(1, '../')
+
+cp = os.path.dirname(os.path.abspath(__file__))
+modules_path = os.path.dirname(cp)
+sys.path.insert(1, modules_path)
+
 from parsersD1S import (Reaction, ReactionFile, Irradiation, IrradiationFile,
                         REACFORMAT)
 from libmanager import LibManager
 
 
-INP = os.path.join('TestFiles', 'parserD1S', 'reac_fe')
+INP = os.path.join(cp, 'TestFiles', 'parserD1S', 'reac_fe')
 
 
 class TestIrradiationFile:
@@ -38,7 +42,7 @@ class TestIrradiationFile:
         """
         Test parsing irradiation file 1
         """
-        filepath = os.path.join('TestFiles', 'parserD1S', 'irr_test')
+        filepath = os.path.join(cp, 'TestFiles', 'parserD1S', 'irr_test')
         irrfile = IrradiationFile.from_text(filepath)
         self._assert_file1(irrfile)
 
@@ -51,7 +55,7 @@ class TestIrradiationFile:
         """
         Test parsing irradiation file 2
         """
-        filepath = os.path.join('TestFiles', 'parserD1S', 'irr_test2')
+        filepath = os.path.join(cp, 'TestFiles', 'parserD1S', 'irr_test2')
         irrfile = IrradiationFile.from_text(filepath)
         self._assert_file2(irrfile)
 
@@ -64,7 +68,7 @@ class TestIrradiationFile:
         """
         Test writing irradiation file 1
         """
-        infile = os.path.join('TestFiles', 'parserD1S', 'irr_test')
+        infile = os.path.join(cp, 'TestFiles', 'parserD1S', 'irr_test')
         outfile = 'irrad'
         irrfile = IrradiationFile.from_text(infile)
         irrfile.write(os.getcwd())
@@ -76,13 +80,29 @@ class TestIrradiationFile:
         """
         Test writing irradiation file 2
         """
-        infile = os.path.join('TestFiles', 'parserD1S', 'irr_test2')
+        infile = os.path.join(cp, 'TestFiles', 'parserD1S', 'irr_test2')
         outfile = 'irrad'
         irrfile = IrradiationFile.from_text(infile)
         irrfile.write(os.getcwd())
         irrfile = IrradiationFile.from_text(outfile)
         self._assert_file2(irrfile)
         os.remove(outfile)
+
+    def test_get_daughters(self):
+        infile = os.path.join(cp, 'TestFiles', 'parserD1S', 'irr_test')
+        irrfile = IrradiationFile.from_text(infile)
+        daughters = irrfile.get_daughters()
+        assert daughters == ['24051', '25054', '26055', '26059']
+
+    def test_get_irrad(self):
+        infile = os.path.join(cp, 'TestFiles', 'parserD1S', 'irr_test')
+        irrfile = IrradiationFile.from_text(infile)
+        # Check the None
+        irradiation = irrfile.get_irrad('20051')
+        assert irradiation is None
+        # Check true value
+        irradiation = irrfile.get_irrad('26055')
+        assert irradiation.daughter == '26055'
 
 
 class TestIrradiation:
@@ -105,6 +125,23 @@ class TestIrradiation:
         assert irr.times[0] == '5.982e+00'
         assert irr.times[1] == '5.697e+00'
         assert irr.comment == 'Cr51'
+
+    def test_equivalence(self):
+        # Equivalent
+        text = '   24051     2.896e-07    5.982e+00    5.697e+00     Cr51'
+        irr1 = Irradiation.from_text(text, 2)
+        text = '   24051     2.896e-07    5.982e+00    5.697     '
+        irr2 = Irradiation.from_text(text, 2)
+        assert irr1 == irr2
+
+        # Not equal
+        text = '   24051     2.896e-07    5.697e+00    5.982e+00     Cr51'
+        irr3 = Irradiation.from_text(text, 2)
+        text = '   24051     2.896e-07    5.697e+00    Cr51'
+        irr4 = Irradiation.from_text(text, 1)
+        assert irr1 != irr3
+        assert irr1 != {}
+        assert irr1 != irr4
 
 
 class TestReaction:
@@ -151,6 +188,10 @@ class TestReaction:
 
 
 class TestReactionFile:
+    xsdirpath = os.path.join(cp, 'TestFiles', 'libmanager', 'xsdir')
+    isotopes_file = os.path.join(modules_path, 'Isotopes.txt')
+    lm = LibManager(xsdirpath, isotopes_file=isotopes_file)
+
     def test_fromtext(self):
         """
         right number of reactions
@@ -184,13 +225,10 @@ class TestReactionFile:
         test translation with libmanager where parents are available
 
         """
-        xsdirpath = os.path.join('TestFiles', 'libmanager', 'xsdir')
-        lm = LibManager(xsdirpath)
-
         newlib = '98c'
 
         reac_file = ReactionFile.from_text(INP)
-        reac_file.change_lib(newlib, libmanager=lm)
+        reac_file.change_lib(newlib, libmanager=self.lm)
 
         for reaction in reac_file.reactions:
             assert reaction.parent[-3:] == newlib
@@ -200,15 +238,19 @@ class TestReactionFile:
         test translation with libmanager where parents are not available
 
         """
-        xsdirpath = os.path.join('TestFiles', 'libmanager', 'xsdir')
-        lm = LibManager(xsdirpath)
 
-        filepath = os.path.join('TestFiles', 'parserD1S', 'reac2')
+        filepath = os.path.join(cp, 'TestFiles', 'parserD1S', 'reac2')
 
         newlib = '99c'
 
         reac_file = ReactionFile.from_text(filepath)
-        reac_file.change_lib(newlib, libmanager=lm)
+        reac_file.change_lib(newlib, libmanager=self.lm)
 
         for reaction in reac_file.reactions:
             assert reaction.parent[-3:] != newlib
+
+    def test_get_parents(self):
+        filepath = os.path.join(cp, 'TestFiles', 'parserD1S', 'reac_fe')
+        reac_file = ReactionFile.from_text(filepath)
+        parents = reac_file.get_parents()
+        assert parents == ['26054', '26056', '26057', '26058']

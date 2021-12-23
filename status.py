@@ -318,14 +318,14 @@ class Status():
         else:
             config = self.config.comp_default
 
+        to_perform = session.check_active_tests(config_option, exp=exp)
+
         test_runned = []
         for idx, row in config.iterrows():
             filename = str(row['File Name'])
             testname = filename.split('.')[0]
 
             # Check if test is active
-            to_perform = session.check_active_tests(config_option, exp=exp)
-
             if testname in to_perform:
                 # Check if benchmark folder exists
                 try:
@@ -389,7 +389,6 @@ class Status():
                  'comparison': self.comparison_tree}
         try:
             library_tests = trees[tree][lib]
-            # Get both experimental and computational benchmark
             to_pp = session.check_active_tests('Post-Processing', exp=exp)
             # to_pp_exp = session.check_active_tests('Post-Processing', exp=True)
             # to_pp.extend(to_pp_exp)
@@ -415,15 +414,17 @@ class Status():
         ----------
         session : Session
             JADE session
+        exp: boolean
+            if True checks the experimental benchmarks. Default is False
 
         Returns
         -------
-        lib: str
-            Library/ies to post process
         ans: Boolean
             True if the PP can begin (Possible override has been accepted).
-        exp: boolean
-            if True checks the experimental benchmarks. Default is False
+        to_single_pp: list
+            list of libraries that need to be single post-processed
+        lib_input: str
+            libraries input that were given
 
         """
         lib_input = input(' Libraries to post-process (e.g. 31c-71c): ')
@@ -497,9 +498,10 @@ class Status():
                     for lib in libs[1:]:
                         name = name+'_Vs_'+lib
 
-                # print(name)
+                print(name)
                 override = self.check_pp_single(name, session,
                                                 tree='comparison', exp=exp)
+                print(override)
                 # Ask for override
                 if override:
 
@@ -525,15 +527,15 @@ class Status():
         return ans, to_single_pp, lib_input
 
 
-def gen_dict_extract(key, var):
-    if hasattr(var, 'items'):
-        for k, v in var.items():
-            if k == key:
-                yield v
-            if isinstance(v, dict):
-                for result in gen_dict_extract(key, v):
-                    yield result
-            elif isinstance(v, list):
-                for d in v:
-                    for result in gen_dict_extract(key, d):
-                        yield result
+# def gen_dict_extract(key, var):
+#     if hasattr(var, 'items'):
+#         for k, v in var.items():
+#             if k == key:
+#                 yield v
+#             if isinstance(v, dict):
+#                 for result in gen_dict_extract(key, v):
+#                     yield result
+#             elif isinstance(v, list):
+#                 for d in v:
+#                     for result in gen_dict_extract(key, d):
+#                         yield result

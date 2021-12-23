@@ -1,76 +1,36 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>Utilities &mdash; JADE v1.4.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>Utilities &mdash; JADE v2.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Tips &amp; Tricks" href="tipstricks.html" />
     <link rel="prev" title="Post-Processing Gallery" href="postprocessing.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> JADE
-          
-
-          
-            
             <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -78,19 +38,8 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">JADE User Guide:</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">JADE User Guide:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../nutshell.html">JADE in a nutshell</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
@@ -111,95 +60,55 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tipstricks.html">Tips &amp; Tricks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 </ul>
-<p class="caption"><span class="caption-text">JADE Developer Guide:</span></p>
+<p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../dev/intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Modify documentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">JADE API</span></p>
+<p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../api/general.html">General OOP scheme</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/initobjects.html">JADE Session</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/inputgeneration.html">Input Generation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/postprocessing.html">Post-Processing</a></li>
 </ul>
-<p class="caption"><span class="caption-text">More on JADE:</span></p>
+<p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../publications.html">List of Publications and Contributions</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">JADE</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Utilities</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/usage/utilities.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="utilities">
-<span id="uty"></span><h1>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h1>
+<span id="uty"></span><h1>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline"></a></h1>
 <p>During the development of JADE, many useful classes and methods were developed
 which could be used for small stand-alone tools, mostly
 operating on MCNP inputs.</p>
@@ -208,17 +117,17 @@ is here provided.</p>
 <p>The outputs (if generated) of these utilities can be found in specific subfolders
 of the <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Utilities</span></code> directory.</p>
 <div class="section" id="print-available-libraries">
-<h2>Print available libraries<a class="headerlink" href="#print-available-libraries" title="Permalink to this headline">¶</a></h2>
+<h2>Print available libraries<a class="headerlink" href="#print-available-libraries" title="Permalink to this headline"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">printlib</span></code></p>
 <p>This function allows to print to video all libraries (suffixes) that are
 available in xsdir file indicated in the main configuration file.</p>
 <div class="figure align-center" id="id1">
 <a class="reference internal image-reference" href="../_images/printlib.png"><img alt="../_images/printlib.png" src="../_images/printlib.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Screenshot of the execution of the <code class="docutils literal notranslate"><span class="pre">printlib</span></code> command</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Screenshot of the execution of the <code class="docutils literal notranslate"><span class="pre">printlib</span></code> command</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
 </div>
 </div>
 <div class="section" id="restore-default-configurations">
-<h2>Restore default configurations<a class="headerlink" href="#restore-default-configurations" title="Permalink to this headline">¶</a></h2>
+<h2>Restore default configurations<a class="headerlink" href="#restore-default-configurations" title="Permalink to this headline"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">restore</span></code></p>
 <p>This function allows to restore the JADE configuration default settings.
 In other words, the content of the <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Configuration</span></code> directory
@@ -236,7 +145,7 @@ before running another JADE instance.</p>
 </div>
 </div>
 <div class="section" id="translate-an-mcnp-input">
-<h2>Translate an MCNP input<a class="headerlink" href="#translate-an-mcnp-input" title="Permalink to this headline">¶</a></h2>
+<h2>Translate an MCNP input<a class="headerlink" href="#translate-an-mcnp-input" title="Permalink to this headline"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">trans</span></code></p>
 <p>This function allows to translate a material section of an MCNP input to
 a whatever nuclear data library available in the xsdir file.</p>
@@ -263,7 +172,10 @@ no other changes applied;</p></li>
 i.e., it is checked if also in the selected library the zaid is expressed as natural.
 In this case, the behavior is identical to case b. If this is not true, the zaid needs
 to be expanded: all zaids of the same elements are returned with their atomic mass (m)
-and natural abundance (NA).</p>
+and natural abundance (NA). All isotopes data is extracted from the
+<a class="reference external" href="https://ciaaw.org/isotopic-abundances.html">Commission on Isotopic Abundances and Atomic Weights (CIAAW)</a>
+and the data is stored locally in JADE distribution in the
+<code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Code\Isotopes.txt</span></code> file.</p>
 <p>At this point, the <strong>translate()</strong> method completes the translation. No particular actions
 are required if there is no zaid expansion.
 In case of expansion, if the original natural zaid fraction is an atomic one
@@ -286,14 +198,14 @@ is basically the natural abundance in mass of the zaid.</p>
 The following scheme summarizes the JADE translation logic.</p>
 <div class="figure align-center" id="id2">
 <a class="reference internal image-reference" href="../_images/Translation_logic.jpg"><img alt="../_images/Translation_logic.jpg" src="../_images/Translation_logic.jpg" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Zaid translation logic</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Zaid translation logic</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
 </div>
 <p>There are few format that can be used to request a translation:</p>
 <dl class="simple">
 <dt>Default (e.g. <code class="docutils literal notranslate"><span class="pre">31c</span></code>)</dt><dd><p>Only one library is provided and the above described translation
 procedure is followed</p>
 </dd>
-<dt>ExactMode (e.g. <code class="docutils literal notranslate"><span class="pre">{99c:</span> <span class="pre">[1001,</span> <span class="pre">1002],</span> <span class="pre">31c:</span> <span class="pre">[8016]}</span></code>)</dt><dd><p>This mode is used in the autoatic translation of D1S inputs where
+<dt>ExactMode (e.g. <code class="docutils literal notranslate"><span class="pre">{99c:</span> <span class="pre">[1001,</span> <span class="pre">1002],</span> <span class="pre">31c:</span> <span class="pre">[8016]}</span></code>)</dt><dd><p>This mode is used in the automatic translation of D1S inputs where
 the mix between zaids to be used for transport and zaids to be used
 for activation result in additional complexity during the translation.
 The use of such mode is discourauged in the <code class="docutils literal notranslate"><span class="pre">trans</span></code> utility.</p>
@@ -306,7 +218,7 @@ user can provide a dictionary which specifies for each original library
 </dl>
 </div>
 <div class="section" id="print-materials-info">
-<h2>Print materials info<a class="headerlink" href="#print-materials-info" title="Permalink to this headline">¶</a></h2>
+<h2>Print materials info<a class="headerlink" href="#print-materials-info" title="Permalink to this headline"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">printmat</span></code></p>
 <p>This function is used to print a summary of an MCNP input material section.
 The information is contained in two sheets of an Excel file dumped into the
@@ -317,25 +229,25 @@ material and submaterial. It may happen that the original fraction appearing
 in the MCNP input is not normalized. JADE prints this fraction as it is and
 only the alternative fraction is normalized during its calculation.</p>
 <div class="figure align-center" id="id3">
-<a class="reference internal image-reference" href="../_images/printmat1.png"><img alt="../_images/printmat1.png" src="../_images/printmat1.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Extract of the isotope sheet. In the example, the material card was
-expressed in mass fraction and not normalized.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+<a class="reference internal image-reference" href="../_images/printmat1.jpg"><img alt="../_images/printmat1.jpg" src="../_images/printmat1.jpg" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">Extract of the isotope sheet.</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
 </div>
 <p>The second sheet summarizes information at the element level.
-Three fractions are here listed for each element:
-* the MCNP fraction of the element in the material;
-* the normalized fraction of the element in the submaterial;
-* the normalized fraction of the element in the material.</p>
-<p>Depending on the orginal MCNP input, these three fraction need to be
-interpreted as either <em>mass</em> or <em>atom</em> fraction.</p>
+Three fractions are here listed for each element:</p>
+<ul class="simple">
+<li><p>the fraction of the element in the MCNP material card (often not normalized);</p></li>
+<li><p>the normalized fraction of the element in the submaterial;</p></li>
+<li><p>the normalized fraction of the element in the material.</p></li>
+</ul>
+<p>Depending on which kind of fraction it was used in the orginal MCNP input,
+these three fraction need to be interpreted as either <em>mass</em> or <em>atom</em> fraction.</p>
 <div class="figure align-center" id="id4">
-<a class="reference internal image-reference" href="../_images/printmat2.png"><img alt="../_images/printmat2.png" src="../_images/printmat2.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Extract of the element sheet. In the example, the material card was
-expressed in mass fraction and not normalized.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+<a class="reference internal image-reference" href="../_images/printmat2.jpg"><img alt="../_images/printmat2.jpg" src="../_images/printmat2.jpg" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">Extract of the element sheet.</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
 </div>
 </div>
 <div class="section" id="generate-material-mixture">
-<h2>Generate material mixture<a class="headerlink" href="#generate-material-mixture" title="Permalink to this headline">¶</a></h2>
+<h2>Generate material mixture<a class="headerlink" href="#generate-material-mixture" title="Permalink to this headline"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">generate</span></code></p>
 <p>This function is used to generate a material mixture starting from two or
 more materials contained in a single MCNP input. The user will be asked for:</p>
@@ -346,19 +258,23 @@ more materials contained in a single MCNP input. The user will be asked for:</p>
 <li><p>percentages to be used in the mixture for each material;</p></li>
 <li><p>nuclear data library to use for the new material mixture.</p></li>
 </ul>
+<p>The following is an example of how all these inputs are provided via console.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="../_images/generate.png"><img alt="../_images/generate.png" src="../_images/generate.png" style="width: 600px;" /></a>
+</div>
 <p>Each material will be transformed in a submaterial of the newly generated mixture
 retaining its header if present. The new material will be dumped in the
 <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Utilities\Generated</span> <span class="pre">Materials</span></code> folder.</p>
 </div>
 <div class="section" id="switch-material-fractions">
-<h2>Switch material fractions<a class="headerlink" href="#switch-material-fractions" title="Permalink to this headline">¶</a></h2>
+<h2>Switch material fractions<a class="headerlink" href="#switch-material-fractions" title="Permalink to this headline"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">switch</span></code></p>
 <p>This function can be used to switch an MCNP input from having atom fractions
 to mass fractions and viceversa. The new input will be dumped in the
 <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Utilities\Fraction</span> <span class="pre">switch</span></code> folder.</p>
 </div>
 <div class="section" id="change-ace-libraries-suffix">
-<h2>Change .ace libraries suffix<a class="headerlink" href="#change-ace-libraries-suffix" title="Permalink to this headline">¶</a></h2>
+<h2>Change .ace libraries suffix<a class="headerlink" href="#change-ace-libraries-suffix" title="Permalink to this headline"></a></h2>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version v1.3.0: </span><code class="docutils literal notranslate"><span class="pre">acelib</span></code></p>
 </div>
@@ -366,10 +282,11 @@ to mass fractions and viceversa. The new input will be dumped in the
 (e.g. <code class="docutils literal notranslate"><span class="pre">98c</span></code>). All .ace files contained in the folder will have their original
 suffix changed to the new one. This function operates in a non-destructive way,
 that is, the switch is not implemented on the original file but on copies of
-them instead.</p>
+them instead. The copies will be saved in a folder created at the same level of
+the original one. <strong>This function does not modify the XSDIR file.</strong></p>
 </div>
 <div class="section" id="produce-d1s-uned-reaction-files">
-<h2>Produce D1S-UNED reaction files<a class="headerlink" href="#produce-d1s-uned-reaction-files" title="Permalink to this headline">¶</a></h2>
+<h2>Produce D1S-UNED reaction files<a class="headerlink" href="#produce-d1s-uned-reaction-files" title="Permalink to this headline"></a></h2>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version v1.3.0: </span><code class="docutils literal notranslate"><span class="pre">react</span></code></p>
 </div>
@@ -384,50 +301,33 @@ file.</p>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="tipstricks.html" class="btn btn-neutral float-right" title="Tips &amp; Tricks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="postprocessing.html" class="btn btn-neutral float-left" title="Post-Processing Gallery" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tipstricks.html" class="btn btn-neutral float-right" title="Tips &amp; Tricks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, Davide Laghi.
-
-    </p>
+    <p>&#169; Copyright 2021, Davide Laghi.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

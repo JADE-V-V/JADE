@@ -22,6 +22,7 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
+from matreader import SubMaterial
 import inputfile as ipt
 import pandas as pd
 import xlsxwriter
@@ -154,8 +155,8 @@ def generate_material(session, sourcefile, materials, percentages, newlib,
         JADE session.
     sourcefile : path/str
         MCNP input file.
-    materials : str
-        source input materials to use for the generation (e.g. M1-m10).
+    materials : list
+        list of materials to mix (e.g. ['m1', 'M2']).
     percentages : str
         percentages associated to the source materials in the new materials
         (e.g. 0.1-0.9). Their are intended as atom or mass fraction depending
@@ -189,6 +190,7 @@ def generate_material(session, sourcefile, materials, percentages, newlib,
     main_header = "C Material Obtained from "+os.path.basename(sourcefile)
 
     for materialname, percentage in zip(materials, percentages):
+        materialname = materialname.upper()
         percentage_str = str(round(float(percentage)*100, 2))+'%'
         main_header = (main_header+'\nC Material: '+materialname +
                        ' Percentage: '+percentage_str)
@@ -356,7 +358,7 @@ def change_ACElib_suffix():
                 print('Decode error in '+file)
 
 
-def get_reaction_file(session):
+def get_reaction_file(session, outpath=None):
     """
     Given a D1S input file the utility dumps a reaction file that includes
     all possible reactions that can generate for the requested libraries in
@@ -366,6 +368,9 @@ def get_reaction_file(session):
     ----------
     session : Session
         JADE session.
+    outpath : str or path, optional
+        path where to save the reaction file. If None (default), the JADE
+        default utilities folder is used.
 
     Returns
     -------
@@ -382,14 +387,15 @@ def get_reaction_file(session):
     inputfile = D1S_Input.from_text(filepath)
     reactionfile = inputfile.get_reaction_file(session.lib_manager, lib)
     reactionfile.name = inputfile.name+'_react'+lib
-    outpath = os.path.join(session.path_uti, 'Reactions')
+    if outpath is None:
+        outpath = os.path.join(session.path_uti, 'Reactions')
     # Dump it
     if not os.path.exists(outpath):  # first time the utilities is used
         os.mkdir(outpath)
     reactionfile.write(outpath)
 
 
-def select_inputfile(message):
+def select_inputfile(message, max_n_tentatives=10):
     """
     Safe inputfile selector
 
@@ -397,6 +403,9 @@ def select_inputfile(message):
     ----------
     message : str
         Message to display for the input
+    
+    max_n_tentatives : int, optional
+        number of max tentatives. The default is 10
 
     Returns
     -------
@@ -404,7 +413,11 @@ def select_inputfile(message):
         valid inputfile as enetered by the user.
 
     """
+    i = 0
     while True:
+        i += 1
+        if i > 10:
+            raise ValueError('Too many wrong entries.')
         inputfile = input(message)
         if os.path.exists(inputfile):
             return inputfile

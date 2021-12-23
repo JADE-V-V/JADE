@@ -50,7 +50,7 @@ CPU
 Computational benchmarks
 ------------------------
 
-.. image:: ../img/conf/comp.png
+.. image:: ../img/conf/comp.jpg
     :width: 600
 
 This table collects allows to personalize which *computational benchmarks* should be included
@@ -71,6 +71,10 @@ OnlyInput
 
     .. seealso::
         :ref:`externalrun`
+    
+    .. note::
+        This input has priority with respect to the 'Run' one, i.e., if both are
+        set to True, the inputs will be only generated and not run.
 
 Run
     the benchmark will be run during an assessment only if this field is set to ``True``.
@@ -126,7 +130,7 @@ Code
 Experimental benchmarks
 -----------------------
 
-.. image:: ../img/conf/exp.png
+.. image:: ../img/conf/exp.jpg
     :width: 600
 
 The structure of the sheet is exactly the same as the :ref:`compsheet` one. Nevertheless,
@@ -164,9 +168,42 @@ and these are the **Parent**, **MT** and **Daughter** ones.
 Benchmark run configuration
 ===========================
 
-TBD
+for the *Sphere Leakage* and for the *Sphere SDDR* benchmarks ad-hoc run
+configuration file are defined and can be found in the
+``<JADE_root>\Configuration\Sphere`` and ``<JADE_root>\Configuration\SphereSDDR``
+folders. These are .csv files that control for each element or typical material
+the following run parameters:
 
-These are used only for *Sphere Leakage* and cannot be generalized.
+NPS cut-off
+    specifies the number of particle histories to be set in the MCNP
+    STOP card.
+
+CTME cut-off
+    specifies the total computer time to be set in the MCNP STOP card.
+
+Relative Error cut-off
+    specifies a precision limit for a tally to be set in the MCNP STOP card.
+
+Density [g/cc]
+    specifies the density to be considered in the sphere for the
+    isotope/typical material.
+
+Name
+    name to be used during post-processing (e.g. Hydrogen or SS316L(N)-IG)
+
+Symbol
+    element symbol (e.g. H) or material number (e.g. M400). In case of material
+    number the id must be consistent with the ones indicated in the
+    ``<JADE_root>\Benchmarks inputs\TypicalMaterials`` file.
+
+Z
+    **[Only for elements]** element number (e.g. 1 for H).
+
+Let Override
+    If True, the general settings specified in the :ref:`mainconfig` file
+    for the STOP card are considered to have priority on the specific ones.
+    If False, the specific parameters are not ovveridden by the general ones.
+
 
 .. _ppconf:
 
@@ -180,7 +217,7 @@ since the high degree of customization needed for an experimental benchmark make
 standardize them. While computational benchmarks can be added to the JADE suite without the need for additional
 coding, this is not true also for experimental one.
 
-The files contain two main sheets, that respectively regulate the Excel and the Word/PDF post-processing output.
+The files contain two main sheets, that respectively regulate the Excel and the Word/PDF (i.e., Atlas) post-processing output.
 
 Excel
 -----
@@ -265,7 +302,9 @@ Quantity
     .. important::
         when two binnings are specified in the Excel sheet, a different plot for each of the **y** bins will be produced.
         For example, let's consider a neutron flux tally binned both in energy (selected as **x**) and cells (selected as **y**).
-        Then, a plot showing the neutron flux as a function of energy will be produced for each cell indicated in the tally.
+        Then, a plot showing the neutron flux as a function of energy will be produced for each cell. On the contrary, if the cell
+        binning is assigned to **x** and the energy one to **y**, a plot showing the neutron flux as a function of the cell would
+        be produced for each energy interval.
 Unit
     Unit associated to the Quantity.
 <Graph type>

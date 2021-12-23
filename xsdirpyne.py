@@ -31,6 +31,7 @@ authors and should not be interpreted as representing official policies, either 
 or implied, of the stakeholders of the PyNE project or the employers of PyNE developers.
 """
 import os
+from typing import List, Tuple
 
 
 class Xsdir(object):
@@ -71,6 +72,16 @@ class Xsdir(object):
         self.tables = []
 
         self.read()
+
+        # It is useful to have a list of the available tables names to be
+        # computed only once at initializations
+        tablenames = []
+        for table in self:
+            name = table.name
+            zaidname = name[:-4]
+            libname = name[-3:]
+            tablenames.append((zaidname, libname))
+        self.tablenames = tablenames
 
     def read(self):
         """Populate the Xsdir object by reading the file.
@@ -142,9 +153,14 @@ class Xsdir(object):
             if len(words) > 10:
                 table.ptable = (words[10] == 'ptable')
 
-
-    def find_table(self, name, mode = 'default'):
+    def find_table(self, name, mode='default'):
         """Find all tables for a given ZIAD.
+        *Modified for JADE, a bug was corrected since table.name do not
+        find natural zaids.
+
+        mode: 'default' default behaviour
+              'exact' check also the library
+              'default-fast' accelerated loop giving only the lib names
 
         Parameters
         ----------
@@ -155,31 +171,43 @@ class Xsdir(object):
         -------
         tables : list
             All XsdirTable objects for a given ZIAD.
-            
-        mode: 'default' default behaviour
-              'exact' check also the library
         """
         if mode == 'exact':
-            toreturn = False
-        else:
+            # Faster, checks for the exact name
+            ans = self._exact_loop(name, self.tablenames)
+
+        elif mode == 'default':
+            # Checks all available libraries for the zaid
             tables = []
-            
-        for table in self:
-            #if name in table.name:#BUG! for natural zaids!!!
-            ################# correction ####################
-            tablename = table.name.split('.')[0]
-            if mode == 'default':
-                if name == tablename:
+            for table in self:
+                # tablename = table.name.split('.')[0]
+                if name == table.name[:-4]:
                     tables.append(table)
-            elif mode == 'exact':
-                if name == table.name:
-                    toreturn = True
-                    break
-            ################# end correction ####################
-        if mode == 'exact':
-            return toreturn
-        else:
-            return tables
+
+            ans = tables
+
+        elif mode == 'default-fast':
+            ans = self._all_fast_loop(name, self.tablenames)
+
+        return ans
+
+    @staticmethod
+    def _exact_loop(name: str, tablenames: List[Tuple[str, str]]) -> bool:
+        print(name)
+        for zaidname, libname in tablenames:
+            if name == zaidname+'.'+libname:
+                return True
+
+        return False
+
+    @staticmethod
+    def _all_fast_loop(name: str, tablenames: List[Tuple[str, str]]) -> List[str]:
+        libs = []
+        for zaidname, libname in tablenames:
+            if name == zaidname:
+                libs.append(libname)
+
+        return libs
 
 #################  Added by Davide Laghi ###############################  
     def find_zaids(self, lib):

@@ -25,15 +25,18 @@ import sys
 import os
 import pandas as pd
 
-sys.path.insert(1, '../')
+cp = os.path.dirname(os.path.abspath(__file__))
+modules_path = os.path.dirname(cp)
+sys.path.insert(1, modules_path)
+
 from libmanager import LibManager
 import sphereoutput as sout
 
 
 # Files
-OUTP_SDDR = os.path.join('TestFiles', 'sphereoutput',
+OUTP_SDDR = os.path.join(cp, 'TestFiles', 'sphereoutput',
                          'SphereSDDR_11023_Na-23_102_o')
-OUTM_SDDR = os.path.join('TestFiles', 'sphereoutput',
+OUTM_SDDR = os.path.join(cp, 'TestFiles', 'sphereoutput',
                          'SphereSDDR_11023_Na-23_102_m')
 
 
@@ -41,7 +44,7 @@ class MockSphereSDDRoutput(sout.SphereSDDRoutput):
     def __init__(self):
         self.lib = '99c'
         self.testname = 'SphereSDDR'
-        self.test_path = os.path.join('TestFiles', 'sphereoutput',
+        self.test_path = os.path.join(cp, 'TestFiles', 'sphereoutput',
                                       'single_excel_sddr')
         mat_settings = [{'num': 'M203', 'Name': 'material', 'other': 1},
                         {'num': 'dummy', 'Name': 'dummy', 'dummy': 1}]

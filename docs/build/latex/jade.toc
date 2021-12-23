@@ -3,12 +3,12 @@
 \contentsline {chapter}{\numberline {2}Installation}{5}{chapter.2}%
 \contentsline {chapter}{\numberline {3}Folder Structure}{7}{chapter.3}%
 \contentsline {section}{\numberline {3.1}Benchmark inputs}{8}{section.3.1}%
-\contentsline {section}{\numberline {3.2}Code}{8}{section.3.2}%
+\contentsline {section}{\numberline {3.2}Code}{9}{section.3.2}%
 \contentsline {section}{\numberline {3.3}Configuration}{9}{section.3.3}%
 \contentsline {section}{\numberline {3.4}Experimental results}{9}{section.3.4}%
 \contentsline {section}{\numberline {3.5}Quality}{9}{section.3.5}%
 \contentsline {section}{\numberline {3.6}Tests}{9}{section.3.6}%
-\contentsline {section}{\numberline {3.7}Utilities}{9}{section.3.7}%
+\contentsline {section}{\numberline {3.7}Utilities}{10}{section.3.7}%
 \contentsline {chapter}{\numberline {4}Configuration}{11}{chapter.4}%
 \contentsline {section}{\numberline {4.1}Main Configuration}{11}{section.4.1}%
 \contentsline {subsection}{\numberline {4.1.1}MAIN Config.}{11}{subsection.4.1.1}%
@@ -17,124 +17,130 @@
 \contentsline {subsection}{\numberline {4.1.4}Libraries}{13}{subsection.4.1.4}%
 \contentsline {section}{\numberline {4.2}Activation File}{14}{section.4.2}%
 \contentsline {section}{\numberline {4.3}Benchmark run configuration}{14}{section.4.3}%
-\contentsline {section}{\numberline {4.4}Benchmark post\sphinxhyphen {}processing configuration}{14}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Excel}{15}{subsection.4.4.1}%
-\contentsline {subsection}{\numberline {4.4.2}Atlas}{17}{subsection.4.4.2}%
-\contentsline {chapter}{\numberline {5}Usage}{19}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Quality check menu}{20}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Computational Benchmark menu}{20}{section.5.2}%
-\contentsline {section}{\numberline {5.3}Experimental Benchmark menu}{21}{section.5.3}%
-\contentsline {section}{\numberline {5.4}Post\sphinxhyphen {}processing menu}{22}{section.5.4}%
-\contentsline {chapter}{\numberline {6}Default Benchmarks}{25}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Computational Benchmarks}{25}{section.6.1}%
-\contentsline {subsection}{\numberline {6.1.1}Sphere Leakage}{25}{subsection.6.1.1}%
-\contentsline {subsubsection}{Geometry and run parameters}{26}{subsubsection*.3}%
-\contentsline {subsubsection}{Tallies}{27}{subsubsection*.4}%
-\contentsline {subsection}{\numberline {6.1.2}ITER 1D}{27}{subsection.6.1.2}%
-\contentsline {subsubsection}{Geometry and run parameters}{27}{subsubsection*.5}%
-\contentsline {subsubsection}{Tallies}{30}{subsubsection*.6}%
-\contentsline {subsection}{\numberline {6.1.3}Test Blanket Module}{31}{subsection.6.1.3}%
-\contentsline {subsubsection}{Geometry and run parameters}{31}{subsubsection*.7}%
-\contentsline {subsubsection}{Tallies}{31}{subsubsection*.8}%
-\contentsline {subsubsection}{C\sphinxhyphen {}Model}{36}{subsubsection*.9}%
-\contentsline {subsubsection}{Geometry and run parameters}{36}{subsubsection*.10}%
-\contentsline {subsubsection}{Tallies}{36}{subsubsection*.11}%
-\contentsline {subsection}{\numberline {6.1.4}Sphere SDDR}{36}{subsection.6.1.4}%
-\contentsline {subsubsection}{Geometry and run parameters}{38}{subsubsection*.12}%
-\contentsline {subsubsection}{SDDR parameters}{38}{subsubsection*.13}%
-\contentsline {subsubsection}{Tallies}{39}{subsubsection*.14}%
-\contentsline {subsection}{\numberline {6.1.5}ITER CYLYNDER SDDR}{39}{subsection.6.1.5}%
-\contentsline {subsubsection}{Geometry and run parameters}{39}{subsubsection*.15}%
-\contentsline {subsubsection}{SDDR parameters}{40}{subsubsection*.16}%
-\contentsline {subsubsection}{Tallies}{41}{subsubsection*.17}%
-\contentsline {section}{\numberline {6.2}Experimental Benchmarks}{42}{section.6.2}%
-\contentsline {subsection}{\numberline {6.2.1}Oktavian}{42}{subsection.6.2.1}%
-\contentsline {subsubsection}{Geometry and run parameters}{42}{subsubsection*.18}%
-\contentsline {subsubsection}{Tallies}{43}{subsubsection*.19}%
-\contentsline {subsection}{\numberline {6.2.2}Frascati Neutron Generator}{43}{subsection.6.2.2}%
-\contentsline {subsubsection}{Geometry}{44}{subsubsection*.20}%
-\contentsline {subsubsection}{SDDR Parameters}{44}{subsubsection*.21}%
-\contentsline {subsubsection}{Tallies}{46}{subsubsection*.22}%
-\contentsline {chapter}{\numberline {7}Post\sphinxhyphen {}Processing Gallery}{49}{chapter.7}%
-\contentsline {section}{\numberline {7.1}Excel output}{49}{section.7.1}%
-\contentsline {subsection}{\numberline {7.1.1}Benchmark specific}{49}{subsection.7.1.1}%
-\contentsline {subsubsection}{Sphere Leakage}{49}{subsubsection*.23}%
-\contentsline {subsubsection}{Oktavian}{50}{subsubsection*.24}%
-\contentsline {subsection}{\numberline {7.1.2}General output}{53}{subsection.7.1.2}%
-\contentsline {section}{\numberline {7.2}Plots Atlas}{53}{section.7.2}%
-\contentsline {subsection}{\numberline {7.2.1}Binned graph}{53}{subsection.7.2.1}%
-\contentsline {subsection}{\numberline {7.2.2}Ratio Graph}{54}{subsection.7.2.2}%
-\contentsline {subsection}{\numberline {7.2.3}Experimental points}{55}{subsection.7.2.3}%
-\contentsline {subsection}{\numberline {7.2.4}Discreet Experimental points}{56}{subsection.7.2.4}%
-\contentsline {subsection}{\numberline {7.2.5}Grouped bars}{57}{subsection.7.2.5}%
-\contentsline {subsection}{\numberline {7.2.6}Waves}{58}{subsection.7.2.6}%
-\contentsline {chapter}{\numberline {8}Utilities}{59}{chapter.8}%
-\contentsline {section}{\numberline {8.1}Print available libraries}{59}{section.8.1}%
-\contentsline {section}{\numberline {8.2}Restore default configurations}{59}{section.8.2}%
-\contentsline {section}{\numberline {8.3}Translate an MCNP input}{60}{section.8.3}%
-\contentsline {section}{\numberline {8.4}Print materials info}{62}{section.8.4}%
-\contentsline {section}{\numberline {8.5}Generate material mixture}{63}{section.8.5}%
-\contentsline {section}{\numberline {8.6}Switch material fractions}{63}{section.8.6}%
-\contentsline {section}{\numberline {8.7}Change .ace libraries suffix}{64}{section.8.7}%
-\contentsline {section}{\numberline {8.8}Produce D1S\sphinxhyphen {}UNED reaction files}{64}{section.8.8}%
-\contentsline {chapter}{\numberline {9}Tips \& Tricks}{65}{chapter.9}%
-\contentsline {section}{\numberline {9.1}External Run of a benchmark}{65}{section.9.1}%
-\contentsline {section}{\numberline {9.2}Change the plots fontsizes}{65}{section.9.2}%
-\contentsline {chapter}{\numberline {10}Insert Custom Benchmarks}{67}{chapter.10}%
-\contentsline {section}{\numberline {10.1}Insert Custom Computational Benchmark}{67}{section.10.1}%
-\contentsline {section}{\numberline {10.2}Insert Custom Experimental Benchmark}{68}{section.10.2}%
-\contentsline {subsection}{\numberline {10.2.1}Call the right Output class}{68}{subsection.10.2.1}%
-\contentsline {subsection}{\numberline {10.2.2}Additional actions for multi\sphinxhyphen {}run benchmarks}{68}{subsection.10.2.2}%
-\contentsline {chapter}{\numberline {11}Modify documentation}{71}{chapter.11}%
-\contentsline {chapter}{\numberline {12}General OOP scheme}{73}{chapter.12}%
-\contentsline {section}{\numberline {12.1}Utilities}{74}{section.12.1}%
-\contentsline {section}{\numberline {12.2}Benchmarks generation and run}{74}{section.12.2}%
-\contentsline {section}{\numberline {12.3}Post\sphinxhyphen {}processing}{74}{section.12.3}%
-\contentsline {chapter}{\numberline {13}JADE Session}{75}{chapter.13}%
-\contentsline {section}{\numberline {13.1}main module}{75}{section.13.1}%
-\contentsline {subsection}{\numberline {13.1.1}Session}{75}{subsection.13.1.1}%
-\contentsline {section}{\numberline {13.2}libmanager module}{76}{section.13.2}%
-\contentsline {subsection}{\numberline {13.2.1}LibManager}{76}{subsection.13.2.1}%
-\contentsline {section}{\numberline {13.3}state module}{77}{section.13.3}%
-\contentsline {subsection}{\numberline {13.3.1}Status}{77}{subsection.13.3.1}%
-\contentsline {section}{\numberline {13.4}configuration module}{79}{section.13.4}%
-\contentsline {subsection}{\numberline {13.4.1}Configuration}{79}{subsection.13.4.1}%
-\contentsline {chapter}{\numberline {14}Input Generation}{81}{chapter.14}%
-\contentsline {section}{\numberline {14.1}matreader module}{81}{section.14.1}%
-\contentsline {subsection}{\numberline {14.1.1}MatCardsList}{81}{subsection.14.1.1}%
-\contentsline {subsection}{\numberline {14.1.2}Material}{82}{subsection.14.1.2}%
-\contentsline {subsection}{\numberline {14.1.3}Submaterial}{84}{subsection.14.1.3}%
-\contentsline {subsection}{\numberline {14.1.4}Element}{85}{subsection.14.1.4}%
-\contentsline {subsection}{\numberline {14.1.5}Zaid}{86}{subsection.14.1.5}%
-\contentsline {section}{\numberline {14.2}testrun module}{87}{section.14.2}%
-\contentsline {subsection}{\numberline {14.2.1}Test}{87}{subsection.14.2.1}%
-\contentsline {subsection}{\numberline {14.2.2}MultipleTest}{88}{subsection.14.2.2}%
-\contentsline {section}{\numberline {14.3}inputfile module}{89}{section.14.3}%
-\contentsline {subsection}{\numberline {14.3.1}InputFile}{89}{subsection.14.3.1}%
-\contentsline {subsection}{\numberline {14.3.2}D1S\_Input}{91}{subsection.14.3.2}%
-\contentsline {subsection}{\numberline {14.3.3}D1S5\_InputFile}{92}{subsection.14.3.3}%
-\contentsline {section}{\numberline {14.4}parsersD1S module}{93}{section.14.4}%
-\contentsline {subsection}{\numberline {14.4.1}IrradiationFile}{93}{subsection.14.4.1}%
-\contentsline {subsection}{\numberline {14.4.2}Irradiation}{94}{subsection.14.4.2}%
-\contentsline {subsection}{\numberline {14.4.3}ReactionFile}{94}{subsection.14.4.3}%
-\contentsline {subsection}{\numberline {14.4.4}Reaction}{95}{subsection.14.4.4}%
-\contentsline {chapter}{\numberline {15}Post\sphinxhyphen {}Processing}{97}{chapter.15}%
-\contentsline {section}{\numberline {15.1}output module}{97}{section.15.1}%
-\contentsline {subsection}{\numberline {15.1.1}AbstractOutput}{97}{subsection.15.1.1}%
-\contentsline {subsection}{\numberline {15.1.2}BenchmarkOutput}{97}{subsection.15.1.2}%
-\contentsline {subsection}{\numberline {15.1.3}MCNPOutput}{98}{subsection.15.1.3}%
-\contentsline {subsection}{\numberline {15.1.4}ExcelOutputSheet}{98}{subsection.15.1.4}%
-\contentsline {section}{\numberline {15.2}expoutput module}{100}{section.15.2}%
-\contentsline {subsection}{\numberline {15.2.1}ExperimentalOutput}{100}{subsection.15.2.1}%
-\contentsline {section}{\numberline {15.3}plotter module}{102}{section.15.3}%
-\contentsline {subsection}{\numberline {15.3.1}Plotter}{102}{subsection.15.3.1}%
-\contentsline {chapter}{\numberline {16}JADE Testing}{105}{chapter.16}%
-\contentsline {chapter}{\numberline {17}License}{107}{chapter.17}%
-\contentsline {section}{\numberline {17.1}GNU GPLv3 License}{107}{section.17.1}%
-\contentsline {section}{\numberline {17.2}Pyne License}{119}{section.17.2}%
-\contentsline {chapter}{\numberline {18}Contributors}{121}{chapter.18}%
-\contentsline {chapter}{\numberline {19}List of Publications and Contributions}{123}{chapter.19}%
-\contentsline {section}{\numberline {19.1}Publications featuring JADE}{123}{section.19.1}%
-\contentsline {section}{\numberline {19.2}Benchmarks Related Publications}{123}{section.19.2}%
-\contentsline {section}{\numberline {19.3}Miscellaneous}{124}{section.19.3}%
-\contentsline {chapter}{\numberline {20}Indices and tables}{125}{chapter.20}%
+\contentsline {section}{\numberline {4.4}Benchmark post\sphinxhyphen {}processing configuration}{15}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Excel}{16}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Atlas}{18}{subsection.4.4.2}%
+\contentsline {chapter}{\numberline {5}Usage}{21}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Quality check menu}{22}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Computational Benchmark menu}{22}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Experimental Benchmark menu}{23}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Post\sphinxhyphen {}processing menu}{24}{section.5.4}%
+\contentsline {chapter}{\numberline {6}Default Benchmarks}{27}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Computational Benchmarks}{27}{section.6.1}%
+\contentsline {subsection}{\numberline {6.1.1}Sphere Leakage}{27}{subsection.6.1.1}%
+\contentsline {subsubsection}{Geometry and run parameters}{28}{subsubsection*.3}%
+\contentsline {subsubsection}{Tallies}{29}{subsubsection*.4}%
+\contentsline {subsection}{\numberline {6.1.2}ITER 1D}{29}{subsection.6.1.2}%
+\contentsline {subsubsection}{Geometry and run parameters}{29}{subsubsection*.5}%
+\contentsline {subsubsection}{Tallies}{32}{subsubsection*.6}%
+\contentsline {subsection}{\numberline {6.1.3}Test Blanket Module}{33}{subsection.6.1.3}%
+\contentsline {subsubsection}{Geometry and run parameters}{33}{subsubsection*.7}%
+\contentsline {subsubsection}{Tallies}{33}{subsubsection*.8}%
+\contentsline {subsubsection}{C\sphinxhyphen {}Model}{38}{subsubsection*.9}%
+\contentsline {subsubsection}{Geometry and run parameters}{38}{subsubsection*.10}%
+\contentsline {subsubsection}{Tallies}{38}{subsubsection*.11}%
+\contentsline {subsection}{\numberline {6.1.4}Sphere SDDR}{38}{subsection.6.1.4}%
+\contentsline {subsubsection}{Geometry and run parameters}{40}{subsubsection*.12}%
+\contentsline {subsubsection}{SDDR parameters}{40}{subsubsection*.13}%
+\contentsline {subsubsection}{Tallies}{41}{subsubsection*.14}%
+\contentsline {subsection}{\numberline {6.1.5}ITER CYLYNDER SDDR}{41}{subsection.6.1.5}%
+\contentsline {subsubsection}{Geometry and run parameters}{41}{subsubsection*.15}%
+\contentsline {subsubsection}{SDDR parameters}{42}{subsubsection*.16}%
+\contentsline {subsubsection}{Tallies}{43}{subsubsection*.17}%
+\contentsline {section}{\numberline {6.2}Experimental Benchmarks}{44}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}Oktavian}{44}{subsection.6.2.1}%
+\contentsline {subsubsection}{Geometry and run parameters}{44}{subsubsection*.18}%
+\contentsline {subsubsection}{Tallies}{45}{subsubsection*.19}%
+\contentsline {subsection}{\numberline {6.2.2}Frascati Neutron Generator SDDR Experiment}{45}{subsection.6.2.2}%
+\contentsline {subsubsection}{Geometry}{46}{subsubsection*.20}%
+\contentsline {subsubsection}{SDDR Parameters}{47}{subsubsection*.21}%
+\contentsline {subsubsection}{Tallies}{48}{subsubsection*.22}%
+\contentsline {chapter}{\numberline {7}Post\sphinxhyphen {}Processing Gallery}{51}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Excel output}{51}{section.7.1}%
+\contentsline {subsection}{\numberline {7.1.1}Benchmark specific}{51}{subsection.7.1.1}%
+\contentsline {subsubsection}{Sphere Leakage}{51}{subsubsection*.23}%
+\contentsline {subsubsection}{Oktavian}{52}{subsubsection*.24}%
+\contentsline {subsection}{\numberline {7.1.2}General output}{55}{subsection.7.1.2}%
+\contentsline {section}{\numberline {7.2}Plots Atlas}{55}{section.7.2}%
+\contentsline {subsection}{\numberline {7.2.1}Binned graph}{55}{subsection.7.2.1}%
+\contentsline {subsection}{\numberline {7.2.2}Ratio Graph}{56}{subsection.7.2.2}%
+\contentsline {subsection}{\numberline {7.2.3}Experimental points}{57}{subsection.7.2.3}%
+\contentsline {subsection}{\numberline {7.2.4}Discreet Experimental points}{58}{subsection.7.2.4}%
+\contentsline {subsection}{\numberline {7.2.5}Grouped bars}{59}{subsection.7.2.5}%
+\contentsline {subsection}{\numberline {7.2.6}Waves}{60}{subsection.7.2.6}%
+\contentsline {chapter}{\numberline {8}Utilities}{61}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Print available libraries}{61}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Restore default configurations}{61}{section.8.2}%
+\contentsline {section}{\numberline {8.3}Translate an MCNP input}{62}{section.8.3}%
+\contentsline {section}{\numberline {8.4}Print materials info}{64}{section.8.4}%
+\contentsline {section}{\numberline {8.5}Generate material mixture}{66}{section.8.5}%
+\contentsline {section}{\numberline {8.6}Switch material fractions}{66}{section.8.6}%
+\contentsline {section}{\numberline {8.7}Change .ace libraries suffix}{66}{section.8.7}%
+\contentsline {section}{\numberline {8.8}Produce D1S\sphinxhyphen {}UNED reaction files}{67}{section.8.8}%
+\contentsline {chapter}{\numberline {9}Tips \& Tricks}{69}{chapter.9}%
+\contentsline {section}{\numberline {9.1}External Run of a benchmark}{69}{section.9.1}%
+\contentsline {section}{\numberline {9.2}Change the plots fontsizes}{69}{section.9.2}%
+\contentsline {chapter}{\numberline {10}Troubleshooting}{71}{chapter.10}%
+\contentsline {section}{\numberline {10.1}Unable to post\sphinxhyphen {}process a libray}{71}{section.10.1}%
+\contentsline {chapter}{\numberline {11}Insert Custom Benchmarks}{73}{chapter.11}%
+\contentsline {section}{\numberline {11.1}Insert Custom Computational Benchmark}{73}{section.11.1}%
+\contentsline {section}{\numberline {11.2}Insert Custom Experimental Benchmark}{74}{section.11.2}%
+\contentsline {subsection}{\numberline {11.2.1}Call the right Output class}{74}{subsection.11.2.1}%
+\contentsline {subsection}{\numberline {11.2.2}Additional actions for multi\sphinxhyphen {}run benchmarks}{74}{subsection.11.2.2}%
+\contentsline {chapter}{\numberline {12}Modify documentation}{77}{chapter.12}%
+\contentsline {chapter}{\numberline {13}General OOP scheme}{79}{chapter.13}%
+\contentsline {section}{\numberline {13.1}Utilities}{80}{section.13.1}%
+\contentsline {section}{\numberline {13.2}Benchmarks generation and run}{80}{section.13.2}%
+\contentsline {section}{\numberline {13.3}Post\sphinxhyphen {}processing}{80}{section.13.3}%
+\contentsline {chapter}{\numberline {14}JADE Session}{81}{chapter.14}%
+\contentsline {section}{\numberline {14.1}main module}{81}{section.14.1}%
+\contentsline {subsection}{\numberline {14.1.1}Session}{81}{subsection.14.1.1}%
+\contentsline {section}{\numberline {14.2}libmanager module}{82}{section.14.2}%
+\contentsline {subsection}{\numberline {14.2.1}LibManager}{82}{subsection.14.2.1}%
+\contentsline {section}{\numberline {14.3}state module}{84}{section.14.3}%
+\contentsline {subsection}{\numberline {14.3.1}Status}{84}{subsection.14.3.1}%
+\contentsline {section}{\numberline {14.4}configuration module}{86}{section.14.4}%
+\contentsline {subsection}{\numberline {14.4.1}Configuration}{86}{subsection.14.4.1}%
+\contentsline {chapter}{\numberline {15}Input Generation}{87}{chapter.15}%
+\contentsline {section}{\numberline {15.1}matreader module}{87}{section.15.1}%
+\contentsline {subsection}{\numberline {15.1.1}MatCardsList}{87}{subsection.15.1.1}%
+\contentsline {subsection}{\numberline {15.1.2}Material}{88}{subsection.15.1.2}%
+\contentsline {subsection}{\numberline {15.1.3}Submaterial}{90}{subsection.15.1.3}%
+\contentsline {subsection}{\numberline {15.1.4}Element}{91}{subsection.15.1.4}%
+\contentsline {subsection}{\numberline {15.1.5}Zaid}{92}{subsection.15.1.5}%
+\contentsline {section}{\numberline {15.2}testrun module}{93}{section.15.2}%
+\contentsline {subsection}{\numberline {15.2.1}Test}{93}{subsection.15.2.1}%
+\contentsline {subsection}{\numberline {15.2.2}MultipleTest}{94}{subsection.15.2.2}%
+\contentsline {section}{\numberline {15.3}inputfile module}{94}{section.15.3}%
+\contentsline {subsection}{\numberline {15.3.1}InputFile}{94}{subsection.15.3.1}%
+\contentsline {subsection}{\numberline {15.3.2}D1S\_Input}{97}{subsection.15.3.2}%
+\contentsline {subsection}{\numberline {15.3.3}D1S5\_InputFile}{98}{subsection.15.3.3}%
+\contentsline {section}{\numberline {15.4}parsersD1S module}{98}{section.15.4}%
+\contentsline {subsection}{\numberline {15.4.1}IrradiationFile}{98}{subsection.15.4.1}%
+\contentsline {subsection}{\numberline {15.4.2}Irradiation}{99}{subsection.15.4.2}%
+\contentsline {subsection}{\numberline {15.4.3}ReactionFile}{100}{subsection.15.4.3}%
+\contentsline {subsection}{\numberline {15.4.4}Reaction}{101}{subsection.15.4.4}%
+\contentsline {chapter}{\numberline {16}Post\sphinxhyphen {}Processing}{103}{chapter.16}%
+\contentsline {section}{\numberline {16.1}output module}{103}{section.16.1}%
+\contentsline {subsection}{\numberline {16.1.1}AbstractOutput}{103}{subsection.16.1.1}%
+\contentsline {subsection}{\numberline {16.1.2}BenchmarkOutput}{103}{subsection.16.1.2}%
+\contentsline {subsection}{\numberline {16.1.3}MCNPOutput}{104}{subsection.16.1.3}%
+\contentsline {subsection}{\numberline {16.1.4}ExcelOutputSheet}{104}{subsection.16.1.4}%
+\contentsline {section}{\numberline {16.2}expoutput module}{106}{section.16.2}%
+\contentsline {subsection}{\numberline {16.2.1}ExperimentalOutput}{106}{subsection.16.2.1}%
+\contentsline {section}{\numberline {16.3}plotter module}{108}{section.16.3}%
+\contentsline {subsection}{\numberline {16.3.1}Plotter}{108}{subsection.16.3.1}%
+\contentsline {chapter}{\numberline {17}JADE Testing}{111}{chapter.17}%
+\contentsline {chapter}{\numberline {18}Future developments}{113}{chapter.18}%
+\contentsline {section}{\numberline {18.1}Eliminate dependency from Microsoft Office suite}{113}{section.18.1}%
+\contentsline {section}{\numberline {18.2}Migration to Linux system}{113}{section.18.2}%
+\contentsline {section}{\numberline {18.3}Implementation of open\sphinxhyphen {}source Monte Carlo codes}{113}{section.18.3}%
+\contentsline {chapter}{\numberline {19}License}{115}{chapter.19}%
+\contentsline {section}{\numberline {19.1}GNU GPLv3 License}{115}{section.19.1}%
+\contentsline {section}{\numberline {19.2}Pyne License}{128}{section.19.2}%
+\contentsline {chapter}{\numberline {20}Contributors}{131}{chapter.20}%
+\contentsline {chapter}{\numberline {21}List of Publications and Contributions}{133}{chapter.21}%
+\contentsline {section}{\numberline {21.1}Publications featuring JADE}{133}{section.21.1}%
+\contentsline {section}{\numberline {21.2}Benchmarks Related Publications}{133}{section.21.2}%
+\contentsline {section}{\numberline {21.3}Miscellaneous}{134}{section.21.3}%
+\contentsline {chapter}{\numberline {22}Indices and tables}{135}{chapter.22}%

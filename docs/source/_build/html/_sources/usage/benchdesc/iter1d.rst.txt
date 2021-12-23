@@ -9,7 +9,7 @@ ITER 1D
 
     ITER 1D MCNP geometry (quarter)
 
-The ITER 1D benchmark developed by Sawan M. is a popular 1-Dimensional neutronic model
+The ITER 1D benchmark developed by Prof. Sawan M. is a popular 1-Dimensional neutronic model
 used for nuclear data benchmarking in the fusion community. This consists of a 
 simple but realistic model of the ITER TOKAMAK where the inboard and outboard 
 portion of the machine and the plasma region are modelled by means of simple 

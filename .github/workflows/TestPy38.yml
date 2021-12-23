@@ -38,7 +38,6 @@ jobs:
       
       # Activate environment and run pytest
       - name: Testing
-        working-directory: ./tests
         run: |
           conda activate jade
-          pytest
+          pytest --cov-report html --cov=.

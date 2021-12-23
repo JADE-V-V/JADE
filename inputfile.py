@@ -142,11 +142,24 @@ class InputFile:
         None.
 
         """
+        to_print = self._to_text()
+
+        with open(out, 'w') as outfile:
+            outfile.write(to_print)
+
+    def _to_text(self):
+        """
+        Get the input in MCNP formatted text
+
+        Returns
+        -------
+        str
+            MCNP formatted text for the input
+        """
+        lines = []
 
         if self.cards['title'] is not None:
-            lines = self.cards['title'].lines
-        else:
-            lines = []
+            lines.extend(self.cards['title'].lines)
 
         # Add cells
         for card in self.cards['cells']:
@@ -172,8 +185,7 @@ class InputFile:
         for line in lines:
             toprint = toprint+line
 
-        with open(out, 'w') as outfile:
-            outfile.write(toprint)
+        return toprint
 
     def translate(self, newlib, libmanager):
         """
@@ -255,6 +267,10 @@ class InputFile:
             error = precision[1]
             line = line+str(tally)+' '+str(error)
 
+        if line == 'STOP ':
+            raise ValueError("""
+Specify at least one among nps, ctme or precision""")
+
         line = line+'\n'
 
         card = par.Card([line], 5, -1)
@@ -278,51 +294,54 @@ class InputFile:
         """
 
         # Change density in sphere cell
-        card = self.cards['cells'][cellidx]
+        try:
+            card = self.cards['cells'][cellidx]
+        except IndexError:
+            raise ValueError('cell n. {} is not available')
         card.get_values()
         card.set_d(str(density))
         card.lines = card.card()
 
-    def add_edits(self, edits_file):
-        """
-        Add weight windows and source bias resulted from ADVANTG analysis
+    # def add_edits(self, edits_file):
+    #     """
+    #     Add weight windows and source bias resulted from ADVANTG analysis
 
-        Parameters
-        ----------
-        edits_file : path like object
-            file containing the edits.
+    #     Parameters
+    #     ----------
+    #     edits_file : path like object
+    #         file containing the edits.
 
-        Returns
-        -------
-        None.
+    #     Returns
+    #     -------
+    #     None.
 
-        """
-        # Parse edits file
-        patBias = re.compile('sb', re.IGNORECASE)
-        patWWP = re.compile('wwp', re.IGNORECASE)
-        patSP = re.compile('sp', re.IGNORECASE)
+    #     """
+    #     # Parse edits file
+    #     patBias = re.compile('sb', re.IGNORECASE)
+    #     patWWP = re.compile('wwp', re.IGNORECASE)
+    #     patSP = re.compile('sp', re.IGNORECASE)
 
-        bias = []
-        wwp = []
-        with open(edits_file, 'r') as infile:
-            for line in infile:
-                if patBias.match(line) is not None:
-                    bias.append(par.Card([line], 5, -1))
-                elif patWWP.match(line) is not None:
-                    wwp.append(par.Card([line], 5, -1))
+    #     bias = []
+    #     wwp = []
+    #     with open(edits_file, 'r') as infile:
+    #         for line in infile:
+    #             if patBias.match(line) is not None:
+    #                 bias.append(par.Card([line], 5, -1))
+    #             elif patWWP.match(line) is not None:
+    #                 wwp.append(par.Card([line], 5, -1))
 
-        newsettings = []
-        for card in self.cards['settings']:
-            # TODO !!!!! this works only if there is only one source card !!!!
-            if patSP.match(card.lines[0]) is not None:
-                newsettings.append(card)
-                newsettings.extend(bias)
-            else:
-                newsettings.append(card)
+    #     newsettings = []
+    #     for card in self.cards['settings']:
+    #         # TODO !!!!! this works only if there is only one source card !!!!
+    #         if patSP.match(card.lines[0]) is not None:
+    #             newsettings.append(card)
+    #             newsettings.extend(bias)
+    #         else:
+    #             newsettings.append(card)
 
-        newsettings.extend(wwp)
+    #     newsettings.extend(wwp)
 
-        self.cards['settings'] = newsettings
+    #     self.cards['settings'] = newsettings
 
     def get_card_byID(self, blockID, cardID):
         """
@@ -679,10 +698,10 @@ class D1S5_InputFile(D1S_Input):
 STOP card is substituted with normal NPS card for MCNP5.
 specified ctme or precision parameters will be ignored
 ''')
-        elif nps is None:
+        if nps is None:
             raise ValueError(' NPS value is mandatory for MCNP 5 inputs')
 
-        line = 'NPS '+str(nps)+'\n'
+        line = 'NPS '+str(int(nps))+'\n'
         card = par.Card([line], 5, -1)
         self.cards['settings'].append(card)
 

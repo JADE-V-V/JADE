@@ -24,15 +24,18 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 import os
 
-sys.path.insert(1, '../')
+cp = os.path.dirname(os.path.abspath(__file__))
+modules_path = os.path.dirname(cp)
+sys.path.insert(1, modules_path)
+
 from libmanager import LibManager
 import output
 
 
 # Files
-OUTP_SDDR = os.path.join('TestFiles', 'sphereoutput',
+OUTP_SDDR = os.path.join(cp, 'TestFiles', 'sphereoutput',
                          'SphereSDDR_11023_Na-23_102_o')
-OUTM_SDDR = os.path.join('TestFiles', 'sphereoutput',
+OUTM_SDDR = os.path.join(cp, 'TestFiles', 'sphereoutput',
                          'SphereSDDR_11023_Na-23_102_m')
 
 

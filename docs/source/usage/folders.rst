@@ -103,7 +103,7 @@ templates
     benchmarks that are based on specific templates, these need to be added here.
 
 tests
-    Contains all the .py files to be run with pytest and folder containing files useful for the testing activity
+    Contains all the .py files to be run with pytest and folders containing files useful for the testing activity
 
 Configuration
 =============
@@ -121,7 +121,8 @@ experimental benchmarks. In case of benchmarks that are composed by more than on
 
 Quality
 =======
-**NOT IMPLEMENTED**
+This space has been reserved but Quality branch is **not being implemented**
+for the time being.
 
 Tests
 =====

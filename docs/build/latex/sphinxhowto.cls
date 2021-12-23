@@ -1,5 +1,5 @@
 %
-% sphinxhowto.cls for Sphinx (http://sphinx-doc.org/)
+% sphinxhowto.cls for Sphinx (https://www.sphinx-doc.org/)
 %
 
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
@@ -76,7 +76,7 @@
   \endgroup
   \noindent\rule{\textwidth}{1pt}\par
   \vspace{12pt}%
-}  
+}
 \newcommand\sphinxtableofcontentshook{}
 \pagenumbering{arabic}
 

@@ -1,76 +1,34 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>Input Generation &mdash; JADE v1.4.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>Input Generation &mdash; JADE v2.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Post-Processing" href="postprocessing.html" />
     <link rel="prev" title="JADE Session" href="initobjects.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> JADE
-          
-
-          
-            
             <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -78,19 +36,8 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">JADE User Guide:</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">JADE User Guide:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../nutshell.html">JADE in a nutshell</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/installation.html">Installation</a></li>
@@ -101,13 +48,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../usage/postprocessing.html">Post-Processing Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/utilities.html">Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/tipstricks.html">Tips &amp; Tricks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/troubleshooting.html">Troubleshooting</a></li>
 </ul>
-<p class="caption"><span class="caption-text">JADE Developer Guide:</span></p>
+<p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Modify documentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">JADE API</span></p>
+<p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="general.html">General OOP scheme</a></li>
 <li class="toctree-l1"><a class="reference internal" href="initobjects.html">JADE Session</a></li>
@@ -142,129 +90,89 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="postprocessing.html">Post-Processing</a></li>
 </ul>
-<p class="caption"><span class="caption-text">More on JADE:</span></p>
+<p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../publications.html">List of Publications and Contributions</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">JADE</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Input Generation</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/api/inputgeneration.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="input-generation">
-<h1>Input Generation<a class="headerlink" href="#input-generation" title="Permalink to this headline">¶</a></h1>
+<h1>Input Generation<a class="headerlink" href="#input-generation" title="Permalink to this headline"></a></h1>
 <p>In this section the most useful classes that can be used during benchmark
 input preparation are described.</p>
 <div class="section" id="matreader-module">
-<h2>matreader module<a class="headerlink" href="#matreader-module" title="Permalink to this headline">¶</a></h2>
+<h2>matreader module<a class="headerlink" href="#matreader-module" title="Permalink to this headline"></a></h2>
 <div class="section" id="matcardslist">
-<span id="matcardob"></span><h3>MatCardsList<a class="headerlink" href="#matcardslist" title="Permalink to this headline">¶</a></h3>
+<span id="matcardob"></span><h3>MatCardsList<a class="headerlink" href="#matcardslist" title="Permalink to this headline"></a></h3>
 </div>
 <div class="section" id="material">
-<h3>Material<a class="headerlink" href="#material" title="Permalink to this headline">¶</a></h3>
+<h3>Material<a class="headerlink" href="#material" title="Permalink to this headline"></a></h3>
 </div>
 <div class="section" id="submaterial">
-<h3>Submaterial<a class="headerlink" href="#submaterial" title="Permalink to this headline">¶</a></h3>
+<h3>Submaterial<a class="headerlink" href="#submaterial" title="Permalink to this headline"></a></h3>
 </div>
 <div class="section" id="element">
-<h3>Element<a class="headerlink" href="#element" title="Permalink to this headline">¶</a></h3>
+<h3>Element<a class="headerlink" href="#element" title="Permalink to this headline"></a></h3>
 </div>
 <div class="section" id="zaid">
-<h3>Zaid<a class="headerlink" href="#zaid" title="Permalink to this headline">¶</a></h3>
+<h3>Zaid<a class="headerlink" href="#zaid" title="Permalink to this headline"></a></h3>
 </div>
 </div>
 <div class="section" id="testrun-module">
-<span id="testrunmodule"></span><h2>testrun module<a class="headerlink" href="#testrun-module" title="Permalink to this headline">¶</a></h2>
+<span id="testrunmodule"></span><h2>testrun module<a class="headerlink" href="#testrun-module" title="Permalink to this headline"></a></h2>
 <div class="section" id="test">
-<span id="testob"></span><h3>Test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h3>
+<span id="testob"></span><h3>Test<a class="headerlink" href="#test" title="Permalink to this headline"></a></h3>
 </div>
 <div class="section" id="multipletest">
-<span id="multitestob"></span><h3>MultipleTest<a class="headerlink" href="#multipletest" title="Permalink to this headline">¶</a></h3>
+<span id="multitestob"></span><h3>MultipleTest<a class="headerlink" href="#multipletest" title="Permalink to this headline"></a></h3>
 </div>
 </div>
 <div class="section" id="inputfile-module">
-<h2>inputfile module<a class="headerlink" href="#inputfile-module" title="Permalink to this headline">¶</a></h2>
+<h2>inputfile module<a class="headerlink" href="#inputfile-module" title="Permalink to this headline"></a></h2>
 <div class="section" id="inputfile">
-<span id="inputob"></span><h3>InputFile<a class="headerlink" href="#inputfile" title="Permalink to this headline">¶</a></h3>
+<span id="inputob"></span><h3>InputFile<a class="headerlink" href="#inputfile" title="Permalink to this headline"></a></h3>
 </div>
 <div class="section" id="d1s-input">
-<h3>D1S_Input<a class="headerlink" href="#d1s-input" title="Permalink to this headline">¶</a></h3>
+<h3>D1S_Input<a class="headerlink" href="#d1s-input" title="Permalink to this headline"></a></h3>
 </div>
 <div class="section" id="d1s5-inputfile">
-<h3>D1S5_InputFile<a class="headerlink" href="#d1s5-inputfile" title="Permalink to this headline">¶</a></h3>
+<h3>D1S5_InputFile<a class="headerlink" href="#d1s5-inputfile" title="Permalink to this headline"></a></h3>
 </div>
 </div>
 <div class="section" id="parsersd1s-module">
-<h2>parsersD1S module<a class="headerlink" href="#parsersd1s-module" title="Permalink to this headline">¶</a></h2>
+<h2>parsersD1S module<a class="headerlink" href="#parsersd1s-module" title="Permalink to this headline"></a></h2>
 <div class="section" id="irradiationfile">
-<span id="irradfileob"></span><h3>IrradiationFile<a class="headerlink" href="#irradiationfile" title="Permalink to this headline">¶</a></h3>
+<span id="irradfileob"></span><h3>IrradiationFile<a class="headerlink" href="#irradiationfile" title="Permalink to this headline"></a></h3>
 <dl class="py class">
-<dt id="parsersD1S.IrradiationFile">
-<em class="property">class </em><code class="sig-prename descclassname">parsersD1S.</code><code class="sig-name descname">IrradiationFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nsc</span></em>, <em class="sig-param"><span class="n">irr_schedules</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">formatting</span><span class="o">=</span><span class="default_value">[8, 14, 13, 9]</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'irrad'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.IrradiationFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">parsersD1S.</span></span><span class="sig-name descname"><span class="pre">IrradiationFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nsc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">irr_schedules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">formatting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[8,</span> <span class="pre">14,</span> <span class="pre">13,</span> <span class="pre">9]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'irrad'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Object representing an irradiation D1S file</p>
 <dl class="field-list simple">
@@ -285,8 +193,8 @@ input preparation are described.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="parsersD1S.IrradiationFile.from_text">
-<em class="property">classmethod </em><code class="sig-name descname">from_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filepath</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile.from_text" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.IrradiationFile.from_text">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile.from_text" title="Permalink to this definition"></a></dt>
 <dd><p>Parse irradiation file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -305,8 +213,8 @@ input preparation are described.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="parsersD1S.IrradiationFile.get_daughters">
-<code class="sig-name descname">get_daughters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile.get_daughters" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.IrradiationFile.get_daughters">
+<span class="sig-name descname"><span class="pre">get_daughters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile.get_daughters" title="Permalink to this definition"></a></dt>
 <dd><p>Get a list of all daughters among all irradiation files</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -319,8 +227,8 @@ input preparation are described.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="parsersD1S.IrradiationFile.get_irrad">
-<code class="sig-name descname">get_irrad</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">daughter</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile.get_irrad" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.IrradiationFile.get_irrad">
+<span class="sig-name descname"><span class="pre">get_irrad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">daughter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile.get_irrad" title="Permalink to this definition"></a></dt>
 <dd><p>Return the irradiation correspondent to the daughter</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -337,8 +245,8 @@ If no irradiation is found returns None.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="parsersD1S.IrradiationFile.write">
-<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile.write" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.IrradiationFile.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile.write" title="Permalink to this definition"></a></dt>
 <dd><p>Write the D1S irradiation file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -357,10 +265,10 @@ If no irradiation is found returns None.</p>
 
 </div>
 <div class="section" id="irradiation">
-<h3>Irradiation<a class="headerlink" href="#irradiation" title="Permalink to this headline">¶</a></h3>
+<h3>Irradiation<a class="headerlink" href="#irradiation" title="Permalink to this headline"></a></h3>
 <dl class="py class">
-<dt id="parsersD1S.Irradiation">
-<em class="property">class </em><code class="sig-prename descclassname">parsersD1S.</code><code class="sig-name descname">Irradiation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">daughter</span></em>, <em class="sig-param"><span class="n">lambd</span></em>, <em class="sig-param"><span class="n">times</span></em>, <em class="sig-param"><span class="n">comment</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Irradiation" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.Irradiation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">parsersD1S.</span></span><span class="sig-name descname"><span class="pre">Irradiation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">daughter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Irradiation" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Irradiation object</p>
 <dl class="field-list simple">
@@ -380,8 +288,8 @@ If no irradiation is found returns None.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="parsersD1S.Irradiation.from_text">
-<em class="property">classmethod </em><code class="sig-name descname">from_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">nsc</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Irradiation.from_text" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.Irradiation.from_text">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Irradiation.from_text" title="Permalink to this definition"></a></dt>
 <dd><p>Parse a single irradiation</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -404,10 +312,10 @@ If no irradiation is found returns None.</p>
 
 </div>
 <div class="section" id="reactionfile">
-<span id="reacfileob"></span><h3>ReactionFile<a class="headerlink" href="#reactionfile" title="Permalink to this headline">¶</a></h3>
+<span id="reacfileob"></span><h3>ReactionFile<a class="headerlink" href="#reactionfile" title="Permalink to this headline"></a></h3>
 <dl class="py class">
-<dt id="parsersD1S.ReactionFile">
-<em class="property">class </em><code class="sig-prename descclassname">parsersD1S.</code><code class="sig-name descname">ReactionFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reactions</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'react'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.ReactionFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">parsersD1S.</span></span><span class="sig-name descname"><span class="pre">ReactionFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reactions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'react'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Reaction file object</p>
 <dl class="field-list simple">
@@ -425,8 +333,8 @@ If no irradiation is found returns None.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="parsersD1S.ReactionFile.change_lib">
-<code class="sig-name descname">change_lib</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newlib</span></em>, <em class="sig-param"><span class="n">libmanager</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile.change_lib" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.ReactionFile.change_lib">
+<span class="sig-name descname"><span class="pre">change_lib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newlib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">libmanager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile.change_lib" title="Permalink to this definition"></a></dt>
 <dd><p>change the parent library tag of the reactions. If no libmanager is
 provided, the check on the availability of the parent in the xsdir
 file will be not performed.</p>
@@ -447,8 +355,8 @@ file will be not performed.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="parsersD1S.ReactionFile.from_text">
-<em class="property">classmethod </em><code class="sig-name descname">from_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filepath</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile.from_text" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.ReactionFile.from_text">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile.from_text" title="Permalink to this definition"></a></dt>
 <dd><p>Generate a reaction file directly from text file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -467,8 +375,8 @@ file will be not performed.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="parsersD1S.ReactionFile.get_parents">
-<code class="sig-name descname">get_parents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile.get_parents" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.ReactionFile.get_parents">
+<span class="sig-name descname"><span class="pre">get_parents</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile.get_parents" title="Permalink to this definition"></a></dt>
 <dd><p>Get a list of all parents</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -481,8 +389,8 @@ file will be not performed.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="parsersD1S.ReactionFile.write">
-<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile.write" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.ReactionFile.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile.write" title="Permalink to this definition"></a></dt>
 <dd><p>write formatted reaction file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -501,10 +409,10 @@ file will be not performed.</p>
 
 </div>
 <div class="section" id="reaction">
-<h3>Reaction<a class="headerlink" href="#reaction" title="Permalink to this headline">¶</a></h3>
+<h3>Reaction<a class="headerlink" href="#reaction" title="Permalink to this headline"></a></h3>
 <dl class="py class">
-<dt id="parsersD1S.Reaction">
-<em class="property">class </em><code class="sig-prename descclassname">parsersD1S.</code><code class="sig-name descname">Reaction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span></em>, <em class="sig-param"><span class="n">MT</span></em>, <em class="sig-param"><span class="n">daughter</span></em>, <em class="sig-param"><span class="n">comment</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Reaction" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.Reaction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">parsersD1S.</span></span><span class="sig-name descname"><span class="pre">Reaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">daughter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Reaction" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Represents a single reaction of the reaction file</p>
 <dl class="field-list simple">
@@ -528,8 +436,8 @@ type (with integer value) can be used.</p></li>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="parsersD1S.Reaction.change_lib">
-<code class="sig-name descname">change_lib</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newlib</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Reaction.change_lib" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.Reaction.change_lib">
+<span class="sig-name descname"><span class="pre">change_lib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newlib</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Reaction.change_lib" title="Permalink to this definition"></a></dt>
 <dd><p>Change the library tag</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -545,8 +453,8 @@ type (with integer value) can be used.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="parsersD1S.Reaction.from_text">
-<em class="property">classmethod </em><code class="sig-name descname">from_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Reaction.from_text" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.Reaction.from_text">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Reaction.from_text" title="Permalink to this definition"></a></dt>
 <dd><p>Create a reaction object from text</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -565,8 +473,8 @@ type (with integer value) can be used.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="parsersD1S.Reaction.write">
-<code class="sig-name descname">write</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Reaction.write" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.Reaction.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Reaction.write" title="Permalink to this definition"></a></dt>
 <dd><p>Generate the reaction text</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -586,50 +494,33 @@ type (with integer value) can be used.</p></li>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="postprocessing.html" class="btn btn-neutral float-right" title="Post-Processing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="initobjects.html" class="btn btn-neutral float-left" title="JADE Session" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="postprocessing.html" class="btn btn-neutral float-right" title="Post-Processing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, Davide Laghi.
-
-    </p>
+    <p>&#169; Copyright 2021, Davide Laghi.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

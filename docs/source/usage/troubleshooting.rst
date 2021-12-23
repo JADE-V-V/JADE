@@ -8,7 +8,7 @@ Unable to post-process a libray
 It may happen that the request to post-process a library fails, prompting to
 video that the library in question has not been run.
 
-.. image:: /img/troubleshooting/notrun.PNG
+.. image:: /img/troubleshooting/notrun.png
 
 This may puzzle the user who is sure to have run the library instead.
 

@@ -1,9 +1,10 @@
-Frascati Neutron Generator
---------------------------
+Frascati Neutron Generator SDDR Experiment
+------------------------------------------
 
 .. important::
   This benchmark input cannot be distributed directly with JADE. The user must have a valid SINBAD
-  license and contact the JADE team in order to obtain the input.
+  license and contact the JADE team in order to obtain the instructions on how to modify
+  the inputs in order for them to be used in JADE.
 
 The Frascati Neutron Generator (FNG) is an experimental facility designed and built by ENEA
 (the italian New Technology, Energy and Ambient Body) in Frascati, Italy. The installation
@@ -12,8 +13,8 @@ produce up to 5E+11 n/s.
 
 One of the key experiments that have been conducted at the FNG is the neutron irradiation
 experiment, where a mock-up of the outer vacuum vessel region of ITER was irradiated by
-means of 14 MeV neutrons for a sufficiently long time in order to achieve activation
-levels similar to the ones that are expected to be reached at the ITER end of life. Two
+means of 14 MeV neutrons for a sufficiently long time in order to achieve achieve significative
+activation levels. Two
 distinct irradiation campaigns were conducted in May and August 2000 and, among other
 things, the SDDR values after different cooling time intervals were measured.
 Many benchmarks activities have been performed using the experiment in the past, and the
@@ -27,7 +28,7 @@ Geometry
 
     FNG SDDR experiment layout
 
-In the FNG, a deuterium beam is accelerated up to 300 KeV by means of a linear electro-static
+At the FNG, a deuterium beam is accelerated up to 300 KeV by means of a linear electro-static
 tube towards a target rich in tritium generating a 14 MeV neutron source. These are the
 neutrons that were used to irradiate the experimental assembly which consisted of a block of
 stainless steel and water equivalent material (perspex) with total thickness of 71.4 cm, and
@@ -40,8 +41,8 @@ local neutron flux, the decay gamma-ray spectra and the dose rates for different
 
 JADE MCNP input template was realized starting from the MCNP inputs provided in the SINBAD database
 and, for this reason, it cannot be freely distributed together with the JADE source code.
-Cell and surface card were left untouched as well as the material composition. D1S-Uned specific
-cards were suitably added.
+Cell and surface card were left untouched as well as the material composition. D1S-UNED specific
+cards were also added.
 
 SDDR Parameters
 ^^^^^^^^^^^^^^^
@@ -111,7 +112,7 @@ irradiation campaign conducted at the FNG.
 The experimentally measured SDDR values at different cooling times are reported in
 the next tables for the 1st and 2nd irradiation campaigns.
 
-.. list-table:: Experimental measure of the SDDR during $1^{st}$ FNG irradiation campaign
+.. list-table:: Experimental measure of the SDDR during 1st FNG irradiation campaign
     :header-rows: 1
 
     * - Cooldown Time [d]
@@ -139,7 +140,7 @@ the next tables for the 1st and 2nd irradiation campaigns.
       - 3.16E-07
       - 0.1
                      
-.. list-table:: Experimental measure of the SDDR during $2^{nd}$ FNG irradiation campaign
+.. list-table:: Experimental measure of the SDDR during 2nd FNG irradiation campaign
     :header-rows: 1
 
     * - Cooldown Time [s]
@@ -247,7 +248,7 @@ When simulating with the D1S approach, in order to reduce the computation time i
 to individuate the subset of decay isotopes which contribute the most to the dose rate. This
 subset will depend from the unirradiated material composition and the cool-down time that are considered.
 In order to do so, preliminary activation calculation are usually performed with the help of
-activation codes like FISPACT or ACAB. Fortunately these studies have been already conducted
+activation codes like FISPACT or ACAB. These studies have been already conducted
 both during the D1S libraries initial V&V procedure and when the experimental results were tested for
 the first time. The next plot lists the isotopes
 contributing cumulatively to more than 95% of the dose rate during the first irradiation campaign.

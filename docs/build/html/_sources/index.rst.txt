@@ -37,6 +37,7 @@ GitHub repository [link].
    usage/postprocessing
    usage/utilities
    usage/tipstricks
+   usage/troubleshooting
 
 .. toctree::
    :maxdepth: 2
@@ -59,6 +60,7 @@ GitHub repository [link].
    :caption: More on JADE:
 
    testing/testing
+   futuredev
    LICENSE
    contributors
    publications

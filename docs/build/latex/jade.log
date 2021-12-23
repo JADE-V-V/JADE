@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6) (preloaded format=pdflatex 2021.6.22)  29 OCT 2021 10:05
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6) (preloaded format=pdflatex 2021.6.22)  23 DEC 2021 10:10
 entering extended mode
 **./jade.tex
 (jade.tex
@@ -142,8 +142,26 @@ Package babel Info: Hyphen rules for 'australian' set to \l@ukenglish
 Package babel Info: Hyphen rules for 'newzealand' set to \l@ukenglish
 (babel)             (\language73). Reported on input line 108.
 ))
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\times.sty
-Package: times 2020/03/25 PSNFSS-v9.3 (SPQR) 
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/tex-gyre\tgtermes.sty
+Package: tgtermes 2009/09/27 v1.2 TeX Gyre Termes as default roman family
+
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/kvoptions\kvoptions.s
+ty
+Package: kvoptions 2020-10-07 v3.14 Key value format for package options (HO)
+
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks23
+)
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/generic/ltxcmds\ltxcmds.sty
+Package: ltxcmds 2020-05-10 v1.25 LaTeX kernel commands for general use (HO)
+)
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/generic/kvsetkeys\kvsetkeys
+.sty
+Package: kvsetkeys 2019/12/15 v1.18 Key value parser (HO)
+)))
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/tex-gyre\tgheros.sty
+Package: tgheros 2009/09/27 v1.2 TeX Gyre Heros as default sans serif family
 )
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/fncychap\fncychap.sty
 Package: fncychap 2007/07/30 v1.34 LaTeX package (Revised chapters)
@@ -157,121 +175,8 @@ Package: fncychap 2007/07/30 v1.34 LaTeX package (Revised chapters)
 \c@AlphaCnt=\count271
 \c@AlphaDecCnt=\count272
 ) (sphinx.sty
-Package: sphinx 2019/09/02 v2.3.0 LaTeX package (Sphinx markup)
+Package: sphinx 2021/01/27 v4.0.0 LaTeX package (Sphinx markup)
 
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/generic/ltxcmds\ltxcmds.sty
-Package: ltxcmds 2020-05-10 v1.25 LaTeX kernel commands for general use (HO)
-)
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
-Package: graphicx 2020/12/05 v1.2c Enhanced LaTeX Graphics (DPC,SPQR)
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
-Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
-\KV@toks@=\toks23
-)
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
-Package: graphics 2021/03/04 v1.4d Standard LaTeX Graphics (DPC,SPQR)
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty
-Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
-)
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics
-.cfg
-File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
-)
-Package graphics Info: Driver file: pdftex.def on input line 107.
-
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.d
-ef
-File: pdftex.def 2020/10/05 v1.2a Graphics/color driver for pdftex
-))
-\Gin@req@height=\dimen149
-\Gin@req@width=\dimen150
-)
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/fancyhdr\fancyhdr.sty
-Package: fancyhdr 2021/01/28 v4.0.1 Extensive control of page headers and foote
-rs
-\f@nch@headwidth=\skip59
-\f@nch@O@elh=\skip60
-\f@nch@O@erh=\skip61
-\f@nch@O@olh=\skip62
-\f@nch@O@orh=\skip63
-\f@nch@O@elf=\skip64
-\f@nch@O@erf=\skip65
-\f@nch@O@olf=\skip66
-\f@nch@O@orf=\skip67
-) (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/base\textcomp.sty
-Package: textcomp 2020/02/02 v2.0n Standard LaTeX package
-)
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/titlesec\titlesec.sty
-Package: titlesec 2019/10/16 v2.13 Sectioning titles
-\ttl@box=\box52
-\beforetitleunit=\skip68
-\aftertitleunit=\skip69
-\ttl@plus=\dimen151
-\ttl@minus=\dimen152
-\ttl@toksa=\toks24
-\titlewidth=\dimen153
-\titlewidthlast=\dimen154
-\titlewidthfirst=\dimen155
-)
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/tabulary\tabulary.sty
-Package: tabulary 2014/06/11 v0.10 tabulary package (DPC)
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/tools\array.sty
-Package: array 2021/04/20 v2.5e Tabular extension package (FMi)
-\col@sep=\dimen156
-\ar@mcellbox=\box53
-\extrarowheight=\dimen157
-\NC@list=\toks25
-\extratabsurround=\skip70
-\backup@length=\skip71
-\ar@cellbox=\box54
-)
-\TY@count=\count273
-\TY@linewidth=\dimen158
-\tymin=\dimen159
-\tymax=\dimen160
-\TY@tablewidth=\dimen161
-)
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/tools\longtable.sty
-Package: longtable 2021-05-07 v4.16 Multi-page Table package (DPC)
-\LTleft=\skip72
-\LTright=\skip73
-\LTpre=\skip74
-\LTpost=\skip75
-\LTchunksize=\count274
-\LTcapwidth=\dimen162
-\LT@head=\box55
-\LT@firsthead=\box56
-\LT@foot=\box57
-\LT@lastfoot=\box58
-\LT@gbox=\box59
-\LT@cols=\count275
-\LT@rows=\count276
-\c@LT@tables=\count277
-\c@LT@chunks=\count278
-\LT@p@ftn=\toks26
-)
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/varwidth\varwidth.sty
-Package: varwidth 2009/03/30 ver 0.92;  Variable-width minipages
-\@vwid@box=\box60
-\sift@deathcycles=\count279
-\@vwid@loff=\dimen163
-\@vwid@roff=\dimen164
-) (sphinxmulticell.sty
-Package: sphinxmulticell 2017/02/23 v1.6 better span rows and columns of a tabl
-e (Sphinx team)
-\sphinx@TY@tablewidth=\dimen165
-)
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/base\makeidx.sty
-Package: makeidx 2014/09/29 v1.0m Standard LaTeX package
-)
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/framed\framed.sty
-Package: framed 2011/10/22 v 0.96: framed or shaded text with page breaks
-\OuterFrameSep=\skip76
-\fb@frw=\dimen166
-\fb@frh=\dimen167
-\FrameRule=\dimen168
-\FrameSep=\dimen169
-)
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/xcolor\xcolor.sty
 Package: xcolor 2016/05/11 v2.12 LaTeX color extensions (UK)
 
@@ -280,6 +185,11 @@ g
 File: color.cfg 2016/01/02 v1.6 sample color configuration
 )
 Package xcolor Info: Driver file: pdftex.def on input line 225.
+
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.d
+ef
+File: pdftex.def 2020/10/05 v1.2a Graphics/color driver for pdftex
+)
 Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1348.
 Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1352.
 Package xcolor Info: Model `RGB' extended on input line 1364.
@@ -290,36 +200,245 @@ Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1369.
 Package xcolor Info: Model `Gray' substituted by `gray' on input line 1370.
 Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
 )
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/fancyvrb\fancyvrb.sty
-Package: fancyvrb 2021/01/20 v3.7 verbatim text (tvz,hv)
-\FV@CodeLineNo=\count280
-\FV@InFile=\read3
-\FV@TabBox=\box61
-\c@FancyVerbLine=\count281
-\FV@StepNumber=\count282
-\FV@OutFile=\write3
-) (footnotehyper-sphinx.sty
-Package: footnotehyper-sphinx 2017/10/27 v1.7 hyperref aware footnote.sty for s
-phinx (JFB)
-\FNH@notes=\box62
-\FNH@width=\dimen170
+\sphinxverbatimsep=\dimen149
+\sphinxverbatimborder=\dimen150
+\sphinxshadowsep=\dimen151
+\sphinxshadowsize=\dimen152
+\sphinxshadowrule=\dimen153
+\spx@notice@border=\dimen154
+ (sphinxoptionshyperref.sty
+File: sphinxoptionshyperref.sty 2021/01/27 hyperref
+) (sphinxoptionsgeometry.sty
+File: sphinxoptionsgeometry.sty 2021/01/27 geometry
+)
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/base\textcomp.sty
+Package: textcomp 2020/02/02 v2.0n Standard LaTeX package
 )
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/float\float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count283
-\float@exts=\toks27
-\float@box=\box63
-\@float@everytoks=\toks28
-\@floatcapt=\box64
+\c@float@type=\count273
+\float@exts=\toks24
+\float@box=\box52
+\@float@everytoks=\toks25
+\@floatcapt=\box53
 )
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/wrapfig\wrapfig.sty
-\wrapoverhang=\dimen171
-\WF@size=\dimen172
-\c@WF@wrappedlines=\count284
-\WF@box=\box65
-\WF@everypar=\toks29
+\wrapoverhang=\dimen155
+\WF@size=\dimen156
+\c@WF@wrappedlines=\count274
+\WF@box=\box54
+\WF@everypar=\toks26
 Package: wrapfig 2003/01/31  v 3.6
 )
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/capt-of\capt-of.sty
+Package: capt-of 2009/12/29 v0.2 standard captions outside of floats
+)
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/tools\multicol.sty
+Package: multicol 2019/12/09 v1.8y multicolumn formatting (FMi)
+\c@tracingmulticols=\count275
+\mult@box=\box55
+\multicol@leftmargin=\dimen157
+\c@unbalance=\count276
+\c@collectmore=\count277
+\doublecol@number=\count278
+\multicoltolerance=\count279
+\multicolpretolerance=\count280
+\full@width=\dimen158
+\page@free=\dimen159
+\premulticols=\dimen160
+\postmulticols=\dimen161
+\multicolsep=\skip59
+\multicolbaselineskip=\skip60
+\partial@page=\box56
+\last@line=\box57
+\maxbalancingoverflow=\dimen162
+\mult@rightbox=\box58
+\mult@grightbox=\box59
+\mult@gfirstbox=\box60
+\mult@firstbox=\box61
+\@tempa=\box62
+\@tempa=\box63
+\@tempa=\box64
+\@tempa=\box65
+\@tempa=\box66
+\@tempa=\box67
+\@tempa=\box68
+\@tempa=\box69
+\@tempa=\box70
+\@tempa=\box71
+\@tempa=\box72
+\@tempa=\box73
+\@tempa=\box74
+\@tempa=\box75
+\@tempa=\box76
+\@tempa=\box77
+\@tempa=\box78
+\@tempa=\box79
+\@tempa=\box80
+\@tempa=\box81
+\@tempa=\box82
+\@tempa=\box83
+\@tempa=\box84
+\@tempa=\box85
+\@tempa=\box86
+\@tempa=\box87
+\@tempa=\box88
+\@tempa=\box89
+\@tempa=\box90
+\@tempa=\box91
+\@tempa=\box92
+\@tempa=\box93
+\@tempa=\box94
+\@tempa=\box95
+\@tempa=\box96
+\@tempa=\box97
+\@tempa=\box98
+\c@minrows=\count281
+\c@columnbadness=\count282
+\c@finalcolumnbadness=\count283
+\last@try=\dimen163
+\multicolovershoot=\dimen164
+\multicolundershoot=\dimen165
+\mult@nat@firstbox=\box99
+\colbreak@box=\box100
+\mc@col@check@num=\count284
+)
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
+Package: graphicx 2020/12/05 v1.2c Enhanced LaTeX Graphics (DPC,SPQR)
+
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
+Package: graphics 2021/03/04 v1.4d Standard LaTeX Graphics (DPC,SPQR)
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics
+.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 107.
+)
+\Gin@req@height=\dimen166
+\Gin@req@width=\dimen167
+) (sphinxlatexgraphics.sty
+File: sphinxlatexgraphics.sty 2021/01/27 graphics
+\spx@image@maxheight=\dimen168
+\spx@image@box=\box101
+) (sphinxlatexadmonitions.sty
+File: sphinxlatexadmonitions.sty 2021/01/27 admonitions
+
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/framed\framed.sty
+Package: framed 2011/10/22 v 0.96: framed or shaded text with page breaks
+\OuterFrameSep=\skip61
+\fb@frw=\dimen169
+\fb@frh=\dimen170
+\FrameRule=\dimen171
+\FrameSep=\dimen172
+))
+(sphinxlatexliterals.sty
+File: sphinxlatexliterals.sty 2021/01/27 code-blocks and parsed literals
+
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/fancyvrb\fancyvrb.sty
+Package: fancyvrb 2021/01/20 v3.7 verbatim text (tvz,hv)
+\FV@CodeLineNo=\count285
+\FV@InFile=\read3
+\FV@TabBox=\box102
+\c@FancyVerbLine=\count286
+\FV@StepNumber=\count287
+\FV@OutFile=\write3
+) (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/base\alltt.sty
+Package: alltt 2021/01/29 v2.0g defines alltt environment
+)
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/upquote\upquote.sty
+Package: upquote 2012/04/19 v1.3 upright-quote and grave-accent glyphs in verba
+tim
+)
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/needspace\needspace.s
+ty
+Package: needspace 2010/09/12 v1.3d reserve vertical space
+)
+\sphinxcontinuationbox=\box103
+\sphinxvisiblespacebox=\box104
+\sphinxVerbatim@TitleBox=\box105
+\sphinxVerbatim@ContentsBox=\box106
+\spx@scratchbox=\box107
+) (sphinxlatexshadowbox.sty
+File: sphinxlatexshadowbox.sty 2021/01/27 sphinxShadowBox
+) (sphinxlatexcontainers.sty
+File: sphinxlatexcontainers.sty 2021/05/03 containers
+)
+(sphinxhighlight.sty
+Package: sphinxhighlight 2016/05/29 stylesheet for highlighting with pygments
+) (sphinxlatextables.sty
+File: sphinxlatextables.sty 2021/01/27 tables
+
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/tabulary\tabulary.sty
+Package: tabulary 2014/06/11 v0.10 tabulary package (DPC)
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/tools\array.sty
+Package: array 2021/04/20 v2.5e Tabular extension package (FMi)
+\col@sep=\dimen173
+\ar@mcellbox=\box108
+\extrarowheight=\dimen174
+\NC@list=\toks27
+\extratabsurround=\skip62
+\backup@length=\skip63
+\ar@cellbox=\box109
+)
+\TY@count=\count288
+\TY@linewidth=\dimen175
+\tymin=\dimen176
+\tymax=\dimen177
+\TY@tablewidth=\dimen178
+)
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/tools\longtable.sty
+Package: longtable 2021-05-07 v4.16 Multi-page Table package (DPC)
+\LTleft=\skip64
+\LTright=\skip65
+\LTpre=\skip66
+\LTpost=\skip67
+\LTchunksize=\count289
+\LTcapwidth=\dimen179
+\LT@head=\box110
+\LT@firsthead=\box111
+\LT@foot=\box112
+\LT@lastfoot=\box113
+\LT@gbox=\box114
+\LT@cols=\count290
+\LT@rows=\count291
+\c@LT@tables=\count292
+\c@LT@chunks=\count293
+\LT@p@ftn=\toks28
+)
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/varwidth\varwidth.sty
+Package: varwidth 2009/03/30 ver 0.92;  Variable-width minipages
+\@vwid@box=\box115
+\sift@deathcycles=\count294
+\@vwid@loff=\dimen180
+\@vwid@roff=\dimen181
+)
+\sphinx@TY@tablewidth=\dimen182
+) (sphinxlatexnumfig.sty
+File: sphinxlatexnumfig.sty 2021/01/27 numbering
+) (sphinxlatexlists.sty
+File: sphinxlatexlists.sty 2021/01/27 lists
+)
+\c@sphinxscope=\count295
+\c@sphinxexplicit=\count296
+ (sphinxpackagefootnote.sty
+Package: sphinxpackagefootnote 2021/02/04 v1.1d footnotehyper adapted to sphinx
+ (Sphinx team)
+\FNH@notes=\box116
+\FNH@toks=\toks29
+\FNH@width=\dimen183
+)
+(sphinxlatexindbibtoc.sty
+File: sphinxlatexindbibtoc.sty 2021/01/27 index, bib., toc
+
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/base\makeidx.sty
+Package: makeidx 2014/09/29 v1.0m Standard LaTeX package
+))
+(sphinxlatexstylepage.sty
+File: sphinxlatexstylepage.sty 2021/01/27 page styling
+
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/parskip\parskip.sty
 Rollback for package 'parskip' requested -> version 'v1'.
          This corresponds to the release introduced on 2001-04-09.
@@ -328,47 +447,40 @@ Rollback for package 'parskip' requested -> version 'v1'.
 04-09.sty
 Package: parskip 2001/04/09 non-zero parskip adjustments
 ))
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/base\alltt.sty
-Package: alltt 2021/01/29 v2.0g defines alltt environment
-)
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/upquote\upquote.sty
-Package: upquote 2012/04/19 v1.3 upright-quote and grave-accent glyphs in verba
-tim
-)
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/capt-of\capt-of.sty
-Package: capt-of 2009/12/29 v0.2 standard captions outside of floats
-)
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/needspace\needspace.s
-ty
-Package: needspace 2010/09/12 v1.3d reserve vertical space
-) (sphinxhighlight.sty
-Package: sphinxhighlight 2016/05/29 stylesheet for highlighting with pygments
-)
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/kvoptions\kvoptions.s
-ty
-Package: kvoptions 2020-10-07 v3.14 Key value format for package options (HO)
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/fancyhdr\fancyhdr.sty
+Package: fancyhdr 2021/01/28 v4.0.1 Extensive control of page headers and foote
+rs
+\f@nch@headwidth=\skip68
+\f@nch@O@elh=\skip69
+\f@nch@O@erh=\skip70
+\f@nch@O@olh=\skip71
+\f@nch@O@orh=\skip72
+\f@nch@O@elf=\skip73
+\f@nch@O@erf=\skip74
+\f@nch@O@olf=\skip75
+\f@nch@O@orf=\skip76
+)) (sphinxlatexstyleheadings.sty
+File: sphinxlatexstyleheadings.sty 2021/01/27 headings
 
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/generic/kvsetkeys\kvsetkeys
-.sty
-Package: kvsetkeys 2019/12/15 v1.18 Key value parser (HO)
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/titlesec\titlesec.sty
+Package: titlesec 2019/10/16 v2.13 Sectioning titles
+\ttl@box=\box117
+\beforetitleunit=\skip77
+\aftertitleunit=\skip78
+\ttl@plus=\dimen184
+\ttl@minus=\dimen185
+\ttl@toksa=\toks30
+\titlewidth=\dimen186
+\titlewidthlast=\dimen187
+\titlewidthfirst=\dimen188
+)) (sphinxlatexstyletext.sty
+File: sphinxlatexstyletext.sty 2021/01/27 text styling
+) (sphinxlatexobjects.sty
+File: sphinxlatexobjects.sty 2021/01/27 documentation environments
+\py@argswidth=\skip79
+\lineblockindentation=\skip80
+\DUlineblockindent=\skip81
 ))
-\sphinxverbatimsep=\dimen173
-\sphinxverbatimborder=\dimen174
-\sphinxshadowsep=\dimen175
-\sphinxshadowsize=\dimen176
-\sphinxshadowrule=\dimen177
-\spx@notice@border=\dimen178
-\spx@image@maxheight=\dimen179
-\spx@image@box=\dimen180
-\c@literalblock=\count285
-\sphinxcontinuationbox=\box66
-\sphinxvisiblespacebox=\box67
-\sphinxVerbatim@TitleBox=\box68
-\sphinxVerbatim@ContentsBox=\box69
-\py@argswidth=\skip77
-\lineblockindentation=\skip78
-\DUlineblockindent=\skip79
-)
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.sty
 Package: geometry 2020/01/02 v5.9 Page Geometry
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifvtex.sty
@@ -377,18 +489,18 @@ Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/generic/iftex\iftex.sty
 Package: iftex 2020/03/06 v1.0d TeX engine tests
 ))
-\Gm@cnth=\count286
-\Gm@cntv=\count287
-\c@Gm@tempcnt=\count288
-\Gm@bindingoffset=\dimen181
-\Gm@wd@mp=\dimen182
-\Gm@odd@mp=\dimen183
-\Gm@even@mp=\dimen184
-\Gm@layoutwidth=\dimen185
-\Gm@layoutheight=\dimen186
-\Gm@layouthoffset=\dimen187
-\Gm@layoutvoffset=\dimen188
-\Gm@dimlist=\toks30
+\Gm@cnth=\count297
+\Gm@cntv=\count298
+\c@Gm@tempcnt=\count299
+\Gm@bindingoffset=\dimen189
+\Gm@wd@mp=\dimen190
+\Gm@odd@mp=\dimen191
+\Gm@even@mp=\dimen192
+\Gm@layoutwidth=\dimen193
+\Gm@layoutheight=\dimen194
+\Gm@layouthoffset=\dimen195
+\Gm@layoutvoffset=\dimen196
+\Gm@dimlist=\toks31
 
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.cfg
 ))
@@ -426,9 +538,9 @@ Package: letltxmacro 2019/12/03 v1.6 Let assignment for LaTeX macros (HO)
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/auxhook\auxhook.sty
 Package: auxhook 2019-12-17 v1.6 Hooks for auxiliary files (HO)
 )
-\@linkdim=\dimen189
-\Hy@linkcounter=\count289
-\Hy@pagecounter=\count290
+\@linkdim=\dimen197
+\Hy@linkcounter=\count300
+\Hy@pagecounter=\count301
 
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pd1enc.def
 File: pd1enc.def 2021-06-05 v7.00l Hyperref: PDFDocEncoding definition (HO)
@@ -447,7 +559,7 @@ Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 ty
 Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
 )
-\Hy@SavedSpaceFactor=\count291
+\Hy@SavedSpaceFactor=\count302
 
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\puenc.def
 File: puenc.def 2021-06-05 v7.00l Hyperref: PDF Unicode definition (HO)
@@ -464,14 +576,14 @@ Package hyperref Info: Plain pages OFF on input line 4207.
 Package hyperref Info: Backreferencing OFF on input line 4212.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4445.
-\c@Hy@tempcnt=\count292
+\c@Hy@tempcnt=\count303
 
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty
 \Urlmuskip=\muskip17
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 4804.
-\XeTeXLinkMargin=\dimen190
+\XeTeXLinkMargin=\dimen198
 
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/generic/bitset\bitset.sty
 Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
@@ -481,9 +593,9 @@ lc.sty
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
 )
 ))
-\Fld@menulength=\count293
-\Field@Width=\dimen191
-\Fld@charsize=\dimen192
+\Fld@menulength=\count304
+\Field@Width=\dimen199
+\Fld@charsize=\dimen256
 Package hyperref Info: Hyper figures OFF on input line 6076.
 Package hyperref Info: Link nesting OFF on input line 6081.
 Package hyperref Info: Hyper index ON on input line 6084.
@@ -498,9 +610,9 @@ LaTeX Info: Redefining \pageref on input line 6150.
 Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
 package with kernel methods
 )
-\Hy@abspage=\count294
-\c@Item=\count295
-\c@Hfootnote=\count296
+\Hy@abspage=\count305
+\c@Item=\count306
+\c@Hfootnote=\count307
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
 
@@ -513,8 +625,8 @@ Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atvery packag
 e
 with kernel methods
 )
-\Fld@listcount=\count297
-\c@bookmark@seq@number=\count298
+\Fld@listcount=\count308
+\c@bookmark@seq@number=\count309
 
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/rerunfilecheck\rerunf
 ilecheck.sty
@@ -527,7 +639,7 @@ Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 86.
 )
-\Hy@SectionHShift=\skip80
+\Hy@SectionHShift=\skip82
 )
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/oberdiek\hypcap.sty
 Package: hypcap 2016/05/16 v1.12 Adjusting the anchors of captions (HO)
@@ -540,52 +652,52 @@ Package: sphinxmessages 2019/01/04 v2.0 Localized LaTeX macros (Sphinx team)
 
 
 Writing index file jade.idx
-LaTeX Font Info:    Trying to load font information for T1+ptm on input line 83
+LaTeX Font Info:    Trying to load font information for T1+qtm on input line 70
 .
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\t1ptm.fd
-File: t1ptm.fd 2001/06/04 font definitions for T1/ptm.
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/tex-gyre\t1qtm.fd
+File: t1qtm.fd 2009/09/25 v1.2 font definition file for T1/qtm
 )
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-p
 dftex.def
 File: l3backend-pdftex.def 2021-05-07 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count299
-\l__pdf_internal_box=\box70
+\l__color_backend_stack_int=\count310
+\l__pdf_internal_box=\box118
 ) (jade.aux)
 \openout1 = `jade.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 83.
-LaTeX Font Info:    ... okay on input line 83.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 83.
-LaTeX Font Info:    ... okay on input line 83.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 83.
-LaTeX Font Info:    ... okay on input line 83.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 83.
-LaTeX Font Info:    ... okay on input line 83.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 83.
-LaTeX Font Info:    ... okay on input line 83.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 83.
-LaTeX Font Info:    ... okay on input line 83.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 83.
-LaTeX Font Info:    ... okay on input line 83.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 83.
-LaTeX Font Info:    ... okay on input line 83.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 83.
-LaTeX Font Info:    ... okay on input line 83.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 70.
+LaTeX Font Info:    ... okay on input line 70.
 
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.
 mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count300
-\scratchdimen=\dimen193
-\scratchbox=\box71
-\nofMPsegments=\count301
-\nofMParguments=\count302
-\everyMPshowfont=\toks31
-\MPscratchCnt=\count303
-\MPscratchDim=\dimen194
-\MPnumerator=\count304
-\makeMPintoPDFobject=\count305
-\everyMPtoPDFconversion=\toks32
+\scratchcounter=\count311
+\scratchdimen=\dimen257
+\scratchbox=\box119
+\nofMPsegments=\count312
+\nofMParguments=\count313
+\everyMPshowfont=\toks32
+\MPscratchCnt=\count314
+\MPscratchDim=\dimen258
+\MPnumerator=\count315
+\makeMPintoPDFobject=\count316
+\everyMPtoPDFconversion=\toks33
 )
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf
 -base.sty
@@ -597,6 +709,8 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 .cfg
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
+\c@literalblock=\count317
+
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -631,7 +745,7 @@ File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-Package hyperref Info: Link coloring ON on input line 83.
+Package hyperref Info: Link coloring ON on input line 70.
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
 
@@ -642,34 +756,29 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 itlestring.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count306
+\c@section@level=\count318
 )
-LaTeX Info: Redefining \ref on input line 83.
-LaTeX Info: Redefining \pageref on input line 83.
-LaTeX Info: Redefining \nameref on input line 83.
+LaTeX Info: Redefining \ref on input line 70.
+LaTeX Info: Redefining \pageref on input line 70.
+LaTeX Info: Redefining \nameref on input line 70.
  (jade.out) (jade.out)
 \@outlinefile=\write5
 \openout5 = `jade.out'.
 
-Package hyperref Info: Option `pageanchor' set `false' on input line 86.
-LaTeX Font Info:    Trying to load font information for T1+phv on input line 86
+Package hyperref Info: Option `pageanchor' set `false' on input line 73.
+LaTeX Font Info:    Trying to load font information for T1+qhv on input line 73
 .
 
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\t1phv.fd
-File: t1phv.fd 2020/03/25 scalable font definitions for T1/phv.
-)
-LaTeX Font Info:    Font shape `T1/phv/b/it' in size <10> not available
-(Font)              Font shape `T1/phv/b/sl' tried instead on input line 86.
-LaTeX Font Info:    Font shape `T1/phv/b/it' in size <17.28> not available
-(Font)              Font shape `T1/phv/b/sl' tried instead on input line 86.
-<<ot1.cmap>><<oml.cmap>><<oms.cmap>><<omx.cmap>>
-LaTeX Font Info:    Trying to load font information for U+msa on input line 86.
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/tex-gyre\t1qhv.fd
+File: t1qhv.fd 2009/09/25 v1.2 font definition file for T1/qhv
+)<<ot1.cmap>><<oml.cmap>><<oms.cmap>><<omx.cmap>>
+LaTeX Font Info:    Trying to load font information for U+msa on input line 73.
 
 
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 86.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 73.
 
 
 (C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
@@ -688,11 +797,11 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 \openout6 = `jade.toc'.
 
  [2]
-LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 1
-01.
+LaTeX Font Info:    Trying to load font information for TS1+qtm on input line 9
+1.
 
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ts1ptm.fd
-File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/tex-gyre\ts1qtm.fd
+File: ts1qtm.fd 2009/09/25 v1.2 font definition file for TS1/qtm
 )
 [1
 
@@ -700,582 +809,587 @@ File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 
 ]
 Chapter 1.
-<scheme.png, id=393, 466.8642pt x 282.8166pt>
-LaTeX Font Info:    Trying to load font information for T1+pcr on input line 12
-0.
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\t1pcr.fd
-File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
+<scheme.png, id=700, 466.8642pt x 282.8166pt>
+LaTeX Font Info:    Trying to load font information for T1+txtt on input line 1
+14.
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/txfonts\t1txtt.fd
+File: t1txtt.fd 2000/12/15 v3.1
 )
 File: scheme.png Graphic file (type png)
 <use scheme.png>
-Package pdftex.def Info: scheme.png  used on input line 120.
+Package pdftex.def Info: scheme.png  used on input line 114.
 (pdftex.def)             Requested size: 451.68457pt x 273.62834pt.
 
 [3 <./scheme.png>] [4]
 Chapter 2.
 [5
 
-] [6
-
-]
+] [6]
 Chapter 3.
-[7] [8] [9] [10
 
-]
+Overfull \vbox (4.72195pt too high) detected at line 381
+ []
+
+[7
+
+] [8] [9] [10]
 Chapter 4.
-<main.png, id=451, 778.70924pt x 87.32625pt>
+<main.png, id=764, 778.70924pt x 87.32625pt>
 File: main.png Graphic file (type png)
 <use main.png>
-Package pdftex.def Info: main.png  used on input line 416.
+Package pdftex.def Info: main.png  used on input line 526.
 (pdftex.def)             Requested size: 451.68457pt x 50.65324pt.
-[11 <./main.png>]
-<comp.png, id=459, 781.11826pt x 232.4685pt>
-File: comp.png Graphic file (type png)
-<use comp.png>
-Package pdftex.def Info: comp.png  used on input line 439.
-(pdftex.def)             Requested size: 451.68457pt x 134.42743pt.
-LaTeX Font Info:    Trying to load font information for TS1+pcr on input line 5
-07.
+[11
 
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ts1pcr.fd
-File: ts1pcr.fd 2001/06/04 font definitions for TS1/pcr.
+ <./main.png>]
+<comp.jpg, id=771, 955.77075pt x 204.16275pt>
+File: comp.jpg Graphic file (type jpg)
+<use comp.jpg>
+Package pdftex.def Info: comp.jpg  used on input line 553.
+(pdftex.def)             Requested size: 451.68457pt x 96.4861pt.
+LaTeX Font Info:    Trying to load font information for TS1+txtt on input line 
+643.
+
+(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/txfonts\ts1txtt.fd
+File: ts1txtt.fd 2000/12/15 v3.1
 )
-[12 <./comp.png>]
-<exp.png, id=467, 773.89125pt x 203.5605pt>
-File: exp.png Graphic file (type png)
-<use exp.png>
-Package pdftex.def Info: exp.png  used on input line 520.
-(pdftex.def)             Requested size: 451.68457pt x 118.81062pt.
-<lib.png, id=469, 195.73125pt x 102.3825pt>
+[12 <./comp.jpg>]
+<exp.jpg, id=778, 831.105pt x 90.93974pt>
+File: exp.jpg Graphic file (type jpg)
+<use exp.jpg>
+Package pdftex.def Info: exp.jpg  used on input line 657.
+(pdftex.def)             Requested size: 451.68457pt x 49.4231pt.
+<lib.png, id=780, 195.73125pt x 102.3825pt>
 File: lib.png Graphic file (type png)
 <use lib.png>
-Package pdftex.def Info: lib.png  used on input line 528.
+Package pdftex.def Info: lib.png  used on input line 666.
 (pdftex.def)             Requested size: 301.12305pt x 157.51956pt.
- [13 <./exp.png> <./lib.png>]
-<activation.jpg, id=478, 443.85825pt x 274.626pt>
+<activation.jpg, id=781, 443.85825pt x 274.626pt>
 File: activation.jpg Graphic file (type jpg)
 <use activation.jpg>
-Package pdftex.def Info: activation.jpg  used on input line 542.
+Package pdftex.def Info: activation.jpg  used on input line 682.
 (pdftex.def)             Requested size: 451.68457pt x 279.47366pt.
- [14 <./activation.jpg>]
-<excelbench.png, id=483, 317.988pt x 348.1005pt>
+ [13 <./exp.jpg> <./lib.png>] [14 <./activation.jpg>]
+<excelbench.png, id=792, 317.988pt x 348.1005pt>
 File: excelbench.png Graphic file (type png)
 <use excelbench.png>
-Package pdftex.def Info: excelbench.png  used on input line 572.
+Package pdftex.def Info: excelbench.png  used on input line 758.
 (pdftex.def)             Requested size: 451.68457pt x 494.48143pt.
- [15 <./excelbench.png>]
-<atlasbench.png, id=491, 402.90524pt x 348.1005pt>
+ [15]
+[16 <./excelbench.png>]
+<atlasbench.png, id=803, 402.90524pt x 348.1005pt>
 File: atlasbench.png Graphic file (type png)
 <use atlasbench.png>
-Package pdftex.def Info: atlasbench.png  used on input line 676.
+Package pdftex.def Info: atlasbench.png  used on input line 885.
 (pdftex.def)             Requested size: 451.68457pt x 390.26826pt.
- [16] [17 <./atlasbench.png>] [18]
+ [17] [18 <./atlasbench.png>] [19] [20
+
+]
 Chapter 5.
-<main_menu.png, id=510, 483.60675pt x 574.5465pt>
+<main_menu.png, id=825, 399.29175pt x 553.46774pt>
 File: main_menu.png Graphic file (type png)
 <use main_menu.png>
-Package pdftex.def Info: main_menu.png  used on input line 724.
-(pdftex.def)             Requested size: 301.12305pt x 357.74934pt.
-[19
-
- <./main_menu.png>]
-<compmenu.png, id=520, 451.6875pt x 355.92975pt>
+Package pdftex.def Info: main_menu.png  used on input line 946.
+(pdftex.def)             Requested size: 301.12305pt x 417.39688pt.
+[21 <./main_menu.png>]
+<compmenu.png, id=836, 451.6875pt x 355.92975pt>
 File: compmenu.png Graphic file (type png)
 <use compmenu.png>
-Package pdftex.def Info: compmenu.png  used on input line 760.
+Package pdftex.def Info: compmenu.png  used on input line 990.
 (pdftex.def)             Requested size: 301.12305pt x 237.29858pt.
- [20 <./compmenu.png>]
-<expmenu.png, id=527, 448.074pt x 350.5095pt>
+ [22 <./compmenu.png>]
+<expmenu.png, id=843, 448.074pt x 350.5095pt>
 File: expmenu.png Graphic file (type png)
 <use expmenu.png>
-Package pdftex.def Info: expmenu.png  used on input line 809.
+Package pdftex.def Info: expmenu.png  used on input line 1051.
 (pdftex.def)             Requested size: 301.12305pt x 235.55682pt.
- [21 <./expmenu.png>]
-<postmenu.png, id=535, 452.892pt x 367.97475pt>
+ [23 <./expmenu.png>]
+<postmenu.png, id=850, 452.892pt x 367.97475pt>
 File: postmenu.png Graphic file (type png)
 <use postmenu.png>
-Package pdftex.def Info: postmenu.png  used on input line 856.
+Package pdftex.def Info: postmenu.png  used on input line 1108.
 (pdftex.def)             Requested size: 301.12305pt x 244.66644pt.
- [22 <./postmenu.png>] [23] [24
+ [24 <./postmenu.png>] [25] [26
 
 ]
 Chapter 6.
-<sphere.png, id=554, 224.037pt x 222.5916pt>
+<sphere.png, id=869, 224.037pt x 222.5916pt>
 File: sphere.png Graphic file (type png)
 <use sphere.png>
-Package pdftex.def Info: sphere.png  used on input line 984.
+Package pdftex.def Info: sphere.png  used on input line 1260.
 (pdftex.def)             Requested size: 224.03644pt x 222.59105pt.
-[25] [26 <./sphere.png>]
-<iter1D.png, id=567, 542.5068pt x 542.025pt>
+[27] [28 <./sphere.png>]
+<iter1D.png, id=881, 542.5068pt x 542.025pt>
 File: iter1D.png Graphic file (type png)
 <use iter1D.png>
-Package pdftex.def Info: iter1D.png  used on input line 1117.
+Package pdftex.def Info: iter1D.png  used on input line 1416.
 (pdftex.def)             Requested size: 451.68457pt x 451.28664pt.
-<materialsITER1D.png, id=568, 626.94225pt x 432.4155pt>
+<materialsITER1D.png, id=882, 626.94225pt x 432.4155pt>
 File: materialsITER1D.png Graphic file (type png)
 <use materialsITER1D.png>
-Package pdftex.def Info: materialsITER1D.png  used on input line 1137.
+Package pdftex.def Info: materialsITER1D.png  used on input line 1438.
 (pdftex.def)             Requested size: 451.68457pt x 311.53687pt.
- [27] [28 <./iter1D.png>] [29 <./materialsITER1D.png>]
-[30]
-<ITERCAD.png, id=594, 561.59813pt x 542.025pt>
+ [29] [30 <./iter1D.png>] [31 <./materialsITER1D.png>]
+[32]
+<ITERCAD.png, id=903, 561.59813pt x 542.025pt>
 File: ITERCAD.png Graphic file (type png)
 <use ITERCAD.png>
-Package pdftex.def Info: ITERCAD.png  used on input line 1260.
+Package pdftex.def Info: ITERCAD.png  used on input line 1590.
 (pdftex.def)             Requested size: 451.68457pt x 435.93636pt.
-<tbmCAD.png, id=595, 523.9575pt x 510.10574pt>
+<tbmCAD.png, id=904, 523.9575pt x 510.10574pt>
 File: tbmCAD.png Graphic file (type png)
 <use tbmCAD.png>
-Package pdftex.def Info: tbmCAD.png  used on input line 1267.
+Package pdftex.def Info: tbmCAD.png  used on input line 1597.
 (pdftex.def)             Requested size: 451.68457pt x 439.75652pt.
-<HCPBcad.png, id=597, 604.659pt x 267.399pt>
+<HCPBcad.png, id=906, 604.659pt x 267.399pt>
 File: HCPBcad.png Graphic file (type png)
 <use HCPBcad.png>
-Package pdftex.def Info: HCPBcad.png  used on input line 1290.
+Package pdftex.def Info: HCPBcad.png  used on input line 1623.
 (pdftex.def)             Requested size: 451.68457pt x 199.74904pt.
-<HCPBmcnp.png, id=598, 474.573pt x 140.9265pt>
+<HCPBmcnp.png, id=907, 474.573pt x 140.9265pt>
 File: HCPBmcnp.png Graphic file (type png)
 <use HCPBmcnp.png>
-Package pdftex.def Info: HCPBmcnp.png  used on input line 1297.
+Package pdftex.def Info: HCPBmcnp.png  used on input line 1630.
 (pdftex.def)             Requested size: 451.68457pt x 134.131pt.
-<WCLLcad.png, id=599, 531.1845pt x 391.4625pt>
+<WCLLcad.png, id=908, 531.1845pt x 391.4625pt>
 File: WCLLcad.png Graphic file (type png)
 <use WCLLcad.png>
-Package pdftex.def Info: WCLLcad.png  used on input line 1304.
+Package pdftex.def Info: WCLLcad.png  used on input line 1637.
 (pdftex.def)             Requested size: 451.68457pt x 332.88805pt.
-<WCLLmcnp.png, id=600, 404.10976pt x 107.2005pt>
+<WCLLmcnp.png, id=909, 404.10976pt x 107.2005pt>
 File: WCLLmcnp.png Graphic file (type png)
 <use WCLLmcnp.png>
-Package pdftex.def Info: WCLLmcnp.png  used on input line 1311.
+Package pdftex.def Info: WCLLmcnp.png  used on input line 1644.
 (pdftex.def)             Requested size: 451.68457pt x 119.8249pt.
- [31] [32 <./ITERCAD.png>] [33 <./tbmCAD.png>] [34 <./HCPBcad.png> <./HCPBmcnp.
-png>] [35 <./WCLLcad.png> <./WCLLmcnp.png>]
-<cmodel.png, id=638, 384.25247pt x 476.16191pt>
+ [33] [34 <./ITERCAD.png>] [35 <./tbmCAD.png>] [36 <./HCPBcad.png> <./HCPBmcnp.
+png>] [37 <./WCLLcad.png> <./WCLLmcnp.png>]
+<cmodel.png, id=944, 384.25247pt x 476.16191pt>
 File: cmodel.png Graphic file (type png)
 <use cmodel.png>
-Package pdftex.def Info: cmodel.png  used on input line 1376.
+Package pdftex.def Info: cmodel.png  used on input line 1720.
 (pdftex.def)             Requested size: 451.68457pt x 559.72282pt.
- [36] [37 <./cmodel.png>]
-<sphereSDDRgeom.png, id=654, 452.454pt x 358.503pt>
+ [38] [39 <./cmodel.png>]
+<sphereSDDRgeom.png, id=957, 452.454pt x 358.503pt>
 File: sphereSDDRgeom.png Graphic file (type png)
 <use sphereSDDRgeom.png>
-Package pdftex.def Info: sphereSDDRgeom.png  used on input line 1435.
+Package pdftex.def Info: sphereSDDRgeom.png  used on input line 1787.
 (pdftex.def)             Requested size: 451.68457pt x 357.90038pt.
 
-[38 <./sphereSDDRgeom.png>]
-<cylSDDR.png, id=663, 2922.336pt x 1691.556pt>
+[40 <./sphereSDDRgeom.png>]
+<cylSDDR.png, id=964, 2922.336pt x 1691.556pt>
 File: cylSDDR.png Graphic file (type png)
 <use cylSDDR.png>
-Package pdftex.def Info: cylSDDR.png  used on input line 1566.
+Package pdftex.def Info: cylSDDR.png  used on input line 1952.
 (pdftex.def)             Requested size: 451.68457pt x 261.43994pt.
- [39] [40 <./cylSDDR.png>] [41]
-<oktaviansimplified.png, id=699, 785.334pt x 264.38776pt>
+ [41] [42 <./cylSDDR.png>] [43]
+<oktaviansimplified.png, id=993, 785.334pt x 264.38776pt>
 File: oktaviansimplified.png Graphic file (type png)
 <use oktaviansimplified.png>
-Package pdftex.def Info: oktaviansimplified.png  used on input line 1972.
+Package pdftex.def Info: oktaviansimplified.png  used on input line 2464.
 (pdftex.def)             Requested size: 451.68457pt x 152.06615pt.
- [42] [43 <./oktaviansimplified.png>]
-<fng.jpg, id=715, 315.54507pt x 175.2932pt>
+ [44] [45 <./oktaviansimplified.png>]
+<fng.jpg, id=1007, 315.54507pt x 175.2932pt>
 File: fng.jpg Graphic file (type jpg)
 <use fng.jpg>
-Package pdftex.def Info: fng.jpg  used on input line 2049.
+Package pdftex.def Info: fng.jpg  used on input line 2554.
 (pdftex.def)             Requested size: 451.68457pt x 250.93217pt.
- [44 <./fng.jpg>]
-Underfull \hbox (badness 10000) in paragraph at lines 2522--2522
-[]\T1/phv/m/n/10 Cooldown Time
+ [46 <./fng.jpg>]
+Underfull \hbox (badness 10000) in paragraph at lines 3206--3206
+[]\T1/qhv/m/n/10 Cooldown Time
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2522--2522
-[]\T1/phv/m/n/10 Cooldown Time
+Underfull \hbox (badness 10000) in paragraph at lines 3206--3206
+[]\T1/qhv/m/n/10 Cooldown Time
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2522--2522
-[]\T1/phv/m/n/10 Cooldown Time
+Underfull \hbox (badness 10000) in paragraph at lines 3206--3206
+[]\T1/qhv/m/n/10 Cooldown Time
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2522--2522
-[]\T1/phv/m/n/10 Ex-per-i-men-tal SDDR
+Underfull \hbox (badness 10000) in paragraph at lines 3206--3206
+[]\T1/qhv/m/n/10 Ex-per-i-men-tal SDDR
  []
 
-[45]
-<daughtersFNG.png, id=731, 518.61359pt x 335.2098pt>
+
+Underfull \hbox (badness 10000) in paragraph at lines 3206--3206
+[]\T1/qhv/m/n/10 Rel-a-tive
+ []
+
+[47]
+<daughtersFNG.png, id=1020, 518.61359pt x 335.2098pt>
 File: daughtersFNG.png Graphic file (type png)
 <use daughtersFNG.png>
-Package pdftex.def Info: daughtersFNG.png  used on input line 2539.
+Package pdftex.def Info: daughtersFNG.png  used on input line 3224.
 (pdftex.def)             Requested size: 451.68457pt x 291.9575pt.
- [46] [47 <./daughtersFNG.png>] [48
+ [48] [49 <./daughtersFNG.png>] [50
 
 ]
 Chapter 7.
-<statchecks_sphere.png, id=748, 508.90125pt x 100.12407pt>
+<statchecks_sphere.png, id=1036, 508.90125pt x 100.12407pt>
 File: statchecks_sphere.png Graphic file (type png)
 <use statchecks_sphere.png>
-Package pdftex.def Info: statchecks_sphere.png  used on input line 2607.
+Package pdftex.def Info: statchecks_sphere.png  used on input line 3301.
 (pdftex.def)             Requested size: 451.68457pt x 88.87027pt.
-<errors_sphere.png, id=749, 506.6428pt x 99.37125pt>
+<errors_sphere.png, id=1037, 506.6428pt x 99.37125pt>
 File: errors_sphere.png Graphic file (type png)
 <use errors_sphere.png>
-Package pdftex.def Info: errors_sphere.png  used on input line 2614.
+Package pdftex.def Info: errors_sphere.png  used on input line 3308.
 (pdftex.def)             Requested size: 451.68457pt x 88.59479pt.
-<consistencysphere.png, id=750, 507.39563pt x 102.3825pt>
+<consistencysphere.png, id=1038, 507.39563pt x 102.3825pt>
 File: consistencysphere.png Graphic file (type png)
 <use consistencysphere.png>
-Package pdftex.def Info: consistencysphere.png  used on input line 2621.
+Package pdftex.def Info: consistencysphere.png  used on input line 3315.
 (pdftex.def)             Requested size: 451.68457pt x 91.14357pt.
-<comparisonsphere.png, id=751, 508.90125pt x 82.05656pt>
+<comparisonsphere.png, id=1039, 508.90125pt x 82.05656pt>
 File: comparisonsphere.png Graphic file (type png)
 <use comparisonsphere.png>
-Package pdftex.def Info: comparisonsphere.png  used on input line 2628.
+Package pdftex.def Info: comparisonsphere.png  used on input line 3322.
 (pdftex.def)             Requested size: 451.68457pt x 72.83351pt.
-[49 <./statchecks_sphere.png> <./errors_sphere.png> <./consistencysphere.png>]
-<oktavexcel.png, id=764, 410.13225pt x 166.221pt>
+[51 <./statchecks_sphere.png> <./errors_sphere.png> <./consistencysphere.png>]
+<oktavexcel.png, id=1051, 410.13225pt x 166.221pt>
 File: oktavexcel.png Graphic file (type png)
 <use oktavexcel.png>
-Package pdftex.def Info: oktavexcel.png  used on input line 2638.
+Package pdftex.def Info: oktavexcel.png  used on input line 3332.
 (pdftex.def)             Requested size: 451.68457pt x 183.06429pt.
-<statchecksgeneral.png, id=765, 652.839pt x 395.076pt>
+<statchecksgeneral.png, id=1052, 652.839pt x 395.076pt>
 File: statchecksgeneral.png Graphic file (type png)
 <use statchecksgeneral.png>
-Package pdftex.def Info: statchecksgeneral.png  used on input line 2648.
+Package pdftex.def Info: statchecksgeneral.png  used on input line 3342.
 (pdftex.def)             Requested size: 451.68457pt x 273.35025pt.
-<errors.png, id=766, 844.3545pt x 318.59026pt>
+<errors.png, id=1053, 844.3545pt x 318.59026pt>
 File: errors.png Graphic file (type png)
 <use errors.png>
-Package pdftex.def Info: errors.png  used on input line 2655.
+Package pdftex.def Info: errors.png  used on input line 3349.
 (pdftex.def)             Requested size: 451.68457pt x 170.42708pt.
-<column.png, id=767, 280.6485pt x 309.5565pt>
+<column.png, id=1054, 280.6485pt x 309.5565pt>
 File: column.png Graphic file (type png)
 <use column.png>
-Package pdftex.def Info: column.png  used on input line 2662.
+Package pdftex.def Info: column.png  used on input line 3356.
 (pdftex.def)             Requested size: 451.68457pt x 498.24794pt.
-<matrix.png, id=768, 1075.6185pt x 343.88475pt>
+<matrix.png, id=1055, 1075.6185pt x 343.88475pt>
 File: matrix.png Graphic file (type png)
 <use matrix.png>
-Package pdftex.def Info: matrix.png  used on input line 2669.
+Package pdftex.def Info: matrix.png  used on input line 3363.
 (pdftex.def)             Requested size: 451.68457pt x 144.40962pt.
-<binned.png, id=769, 542.025pt x 406.1574pt>
+<binned.png, id=1056, 542.025pt x 406.1574pt>
 File: binned.png Graphic file (type png)
 <use binned.png>
-Package pdftex.def Info: binned.png  used on input line 2678.
+Package pdftex.def Info: binned.png  used on input line 3372.
 (pdftex.def)             Requested size: 451.68457pt x 338.47398pt.
 
-[50 <./comparisonsphere.png> <./oktavexcel.png>] [51 <./statchecksgeneral.png> 
-<./errors.png>] [52 <./column.png>] [53 <./matrix.png> <./binned.png>]
-<ratio.png, id=803, 380.1402pt x 213.9192pt>
+[52 <./comparisonsphere.png> <./oktavexcel.png>] [53 <./statchecksgeneral.png> 
+<./errors.png>] [54 <./column.png>] [55 <./matrix.png> <./binned.png>]
+<ratio.png, id=1086, 380.1402pt x 213.9192pt>
 File: ratio.png Graphic file (type png)
 <use ratio.png>
-Package pdftex.def Info: ratio.png  used on input line 2683.
+Package pdftex.def Info: ratio.png  used on input line 3377.
 (pdftex.def)             Requested size: 451.68457pt x 254.18835pt.
-<ratio2.png, id=804, 542.025pt x 332.442pt>
+<ratio2.png, id=1087, 542.025pt x 332.442pt>
 File: ratio2.png Graphic file (type png)
 <use ratio2.png>
-Package pdftex.def Info: ratio2.png  used on input line 2685.
+Package pdftex.def Info: ratio2.png  used on input line 3379.
 (pdftex.def)             Requested size: 451.68457pt x 277.04276pt.
- [54 <./ratio.png> <./ratio2.png>]
-<exp1.png, id=812, 542.025pt x 406.1574pt>
-File: exp1.png Graphic file (type png)
-<use exp1.png>
-Package pdftex.def Info: exp1.png  used on input line 2690.
+ [56 <./ratio.png> <./ratio2.png>]
+<exp.png, id=1094, 542.025pt x 406.1574pt>
+File: exp.png Graphic file (type png)
+<use exp.png>
+Package pdftex.def Info: exp.png  used on input line 3384.
 (pdftex.def)             Requested size: 451.68457pt x 338.47398pt.
-<descreet.png, id=813, 542.025pt x 434.3427pt>
+<descreet.png, id=1095, 542.025pt x 434.3427pt>
 File: descreet.png Graphic file (type png)
 <use descreet.png>
-Package pdftex.def Info: descreet.png  used on input line 2695.
+Package pdftex.def Info: descreet.png  used on input line 3389.
 (pdftex.def)             Requested size: 451.68457pt x 361.9624pt.
- [55 <./exp1.png>]
-<grouped.png, id=820, 542.025pt x 405.4347pt>
+ [57 <./exp.png>]
+<grouped.png, id=1102, 542.025pt x 405.4347pt>
 File: grouped.png Graphic file (type png)
 <use grouped.png>
-Package pdftex.def Info: grouped.png  used on input line 2700.
+Package pdftex.def Info: grouped.png  used on input line 3394.
 (pdftex.def)             Requested size: 451.68457pt x 337.87172pt.
- [56 <./descreet.png>]
-<waves.png, id=827, 542.025pt x 407.5225pt>
+ [58 <./descreet.png>]
+<waves.png, id=1108, 542.025pt x 407.5225pt>
 File: waves.png Graphic file (type png)
 <use waves.png>
-Package pdftex.def Info: waves.png  used on input line 2705.
+Package pdftex.def Info: waves.png  used on input line 3399.
 (pdftex.def)             Requested size: 451.68457pt x 339.6116pt.
- [57 <./grouped.png>] [58 <./waves.png>]
+ [59 <./grouped.png>] [60 <./waves.png>]
 Chapter 8.
-<printlib.png, id=841, 523.35526pt x 127.07475pt>
+<printlib.png, id=1119, 523.35526pt x 127.07475pt>
 File: printlib.png Graphic file (type png)
 <use printlib.png>
-Package pdftex.def Info: printlib.png  used on input line 2732.
+Package pdftex.def Info: printlib.png  used on input line 3431.
 (pdftex.def)             Requested size: 451.68457pt x 109.67383pt.
-[59
+[61
 
  <./printlib.png>]
-<Translation_logic.jpg, id=849, 588.1975pt x 974.64125pt>
+<Translation_logic.jpg, id=1128, 441.14813pt x 730.98094pt>
 File: Translation_logic.jpg Graphic file (type jpg)
 <use Translation_logic.jpg>
-Package pdftex.def Info: Translation_logic.jpg  used on input line 2834.
-(pdftex.def)             Requested size: 392.53757pt x 650.43343pt.
+Package pdftex.def Info: Translation_logic.jpg  used on input line 3555.
+(pdftex.def)             Requested size: 392.53983pt x 650.45946pt.
 
 
-LaTeX Warning: Float too large for page by 24.16492pt on input line 2835.
+LaTeX Warning: Float too large for page by 24.18pt on input line 3556.
 
-[60] [61 <./Translation_logic.jpg>]
-<printmat1.png, id=868, 483.0045pt x 474.573pt>
-File: printmat1.png Graphic file (type png)
-<use printmat1.png>
-Package pdftex.def Info: printmat1.png  used on input line 2875.
-(pdftex.def)             Requested size: 451.68457pt x 443.79591pt.
-<printmat2.png, id=869, 546.24075pt x 263.18324pt>
-File: printmat2.png Graphic file (type png)
-<use printmat2.png>
-Package pdftex.def Info: printmat2.png  used on input line 2892.
-(pdftex.def)             Requested size: 451.68457pt x 217.63083pt.
- [62 <./printmat1.png>] [63 <./printmat2.png>] [64]
-Chapter 9.
-LaTeX Font Info:    Font shape `T1/pcr/m/it' in size <9> not available
-(Font)              Font shape `T1/pcr/m/sl' tried instead on input line 3002.
-[65
+LaTeX Font Info:    Font shape `T1/txtt/b/n' in size <10> not available
+(Font)              Font shape `T1/txtt/bx/n' tried instead on input line 3561.
 
-] [66]
-Chapter 10.
-[67
-
-] [68] [69] [70
+[62] [63 <./Translation_logic.jpg>]
+<printmat1.jpg, id=1148, 546.843pt x 492.6405pt>
+File: printmat1.jpg Graphic file (type jpg)
+<use printmat1.jpg>
+Package pdftex.def Info: printmat1.jpg  used on input line 3602.
+(pdftex.def)             Requested size: 451.68457pt x 406.92955pt.
+ [64 <./printmat1.jpg>]
+<printmat2.jpg, id=1154, 590.205pt x 542.025pt>
+File: printmat2.jpg Graphic file (type jpg)
+<use printmat2.jpg>
+Package pdftex.def Info: printmat2.jpg  used on input line 3631.
+(pdftex.def)             Requested size: 451.68457pt x 414.82146pt.
+ [65 <./printmat2.jpg>]
+<generate.png, id=1160, 716.07526pt x 117.43875pt>
+File: generate.png Graphic file (type png)
+<use generate.png>
+Package pdftex.def Info: generate.png  used on input line 3672.
+(pdftex.def)             Requested size: 451.68457pt x 74.07817pt.
+ [66 <./generate.png>] [67] [68
 
 ]
+Chapter 9.
+LaTeX Font Info:    Font shape `T1/txtt/m/it' in size <10> not available
+(Font)              Font shape `T1/txtt/m/sl' tried instead on input line 3776.
+
+
+Overfull \vbox (1.5969pt too high) detected at line 3791
+ []
+
+[69] [70]
+Chapter 10.
+<notrun.PNG, id=1188, 357.7365pt x 324.61275pt>
+File: notrun.PNG Graphic file (type png)
+<use notrun.PNG>
+Package pdftex.def Info: notrun.PNG  used on input line 3803.
+(pdftex.def)             Requested size: 357.73561pt x 324.61194pt.
+[71
+
+ <./notrun.PNG>] [72]
 Chapter 11.
-[71] [72
+[73
+
+]
+Overfull \vbox (1.10773pt too high) detected at line 3959
+ []
+
+[74] [75] [76
 
 ]
 Chapter 12.
-<OOPscheme.png, id=941, 933.816pt x 522.753pt>
+[77] [78
+
+]
+Chapter 13.
+<OOPscheme.png, id=1237, 933.816pt x 522.753pt>
 File: OOPscheme.png Graphic file (type png)
 <use OOPscheme.png>
-Package pdftex.def Info: OOPscheme.png  used on input line 3175.
+Package pdftex.def Info: OOPscheme.png  used on input line 4000.
 (pdftex.def)             Requested size: 451.68457pt x 252.8489pt.
-[73 <./OOPscheme.png>] [74]
-Chapter 13.
-LaTeX Font Info:    Font shape `T1/pcr/m/it' in size <10> not available
-(Font)              Font shape `T1/pcr/m/sl' tried instead on input line 3288.
-[75
-
-] [76] [77] [78] [79] [80]
+[79 <./OOPscheme.png>] [80]
 Chapter 14.
 [81
 
-] [82] [83] [84] [85] [86] [87] [88] [89] [90] [91]
-Underfull \hbox (badness 10000) in paragraph at lines 5262--5263
-[]\T1/pcr/b/n/10 original_irradfile \T1/ptm/m/n/10 (\T1/pcr/m/sl/10 d1s_parser.
-IrradiationFile, optional\T1/ptm/m/n/10 ) 
- []
-
-[92] [93] [94] [95] [96]
+] [82] [83] [84] [85] [86]
 Chapter 15.
-[97
+[87
 
-] [98] [99] [100] [101] [102] [103] [104
-
-]
+] [88] [89] [90] [91] [92] [93] [94] [95] [96] [97] [98] [99] [100] [101]
+[102]
 Chapter 16.
-[105] [106
+[103
+
+] [104] [105] [106] [107] [108] [109] [110
 
 ]
 Chapter 17.
+[111] [112
 
-Package textcomp Warning: Symbol \textasciigrave not provided by
-(textcomp)                font family pcr in TS1 encoding.
-(textcomp)                Default family used instead on input line 7150.
+]
+Chapter 18.
+[113] [114
 
-LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 7
-150.
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/base\t1cmtt.fd
-File: t1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
-)
-LaTeX Font Info:    Trying to load font information for TS1+cmtt on input line 
-7150.
-
-(C:\Users\d.laghi\AppData\Local\Programs\MiKTeX\tex/latex/base\ts1cmtt.fd
-File: ts1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
-)
-
-Package textcomp Warning: Symbol \textasciigrave not provided by
-(textcomp)                font family pcr in TS1 encoding.
-(textcomp)                Default family used instead on input line 7152.
-
-
-Package textcomp Warning: Symbol \textasciigrave not provided by
-(textcomp)                font family pcr in TS1 encoding.
-(textcomp)                Default family used instead on input line 7154.
-
-
-Package textcomp Warning: Symbol \textasciigrave not provided by
-(textcomp)                font family pcr in TS1 encoding.
-(textcomp)                Default family used instead on input line 7154.
-
-[107]
-Underfull \vbox (badness 10000) detected at line 7169
- []
-
-
-Overfull \vbox (2.68169pt too high) detected at line 7169
- []
-
-[108]
-Underfull \vbox (badness 10000) detected at line 7169
- []
-
-
-Overfull \vbox (2.68169pt too high) detected at line 7169
- []
-
-[109]
-Underfull \vbox (badness 10000) detected at line 7169
- []
-
-
-Overfull \vbox (2.68169pt too high) detected at line 7169
- []
-
-[110]
-Underfull \vbox (badness 10000) detected at line 7169
- []
-
-
-Overfull \vbox (2.68169pt too high) detected at line 7169
- []
-
-[111]
-Underfull \vbox (badness 10000) detected at line 7169
- []
-
-
-Overfull \vbox (2.68169pt too high) detected at line 7169
- []
-
-[112]
-Underfull \vbox (badness 10000) detected at line 7169
- []
-
-
-Overfull \vbox (2.68169pt too high) detected at line 7169
- []
-
-[113]
-Underfull \vbox (badness 10000) detected at line 7169
- []
-
-
-Overfull \vbox (2.68169pt too high) detected at line 7169
- []
-
-[114]
-Underfull \vbox (badness 10000) detected at line 7169
- []
-
-
-Overfull \vbox (2.68169pt too high) detected at line 7169
- []
-
+]
+Chapter 19.
 [115]
-Underfull \vbox (badness 10000) detected at line 7169
+Underfull \vbox (badness 10000) detected at line 8748
  []
 
 
-Overfull \vbox (2.68169pt too high) detected at line 7169
+Underfull \vbox (badness 10000) detected at line 8748
  []
 
 [116]
-Underfull \vbox (badness 10000) detected at line 7169
+Underfull \vbox (badness 10000) detected at line 8748
  []
 
 
-Overfull \vbox (2.68169pt too high) detected at line 7169
+Underfull \vbox (badness 10000) detected at line 8748
  []
 
 [117]
-Underfull \vbox (badness 10000) detected at line 7169
+Underfull \vbox (badness 10000) detected at line 8748
  []
 
 
-Overfull \vbox (2.68169pt too high) detected at line 7169
+Underfull \vbox (badness 10000) detected at line 8748
  []
 
 [118]
-
-Package textcomp Warning: Symbol \textasciigrave not provided by
-(textcomp)                font family pcr in TS1 encoding.
-(textcomp)                Default family used instead on input line 7187.
-
-
-Package textcomp Warning: Symbol \textasciigrave not provided by
-(textcomp)                font family pcr in TS1 encoding.
-(textcomp)                Default family used instead on input line 7187.
-
-[119] [120]
-Chapter 18.
-<nier.png, id=1358, 502.87875pt x 201.00093pt>
-File: nier.png Graphic file (type png)
-<use nier.png>
-Package pdftex.def Info: nier.png  used on input line 7243.
-(pdftex.def)             Requested size: 301.12305pt x 120.35918pt.
-<unibo.jpg, id=1359, 466.1415pt x 171.64125pt>
-File: unibo.jpg Graphic file (type jpg)
-<use unibo.jpg>
-Package pdftex.def Info: unibo.jpg  used on input line 7245.
-(pdftex.def)             Requested size: 301.12305pt x 110.8819pt.
-<f4e.jpg, id=1360, 360.8682pt x 155.1396pt>
-File: f4e.jpg Graphic file (type jpg)
-<use f4e.jpg>
-Package pdftex.def Info: f4e.jpg  used on input line 7247.
-(pdftex.def)             Requested size: 301.12305pt x 129.46179pt.
-
-Overfull \hbox (9.96034pt too wide) in paragraph at lines 2--7283
-[]|[][]\T1/ptm/m/n/10 marco.fabbri@f4e.europa.eu[][]| 
+Underfull \vbox (badness 10000) detected at line 8748
  []
 
-[121
 
- <./nier.png> <./unibo.jpg> <./f4e.jpg>] [122]
-Chapter 19.
-[123
+Underfull \vbox (badness 10000) detected at line 8748
+ []
 
-] [124]
+[119]
+Underfull \vbox (badness 10000) detected at line 8748
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 8748
+ []
+
+[120]
+Underfull \vbox (badness 10000) detected at line 8748
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 8748
+ []
+
+[121]
+Underfull \vbox (badness 10000) detected at line 8748
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 8748
+ []
+
+[122]
+Underfull \vbox (badness 10000) detected at line 8748
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 8748
+ []
+
+[123]
+Underfull \vbox (badness 10000) detected at line 8748
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 8748
+ []
+
+[124]
+Underfull \vbox (badness 10000) detected at line 8748
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 8748
+ []
+
+[125]
+Underfull \vbox (badness 10000) detected at line 8748
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 8748
+ []
+
+[126]
+Underfull \vbox (badness 10000) detected at line 8748
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 8748
+ []
+
+[127]
+Overfull \vbox (2.95134pt too high) detected at line 8813
+ []
+
+[128] [129] [130
+
+]
 Chapter 20.
+<nier.png, id=1650, 502.87875pt x 201.00093pt>
+File: nier.png Graphic file (type png)
+<use nier.png>
+Package pdftex.def Info: nier.png  used on input line 8823.
+(pdftex.def)             Requested size: 301.12305pt x 120.35918pt.
+<unibo.jpg, id=1651, 466.1415pt x 171.64125pt>
+File: unibo.jpg Graphic file (type jpg)
+<use unibo.jpg>
+Package pdftex.def Info: unibo.jpg  used on input line 8825.
+(pdftex.def)             Requested size: 301.12305pt x 110.8819pt.
+<f4e.jpg, id=1652, 360.8682pt x 155.1396pt>
+File: f4e.jpg Graphic file (type jpg)
+<use f4e.jpg>
+Package pdftex.def Info: f4e.jpg  used on input line 8827.
+(pdftex.def)             Requested size: 301.12305pt x 129.46179pt.
+
+Overfull \hbox (10.01123pt too wide) in paragraph at lines 8873--8876
+[]|[][]\T1/qtm/m/n/10 marco.fabbri@f4e.europa.eu[][]| 
+ []
+
+[131 <./nier.png> <./unibo.jpg> <./f4e.jpg>] [132]
+Chapter 21.
+[133
+
+] [134]
+Chapter 22.
 No file jade.ind.
-[125
+[135
 
 ] (jade.aux)
 Package rerunfilecheck Info: File `jade.out' has not changed.
-(rerunfilecheck)             Checksum: 06C0BD84AD593DD8D9314B6A496C142A;10494.
+(rerunfilecheck)             Checksum: E402816F635D34654659FAAF3F2D2742;21288.
  ) 
 Here is how much of TeX's memory you used:
- 14756 strings out of 478864
- 226422 string characters out of 2847712
- 1230758 words of memory out of 3000000
- 31808 multiletter control sequences out of 15000+600000
- 459770 words of font info for 97 fonts, out of 8000000 for 9000
+ 15166 strings out of 478864
+ 235092 string characters out of 2847712
+ 1238072 words of memory out of 3000000
+ 32175 multiletter control sequences out of 15000+600000
+ 463971 words of font info for 73 fonts, out of 8000000 for 9000
  1142 hyphenation exceptions out of 8191
  72i,17n,80p,795b,682s stack positions out of 5000i,500n,10000p,200000b,80000s
- <C:\Users\d.laghi\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tc
-tt0900.pk>{C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/
-8r.enc}<C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfo
-nts/cm/cmex10.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/p
-ublic/amsfonts/cm/cmmi10.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fo
-nts/type1/public/amsfonts/cm/cmmi5.pfb><C:/Users/d.laghi/AppData/Local/Programs
-/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/d.laghi/AppData/Loca
-l/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/d.laghi/Ap
-pData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users
-/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy5.pfb
-><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrb8a
-.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/uc
-rr8a.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courie
-r/ucrro8a.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/urw/h
-elvetic/uhvb8a.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/
-urw/helvetic/uhvbo8a.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/
-type1/urw/helvetic/uhvr8a.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/f
-onts/type1/urw/times/utmb8a.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX
-/fonts/type1/urw/times/utmr8a.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKT
-eX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on jade.pdf (129 pages, 7225688 bytes).
+{C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/tex-gyre/q-ts
+1.enc}{C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/tex-gyre/
+q-ec.enc}<C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/public/ams
+fonts/cm/cmex10.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1
+/public/amsfonts/cm/cmmi10.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/
+fonts/type1/public/amsfonts/cm/cmmi5.pfb><C:/Users/d.laghi/AppData/Local/Progra
+ms/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/d.laghi/AppData/Lo
+cal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/d.laghi/
+AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Use
+rs/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy5.p
+fb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/public/tex-gyre/
+qhvb.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/public/tex
+-gyre/qhvbi.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/type1/pub
+lic/tex-gyre/qhvr.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fonts/typ
+e1/public/tex-gyre/qtmb.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKTeX/fon
+ts/type1/public/tex-gyre/qtmr.pfb><C:/Users/d.laghi/AppData/Local/Programs/MiKT
+eX/fonts/type1/public/tex-gyre/qtmri.pfb><C:/Users/d.laghi/AppData/Local/Progra
+ms/MiKTeX/fonts/type1/public/txfonts/t1xbtt.pfb><C:/Users/d.laghi/AppData/Local
+/Programs/MiKTeX/fonts/type1/public/txfonts/t1xtt.pfb><C:/Users/d.laghi/AppData
+/Local/Programs/MiKTeX/fonts/type1/public/txfonts/t1xtt.pfb><C:/Users/d.laghi/A
+ppData/Local/Programs/MiKTeX/fonts/type1/public/txfonts/tcxtt.pfb>
+Output written on jade.pdf (139 pages, 7778853 bytes).
 PDF statistics:
- 1557 PDF objects out of 1728 (max. 8388607)
- 463 named destinations out of 1000 (max. 500000)
- 836 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1849 PDF objects out of 2073 (max. 8388607)
+ 485 named destinations out of 1000 (max. 500000)
+ 1446 words of extra memory for PDF output out of 10000 (max. 10000000)
 

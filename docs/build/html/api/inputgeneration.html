@@ -1,76 +1,34 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>Input Generation &mdash; JADE v1.4.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>Input Generation &mdash; JADE v2.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Post-Processing" href="postprocessing.html" />
     <link rel="prev" title="JADE Session" href="initobjects.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> JADE
-          
-
-          
-            
             <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -78,19 +36,8 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">JADE User Guide:</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">JADE User Guide:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../nutshell.html">JADE in a nutshell</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/installation.html">Installation</a></li>
@@ -101,13 +48,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../usage/postprocessing.html">Post-Processing Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/utilities.html">Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/tipstricks.html">Tips &amp; Tricks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/troubleshooting.html">Troubleshooting</a></li>
 </ul>
-<p class="caption"><span class="caption-text">JADE Developer Guide:</span></p>
+<p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Modify documentation</a></li>
 </ul>
-<p class="caption"><span class="caption-text">JADE API</span></p>
+<p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="general.html">General OOP scheme</a></li>
 <li class="toctree-l1"><a class="reference internal" href="initobjects.html">JADE Session</a></li>
@@ -142,90 +90,50 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="postprocessing.html">Post-Processing</a></li>
 </ul>
-<p class="caption"><span class="caption-text">More on JADE:</span></p>
+<p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../publications.html">List of Publications and Contributions</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">JADE</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Input Generation</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="../_sources/api/inputgeneration.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <div class="section" id="input-generation">
-<h1>Input Generation<a class="headerlink" href="#input-generation" title="Permalink to this headline">¶</a></h1>
+<h1>Input Generation<a class="headerlink" href="#input-generation" title="Permalink to this headline"></a></h1>
 <p>In this section the most useful classes that can be used during benchmark
 input preparation are described.</p>
 <div class="section" id="matreader-module">
-<h2>matreader module<a class="headerlink" href="#matreader-module" title="Permalink to this headline">¶</a></h2>
+<h2>matreader module<a class="headerlink" href="#matreader-module" title="Permalink to this headline"></a></h2>
 <div class="section" id="matcardslist">
-<span id="matcardob"></span><h3>MatCardsList<a class="headerlink" href="#matcardslist" title="Permalink to this headline">¶</a></h3>
+<span id="matcardob"></span><h3>MatCardsList<a class="headerlink" href="#matcardslist" title="Permalink to this headline"></a></h3>
 <dl class="py class">
-<dt id="matreader.MatCardsList">
-<em class="property">class </em><code class="sig-prename descclassname">matreader.</code><code class="sig-name descname">MatCardsList</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">materials</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.MatCardsList" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.MatCardsList">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">matreader.</span></span><span class="sig-name descname"><span class="pre">MatCardsList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">materials</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.MatCardsList" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Sequence</span></code></p>
 <p>Object representing the list of materials included in an MCNP input.
 This class is a child of the Sequence base class.</p>
@@ -241,8 +149,8 @@ This class is a child of the Sequence base class.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="matreader.MatCardsList.from_input">
-<em class="property">classmethod </em><code class="sig-name descname">from_input</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputfile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.MatCardsList.from_input" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.MatCardsList.from_input">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.MatCardsList.from_input" title="Permalink to this definition"></a></dt>
 <dd><p>This method use the numjuggler parser to help identify the mcards in
 the input. Then the mcards are parsed using the classes defined in this
 module</p>
@@ -250,7 +158,7 @@ module</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cls</strong> (<em>TYPE</em>) – DESCRIPTION.</p></li>
-<li><p><strong>inputfile</strong> (<a class="reference internal" href="#inputfile.InputFile" title="inputfile.InputFile"><em>inputfile.InputFile</em></a>) – MCNP input file containing the material section.</p></li>
+<li><p><strong>inputfile</strong> (<em>os.PathLike</em>) – MCNP input file containing the material section.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -263,8 +171,8 @@ module</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="matreader.MatCardsList.get_info">
-<code class="sig-name descname">get_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lib_manager</span></em>, <em class="sig-param"><span class="n">zaids</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">complete</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.MatCardsList.get_info" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.MatCardsList.get_info">
+<span class="sig-name descname"><span class="pre">get_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zaids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">complete</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.MatCardsList.get_info" title="Permalink to this definition"></a></dt>
 <dd><p>Get the material informations in terms of fraction and composition
 of the material card</p>
 <dl class="field-list simple">
@@ -288,8 +196,8 @@ material and submaterial.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="matreader.MatCardsList.to_text">
-<code class="sig-name descname">to_text</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#matreader.MatCardsList.to_text" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.MatCardsList.to_text">
+<span class="sig-name descname"><span class="pre">to_text</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#matreader.MatCardsList.to_text" title="Permalink to this definition"></a></dt>
 <dd><p>return text of the material cards in order</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -302,8 +210,8 @@ material and submaterial.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="matreader.MatCardsList.translate">
-<code class="sig-name descname">translate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newlib</span></em>, <em class="sig-param"><span class="n">lib_manager</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.MatCardsList.translate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.MatCardsList.translate">
+<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newlib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lib_manager</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.MatCardsList.translate" title="Permalink to this definition"></a></dt>
 <dd><p>This method allows to translate the material cards to another library.
 The zaid are collapsed again to get the new elements</p>
 <dl class="field-list simple">
@@ -331,8 +239,8 @@ on the zaidnum.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="matreader.MatCardsList.update_info">
-<code class="sig-name descname">update_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lib_manager</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.MatCardsList.update_info" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.MatCardsList.update_info">
+<span class="sig-name descname"><span class="pre">update_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib_manager</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.MatCardsList.update_info" title="Permalink to this definition"></a></dt>
 <dd><p>This methods allows to update the in-line comments for every zaids
 containing additional information</p>
 <dl class="field-list simple">
@@ -352,10 +260,10 @@ containing additional information</p>
 
 </div>
 <div class="section" id="material">
-<h3>Material<a class="headerlink" href="#material" title="Permalink to this headline">¶</a></h3>
+<h3>Material<a class="headerlink" href="#material" title="Permalink to this headline"></a></h3>
 <dl class="py class">
-<dt id="matreader.Material">
-<em class="property">class </em><code class="sig-prename descclassname">matreader.</code><code class="sig-name descname">Material</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">zaids</span></em>, <em class="sig-param"><span class="n">elem</span></em>, <em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">submaterials</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mx_cards</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Material" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.Material">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">matreader.</span></span><span class="sig-name descname"><span class="pre">Material</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zaids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">submaterials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mx_cards</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Material" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Object representing an MCNP material</p>
 <dl class="field-list simple">
@@ -377,14 +285,14 @@ containing additional information</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="matreader.Material.add_mx">
-<code class="sig-name descname">add_mx</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mx_cards</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Material.add_mx" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.Material.add_mx">
+<span class="sig-name descname"><span class="pre">add_mx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mx_cards</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Material.add_mx" title="Permalink to this definition"></a></dt>
 <dd><p>Add a list of mx_cards to the material</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="matreader.Material.from_text">
-<em class="property">classmethod </em><code class="sig-name descname">from_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Material.from_text" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.Material.from_text">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Material.from_text" title="Permalink to this definition"></a></dt>
 <dd><p>Create a material from MCNP formatted text</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -403,14 +311,14 @@ containing additional information</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="matreader.Material.get_tot_fraction">
-<code class="sig-name descname">get_tot_fraction</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Material.get_tot_fraction" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.Material.get_tot_fraction">
+<span class="sig-name descname"><span class="pre">get_tot_fraction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Material.get_tot_fraction" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the total material fraction</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="matreader.Material.switch_fraction">
-<code class="sig-name descname">switch_fraction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ftype</span></em>, <em class="sig-param"><span class="n">lib_manager</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Material.switch_fraction" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.Material.switch_fraction">
+<span class="sig-name descname"><span class="pre">switch_fraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ftype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lib_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Material.switch_fraction" title="Permalink to this definition"></a></dt>
 <dd><p>Switch between atom or mass fraction for the material card.
 If the material is already switched the command is ignored.</p>
 <dl class="field-list simple">
@@ -435,8 +343,8 @@ otherwise a copy of the material is provided. DEFAULT is True</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="matreader.Material.to_text">
-<code class="sig-name descname">to_text</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Material.to_text" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.Material.to_text">
+<span class="sig-name descname"><span class="pre">to_text</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Material.to_text" title="Permalink to this definition"></a></dt>
 <dd><p>Write the material to MCNP formatted text</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -449,8 +357,8 @@ otherwise a copy of the material is provided. DEFAULT is True</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="matreader.Material.translate">
-<code class="sig-name descname">translate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newlib</span></em>, <em class="sig-param"><span class="n">lib_manager</span></em>, <em class="sig-param"><span class="n">update</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Material.translate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.Material.translate">
+<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newlib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lib_manager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Material.translate" title="Permalink to this definition"></a></dt>
 <dd><p>This method allows to translate all submaterials to another library</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -478,8 +386,8 @@ on the zaidnum.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="matreader.Material.update_info">
-<code class="sig-name descname">update_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lib_manager</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Material.update_info" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.Material.update_info">
+<span class="sig-name descname"><span class="pre">update_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib_manager</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Material.update_info" title="Permalink to this definition"></a></dt>
 <dd><p>This methods allows to update the in-line comments for every zaids
 containing additional information</p>
 <p>lib_manager: (LibManager) Library manager for the conversion</p>
@@ -489,10 +397,10 @@ containing additional information</p>
 
 </div>
 <div class="section" id="submaterial">
-<h3>Submaterial<a class="headerlink" href="#submaterial" title="Permalink to this headline">¶</a></h3>
+<h3>Submaterial<a class="headerlink" href="#submaterial" title="Permalink to this headline"></a></h3>
 <dl class="py class">
-<dt id="matreader.SubMaterial">
-<em class="property">class </em><code class="sig-prename descclassname">matreader.</code><code class="sig-name descname">SubMaterial</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">zaidList</span></em>, <em class="sig-param"><span class="n">elemList</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">additional_keys</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.SubMaterial" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.SubMaterial">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">matreader.</span></span><span class="sig-name descname"><span class="pre">SubMaterial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zaidList</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elemList</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.SubMaterial" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Generate a SubMaterial Object starting from a list of Zaid and
 eventually Elements list</p>
@@ -515,8 +423,8 @@ eventually Elements list</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="matreader.SubMaterial.collapse_zaids">
-<code class="sig-name descname">collapse_zaids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#matreader.SubMaterial.collapse_zaids" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.SubMaterial.collapse_zaids">
+<span class="sig-name descname"><span class="pre">collapse_zaids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#matreader.SubMaterial.collapse_zaids" title="Permalink to this definition"></a></dt>
 <dd><p>Organize zaids into their elements and collapse mutiple istances</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -529,8 +437,8 @@ eventually Elements list</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="matreader.SubMaterial.from_text">
-<em class="property">classmethod </em><code class="sig-name descname">from_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.SubMaterial.from_text" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.SubMaterial.from_text">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.SubMaterial.from_text" title="Permalink to this definition"></a></dt>
 <dd><p>Generate a submaterial from MCNP input text</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -549,8 +457,8 @@ eventually Elements list</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="matreader.SubMaterial.get_info">
-<code class="sig-name descname">get_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lib_manager</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.SubMaterial.get_info" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.SubMaterial.get_info">
+<span class="sig-name descname"><span class="pre">get_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib_manager</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.SubMaterial.get_info" title="Permalink to this definition"></a></dt>
 <dd><p>Returns DataFrame containing the different fractions of the elements
 and zaids</p>
 <dl class="field-list simple">
@@ -568,8 +476,8 @@ and zaids</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="matreader.SubMaterial.scale_fractions">
-<code class="sig-name descname">scale_fractions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">norm_factor</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.SubMaterial.scale_fractions" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.SubMaterial.scale_fractions">
+<span class="sig-name descname"><span class="pre">scale_fractions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">norm_factor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.SubMaterial.scale_fractions" title="Permalink to this definition"></a></dt>
 <dd><p>Scale the zaids fractions using a normalizing factor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -585,8 +493,8 @@ and zaids</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="matreader.SubMaterial.to_text">
-<code class="sig-name descname">to_text</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#matreader.SubMaterial.to_text" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.SubMaterial.to_text">
+<span class="sig-name descname"><span class="pre">to_text</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#matreader.SubMaterial.to_text" title="Permalink to this definition"></a></dt>
 <dd><p>Write to text in MNCP format the submaterial</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -599,8 +507,8 @@ and zaids</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="matreader.SubMaterial.translate">
-<code class="sig-name descname">translate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newlib</span></em>, <em class="sig-param"><span class="n">lib_manager</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.SubMaterial.translate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.SubMaterial.translate">
+<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newlib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lib_manager</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.SubMaterial.translate" title="Permalink to this definition"></a></dt>
 <dd><p>This method implements the translation logic of JADE. All zaids are
 translated accordingly to the newlib specified.</p>
 <dl class="field-list simple">
@@ -628,8 +536,8 @@ on the zaidnum.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="matreader.SubMaterial.update_info">
-<code class="sig-name descname">update_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lib_manager</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.SubMaterial.update_info" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.SubMaterial.update_info">
+<span class="sig-name descname"><span class="pre">update_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib_manager</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.SubMaterial.update_info" title="Permalink to this definition"></a></dt>
 <dd><p>This methods allows to update the in-line comments for every zaids
 containing additional information</p>
 <dl class="field-list simple">
@@ -649,10 +557,10 @@ containing additional information</p>
 
 </div>
 <div class="section" id="element">
-<h3>Element<a class="headerlink" href="#element" title="Permalink to this headline">¶</a></h3>
+<h3>Element<a class="headerlink" href="#element" title="Permalink to this headline"></a></h3>
 <dl class="py class">
-<dt id="matreader.Element">
-<em class="property">class </em><code class="sig-prename descclassname">matreader.</code><code class="sig-name descname">Element</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">zaidList</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Element" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.Element">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">matreader.</span></span><span class="sig-name descname"><span class="pre">Element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zaidList</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Element" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Generate an Element object starting from a list of zaids.
 It will collapse multiple instance of a zaid into a single one</p>
@@ -668,8 +576,8 @@ It will collapse multiple instance of a zaid into a single one</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="matreader.Element.get_fraction">
-<code class="sig-name descname">get_fraction</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Element.get_fraction" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.Element.get_fraction">
+<span class="sig-name descname"><span class="pre">get_fraction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Element.get_fraction" title="Permalink to this definition"></a></dt>
 <dd><p>Get the sum of the fraction of the zaids composing the element</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -682,8 +590,8 @@ It will collapse multiple instance of a zaid into a single one</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="matreader.Element.update_zaidinfo">
-<code class="sig-name descname">update_zaidinfo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">libmanager</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Element.update_zaidinfo" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.Element.update_zaidinfo">
+<span class="sig-name descname"><span class="pre">update_zaidinfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">libmanager</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Element.update_zaidinfo" title="Permalink to this definition"></a></dt>
 <dd><p>Update zaids infos through a libmanager. Info are the formula name and
 the abundance in the material.</p>
 <dl class="field-list simple">
@@ -703,10 +611,10 @@ the abundance in the material.</p>
 
 </div>
 <div class="section" id="zaid">
-<h3>Zaid<a class="headerlink" href="#zaid" title="Permalink to this headline">¶</a></h3>
+<h3>Zaid<a class="headerlink" href="#zaid" title="Permalink to this headline"></a></h3>
 <dl class="py class">
-<dt id="matreader.Zaid">
-<em class="property">class </em><code class="sig-prename descclassname">matreader.</code><code class="sig-name descname">Zaid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fraction</span></em>, <em class="sig-param"><span class="n">element</span></em>, <em class="sig-param"><span class="n">isotope</span></em>, <em class="sig-param"><span class="n">library</span></em>, <em class="sig-param"><span class="n">ab</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">fullname</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Zaid" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.Zaid">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">matreader.</span></span><span class="sig-name descname"><span class="pre">Zaid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fraction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isotope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ab</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fullname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Zaid" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Object representing a Zaid</p>
 <dl class="field-list simple">
@@ -728,8 +636,8 @@ the abundance in the material.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="matreader.Zaid.from_string">
-<em class="property">classmethod </em><code class="sig-name descname">from_string</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Zaid.from_string" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.Zaid.from_string">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Zaid.from_string" title="Permalink to this definition"></a></dt>
 <dd><p>Generate a zaid object from an MCNP string</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -748,8 +656,8 @@ the abundance in the material.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="matreader.Zaid.get_fullname">
-<code class="sig-name descname">get_fullname</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">libmanager</span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Zaid.get_fullname" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.Zaid.get_fullname">
+<span class="sig-name descname"><span class="pre">get_fullname</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">libmanager</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Zaid.get_fullname" title="Permalink to this definition"></a></dt>
 <dd><p>Get the formula name of the zaid (e.g. H1)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -765,8 +673,8 @@ the abundance in the material.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="matreader.Zaid.to_text">
-<code class="sig-name descname">to_text</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Zaid.to_text" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="matreader.Zaid.to_text">
+<span class="sig-name descname"><span class="pre">to_text</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#matreader.Zaid.to_text" title="Permalink to this definition"></a></dt>
 <dd><blockquote>
 <div><p>Get the zaid string ready for MCNP material card</p>
 </div></blockquote>
@@ -785,12 +693,12 @@ the abundance in the material.</p>
 </div>
 </div>
 <div class="section" id="testrun-module">
-<span id="testrunmodule"></span><h2>testrun module<a class="headerlink" href="#testrun-module" title="Permalink to this headline">¶</a></h2>
+<span id="testrunmodule"></span><h2>testrun module<a class="headerlink" href="#testrun-module" title="Permalink to this headline"></a></h2>
 <div class="section" id="test">
-<span id="testob"></span><h3>Test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h3>
+<span id="testob"></span><h3>Test<a class="headerlink" href="#test" title="Permalink to this headline"></a></h3>
 <dl class="py class">
-<dt id="testrun.Test">
-<em class="property">class </em><code class="sig-prename descclassname">testrun.</code><code class="sig-name descname">Test</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inp</span></em>, <em class="sig-param"><span class="n">lib</span></em>, <em class="sig-param"><span class="n">config</span></em>, <em class="sig-param"><span class="n">log</span></em>, <em class="sig-param"><span class="n">VRTpath</span></em>, <em class="sig-param"><span class="n">confpath</span></em><span class="sig-paren">)</span><a class="headerlink" href="#testrun.Test" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="testrun.Test">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">testrun.</span></span><span class="sig-name descname"><span class="pre">Test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">VRTpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confpath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#testrun.Test" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class representing a general test. This class will have to be extended
 for specific tests.</p>
@@ -816,8 +724,8 @@ for specific tests.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="testrun.Test.custom_inp_modifications">
-<code class="sig-name descname">custom_inp_modifications</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#testrun.Test.custom_inp_modifications" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="testrun.Test.custom_inp_modifications">
+<span class="sig-name descname"><span class="pre">custom_inp_modifications</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#testrun.Test.custom_inp_modifications" title="Permalink to this definition"></a></dt>
 <dd><p>Perform additional operation on the input before generation. In this
 parent object actually does nothing</p>
 <dl class="field-list simple">
@@ -831,8 +739,8 @@ parent object actually does nothing</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="testrun.Test.generate_test">
-<code class="sig-name descname">generate_test</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lib_directory</span></em>, <em class="sig-param"><span class="n">libmanager</span></em>, <em class="sig-param"><span class="n">MCNP_dir</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#testrun.Test.generate_test" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="testrun.Test.generate_test">
+<span class="sig-name descname"><span class="pre">generate_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">libmanager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MCNP_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#testrun.Test.generate_test" title="Permalink to this definition"></a></dt>
 <dd><p>Generate the test input files</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -852,8 +760,8 @@ parent object actually does nothing</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="testrun.Test.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cpu</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#testrun.Test.run" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="testrun.Test.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cpu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#testrun.Test.run" title="Permalink to this definition"></a></dt>
 <dd><p>run the input</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -876,10 +784,10 @@ The default is None.</p></li>
 
 </div>
 <div class="section" id="multipletest">
-<span id="multitestob"></span><h3>MultipleTest<a class="headerlink" href="#multipletest" title="Permalink to this headline">¶</a></h3>
+<span id="multitestob"></span><h3>MultipleTest<a class="headerlink" href="#multipletest" title="Permalink to this headline"></a></h3>
 <dl class="py class">
-<dt id="testrun.MultipleTest">
-<em class="property">class </em><code class="sig-prename descclassname">testrun.</code><code class="sig-name descname">MultipleTest</code><span class="sig-paren">(</span><em class="sig-param">inpsfolder</em>, <em class="sig-param">lib</em>, <em class="sig-param">config</em>, <em class="sig-param">log</em>, <em class="sig-param">VRTpath</em>, <em class="sig-param">confpath</em>, <em class="sig-param">TestOb=&lt;class 'testrun.Test'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#testrun.MultipleTest" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="testrun.MultipleTest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">testrun.</span></span><span class="sig-name descname"><span class="pre">MultipleTest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inpsfolder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">VRTpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">TestOb=&lt;class</span> <span class="pre">'testrun.Test'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#testrun.MultipleTest" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A collection of Tests</p>
 <dl class="field-list simple">
@@ -902,8 +810,8 @@ The default is None.</p></li>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="testrun.MultipleTest.generate_test">
-<code class="sig-name descname">generate_test</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lib_directory</span></em>, <em class="sig-param"><span class="n">libmanager</span></em><span class="sig-paren">)</span><a class="headerlink" href="#testrun.MultipleTest.generate_test" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="testrun.MultipleTest.generate_test">
+<span class="sig-name descname"><span class="pre">generate_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">libmanager</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#testrun.MultipleTest.generate_test" title="Permalink to this definition"></a></dt>
 <dd><p>Generate all the tests of the collection</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -922,8 +830,8 @@ The default is None.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="testrun.MultipleTest.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cpu</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#testrun.MultipleTest.run" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="testrun.MultipleTest.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cpu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#testrun.MultipleTest.run" title="Permalink to this definition"></a></dt>
 <dd><p>Run all the tests</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -947,12 +855,12 @@ None.</p></li>
 </div>
 </div>
 <div class="section" id="inputfile-module">
-<h2>inputfile module<a class="headerlink" href="#inputfile-module" title="Permalink to this headline">¶</a></h2>
+<h2>inputfile module<a class="headerlink" href="#inputfile-module" title="Permalink to this headline"></a></h2>
 <div class="section" id="inputfile">
-<span id="inputob"></span><h3>InputFile<a class="headerlink" href="#inputfile" title="Permalink to this headline">¶</a></h3>
+<span id="inputob"></span><h3>InputFile<a class="headerlink" href="#inputfile" title="Permalink to this headline"></a></h3>
 <dl class="py class">
-<dt id="inputfile.InputFile">
-<em class="property">class </em><code class="sig-prename descclassname">inputfile.</code><code class="sig-name descname">InputFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cards</span></em>, <em class="sig-param"><span class="n">matlist</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="inputfile.InputFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">inputfile.</span></span><span class="sig-name descname"><span class="pre">InputFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matlist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Object representing an MCNP input file</p>
 <dl class="field-list simple">
@@ -971,25 +879,8 @@ None.</p></li>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="inputfile.InputFile.add_edits">
-<code class="sig-name descname">add_edits</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edits_file</span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile.add_edits" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add weight windows and source bias resulted from ADVANTG analysis</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>edits_file</strong> (<em>path like object</em>) – file containing the edits.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>None.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="inputfile.InputFile.add_stopCard">
-<code class="sig-name descname">add_stopCard</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nps</span></em>, <em class="sig-param"><span class="n">ctme</span></em>, <em class="sig-param"><span class="n">precision</span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile.add_stopCard" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="inputfile.InputFile.add_stopCard">
+<span class="sig-name descname"><span class="pre">add_stopCard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctme</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile.add_stopCard" title="Permalink to this definition"></a></dt>
 <dd><p>Add STOP card</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1009,8 +900,8 @@ None.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="inputfile.InputFile.addlines2card">
-<code class="sig-name descname">addlines2card</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lines</span></em>, <em class="sig-param"><span class="n">blockID</span></em>, <em class="sig-param"><span class="n">cardID</span></em>, <em class="sig-param"><span class="n">offset_all</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile.addlines2card" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="inputfile.InputFile.addlines2card">
+<span class="sig-name descname"><span class="pre">addlines2card</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blockID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cardID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile.addlines2card" title="Permalink to this definition"></a></dt>
 <dd><p>Append some lines to one of the cards in the input</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1034,8 +925,8 @@ the first line will have no offset (new card)</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="inputfile.InputFile.change_density">
-<code class="sig-name descname">change_density</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">density</span></em>, <em class="sig-param"><span class="n">cellidx</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile.change_density" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="inputfile.InputFile.change_density">
+<span class="sig-name descname"><span class="pre">change_density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">density</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cellidx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile.change_density" title="Permalink to this definition"></a></dt>
 <dd><p>Change the density of the sphere according to the selected zaid</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1054,8 +945,8 @@ the first line will have no offset (new card)</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="inputfile.InputFile.from_text">
-<em class="property">classmethod </em><code class="sig-name descname">from_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputfile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile.from_text" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="inputfile.InputFile.from_text">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile.from_text" title="Permalink to this definition"></a></dt>
 <dd><p>This method use the numjuggler parser to help identify the mcards in
 the input which will usually undergo special treatments in the input
 creation</p>
@@ -1076,8 +967,8 @@ creation</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="inputfile.InputFile.get_card_byID">
-<code class="sig-name descname">get_card_byID</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">blockID</span></em>, <em class="sig-param"><span class="n">cardID</span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile.get_card_byID" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="inputfile.InputFile.get_card_byID">
+<span class="sig-name descname"><span class="pre">get_card_byID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">blockID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cardID</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile.get_card_byID" title="Permalink to this definition"></a></dt>
 <dd><p>Get a card of the input based on its ID</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1099,8 +990,8 @@ creation</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="inputfile.InputFile.mcnp_wrap">
-<em class="property">static </em><code class="sig-name descname">mcnp_wrap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">maxchars</span><span class="o">=</span><span class="default_value">80</span></em>, <em class="sig-param"><span class="n">whitespace</span><span class="o">=</span><span class="default_value">'      '</span></em>, <em class="sig-param"><span class="n">offset_all</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile.mcnp_wrap" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="inputfile.InputFile.mcnp_wrap">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mcnp_wrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxchars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">80</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">whitespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'</span>&#160;&#160;&#160;&#160;&#160; <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile.mcnp_wrap" title="Permalink to this definition"></a></dt>
 <dd><p>Wrap the text of a card in MCNP style</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1123,8 +1014,8 @@ text.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="inputfile.InputFile.translate">
-<code class="sig-name descname">translate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newlib</span></em>, <em class="sig-param"><span class="n">libmanager</span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile.translate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="inputfile.InputFile.translate">
+<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newlib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">libmanager</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile.translate" title="Permalink to this definition"></a></dt>
 <dd><p>Translate the input to another library</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1143,8 +1034,8 @@ text.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="inputfile.InputFile.update_zaidinfo">
-<code class="sig-name descname">update_zaidinfo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lib_manager</span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile.update_zaidinfo" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="inputfile.InputFile.update_zaidinfo">
+<span class="sig-name descname"><span class="pre">update_zaidinfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib_manager</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile.update_zaidinfo" title="Permalink to this definition"></a></dt>
 <dd><p>This methods allows to update the in-line comments for every zaids
 containing additional information</p>
 <dl class="field-list simple">
@@ -1161,8 +1052,8 @@ containing additional information</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="inputfile.InputFile.write">
-<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">out</span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile.write" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="inputfile.InputFile.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.InputFile.write" title="Permalink to this definition"></a></dt>
 <dd><p>Write the input to a file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1181,10 +1072,10 @@ containing additional information</p>
 
 </div>
 <div class="section" id="d1s-input">
-<h3>D1S_Input<a class="headerlink" href="#d1s-input" title="Permalink to this headline">¶</a></h3>
+<h3>D1S_Input<a class="headerlink" href="#d1s-input" title="Permalink to this headline"></a></h3>
 <dl class="py class">
-<dt id="inputfile.D1S_Input">
-<em class="property">class </em><code class="sig-prename descclassname">inputfile.</code><code class="sig-name descname">D1S_Input</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cards</span></em>, <em class="sig-param"><span class="n">matlist</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.D1S_Input" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="inputfile.D1S_Input">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">inputfile.</span></span><span class="sig-name descname"><span class="pre">D1S_Input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matlist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.D1S_Input" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#inputfile.InputFile" title="inputfile.InputFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">inputfile.InputFile</span></code></a></p>
 <p>Object representing an MCNP input file</p>
 <dl class="field-list simple">
@@ -1203,8 +1094,8 @@ containing additional information</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="inputfile.D1S_Input.add_PIKMT_card">
-<code class="sig-name descname">add_PIKMT_card</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent_list</span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.D1S_Input.add_PIKMT_card" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="inputfile.D1S_Input.add_PIKMT_card">
+<span class="sig-name descname"><span class="pre">add_PIKMT_card</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.D1S_Input.add_PIKMT_card" title="Permalink to this definition"></a></dt>
 <dd><p>Add a PIKMT card to the input file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1220,8 +1111,8 @@ containing additional information</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="inputfile.D1S_Input.add_track_contribution">
-<code class="sig-name descname">add_track_contribution</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tallyID</span></em>, <em class="sig-param"><span class="n">zaids</span></em>, <em class="sig-param"><span class="n">who</span><span class="o">=</span><span class="default_value">'parent'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.D1S_Input.add_track_contribution" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="inputfile.D1S_Input.add_track_contribution">
+<span class="sig-name descname"><span class="pre">add_track_contribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tallyID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zaids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">who</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'parent'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.D1S_Input.add_track_contribution" title="Permalink to this definition"></a></dt>
 <dd><p>Given a list of zaid add the FU bin in the requested tallies in order
 to collect the contribution of them to the tally.</p>
 <dl class="field-list simple">
@@ -1246,8 +1137,8 @@ be tracked. The default is ‘parent’.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="inputfile.D1S_Input.get_reaction_file">
-<code class="sig-name descname">get_reaction_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">libmanager</span></em>, <em class="sig-param"><span class="n">lib</span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.D1S_Input.get_reaction_file" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="inputfile.D1S_Input.get_reaction_file">
+<span class="sig-name descname"><span class="pre">get_reaction_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">libmanager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lib</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.D1S_Input.get_reaction_file" title="Permalink to this definition"></a></dt>
 <dd><p>Collect all the possible reactions that are allowed amnong all the
 materials in the input</p>
 <dl class="field-list simple">
@@ -1267,8 +1158,8 @@ materials in the input</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="inputfile.D1S_Input.translate">
-<code class="sig-name descname">translate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newlib</span></em>, <em class="sig-param"><span class="n">libmanager</span></em>, <em class="sig-param"><span class="n">original_irradfile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">original_reacfile</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.D1S_Input.translate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="inputfile.D1S_Input.translate">
+<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newlib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">libmanager</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">original_irradfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">original_reacfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.D1S_Input.translate" title="Permalink to this definition"></a></dt>
 <dd><p>Translate the input to another library. This methods ovverride the
 parent one since often two different libraries must be considered in
 a D1S input: a tranport and an activation library</p>
@@ -1295,10 +1186,10 @@ a D1S input: a tranport and an activation library</p>
 
 </div>
 <div class="section" id="d1s5-inputfile">
-<h3>D1S5_InputFile<a class="headerlink" href="#d1s5-inputfile" title="Permalink to this headline">¶</a></h3>
+<h3>D1S5_InputFile<a class="headerlink" href="#d1s5-inputfile" title="Permalink to this headline"></a></h3>
 <dl class="py class">
-<dt id="inputfile.D1S5_InputFile">
-<em class="property">class </em><code class="sig-prename descclassname">inputfile.</code><code class="sig-name descname">D1S5_InputFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cards</span></em>, <em class="sig-param"><span class="n">matlist</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.D1S5_InputFile" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="inputfile.D1S5_InputFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">inputfile.</span></span><span class="sig-name descname"><span class="pre">D1S5_InputFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matlist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.D1S5_InputFile" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#inputfile.D1S_Input" title="inputfile.D1S_Input"><code class="xref py py-class docutils literal notranslate"><span class="pre">inputfile.D1S_Input</span></code></a></p>
 <p>Object representing an MCNP input file</p>
 <dl class="field-list simple">
@@ -1317,8 +1208,8 @@ a D1S input: a tranport and an activation library</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="inputfile.D1S5_InputFile.add_stopCard">
-<code class="sig-name descname">add_stopCard</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nps</span></em>, <em class="sig-param"><span class="n">ctme</span></em>, <em class="sig-param"><span class="n">precision</span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.D1S5_InputFile.add_stopCard" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="inputfile.D1S5_InputFile.add_stopCard">
+<span class="sig-name descname"><span class="pre">add_stopCard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctme</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#inputfile.D1S5_InputFile.add_stopCard" title="Permalink to this definition"></a></dt>
 <dd><p>STOP card is not supported in MCNP 5. This simply is translated to a
 nps card. Warnings are prompt to the user if ctme or precision are
 specified.</p>
@@ -1326,8 +1217,8 @@ specified.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>nps</strong> (<em>int</em>) – number of particles to simulate</p></li>
-<li><p><strong>= int</strong> (<em>ctme</em>) – computer time</p></li>
-<li><p><strong>=</strong><strong> (</strong><strong>str</strong> (<em>precision</em>) – tuple indicating the tally number and the precision requested</p></li>
+<li><p><strong>int</strong> (<em>ctme =</em>) – computer time</p></li>
+<li><p><strong>(</strong><strong>str</strong> (<em>precision =</em>) – tuple indicating the tally number and the precision requested</p></li>
 <li><p><strong>float</strong><strong>)</strong> – tuple indicating the tally number and the precision requested</p></li>
 </ul>
 </dd>
@@ -1345,12 +1236,12 @@ specified.</p>
 </div>
 </div>
 <div class="section" id="parsersd1s-module">
-<h2>parsersD1S module<a class="headerlink" href="#parsersd1s-module" title="Permalink to this headline">¶</a></h2>
+<h2>parsersD1S module<a class="headerlink" href="#parsersd1s-module" title="Permalink to this headline"></a></h2>
 <div class="section" id="irradiationfile">
-<span id="irradfileob"></span><h3>IrradiationFile<a class="headerlink" href="#irradiationfile" title="Permalink to this headline">¶</a></h3>
+<span id="irradfileob"></span><h3>IrradiationFile<a class="headerlink" href="#irradiationfile" title="Permalink to this headline"></a></h3>
 <dl class="py class">
-<dt id="parsersD1S.IrradiationFile">
-<em class="property">class </em><code class="sig-prename descclassname">parsersD1S.</code><code class="sig-name descname">IrradiationFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nsc</span></em>, <em class="sig-param"><span class="n">irr_schedules</span></em>, <em class="sig-param"><span class="n">header</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">formatting</span><span class="o">=</span><span class="default_value">[8, 14, 13, 9]</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'irrad'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.IrradiationFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">parsersD1S.</span></span><span class="sig-name descname"><span class="pre">IrradiationFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nsc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">irr_schedules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">formatting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[8,</span> <span class="pre">14,</span> <span class="pre">13,</span> <span class="pre">9]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'irrad'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Object representing an irradiation D1S file</p>
 <dl class="field-list simple">
@@ -1371,8 +1262,8 @@ specified.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="parsersD1S.IrradiationFile.from_text">
-<em class="property">classmethod </em><code class="sig-name descname">from_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filepath</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile.from_text" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.IrradiationFile.from_text">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile.from_text" title="Permalink to this definition"></a></dt>
 <dd><p>Parse irradiation file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1391,8 +1282,8 @@ specified.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="parsersD1S.IrradiationFile.get_daughters">
-<code class="sig-name descname">get_daughters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile.get_daughters" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.IrradiationFile.get_daughters">
+<span class="sig-name descname"><span class="pre">get_daughters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile.get_daughters" title="Permalink to this definition"></a></dt>
 <dd><p>Get a list of all daughters among all irradiation files</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1405,8 +1296,8 @@ specified.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="parsersD1S.IrradiationFile.get_irrad">
-<code class="sig-name descname">get_irrad</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">daughter</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile.get_irrad" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.IrradiationFile.get_irrad">
+<span class="sig-name descname"><span class="pre">get_irrad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">daughter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile.get_irrad" title="Permalink to this definition"></a></dt>
 <dd><p>Return the irradiation correspondent to the daughter</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1423,8 +1314,8 @@ If no irradiation is found returns None.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="parsersD1S.IrradiationFile.write">
-<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile.write" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.IrradiationFile.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.IrradiationFile.write" title="Permalink to this definition"></a></dt>
 <dd><p>Write the D1S irradiation file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1443,10 +1334,10 @@ If no irradiation is found returns None.</p>
 
 </div>
 <div class="section" id="irradiation">
-<h3>Irradiation<a class="headerlink" href="#irradiation" title="Permalink to this headline">¶</a></h3>
+<h3>Irradiation<a class="headerlink" href="#irradiation" title="Permalink to this headline"></a></h3>
 <dl class="py class">
-<dt id="parsersD1S.Irradiation">
-<em class="property">class </em><code class="sig-prename descclassname">parsersD1S.</code><code class="sig-name descname">Irradiation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">daughter</span></em>, <em class="sig-param"><span class="n">lambd</span></em>, <em class="sig-param"><span class="n">times</span></em>, <em class="sig-param"><span class="n">comment</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Irradiation" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.Irradiation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">parsersD1S.</span></span><span class="sig-name descname"><span class="pre">Irradiation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">daughter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Irradiation" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Irradiation object</p>
 <dl class="field-list simple">
@@ -1466,8 +1357,8 @@ If no irradiation is found returns None.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="parsersD1S.Irradiation.from_text">
-<em class="property">classmethod </em><code class="sig-name descname">from_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">nsc</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Irradiation.from_text" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.Irradiation.from_text">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Irradiation.from_text" title="Permalink to this definition"></a></dt>
 <dd><p>Parse a single irradiation</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1490,10 +1381,10 @@ If no irradiation is found returns None.</p>
 
 </div>
 <div class="section" id="reactionfile">
-<span id="reacfileob"></span><h3>ReactionFile<a class="headerlink" href="#reactionfile" title="Permalink to this headline">¶</a></h3>
+<span id="reacfileob"></span><h3>ReactionFile<a class="headerlink" href="#reactionfile" title="Permalink to this headline"></a></h3>
 <dl class="py class">
-<dt id="parsersD1S.ReactionFile">
-<em class="property">class </em><code class="sig-prename descclassname">parsersD1S.</code><code class="sig-name descname">ReactionFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reactions</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'react'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.ReactionFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">parsersD1S.</span></span><span class="sig-name descname"><span class="pre">ReactionFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reactions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'react'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Reaction file object</p>
 <dl class="field-list simple">
@@ -1511,8 +1402,8 @@ If no irradiation is found returns None.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="parsersD1S.ReactionFile.change_lib">
-<code class="sig-name descname">change_lib</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newlib</span></em>, <em class="sig-param"><span class="n">libmanager</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile.change_lib" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.ReactionFile.change_lib">
+<span class="sig-name descname"><span class="pre">change_lib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newlib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">libmanager</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile.change_lib" title="Permalink to this definition"></a></dt>
 <dd><p>change the parent library tag of the reactions. If no libmanager is
 provided, the check on the availability of the parent in the xsdir
 file will be not performed.</p>
@@ -1533,8 +1424,8 @@ file will be not performed.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="parsersD1S.ReactionFile.from_text">
-<em class="property">classmethod </em><code class="sig-name descname">from_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filepath</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile.from_text" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.ReactionFile.from_text">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile.from_text" title="Permalink to this definition"></a></dt>
 <dd><p>Generate a reaction file directly from text file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1553,8 +1444,8 @@ file will be not performed.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="parsersD1S.ReactionFile.get_parents">
-<code class="sig-name descname">get_parents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile.get_parents" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.ReactionFile.get_parents">
+<span class="sig-name descname"><span class="pre">get_parents</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile.get_parents" title="Permalink to this definition"></a></dt>
 <dd><p>Get a list of all parents</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1567,8 +1458,8 @@ file will be not performed.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="parsersD1S.ReactionFile.write">
-<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile.write" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.ReactionFile.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.ReactionFile.write" title="Permalink to this definition"></a></dt>
 <dd><p>write formatted reaction file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1587,10 +1478,10 @@ file will be not performed.</p>
 
 </div>
 <div class="section" id="reaction">
-<h3>Reaction<a class="headerlink" href="#reaction" title="Permalink to this headline">¶</a></h3>
+<h3>Reaction<a class="headerlink" href="#reaction" title="Permalink to this headline"></a></h3>
 <dl class="py class">
-<dt id="parsersD1S.Reaction">
-<em class="property">class </em><code class="sig-prename descclassname">parsersD1S.</code><code class="sig-name descname">Reaction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span></em>, <em class="sig-param"><span class="n">MT</span></em>, <em class="sig-param"><span class="n">daughter</span></em>, <em class="sig-param"><span class="n">comment</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Reaction" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.Reaction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">parsersD1S.</span></span><span class="sig-name descname"><span class="pre">Reaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">daughter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Reaction" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Represents a single reaction of the reaction file</p>
 <dl class="field-list simple">
@@ -1614,8 +1505,8 @@ type (with integer value) can be used.</p></li>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="parsersD1S.Reaction.change_lib">
-<code class="sig-name descname">change_lib</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newlib</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Reaction.change_lib" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.Reaction.change_lib">
+<span class="sig-name descname"><span class="pre">change_lib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">newlib</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Reaction.change_lib" title="Permalink to this definition"></a></dt>
 <dd><p>Change the library tag</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1631,8 +1522,8 @@ type (with integer value) can be used.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="parsersD1S.Reaction.from_text">
-<em class="property">classmethod </em><code class="sig-name descname">from_text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Reaction.from_text" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.Reaction.from_text">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Reaction.from_text" title="Permalink to this definition"></a></dt>
 <dd><p>Create a reaction object from text</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1651,8 +1542,8 @@ type (with integer value) can be used.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="parsersD1S.Reaction.write">
-<code class="sig-name descname">write</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Reaction.write" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="parsersD1S.Reaction.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#parsersD1S.Reaction.write" title="Permalink to this definition"></a></dt>
 <dd><p>Generate the reaction text</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1672,50 +1563,33 @@ type (with integer value) can be used.</p></li>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="postprocessing.html" class="btn btn-neutral float-right" title="Post-Processing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="initobjects.html" class="btn btn-neutral float-left" title="JADE Session" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="postprocessing.html" class="btn btn-neutral float-right" title="Post-Processing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, Davide Laghi.
-
-    </p>
+    <p>&#169; Copyright 2021, Davide Laghi.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

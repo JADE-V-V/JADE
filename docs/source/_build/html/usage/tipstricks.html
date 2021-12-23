@@ -69,6 +69,7 @@
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../publications.html">List of Publications and Contributions</a></li>
@@ -107,7 +108,7 @@ JADE additional capabilities.</p>
 <p>It may be useful for particularly computational-intensive benchmark to be
 run on a separate hardware (e.g. a server) with respect to the one used for JADE.
 This can be achieved quite easily with the following steps:</p>
-<ol class="arabic simple">
+<ol class="arabic">
 <li><p>set the <code class="docutils literal notranslate"><span class="pre">OnlyInput</span></code> option in the <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Configuration\Conf.xlsx</span></code>
 file to <code class="docutils literal notranslate"><span class="pre">True</span></code> for the benchmark that needs to be run externally. This
 will generate the MCNP input file of the benchmark that can be found in
@@ -115,7 +116,10 @@ will generate the MCNP input file of the benchmark that can be found in
 without running it;</p></li>
 <li><p>copy the generated input file into the hardware selected for the run and start the
 MCNP simulation. The only requirement is to use the MCNP keyword  <code class="docutils literal notranslate"><span class="pre">name=</span></code>
-when launching the simulation in order to obtain consistently named outputs;</p></li>
+when launching the simulation in order to obtain consistently named outputs,
+for instance:</p>
+<p><code class="docutils literal notranslate"><span class="pre">mcnp6</span> <span class="pre">name=FNG</span> <span class="pre">tasks</span> <span class="pre">32</span></code></p>
+</li>
 <li><p>once the simulation is completed, copy all MCNP outputs to the same
 <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Tests\MCNP</span> <span class="pre">simulation\&lt;lib</span> <span class="pre">suffix&gt;\&lt;Benchmark</span> <span class="pre">name&gt;</span></code> folder;</p></li>
 <li><p>normally run the post-processing.</p></li>

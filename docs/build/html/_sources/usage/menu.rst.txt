@@ -49,9 +49,11 @@ The following options are available in the computational benchmark menu:
   specified directly from the console when the selection is prompted to
   video. The library must be contained in the xsdir file (available libraries
   can be explored using ``printlib``);
-* ``continue`` continue a previously interrupted assessment for a selected
-  library. **Currently, this option is implemented only for the Sphere Leakage
-  benchmark.**
+* ``continue`` **currently, this option is implemented only for the Sphere Leakage
+  benchmark.** Continue a previously interrupted assessment for a selected
+  library. The codes scans for all isotopes and materials in the sphere benchmarks
+  and checks if the mctal file has been produced. If not, it deletes the eventual
+  output files and (re)runs the simulation.
 * ``back`` go back to the main menu;
 * ``exit`` exit the application.
 

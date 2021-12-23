@@ -202,7 +202,7 @@ This function asks for a directory absolute path and for a new library suffix
 suffix changed to the new one. This function operates in a non-destructive way,
 that is, the switch is not implemented on the original file but on copies of
 them instead. The copies will be saved in a folder created at the same level of
-the original one. This function does not modify the XSDIR file. 
+the original one. **This function does not modify the XSDIR file.**
 
 Produce D1S-UNED reaction files
 ===============================

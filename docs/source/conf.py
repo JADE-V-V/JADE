@@ -72,5 +72,5 @@ class Mock(MagicMock):
 
 
 MOCK_MODULES = ['psutil', 'win32com', 'win32com.client', 'aem', 'appscript',
-                'appscript.reference']
+                'appscript.reference', 'pythoncom']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)

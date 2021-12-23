@@ -63,14 +63,6 @@ html_logo = './img/Jade_white.jpg'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-
-# Mock Windows module or Linux-based read the docs building would not work
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-        return MagicMock()
-
-
-MOCK_MODULES = ['psutil', 'win32com', 'win32com.client', 'aem', 'appscript',
-                'appscript.reference', 'pythoncom']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+# Mock Windows modules or Linux-based read the docs building would not work
+autodoc_mock_imports = ['psutil', 'win32com', 'win32com.client', 'aem',
+                        'appscript', 'pythoncom']

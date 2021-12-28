@@ -114,40 +114,35 @@ class Session:
             if not os.path.exists(path):
                 os.mkdir(path)
 
+        # --This paths must exist or are created at the first initialization--
         # Configuration
         self.path_cnf = os.path.join(cp, 'Configuration',
                                      'Benchmarks Configuration')
+        # Experimental results
+        self.path_exp_res = os.path.join(cp, 'Experimental Results')
+        # Benchmark inputs
+        self.path_inputs = os.path.join(cp, 'Benchmarks inputs')
+
         # Copy default settings if it is the first initialization
         if not os.path.exists(self.path_cnf):
             print(FIRST_INITIALIZATION)
             files = self.path_default_settings
             shutil.copytree(files, os.path.dirname(self.path_cnf))
+
+            # Copy files into benchmark inputs folder
+            files = os.path.join('install_files', 'Benchmarks inputs')
+            shutil.copytree(files, self.path_inputs)
+
+            # Copy experimental results folder
+            files = os.path.join('install_files', 'Experimental Results')
+            shutil.copytree(files, self.path_exp_res)
+
             # the application needs to be closed
             sys.exit()
 
         # Read global configuration file. All vital variables are stored here
         self.conf = cnf.Configuration(os.path.join(cp, 'Configuration',
                                                    'Config.xlsx'))
-
-        # Copy files into benchmark inputs folder
-        path_inputs = os.path.join(cp, 'Benchmarks inputs')
-        if not os.path.exists(path_inputs):
-            files = os.path.join('install_files', 'Benchmarks inputs')
-            shutil.copytree(files, path_inputs)
-        self.path_inputs = path_inputs
-
-        # Copy input files for testing
-        path_inputs = os.path.join(self.path_test_install, 'Inputs')
-        if not os.path.exists(path_inputs):
-            files = os.path.join('install_files', 'Inputs install')
-            shutil.copytree(files, path_inputs)
-
-        # Copy experimental results folder
-        path_exp_res = os.path.join(cp, 'Experimental Results')
-        if not os.path.exists(path_exp_res):
-            files = os.path.join('install_files', 'Experimental Results')
-            shutil.copytree(files, path_exp_res)
-        self.path_exp_res = path_exp_res
 
         # --- Create the session LOG ---
         log = os.path.join(self.path_logs,

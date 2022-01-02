@@ -193,7 +193,6 @@ class Xsdir(object):
 
     @staticmethod
     def _exact_loop(name: str, tablenames: List[Tuple[str, str]]) -> bool:
-        print(name)
         for zaidname, libname in tablenames:
             if name == zaidname+'.'+libname:
                 return True

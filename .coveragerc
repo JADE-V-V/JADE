@@ -1,0 +1,8 @@
+# .coveragerc to control coverage.py
+[run]
+omit =
+    # No need to cover the test files
+    tests/*
+    # The following are not developed directly by JADE
+    MCTAL_READER2.py
+    xsdirpyne.py

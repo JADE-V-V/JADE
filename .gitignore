@@ -2,6 +2,7 @@
 # this files are not useful
 *.pyc
 Untitled.ipynb
+.coverage
 
 # These are generated folders for cache 
 .ipynb_checkpoints/

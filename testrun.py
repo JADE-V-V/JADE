@@ -532,11 +532,10 @@ class SphereTest(Test):
     @staticmethod
     def _get_zaidtestname(testname, zaid, formula, addtag=None):
 
-        if addtag is None:
-            outfile = (testname+'_'+zaid.element+zaid.isotope+'_'+formula+'_')
-            outdir = testname+'_'+zaid.element+zaid.isotope+'_'+formula
+        outfile = (testname+'_'+zaid.element+zaid.isotope+'_'+formula+'_')
+        outdir = testname+'_'+zaid.element+zaid.isotope+'_'+formula
 
-        else:
+        if addtag is not None:
             outfile = outfile+addtag+'_'
             outdir = outdir+'_'+addtag
 

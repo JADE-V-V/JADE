@@ -40,4 +40,4 @@ jobs:
       - name: Testing
         run: |
           conda activate jade
-          pytest --cov-report html --cov=.
+          pytest --cov=. --cov-report html -cov-config=.coveragerc

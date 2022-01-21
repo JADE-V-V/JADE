@@ -16,7 +16,7 @@ following steps:
 #. Change directory to ``<JADE_root>\Code``;
 #. run:
    
-   ``pytest --cov-report html --cov=.``
+   ``pytest --cov=. --cov-report html -cov-config=.coveragerc``
 
 This will automatically collect and run all tests contained in 
 ``<JADE_root>\Code\tests`` while also providing an html index with detailed

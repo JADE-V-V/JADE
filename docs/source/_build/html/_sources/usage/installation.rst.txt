@@ -10,7 +10,7 @@ information about the Anaconda products and virtual environments.
 
 Once Anaconda is set up, proceed with the following steps to complete JADE installation:
 
-#. Visit [link github JADE] and download the latest JADE release as a .zip folder; 
+#. Visit `JADE GitHub repository <https://github.com/dodu94/JADE>`_ and download the latest JADE release as a .zip folder; 
 #. Extract the .zip into a folder of choice (from now on ``<JADE_root>``);
 #. Rename the folder containing the different Python modules as 'Code' (``<JADE_root>\Code``);
    Your folders structure at this point should look like this:

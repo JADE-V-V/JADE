@@ -50,6 +50,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tipstricks.html">Tips &amp; Tricks</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Troubleshooting</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#unable-to-post-process-a-libray">Unable to post-process a libray</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#jade-fails-on-first-library-assessment">JADE fails on first library assessment</a></li>
 </ul>
 </li>
 </ul>
@@ -104,7 +105,7 @@
 <h2>Unable to post-process a libray<a class="headerlink" href="#unable-to-post-process-a-libray" title="Permalink to this headline"></a></h2>
 <p>It may happen that the request to post-process a library fails, prompting to
 video that the library in question has not been run.</p>
-<img alt="../_images/notrun.PNG" src="../_images/notrun.PNG" />
+<img alt="../_images/notrun.png" src="../_images/notrun.png" />
 <p>This may puzzle the user who is sure to have run the library instead.</p>
 <p>This may happen if:</p>
 <ul class="simple">
@@ -114,6 +115,26 @@ as active for the post-processing have been actually run;</p></li>
 simulations. JADE considers a benchmark to have been “run” only if a mctal or
 fmesh file has been produced for each of the MCNP run foreseen by the benchmark.</p></li>
 </ul>
+</div>
+<div class="section" id="jade-fails-on-first-library-assessment">
+<h2>JADE fails on first library assessment<a class="headerlink" href="#jade-fails-on-first-library-assessment" title="Permalink to this headline"></a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">FileNotFound</span></code> error may be encountered the first time an assessment is
+requested using JADE. Most likely, this would be caused by the impossibility
+to call the MCNP executable directly from a cmd prompt.
+Indeed, by default, MCNP installation provide also an ad hoc prompt where the
+necessary enviroment variables are already set up and does not set such variables
+as user enviroment variables.</p>
+<p>To solve this issue it is sufficient to set-up/modify the following enviromental
+variables for the user account:</p>
+<dl class="simple">
+<dt>DATAPATH</dt><dd><p>path to the folder containing the xsdir files, it will be something like
+<code class="docutils literal notranslate"><span class="pre">&lt;Custom</span> <span class="pre">path</span> <span class="pre">to</span> <span class="pre">MCNP</span> <span class="pre">folder&gt;\MCNP_DATA\</span></code>.</p>
+</dd>
+<dt>PATH</dt><dd><p>the path to the MCNP executables needs to be added to the PATH enviromental
+variables. The path will be similar to
+<code class="docutils literal notranslate"><span class="pre">&lt;Custom</span> <span class="pre">path</span> <span class="pre">to</span> <span class="pre">MCNP</span> <span class="pre">folder&gt;\MCNP_CODE\bin</span></code>.</p>
+</dd>
+</dl>
 </div>
 </div>
 

@@ -50,6 +50,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tips &amp; Tricks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#external-run-of-a-benchmark">External Run of a benchmark</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#change-the-plots-fontsizes">Change the plots fontsizes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#add-a-new-material-to-the-spherical-benchmarks">Add a new material to the spherical benchmarks</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
@@ -148,6 +149,20 @@ for all plots it is quite easy since they are all defined at the beginning of th
 <span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;lines&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>          <span class="c1"># Marker default size</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="add-a-new-material-to-the-spherical-benchmarks">
+<h2>Add a new material to the spherical benchmarks<a class="headerlink" href="#add-a-new-material-to-the-spherical-benchmarks" title="Permalink to this headline"></a></h2>
+<p>To add a new material to both the Sphere Leakage and Sphere SDDR is fairly simple.
+The steps to follow are the following:</p>
+<ul class="simple">
+<li><p>Add the material card defining the material to the MCNP input named
+<strong>TypicalMaterials</strong> in the <code class="docutils literal notranslate"><span class="pre">JADE_root&gt;\Benchmarks</span> <span class="pre">inputs</span></code> folder.
+Chose a material number that has not been already used.</p></li>
+<li><p>Modify the <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Benchmarks</span> <span class="pre">Configuration\Sphere\MaterialSettings.csv</span></code>
+and the <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Benchmarks</span> <span class="pre">Configuration\SphereSDDR\MaterialSettings.csv</span></code>
+to specify the run parameters for the new materials. See <a class="reference internal" href="configuration.html#runconf"><span class="std std-ref">Benchmark run configuration</span></a> for
+additional details on such files.</p></li>
+</ul>
 </div>
 </div>
 

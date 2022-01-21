@@ -54,3 +54,16 @@ for all plots it is quite easy since they are all defined at the beginning of th
    plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
    plt.rc('lines', markersize=12)          # Marker default size
 
+
+Add a new material to the spherical benchmarks
+==============================================
+To add a new material to both the Sphere Leakage and Sphere SDDR is fairly simple.
+The steps to follow are the following:
+
+* Add the material card defining the material to the MCNP input named
+  **TypicalMaterials** in the ``JADE_root>\Benchmarks inputs`` folder.
+  Chose a material number that has not been already used.
+* Modify the ``<JADE_root>\Configuration\Benchmarks Configuration\Sphere\MaterialSettings.csv``
+  and the ``<JADE_root>\Configuration\Benchmarks Configuration\SphereSDDR\MaterialSettings.csv``
+  to specify the run parameters for the new materials. See :ref:`runconf` for
+  additional details on such files.

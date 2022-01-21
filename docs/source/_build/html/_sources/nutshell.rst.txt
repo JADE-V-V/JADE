@@ -44,4 +44,4 @@ When using JADE for scientific publications you are kindly encouraged to cite th
 For additional information contact: d.laghi@nier.it
 
 For additional information on future developments please check the issues list on the
-GitHub repository [link].
+GitHub repository https://github.com/dodu94/JADE.

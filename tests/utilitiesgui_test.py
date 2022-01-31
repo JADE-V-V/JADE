@@ -71,10 +71,19 @@ class TestUtilities:
                                 outpath=self.outpath)
         testfilename = os.path.basename(self.inputfile)
         tag = 'materialinfo.xlsx'
-        fileA = os.path.join(cp, 'tmp', testfilename+'_'+tag)
+        fileA = os.path.join(self.outpath, testfilename+'_'+tag)
         fileB = os.path.join(cp, 'TestFiles', 'utilitiesgui', tag)
+
+        # --- Do some consistency check on the results ---
+        # Check on total fraction of materials to be 1
+        elem_df = pd.read_excel(fileA, sheet_name='Sheet2').ffill()
+        tot_frac = elem_df.groupby('Material').sum()['Material Fraction']
+        print(tot_frac)
+        assert (tot_frac == 1).all()
+
+        # Check for equivalence with an expected output
         excel_equal(fileA, fileB, 2)
-        # shutil.rmtree(self.outpath)
+        shutil.rmtree(self.outpath)
 
     def test_generate_material(self):
         # using atom fraction

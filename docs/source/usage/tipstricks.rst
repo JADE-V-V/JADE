@@ -29,8 +29,8 @@ This can be achieved quite easily with the following steps:
    ``<JADE root>\Tests\MCNP simulation\<lib suffix>\<Benchmark name>`` folder;
 #. normally run the post-processing.
 
-Change the plots fontsizes
-==========================
+Change the plots parameters
+===========================
 Font size in plots is hardcoded in JADE. Nevertheless to change these value globally
 for all plots it is quite easy since they are all defined at the beginning of the
 ``<JADE root>\Code\plotter.py`` file trough the matplotlib.pyplot.rc attribute:
@@ -41,6 +41,8 @@ for all plots it is quite easy since they are all defined at the beginning of th
    # ============================================================================
    #                   Specify parameters for plots
    # ============================================================================
+   DEFAULT_EXTENSION = '.png'
+
    SMALL_SIZE = 22
    MEDIUM_SIZE = 26
    BIGGER_SIZE = 30
@@ -54,6 +56,8 @@ for all plots it is quite easy since they are all defined at the beginning of th
    plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
    plt.rc('lines', markersize=12)          # Marker default size
 
+Also the default extension of the plots can be changed in this way (it needs
+to be supported by ``matplotlib`` though).
 
 Add a new material to the spherical benchmarks
 ==============================================

@@ -39,6 +39,8 @@ from matplotlib.patches import Rectangle
 # ============================================================================
 #                   Specify parameters for plots
 # ============================================================================
+DEFAULT_EXTENSION = '.png'
+
 SMALL_SIZE = 22
 MEDIUM_SIZE = 26
 BIGGER_SIZE = 30
@@ -118,7 +120,7 @@ CYL_SDDR_XTICKS = {"'22-1'": 'Hole Front',
 # ============================================================================
 class Plotter:
     def __init__(self, data, title, outpath, outname, quantity, unit, xlabel,
-                 testname, ext='.png'):
+                 testname, ext=DEFAULT_EXTENSION):
         """
         Object Handling plots
 

@@ -966,18 +966,6 @@ def safe_override(directory):
     os.mkdir(directory)
 
 
-def check_true(obj):
-    # It may not work! check needed
-    if obj is True:
-        return True
-    elif obj == 'True':
-        return True
-    elif obj == 'true':
-        return True
-    else:
-        return False
-
-
 def check_transport_activation(lib):
     # Operate on the newlib, should arrive in the 99c-31c format
     errmsg = """

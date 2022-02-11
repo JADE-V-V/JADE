@@ -116,6 +116,8 @@ class TestLibManger:
         lib = '31c'
         translation = self.lm.convertZaid(zaid, lib)
         assert len(translation) == 3
+        # not available in the requested lib but available in default
+        
         # not available
         try:
             zaid = '84000'

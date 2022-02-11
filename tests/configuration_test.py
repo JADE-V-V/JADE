@@ -58,6 +58,13 @@ class TestLog:
         txt = 'assdad'
         self.log.bar_adjourn(txt)
         self.log.bar_adjourn(txt, spacing=True)
+
+        txt = 'asdadasdadasdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+        self.log.bar_adjourn(txt)
+
+        txt = 'asa'
+        self.log.bar_adjourn(txt)
+
         assert True
 
     def test_adjourn(self):

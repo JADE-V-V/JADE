@@ -651,7 +651,7 @@ class OktavianOutput(ExperimentalOutput):
                 unit = r'$ 1/MeV\cdot n_s$'
 
             print(msg)
-            
+
             atlas.doc.add_heading(quantity, level=1)
 
             for material in tqdm(self.materials, desc='Materials: '):
@@ -713,24 +713,32 @@ class OktavianOutput(ExperimentalOutput):
         # Create a Pandas Excel writer using XlsxWriter as the engine.
         writer = pd.ExcelWriter(ex_outpath, engine='xlsxwriter')
         # dump global table
+        todump = todump[['Min E', 'Max E','C/E','Standard Deviation (σ)',]]
+
         todump.to_excel(writer, sheet_name='Global')
 
         # Elaborate table for better output format
         ft = final_table.set_index(['Material'])
-        ft['Energy Range [MeV]'] = (ft['Min E'].astype(str) + ' - ' +
-                                    ft['Max E'].astype(str))
+        #ft['Energy Range [MeV]'] = (ft['Min E'].astype(str) + ' - ' +
+        #                            ft['Max E'].astype(str))
+        ft['E-min [MeV]'] = ft['Min E']
+        ft['E-max [MeV]'] = ft['Max E']
+
         ft['C/E (mean +/- σ)'] = (ft['C/E'].round(2).astype(str) + ' +/- ' +
                                   ft['Standard Deviation (σ)'].round(2).astype(str))
         # Delete all confusing columns
-        for column in ['C/E', 'Standard Deviation (σ)', 'Max E', 'Min E']:
+        for column in [ 'Min E', 'Max E','C/E', 'Standard Deviation (σ)',]:
             del ft[column]
 
         # Dump also table material by material
         for material in self.materials:
             # dump material table
             todump = ft.loc[material]
-            todump = todump.pivot(index=['Particle', 'Energy Range [MeV]'],
+            todump = todump.pivot(index=['Particle', 'E-min [MeV]','E-max [MeV]'],
                                   columns='Library', values='C/E (mean +/- σ)')
+
+            todump.sort_values(by=['E-min [MeV]'])
+
             todump.to_excel(writer, sheet_name=material, startrow=2)
             ws = writer.sheets[material]
             ws.write_string(0, 0, '"C/E (mean +/- σ)"')
@@ -814,10 +822,10 @@ class OktavianOutput(ExperimentalOutput):
         for tallynum, data in output.tallydata.items():
             tallynum = str(tallynum)
             res2 = res[tallynum] = {}
-            
+
             # Delete the total value
             data = data.set_index('Energy').drop('total').reset_index()
-            
+
             flux = data['Value'].values
             energies = data['Energy'].values
             errors = data['Error'].values
@@ -826,18 +834,18 @@ class OktavianOutput(ExperimentalOutput):
             ergs = [1e-10]  # Additional "zero" energy for lethargy computation
             ergs.extend(energies.tolist())
             ergs = np.array(ergs)
-            
+
             # Different behaviour for photons and neutrons
             if tallynum == '21':
                 flux = flux/np.log((ergs[1:]/ergs[:-1]))
 
-            elif tallynum == '41':    
+            elif tallynum == '41':
                 flux = flux/(ergs[1:]-ergs[:-1])
 
             res2['Energy [MeV]'] = energies
             res2['C'] = flux
             res2['Error'] = errors
-            
+
             res[tallynum] = res2
 
         return res
@@ -884,10 +892,10 @@ class OktavianOutput(ExperimentalOutput):
                          header=None, sep=r'\s+')
         df.columns = columns[tallynum]
         df = df[df['C'] > 2e-38]
-        
+
         x = df['Nominal Energy [MeV]'].values
         y = df['C'].values
-        
+
         err = df['Error'].values
 
         return x, y, err

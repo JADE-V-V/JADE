@@ -690,7 +690,7 @@ class OktavianOutput(ExperimentalOutput):
                         table = _get_tablevalues(values, interpolator)
                         table['Particle'] = particle
                         table['Material'] = material
-                        table['Library'] = lib_name
+                        table['Library']  = lib_name
                         tables.append(table)
                     except KeyError:
                         # The tally is not defined

@@ -522,6 +522,8 @@ class Plotter:
         # limit the ax 2 to [0, 2]
         ax2.set_ylim(bottom=0, top=2)
         ax2.set_ylabel('C/E')
+        yticks = np.arange(0, 2.5, 0.5)
+        ax2.set_yticks(yticks)
         ax2.set_xlabel(self.xlabel)
         ax2.axhline(y=1, linestyle='--', color='black')
         # # Draw the exp error
@@ -634,6 +636,8 @@ class Plotter:
         ax2.set_ylabel('C/E')
         ax2.set_xlabel(self.xlabel)
         ax2.axhline(y=1, linestyle='--', color='black')
+        yticks = np.arange(0, 2.5, 0.5)
+        ax2.set_yticks(yticks)
         plt.setp(ax2.get_xticklabels(), rotation=45, ha="right",
                  rotation_mode="anchor")
         ax2.axhline(lowerlimit, color='red', linewidth=0.5)

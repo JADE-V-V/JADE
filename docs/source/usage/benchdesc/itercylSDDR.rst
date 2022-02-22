@@ -24,7 +24,7 @@ and features a central 15 cm diameter cylindrical hole. As it can be deducted
 from the given measures, a 2 cm gap is left between the main external hollow
 cylinder and its internal components.
 
-A volumetric and isotropic neutron source is also defined. The volume of
+A volumetric and isotropic 14 MeV neutron source is also defined. The volume of
 emission is a disk aligned with the front part of the cylinder assembly and
 positioned at a distance of 100 cm. The volume of the disk is 10 cm thick and
 has a radius equal to 100 cm.

@@ -26,6 +26,7 @@ This is the cell used to tally the contact shut down dose rate.
 Similarly to what was done for the Sphere Leakage benchmark, the user have control on
 the densities to be applied for each element and material (default is set to NTP
 conditions with few exceptions) and control on the STOP parameters to be used.
+The same 0-14 MeV uniform neutron point source is also defined.
 
 SDDR parameters
 ^^^^^^^^^^^^^^^

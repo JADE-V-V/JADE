@@ -21,13 +21,7 @@ model was focused on shielding application and did not feature any port in the
 outboard region. On the contrary, in the new benchmarks, the outboard region was
 substituted with 1D models of the two proposed European concepts for the TBM: the
 Helium Cooled Pebbled bed (HCPB) and the Water Cooled Lithium Lead (WCLL).
-
-
-.. figure:: /img/benchmarks/ITERCAD.png
-    :width: 600
-    :align: center
-
-    Position of the MCNP model in the ITER tokamak
+This substitution is the only modification applied to the :ref:`iter1ddesc`.
 
 .. figure:: /img/benchmarks/tbmCAD.png
     :width: 600
@@ -35,7 +29,6 @@ Helium Cooled Pebbled bed (HCPB) and the Water Cooled Lithium Lead (WCLL).
 
     CAD model of the TBM component
 
-.. seealso:: :ref:`iter1ddesc`
 
 Geometry and run parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -89,4 +82,6 @@ Tally n. 244
 Tally n. 254
     Photon flux [#/cm^3/n_s].
 
-.. seealso:: :ref:`iter1ddesc`
+.. seealso:: 
+    *Generation of 1D TBM WCLL and HCPB MCNP computational models*,
+    F4E IDM [F4E_D_2JMRZR v1.0]

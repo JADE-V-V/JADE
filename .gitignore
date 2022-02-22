@@ -9,3 +9,6 @@ Untitled.ipynb
 __pycache__/
 *.pyc
 docs/build/
+docs/source/_build/
+docs/source/_static/
+docs/source/_templates/

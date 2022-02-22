@@ -388,10 +388,7 @@ class SphereTest(Test):
         for zaid in tqdm(zaids[:limit]):
             Z = int(zaid[:-3])
             # Get Density
-            if zaid[-3:] == '235':  # Special treatment for U235
-                density = 1
-            else:
-                density = settings.loc[Z, 'Density [g/cc]']
+            density = settings.loc[Z, 'Density [g/cc]']
 
             if settings.loc[Z, 'Let Override']:
                 # get stop parameters

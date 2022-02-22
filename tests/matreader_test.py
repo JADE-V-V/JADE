@@ -140,6 +140,29 @@ class Testmaterial:
         massnorm = material.to_text()
         assert massnorm == mass
 
+    def test_switch_pnnl(self):
+        # --- Test the PNNL with Bismuth Germanate (BGO) ---
+        # read the material cards
+        inp = os.path.join(cp, 'TestFiles', 'matreader', 'BGO_mass.i')
+        matcard = MatCardsList.from_input(inp)
+        mass_material = matcard[0]
+
+        inp = os.path.join(cp, 'TestFiles', 'matreader', 'BGO_atom.i')
+        matcard = MatCardsList.from_input(inp)
+        atom_material = matcard[0]
+
+        # Switch the mass fraction to atomic fraction
+        mass_material.switch_fraction('atom', LIBMAN)
+        print(mass_material.to_text())
+
+        tolerance = 1e-5  # tolerance for the difference with respect to pnnl
+        switched_sub = mass_material.submaterials[0]
+        pnnl_sub = atom_material.submaterials[0]
+
+        for zaid1, zaid2 in zip(switched_sub.zaidList, pnnl_sub.zaidList):
+            diff = zaid1.fraction - zaid2.fraction
+            assert diff < tolerance
+
 
 class TestMatCardList:
 

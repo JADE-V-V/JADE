@@ -35,6 +35,7 @@ from copy import deepcopy
 import numpy as np
 
 INP_PATH = os.path.join(cp, 'TestFiles/inputfile/test.i')
+INP_EX_PATH = os.path.join(cp, 'TestFiles/inputfile/test_exceptions.i')
 DIS_INP_PATH = os.path.join(cp, 'TestFiles/inputfile/d1stest.i')
 DIS_NOPKMT_PATH = os.path.join(cp, 'TestFiles/inputfile/d1stest_noPKMT.i')
 DIS_GETREACT_PATH = os.path.join(cp, 'TestFiles/inputfile/d1stest_getreact.i')
@@ -50,6 +51,7 @@ REACT_PATH = os.path.join(cp, 'TestFiles/inputfile/d1stest_react')
 
 class TestInputFile:
     testInput = InputFile.from_text(INP_PATH)
+    exceptInput = InputFile.from_text(INP_EX_PATH)
     lm = LibManager(XSDIR_FILE, activationfile=ACTIVATION_FILE,
                     isotopes_file=ISOTOPES_FILE)
 
@@ -100,10 +102,15 @@ class TestInputFile:
 
     def test_change_density(self):
         newinp = deepcopy(self.testInput)
-        density = 1
+        density = -2e7
         newinp.change_density(density, cellidx=2)
-        modline = '2    13  {}  -128 129 1   -2         \n'.format(str(density))
-        assert newinp.cards['cells'][2].lines == modline
+        # Get the modified text
+        newtext = newinp._to_text()
+        line = newtext.split('\n')[4].strip()
+        modline = '2    13  {}  -128 129 1   -2'.format(str(density))
+        print(line)
+        print(modline)
+        assert line == modline
 
         try:
             newinp.change_density(1, cellidx=20000000)

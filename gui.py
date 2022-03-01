@@ -72,6 +72,7 @@ principal_menu = header+"""
  * Switch fractions                     (switch)
  * Change ACE lib suffix                (acelib)
  * Produce D1S Reaction file             (react)
+ * Remove all runtpe files           (rmvruntpe)
  -----------------------------------------------
 
  * Exit                                   (exit)
@@ -197,6 +198,10 @@ def mainloop(session):
         elif option == 'react':
             uty.get_reaction_file(session)
             print('\n Reaction file has been dumped\n')
+
+        elif option == 'rmvruntpe':
+            uty.clean_runtpe(session.path_run)
+            print('\n Runtpe files have been removed\n')
 
         elif option == 'exit':
             session.log.adjourn('\nSession concluded normally \n')

@@ -453,3 +453,53 @@ def input_with_options(message, options):
             print("""
                   Please chose a valid option
                   """)
+
+
+def clean_runtpe(root):
+    for lib in os.listdir(root):
+        libpath = os.path.join(root, lib)
+        for benchmark in os.listdir(libpath):
+            benchpath = os.path.join(libpath, benchmark)
+
+            try:
+                # multi-test
+                for test in os.listdir(benchpath):
+                    testpath = os.path.join(benchpath, test)
+                    _rmv_runtpe_file(testpath)
+
+            except NotADirectoryError:
+                # single-test
+                _rmv_runtpe_file(benchpath)
+
+
+def _rmv_runtpe_file(folder):
+    """find and remove the runtpe file from a specific folder.
+
+    Parameters
+    ----------
+    folder : os.PathLike
+        folder that contains the runtpe file
+
+    Returns
+    -------
+    ans : bool
+        True if a runtpe file has been found and removed
+    """
+    selected = None
+    for file in os.listdir(folder):
+        # there can be more than one file ending with 'r'. The longer namefile
+        # though will be the runtpe
+
+        if file[-1] == 'r':
+            if selected is None or len(file) > len(selected):
+                selected = file
+    if selected is None:
+        # no runtpe was found
+        ans = False
+    else:
+        # Remove the file
+        filepath = os.path.join(folder, selected)
+        os.remove(filepath)
+        ans = True
+
+    return ans

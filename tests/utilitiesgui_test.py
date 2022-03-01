@@ -20,6 +20,7 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import sys
 import os
+import shutil
 
 cp = os.path.dirname(os.path.abspath(__file__))
 modules_path = os.path.dirname(cp)
@@ -159,6 +160,29 @@ class TestUtilities:
         monkeypatch.setattr('builtins.input', lambda msg: next(inputs))
         valid_input = uty.input_with_options(msg, options)
         assert valid_input == 'option1'
+
+    def test_clean_runtpe(self):
+        folders = os.path.join(cp, 'TestFiles', 'utilitiesgui', 'rmv_runtpe')
+        folders_copy = os.path.join(cp, 'TestFiles', 'utilitiesgui',
+                                    'rmv_runtpe_tmp')
+        # Copy the folders
+        shutil.copytree(folders, folders_copy)
+        try:
+            uty.clean_runtpe(folders_copy)
+            # Check files have been removed
+            example = os.path.join(folders_copy, '00c', 'Example')
+            oktavian = os.path.join(folders_copy, '00c', 'Oktavian',
+                                    'Oktavian_Cr')
+            sphere = os.path.join(folders_copy, '00c', 'Sphere', 'test')
+
+            assert len(os.listdir(example)) == 1
+            assert len(os.listdir(oktavian)) == 3
+            assert len(os.listdir(sphere)) == 3
+            assert os.path.exists(os.path.join(example, 'testtestr'))
+
+        finally:
+            # Whatever happens, clean the tmp folder
+            shutil.rmtree(folders_copy)
 
 
 def excel_equal(fileA, fileB, n_sheets):

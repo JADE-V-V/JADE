@@ -285,7 +285,8 @@ def comploop(session):
                     path = os.path.join(motherdir, directory)
                     name = directory+'_'
 
-                    flag = testrun.Test._run(name, path, cpu=session.conf.cpu)
+                    flag = testrun.Test._runMCNP('mcnp6', name, path,
+                                                 cpu=session.conf.cpu)
                     if flag:
                         flagOk = False
                         session.log.adjourn(name +

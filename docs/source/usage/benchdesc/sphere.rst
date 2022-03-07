@@ -55,6 +55,19 @@ These parameters are provided by default in JADE, but the user may modify them i
 benchmark-specific configuration files. Density values can be modified too. The files are located in
 ``<JADE_root>\Configuration\Benchmarks Configuration\Sphere``.
 
+Even after all these optimizations, it is clear to the developers that a "fair" 
+test for all isotopes has not been reached yet. For example, in materials with cross sections
+having 1/V dependencies, the output of the simulations could be dominated by the cross
+sections at lower energies. Moreover, particles
+will not have the same mean free paths in the different spheres meaning that the number
+of times the cross-sections are sampled will vary, with consequance 
+also on integral results (e.g. heating). In short, some isotopes will necessarly
+be tested "better" than others. The solution to this issue is not trivial and will
+certainly receive further attention in future developments. It should be noticed
+that users can easily modify both density and source parameters at anytime if they 
+do not agree with the default settings that are provided.
+
+
 Tallies
 ^^^^^^^
 Both the transport of neutrons and of secondary photons are active and photons cut-off energy  is

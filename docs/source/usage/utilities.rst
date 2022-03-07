@@ -216,3 +216,13 @@ library is provided (and may be modified) in the ``<JADE_root>\Configuration\Act
 file. 
 
 The generated reaction files are dumped in the ``<JADE root>\Utilities\Reactions`` folder
+
+Remove runtpe files
+===================
+.. versionadded:: v2.0.2
+    ``rmvruntpe``
+
+This function allows to remove all MCNP runtpe files produced during the
+library assessment. These files, once the simulations are terminated correctly,
+are kind of useless for the post-processing and they consume a large amount
+of storage memory (up to 95% for MCNP produced outputs).

@@ -10,5 +10,7 @@
     "python.linting.pycodestyleArgs": [
         "--ignore=E402,E226"
     ],
-    "restructuredtext.confPath": "${workspaceFolder}\\docs\\source"
+    "restructuredtext.confPath": "${workspaceFolder}\\docs\\source",
+    "esbonio.sphinx.confDir": "c:\\Users\\d.laghi\\Documents\\GitHub\\JADE\\Code\\docs\\source",
+    "esbonio.server.enabled": true
 }

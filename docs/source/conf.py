@@ -21,7 +21,7 @@ copyright = '2021, Davide Laghi'
 author = 'Davide Laghi'
 
 # The full version, including alpha/beta/rc tags
-release = 'v2.0.2'
+release = 'v2.1.0'
 
 
 # -- General configuration ---------------------------------------------------

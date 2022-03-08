@@ -42,3 +42,8 @@ Benchmarks Related Publications
 
 Miscellaneous
 =============
+* **MCNP**, Werner C.J., 2017, "MCNP User’S Manual Code", Los Alamos: LAUR-17-29981 (version 6.2).
+* **D1S-UNED**, P. Sauvan et al, 2020, "D1SUNED system for the determination of decay photon related quantities",
+  *Fusion Eng. Des.*, **151** 111399.
+* Loughlin M. and Taylor N., 2009, "Recommendation on Plasma scenarios",
+  [ITER IDM 2V3V8G v1.2]

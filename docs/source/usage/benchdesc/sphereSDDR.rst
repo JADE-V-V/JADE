@@ -82,6 +82,12 @@ Tallies
 ^^^^^^^
 All neutron and photon related tallies defined in Sphere Leakage benchmark have also been imported
 in the Sphere SDDR benchmark. For photons, the time binning necessary to cover all the cool-down
-times of interest have been added. Tally n. 104 have been also defined to tally the contact shut
-down dose rate in air at all cool-down times in the additional spherical shell added for this
+times of interest have been added. Tally n. 104 have been also defined to tally the shut
+down dose rate at all cool-down times in the additional spherical shell added for this
 specific purpose [Sv/h].
+
+.. seealso:: 
+  For additional information on SA2 irradiation scenario
+  and ITER irradiation scenarios in general the reader is
+  referred to Loughlin M. and Taylor N., 2009, "Recommendation on Plasma scenarios",
+  [ITER IDM 2V3V8G v1.2].

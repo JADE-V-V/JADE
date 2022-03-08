@@ -45,3 +45,8 @@ For additional information contact: d.laghi@nier.it
 
 For additional information on future developments please check the issues list on the
 `JADE GitHub repository <https://github.com/dodu94/JADE/>`_.
+
+.. seealso:: 
+  * **MCNP**, Werner C.J., 2017, "MCNP User’S Manual Code", Los Alamos: LAUR-17-29981 (version 6.2).
+  * **D1S-UNED**, P. Sauvan et al, 2020, "D1SUNED system for the determination of decay photon related quantities",
+    *Fusion Eng. Des.*, **151** 111399.

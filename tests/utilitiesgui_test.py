@@ -173,10 +173,13 @@ class TestUtilities:
             example = os.path.join(folders_copy, '00c', 'Example')
             oktavian = os.path.join(folders_copy, '00c', 'Oktavian',
                                     'Oktavian_Cr')
+            oktavian2 = os.path.join(folders_copy, '00c', 'Oktavian',
+                                     'Oktavian_Al')
             sphere = os.path.join(folders_copy, '00c', 'Sphere', 'test')
 
             assert len(os.listdir(example)) == 1
             assert len(os.listdir(oktavian)) == 3
+            assert len(os.listdir(oktavian2)) == 3  # No deletion
             assert len(os.listdir(sphere)) == 3
             assert os.path.exists(os.path.join(example, 'testtestr'))
 

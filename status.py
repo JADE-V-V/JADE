@@ -498,10 +498,8 @@ class Status():
                     for lib in libs[1:]:
                         name = name+'_Vs_'+lib
 
-                print(name)
                 override = self.check_pp_single(name, session,
                                                 tree='comparison', exp=exp)
-                print(override)
                 # Ask for override
                 if override:
 

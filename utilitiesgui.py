@@ -403,7 +403,7 @@ def select_inputfile(message, max_n_tentatives=10):
     ----------
     message : str
         Message to display for the input
-    
+
     max_n_tentatives : int, optional
         number of max tentatives. The default is 10
 
@@ -456,8 +456,19 @@ def input_with_options(message, options):
 
 
 def clean_runtpe(root):
+    """Clean the runtpe files from all benchmarks simulations contained in
+    subdirectories of root
+
+    Parameters
+    ----------
+    root : os.PathLike
+        path to the root folder containing all simulation where runtpe files
+        need to be removed
+    """
+    # Cycle on all library folders
     for lib in os.listdir(root):
         libpath = os.path.join(root, lib)
+        # Cycle on all benchmarks
         for benchmark in os.listdir(libpath):
             benchpath = os.path.join(libpath, benchmark)
 
@@ -487,19 +498,19 @@ def _rmv_runtpe_file(folder):
     """
     selected = None
     for file in os.listdir(folder):
-        # there can be more than one file ending with 'r'. The longer namefile
-        # though will be the runtpe
+        # The runtpe file will always be called <shorter file name>+'r'
+        # Check for the shorter name
+        if selected is None or len(file) < len(selected):
+            selected = file
+    # get the runtpe name
+    runtpe = selected+'r'
+    filepath = os.path.join(folder, runtpe)
 
-        if file[-1] == 'r':
-            if selected is None or len(file) > len(selected):
-                selected = file
-    if selected is None:
-        # no runtpe was found
-        ans = False
-    else:
-        # Remove the file
-        filepath = os.path.join(folder, selected)
+    # If found remove the file
+    if os.path.exists(filepath):
         os.remove(filepath)
         ans = True
+    else:
+        ans = False
 
     return ans

@@ -909,6 +909,291 @@ class OktavianOutput(ExperimentalOutput):
         pass
 
 
+class TiaraOutput(ExperimentalOutput):
+
+    def _build_atlas(self, tmp_path, atlas):
+        """
+        See ExperimentalOutput documentation
+        """
+        maintitle = ' Oktavian Experiment: '
+        xlabel = 'Energy [MeV]'
+
+        tables = []  # All C/E tables will be stored here and then concatenated
+
+        # Tally numbers should be fixed
+        for tallynum in ['21', '41']:
+            if tallynum == '21':
+                particle = 'Neutron'
+                tit_tag = 'Neutron Leakage Current per Unit Lethargy'
+                quantity = 'Neutron Leakage Current'
+                msg = ' Printing the '+particle+' Letharghy flux...'
+                unit = r'$ 1/u\cdot n_s$'
+            else:
+                particle = 'Photon'
+                tit_tag = 'Photon Leakage Current per unit energy'
+                quantity = 'Photon Leakage Current'
+                msg = ' Printing the '+particle+' spectrum...'
+                unit = r'$ 1/MeV\cdot n_s$'
+
+            print(msg)
+
+            atlas.doc.add_heading(quantity, level=1)
+
+            for material in tqdm(self.materials, desc='Materials: '):
+
+                atlas.doc.add_heading('Material: '+material, level=2)
+
+                title = material+maintitle+tit_tag
+
+                # Get the experimental data
+                file = 'oktavian_'+material+'_tal'+tallynum+'.exp'
+                filepath = os.path.join(self.path_exp_res, material, file)
+                if os.path.isfile(filepath):
+                    x, y, err = self._read_Oktavian_expresult(filepath,
+                                                              tallynum)
+                else:
+                    # Skip the tally if no experimental data is available
+                    continue
+                # lib will be passed to the plotter
+                lib = {'x': x, 'y': y, 'err': err,
+                       'ylabel': material + ' (Experiment)'}
+                # Get also the interpolator
+                interpolator = interp1d(x, y, fill_value=0, bounds_error=False)
+
+                # Collect the data to be plotted
+                data = [lib]  # The first one should be the exp one
+                for lib_tag in self.lib[1:]:  # Avoid exp
+                    lib_name = self.session.conf.get_lib_name(lib_tag)
+                    try:  # The tally may not be defined
+                        # Data for the plotter
+                        values = self.results[material, lib_tag][tallynum]
+                        lib = {'x': values['Energy [MeV]'],
+                               'y': values['C'], 'err': values['Error'],
+                               'ylabel': material + ' ('+lib_name+')'}
+                        data.append(lib)
+                        # data for the table
+                        table = _get_tablevalues(values, interpolator)
+                        table['Particle'] = particle
+                        table['Material'] = material
+                        table['Library']  = lib_name
+                        tables.append(table)
+                    except KeyError:
+                        # The tally is not defined
+                        pass
+
+                # Once the data is collected it is passed to the plotter
+                outname = 'tmp'
+                plot = Plotter(data, title, tmp_path, outname, quantity, unit,
+                               xlabel, self.testname)
+                img_path = plot.plot('Experimental points')
+                # Insert the image in the atlas
+                atlas.insert_img(img_path)
+
+        # Dump the global C/E table
+        print(' Dump the C/E table in Excel...')
+        final_table = pd.concat(tables)
+        todump = final_table.set_index(['Material', 'Particle', 'Library'])
+        ex_outpath = os.path.join(self.excel_path, 'C over E table.xlsx')
+
+        # Create a Pandas Excel writer using XlsxWriter as the engine.
+        writer = pd.ExcelWriter(ex_outpath, engine='xlsxwriter')
+        # dump global table
+        todump = todump[['Min E', 'Max E','C/E','Standard Deviation (σ)',]]
+
+        todump.to_excel(writer, sheet_name='Global')
+
+        # Elaborate table for better output format
+        ft = final_table.set_index(['Material'])
+        #ft['Energy Range [MeV]'] = (ft['Min E'].astype(str) + ' - ' +
+        #                            ft['Max E'].astype(str))
+        ft['E-min [MeV]'] = ft['Min E']
+        ft['E-max [MeV]'] = ft['Max E']
+
+        ft['C/E (mean +/- σ)'] = (ft['C/E'].round(2).astype(str) + ' +/- ' +
+                                  ft['Standard Deviation (σ)'].round(2).astype(str))
+        # Delete all confusing columns
+        for column in [ 'Min E', 'Max E','C/E', 'Standard Deviation (σ)',]:
+            del ft[column]
+
+        # Dump also table material by material
+        for material in self.materials:
+            # dump material table
+            todump = ft.loc[material]
+            todump = todump.pivot(index=['Particle', 'E-min [MeV]','E-max [MeV]'],
+                                  columns='Library', values='C/E (mean +/- σ)')
+
+            todump.sort_values(by=['E-min [MeV]'])
+
+            todump.to_excel(writer, sheet_name=material, startrow=2)
+            ws = writer.sheets[material]
+            ws.write_string(0, 0, '"C/E (mean +/- σ)"')
+
+            # adjust columns' width
+            writer.sheets[material].set_column(0, 4, 18)
+
+        # Close the Pandas Excel writer and output the Excel file.
+        writer.save()
+
+        return atlas
+
+        # atlas.insert_df(final_table)
+
+    def _extract_outputs(self):
+        # Get results
+        # results = []
+        # errors = []
+        # stat_checks = []
+        outputs = {}
+        results = {}
+        materials = []
+        # Iterate on the different libraries results except 'Exp'
+        for lib, test_path in self.test_path.items():
+            if lib != EXP_TAG:
+                for folder in os.listdir(test_path):
+                    results_path = os.path.join(test_path, folder)
+                    pieces = folder.split('_')
+                    # Get zaid
+                    material = pieces[-1]
+
+                    mfile, ofile = self._get_output_files(results_path)
+                    # Parse output
+                    output = MCNPoutput(mfile, ofile)
+                    outputs[material, lib] = output
+                    # Adjourn raw Data
+                    self.raw_data[material, lib] = output.tallydata
+                    # Get the meaningful results
+                    results[material, lib] = self._processMCNPdata(output)
+                    if material not in materials:
+                        materials.append(material)
+
+        self.outputs = outputs
+        self.results = results
+        self.materials = materials
+
+    def _pp_excel_comparison(self):
+        # Excel is actually printed by the build atlas in this case
+        pass
+
+    def _print_raw(self):
+        # Generate a folder for each library
+        for lib_name in self.lib[1:]:  # Avoid Exp
+            cd_lib = os.path.join(self.raw_path, lib_name)
+            os.mkdir(cd_lib)
+            # result for each material
+            for material in self.materials:
+                for key, data in self.raw_data[material, lib_name].items():
+                    file = os.path.join(cd_lib, material+' '+str(key)+'.csv')
+                    data.to_csv(file, header=True, index=False)
+
+    @staticmethod
+    def _processMCNPdata(output):
+        """
+        given the mctal file the lethargy flux and energies are returned
+        both for the neutron and photon tally
+
+        Parameters
+        ----------
+        output : MCNPoutput
+            object representing the MCNP output.
+
+        Returns
+        -------
+        res : dic
+            contains the extracted lethargy flux and energies.
+
+        """
+        res = {}
+        # Read tally energy binned fluxes
+        for tallynum, data in output.tallydata.items():
+            tallynum = str(tallynum)
+            res2 = res[tallynum] = {}
+
+            # Delete the total value
+            data = data.set_index('Energy').drop('total').reset_index()
+
+            flux = data['Value'].values
+            energies = data['Energy'].values
+            errors = data['Error'].values
+
+            # Energies for lethargy computation
+            ergs = [1e-10]  # Additional "zero" energy for lethargy computation
+            ergs.extend(energies.tolist())
+            ergs = np.array(ergs)
+
+            # Different behaviour for photons and neutrons
+            if tallynum == '21':
+                flux = flux/np.log((ergs[1:]/ergs[:-1]))
+
+            elif tallynum == '41':
+                flux = flux/(ergs[1:]-ergs[:-1])
+
+            res2['Energy [MeV]'] = energies
+            res2['C'] = flux
+            res2['Error'] = errors
+
+            res[tallynum] = res2
+
+        return res
+
+    @staticmethod
+    def _read_Oktavian_expresult(file, tallynum):
+        """
+        Given a file containing the Oktavian experimental results read it and
+        return the values to plot.
+
+        The values equal to 1e-38 are eliminated since it appears that they
+        are the zero values of the instrument used.
+
+        Parameters
+        ----------
+        file : os.Path or str
+            path to the file to be read.
+        tallynum : str
+            either '21' or '41'. the data is different for neutrons and
+            photons
+
+        Returns
+        -------
+        x : np.array
+            energy values.
+        y : np.array
+            lethargy flux values.
+
+        """
+        columns = {'21': ['Nominal Energy [MeV]', 'Upper Energy [MeV]',
+                          'Lower Energy [MeV]', 'C', 'Error'],
+                   '41': ['Nominal Energy [MeV]', 'Lower Energy [MeV]',
+                          'Upper Energy [MeV]', 'C', 'Error']}
+        # First of all understand how many comment lines there are
+        with open(file, 'r') as infile:
+            counter = 0
+            for line in infile:
+                if line[0] == '#':
+                    counter += 1
+                else:
+                    break
+        # then read the file accordingly
+        df = pd.read_csv(file, skiprows=counter, skipfooter=1, engine='python',
+                         header=None, sep=r'\s+')
+        df.columns = columns[tallynum]
+        df = df[df['C'] > 2e-38]
+
+        x = df['Nominal Energy [MeV]'].values
+        y = df['C'].values
+
+        err = df['Error'].values
+
+        return x, y, err
+
+    def _read_exp_results(self):
+        """
+        This is an older implementation and the reading was done somewhere
+        else
+
+        """
+        pass 
+
+
 def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='C',
                      e_intervals=[0.1, 1, 5, 10, 20]):
     """

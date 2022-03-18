@@ -69,6 +69,13 @@ def _get_output(action, testname, lib, session):
             print(exp_pp_message)
             return False
 
+    elif testname == 'Tiara':
+        if action == 'compare':
+            out = expo.TiaraOutput(lib, testname, session)
+        elif action == 'pp':
+            print(exp_pp_message)
+            return False
+
     elif testname == 'FNG':
         if action == 'compare':
             out = expo.FNGOutput(lib, testname, session, multiplerun=True)

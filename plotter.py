@@ -201,10 +201,10 @@ class Plotter:
                                         v_lines=VERT_LINES_ITER1D)
             elif self.testname == 'HCPB_TBM_1D':
                 outp = self._ratio_plot(recs=TBM_HCPB_RECT, xlimits=XLIM_HCPB,
-                                        markers=True)
+                                        markers=True, figsize=(24, 13.5))
             elif self.testname == 'WCLL_TBM_1D':
                 outp = self._ratio_plot(recs=TBM_WCLL_RECT, xlimits=XLIM_WCLL,
-                                        markers=True)
+                                        markers=True, figsize=(24, 13.5))
             else:
                 outp = self._ratio_plot()
 
@@ -656,7 +656,7 @@ class Plotter:
         return self._save()
 
     def _ratio_plot(self, additional_labels=None, v_lines=None, recs=None,
-                    xlimits=None, markers=False):
+                    xlimits=None, markers=False, figsize=(16, 9)):
         """
         Plot a ratio plot where all data dictionaries are plotted against the
         first one which is used as reference
@@ -679,6 +679,8 @@ class Plotter:
         markers : bool
             if True markers are applied to the line plots.
             The default is False.
+        figsize : (int, int)
+            determines the size of the plot. default is (16, 9)
 
         Returns
         -------
@@ -693,7 +695,7 @@ class Plotter:
         ylabel = 'Ratio of '+self.quantity+' (vs. '+ref['ylabel']+')'
 
         # Initialize plot
-        fig, ax = plt.subplots(figsize=(16, 9))
+        fig, ax = plt.subplots(figsize=figsize)
 
         # Plot all data
         y_max = 0
@@ -709,7 +711,7 @@ class Plotter:
                     if max(y) > y_max:
                         y_max = max(y)
                     if min(y) < y_min:
-                        y_min = y_min
+                        y_min = min(y)
                 # Plot
                 if markers:
                     marker = self.markers[i]

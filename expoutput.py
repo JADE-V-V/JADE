@@ -690,7 +690,7 @@ class OktavianOutput(ExperimentalOutput):
                         table = _get_tablevalues(values, interpolator)
                         table['Particle'] = particle
                         table['Material'] = material
-                        table['Library']  = lib_name
+                        table['Library'] = lib_name
                         tables.append(table)
                     except KeyError:
                         # The tally is not defined
@@ -1202,7 +1202,7 @@ def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='C',
 
     Parameters
     ----------
-    df : pd.DataFrame
+    df : dict
         benchmark data.
     interpolator : func
         interpolator from experimental data.
@@ -1223,6 +1223,11 @@ def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='C',
     df = pd.DataFrame(df)
     df['Exp'] = interpolator(df[x])
     df['C/E'] = df[y]/df['Exp']
+    # it is better here to drop inf values because it means that the
+    # interpolated experiment was zero, i.e., no value available
+    df.replace([np.inf, -np.inf], np.nan, inplace=True)  # replace inf with NaN
+    df.dropna(subset=['C/E'], how='all', inplace=True)  # drop the inf rows
+
     e_min = e_intervals[0]
     for e_max in e_intervals[1:]:
         red = df[e_min < df[x]]

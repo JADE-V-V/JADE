@@ -10,6 +10,6 @@
     "python.linting.pycodestyleArgs": [
         "--ignore=E402,E226"
     ],
-    "esbonio.sphinx.confDir": "c:\\Users\\d.laghi\\Documents\\GitHub\\JADE\\Code\\docs\\source",
+    "esbonio.sphinx.confDir": "${workspaceFolder}\\docs\\source",
     "esbonio.server.enabled": true
 }

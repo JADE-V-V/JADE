@@ -31,8 +31,8 @@ import testrun
 from tqdm import tqdm
 from status import EXP_TAG
 
-date = '08/03/2022'
-version = 'v2.1.0'
+date = '10/05/2022'
+version = 'v2.1.1'
 
 
 def clear_screen():

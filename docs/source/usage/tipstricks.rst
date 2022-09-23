@@ -92,4 +92,5 @@ at different impurities:
 * run a comparison post-processing listing all the fake libraries (e.g. 01.d-02.d-...).
 
 Note that the benchmarks could also be run separately and only the simulation
-results be brought in JADE.
+results be brought in JADE. Clearly, all benchmarks should be run using the same
+nuclear data library.

@@ -71,3 +71,25 @@ The steps to follow are the following:
   and the ``<JADE_root>\Configuration\Benchmarks Configuration\SphereSDDR\MaterialSettings.csv``
   to specify the run parameters for the new materials. See :ref:`runconf` for
   additional details on such files.
+
+Compare design solutions instead of libraries
+=============================================
+It is possible to "inappropriately" use JADE to compare different
+design solution or in general different version of a same MCNP input instead 
+of libraries and still exploit JADE automatic post-processing. For instance
+let us imagine to test which is the effect of different level of impurities 
+in a specific material inside a particular geometry. Then the following steps
+would allow to use JADE post-processing features to obtain comparisons of results
+at different impurities:
+
+* :ref:`customcompbench` containing the problem of interest;
+* run the first version of the benchmark with a library of choice;
+* rename the obtained output folder (e.g. "01.d");
+* change the impurity level in the MCNP template and run again the bechmark;
+* rename the obtained folder (e.g. "02.d");
+* repeat the previous steps for all the different benchmark versions;
+* map the fake library names to more significant ones using the :ref:`mainconfig` file;
+* run a comparison post-processing listing all the fake libraries (e.g. 01.d-02.d-...).
+
+Note that the benchmarks could also be run separately and only the simulation
+results be brought in JADE.

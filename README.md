@@ -19,3 +19,43 @@ For additional information contact: d.laghi@nier.it
 
 ## LICENSE
 JADE is an open-source software licensed under the [GNU GPLv3](./LICENSE) license.
+
+## LINUX INSTALLATION
+
+Firstly, create a new JADE directory:
+
+``` 
+mkdir JADE
+cd JADE
+```
+
+Then create a pip virtual environment and activate it:
+
+```
+python -m venv jade
+source jade/bin/activate
+```
+Note that once the venv is created, only the source command is required in future use.
+ 
+Next clone the repository, and rename it to Code, and cd into it:
+
+```
+git clone https://github.com/sbradnam/JADE.git
+mv JADE Code
+cd Code
+```
+
+Now upgrade pip, and install the pip requirements:
+
+```
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+From here, the user can follow the instructions from step 5 in:
+
+https://jade-a-nuclear-data-libraries-vv-tool.readthedocs.io/en/latest/usage/installation.html
+
+
+
+

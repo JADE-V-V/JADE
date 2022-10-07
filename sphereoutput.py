@@ -28,7 +28,7 @@ import pandas as pd
 import os
 import shutil
 import plotter
-import pythoncom
+#import pythoncom
 import math
 
 from tqdm import tqdm
@@ -1399,11 +1399,13 @@ class SphereExcelOutputSheet:
             template_sheet.api.Copy(Before=template_sheet.api)
         try:
             ws = self.wb.sheets(template_sheet.name+' (2)')
-        except pythoncom.com_error:
+        #except pythoncom.com_error:
+        except Exception as e:
             print('The available sheets are :'+str(self.wb.sheets))
         try:
             ws.name = newname
-        except pythoncom.com_error:
+        #except pythoncom.com_error:
+        except Exception as e:
             ws.Name = newname
         return ws
 

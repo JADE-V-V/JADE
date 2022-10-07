@@ -22,7 +22,8 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import docx
-import win32com.client
+#import win32com.client
+import aspose.words
 from docx.shared import Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_ALIGN_VERTICAL
@@ -242,20 +243,23 @@ class Atlas():
             in_file = outpath_word
             out_file = outpath_pdf
 
-            word = win32com.client.Dispatch('Word.Application')
-            doc = word.Documents.Open(in_file)
-            doc.ExportAsFixedFormat(OutputFileName=out_file,
-                                    # 17 = PDF output, 18=XPS output
-                                    ExportFormat=17,
-                                    OpenAfterExport=False,
-                                    # 0=Print (higher res), 1=Screen (lower res)
-                                    OptimizeFor=0,
-   # 0=No bookmarks, 1=Heading bookmarks only, 2=bookmarks match word bookmarks
-                                    CreateBookmarks=1,
-                                    DocStructureTags=True)
-
-            doc.Close()
-            word.Quit()
+            doc = apose.words.Document(in_file)
+            doc.save(out_file)
+            
+#            word = win32com.client.Dispatch('Word.Application')
+#            doc = word.Documents.Open(in_file)
+#            doc.ExportAsFixedFormat(OutputFileName=out_file,
+#                                    # 17 = PDF output, 18=XPS output
+#                                    ExportFormat=17,
+#                                    OpenAfterExport=False,
+#                                    # 0=Print (higher res), 1=Screen (lower res)
+#                                    OptimizeFor=0,
+#   # 0=No bookmarks, 1=Heading bookmarks only, 2=bookmarks match word bookmarks
+#                                    CreateBookmarks=1,
+#                                    DocStructureTags=True)
+#
+#            doc.Close()
+#            word.Quit()
 
     @staticmethod
     def _wrapper(paragraph, ptype):

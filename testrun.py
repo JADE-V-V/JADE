@@ -322,7 +322,7 @@ class Test():
 
             # Execution
             subprocess.run([shutil.which(code), command], cwd=directory,
-                           creationflags=subprocess.CREATE_NEW_CONSOLE,
+                           #creationflags=subprocess.CREATE_NEW_CONSOLE,
                            timeout=timeout)
 
         except subprocess.TimeoutExpired:
@@ -617,7 +617,7 @@ class SphereTest(Test):
             command = 'name='+name+' wwinp=wwinp tasks '+str(cpu)
             try:
                 subprocess.run([code, command], cwd=path,
-                               creationflags=subprocess.CREATE_NEW_CONSOLE,
+                               #creationflags=subprocess.CREATE_NEW_CONSOLE,
                                timeout=timeout)
 
             except subprocess.TimeoutExpired:

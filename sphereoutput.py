@@ -30,7 +30,9 @@ import shutil
 import plotter
 #import pythoncom
 import math
+import openpyxl
 
+from openpyxl.utlis.dataframe import dataframe_to_rows
 from tqdm import tqdm
 import atlas as at
 import numpy as np
@@ -293,7 +295,7 @@ class SphereOutput(BenchmarkOutput):
         ex.insert_df(9, 2, errors, 1)
         ex.insert_df(9, 2, stat_checks, 2)
         lib_name = self.session.conf.get_lib_name(self.lib)
-        ex.wb.sheets[0].range('D1').value = lib_name
+#        ex.wb.sheets[0].range('D1').value = lib_name
         ex.save()
 
     def pp_excel_comparison(self):
@@ -1339,17 +1341,22 @@ class SphereExcelOutputSheet:
         self.outpath = outpath  # Path to the excel file
         # Open template
         shutil.copy(template, outpath)
-        self.app = xw.App(visible=False)
-        self.wb = self.app.books.open(outpath)
+#        self.app = xw.App(visible=False)
+#        self.wb = self.app.books.open(outpath)
+        self.wb=openpyxl.load_workbook(filename=outpath)
 
     def insert_df(self, startrow, startcolumn, df, ws, header=True):
         '''
         Insert a DataFrame (df) into a Worksheet (ws) using openpyxl.
         (startrow) and (startcolumn) identify the starting data entry
         '''
-        ws = self.wb.sheets[ws]
-        exsupp.insert_df(startrow, startcolumn, df, ws, header=header)
-
+#        ws = self.wb.sheets[ws]
+#        exsupp.insert_df(startrow, startcolumn, df, ws, header=header)
+        ws=self.wb[self.wb.sheetnames[ws]]
+        
+        for r in dataframe_to_rows(df,index=True, header=True):
+            ws.append(r)         
+          
     def copy_sheets(self, wb_origin_path):
         """
         Copy all sheets of the selected excel file into the current one
@@ -1413,7 +1420,7 @@ class SphereExcelOutputSheet:
         """
         Save Excel
         """
-        self.app.calculate()
-        self.wb.save()
-        self.wb.close()
-        self.app.quit()
+#        self.app.calculate()
+        self.wb.save(self.outpath)
+#        self.wb.close()
+#        self.app.quit()

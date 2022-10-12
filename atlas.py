@@ -243,7 +243,7 @@ class Atlas():
             in_file = outpath_word
             out_file = outpath_pdf
 
-            doc = apose.words.Document(in_file)
+            doc = aspose.words.Document(in_file)
             doc.save(out_file)
             
 #            word = win32com.client.Dispatch('Word.Application')

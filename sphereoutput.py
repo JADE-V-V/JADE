@@ -1351,11 +1351,9 @@ class SphereExcelOutputSheet:
         (startrow) and (startcolumn) identify the starting data entry
         '''
 #        ws = self.wb.sheets[ws]
-#        exsupp.insert_df(startrow, startcolumn, df, ws, header=header)
         ws=self.wb[self.wb.sheetnames[ws]]
         
-        for r in dataframe_to_rows(df,index=True, header=True):
-            ws.append(r)         
+        exsupp.insert_df(startrow, startcolumn, df, ws, header=header)
           
     def copy_sheets(self, wb_origin_path):
         """

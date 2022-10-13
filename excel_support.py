@@ -71,7 +71,8 @@ def insert_df(startrow, startcolumn, df, ws, header=True):
                                          startcolumn+len(columns))):
             value = columns[i]
             try:
-                ws.range((startrow, column)).value = value
+                ws.cell(column=column, row=startrow,value=value)
+                #ws.range((startrow, column)).value = value
             except (AttributeError, ValueError) as e:
                 print(e)
                 print('Warning! header not printes: column,value',
@@ -83,7 +84,8 @@ def insert_df(startrow, startcolumn, df, ws, header=True):
                                          startcolumn+len(df.columns))):
             value = values[i][j]
             try:
-                ws.range((row, column)).value = value
+                ws.cell(column=column,row=row,value=value)
+                #ws.range((row, column)).value = value
             except (AttributeError, ValueError) as e:
                 print(e)
                 print('Warning! value not printed: row,column,value', row,

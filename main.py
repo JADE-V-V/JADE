@@ -83,7 +83,8 @@ class Session:
         """
 
         code_root = os.path.dirname(os.path.abspath(__file__))
-        jade_root = os.path.dirname(code_root)
+        #jade_root = os.path.dirname(code_root)
+        jade_root = os.getcwd()
         
         self.path_default_settings = os.path.join(code_root, 'default_settings')
 
@@ -151,9 +152,11 @@ class Session:
         # --- Create the library manager ---
         dl = self.conf.default_lib
         activationfile = os.path.join(jade_root, 'Configuration', 'Activation.xlsx')
+        isotopes_file = os.path.join(code_root, 'Isotopes.txt')
         self.lib_manager = libmanager.LibManager(self.conf.xsdir_path,
                                                  defaultlib=dl,
-                                                 activationfile=activationfile)
+                                                 activationfile=activationfile,
+                                                 isotopes_file=isotopes_file)
 
         # --- Initialize status ---
         self.state = status.Status(self)

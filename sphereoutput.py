@@ -32,7 +32,7 @@ import plotter
 import math
 import openpyxl
 
-from openpyxl.utlis.dataframe import dataframe_to_rows
+from openpyxl.utils.dataframe import dataframe_to_rows
 from tqdm import tqdm
 import atlas as at
 import numpy as np

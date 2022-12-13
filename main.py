@@ -83,6 +83,7 @@ class Session:
         """
 
         cp = os.getcwd()
+        #cp = os.path.abspath(__file__)
 
         self.path_default_settings = os.path.join(cp, 'default_settings')
 

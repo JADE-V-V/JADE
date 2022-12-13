@@ -49,7 +49,7 @@ Now upgrade pip, and install the pip requirements:
 
 ```
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install .
 ```
 
 From here, the user can follow the instructions from step 5 in:

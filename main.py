@@ -82,19 +82,17 @@ class Session:
 
         """
 
-        cp = os.getcwd()
-        #cp = os.path.abspath(__file__)
-
-        self.path_default_settings = os.path.join(cp, 'default_settings')
-
-        cp = os.path.dirname(cp)
+        code_root = os.path.dirname(os.path.abspath(__file__))
+        jade_root = os.path.dirname(code_root)
+        
+        self.path_default_settings = os.path.join(code_root, 'default_settings')
 
         # --- INITIALIZATION ---
         # --- Create/memorize JADE folder structure ---
         # Future implementation
-        self.path_quality = os.path.join(cp, 'Quality')
+        self.path_quality = os.path.join(jade_root, 'Quality')
         # Test level 1
-        self.path_test = os.path.join(cp, 'Tests')
+        self.path_test = os.path.join(jade_root, 'Tests')
         # Test level 2
         self.path_run = os.path.join(self.path_test, 'MCNP simulations')
         self.path_pp = os.path.join(self.path_test, 'Post-Processing')
@@ -102,9 +100,9 @@ class Session:
         self.path_single = os.path.join(self.path_pp, 'Single Libraries')
         self.path_comparison = os.path.join(self.path_pp, 'Comparisons')
         # Utilities
-        self.path_uti = os.path.join(cp, 'Utilities')
-        self.path_logs = os.path.join(cp, 'Utilities', 'Log Files')
-        self.path_test_install = os.path.join(cp, 'Utilities',
+        self.path_uti = os.path.join(jade_root, 'Utilities')
+        self.path_logs = os.path.join(jade_root, 'Utilities', 'Log Files')
+        self.path_test_install = os.path.join(jade_root, 'Utilities',
                                               'Installation Test')
 
         keypaths = [self.path_quality, self.path_test,
@@ -117,12 +115,12 @@ class Session:
 
         # --This paths must exist or are created at the first initialization--
         # Configuration
-        self.path_cnf = os.path.join(cp, 'Configuration',
+        self.path_cnf = os.path.join(jade_root, 'Configuration',
                                      'Benchmarks Configuration')
         # Experimental results
-        self.path_exp_res = os.path.join(cp, 'Experimental Results')
+        self.path_exp_res = os.path.join(jade_root, 'Experimental Results')
         # Benchmark inputs
-        self.path_inputs = os.path.join(cp, 'Benchmarks inputs')
+        self.path_inputs = os.path.join(jade_root, 'Benchmarks inputs')
 
         # Copy default settings if it is the first initialization
         if not os.path.exists(self.path_cnf):
@@ -131,18 +129,18 @@ class Session:
             shutil.copytree(files, os.path.dirname(self.path_cnf))
 
             # Copy files into benchmark inputs folder
-            files = os.path.join('install_files', 'Benchmarks inputs')
+            files = os.path.join(code_root, 'install_files', 'Benchmarks inputs')
             shutil.copytree(files, self.path_inputs)
 
             # Copy experimental results folder
-            files = os.path.join('install_files', 'Experimental Results')
+            files = os.path.join(code_root, 'install_files', 'Experimental Results')
             shutil.copytree(files, self.path_exp_res)
 
             # the application needs to be closed
             sys.exit()
 
         # Read global configuration file. All vital variables are stored here
-        self.conf = cnf.Configuration(os.path.join(cp, 'Configuration',
+        self.conf = cnf.Configuration(os.path.join(jade_root, 'Configuration',
                                                    'Config.xlsx'))
 
         # --- Create the session LOG ---
@@ -152,7 +150,7 @@ class Session:
 
         # --- Create the library manager ---
         dl = self.conf.default_lib
-        activationfile = os.path.join(cp, 'Configuration', 'Activation.xlsx')
+        activationfile = os.path.join(jade_root, 'Configuration', 'Activation.xlsx')
         self.lib_manager = libmanager.LibManager(self.conf.xsdir_path,
                                                  defaultlib=dl,
                                                  activationfile=activationfile)

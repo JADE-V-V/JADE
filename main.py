@@ -236,9 +236,7 @@ def fatal_exception(message=None):
     print(CRED+' FATAL EXCEPTION: \n'+message+CEND)
     sys.exit()
 
-
-if __name__ == "__main__":
-
+def main():
     # Module having problem with log(0) for tick position in graphs
     warnings.filterwarnings('ignore',
                             r'invalid value encountered in double_scalars')
@@ -250,3 +248,7 @@ if __name__ == "__main__":
 
     session = Session()
     gui.mainloop(session)
+
+if __name__ == "__main__":
+    main()
+

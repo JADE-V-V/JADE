@@ -1,0 +1,215 @@
+<geometry>
+  <surface boundary="transmission" coeffs="0.0 0.0 287.5" id="1" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 291.97" id="60" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 296.44" id="61" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 300.91" id="62" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 305.38" id="63" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 309.85" id="64" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 314.32" id="65" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 318.79" id="66" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 323.26" id="67" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 327.73" id="68" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 332.2" id="69" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 336.67" id="70" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 341.14" id="71" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 345.61" id="72" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 350.08" id="73" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 354.55" id="74" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 359.02" id="75" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 363.49" id="76" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 367.96" id="77" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 372.43" id="78" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 376.9" id="2" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 377.0" id="3" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 390.5" id="4" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 395.5" id="5" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 400.5" id="6" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 406.6" id="80" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 412.7" id="81" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 418.8" id="82" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 424.9" id="83" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 431.0" id="7" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 436.0" id="8" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 441.0" id="9" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 447.9" id="10" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 451.0" id="11" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 455.2" id="12" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 458.2" id="13" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 465.2" id="14" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 468.2" id="15" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 473.7" id="16" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 476.7" id="17" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 481.7" id="18" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 484.7" id="19" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 487.0" id="20" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 489.0" id="21" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 490.0" id="22" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 493.6" id="23" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 493.7" id="24" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 494.2" id="25" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 495.0" id="26" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 506.6" id="27" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1115.0" id="28" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1131.3" id="29" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1132.1" id="30" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1132.6" id="31" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1132.7" id="32" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1136.3" id="33" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1137.3" id="34" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1139.3" id="35" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1141.6" id="36" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1144.6" id="37" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1149.6" id="38" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1152.6" id="39" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1158.1" id="40" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1161.1" id="41" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1168.1" id="42" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1171.1" id="43" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1175.3" id="44" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1178.4" id="45" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1185.3" id="46" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1222.8" id="47" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1227.8" id="48" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1232.49" id="84" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1237.18" id="85" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1241.87" id="86" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1246.56" id="87" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1251.25" id="88" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1255.94" id="89" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1260.63" id="90" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1265.32" id="91" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1270.01" id="92" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1274.7" id="49" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1279.7" id="50" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1284.7" id="51" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1300.0" id="52" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1300.1" id="53" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1304.57" id="93" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1309.04" id="94" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1313.51" id="95" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1317.98" id="96" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1322.45" id="97" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1326.92" id="98" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1331.39" id="99" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1335.86" id="100" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1340.33" id="101" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1344.8" id="102" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1349.27" id="103" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1353.74" id="104" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1358.21" id="105" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1362.68" id="106" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1367.15" id="107" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1371.62" id="108" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1376.09" id="109" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1380.56" id="110" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 1385.03" id="111" type="z-cylinder" />
+  <surface boundary="vacuum" coeffs="0.0 0.0 1389.5" id="54" type="z-cylinder" />
+  <surface boundary="transmission" coeffs="1000.0" id="55" type="z-plane" />
+  <surface boundary="vacuum" coeffs="-1000.0" id="56" type="z-plane" />
+  <cell id="1" material="void" region=" -55 56 -1" universe="0" />
+  <cell id="2" material="13" region=" -55 56 1 -60" universe="0" />
+  <cell id="3" material="13" region=" -55 56 60 -61" universe="0" />
+  <cell id="4" material="13" region=" -55 56 61 -62" universe="0" />
+  <cell id="5" material="13" region=" -55 56 62 -63" universe="0" />
+  <cell id="6" material="13" region=" -55 56 63 -64" universe="0" />
+  <cell id="7" material="13" region=" -55 56 64 -65" universe="0" />
+  <cell id="8" material="13" region=" -55 56 65 -66" universe="0" />
+  <cell id="9" material="13" region=" -55 56 66 -67" universe="0" />
+  <cell id="10" material="13" region=" -55 56 67 -68" universe="0" />
+  <cell id="11" material="13" region=" -55 56 68 -69" universe="0" />
+  <cell id="12" material="13" region=" -55 56 69 -70" universe="0" />
+  <cell id="13" material="13" region=" -55 56 70 -71" universe="0" />
+  <cell id="14" material="13" region=" -55 56 71 -72" universe="0" />
+  <cell id="15" material="13" region=" -55 56 72 -73" universe="0" />
+  <cell id="16" material="13" region=" -55 56 73 -74" universe="0" />
+  <cell id="17" material="13" region=" -55 56 74 -75" universe="0" />
+  <cell id="18" material="13" region=" -55 56 75 -76" universe="0" />
+  <cell id="19" material="13" region=" -55 56 76 -77" universe="0" />
+  <cell id="20" material="13" region=" -55 56 77 -78" universe="0" />
+  <cell id="21" material="13" region=" -55 56 78 -2" universe="0" />
+  <cell id="22" material="1" region=" -55 56 2 -3" universe="0" />
+  <cell id="23" material="void" region=" -55 56 3 -4" universe="0" />
+  <cell id="24" material="14" region=" -55 56 4 -5" universe="0" />
+  <cell id="25" material="12" region=" -55 56 5 -6" universe="0" />
+  <cell id="26" material="15" region=" -55 56 6 -80" universe="0" />
+  <cell id="27" material="15" region=" -55 56 80 -81" universe="0" />
+  <cell id="28" material="15" region=" -55 56 81 -82" universe="0" />
+  <cell id="29" material="15" region=" -55 56 82 -83" universe="0" />
+  <cell id="30" material="15" region=" -55 56 83 -7" universe="0" />
+  <cell id="31" material="12" region=" -55 56 7 -8" universe="0" />
+  <cell id="32" material="void" region=" -55 56 8 -9" universe="0" />
+  <cell id="33" material="11" region=" -55 56 9 -10" universe="0" />
+  <cell id="34" material="7" region=" -55 56 10 -11" universe="0" />
+  <cell id="35" material="11" region=" -55 56 11 -12" universe="0" />
+  <cell id="36" material="7" region=" -55 56 12 -13" universe="0" />
+  <cell id="37" material="11" region=" -55 56 13 -14" universe="0" />
+  <cell id="38" material="7" region=" -55 56 14 -15" universe="0" />
+  <cell id="39" material="11" region=" -55 56 15 -16" universe="0" />
+  <cell id="40" material="7" region=" -55 56 16 -17" universe="0" />
+  <cell id="41" material="11" region=" -55 56 17 -18" universe="0" />
+  <cell id="42" material="7" region=" -55 56 18 -19" universe="0" />
+  <cell id="43" material="11" region=" -55 56 19 -20" universe="0" />
+  <cell id="44" material="7" region=" -55 56 20 -21" universe="0" />
+  <cell id="45" material="11" region=" -55 56 21 -22" universe="0" />
+  <cell id="46" material="7" region=" -55 56 22 -23" universe="0" />
+  <cell id="47" material="11" region=" -55 56 23 -24" universe="0" />
+  <cell id="48" material="8" region=" -55 56 24 -25" universe="0" />
+  <cell id="49" material="9" region=" -55 56 25 -26" universe="0" />
+  <cell id="50" material="void" region=" -55 56 26 -27" universe="0" />
+  <cell id="51" material="void" region=" -55 56 27 -28" universe="0" />
+  <cell id="52" material="void" region=" -55 56 28 -29" universe="0" />
+  <cell id="53" material="9" region=" -55 56 29 -30" universe="0" />
+  <cell id="54" material="8" region=" -55 56 30 -31" universe="0" />
+  <cell id="55" material="11" region=" -55 56 31 -32" universe="0" />
+  <cell id="56" material="7" region=" -55 56 32 -33" universe="0" />
+  <cell id="57" material="11" region=" -55 56 33 -34" universe="0" />
+  <cell id="58" material="7" region=" -55 56 34 -35" universe="0" />
+  <cell id="59" material="11" region=" -55 56 35 -36" universe="0" />
+  <cell id="60" material="7" region=" -55 56 36 -37" universe="0" />
+  <cell id="61" material="11" region=" -55 56 37 -38" universe="0" />
+  <cell id="62" material="7" region=" -55 56 38 -39" universe="0" />
+  <cell id="63" material="11" region=" -55 56 39 -40" universe="0" />
+  <cell id="64" material="7" region=" -55 56 40 -41" universe="0" />
+  <cell id="65" material="11" region=" -55 56 41 -42" universe="0" />
+  <cell id="66" material="7" region=" -55 56 42 -43" universe="0" />
+  <cell id="67" material="11" region=" -55 56 43 -44" universe="0" />
+  <cell id="68" material="7" region=" -55 56 44 -45" universe="0" />
+  <cell id="69" material="11" region=" -55 56 45 -46" universe="0" />
+  <cell id="70" material="void" region=" -55 56 46 -47" universe="0" />
+  <cell id="71" material="12" region=" -55 56 47 -48" universe="0" />
+  <cell id="72" material="15" region=" -55 56 48 -84" universe="0" />
+  <cell id="73" material="15" region=" -55 56 84 -85" universe="0" />
+  <cell id="74" material="15" region=" -55 56 85 -86" universe="0" />
+  <cell id="75" material="15" region=" -55 56 86 -87" universe="0" />
+  <cell id="76" material="15" region=" -55 56 87 -88" universe="0" />
+  <cell id="77" material="15" region=" -55 56 88 -89" universe="0" />
+  <cell id="78" material="15" region=" -55 56 89 -90" universe="0" />
+  <cell id="79" material="15" region=" -55 56 90 -91" universe="0" />
+  <cell id="80" material="15" region=" -55 56 91 -92" universe="0" />
+  <cell id="81" material="15" region=" -55 56 92 -49" universe="0" />
+  <cell id="82" material="12" region=" -55 56 49 -50" universe="0" />
+  <cell id="83" material="14" region=" -55 56 50 -51" universe="0" />
+  <cell id="84" material="void" region=" -55 56 51 -52" universe="0" />
+  <cell id="85" material="1" region=" -55 56 52 -53" universe="0" />
+  <cell id="86" material="13" region=" -55 56 53 -93" universe="0" />
+  <cell id="87" material="13" region=" -55 56 93 -94" universe="0" />
+  <cell id="88" material="13" region=" -55 56 94 -95" universe="0" />
+  <cell id="89" material="13" region=" -55 56 95 -96" universe="0" />
+  <cell id="90" material="13" region=" -55 56 96 -97" universe="0" />
+  <cell id="91" material="13" region=" -55 56 97 -98" universe="0" />
+  <cell id="92" material="13" region=" -55 56 98 -99" universe="0" />
+  <cell id="93" material="13" region=" -55 56 99 -100" universe="0" />
+  <cell id="94" material="13" region=" -55 56 100 -101" universe="0" />
+  <cell id="95" material="13" region=" -55 56 101 -102" universe="0" />
+  <cell id="96" material="13" region=" -55 56 102 -103" universe="0" />
+  <cell id="97" material="13" region=" -55 56 103 -104" universe="0" />
+  <cell id="98" material="13" region=" -55 56 104 -105" universe="0" />
+  <cell id="99" material="13" region=" -55 56 105 -106" universe="0" />
+  <cell id="100" material="13" region=" -55 56 106 -107" universe="0" />
+  <cell id="101" material="13" region=" -55 56 107 -108" universe="0" />
+  <cell id="102" material="13" region=" -55 56 108 -109" universe="0" />
+  <cell id="103" material="13" region=" -55 56 109 -110" universe="0" />
+  <cell id="104" material="13" region=" -55 56 110 -111" universe="0" />
+  <cell id="105" material="13" region=" -55 56 111 -54" universe="0" />
+  <cell id="106" material="void" region=" ( 55 |  54 |  -56 ) " universe="0" />
+</geometry>

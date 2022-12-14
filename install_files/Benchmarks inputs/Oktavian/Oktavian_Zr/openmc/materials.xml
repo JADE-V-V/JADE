@@ -1,0 +1,10 @@
+<materials>
+  <material id="1" name="M1">
+    <density units="g/cc" value="2.77813" />
+    <nuclide ao="1.0" name="Zr90" />
+  </material>
+  <material id="2" name="M2">
+    <density units="g/cc" value="7.824" />
+    <nuclide name="Cr50" wo="1.0" />
+  </material>
+</materials>

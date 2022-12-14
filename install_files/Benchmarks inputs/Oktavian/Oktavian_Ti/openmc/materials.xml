@@ -1,0 +1,41 @@
+<materials>
+  <material id="1" name="M1">
+    <density units="g/cc" value="1.54" />
+    <nuclide name="Ti46" wo="0.08227641642237271" />
+    <nuclide name="Ti47" wo="0.07419841481000358" />
+    <nuclide name="Ti48" wo="0.7352021467463484" />
+    <nuclide name="Ti49" wo="0.05395341076910078" />
+    <nuclide name="Ti50" wo="0.05165961031125821" />
+    <nuclide name="Mg24" wo="0.00022907104572258069" />
+    <nuclide name="Mg25" wo="2.900000578840115e-05" />
+    <nuclide name="Mg26" wo="3.1929006373029666e-05" />
+    <nuclide name="Fe54" wo="4.909800979996275e-05" />
+    <nuclide name="Fe56" wo="0.000770734153838537" />
+    <nuclide name="Fe57" wo="1.7799603552800867e-05" />
+    <nuclide name="Fe58" wo="2.368800472812574e-06" />
+    <nuclide name="N14" wo="2.0000003992000796e-05" />
+    <nuclide name="Cl35" wo="0.000636468127039038" />
+    <nuclide name="Cl37" wo="0.00020353204062499529" />
+    <nuclide name="H1" wo="3.0000005988001193e-05" />
+    <nuclide name="Mn55" wo="2.0000003992000796e-05" />
+    <nuclide name="O16" wo="0.0006100001217560242" />
+    <nuclide name="C12" wo="5.941111697165987e-05" />
+    <nuclide name="C13" wo="5.931456911383439e-07" />
+  </material>
+  <material id="2" name="M2">
+    <density units="g/cc" value="7.824" />
+    <nuclide name="Cr50" wo="0.008038248553115261" />
+    <nuclide name="Cr52" wo="0.15500997209820505" />
+    <nuclide name="Cr53" wo="0.017576796836176575" />
+    <nuclide name="Cr54" wo="0.004375249212455142" />
+    <nuclide name="Fe54" wo="0.04114879259321734" />
+    <nuclide name="Fe56" wo="0.6459478837293811" />
+    <nuclide name="Fe57" wo="0.014917797314796486" />
+    <nuclide name="Fe58" wo="0.0019852796426496648" />
+    <nuclide name="Ni58" wo="0.07556548639821246" />
+    <nuclide name="Ni60" wo="0.02910749476065095" />
+    <nuclide name="Ni61" wo="0.0012653997722280412" />
+    <nuclide name="Ni62" wo="0.004033739273926931" />
+    <nuclide name="Ni64" wo="0.0010278598149852335" />
+  </material>
+</materials>

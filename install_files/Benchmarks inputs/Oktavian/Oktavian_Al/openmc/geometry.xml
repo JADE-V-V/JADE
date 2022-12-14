@@ -1,0 +1,16 @@
+<geometry>
+  <surface boundary="transmission" coeffs="0.0 0.0 5.55" id="1" type="x-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 5.75" id="2" type="x-cylinder" />
+  <surface boundary="transmission" coeffs="0.0 0.0 0.0 10.0" id="3" type="sphere" />
+  <surface boundary="transmission" coeffs="0.0 0.0 0.0 10.2" id="4" type="sphere" />
+  <surface boundary="transmission" coeffs="0.0 0.0 0.0 19.75" id="5" type="sphere" />
+  <surface boundary="transmission" coeffs="0.0 0.0 0.0 19.95" id="6" type="sphere" />
+  <surface boundary="vacuum" coeffs="0.0 0.0 0.0 100.0" id="7" type="sphere" />
+  <surface boundary="transmission" coeffs="8.32" id="8" type="x-plane" />
+  <cell id="1" material="void" region=" ( -3 -8 )  |  ( 8 -1 -6 ) " universe="0" />
+  <cell id="2" material="2" region=" ( 3 -4 -8 )  |  ( 8 1 -2 -6 ) " universe="0" />
+  <cell id="3" material="1" region=" ( 4 -5 -8 )  |  ( 8 2 -5 ) " universe="0" />
+  <cell id="4" material="2" region=" ( 5 -6 -8 )  |  ( 8 2 5 -6 ) " universe="0" />
+  <cell id="5" material="void" region=" 6 -7" universe="0" />
+  <cell id="6" material="void" region=" 7" universe="0" />
+</geometry>

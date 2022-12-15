@@ -94,6 +94,12 @@ class Test():
         # Get the configuration files path
         self.test_conf_path = confpath
 
+        # Updated to handle multiple codes
+        self.mcnp = bool(config['MCNP'])
+        self.serpent = bool(config['Serpent'])
+        self.openmc = bool(config['OpenMC'])
+        self.d1s = bool(config['d1S'])
+        """
         # Chek for valid code
         code = config['Code']
         if code not in CODE_TAGS.keys():
@@ -101,10 +107,13 @@ class Test():
                              'Please double check the configuration file.')
         else:
             self.code = code  # transport code to be used for the benchmark
+        """
 
         # Generate input file template according to code
-        if code == 'D1S5':
-            self.inp = ipt.D1S5_InputFile.from_text(inp)
+        #if code == 'D1S5':
+        if self.d1S:
+            d1s_ipt = os.path.join(inp, 'mcnp', conf['Folder Name']+'.i')
+            self.inp = d1s_ipt.D1S5_InputFile.from_text(inp)
             # It also have additional files then that must be in the
             # VRT folder (irradiation and reaction files)
             irrfile = os.path.join(VRTpath, self.inp.name,
@@ -120,10 +129,13 @@ class Test():
                 # responsability of the user to make them available or not.
                 self.irrad = None
                 self.react = None
-        else:
+        elif self.mcnp:
+            mcnp_ipt = os.path.join(inp, 'mcnp', conf['Folder Name']+'.i')
             self.inp = ipt.InputFile.from_text(inp)
             self.irrad = None
             self.react = None
+
+        # Fix from here
 
         # Name of input file
         self.name = self.inp.name

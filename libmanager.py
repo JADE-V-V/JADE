@@ -92,9 +92,7 @@ class LibManager:
 
         self.libraries = libraries
         """
-        libraries = self.XS.libraries
-
-        # Fix from here.
+        self.libraries = self.XS.libraries
 
         # Load the activation reaction data if available
         if activationfile is not None:
@@ -110,6 +108,7 @@ class LibManager:
         self.reactions = reactions
 
     def check4zaid(self, zaid):
+        # Needs fixing
         """
         Check which libraries are available for the selected zaid and return it
 
@@ -131,6 +130,7 @@ class LibManager:
         return libraries
 
     def convertZaid(self, zaid, lib):
+        # Needs fixing
         """
         This methods will convert a zaid into the requested library
 
@@ -220,6 +220,7 @@ class LibManager:
         return translation
 
     def get_libzaids(self, lib):
+        # Needs fixing
         """
         Given a library, returns all zaids available
 

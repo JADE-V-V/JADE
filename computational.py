@@ -82,13 +82,13 @@ def executeBenchmarksRoutines(session, lib, exp=False):
             # get path to libdir
             outpath = os.path.join(session.path_run, libpath)
             safemkdir(outpath)
-            fname = row['File Name']
-            inpfile = os.path.join(session.path_inputs, fname)
-            VRTpath = os.path.join(session.path_inputs, 'VRT')
+            fname = row['Folder Name']
+            inppath = os.path.join(session.path_inputs, fname)
+            VRTpath = os.path.join(session.path_inputs, 'ITER_Cyl_SDDR', 'd1S')
             confpath = os.path.join(session.path_cnf, fname.split('.')[0])
 
             # Generate test
-            args = (inpfile, lib, row, log, VRTpath, confpath)
+            args = (inppath, lib, row, log, VRTpath, confpath)
             # Handle special cases
             if testname == 'Sphere Leakage Test':
                 test = testrun.SphereTest(*args)

@@ -95,16 +95,16 @@ class Session:
         # Test level 1
         self.path_test = os.path.join(jade_root, 'Tests')
         # Test level 2
-        self.path_run = os.path.join(self.path_test, 'MCNP simulations')
+        self.path_run = os.path.join(self.path_test, 'Simulations')
         self.path_pp = os.path.join(self.path_test, 'Post-Processing')
         # Test level 3
-        self.path_single = os.path.join(self.path_pp, 'Single Libraries')
+        self.path_single = os.path.join(self.path_pp, 'Single_Libraries')
         self.path_comparison = os.path.join(self.path_pp, 'Comparisons')
         # Utilities
         self.path_uti = os.path.join(jade_root, 'Utilities')
-        self.path_logs = os.path.join(jade_root, 'Utilities', 'Log Files')
+        self.path_logs = os.path.join(jade_root, 'Utilities', 'Log_Files')
         self.path_test_install = os.path.join(jade_root, 'Utilities',
-                                              'Installation Test')
+                                              'Installation_Test')
 
         keypaths = [self.path_quality, self.path_test,
                     self.path_run, self.path_pp, self.path_uti,
@@ -117,11 +117,11 @@ class Session:
         # --This paths must exist or are created at the first initialization--
         # Configuration
         self.path_cnf = os.path.join(jade_root, 'Configuration',
-                                     'Benchmarks Configuration')
+                                     'Benchmarks_Configuration')
         # Experimental results
-        self.path_exp_res = os.path.join(jade_root, 'Experimental Results')
+        self.path_exp_res = os.path.join(jade_root, 'Experimental_Results')
         # Benchmark inputs
-        self.path_inputs = os.path.join(jade_root, 'Benchmarks inputs')
+        self.path_inputs = os.path.join(jade_root, 'Benchmarks_Inputs')
 
         # Copy default settings if it is the first initialization
         if not os.path.exists(self.path_cnf):
@@ -130,11 +130,11 @@ class Session:
             shutil.copytree(files, os.path.dirname(self.path_cnf))
 
             # Copy files into benchmark inputs folder
-            files = os.path.join(code_root, 'install_files', 'Benchmarks inputs')
+            files = os.path.join(code_root, 'install_files', 'Benchmarks_Inputs')
             shutil.copytree(files, self.path_inputs)
 
             # Copy experimental results folder
-            files = os.path.join(code_root, 'install_files', 'Experimental Results')
+            files = os.path.join(code_root, 'install_files', 'Experimental_Results')
             shutil.copytree(files, self.path_exp_res)
 
             # the application needs to be closed
@@ -189,7 +189,7 @@ class Session:
 
         to_perform = []
         for idx, row in config.iterrows():
-            filename = str(row['File Name'])
+            filename = str(row['Folder Name'])
             testname = filename.split('.')[0]
 
             pp = row[action]

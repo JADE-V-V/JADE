@@ -61,22 +61,36 @@ class Configuration:
                              header=None)
         main.columns = ['Variable', 'Value']
         main.set_index('Variable', inplace=True)
-        self.xsdir_path = main['Value'].loc['xsdir Path']
-        self.suppressW = main['Value'].loc['Suppress warnings']
-        self.multi_threads = main['Value'].loc['multithread']
-        self.cpu = main['Value'].loc['CPU']
+        self.mcnp_exec = main['Value'].loc['MCNP executable']
+        self.mcnp_config = main['Value'].loc['MCNP config']
+        self.serpent_exec = main['Value'].loc['Serpent executable']
+        self.serpent_config = main['Value'].loc['Serpent config']
+        self.openmc_exec = main['Value'].loc['OpenMC executable']
+        self.openmc_config = main['Value'].loc['OpenMC config']
+        self.d1s_exec = main['Value'].loc['d1s executable']
+        self.d1s_config = main['Value'].loc['d1s config']
+        self.openmp_threads = main['Value'].loc['OpenMP threads']
+        self.mpi_tasks = main['Value'].loc['MPI tasks']
+        self.batch_system = main['Value'].loc['Batch system']
+        self.batch_file = main['Value'].loc['Batch file']  
+        
+        """ Legacy config variables """
+        #self.xsdir_path = main['Value'].loc['xsdir Path']
+        #self.suppressW = main['Value'].loc['Suppress warnings']
+        #self.multi_threads = main['Value'].loc['multithread']
+        #self.cpu = main['Value'].loc['CPU']
 
         # Computational
         comp_default = pd.read_excel(conf_file,
                                      sheet_name='Computational benchmarks',
                                      skiprows=2)
-        self.comp_default = comp_default.dropna(subset=['File Name'])
+        self.comp_default = comp_default.dropna(subset=['Folder Name'])
 
         # Experimental
         comp_default = pd.read_excel(conf_file,
                                      sheet_name='Experimental benchmarks',
                                      skiprows=2)
-        self.exp_default = comp_default.dropna(subset=['File Name'])
+        self.exp_default = comp_default.dropna(subset=['Folder Name'])
 
         # Libraries
         lib = pd.read_excel(conf_file, sheet_name='Libraries')

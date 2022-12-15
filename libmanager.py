@@ -39,7 +39,9 @@ MSG_DEFLIB = ' The Default library {} was used for zaid {}'
 
 class LibManager:
 
-    def __init__(self, xsdir_file, defaultlib='81c', activationfile=None,
+    #def __init__(self, xsdir_file, defaultlib='81c', activationfile=None,
+    #             isotopes_file=None):
+    def __init__(self, lib, defaultlib='81c', activationfile=None,
                  isotopes_file=None):
         """
         Object dealing with all complex operations that involves nuclear data
@@ -74,11 +76,14 @@ class LibManager:
         self.defaultlib = defaultlib
 
         # Initilize the Xsdir object
-        self.XS = xs.Xsdir(xsdir_file)
+        #self.XS = xs.Xsdir(xsdir_file)
+        self.XS = xs.XSData(lib)
 
         # Identify different libraries installed. This is done checking H
         # libraries = self.check4zaid('1001')
         # libraries.extend(self.check4zaid('1000'))  # photons
+        """ Legacy library definition changed """
+        """
         libraries = []
         for table in self.XS:
             lib = table.name.split('.')[1]
@@ -86,6 +91,10 @@ class LibManager:
                 libraries.append(lib)
 
         self.libraries = libraries
+        """
+        libraries = self.XS.libraries
+
+        # Fix from here.
 
         # Load the activation reaction data if available
         if activationfile is not None:

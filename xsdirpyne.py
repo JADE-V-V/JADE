@@ -33,7 +33,6 @@ or implied, of the stakeholders of the PyNE project or the employers of PyNE dev
 import os
 from typing import List, Tuple
 
-
 class Xsdir(object):
     """This class stores the information contained in a single MCNP xsdir file.
 
@@ -390,3 +389,39 @@ class XsdirTable(object):
 
     def __repr__(self):
         return "<XsDirTable: {0}>".format(self.name)
+
+""" General XSData object added by S. Bradnam """
+class XSData(object):
+    def __init__(self, lib):
+        self.read(lib)
+
+    def read(self, lib):
+        self.libraries = lib.['Suffix'].tolist()
+        self.mcnp_data = {}
+        self.serpent_data = {}
+        self.openmc_data = {}
+        self.d1s_data = {}
+
+        for i, library in enumerate(self.libraries):
+            mcnp_value = lib.at[i,"MCNP"]
+            if mcnp_value == '':
+                self.mcnp_data[library] = None
+            else:
+                self.mcnp_data[lib] = Xsdir(mcnp_value)
+            serpent_value = lib.at[i,"Serpent"]
+            if serpent_value == '':
+                self.serpent_data[library] = None
+            else:
+                self.serpent_data[lib] = Xsdir(serpent_value)           
+            openmc_value = lib.at[i,"OpenMC"]
+            if openmc_value == '':
+                self.openmc_data[library] = None
+            else:
+                self.openmc_data[lib] = openmc_value
+            d1s_value = lib.at[i,"d1S"]
+            if d1s_value == '':
+                self.d1s_data[library] = None
+            else:
+                self.d1s_data[lib] = Xsdir(d1s_value)
+            
+

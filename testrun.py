@@ -94,11 +94,50 @@ class Test():
         # Get the configuration files path
         self.test_conf_path = confpath
 
+        # Inout variables
+        self.mcnp_ipt = None
+        self.serpent_ipt = None
+        self.openmc_ipt = None
+        self.d1s_ipt = None
+
+        self.irrad = None
+        self.react = None
+
+        # Path variables
+        self.run_dir = None
+        #self.serpent_dir = None
+        #self.openmc_dir = None
+        #self.d1s_dir = None
+
+        config = config.dropna()
+
+        self.name = conf['Folder Name']
+
+        try:
+            self.nps = config['NPS cut-off']
+        except KeyError:
+            self.nps = None
+        if self.nps is np.nan:
+            self.nps = None        
+        
         # Updated to handle multiple codes
-        self.mcnp = bool(config['MCNP'])
-        self.serpent = bool(config['Serpent'])
-        self.openmc = bool(config['OpenMC'])
-        self.d1s = bool(config['d1S'])
+        try:
+            self.mcnp = bool(config['MCNP'])
+        except KeyError:
+            self.mcnp = False
+        try:
+            self.serpent = bool(config['Serpent'])
+        except KeyError:
+            self.serpent = False
+        try:
+            self.openmc = bool(config['OpenMC'])
+        except KeyError:
+            self.openmc = False
+        try:
+            self.d1s = bool(config['d1S'])
+        except KeyError:
+            self.d1s = False
+
         """
         # Chek for valid code
         code = config['Code']
@@ -108,39 +147,46 @@ class Test():
         else:
             self.code = code  # transport code to be used for the benchmark
         """
-
         # Generate input file template according to code
         #if code == 'D1S5':
         if self.d1S:
-            d1s_ipt = os.path.join(inp, 'mcnp', conf['Folder Name']+'.i')
-            self.inp = d1s_ipt.D1S5_InputFile.from_text(inp)
+            d1s_ipt = os.path.join(inp, 'mcnp', self.name+'.i')
+            self.d1s_inp = d1s_ipt.D1S5_InputFile.from_text(inp)
             # It also have additional files then that must be in the
             # VRT folder (irradiation and reaction files)
-            irrfile = os.path.join(VRTpath, self.inp.name,
+            irrfile = os.path.join(VRTpath, self.d1s_inp.name,
                                    self.inp.name+'_irrad')
-            reacfile = os.path.join(VRTpath, self.inp.name,
-                                    self.inp.name+'_react')
+            reacfile = os.path.join(VRTpath, self.d1s_inp.name,
+                                    self.d1s_inp.name+'_react')
             try:
                 self.irrad = IrradiationFile.from_text(irrfile)
                 self.react = ReactionFile.from_text(reacfile)
             except FileNotFoundError:
+                self.log.adjourn('d1S irradition and reaction files not found, skipping...')
                 # For instance in sphere test they are not provided
                 # There may be reasons why these files are not provided, it is
                 # responsability of the user to make them available or not.
-                self.irrad = None
-                self.react = None
-        elif self.mcnp:
-            mcnp_ipt = os.path.join(inp, 'mcnp', conf['Folder Name']+'.i')
-            self.inp = ipt.InputFile.from_text(inp)
-            self.irrad = None
-            self.react = None
+                #self.irrad = None
+                #self.react = None
+        if self.mcnp:
+            mcnp_ipt = os.path.join(inp, 'mcnp',  self.name+'.i')
+            self.mcnp_inp = ipt.InputFile.from_text(inp)
+            #self.irrad = None
+            #self.react = None
+        if self.serpent:
+            # Add serpent initialisation here
+            self.log.adjourn('Serpent running not implimented yet, skipping...')
+        if self.openmc:
+            # Add openmc initialisation here
+            self.log.adjourn('Serpent running not implimented yet, skipping...')
 
         # Fix from here
 
         # Name of input file
-        self.name = self.inp.name
+        #self.name = self.inp.name
 
         # Add the stop card according to config
+        """
         config = config.dropna()
         try:
             nps = config['NPS cut-off']
@@ -167,6 +213,7 @@ class Test():
 
         # Directory where the MCNP run will be performed
         self.MCNPdir = None
+        """
 
     def _translate_input(self, lib, libmanager):
         """
@@ -185,22 +232,29 @@ class Test():
         None.
 
         """
-        if isinstance(self.inp, ipt.D1S_Input):
+        #if isinstance(self.inp, ipt.D1S_Input):
+        if self.d1s:
             # Then it was the translation of a D1S input, additional
             # actions are required
-            add = self.inp.translate(lib, libmanager,
-                                     original_irradfile=self.irrad,
-                                     original_reacfile=self.react)
+            add = self.d1s_inp.translate(lib, libmanager,
+                                         original_irradfile=self.irrad,
+                                         original_reacfile=self.react)
             newirradiations = add[0]
             newreactions = add[1]
             self.irrad.irr_schedules = newirradiations
             self.react.reactions = newreactions
-        else:
-            self.inp.translate(lib, libmanager)
+            self.d1s_inp.update_zaidinfo(libmanager)
+        if self.mcnp:
+            self.mcnp_inp.translate(lib, libmanager)
+            self.mcnp_inp.update_zaidinfo(libmanager)
+        if self.serpent:
+            # Add serpent file translation here
+            pass
+        if self.openmc:
+            # Add openmc file translation here
+            pass
 
-        self.inp.update_zaidinfo(libmanager)
-
-    def generate_test(self, lib_directory, libmanager, MCNP_dir=None):
+    def generate_test(self, lib_directory, libmanager, run_dir=None):
         """
         Generate the test input files
 
@@ -222,15 +276,24 @@ class Test():
         self._translate_input(self.lib, libmanager)
 
         # Add stop card
-        self.inp.add_stopCard(self.nps, self.ctme, self.precision)
+        #self.inp.add_stopCard(self.nps, self.ctme, self.precision)
+        if self.d1s:
+            self.mcnp_inp.add_stopCard(self.nps)
+        if self.mcnp:
+            self.mcnp_inp.add_stopCard(self.nps)
+        if self.serpent:
+            pass
+        if self.openmc:
+            pass
 
         # Identify working directory
-        testname = self.inp.name
-        if MCNP_dir is None:
+        #testname = self.inp.name
+        testname = self.name
+        if run_dir is None:
             motherdir = os.path.join(lib_directory, testname)
         else:
-            motherdir = MCNP_dir
-        self.MCNPdir = motherdir
+            motherdir = run_dir
+        self.run_dir = motherdir
         # If previous results are present they are canceled
         if os.path.exists(motherdir):
             shutil.rmtree(motherdir)
@@ -244,6 +307,32 @@ class Test():
 
         # Allow space for personalization getting additional modification
         self.custom_inp_modifications()
+
+        if self.d1s:
+            outinpfile = os.path.join(motherdir, testname, 'd1s')
+            self.mcnp_inp.write(outinpfile)
+            # And accessory files if needed
+            if self.irrad is not None:
+                self.irrad.write(motherdir, testname, 'd1s')
+            if self.react is not None:
+                self.react.write(motherdir, testname, 'd1s')
+            # Get VRT files if available
+            wwinp = os.path.join(self.path_VRT, testname, 'wwinp')
+            if os.path.exists(wwinp):
+                outfile = os.path.join(motherdir, testname, 'mcnp', 'wwinp')
+                shutil.copyfile(wwinp, outfile)
+
+        if self.mcnp:
+            outinpfile = os.path.join(motherdir, testname, 'mcnp')
+            self.mcnp_inp.write(outinpfile)
+            # Get VRT files if available
+            wwinp = os.path.join(self.path_VRT, testname, 'wwinp')
+            if os.path.exists(wwinp):
+                outfile = os.path.join(motherdir, testname, 'mcnp', 'wwinp')
+                shutil.copyfile(wwinp, outfile)
+        # Fix from here
+
+        """
         # Write new input file
         outinpfile = os.path.join(motherdir, testname)
         self.inp.write(outinpfile)
@@ -258,6 +347,7 @@ class Test():
         if os.path.exists(wwinp):
             outfile = os.path.join(motherdir, 'wwinp')
             shutil.copyfile(wwinp, outfile)
+        """
 
     def custom_inp_modifications(self):
         """

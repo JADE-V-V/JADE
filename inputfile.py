@@ -231,7 +231,8 @@ class InputFile:
 
         self.matlist.update_info(lib_manager)
 
-    def add_stopCard(self, nps, ctme, precision):
+#    def add_stopCard(self, nps, ctme, precision):
+    def add_stopCard(self, nps):
         """
         Add STOP card
 
@@ -256,6 +257,7 @@ class InputFile:
                 line = line+'NPS '+str(int(nps))+' '
             except ValueError:
                 pass  # an escaped NaN
+        """
         if ctme is not None:
             try:
                 line = line+'CTME '+str(int(ctme))+' '
@@ -266,7 +268,8 @@ class InputFile:
             tally = precision[0]
             error = precision[1]
             line = line+str(tally)+' '+str(error)
-
+        """
+        
         if line == 'STOP ':
             raise ValueError("""
 Specify at least one among nps, ctme or precision""")

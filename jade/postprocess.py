@@ -22,9 +22,9 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import datetime
-import sphereoutput as spho
-import output as bencho
-import expoutput as expo
+import jade.sphereoutput as spho
+import jade.output as bencho
+import jade.expoutput as expo
 
 
 def compareBenchmark(session, lib_input, testname):

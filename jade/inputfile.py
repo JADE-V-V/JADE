@@ -24,13 +24,13 @@
 import re
 import json
 import textwrap
-import matreader as mat
+import jade.matreader as mat
 from numjuggler import parser as par
 import os
 import sys
 from contextlib import contextmanager
 import warnings
-from parsersD1S import (ReactionFile, Reaction)
+from jade.parsersD1S import (ReactionFile, Reaction)
 
 
 class InputFile:

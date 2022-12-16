@@ -21,11 +21,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
-import gui
-import configuration as cnf
-import libmanager
+import jade.gui as gui
+import jade.configuration as cnf
+import jade.libmanager as libmanager
 import os
-import status
+import jade.status as status
 import warnings
 import time
 import shutil
@@ -82,7 +82,7 @@ class Session:
 
         """
 
-        code_root = os.path.dirname(os.path.abspath(__file__))
+        code_root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
         #jade_root = os.path.dirname(code_root)
         jade_root = os.getcwd()
         
@@ -152,7 +152,7 @@ class Session:
         # --- Create the library manager ---
         dl = self.conf.default_lib
         activationfile = os.path.join(jade_root, 'Configuration', 'Activation.xlsx')
-        isotopes_file = os.path.join(code_root, 'Isotopes.txt')
+        isotopes_file = os.path.join(code_root, 'jade', 'Isotopes.txt')
         self.lib_manager = libmanager.LibManager(self.conf.xsdir_path,
                                                  defaultlib=dl,
                                                  activationfile=activationfile,

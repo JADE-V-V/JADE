@@ -21,8 +21,8 @@
 # You should have received a copy of the GNU General Public License
 # along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 
-import inputfile as ipt
-import matreader as mat
+import jade.inputfile as ipt
+import jade.matreader as mat
 import os
 import subprocess
 import shutil
@@ -32,7 +32,7 @@ import sys
 
 from copy import deepcopy
 from tqdm import tqdm
-from parsersD1S import (IrradiationFile, ReactionFile, Reaction)
+from jade.parsersD1S import (IrradiationFile, ReactionFile, Reaction)
 
 
 CODE_TAGS = {'mcnp6': 'mcnp6', 'D1S5': 'd1suned3.1.2'}

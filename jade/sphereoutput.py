@@ -23,21 +23,21 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import xlwings as xw
-import excel_support as exsupp
+import jade.excel_support as exsupp
 import pandas as pd
 import os
 import shutil
-import plotter
+import jade.plotter as plotter
 #import pythoncom
 import math
 import openpyxl
 
 from openpyxl.utils.dataframe import dataframe_to_rows
 from tqdm import tqdm
-import atlas as at
+import jade.atlas as at
 import numpy as np
-from output import BenchmarkOutput
-from output import MCNPoutput
+from jade.output import BenchmarkOutput
+from jade.output import MCNPoutput
 
 
 class SphereOutput(BenchmarkOutput):

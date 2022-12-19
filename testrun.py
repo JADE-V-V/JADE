@@ -309,8 +309,9 @@ class Test():
         self.custom_inp_modifications()
 
         if self.d1s:
+            os.makedir(os.path.join(motherdir, 'd1s'))
             outinpfile = os.path.join(motherdir, testname, 'd1s')
-            self.mcnp_inp.write(outinpfile)
+            self.d1s_inp.write(outinpfile)
             # And accessory files if needed
             if self.irrad is not None:
                 self.irrad.write(motherdir, testname, 'd1s')
@@ -323,6 +324,7 @@ class Test():
                 shutil.copyfile(wwinp, outfile)
 
         if self.mcnp:
+            os.makedir(os.path.join(motherdir, 'mcnp'))
             outinpfile = os.path.join(motherdir, testname, 'mcnp')
             self.mcnp_inp.write(outinpfile)
             # Get VRT files if available
@@ -330,7 +332,14 @@ class Test():
             if os.path.exists(wwinp):
                 outfile = os.path.join(motherdir, testname, 'mcnp', 'wwinp')
                 shutil.copyfile(wwinp, outfile)
-        # Fix from here
+        
+        if self.serpent:
+            # Impliment serpent outputfile generation here
+            pass
+
+        if self.openmc:
+            # Impliment openmc outputfile generation here
+            pass            
 
         """
         # Write new input file
@@ -362,7 +371,8 @@ class Test():
         # It does not do anything in the default benchmark
         pass
 
-    def run(self, cpu=1, timeout=None):
+    #def run(self, cpu=1, timeout=None):
+    def run(config):
         """
         run the input
 
@@ -372,12 +382,13 @@ class Test():
             number of CPU to be used. The default is 1.
         timeout : int, optional
             number of seconds after the simulation should be killed.
-            The default is None.
+            The default is None.def run
 
         Returns
         -------
         None.
 
+        """
         """
         name = self.name
         directory = self.MCNPdir
@@ -385,6 +396,66 @@ class Test():
 
         self._runMCNP(code_tag, name, directory, cpu=cpu, timeout=timeout)
 
+        """
+        name = self.name
+        directory = self.run_dir
+
+        if self.d1s:
+            d1s_directory = os.path.join(directory, name, 'd1s')
+            if config.d1s_exec != '':
+                self.run_d1s(config, name, d1s_directory)
+        if self.mcnp:
+            mcnp_directory = os.path.join(directory, name, 'mcnp')
+            if config.mcnp_exec != '':
+                self.run_mcnp(config, name, mcnp_directory)
+        if self.serpent:
+            serpent_directory = os.path.join(directory, name, 'serpent')
+            if config.serpent_exec != '':
+                self.run_serpent(config, name, serpent_directory)
+        if self.openmc:
+            openmc_directory = os.path.join(directory, name, 'openmc')
+            if config.openmc_exec != '':
+                self.run_openmc(config, name, openmc_directory)
+
+    @staticmethod
+    def run_mcnp(self, config, name, directory):
+        mpi_tasks = int(config.openmp_threads) * int(config.mpi_tasks)
+        run_mpi = False
+        if mpi_tasks > 1:
+            mpistring = 'mpirun -n ' + str(mpi_tasks)
+            run_mpi = True
+        executable = config.mcnp_exec
+        inputstring = 'i=' + name + '.i'
+        outputstring = 'n=' + name + '.'
+        if run_mpi:
+            command = ' '.join([mpistring, executable, inputstring, outputstring])
+        else:
+            command = ' '.join([executable, inputstring, outputstring])
+        flagnotrun = False
+        try:
+            cwd = os.getcwd()
+            os.chdir(directory)
+            # cancel eventual previous output file
+            outputfile = name+'.o'
+            if os.path.exists(outputfile):
+                os.remove(outputfile)
+
+            # check if runtpe exits
+            runtpe = name+'.r'
+            if os.path.exists(runtpe):
+                command = command+' runtpe='+name+'.r'
+
+            # Execution
+            subprocess.run([command], cwd=directory,
+                           #creationflags=subprocess.CREATE_NEW_CONSOLE,
+                           timeout=timeout)
+            os.chdir(cwd)
+        except subprocess.TimeoutExpired:
+            pass
+
+        return flagnotrun 
+    
+    # Legacy MCNP runner
     @staticmethod
     def _runMCNP(code, name, directory, cpu=1, timeout=None):
         """
@@ -432,7 +503,7 @@ class Test():
 
         return flagnotrun
 
-
+# Fix from here
 class SphereTest(Test):
     """
     Class handling the sphere test

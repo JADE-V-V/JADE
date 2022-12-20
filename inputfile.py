@@ -187,7 +187,7 @@ class InputFile:
 
         return toprint
 
-    def translate(self, newlib, libmanager):
+    def translate(self, newlib, libmanager, code):
         """
         Translate the input to another library
 
@@ -211,7 +211,7 @@ class InputFile:
             # It is already a dict, pass
             pass
 
-        self.matlist.translate(newlib, libmanager)
+        self.matlist.translate(newlib, libmanager, code)
 
     def update_zaidinfo(self, lib_manager):
         """

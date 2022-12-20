@@ -431,7 +431,7 @@ class SubMaterial:
 
         return text.strip('\n')
 
-    def translate(self, newlib, lib_manager):
+    def translate(self, newlib, lib_manager, code):
         """
         This method implements the translation logic of JADE. All zaids are
         translated accordingly to the newlib specified.
@@ -491,7 +491,7 @@ class SubMaterial:
 
             try:
                 translation = lib_manager.convertZaid(zaid.element +
-                                                      zaid.isotope, newtag)
+                                                      zaid.isotope, newtag, code)
             except ValueError:
                 # No Available translation was found, ignore zaid
                 # Only video warning, to propagate to the log would be too much

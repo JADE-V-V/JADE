@@ -234,7 +234,7 @@ class Test():
         if self.d1s:
             # Then it was the translation of a D1S input, additional
             # actions are required
-            add = self.d1s_inp.translate(lib, libmanager,
+            add = self.d1s_inp.translate(lib, libmanager, 'd1s',
                                          original_irradfile=self.irrad,
                                          original_reacfile=self.react)
             newirradiations = add[0]
@@ -243,7 +243,7 @@ class Test():
             self.react.reactions = newreactions
             self.d1s_inp.update_zaidinfo(libmanager)
         if self.mcnp:
-            self.mcnp_inp.translate(lib, libmanager)
+            self.mcnp_inp.translate(lib, libmanager, 'mcnp')
             self.mcnp_inp.update_zaidinfo(libmanager)
         if self.serpent:
             # Add serpent file translation here
@@ -276,7 +276,7 @@ class Test():
         # Add stop card
         #self.inp.add_stopCard(self.nps, self.ctme, self.precision)
         if self.d1s:
-            self.mcnp_inp.add_stopCard(self.nps)
+            self.d1s_inp.add_stopCard(self.nps)
         if self.mcnp:
             self.mcnp_inp.add_stopCard(self.nps)
         if self.serpent:
@@ -370,7 +370,7 @@ class Test():
         pass
 
     #def run(self, cpu=1, timeout=None):
-    def run(config):
+    def run(self, config):
         """
         run the input
 
@@ -416,6 +416,10 @@ class Test():
                 self.run_openmc(config, name, openmc_directory)
 
     @staticmethod
+    def run_d1s(self, config, name, directory):
+        pass
+ 
+    @staticmethod
     def run_mcnp(self, config, name, directory):
         mpi_tasks = int(config.openmp_threads) * int(config.mpi_tasks)
         run_mpi = False
@@ -451,7 +455,15 @@ class Test():
         except subprocess.TimeoutExpired:
             pass
 
-        return flagnotrun 
+        return flagnotrun
+
+    @staticmethod
+    def run_serpent(self, config, name, directory):
+        pass
+
+    @staticmethod
+    def run_openmc(self, config, name, directory):
+        pass
     
     # Legacy MCNP runner
     @staticmethod
@@ -528,19 +540,30 @@ class SphereTest(Test):
         if lib is None:
             lib = self.lib
         # Get typical materials input
-        dirmat = os.path.dirname(self.original_inp)
+        dirmat = os.path.join(os.path.dirname(self.original_inp), '..')
         matpath = os.path.join(dirmat, 'TypicalMaterials')
         inpmat = ipt.InputFile.from_text(matpath)
         matlist = inpmat.matlist
         # Get zaids available into the selected library
-        zaids = libmanager.get_libzaids(lib)
+        zaids = libmanager.get_libzaids(lib, 'mcnp')
 
-        testname = self.inp.name
+        #testname = self.inp.name
+        testname = self.name
+        
         motherdir = os.path.join(directory, testname)
         # If previous results are present they are canceled
         if os.path.exists(motherdir):
             shutil.rmtree(motherdir)
         os.mkdir(motherdir)
+
+        if self.d1s:
+            os.makedir(motherdir, 'd1s')
+        if self.mcnp:
+            os.makedir(motherdir, 'mcnp')        
+        if self.serpent:
+            os.makedir(motherdir, 'serpent')
+        if self.openmc:
+            os.makedir(motherdir, 'openmc')
 
         # GET SETTINGS
         # Zaids
@@ -551,7 +574,7 @@ class SphereTest(Test):
                                     'MaterialsSettings.csv')
         settings_mat = pd.read_csv(settings_mat, sep=';').set_index('Symbol')
 
-        self.MCNPdir = motherdir
+        self.run_dir = motherdir
 
         print(' Zaids:')
         # for zaid in tqdm(zaids):
@@ -569,23 +592,23 @@ class SphereTest(Test):
                 else:
                     nps = self.nps
 
-                if self.ctme is None:
-                    ctme = settings.loc[Z, 'CTME cut-off']
-                    if ctme is np.nan:
-                        ctme = None
-                else:
-                    ctme = self.ctme
-
-                if self.precision is None:
-                    prec = settings.loc[Z, 'Relative Error cut-off']
-                    if prec is np.nan:
-                        precision = None
-                    else:
-                        tally = prec.split('-')[0]
-                        error = prec.split('-')[1]
-                        precision = (tally, error)
-                else:
-                    precision = self.precision
+                #if self.ctme is None:
+                #    ctme = settings.loc[Z, 'CTME cut-off']
+                #    if ctme is np.nan:
+                #        ctme = None
+                #else:
+                #    ctme = self.ctme
+                #
+                #if self.precision is None:
+                #    prec = settings.loc[Z, 'Relative Error cut-off']
+                #    if prec is np.nan:
+                #        precision = None
+                #    else:
+                #        tally = prec.split('-')[0]
+                #        error = prec.split('-')[1]
+                #        precision = (tally, error)
+                #else:
+                #    precision = self.precision
 
             # Zaid local settings are prioritized
             else:
@@ -593,21 +616,20 @@ class SphereTest(Test):
                 if nps is np.nan:
                     nps = None
 
-                ctme = settings.loc[Z, 'CTME cut-off']
-                if ctme is np.nan:
-                    ctme = None
-
-                prec = settings.loc[Z, 'Relative Error cut-off']
-                if prec is np.nan:
-                    precision = None
-                else:
-                    tally = prec.split('-')[0]
-                    error = prec.split('-')[1]
-                    precision = (tally, error)
+                #ctme = settings.loc[Z, 'CTME cut-off']
+                #if ctme is np.nan:
+                #    ctme = None
+                #
+                #prec = settings.loc[Z, 'Relative Error cut-off']
+                #if prec is np.nan:
+                #    precision = None
+                #else:
+                #    tally = prec.split('-')[0]
+                #    error = prec.split('-')[1]
+                #    precision = (tally, error)
 
             self.generate_zaid_test(zaid, libmanager, testname,
-                                    motherdir, -1*density, nps, ctme,
-                                    precision)
+                                    motherdir, -1*density, nps)
 
         print(' Materials:')
         # for material in tqdm(matlist.materials):
@@ -618,8 +640,11 @@ class SphereTest(Test):
             self.generate_material_test(material, -1*density, libmanager,
                                         testname, motherdir)
 
+#    def generate_zaid_test(self, zaid, libmanager, testname, motherdir,
+#                           density, nps, ctme, precision, addtag=None,
+#                           parentlist=None, lib=None):
     def generate_zaid_test(self, zaid, libmanager, testname, motherdir,
-                           density, nps, ctme, precision, addtag=None,
+                           density, nps, addtag=None,
                            parentlist=None, lib=None):
         """
         Generate input for a single zaid sphere leakage benchmark run.
@@ -669,32 +694,45 @@ class SphereTest(Test):
         material = mat.Material([zaid], None, 'M1', submaterials=[submat])
         matlist = mat.MatCardsList([material])
 
-        # Generate the new input
-        newinp = deepcopy(self.inp)
-        newinp.matlist = matlist  # Assign material
-        # adjourn density
-        newinp.change_density(density)
-        # assign stop card
-        newinp.add_stopCard(nps, ctme, precision)
-        # add PIKMT if requested
-        if parentlist is not None:
-            newinp.add_PIKMT_card(parentlist)
+        if self.d1s:
+            # Add d1s function here           
+        
+        if self.mcnp:
+            # Generate the new input
+            newinp = deepcopy(self.mcnp_inp)
+            newinp.matlist = matlist  # Assign material
+            # adjourn density
+            newinp.change_density(density)
+            # assign stop card
+            newinp.add_stopCard(nps)#, ctme, precision)
+            # add PIKMT if requested
+            if parentlist is not None:
+                newinp.add_PIKMT_card(parentlist)
 
-        if os.path.exists(directoryVRT):
-            newinp.add_edits(edits_file)  # Add variance reduction
+            if os.path.exists(directoryVRT):
+                newinp.add_edits(edits_file)  # Add variance reduction
 
-        # Write new input file
-        outfile, outdir = self._get_zaidtestname(testname, zaid, formula,
-                                                 addtag=addtag)
-        outpath = os.path.join(motherdir, outdir)
-        os.mkdir(outpath)
-        outinpfile = os.path.join(outpath, outfile)
-        newinp.write(outinpfile)
+            # Write new input file
+            outfile, outdir = self._get_zaidtestname(testname, zaid, formula,
+                                                    addtag=addtag)
+            outpath = os.path.join(motherdir, outdir)
+            os.mkdir(outpath)
+            outinpfile = os.path.join(outpath, outfile)
+            newinp.write(outinpfile)
 
-        # Copy also wwinp file
-        if os.path.exists(directoryVRT):
-            outwwfile = os.path.join(outpath, 'wwinp')
-            shutil.copyfile(ww_file, outwwfile)
+            # Copy also wwinp file
+            if os.path.exists(directoryVRT):
+                outwwfile = os.path.join(outpath, 'wwinp')
+                shutil.copyfile(ww_file, outwwfile)
+
+        if self.serpent:
+            # Add serpent function here
+            pass
+
+        if self.openmc:
+            # Add openmc function here
+            pass
+
 
     @staticmethod
     def _get_zaidtestname(testname, zaid, formula, addtag=None):
@@ -742,45 +780,60 @@ class SphereTest(Test):
         edits_file = os.path.join(directoryVRT, 'inp_edits.txt')
         ww_file = os.path.join(directoryVRT, 'wwinp')
 
-        # Translate and assign the material
-        material.translate(lib, libmanager)
-        material.header = material.header+'C\nC True name:'+truename
-        material.name = 'M1'
-        matlist = mat.MatCardsList([material])
+        if self.d1s:
+            # Add d1s function here
+            pass
+        
+        if self.mcnp:
+            # Translate and assign the material
+            material.translate(lib, libmanager, 'mcnp')
+            material.header = material.header+'C\nC True name:'+truename
+            material.name = 'M1'
+            matlist = mat.MatCardsList([material])
 
-        # Generate the new input
-        newinp = deepcopy(self.inp)
-        newinp.matlist = matlist  # Assign material
-        # adjourn density
-        newinp.change_density(density)
-        # add stop card
-        newinp.add_stopCard(self.nps, self.ctme, self.precision)
-        # Add PIKMT card if required
-        if parentlist is not None:
-            newinp.add_PIKMT_card(parentlist)
+            # Generate the new input
+            newinp = deepcopy(self.mcnp_inp)
+            newinp.matlist = matlist  # Assign material
+            # adjourn density
+            newinp.change_density(density)
+            # add stop card
+            newinp.add_stopCard(self.nps)#, self.ctme, self.precision)
+            # Add PIKMT card if required
+            if parentlist is not None:
+                newinp.add_PIKMT_card(parentlist)
 
-        if os.path.exists(directoryVRT):
-            newinp.add_edits(edits_file)  # Add variance reduction
+            if os.path.exists(directoryVRT):
+                newinp.add_edits(edits_file)  # Add variance reduction
 
-        # Write new input file
-        outfile = testname+'_'+truename+'_'
-        outdir = testname+'_'+truename
-        outpath = os.path.join(motherdir, outdir)
-        os.mkdir(outpath)
-        outinpfile = os.path.join(outpath, outfile)
-        newinp.write(outinpfile)
+            # Write new input file
+            outfile = testname+'_'+truename+'_'
+            outdir = testname+'_'+truename
+            outpath = os.path.join(motherdir, outdir)
+            os.mkdir(outpath)
+            outinpfile = os.path.join(outpath, outfile)
+            newinp.write(outinpfile)
 
-        # Copy also wwinp file
-        if os.path.exists(directoryVRT):
-            outwwfile = os.path.join(outpath, 'wwinp')
-            shutil.copyfile(ww_file, outwwfile)
+            # Copy also wwinp file
+            if os.path.exists(directoryVRT):
+                outwwfile = os.path.join(outpath, 'wwinp')
+                shutil.copyfile(ww_file, outwwfile)
 
-    def run(self, cpu=1, timeout=None):
+        if self.serpent:
+            # Add serpent function here
+            pass
+
+        if self.openmc:
+            # Add openmc function here
+            pass
+
+#    def run(self, cpu=1, timeout=None):
+    def run(self, config):
         """
         Sphere test needs an ad-hoc run method to run all zaids tests
         """
+        """
         flagnotrun = False
-        for folder in tqdm(os.listdir(self.MCNPdir)):
+        for folder in tqdm(os.listdir(self.run_dir)):
             path = os.path.join(self.MCNPdir, folder)
             name = folder+'_'
             code = 'mcnp6'
@@ -799,8 +852,29 @@ class SphereTest(Test):
             print("""
  Some MCNP run reached timeout, they are listed in the log file.
  Please remove their folders before attempting to postprocess the library""")
+        """
+        
+        name = self.name
+        directory = self.run_dir
+        for folder in tqdm(os.listdir(directory)):
+            if self.d1s:
+                d1s_directory = os.path.join(directory, name, 'd1s')
+                if config.d1s_exec != '':
+                    self.run_d1s(config, name, d1s_directory)
+            if self.mcnp:
+                mcnp_directory = os.path.join(directory, name, 'mcnp')
+                if config.mcnp_exec != '':
+                    self.run_mcnp(config, name, mcnp_directory)
+            if self.serpent:
+                serpent_directory = os.path.join(directory, name, 'serpent')
+                if config.serpent_exec != '':
+                    self.run_serpent(config, name, serpent_directory)
+            if self.openmc:
+                openmc_directory = os.path.join(directory, name, 'openmc')
+                if config.openmc_exec != '':
+                    self.run_openmc(config, name, openmc_directory)
 
-
+# Fix from here
 class SphereTestSDDR(SphereTest):
 
     def __init__(self, *args, **keyargs):

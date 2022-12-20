@@ -150,8 +150,8 @@ class Test():
         # Generate input file template according to code
         #if code == 'D1S5':
         if self.d1S:
-            d1s_ipt = os.path.join(inp, 'mcnp', self.name+'.i')
-            self.d1s_inp = d1s_ipt.D1S5_InputFile.from_text(inp)
+            d1s_ipt = os.path.join(inp, 'd1s', self.name+'.i')
+            self.d1s_inp = ipt.D1S5_InputFile.from_text(d1s_ipt)
             # It also have additional files then that must be in the
             # VRT folder (irradiation and reaction files)
             irrfile = os.path.join(VRTpath, self.d1s_inp.name,
@@ -170,7 +170,7 @@ class Test():
                 #self.react = None
         if self.mcnp:
             mcnp_ipt = os.path.join(inp, 'mcnp',  self.name+'.i')
-            self.mcnp_inp = ipt.InputFile.from_text(inp)
+            self.mcnp_inp = ipt.InputFile.from_text(mcnp_ipt)
             #self.irrad = None
             #self.react = None
         if self.serpent:
@@ -179,8 +179,6 @@ class Test():
         if self.openmc:
             # Add openmc initialisation here
             self.log.adjourn('Serpent running not implimented yet, skipping...')
-
-        # Fix from here
 
         # Name of input file
         #self.name = self.inp.name
@@ -503,7 +501,6 @@ class Test():
 
         return flagnotrun
 
-# Fix from here
 class SphereTest(Test):
     """
     Class handling the sphere test

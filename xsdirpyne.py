@@ -407,21 +407,21 @@ class XSData(object):
             if mcnp_value == '':
                 self.mcnp_data[library] = None
             else:
-                self.mcnp_data[lib] = Xsdir(mcnp_value)
+                self.mcnp_data[library] = Xsdir(mcnp_value)
             serpent_value = lib.at[i,"Serpent"]
             if serpent_value == '':
                 self.serpent_data[library] = None
             else:
-                self.serpent_data[lib] = Xsdir(serpent_value)           
+                self.serpent_data[library] = Xsdir(serpent_value)           
             openmc_value = lib.at[i,"OpenMC"]
             if openmc_value == '':
                 self.openmc_data[library] = None
             else:
-                self.openmc_data[lib] = openmc_value
+                self.openmc_data[library] = openmc_value
             d1s_value = lib.at[i,"d1S"]
             if d1s_value == '':
                 self.d1s_data[library] = None
             else:
-                self.d1s_data[lib] = Xsdir(d1s_value)
+                self.d1s_data[library] = Xsdir(d1s_value)
             
 

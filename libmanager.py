@@ -107,7 +107,19 @@ class LibManager:
 
         self.reactions = reactions
 
-    def check4zaid(self, zaid):
+    def _get_xs(self, code, lib):
+        # Check which code is being used
+        if code == 'd1s':
+            XS = self.XS.d1s_data[lib]
+        if code == 'mcnp':
+            XS = self.XS.mcnp_data[lib]
+        if code == 'serpent':
+            XS = self.XS.serpent_data[lib]
+        if code == 'openmc':
+            XS = self.XS.openmc_data[lib]
+        return XS
+    
+    def check4zaid(self, zaid, code):
         # Needs fixing
         """
         Check which libraries are available for the selected zaid and return it
@@ -129,7 +141,14 @@ class LibManager:
 
         return libraries
 
-    def convertZaid(self, zaid, lib):
+    def check_zaid(self, zaid, lib, code):
+        XS = self._get_xs(code, lib)
+        if len(XS.find_table(zaid, mode='default-fast')) > 0:
+            return True
+        else:
+            return False
+
+    def convertZaid(self, zaid, lib, code):
         # Needs fixing
         """
         This methods will convert a zaid into the requested library
@@ -159,67 +178,75 @@ class LibManager:
             {zaidname:(lib,nat_abundance,Atomic mass)}.
 
         """
+        # Get xs data for code and lib
+        XS = self._get_xs(code, lib)
+        
         # Check if library is available in Xsdir
         if lib not in self.libraries:
             raise ValueError('Library '+lib+' is not available in xsdir file')
 
-        zaidlibs = self.check4zaid(zaid)
-        # Natural zaid
-        if zaid[-3:] == '000':
-            # Check if zaid has natural info
-            if self.XS.find_table(zaid+'.'+lib, mode='exact'):
+        #zaidlibs = self.check4zaid(zaid, code)
+        zaidlib = self.check_zaid(zaid, lib, code)
+
+        if isinstance(XS, Xsdir):
+            # Natural zaid
+            if zaid[-3:] == '000':
+                # Check if zaid has natural info
+                if XS.find_table(zaid+'.'+lib, mode='exact'):
+                    translation = {zaid: (lib, 1, 1)}  # mass not important
+
+                else:  # Has to be expanded
+                    translation = {}
+                    reduced = self.isotopes[self.isotopes['Z'] == int(zaid[:-3])]
+                    for idx, row in reduced.iterrows():
+                        # zaid availability must be checked
+                        if XS.find_table(idx+'.'+lib, mode='exact'):
+                            newlib = lib
+                        elif XS.find_table(idx+'.'+self.defaultlib,
+                                                mode='exact'):
+                            warnings.warn(MSG_DEFLIB.format(self.defaultlib, zaid))
+                            newlib = self.defaultlib
+                        else:
+                            raise ValueError('No available translation for zaid :' +
+                                            zaid+'It is needed for natural zaid expansion.')
+
+                        translation[idx] = (newlib, row['Mean value'],
+                                            row['Atomic Mass'])
+            # 1to1
+            #elif lib in zaidlibs:
+            elif zaidlib:
                 translation = {zaid: (lib, 1, 1)}  # mass not important
 
-            else:  # Has to be expanded
-                translation = {}
-                reduced = self.isotopes[self.isotopes['Z'] == int(zaid[:-3])]
-                for idx, row in reduced.iterrows():
-                    # zaid availability must be checked
-                    if self.XS.find_table(idx+'.'+lib, mode='exact'):
-                        newlib = lib
-                    elif self.XS.find_table(idx+'.'+self.defaultlib,
-                                            mode='exact'):
-                        warnings.warn(MSG_DEFLIB.format(self.defaultlib, zaid))
-                        newlib = self.defaultlib
+            # No possible correspondence, natural or default lib has to be used
+            else:
+                # Check if the natural zaid is available
+                natzaid = zaid[:-3]+'000'
+                if XS.find_table(natzaid+'.'+lib, mode='exact'):
+                    translation = {natzaid: (lib, 1, 1)}  # mass not important
+                # Check if default lib is available
+                elif XS.find_table(zaid+'.'+self.defaultlib, mode='exact'):
+                    warnings.warn(MSG_DEFLIB.format(self.defaultlib, zaid))
+                    translation = {zaid: (self.defaultlib, 1, 1)}  # mass not imp
+                else:
+                    # Check if any zaid cross section is available
+                    libraries = self.check4zaid(zaid)
+                    # It has to be for the same type of particles
+                    found = False
+                    for library in libraries:
+                        if library[-1] == lib[-1]:
+                            found = True
+                    # If found no lib is assigned
+                    if found:
+                        translation = {zaid: (None, 1, 1)}  # no masses
+                    # If no possible translation is found raise error
                     else:
                         raise ValueError('No available translation for zaid :' +
-                                         zaid+'It is needed for natural zaid expansion.')
-
-                    translation[idx] = (newlib, row['Mean value'],
-                                        row['Atomic Mass'])
-        # 1to1
-        elif lib in zaidlibs:
-            translation = {zaid: (lib, 1, 1)}  # mass not important
-
-        # No possible correspondence, natural or default lib has to be used
+                                        zaid)
         else:
-            # Check if the natural zaid is available
-            natzaid = zaid[:-3]+'000'
-            if self.XS.find_table(natzaid+'.'+lib, mode='exact'):
-                translation = {natzaid: (lib, 1, 1)}  # mass not important
-            # Check if default lib is available
-            elif self.XS.find_table(zaid+'.'+self.defaultlib, mode='exact'):
-                warnings.warn(MSG_DEFLIB.format(self.defaultlib, zaid))
-                translation = {zaid: (self.defaultlib, 1, 1)}  # mass not imp
-            else:
-                # Check if any zaid cross section is available
-                libraries = self.check4zaid(zaid)
-                # It has to be for the same type of particles
-                found = False
-                for library in libraries:
-                    if library[-1] == lib[-1]:
-                        found = True
-                # If found no lib is assigned
-                if found:
-                    translation = {zaid: (None, 1, 1)}  # no masses
-                # If no possible translation is found raise error
-                else:
-                    raise ValueError('No available translation for zaid :' +
-                                     zaid)
-
+            raise ValueError('Translation not required for code '+code)
         return translation
 
-    def get_libzaids(self, lib):
+    def get_libzaids(self, lib, code):
         # Needs fixing
         """
         Given a library, returns all zaids available
@@ -235,12 +262,15 @@ class LibManager:
             list of zaid names available in the library.
 
         """
+        XS = self._get_xs(code, lib)
+        
         zaids = []
 
-        for table in self.XS.find_zaids(lib):
-            zaid = table.name.split('.')[0]
-            if zaid not in zaids:
-                zaids.append(zaid)
+        if isinstance(XS, Xsdir):
+            for table in XS.find_zaids(lib):
+                zaid = table.name.split('.')[0]
+                if zaid not in zaids:
+                    zaids.append(zaid)
 
         return zaids
 

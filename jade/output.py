@@ -22,18 +22,18 @@
 # along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import MCTAL_READER2 as mtal
+import jade.MCTAL_READER2 as mtal
 import xlwings as xw
 import pandas as pd
 import os
 import shutil
-import plotter
+import jade.plotter as plotter
 from tqdm import tqdm
-import atlas as at
+import jade.atlas as at
 import numpy as np
 import string
-from outputFile import OutputFile
-from meshtal import Meshtal
+from jade.outputFile import OutputFile
+from jade.meshtal import Meshtal
 import pickle
 import sys
 import abc

@@ -396,7 +396,7 @@ class XSData(object):
         self.read(lib)
 
     def read(self, lib):
-        self.libraries = lib.['Suffix'].tolist()
+        self.libraries = lib['Suffix'].tolist()
         self.mcnp_data = {}
         self.serpent_data = {}
         self.openmc_data = {}

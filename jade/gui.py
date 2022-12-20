@@ -23,13 +23,13 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
 import sys
-import computational as cmp
-import utilitiesgui as uty
-import postprocess as pp
-import testrun
+import jade.computational as cmp
+import jade.utilitiesgui as uty
+import jade.postprocess as pp
+import jade.testrun as testrun
 
 from tqdm import tqdm
-from status import EXP_TAG
+from jade.status import EXP_TAG
 
 date = '10/05/2022'
 version = 'v2.1.1'

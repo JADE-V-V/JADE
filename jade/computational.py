@@ -21,7 +21,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
-import testrun
+import jade.testrun as testrun
 import os
 import datetime
 import re

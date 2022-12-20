@@ -16,7 +16,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/sbradnam/JADE",
     packages=setuptools.find_packages(),
-    entry_points= dict(console_scripts=['jade=main:main']),
+    entry_points= dict(console_scripts=['jade=jade.main:main']),
     install_requires=requirements,
     classifiers=["Programming Language :: Python :: 3",
                  "Operating System :: OS Independent"],

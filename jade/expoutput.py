@@ -23,17 +23,17 @@
 import pandas as pd
 import numpy as np
 import os
-import atlas as at
+import jade.atlas as at
 import shutil
 
-from output import BenchmarkOutput
-from output import MCNPoutput
+from jade.output import BenchmarkOutput
+from jade.output import MCNPoutput
 from tqdm import tqdm
-from status import EXP_TAG
-from plotter import Plotter
+from jade.status import EXP_TAG
+from jade.plotter import Plotter
 from scipy.interpolate import interp1d
 from abc import abstractmethod
-from inputfile import D1S_Input
+from jade.inputfile import D1S_Input
 import re
 
 

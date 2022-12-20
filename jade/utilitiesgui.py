@@ -22,14 +22,14 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
-from matreader import SubMaterial
-import inputfile as ipt
+from jade.matreader import SubMaterial
+import jade.inputfile as ipt
 import pandas as pd
 import xlsxwriter
-import matreader as mat
+import jade.matreader as mat
 
 from tqdm import tqdm
-from inputfile import D1S_Input
+from jade.inputfile import D1S_Input
 
 
 ###############################################################################

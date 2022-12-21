@@ -67,8 +67,8 @@ class Configuration:
         self.serpent_config = main['Value'].loc['Serpent config']
         self.openmc_exec = main['Value'].loc['OpenMC executable']
         self.openmc_config = main['Value'].loc['OpenMC config']
-        self.d1s_exec = main['Value'].loc['d1s executable']
-        self.d1s_config = main['Value'].loc['d1s config']
+        self.d1s_exec = main['Value'].loc['d1S executable']
+        self.d1s_config = main['Value'].loc['d1S config']
         self.openmp_threads = main['Value'].loc['OpenMP threads']
         self.mpi_tasks = main['Value'].loc['MPI tasks']
         self.batch_system = main['Value'].loc['Batch system']
@@ -93,7 +93,7 @@ class Configuration:
         self.exp_default = comp_default.dropna(subset=['Folder Name'])
 
         # Libraries
-        lib = pd.read_excel(conf_file, sheet_name='Libraries')
+        lib = pd.read_excel(conf_file, sheet_name='Libraries', keep_default_na=False)
         self.lib = lib
 
         self.default_lib = lib[lib['Default'] == 'yes']['Suffix'].values[0]

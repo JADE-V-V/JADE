@@ -31,7 +31,9 @@ authors and should not be interpreted as representing official policies, either 
 or implied, of the stakeholders of the PyNE project or the employers of PyNE developers.
 """
 import os
+import math
 from typing import List, Tuple
+import sys
 
 class Xsdir(object):
     """This class stores the information contained in a single MCNP xsdir file.
@@ -422,6 +424,5 @@ class XSData(object):
             if d1s_value == '':
                 self.d1s_data[library] = None
             else:
-                self.d1s_data[library] = Xsdir(d1s_value)
-            
+                self.d1s_data[library] = Xsdir(d1s_value)           
 

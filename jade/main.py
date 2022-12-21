@@ -153,7 +153,7 @@ class Session:
         dl = self.conf.default_lib
         activationfile = os.path.join(jade_root, 'Configuration', 'Activation.xlsx')
         isotopes_file = os.path.join(jade_root, 'Benchmarks_Inputs', 'Isotopes.txt')
-        self.lib_manager = libmanager.LibManager(self.conf.xsdir_path,
+        self.lib_manager = libmanager.LibManager(self.conf.lib,
                                                  defaultlib=dl,
                                                  activationfile=activationfile,
                                                  isotopes_file=isotopes_file)

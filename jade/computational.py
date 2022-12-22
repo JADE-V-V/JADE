@@ -127,7 +127,7 @@ def executeBenchmarksRoutines(session, lib, exp=False):
                 print(' MCNP run running:         ' +
                       str(datetime.datetime.now()))
                 #test.run(cpu=session.conf.cpu)
-                test.run(session.conf)
+                test.run(session.conf, session.lib_manager)
                 print('\n        -- '+testname.upper()+' COMPLETED --\n')
                 # Adjourn log
                 log.adjourn(testname.upper()+' run completed with success'

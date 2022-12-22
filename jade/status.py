@@ -79,7 +79,7 @@ class Status():
                     libraries[lib][test] = {}
                     cp1 = os.path.join(cp, test)
                     for code in os.listdir(cp1):
-                        libraries[lib][test][code] = []
+                        libraries[lib][test][code] = {}
                         cp2 = os.path.join(cp1, code)
                         for zaid in os.listdir(cp2):
                             libraries[lib][test][code][zaid] = []
@@ -87,7 +87,7 @@ class Status():
                             for file in os.listdir(cp3):
                                 libraries[lib][test][code][zaid].append(file)
                 else:
-                    libraries[lib][test] = []
+                    libraries[lib][test] = {}
                     cp1 = os.path.join(cp, test)
                     for code in os.listdir(cp1):
                         libraries[lib][test][code] = []
@@ -211,16 +211,16 @@ class Status():
         unfinished = {}
         for code in folders:
             unfinished[code] = []
-            for zaid in folders:
-                files = folders[zaid]
-                if not self.check_test_run(files):
+            for zaid in folders[code]:
+                files = folders[code][zaid]
+                if not self.check_test_run(files, code):
                     unfinished[code].append(zaid)
 
         motherdir = os.path.join(self.run_path, lib, test)
 
         return unfinished, motherdir
 
-    @staticmethod
+    #@staticmethod
     def check_test_run(self, files, code):
         if code == 'mcnp' or code == 'd1s':
             flag_run_test = self._check_test_mcnp(files)
@@ -231,7 +231,7 @@ class Status():
 
         return flag_run_test
 
-    @staticmethod
+    #@staticmethod
     def _check_test_mcnp(self, files):
         """
         Check if a test has been run
@@ -256,12 +256,12 @@ class Status():
 
         return flag_run_test
 
-    @staticmethod
+    #@staticmethod
     def _check_test_serpent(self, files):
         # Add check for serpent output data
         return False
 
-    @staticmethod
+    #@staticmethod
     def _check_test_openmc(self, files):
         # Add check for openmc output data
         return False
@@ -364,7 +364,7 @@ class Status():
                       'serpent' : session.check_active_tests('Serpent', exp=exp),
                       'openmc' : session.check_active_tests('OpenMC', exp=exp),
                       'd1s' : session.check_active_tests('d1S', exp=exp)}
-
+       
         test_runned = {}
         for idx, row in config.iterrows():
             filename = str(row['Folder Name'])
@@ -379,11 +379,11 @@ class Status():
                         if testname in MULTI_TEST:
                             flag_test_run = True
                             for zaid, files in test.items():
-                                flag_run_zaid = self.check_test_run(files)
+                                flag_run_zaid = self.check_test_run(files, code)
                                 if not flag_run_zaid:
                                     flag_test_run = False
                             if flag_test_run:
-                                test_runned[code].append(testname, code)
+                                test_runned[code].append(testname)
                             #flag_test_run = True
                             #for zaid, files in test.items():
                             #    # Check if output is present

@@ -370,7 +370,7 @@ class Test():
         pass
 
     #def run(self, cpu=1, timeout=None):
-    def run(self, config):
+    def run(self, config, lib_manager):
         """
         run the input
 
@@ -415,24 +415,26 @@ class Test():
             if config.openmc_exec != '':
                 self.run_openmc(config, name, openmc_directory)
 
-    @staticmethod
-    def run_d1s(self, config, name, directory):
+    #@staticmethod
+    def run_d1s(self, config, lib_manager, name, directory):
         pass
  
-    @staticmethod
-    def run_mcnp(self, config, name, directory):
+    #@staticmethod
+    def run_mcnp(self, config, lib_manager, name, directory, timeout=None):
         mpi_tasks = int(config.openmp_threads) * int(config.mpi_tasks)
         run_mpi = False
         if mpi_tasks > 1:
             mpistring = 'mpirun -n ' + str(mpi_tasks)
             run_mpi = True
         executable = config.mcnp_exec
-        inputstring = 'i=' + name + '.i'
-        outputstring = 'n=' + name + '.'
+        inputstring = 'i=' + name
+        outputstring = 'n=' + name
+        xsstring = 'xs='+lib_manager.XS.mcnp_data[self.lib].filename
         if run_mpi:
-            command = ' '.join([mpistring, executable, inputstring, outputstring])
+            #command = ' '.join([mpistring, executable, inputstring, outputstring])
+            command = ['mpirun', '-n', str(mpi_tasks), executable, inputstring, outputstring, xsstring]
         else:
-            command = ' '.join([executable, inputstring, outputstring])
+            command = [executable, inputstring, outputstring, xsstring]
         flagnotrun = False
         try:
             cwd = os.getcwd()
@@ -447,8 +449,10 @@ class Test():
             if os.path.exists(runtpe):
                 command = command+' runtpe='+name+'.r'
 
+            print(command)
+            print(cwd)
             # Execution
-            subprocess.run([command], cwd=directory,
+            subprocess.run(command, cwd=directory,
                            #creationflags=subprocess.CREATE_NEW_CONSOLE,
                            timeout=timeout)
             os.chdir(cwd)
@@ -457,12 +461,12 @@ class Test():
 
         return flagnotrun
 
-    @staticmethod
-    def run_serpent(self, config, name, directory):
+    #@staticmethod
+    def run_serpent(self, config, lib_manager, name, directory):
         pass
 
-    @staticmethod
-    def run_openmc(self, config, name, directory):
+    #@staticmethod
+    def run_openmc(self, config, lib_manager, name, directory):
         pass
     
     # Legacy MCNP runner
@@ -828,7 +832,7 @@ class SphereTest(Test):
             pass
 
 #    def run(self, cpu=1, timeout=None):
-    def run(self, config):
+    def run(self, config, lib_manager):
         """
         Sphere test needs an ad-hoc run method to run all zaids tests
         """
@@ -856,25 +860,32 @@ class SphereTest(Test):
  #Please remove their folders before attempting to postprocess the library""")
 
         
-        name = self.name
         directory = self.run_dir
-        for folder in tqdm(os.listdir(directory)):
-            if self.d1s:
-                d1s_directory = os.path.join(directory, name, 'd1s')
-                if config.d1s_exec != '':
-                    self.run_d1s(config, name, d1s_directory)
-            if self.mcnp:
-                mcnp_directory = os.path.join(directory, name, 'mcnp')
-                if config.mcnp_exec != '':
-                    self.run_mcnp(config, name, mcnp_directory)
-            if self.serpent:
-                serpent_directory = os.path.join(directory, name, 'serpent')
-                if config.serpent_exec != '':
-                    self.run_serpent(config, name, serpent_directory)
-            if self.openmc:
-                openmc_directory = os.path.join(directory, name, 'openmc')
-                if config.openmc_exec != '':
-                    self.run_openmc(config, name, openmc_directory)
+
+        if self.d1s:
+            d1s_directory = os.path.join(directory, 'd1s')
+            if config.d1s_exec != '':
+                for folder in tqdm(os.listdir(d1s_directory)):
+                    run_directory = os.path.join(d1s_directory, folder)
+                    self.run_d1s(config, lib_manager, folder+'_', run_directory)
+        if self.mcnp:
+            mcnp_directory = os.path.join(directory, 'mcnp')
+            if config.mcnp_exec != '':
+                for folder in tqdm(os.listdir(mcnp_directory)):
+                    run_directory = os.path.join(mcnp_directory, folder)           
+                    self.run_mcnp(config, lib_manager, folder+'_', run_directory)
+        if self.serpent:
+            serpent_directory = os.path.join(directory, 'serpent')
+            if config.serpent_exec != '':
+                for folder in tqdm(os.listdir(serpent_directory)):
+                    run_directory = os.path.join(serpent_directory, folder)                 
+                    self.run_serpent(config, lib_manager, folder+'_', run_directory)
+        if self.openmc:
+            openmc_directory = os.path.join(directory, 'openmc')
+            if config.openmc_exec != '':
+                for folder in tqdm(os.listdir(openmc_directory)):
+                    run_directory = os.path.join(openmc_directory, folder)                 
+                    self.run_openmc(config, lib_manager, folder+'_', run_directory)
 
 # Fix from here
 class SphereTestSDDR(SphereTest):

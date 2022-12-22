@@ -56,6 +56,7 @@ class Status():
         # Initialize pp trees
         self.comparison_tree, self.single_tree = self.update_pp_status()
 
+    # Updated by S. Bradnam to include new level, code, between test and zaid.
     def update_run_status(self):
         """
         Read/Update the run tree status. All files produced by runs are
@@ -67,6 +68,8 @@ class Status():
             dictionary of dictionaries representing the run tree
 
         """
+
+
         libraries = {}
         for lib in os.listdir(self.run_path):
             libraries[lib] = {}
@@ -75,22 +78,29 @@ class Status():
                 if test in MULTI_TEST:
                     libraries[lib][test] = {}
                     cp1 = os.path.join(cp, test)
-                    for zaid in os.listdir(cp1):
-                        libraries[lib][test][zaid] = []
-                        cp2 = os.path.join(cp1, zaid)
-                        for file in os.listdir(cp2):
-                            libraries[lib][test][zaid].append(file)
+                    for code in os.listdir(cp1):
+                        libraries[lib][test][code] = []
+                        cp2 = os.path.join(cp1, code)
+                        for zaid in os.listdir(cp2):
+                            libraries[lib][test][code][zaid] = []
+                            cp3 = os.path.join(cp2, zaid)
+                            for file in os.listdir(cp3):
+                                libraries[lib][test][code][zaid].append(file)
                 else:
                     libraries[lib][test] = []
                     cp1 = os.path.join(cp, test)
-                    for file in os.listdir(cp1):
-                        libraries[lib][test].append(file)
+                    for code in os.listdir(cp1):
+                        libraries[lib][test][code] = []
+                        cp2 = os.path.join(cp1, code)
+                        for file in os.listdir(cp2):
+                            libraries[lib][test][code].append(file)
 
         # Update tree
         self.run_tree = libraries
 
         return libraries
 
+    # Updated by S. Bradnam to include new level, code.
     def update_pp_status(self):
         """
         Read/Update the post processing tree status. All files produced by
@@ -113,7 +123,10 @@ class Status():
             comparison_tree[lib] = []
             cp1 = os.path.join(cp, lib)
             for test in os.listdir(cp1):
-                comparison_tree[lib].append(test)
+                comparison_tree[lib][test] = []
+                cp2 = os.path.join(cp1, test)
+                for code in os.listdir(cp2):
+                    comparison_tree[lib][test].append(code)
 
         # Read Single library tree
         single_tree = {}
@@ -122,7 +135,10 @@ class Status():
             single_tree[lib] = []
             cp1 = os.path.join(cp, lib)
             for test in os.listdir(cp1):
-                single_tree[lib].append(test)
+                single_tree[lib][test] = []
+                cp2 = os.path.join(cp1, test)
+                for code in os.listdir(cp2):
+                    single_tree[lib][test].append(code)
 
         # Update Trees
         self.comparison_tree = comparison_tree
@@ -192,18 +208,31 @@ class Status():
         except KeyError:
             return None  # Not Generated
 
-        unfinished = []
-        for zaid in folders:
-            files = folders[zaid]
-            if not self.check_test_run(files):
-                unfinished.append(zaid)
+        unfinished = {}
+        for code in folders:
+            unfinished[code] = []
+            for zaid in folders:
+                files = folders[zaid]
+                if not self.check_test_run(files):
+                    unfinished[code].append(zaid)
 
         motherdir = os.path.join(self.run_path, lib, test)
 
         return unfinished, motherdir
 
     @staticmethod
-    def check_test_run(files):
+    def check_test_run(self, files, code):
+        if code == 'mcnp' or code == 'd1s':
+            flag_run_test = self._check_test_mcnp(files)
+        if code == 'serpent':
+            flag_run_test = self._check_test_serpent(files)
+        if code == 'openmc':
+            flag_run_test = self._check_test_openmc(files)            
+
+        return flag_run_test
+
+    @staticmethod
+    def _check_test_mcnp(self, files):
         """
         Check if a test has been run
 
@@ -227,6 +256,17 @@ class Status():
 
         return flag_run_test
 
+    @staticmethod
+    def _check_test_serpent(self, files):
+        # Add check for serpent output data
+        return False
+
+    @staticmethod
+    def _check_test_openmc(self, files):
+        # Add check for openmc output data
+        return False
+
+    # Fix checking for multiple codes
     def check_override_run(self, lib, session, exp=False):
         """
         Check status of the requested run. If overridden is required permission
@@ -253,8 +293,9 @@ class Status():
         if len(test_runned) > 0:
             while True:
                 print(' The following benchmark(s) have already been run:')
-                for test in test_runned:
-                    print(' - '+test)
+                for code in test_runned:
+                    for test in test_runned[code]:
+                        print(' - '+code+': '+test)
 
                 print("""
      You can manage the selection of benchmarks to run in the Config.xlsx file
@@ -264,8 +305,9 @@ class Status():
                 if i == 'y':
                     ans = True
                     logtext = '\nThe following test results have been overwritten:'
-                    for test in test_runned:
-                        logtext = logtext+'\n'+'- '+test+' ['+lib+']'
+                    for code in test_runned:
+                        for test in test_runned[code]:
+                            logtext = logtext+'\n'+'- '+code+': '+test+' ['+lib+']'
                     session.log.adjourn(logtext)
                     break
                 elif i == 'n':
@@ -318,45 +360,56 @@ class Status():
         else:
             config = self.config.comp_default
 
-        to_perform = session.check_active_tests(config_option, exp=exp)
+        to_perform = {'mcnp' : session.check_active_tests('MCNP', exp=exp),
+                      'serpent' : session.check_active_tests('Serpent', exp=exp),
+                      'openmc' : session.check_active_tests('OpenMC', exp=exp),
+                      'd1s' : session.check_active_tests('d1S', exp=exp)}
 
-        test_runned = []
+        test_runned = {}
         for idx, row in config.iterrows():
-            filename = str(row['File Name'])
+            filename = str(row['Folder Name'])
             testname = filename.split('.')[0]
-
-            # Check if test is active
-            if testname in to_perform:
-                # Check if benchmark folder exists
-                try:
-                    test = self.run_tree[lib][testname]
-                    if testname in MULTI_TEST:
-                        flag_test_run = True
-                        for zaid, files in test.items():
+            for code in to_perform:
+                # Check if test is active
+                test_runned[code] = []
+                if testname in to_perform[code]:
+                    # Check if benchmark folder exists
+                    try:
+                        test = self.run_tree[lib][testname][code]
+                        if testname in MULTI_TEST:
+                            flag_test_run = True
+                            for zaid, files in test.items():
+                                flag_run_zaid = self.check_test_run(files)
+                                if not flag_run_zaid:
+                                    flag_test_run = False
+                            if flag_test_run:
+                                test_runned[code].append(testname, code)
+                            #flag_test_run = True
+                            #for zaid, files in test.items():
+                            #    # Check if output is present
+                            #    flag_run_zaid = False
+                            #    for file in files:
+                            #        c1 = (file[-1] == 'm')  # mctal file
+                            #        c2 = (file[-4:] == 'msht')  # meshtally file
+                            #        if c1 or c2:
+                            #            flag_run_zaid = True
+                            #
+                            #    if not flag_run_zaid:
+                            #        flag_test_run = False
+                        else:
                             # Check if output is present
-                            flag_run_zaid = False
-                            for file in files:
-                                c1 = (file[-1] == 'm')  # mctal file
-                                c2 = (file[-4:] == 'msht')  # meshtally file
-                                if c1 or c2:
-                                    flag_run_zaid = True
-
-                            if not flag_run_zaid:
-                                flag_test_run = False
-
-                        if flag_test_run:
-                            test_runned.append(testname)
-                    else:
-                        # Check if output is present
-                        for file in test:
-                            c1 = file[-1] == 'm'  # mctal file
-                            c2 = file[-4:] == 'msht'  # meshtally file
-                            if not c1 and not c2:
-                                pass  # It has not been run correctly
-                            else:
-                                test_runned.append(testname)
-                except KeyError:  # Folder does not exist
-                    pass
+                            flag_test_run = self.check_test_run(test, code)
+                            if flag_test_run:
+                                test_runned[code].append(testname)
+                            #for file in test:
+                            #    c1 = file[-1] == 'm'  # mctal file
+                            #    c2 = file[-4:] == 'msht'  # meshtally file
+                            #    if not c1 and not c2:
+                            #        pass  # It has not been run correctly
+                            #    else:
+                            #        test_runned.append(testname)
+                    except KeyError:  # Folder does not exist
+                        pass
 
         return test_runned
 

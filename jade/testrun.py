@@ -111,7 +111,7 @@ class Test():
 
         config = config.dropna()
 
-        self.name = conf['Folder Name']
+        self.name = config['Folder Name']
 
         try:
             self.nps = config['NPS cut-off']
@@ -149,7 +149,7 @@ class Test():
         """
         # Generate input file template according to code
         #if code == 'D1S5':
-        if self.d1S:
+        if self.d1s:
             d1s_ipt = os.path.join(inp, 'd1s', self.name+'.i')
             self.d1s_inp = ipt.D1S5_InputFile.from_text(d1s_ipt)
             # It also have additional files then that must be in the
@@ -307,7 +307,7 @@ class Test():
         self.custom_inp_modifications()
 
         if self.d1s:
-            os.makedir(os.path.join(motherdir, 'd1s'))
+            os.mkdir(os.path.join(motherdir, 'd1s'))
             outinpfile = os.path.join(motherdir, testname, 'd1s')
             self.d1s_inp.write(outinpfile)
             # And accessory files if needed
@@ -322,7 +322,7 @@ class Test():
                 shutil.copyfile(wwinp, outfile)
 
         if self.mcnp:
-            os.makedir(os.path.join(motherdir, 'mcnp'))
+            os.mkdir(os.path.join(motherdir, 'mcnp'))
             outinpfile = os.path.join(motherdir, testname, 'mcnp')
             self.mcnp_inp.write(outinpfile)
             # Get VRT files if available
@@ -540,7 +540,7 @@ class SphereTest(Test):
         if lib is None:
             lib = self.lib
         # Get typical materials input
-        dirmat = os.path.join(os.path.dirname(self.original_inp), '..')
+        dirmat = os.path.dirname(self.original_inp)
         matpath = os.path.join(dirmat, 'TypicalMaterials')
         inpmat = ipt.InputFile.from_text(matpath)
         matlist = inpmat.matlist
@@ -557,22 +557,22 @@ class SphereTest(Test):
         os.mkdir(motherdir)
 
         if self.d1s:
-            os.makedir(motherdir, 'd1s')
+            os.mkdir(os.path.join(motherdir, 'd1s'))
         if self.mcnp:
-            os.makedir(motherdir, 'mcnp')        
+            os.mkdir(os.path.join(motherdir, 'mcnp'))       
         if self.serpent:
-            os.makedir(motherdir, 'serpent')
+            os.mkdir(os.path.join(motherdir, 'serpent'))
         if self.openmc:
-            os.makedir(motherdir, 'openmc')
+            os.mkdir(os.path.join(motherdir, 'openmc'))
 
         # GET SETTINGS
         # Zaids
         settings = os.path.join(self.test_conf_path, 'ZaidSettings.csv')
-        settings = pd.read_csv(settings, sep=';').set_index('Z')
+        settings = pd.read_csv(settings, sep=',').set_index('Z')
         # Materials
         settings_mat = os.path.join(self.test_conf_path,
                                     'MaterialsSettings.csv')
-        settings_mat = pd.read_csv(settings_mat, sep=';').set_index('Symbol')
+        settings_mat = pd.read_csv(settings_mat, sep=',').set_index('Symbol')
 
         self.run_dir = motherdir
 
@@ -716,7 +716,7 @@ class SphereTest(Test):
             # Write new input file
             outfile, outdir = self._get_zaidtestname(testname, zaid, formula,
                                                     addtag=addtag)
-            outpath = os.path.join(motherdir, outdir)
+            outpath = os.path.join(motherdir, 'mcnp', outdir)
             os.mkdir(outpath)
             outinpfile = os.path.join(outpath, outfile)
             newinp.write(outinpfile)
@@ -809,7 +809,7 @@ class SphereTest(Test):
             # Write new input file
             outfile = testname+'_'+truename+'_'
             outdir = testname+'_'+truename
-            outpath = os.path.join(motherdir, outdir)
+            outpath = os.path.join(motherdir, 'mcnp', outdir)
             os.mkdir(outpath)
             outinpfile = os.path.join(outpath, outfile)
             newinp.write(outinpfile)

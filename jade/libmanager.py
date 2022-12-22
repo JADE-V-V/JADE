@@ -188,7 +188,7 @@ class LibManager:
         #zaidlibs = self.check4zaid(zaid, code)
         zaidlib = self.check_zaid(zaid, lib, code)
 
-        if isinstance(XS, Xsdir):
+        if isinstance(XS, xs.Xsdir):
             # Natural zaid
             if zaid[-3:] == '000':
                 # Check if zaid has natural info
@@ -266,7 +266,7 @@ class LibManager:
         
         zaids = []
 
-        if isinstance(XS, Xsdir):
+        if isinstance(XS, xs.Xsdir):
             for table in XS.find_zaids(lib):
                 zaid = table.name.split('.')[0]
                 if zaid not in zaids:

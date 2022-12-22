@@ -783,7 +783,7 @@ class Material:
 
         return text.strip('\n')
 
-    def translate(self, newlib, lib_manager, update=True):
+    def translate(self, newlib, lib_manager, code, update=True):
         """
         This method allows to translate all submaterials to another library
 
@@ -811,7 +811,7 @@ class Material:
         None.
         """
         for submat in self.submaterials:
-            submat.translate(newlib, lib_manager)
+            submat.translate(newlib, lib_manager, code)
 
         self.update_info(lib_manager)
 

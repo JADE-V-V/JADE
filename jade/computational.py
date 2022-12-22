@@ -25,6 +25,7 @@ import jade.testrun as testrun
 import os
 import datetime
 import re
+import sys
 
 
 def executeBenchmarksRoutines(session, lib, exp=False):
@@ -58,7 +59,7 @@ def executeBenchmarksRoutines(session, lib, exp=False):
 
     for testname, row in config.iterrows():
         # Check for active test first
-        if bool(row['OnlyInput']) or bool(row['Run']):
+        if bool(row['OnlyInput']) or bool(row['MCNP']) or bool(row['Serpent']) or bool(row['OpenMC']) or bool(row['d1S']):
             print('        -- '+testname.upper()+' STARTED --\n')
             print(' Generating input files:'+'    ' +
                   str(datetime.datetime.now()))

@@ -269,7 +269,6 @@ class InputFile:
             error = precision[1]
             line = line+str(tally)+' '+str(error)
         """
-        
         if line == 'STOP ':
             raise ValueError("""
 Specify at least one among nps, ctme or precision""")

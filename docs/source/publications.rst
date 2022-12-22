@@ -12,6 +12,10 @@ Publications featuring JADE
 * D. Laghi, M. Fabbri, L. Isolan, M. Sumini, G. Shnabel and A. Trkov, 2021,
   "Application Of JADE V&V Capabilities To The New FENDL v3.2 Beta Release",
   *Nuclear Fusion*, **61** 116073. doi: https://doi.org/10.1088/1741-4326/ac121a
+* D.Laghi, M. Fabbri, S. La Rovere, L. Isolan, R. Pampin, A. Portone and M. Sumini,
+  2022, "Status of JADE, an open-source software for nuclear data libraries V&V",
+  Fusion Engineering and Design, **187** 113380, doi: https://doi.org/10.1016/j.fusengdes.2022.113380
+
 
 Benchmarks Related Publications
 ===============================

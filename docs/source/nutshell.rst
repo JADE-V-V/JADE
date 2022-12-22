@@ -35,11 +35,11 @@ Additional JADE features are:
 
 When using JADE for scientific publications you are kindly encouraged to cite the following papers:
 
-* Davide Laghi et al, 2020, "JADE, a new software tool for nuclear fusion data libraries verification & validation",
+* D. Laghi et al, 2020, "JADE, a new software tool for nuclear fusion data libraries verification & validation",
   Fusion Engineering and Design, **161** 112075, doi: https://doi.org/10.1016/j.fusengdes.2020.112075.
-* D. Laghi, M. Fabbri, L. Isolan, M. Sumini, G. Shnabel and A. Trkov, 2021,
-  "Application Of JADE V&V Capabilities To The New FENDL v3.2 Beta Release",
-  *Nuclear Fusion*, **61** 116073. doi: https://doi.org/10.1088/1741-4326/ac121a
+* D.Laghi, M. Fabbri, S. La Rovere, L. Isolan, R. Pampin, A. Portone and M. Sumini,
+  2022, "Status of JADE, an open-source software for nuclear data libraries V&V",
+  Fusion Engineering and Design, **187** 113380, doi: https://doi.org/10.1016/j.fusengdes.2022.113380
 
 For additional information contact: d.laghi@nier.it
 

@@ -735,3 +735,114 @@ def check_transport_activation(lib):
         raise ValueError(errmsg)
 
     return activationlib, transportlib
+
+class SerpentInputFile:
+    def __init__(self, lines, matlist, name=None):
+        """
+        Object representing an Serpent input file
+
+        Parameters
+        ----------
+        cards : dic
+            contains the cells, surfaces, settings and title cards.
+        matlist : matreader.MatCardList
+            material list in the input.
+        name : str, optional
+            name associated with the file. The default is None.
+
+        Returns
+        -------
+        None.
+
+        """
+
+        # All cards from parser epurated by the materials
+        self.lines = lines
+        
+        # Materials list (see matreader.py)
+        self.matlist = matlist
+
+        # Set a name
+        self.name = name
+
+    @classmethod
+    def from_text(cls, inputfile):
+        """
+        This method use the numjuggler parser to help identify the mcards in
+        the input which will usually undergo special treatments in the input
+        creation
+
+        Parameters
+        ----------
+        cls : TYPE
+            DESCRIPTION.
+        inputfile : path like object
+            path to the MCNP input file.
+
+        Returns
+        -------
+        None.
+
+        """
+        with open(inputfile, 'r') as f:
+            lines = f.readlines()
+
+        idx = len(lines) - 1
+        while True:
+            if lines[idx].strip() == '':
+                del lines[idx]
+                idx -= 1
+            else:
+                break
+
+        matlist = None
+
+        return cls(lines, matlist,
+                   name=os.path.basename(inputfile).split('.')[0])
+
+    def add_stopCard(self, nps):
+        self.lines.append('set nps '+str(int(nps))+'\n')
+
+    def _to_text(self):
+        """
+        Get the input in Serpent formatted text
+
+        Returns
+        -------
+        str
+            Serpent formatted text for the input
+        """
+
+        # Add materials
+        self.lines.append(self.matlist.to_text())
+        self.lines.append('\n')  # Missing
+
+        toprint = ''
+        for line in self.lines:
+            toprint = toprint+line
+
+        return toprint
+
+    
+    def write(self, out):
+        """
+        Write the input to a file
+
+        Parameters
+        ----------
+        out : str
+            path to the output file.
+
+        Returns
+        -------
+        None.
+
+        """
+        to_print = self._to_text()
+
+        with open(out, 'w') as outfile:
+            outfile.write(to_print)
+
+
+
+

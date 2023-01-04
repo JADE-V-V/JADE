@@ -153,6 +153,10 @@ class Zaid:
 
         return '{0:>15} {1:>18} {2:<12} {3:<10}'.format(*args)
 
+    def to_serpent(self):
+        # Serpent output writer
+        pass
+
     def get_fullname(self, libmanager):
         """
         Get the formula name of the zaid (e.g. H1)
@@ -431,6 +435,10 @@ class SubMaterial:
 
         return text.strip('\n')
 
+    def to_serpent(self):
+        # Serpent output writer
+        pass
+
     def translate(self, newlib, lib_manager, code):
         """
         This method implements the translation logic of JADE. All zaids are
@@ -659,7 +667,7 @@ def readLine(string):
 class Material:
 
     def __init__(self, zaids, elem, name, submaterials=None, mx_cards=[],
-                 header=None):
+                 header=None, density=None):
         """
         Object representing an MCNP material
 
@@ -677,6 +685,8 @@ class Material:
             list of mx_cards in the material if present. The default is [].
         header : str, optional
             material header. The default is None.
+        density : float, optional
+            material density. Default is None.    
 
         Returns
         -------
@@ -690,6 +700,7 @@ class Material:
         self.name = name.strip()
         self.mx_cards = mx_cards
         self.header = header
+        self.density = density
 
         # Adjust the submaterial and headers reading
         try:
@@ -765,10 +776,16 @@ class Material:
             MCNP formatte text representing the material.
 
         """
-        if self.header is not None:
-            text = self.header.strip('\n')+'\n'+self.name.upper().strip('\n')
+        if self.density is not None:
+            if self.header is not None:
+                text = self.header.strip('\n')+' '+str(self.density)+'\n'+self.name.lower().strip('\n')
+            else:
+                text = self.name.lower()+' '+str(self.density)
         else:
-            text = self.name.upper()
+            if self.header is not None:
+                text = self.header.strip('\n')+'\n'+self.name.upper().strip('\n')
+            else:
+                text = self.name.upper()          
         if self.submaterials is not None:
             for submaterial in self.submaterials:
                 text = text+'\n'+submaterial.to_text()
@@ -782,6 +799,10 @@ class Material:
             pass  # TODO
 
         return text.strip('\n')
+
+    def to_serpent(self):
+        # Serpent output writer
+        pass
 
     def translate(self, newlib, lib_manager, code, update=True):
         """
@@ -1069,6 +1090,10 @@ class MatCardsList(Sequence):
             text = text+'\n'+material.to_text()
 
         return(text.strip('\n'))
+
+    def to_serpent(self):
+        # Serpent output writer
+        pass
 
     def translate(self, newlib, lib_manager):
         """

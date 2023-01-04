@@ -778,7 +778,7 @@ class Material:
         """
         if self.density is not None:
             if self.header is not None:
-                text = self.header.strip('\n')+' '+str(self.density)+'\n'+self.name.lower().strip('\n')
+                text = self.header.strip('\n')+'\n'+self.name.lower().strip('\n')+' '+str(self.density)
             else:
                 text = self.name.lower()+' '+str(self.density)
         else:
@@ -797,7 +797,10 @@ class Material:
         else:
             text = '  Not supported yet, generate submaterials first'
             pass  # TODO
-
+        if self.density is not None:
+            text = text.replace('$', '%')
+            text = re.sub('^c', '%', text, flags=re.MULTILINE | re.I)
+            
         return text.strip('\n')
 
     def to_serpent(self):

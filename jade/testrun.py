@@ -812,11 +812,12 @@ class SphereTest(Test):
             pass
         
         if self.mcnp:
+            newmat = deepcopy(material)
             # Translate and assign the material
-            material.translate(lib, libmanager, 'mcnp')
-            material.header = material.header+'C\nC True name:'+truename
-            material.name = 'M1'
-            matlist = mat.MatCardsList([material])
+            newmat.translate(lib, libmanager, 'mcnp')
+            newmat.header = material.header+'C\nC True name:'+truename
+            newmat.name = 'M1'
+            matlist = mat.MatCardsList([newmat])
 
             # Generate the new input
             newinp = deepcopy(self.mcnp_inp)
@@ -846,8 +847,27 @@ class SphereTest(Test):
                 shutil.copyfile(ww_file, outwwfile)
 
         if self.serpent:
-            # Add serpent function here
-            pass
+            newmat = deepcopy(material)
+            # Translate and assign the material
+            newmat.translate(lib, libmanager, 'serpent')
+            newmat.header = material.header+'%\n% True name:'+truename
+            newmat.name = 'mat 1'
+            newmat.density = density
+            matlist = mat.MatCardsList([newmat])
+
+            # Generate the new input
+            newinp = deepcopy(self.serpent_inp)
+            newinp.matlist = matlist  # Assign material
+            # add stop card
+            newinp.add_stopCard(self.nps)#, self.ctme, self.precision)
+
+            # Write new input file
+            outfile = testname+'_'+truename+'_'
+            outdir = testname+'_'+truename
+            outpath = os.path.join(motherdir, 'serpent', outdir)
+            os.mkdir(outpath)
+            outinpfile = os.path.join(outpath, outfile)
+            newinp.write(outinpfile)
 
         if self.openmc:
             # Add openmc function here

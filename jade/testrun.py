@@ -613,8 +613,8 @@ class SphereTest(Test):
         for folder in tqdm(os.listdir(self.MCNPdir)):
             path = os.path.join(self.MCNPdir, folder)
             name = folder+'_'
-            code = 'mcnp6'
-            command = 'name='+name+' wwinp=wwinp tasks '+str(cpu)
+            code = '/home/mcnp/mcnpexecs/freia/mcnp6v2_ifort2020_openmpi4.1_220505'
+            command = 'name='+name+ ' xs=/home/mcnp/xs/xsdir_mcnp6.2_fendl31d_jeff33_endfb71_irdff105_mcplib84_el03'+' wwinp=wwinp tasks '+str(cpu)
             try:
                 subprocess.run([code, command], cwd=path,
                                #creationflags=subprocess.CREATE_NEW_CONSOLE,

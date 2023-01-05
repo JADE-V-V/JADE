@@ -175,7 +175,9 @@ class Test():
             #self.react = None
         if self.serpent:
             # Add serpent initialisation here
-            self.log.adjourn('Serpent running not implimented yet, skipping...')
+            #self.log.adjourn('Serpent running not implimented yet, skipping...')
+            serpent_ipt = os.path.join(inp, 'serpent',  self.name+'.i')
+            self.serpent_inp = ipt.SerpentInputFile.from_text(serpent_ipt)           
         if self.openmc:
             # Add openmc initialisation here
             self.log.adjourn('Serpent running not implimented yet, skipping...')
@@ -280,7 +282,7 @@ class Test():
         if self.mcnp:
             self.mcnp_inp.add_stopCard(self.nps)
         if self.serpent:
-            pass
+            self.serpent_inp.add_stopCard(self.nps)
         if self.openmc:
             pass
 
@@ -693,16 +695,18 @@ class SphereTest(Test):
         # Adjourn the material cards for the zaid
         zaid = mat.Zaid(1, zaid[:-3], zaid[-3:], lib)
         name, formula = libmanager.get_zaidname(zaid)
-        submat = mat.SubMaterial('M1', [zaid],
-                                 header='C '+name+' '+formula)
-        material = mat.Material([zaid], None, 'M1', submaterials=[submat])
-        matlist = mat.MatCardsList([material])
 
         if self.d1s:
             # Add d1s function here
             pass           
         
         if self.mcnp:
+            # Create MCNP material card
+            submat = mat.SubMaterial('M1', [zaid],
+                                     header='C '+name+' '+formula)
+            material = mat.Material([zaid], None, 'M1', submaterials=[submat])
+            matlist = mat.MatCardsList([material])            
+            
             # Generate the new input
             newinp = deepcopy(self.mcnp_inp)
             newinp.matlist = matlist  # Assign material
@@ -731,8 +735,26 @@ class SphereTest(Test):
                 shutil.copyfile(ww_file, outwwfile)
 
         if self.serpent:
-            # Add serpent function here
-            pass
+            # Create MCNP material card
+            submat = mat.SubMaterial('mat 1', [zaid],
+                                     header='% '+name+' '+formula)
+            material = mat.Material([zaid], None, 'mat 1', submaterials=[submat], density=density)
+            matlist = mat.MatCardsList([material])
+
+            # Generate the new input
+            newinp = deepcopy(self.serpent_inp)
+            newinp.matlist = matlist  # Assign material
+            
+            # assign stop card
+            newinp.add_stopCard(nps)
+
+            # Write new input file
+            outfile, outdir = self._get_zaidtestname(testname, zaid, formula,
+                                                    addtag=addtag)
+            outpath = os.path.join(motherdir, 'serpent', outdir)
+            os.mkdir(outpath)
+            outinpfile = os.path.join(outpath, outfile)
+            newinp.write(outinpfile)
 
         if self.openmc:
             # Add openmc function here
@@ -790,11 +812,12 @@ class SphereTest(Test):
             pass
         
         if self.mcnp:
+            newmat = deepcopy(material)
             # Translate and assign the material
-            material.translate(lib, libmanager, 'mcnp')
-            material.header = material.header+'C\nC True name:'+truename
-            material.name = 'M1'
-            matlist = mat.MatCardsList([material])
+            newmat.translate(lib, libmanager, 'mcnp')
+            newmat.header = material.header+'C\nC True name:'+truename
+            newmat.name = 'M1'
+            matlist = mat.MatCardsList([newmat])
 
             # Generate the new input
             newinp = deepcopy(self.mcnp_inp)
@@ -824,8 +847,27 @@ class SphereTest(Test):
                 shutil.copyfile(ww_file, outwwfile)
 
         if self.serpent:
-            # Add serpent function here
-            pass
+            newmat = deepcopy(material)
+            # Translate and assign the material
+            newmat.translate(lib, libmanager, 'serpent')
+            newmat.header = material.header+'%\n% True name:'+truename
+            newmat.name = 'mat 1'
+            newmat.density = density
+            matlist = mat.MatCardsList([newmat])
+
+            # Generate the new input
+            newinp = deepcopy(self.serpent_inp)
+            newinp.matlist = matlist  # Assign material
+            # add stop card
+            newinp.add_stopCard(self.nps)#, self.ctme, self.precision)
+
+            # Write new input file
+            outfile = testname+'_'+truename+'_'
+            outdir = testname+'_'+truename
+            outpath = os.path.join(motherdir, 'serpent', outdir)
+            os.mkdir(outpath)
+            outinpfile = os.path.join(outpath, outfile)
+            newinp.write(outinpfile)
 
         if self.openmc:
             # Add openmc function here

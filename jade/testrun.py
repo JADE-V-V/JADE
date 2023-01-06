@@ -906,25 +906,25 @@ class SphereTest(Test):
 
         if self.d1s:
             d1s_directory = os.path.join(directory, 'd1s')
-            if config.d1s_exec != '':
+            if pd.isnull(config.d1s_exec) is not True:
                 for folder in tqdm(os.listdir(d1s_directory)):
                     run_directory = os.path.join(d1s_directory, folder)
                     self.run_d1s(config, lib_manager, folder+'_', run_directory)
         if self.mcnp:
             mcnp_directory = os.path.join(directory, 'mcnp')
-            if config.mcnp_exec != '':
+            if pd.isnull(config.mcnp_exec) is not True:
                 for folder in tqdm(os.listdir(mcnp_directory)):
                     run_directory = os.path.join(mcnp_directory, folder)           
                     self.run_mcnp(config, lib_manager, folder+'_', run_directory)
         if self.serpent:
             serpent_directory = os.path.join(directory, 'serpent')
-            if config.serpent_exec != '':
+            if pd.isnull(config.serpent_exec) is not True:
                 for folder in tqdm(os.listdir(serpent_directory)):
                     run_directory = os.path.join(serpent_directory, folder)                 
                     self.run_serpent(config, lib_manager, folder+'_', run_directory)
         if self.openmc:
             openmc_directory = os.path.join(directory, 'openmc')
-            if config.openmc_exec != '':
+            if pd.isnull(config.openmc_exec) is not True:
                 for folder in tqdm(os.listdir(openmc_directory)):
                     run_directory = os.path.join(openmc_directory, folder)                 
                     self.run_openmc(config, lib_manager, folder+'_', run_directory)

@@ -21,6 +21,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
+import os
 import pandas as pd
 import datetime
 
@@ -45,6 +46,13 @@ class Configuration:
         self.conf_file = conf_file
         self.read_settings()
 
+    def _process_path(self, file_path):
+        if pd.isnull(file_path) is not True:
+            if os.path.isabs(file_path) is not True:
+                file_path = os.path.join(os.path.dirname(self.conf_file), file_path)
+        return file_path
+
+    
     def read_settings(self):
         """
         Parse the configuration file
@@ -62,13 +70,13 @@ class Configuration:
         main.columns = ['Variable', 'Value']
         main.set_index('Variable', inplace=True)
         self.mcnp_exec = main['Value'].loc['MCNP executable']
-        self.mcnp_config = main['Value'].loc['MCNP config']
+        self.mcnp_config = self._process_path(main['Value'].loc['MCNP config'])
         self.serpent_exec = main['Value'].loc['Serpent executable']
-        self.serpent_config = main['Value'].loc['Serpent config']
+        self.serpent_config = self._process_path(main['Value'].loc['Serpent config'])
         self.openmc_exec = main['Value'].loc['OpenMC executable']
-        self.openmc_config = main['Value'].loc['OpenMC config']
+        self.openmc_config = self._process_path(main['Value'].loc['OpenMC config'])
         self.d1s_exec = main['Value'].loc['d1S executable']
-        self.d1s_config = main['Value'].loc['d1S config']
+        self.d1s_config = self._process_path(main['Value'].loc['d1S config'])
         self.openmp_threads = main['Value'].loc['OpenMP threads']
         self.mpi_tasks = main['Value'].loc['MPI tasks']
         self.batch_system = main['Value'].loc['Batch system']

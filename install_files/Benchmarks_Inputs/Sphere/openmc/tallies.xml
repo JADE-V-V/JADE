@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<tallies>
+  <filter id="5" type="cell">
+    <bins>2</bins>
+  </filter>
+  <filter id="1" type="particle">
+    <bins>neutron</bins>
+  </filter>
+  <filter id="3" type="particle">
+    <bins>positron</bins>
+  </filter>
+  <filter id="4" type="particle">
+    <bins>electron</bins>
+  </filter>
+  <tally id="6" name="Neutron heating">
+    <filters>5 1</filters>
+    <scores>flux</scores>
+  </tally>
+  <tally id="461" name="Photon heating">
+    <filters>5 1</filters>
+    <scores>heating</scores>
+  </tally>
+  <tally id="462" name="positron heating">
+    <filters>5 3</filters>
+    <scores>heating</scores>
+  </tally>
+  <tally id="463" name="electron heating">
+    <filters>5 4</filters>
+    <scores>heating</scores>
+  </tally>
+  <tally id="24" name="Tritium Production">
+    <filters>5 1</filters>
+    <scores>(n,Xt)</scores>
+  </tally>
+  <tally id="34" name="DPA">
+    <filters>5 1</filters>
+    <scores>damage-energy</scores>
+  </tally>
+</tallies>

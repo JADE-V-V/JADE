@@ -267,7 +267,24 @@ class Xsdir(object):
                          for table in self.tables if
                          nucname.isnuclide(table.name.split('.')[0]))
         return valid_nucs
-    
+
+class SerpentXsdir(Xsdir):
+    """
+    Serpent Xsdir class
+    """
+    def read(self):
+        for i, line in enumerate(self.f):
+            if i % 2 == 0:
+                # Create XsdirTable object and add to line
+                table = XsdirTable()
+                self.tables.append(table)
+                words = line.split()
+                if len(words) > 0:
+                    table.name = words[0]
+                    table.awr = float(words[5])/1.0086649670000
+                    table.filename = words[8]
+                    table.temperature = float(words[6])/1.1604518025685E+10
+
 
 class XsdirTable(object):
     """Stores all information that describes a xsdir table entry, which appears
@@ -414,7 +431,7 @@ class XSData(object):
             if serpent_value == '':
                 self.serpent_data[library] = None
             else:
-                self.serpent_data[library] = Xsdir(serpent_value)           
+                self.serpent_data[library] = SerpentXsdir(serpent_value)           
             openmc_value = lib.at[i,"OpenMC"]
             if openmc_value == '':
                 self.openmc_data[library] = None

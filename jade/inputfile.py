@@ -843,6 +843,117 @@ class SerpentInputFile:
         with open(out, 'w') as outfile:
             outfile.write(to_print)
 
+class OpenMCInputFiles:
+    def __init__(self, geometry, settings, tallies, materials, matlist, name=None):
+        """
+        Object representing an Serpent input file
 
+        Parameters
+        ----------
+        cards : dic
+            contains the cells, surfaces, settings and title cards.
+        matlist : matreader.MatCardList
+            material list in the input.
+        name : str, optional
+            name associated with the file. The default is None.
 
+        Returns
+        -------
+        None.
 
+        """
+
+        # All cards from parser epurated by the materials
+        self.geometry = geometry
+        self.settings = settings
+        self.tallies = tallies
+        # Temporary material holder until matlist supports openmc mats
+        self.materials = materials
+        
+        # Materials list (see matreader.py)
+        self.matlist = matlist
+
+        # Set a name
+        self.name = name
+
+    def _get_lines(self, path):
+        if os.path.exists(path):
+            with open(path, 'r') as f:
+                lines = f.readlines()
+        else:
+            lines = None
+        return lines        
+    
+    @classmethod
+    def from_path(cls, path):
+        """
+        This method use the numjuggler parser to help identify the mcards in
+        the input which will usually undergo special treatments in the input
+        creation
+
+        Parameters
+        ----------
+        cls : TYPE
+            DESCRIPTION.
+        path : path like object
+            path to the OpenMC input files directory.
+
+        Returns
+        -------
+        None.
+        """
+        geometry_file = os.path.join(path, 'geometry.xml')
+        geometry = self._read_lines(geometry_file)
+
+        settings_file = os.path.join(path, 'settings.xml')
+        settings = self._read_lines(settings_file)
+
+        tallies_file = os.path.join(path, 'tallies.xml')
+        tallies = self._read_lines(tallies_file)
+
+        materials_file = os.path.join(path, 'materials.xml')
+        materials = self._read_lines(materials_file)
+
+        matlist = None
+
+        name = os.path.basename(os.path.dirname(path))
+
+        return cls(geometry, settings, tallies, materials, matlist, name=name)
+
+    def add_stopCard(self, nps):
+        for i, line in self.settings:
+            if '<settings>' in line:
+                nps_line = '   <batches>'+str(nps)+'</batches>\n'
+                self.settings.insert(i+1, nps_line)
+                break
+
+    def _to_text(self):
+        """
+        Get the inputs in openMC formatted text
+
+        Returns
+        -------
+        str
+            OpenMC formatted text for the input files
+        """
+
+        # Add materials
+        self.materials = self.matlist.to_openmc()
+
+        geometry = ''
+        for line in self.geometry:
+            geometry = geometry+line
+        
+        settings = ''
+        for line in self.settings:
+            settings = settings+line
+
+        tallies = ''
+        for line in self.tallies:
+            tallies = tallies+line
+
+        materials = ''
+        for line in self.materials:
+            materials = materials+line
+
+        return geometry, settings, tallies, materials

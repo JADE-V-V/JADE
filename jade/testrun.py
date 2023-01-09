@@ -180,8 +180,9 @@ class Test():
             self.serpent_inp = ipt.SerpentInputFile.from_text(serpent_ipt)           
         if self.openmc:
             # Add openmc initialisation here
-            self.log.adjourn('Serpent running not implimented yet, skipping...')
-
+            #self.log.adjourn('Serpent running not implimented yet, skipping...')
+            openmc_ipt = os.path.join(inp, 'openmc')
+            self.openmc_inp = ipt.OpenMCInputFiles.from_path(openmc_ipt)
         # Name of input file
         #self.name = self.inp.name
 

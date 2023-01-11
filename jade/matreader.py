@@ -171,7 +171,7 @@ class Zaid:
 
     def to_xml(self, libmanager, submaterial):
         # OpenMC output writer        
-        nuclide = self.get_fullname(libmanager)
+        nuclide = self.get_fullname(libmanager).replace('-', '')
         if self.fraction < 0.0:
             ET.SubElement(submaterial, "nuclide", name=nuclide, wo=str(abs(self.fraction)))
         else:
@@ -456,9 +456,9 @@ class SubMaterial:
 
         return text.strip('\n')
 
-    def to_xml(self, libmanager, material_tree, density):
+    def to_xml(self, libmanager, material_tree, id, density):
         # OpenMC output writer
-        matid = re.sub("[^0-9]", "", str(self.name))
+        matid = id
         matname = str(self.name)
         matdensity = str(abs(density))
         if density < 0:
@@ -842,9 +842,10 @@ class Material:
 
     def to_xml(self, libmanager, material_tree):
         # OpenMC output writer
+        id = re.sub("[^0-9]", "", str(self.name))
         if self.submaterials is not None:
             for submaterial in self.submaterials:
-                submaterial.to_xml(libmanager, material_tree, self.density)
+                submaterial.to_xml(libmanager, material_tree, id, self.density)
 
     def translate(self, newlib, lib_manager, code, update=True):
         """

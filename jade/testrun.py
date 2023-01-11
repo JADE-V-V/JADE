@@ -285,7 +285,7 @@ class Test():
         if self.serpent:
             self.serpent_inp.add_stopCard(self.nps)
         if self.openmc:
-            pass
+            self.openmc_inp.add_stopCard(self.nps)
 
         # Identify working directory
         #testname = self.inp.name
@@ -373,7 +373,7 @@ class Test():
         pass
 
     #def run(self, cpu=1, timeout=None):
-    def run(self, config, lib_manager):
+    def run(self, config, libmanager):
         """
         run the input
 
@@ -419,11 +419,11 @@ class Test():
                 self.run_openmc(config, name, openmc_directory)
 
     #@staticmethod
-    def run_d1s(self, config, lib_manager, name, directory):
+    def run_d1s(self, config, libmanager, name, directory):
         pass
  
     #@staticmethod
-    def run_mcnp(self, config, lib_manager, name, directory, timeout=None):
+    def run_mcnp(self, config, libmanager, name, directory, timeout=None):
         mpi_tasks = int(config.openmp_threads) * int(config.mpi_tasks)
         run_mpi = False
         if mpi_tasks > 1:
@@ -432,7 +432,7 @@ class Test():
         executable = config.mcnp_exec
         inputstring = 'i=' + name
         outputstring = 'n=' + name
-        xsstring = 'xs='+lib_manager.XS.mcnp_data[self.lib].filename
+        xsstring = 'xs='+libmanager.XS.mcnp_data[self.lib].filename
         if run_mpi:
             #command = ' '.join([mpistring, executable, inputstring, outputstring])
             command = ['mpirun', '-n', str(mpi_tasks), executable, inputstring, outputstring, xsstring]
@@ -465,11 +465,11 @@ class Test():
         return flagnotrun
 
     #@staticmethod
-    def run_serpent(self, config, lib_manager, name, directory):
+    def run_serpent(self, config, libmanager, name, directory):
         pass
 
     #@staticmethod
-    def run_openmc(self, config, lib_manager, name, directory):
+    def run_openmc(self, config, libmanager, name, directory):
         pass
     
     # Legacy MCNP runner
@@ -736,7 +736,7 @@ class SphereTest(Test):
                 shutil.copyfile(ww_file, outwwfile)
 
         if self.serpent:
-            # Create MCNP material card
+            # Create Serpent material card
             submat = mat.SubMaterial('mat 1', [zaid],
                                      header='% '+name+' '+formula)
             material = mat.Material([zaid], None, 'mat 1', submaterials=[submat], density=density)
@@ -758,8 +758,24 @@ class SphereTest(Test):
             newinp.write(outinpfile)
 
         if self.openmc:
-            # Add openmc function here
-            pass
+            # Create MCNP material card
+            submat = mat.SubMaterial('m1', [zaid])
+            material = mat.Material([zaid], None, 'm1', submaterials=[submat], density=density)
+            matlist = mat.MatCardsList([material])
+
+            # Generate the new input
+            newinp = deepcopy(self.openmc_inp)
+            newinp.matlist = matlist  # Assign material
+            
+            # assign stop card
+            newinp.add_stopCard(nps)
+
+            # Write new input file
+            outfile, outdir = self._get_zaidtestname(testname, zaid, formula,
+                                                    addtag=addtag)
+            outpath = os.path.join(motherdir, 'openmc', outdir)
+            os.mkdir(outpath)
+            newinp.write(outpath, libmanager)
 
 
     @staticmethod
@@ -871,11 +887,28 @@ class SphereTest(Test):
             newinp.write(outinpfile)
 
         if self.openmc:
-            # Add openmc function here
-            pass
+            newmat = deepcopy(material)
+            # Translate and assign the material (not supported yet for openmc)
+            #newmat.translate(lib, libmanager, 'openmc')
+            newmat.name = 'm1'
+            newmat.density = density
+            matlist = mat.MatCardsList([newmat])
+
+            # Generate the new input
+            newinp = deepcopy(self.openmc_inp)
+            newinp.matlist = matlist  # Assign material
+            # add stop card
+            newinp.add_stopCard(self.nps)#, self.ctme, self.precision)
+
+            # Write new input file
+            outfile = testname+'_'+truename+'_'
+            outdir = testname+'_'+truename
+            outpath = os.path.join(motherdir, 'openmc', outdir)
+            os.mkdir(outpath)
+            newinp.write(outpath, libmanager)
 
 #    def run(self, cpu=1, timeout=None):
-    def run(self, config, lib_manager):
+    def run(self, config, libmanager):
         """
         Sphere test needs an ad-hoc run method to run all zaids tests
         """
@@ -910,25 +943,25 @@ class SphereTest(Test):
             if pd.isnull(config.d1s_exec) is not True:
                 for folder in tqdm(os.listdir(d1s_directory)):
                     run_directory = os.path.join(d1s_directory, folder)
-                    self.run_d1s(config, lib_manager, folder+'_', run_directory)
+                    self.run_d1s(config, libmanager, folder+'_', run_directory)
         if self.mcnp:
             mcnp_directory = os.path.join(directory, 'mcnp')
             if pd.isnull(config.mcnp_exec) is not True:
                 for folder in tqdm(os.listdir(mcnp_directory)):
                     run_directory = os.path.join(mcnp_directory, folder)           
-                    self.run_mcnp(config, lib_manager, folder+'_', run_directory)
+                    self.run_mcnp(config, libmanager, folder+'_', run_directory)
         if self.serpent:
             serpent_directory = os.path.join(directory, 'serpent')
             if pd.isnull(config.serpent_exec) is not True:
                 for folder in tqdm(os.listdir(serpent_directory)):
                     run_directory = os.path.join(serpent_directory, folder)                 
-                    self.run_serpent(config, lib_manager, folder+'_', run_directory)
+                    self.run_serpent(config, libmanager, folder+'_', run_directory)
         if self.openmc:
             openmc_directory = os.path.join(directory, 'openmc')
             if pd.isnull(config.openmc_exec) is not True:
                 for folder in tqdm(os.listdir(openmc_directory)):
                     run_directory = os.path.join(openmc_directory, folder)                 
-                    self.run_openmc(config, lib_manager, folder+'_', run_directory)
+                    self.run_openmc(config, libmanager, folder+'_', run_directory)
 
 # Fix from here
 class SphereTestSDDR(SphereTest):

@@ -143,7 +143,9 @@ class LibManager:
 
     def check_zaid(self, zaid, lib, code):
         XS = self._get_xs(code, lib)
-        if len(XS.find_table(zaid, mode='default-fast')) > 0:
+        if isinstance(XS, str) or XS is None:
+            return True
+        elif len(XS.find_table(zaid, mode='default-fast')) > 0:
             return True
         else:
             return False
@@ -188,7 +190,7 @@ class LibManager:
         #zaidlibs = self.check4zaid(zaid, code)
         zaidlib = self.check_zaid(zaid, lib, code)
 
-        if isinstance(XS, xs.Xsdir):
+        if isinstance(XS, xs.Xsdir) or isinstance(XS, xs.SerpentXsdir):
             # Natural zaid
             if zaid[-3:] == '000':
                 # Check if zaid has natural info

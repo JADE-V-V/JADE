@@ -876,6 +876,7 @@ class OpenMCInputFiles:
         # Set a name
         self.name = name
 
+    # This should be updated to use xml elements rather than strings
     def _get_lines(self, path):
         if os.path.exists(path):
             with open(path, 'r') as f:
@@ -903,16 +904,16 @@ class OpenMCInputFiles:
         None.
         """
         geometry_file = os.path.join(path, 'geometry.xml')
-        geometry = self._read_lines(geometry_file)
+        geometry = cls._get_lines(cls, geometry_file)
 
         settings_file = os.path.join(path, 'settings.xml')
-        settings = self._read_lines(settings_file)
+        settings = cls._get_lines(cls, settings_file)
 
         tallies_file = os.path.join(path, 'tallies.xml')
-        tallies = self._read_lines(tallies_file)
+        tallies = cls._get_lines(cls, tallies_file)
 
         materials_file = os.path.join(path, 'materials.xml')
-        materials = self._read_lines(materials_file)
+        materials = cls._get_lines(cls, materials_file)
 
         matlist = None
 
@@ -921,13 +922,13 @@ class OpenMCInputFiles:
         return cls(geometry, settings, tallies, materials, matlist, name=name)
 
     def add_stopCard(self, nps):
-        for i, line in self.settings:
+        for i, line in enumerate(self.settings):
             if '<settings>' in line:
-                nps_line = '   <batches>'+str(nps)+'</batches>\n'
+                nps_line = '  <batches>'+str(nps)+'</batches>\n'
                 self.settings.insert(i+1, nps_line)
                 break
 
-    def _to_text(self):
+    def _to_xml(self, libmanager):
         """
         Get the inputs in openMC formatted text
 
@@ -938,7 +939,7 @@ class OpenMCInputFiles:
         """
 
         # Add materials
-        self.materials = self.matlist.to_openmc()
+        self.materials = self.matlist.to_xml(libmanager)
 
         geometry = ''
         for line in self.geometry:
@@ -952,8 +953,38 @@ class OpenMCInputFiles:
         for line in self.tallies:
             tallies = tallies+line
 
-        materials = ''
-        for line in self.materials:
-            materials = materials+line
+        materials = self.materials
 
         return geometry, settings, tallies, materials
+
+    def write(self, path, libmanager):
+        """
+        Write the input to a file
+
+        Parameters
+        ----------
+        out : str
+            path to the output file.
+
+        Returns
+        -------
+        None.
+
+        """
+        geometry, settings, tallies, materials = self._to_xml(libmanager)
+
+        geometry_file = os.path.join(path, 'geometry.xml')
+        with open(geometry_file, 'w') as outfile:
+            outfile.write(geometry)
+
+        settings_file = os.path.join(path, 'settings.xml')
+        with open(settings_file, 'w') as outfile:
+            outfile.write(settings)
+
+        tallies_file = os.path.join(path, 'tallies.xml')
+        with open(tallies_file, 'w') as outfile:
+            outfile.write(tallies)
+
+        materials_file = os.path.join(path, 'materials.xml')
+        with open(materials_file, 'w') as outfile:
+            outfile.write(materials)

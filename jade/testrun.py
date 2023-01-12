@@ -290,7 +290,7 @@ class Test():
         #testname = self.inp.name
         testname = self.name
         if run_dir is None:
-            motherdir = os.path.join(lib_directory, testname)
+            motherdir = os.path.join(lib_directory, testname) 
         else:
             motherdir = run_dir
         self.run_dir = motherdir
@@ -417,6 +417,13 @@ class Test():
             if config.openmc_exec != '':
                 self.run_openmc(config, name, openmc_directory)
 
+    def job_submission(self, config, name, directory, command)
+        with fin = open(config.batch_file, "rt")
+            contents = fin.read()
+        
+        contents.replace(dummy, input)
+            fout.write(line)
+            
     #@staticmethod
     def run_d1s(self, config, lib_manager, name, directory):
         pass
@@ -454,10 +461,14 @@ class Test():
             print(command)
             print(cwd)
             # Execution
-            subprocess.run(command, cwd=directory,
+            if config.batch_system == ""
+                subprocess.run(command, cwd=directory,
                            #creationflags=subprocess.CREATE_NEW_CONSOLE,
-                           timeout=timeout)
-            os.chdir(cwd)
+                            timeout=timeout)
+                os.chdir(cwd)
+            else:
+                self.job_submission(config, name, directory, command)
+            
         except subprocess.TimeoutExpired:
             pass
 
@@ -512,7 +523,7 @@ class Test():
             # Execution
             subprocess.run([shutil.which(code), command], cwd=directory,
                            #creationflags=subprocess.CREATE_NEW_CONSOLE,
-                           timeout=timeout)
+                            timeout=timeout)
 
         except subprocess.TimeoutExpired:
             pass

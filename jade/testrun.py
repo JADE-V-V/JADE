@@ -416,13 +416,20 @@ class Test():
             openmc_directory = os.path.join(directory, name, 'openmc')
             if config.openmc_exec != '':
                 self.run_openmc(config, name, openmc_directory)
-
-    def job_submission(self, config, name, directory, command)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Edited by D. Wheeler ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+    #job submission currently tailored for LoadLeveler, may be applicable to other submission systems with equivalent dummy variables
+    def job_submission(self, config, name, directory, command, env_variables, mpi_tasks)
+        fout = open(directory + os.path.basename(config.batch_file), "wt")
         with fin = open(config.batch_file, "rt")
             contents = fin.read()
-        
-        contents.replace(dummy, input)
-            fout.write(line)
+        contents.replace("COMMAND", command)
+        contents.replace("ENV_VARIABLES", "source "+env_variables)
+        contents.replace("INITIAL_DIR", directory)
+        contents.replace("OUT_FILE", name+"_job_out")
+        contents.replace("ERR_FILE", name+"_job_error")
+        fout.write(contents)
+
+        subprocess.run(config.batch_system + os.path.basename(config.batch_file), cwd=directory)
             
     #@staticmethod
     def run_d1s(self, config, lib_manager, name, directory):
@@ -436,6 +443,7 @@ class Test():
             mpistring = 'mpirun -n ' + str(mpi_tasks)
             run_mpi = True
         executable = config.mcnp_exec
+        env_variables = config.mcnp_config
         inputstring = 'i=' + name
         outputstring = 'n=' + name
         xsstring = 'xs='+lib_manager.XS.mcnp_data[self.lib].filename
@@ -467,7 +475,7 @@ class Test():
                             timeout=timeout)
                 os.chdir(cwd)
             else:
-                self.job_submission(config, name, directory, command)
+                self.job_submission(config, name, directory, command, env_variables, mpi_tasks)
             
         except subprocess.TimeoutExpired:
             pass
@@ -476,12 +484,42 @@ class Test():
 
     #@staticmethod
     def run_serpent(self, config, lib_manager, name, directory):
-        pass
+        mpi_tasks = int(config.openmp_threads) * int(config.mpi_tasks)
+        run_mpi = False
+        if mpi_tasks > 1:
+            mpistring = 'mpirun -n ' + str(mpi_tasks)
+            run_mpi = True
+        executable = config.serpent_exec
+        env_variables = config.serpent_config
+        inputstring = name
+        xsstring = 'SERPENT_ACELIB='+lib_manager.XS.serpent_data[self.lib].filename
+        if run_mpi:
+            #command = ' '.join([mpistring, executable, inputstring, outputstring])
+            command = [xsstring,'/n','mpirun', '-n', str(mpi_tasks), executable, inputstring, xsstring]
+        else:
+            command = [xsstring, executable, inputstring]
+        flagnotrun = False
+        try:
+            cwd = os.getcwd()
+            os.chdir(directory)
+
+            print(command)
+            print(cwd)
+            # Execution
+            if config.batch_system == ""
+                subprocess.run(command, cwd=directory, timeout=timeout)
+            else:
+                self.job_submission(config, name, directory, command, env_variables, mpi_tasks)
+            os.chdir(cwd)
+        except subprocess.TimeoutExpired:
+            pass
+
+        return flagnotrun
 
     #@staticmethod
     def run_openmc(self, config, lib_manager, name, directory):
         pass
-    
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     # Legacy MCNP runner
     @staticmethod
     def _runMCNP(code, name, directory, cpu=1, timeout=None):

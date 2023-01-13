@@ -418,9 +418,9 @@ class Test():
                 self.run_openmc(config, name, openmc_directory)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Edited by D. Wheeler ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     #job submission currently tailored for LoadLeveler, may be applicable to other submission systems with equivalent dummy variables
-    def job_submission(self, config, name, directory, command, env_variables, mpi_tasks)
+    def job_submission(self, config, name, directory, command, env_variables, mpi_tasks):
         fout = open(directory + os.path.basename(config.batch_file), "wt")
-        with fin = open(config.batch_file, "rt")
+        with open(config.batch_file, "rt") as fin:
             contents = fin.read()
         contents.replace("COMMAND", command)
         contents.replace("ENV_VARIABLES", "source "+env_variables)
@@ -428,6 +428,9 @@ class Test():
         contents.replace("OUT_FILE", name+"_job_out")
         contents.replace("ERR_FILE", name+"_job_error")
         fout.write(contents)
+        
+        fin.close()
+        fout.close()
 
         subprocess.run(config.batch_system + os.path.basename(config.batch_file), cwd=directory)
             
@@ -469,14 +472,13 @@ class Test():
             print(command)
             print(cwd)
             # Execution
-            if config.batch_system == ""
+            if pd.isnull(config.batch_system) is True:
                 subprocess.run(command, cwd=directory,
                            #creationflags=subprocess.CREATE_NEW_CONSOLE,
                             timeout=timeout)
-                os.chdir(cwd)
             else:
                 self.job_submission(config, name, directory, command, env_variables, mpi_tasks)
-            
+            os.chdir(cwd)
         except subprocess.TimeoutExpired:
             pass
 
@@ -506,7 +508,7 @@ class Test():
             print(command)
             print(cwd)
             # Execution
-            if config.batch_system == ""
+            if pd.isnull(config.batch_system) is True:
                 subprocess.run(command, cwd=directory, timeout=timeout)
             else:
                 self.job_submission(config, name, directory, command, env_variables, mpi_tasks)
@@ -515,6 +517,7 @@ class Test():
             pass
 
         return flagnotrun
+        pass
 
     #@staticmethod
     def run_openmc(self, config, lib_manager, name, directory):

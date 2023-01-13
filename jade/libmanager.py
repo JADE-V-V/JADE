@@ -276,6 +276,12 @@ class LibManager:
 
         return zaids
 
+    def get_formulazaid(self, formula):
+        match = re.match(r"([a-z]+)([0-9]+)", formula, re.I)
+        parts = match.groups()
+        """ Complete function here """
+        
+    
     def get_zaidname(self, zaid):
         """
         Given a zaid, its element name and formula are returned. E.g.,

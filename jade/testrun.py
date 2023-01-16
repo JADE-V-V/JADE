@@ -30,6 +30,7 @@ import pandas as pd
 import numpy as np
 import sys
 
+from pathlib import Path
 from copy import deepcopy
 from tqdm import tqdm
 from jade.parsersD1S import (IrradiationFile, ReactionFile, Reaction)
@@ -485,7 +486,7 @@ class Test():
         return flagnotrun
 
     #@staticmethod
-    def run_serpent(self, config, lib_manager, name, directory):
+    def run_serpent(self, config, lib_manager, name, directory, timeout=None):
         mpi_tasks = int(config.openmp_threads) * int(config.mpi_tasks)
         run_mpi = False
         if mpi_tasks > 1:
@@ -494,12 +495,17 @@ class Test():
         executable = config.serpent_exec
         env_variables = config.serpent_config
         inputstring = name
-        xsstring = 'SERPENT_ACELIB='+lib_manager.XS.serpent_data[self.lib].filename
+        libpath = Path(str(lib_manager.XS.serpent_data[self.lib].filename))
+        print(str(lib_manager.XS.serpent_data[self.lib].filename))
+        datastring = 'SERPENT_DATA='+str(libpath.parent) + "\n export SERPENT_DATA"
+        xsstring = 'SERPENT_ACELIB='+str(libpath.stem) + ".xsdata \n export SERPENT_ACELIB"
+        decstring = 'SERPENT_DECLIB='+str(libpath.stem) + ".dec \n export SERPENT_DECLIB"
+        nfystring = 'SERPENT_NFYLIB='+str(libpath.stem) + ".nfy \n export SERPENT_NFYLIB"
         if run_mpi:
             #command = ' '.join([mpistring, executable, inputstring, outputstring])
-            command = [xsstring,'/n','mpirun', '-n', str(mpi_tasks), executable, inputstring, xsstring]
+            command = ['mpirun', '-n', str(mpi_tasks), executable, inputstring]
         else:
-            command = [xsstring, executable, inputstring]
+            command = [executable, inputstring]
         flagnotrun = False
         try:
             cwd = os.getcwd()
@@ -509,6 +515,8 @@ class Test():
             print(cwd)
             # Execution
             if pd.isnull(config.batch_system) is True:
+                os.system("bash "+ env_variables)
+                print(datastring + " \n " + xsstring + " \n "+ decstring + " \n "+ nfystring)
                 subprocess.run(command, cwd=directory, timeout=timeout)
             else:
                 self.job_submission(config, name, directory, command, env_variables, mpi_tasks)
@@ -962,18 +970,18 @@ class SphereTest(Test):
                 for folder in tqdm(os.listdir(d1s_directory)):
                     run_directory = os.path.join(d1s_directory, folder)
                     self.run_d1s(config, lib_manager, folder+'_', run_directory)
-        if self.mcnp:
-            mcnp_directory = os.path.join(directory, 'mcnp')
-            if pd.isnull(config.mcnp_exec) is not True:
-                for folder in tqdm(os.listdir(mcnp_directory)):
-                    run_directory = os.path.join(mcnp_directory, folder)           
-                    self.run_mcnp(config, lib_manager, folder+'_', run_directory)
         if self.serpent:
             serpent_directory = os.path.join(directory, 'serpent')
             if pd.isnull(config.serpent_exec) is not True:
                 for folder in tqdm(os.listdir(serpent_directory)):
                     run_directory = os.path.join(serpent_directory, folder)                 
                     self.run_serpent(config, lib_manager, folder+'_', run_directory)
+        if self.mcnp:
+            mcnp_directory = os.path.join(directory, 'mcnp')
+            if pd.isnull(config.mcnp_exec) is not True:
+                for folder in tqdm(os.listdir(mcnp_directory)):
+                    run_directory = os.path.join(mcnp_directory, folder)           
+                    self.run_mcnp(config, lib_manager, folder+'_', run_directory)
         if self.openmc:
             openmc_directory = os.path.join(directory, 'openmc')
             if pd.isnull(config.openmc_exec) is not True:

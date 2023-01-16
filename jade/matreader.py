@@ -36,6 +36,7 @@ import sys
 import os
 from contextlib import contextmanager
 import warnings
+import xml.etree.ElementTree as ET
 
 # -------------------------------------
 #         == COMMON PATTERNS ==
@@ -44,6 +45,21 @@ PAT_COMMENT = re.compile(r'[cC][\s\t]+')
 PAT_MAT = re.compile(r'[\s\t]*[mM]\d+')
 PAT_MX = re.compile(r'[\s\t]*mx\d+', re.IGNORECASE)
 
+
+def indent(elem, level=0):
+    i = "\n" + level * "  "
+    if len(elem):
+        if not elem.text or not elem.text.strip():
+            elem.text = i + "  "
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+        for elem in elem:
+            indent(elem, level + 1)
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+    else:
+        if level and (not elem.tail or not elem.tail.strip()):
+            elem.tail = i
 
 # -------------------------------------
 # == CLASSES FOR MATERIAL READING ==
@@ -153,9 +169,14 @@ class Zaid:
 
         return '{0:>15} {1:>18} {2:<12} {3:<10}'.format(*args)
 
-    def to_serpent(self):
-        # Serpent output writer
-        pass
+    def to_xml(self, libmanager, submaterial):
+        # OpenMC output writer        
+        nuclide = self.get_fullname(libmanager).replace('-', '')
+        if self.fraction < 0.0:
+            ET.SubElement(submaterial, "nuclide", name=nuclide, wo=str(abs(self.fraction)))
+        else:
+            ET.SubElement(submaterial, "nuclide", name=nuclide, wo=str(abs(self.fraction)))
+
 
     def get_fullname(self, libmanager):
         """
@@ -435,9 +456,25 @@ class SubMaterial:
 
         return text.strip('\n')
 
-    def to_serpent(self):
-        # Serpent output writer
-        pass
+    def to_xml(self, libmanager, material_tree, id, density):
+        # OpenMC output writer
+        matid = id
+        matname = str(self.name)
+        matdensity = str(abs(density))
+        if density < 0:
+            density_units = "g/cc"
+        else:
+            density_units = "atom/b-cm"        
+        submaterial = ET.SubElement(material_tree, "material", id=matid, name=matname)
+        ET.SubElement(submaterial, "density", value=matdensity, units=density_units)
+        if self.elements is not None:
+            for elem in self.elements:
+                for zaid in elem.zaids:
+                    zaid.to_xml(libmanager, submaterial)
+        else:
+            for zaid in self.zaidList:
+                zaid.to_xml(libmanager, submaterial)
+
 
     def translate(self, newlib, lib_manager, code):
         """
@@ -803,9 +840,12 @@ class Material:
             
         return text.strip('\n')
 
-    def to_serpent(self):
-        # Serpent output writer
-        pass
+    def to_xml(self, libmanager, material_tree):
+        # OpenMC output writer
+        id = re.sub("[^0-9]", "", str(self.name))
+        if self.submaterials is not None:
+            for submaterial in self.submaterials:
+                submaterial.to_xml(libmanager, material_tree, id, self.density)
 
     def translate(self, newlib, lib_manager, code, update=True):
         """
@@ -1094,9 +1134,15 @@ class MatCardsList(Sequence):
 
         return(text.strip('\n'))
 
-    def to_serpent(self):
-        # Serpent output writer
-        pass
+    def to_xml(self, libmanager):
+        # OpenMC output writer
+        material_tree = ET.Element("materials")
+        for material in self.materials:
+            material.to_xml(libmanager, material_tree)
+        
+        indent(material_tree)
+        
+        return ET.tostring(material_tree, encoding='unicode', method='xml')
 
     def translate(self, newlib, lib_manager):
         """

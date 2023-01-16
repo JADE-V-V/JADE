@@ -843,6 +843,148 @@ class SerpentInputFile:
         with open(out, 'w') as outfile:
             outfile.write(to_print)
 
+class OpenMCInputFiles:
+    def __init__(self, geometry, settings, tallies, materials, matlist, name=None):
+        """
+        Object representing an Serpent input file
 
+        Parameters
+        ----------
+        cards : dic
+            contains the cells, surfaces, settings and title cards.
+        matlist : matreader.MatCardList
+            material list in the input.
+        name : str, optional
+            name associated with the file. The default is None.
 
+        Returns
+        -------
+        None.
 
+        """
+
+        # All cards from parser epurated by the materials
+        self.geometry = geometry
+        self.settings = settings
+        self.tallies = tallies
+        # Temporary material holder until matlist supports openmc mats
+        self.materials = materials
+        
+        # Materials list (see matreader.py)
+        self.matlist = matlist
+
+        # Set a name
+        self.name = name
+
+    # This should be updated to use xml elements rather than strings
+    def _get_lines(self, path):
+        if os.path.exists(path):
+            with open(path, 'r') as f:
+                lines = f.readlines()
+        else:
+            lines = None
+        return lines        
+    
+    @classmethod
+    def from_path(cls, path):
+        """
+        This method use the numjuggler parser to help identify the mcards in
+        the input which will usually undergo special treatments in the input
+        creation
+
+        Parameters
+        ----------
+        cls : TYPE
+            DESCRIPTION.
+        path : path like object
+            path to the OpenMC input files directory.
+
+        Returns
+        -------
+        None.
+        """
+        geometry_file = os.path.join(path, 'geometry.xml')
+        geometry = cls._get_lines(cls, geometry_file)
+
+        settings_file = os.path.join(path, 'settings.xml')
+        settings = cls._get_lines(cls, settings_file)
+
+        tallies_file = os.path.join(path, 'tallies.xml')
+        tallies = cls._get_lines(cls, tallies_file)
+
+        materials_file = os.path.join(path, 'materials.xml')
+        materials = cls._get_lines(cls, materials_file)
+
+        matlist = None
+
+        name = os.path.basename(os.path.dirname(path))
+
+        return cls(geometry, settings, tallies, materials, matlist, name=name)
+
+    def add_stopCard(self, nps):
+        for i, line in enumerate(self.settings):
+            if '<settings>' in line:
+                nps_line = '  <batches>'+str(nps)+'</batches>\n'
+                self.settings.insert(i+1, nps_line)
+                break
+
+    def _to_xml(self, libmanager):
+        """
+        Get the inputs in openMC formatted text
+
+        Returns
+        -------
+        str
+            OpenMC formatted text for the input files
+        """
+
+        # Add materials
+        self.materials = self.matlist.to_xml(libmanager)
+
+        geometry = ''
+        for line in self.geometry:
+            geometry = geometry+line
+        
+        settings = ''
+        for line in self.settings:
+            settings = settings+line
+
+        tallies = ''
+        for line in self.tallies:
+            tallies = tallies+line
+
+        materials = self.materials
+
+        return geometry, settings, tallies, materials
+
+    def write(self, path, libmanager):
+        """
+        Write the input to a file
+
+        Parameters
+        ----------
+        out : str
+            path to the output file.
+
+        Returns
+        -------
+        None.
+
+        """
+        geometry, settings, tallies, materials = self._to_xml(libmanager)
+
+        geometry_file = os.path.join(path, 'geometry.xml')
+        with open(geometry_file, 'w') as outfile:
+            outfile.write(geometry)
+
+        settings_file = os.path.join(path, 'settings.xml')
+        with open(settings_file, 'w') as outfile:
+            outfile.write(settings)
+
+        tallies_file = os.path.join(path, 'tallies.xml')
+        with open(tallies_file, 'w') as outfile:
+            outfile.write(tallies)
+
+        materials_file = os.path.join(path, 'materials.xml')
+        with open(materials_file, 'w') as outfile:
+            outfile.write(materials)

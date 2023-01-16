@@ -56,5 +56,5 @@ set bala 1
 set ngamma 2
 set bc 1
 set nbuf 1000
-set gbuf 1000
+set gbuf 10000
 set srcrate 1

@@ -498,29 +498,29 @@ class Test():
         inputstring = name
         libpath = Path(str(lib_manager.XS.serpent_data[self.lib].filename))
         print(str(lib_manager.XS.serpent_data[self.lib].filename))
-        datastring = 'SERPENT_DATA='+str(libpath.parent) + "\n export SERPENT_DATA"
-        xsstring = 'SERPENT_ACELIB='+str(libpath.stem) + ".xsdata \n export SERPENT_ACELIB"
-        decstring = 'SERPENT_DECLIB='+str(libpath.stem) + ".dec \n export SERPENT_DECLIB"
-        nfystring = 'SERPENT_NFYLIB='+str(libpath.stem) + ".nfy \n export SERPENT_NFYLIB"
+        #data_command = ["export", "SERPENT_DATA", "=", str(libpath.parent)]
+        #ace_command = ["export", "SERPENT_ACELIB", "=", str(libpath)]
         if run_mpi:
             #command = ' '.join([mpistring, executable, inputstring, outputstring])
-            command = ['mpirun', '-n', str(mpi_tasks), executable, inputstring]
+            run_command = ['mpirun', '-n', str(mpi_tasks), executable, inputstring]
         else:
-            command = [executable, inputstring]
+            run_command = [executable, inputstring]
         flagnotrun = False
         try:
             cwd = os.getcwd()
             os.chdir(directory)
 
-            print(command)
+            print(run_command)
             print(cwd)
             # Execution
             if pd.isnull(config.batch_system) is True:
-                os.system("bash "+ env_variables)
-                print(datastring + " \n " + xsstring + " \n "+ decstring + " \n "+ nfystring)
-                subprocess.run(command, cwd=directory, timeout=timeout)
+                os.environ['SERPENT_DATA'] = str(libpath.parent)
+                os.environ['SERPENT_ACELIB'] = str(libpath)
+                subprocess.run(["echo","$SERPENT_DATA"], cwd=directory, timeout=timeout)
+                subprocess.run(["echo","$SERPENT_ACELIB"], cwd=directory, timeout=timeout)
+                subprocess.run(run_command, cwd=directory, timeout=timeout)
             else:
-                self.job_submission(config, name, directory, command, env_variables, mpi_tasks)
+                self.job_submission(config, name, directory, run_command, data_command, mpi_tasks)
             os.chdir(cwd)
         except subprocess.TimeoutExpired:
             pass

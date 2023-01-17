@@ -420,21 +420,22 @@ class Test():
                 self.run_openmc(config, name, openmc_directory)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Edited by D. Wheeler ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     #job submission currently tailored for LoadLeveler, may be applicable to other submission systems with equivalent dummy variables
-    def job_submission(self, config, name, directory, command, env_variables, mpi_tasks):
-        fout = open(directory + os.path.basename(config.batch_file), "wt")
+    def job_submission(self, config, name, directory, run_command, mpi_tasks, data_command=str()):
+        fout = open(name+"_job_script", "wt")
         with open(config.batch_file, "rt") as fin:
             contents = fin.read()
-        contents.replace("COMMAND", command)
-        contents.replace("ENV_VARIABLES", "source "+env_variables)
-        contents.replace("INITIAL_DIR", directory)
-        contents.replace("OUT_FILE", name+"_job_out")
-        contents.replace("ERR_FILE", name+"_job_error")
-        fout.write(contents)
+            contents = contents.replace("COMMAND", " ".join(run_command))
+            contents = contents.replace("ENV_VARIABLES", str(data_command))
+            contents = contents.replace("INITIAL_DIR", directory)
+            contents = contents.replace("OUT_FILE", name+"_job_out")
+            contents = contents.replace("ERROR_FILE", name+"_job_error")
+            contents = contents.replace("MPI_TASKS", str(mpi_tasks))
+            fout.write(contents)
         
         fin.close()
         fout.close()
 
-        subprocess.run(config.batch_system + os.path.basename(config.batch_file), cwd=directory)
+        os.system(config.batch_system + " " +name+"_job_script")
             
     #@staticmethod
     def run_d1s(self, config, libmanager, name, directory):
@@ -454,9 +455,9 @@ class Test():
         xsstring = 'xs='+libmanager.XS.mcnp_data[self.lib].filename
         if run_mpi:
             #command = ' '.join([mpistring, executable, inputstring, outputstring])
-            command = ['mpirun', '-n', str(mpi_tasks), executable, inputstring, outputstring, xsstring]
+            run_command = ['mpirun', '-n', str(mpi_tasks), executable, inputstring, outputstring, xsstring]
         else:
-            command = [executable, inputstring, outputstring, xsstring]
+            run_command = [executable, inputstring, outputstring, xsstring]
         flagnotrun = False
         try:
             cwd = os.getcwd()
@@ -471,20 +472,21 @@ class Test():
             if os.path.exists(runtpe):
                 command = command+' runtpe='+name+'.r'
 
-            print(command)
+            print(run_command)
             print(cwd)
             # Execution
             if pd.isnull(config.batch_system) is True:
-                subprocess.run(command, cwd=directory,
+                subprocess.run(run_command, cwd=directory,
                            #creationflags=subprocess.CREATE_NEW_CONSOLE,
                             timeout=timeout)
             else:
-                self.job_submission(config, name, directory, command, env_variables, mpi_tasks)
+                self.job_submission(config, name, directory, run_command, mpi_tasks)
             os.chdir(cwd)
         except subprocess.TimeoutExpired:
             pass
 
         return flagnotrun
+        
 
     #@staticmethod
     def run_serpent(self, config, lib_manager, name, directory, timeout=None):
@@ -498,8 +500,7 @@ class Test():
         inputstring = name
         libpath = Path(str(lib_manager.XS.serpent_data[self.lib].filename))
         print(str(lib_manager.XS.serpent_data[self.lib].filename))
-        #data_command = ["export", "SERPENT_DATA", "=", str(libpath.parent)]
-        #ace_command = ["export", "SERPENT_ACELIB", "=", str(libpath)]
+        data_command = "export SERPENT_DATA=" + str(libpath.parent) + " \nexport SERPENT_ACELIB=" + str(libpath)
         if run_mpi:
             #command = ' '.join([mpistring, executable, inputstring, outputstring])
             run_command = ['mpirun', '-n', str(mpi_tasks), executable, inputstring]
@@ -520,8 +521,9 @@ class Test():
                 subprocess.run(["echo","$SERPENT_ACELIB"], cwd=directory, timeout=timeout)
                 subprocess.run(run_command, cwd=directory, timeout=timeout)
             else:
-                self.job_submission(config, name, directory, run_command, data_command, mpi_tasks)
+                self.job_submission(config, name, directory, run_command, mpi_tasks, data_command)
             os.chdir(cwd)
+            sys.exit()
         except subprocess.TimeoutExpired:
             pass
 

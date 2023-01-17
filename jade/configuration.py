@@ -80,7 +80,7 @@ class Configuration:
         self.openmp_threads = main['Value'].loc['OpenMP threads']
         self.mpi_tasks = main['Value'].loc['MPI tasks']
         self.batch_system = main['Value'].loc['Batch system']
-        self.batch_file = main['Value'].loc['Batch file']  
+        self.batch_file = self._process_path(main['Value'].loc['Batch file']) 
         
         """ Legacy config variables """
         #self.xsdir_path = main['Value'].loc['xsdir Path']

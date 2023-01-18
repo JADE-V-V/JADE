@@ -399,7 +399,7 @@ class LibManager:
             else:
                 print(error.format(lib))
 
-            if i > 20:
+            if i > 10:
                 raise ValueError('Too many wrong inputs')
         return lib
 

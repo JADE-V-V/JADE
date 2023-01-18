@@ -261,7 +261,7 @@ def comploop(session):
             else:
                 clear_screen()
                 print(computational_menu)
-                print(' Assessment canceled.')
+                print(' Assessment cancelled.')
 
         elif option == 'continue':
             # Select and check library

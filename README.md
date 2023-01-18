@@ -8,7 +8,7 @@ A new tool for nuclear libraries V&V.
 Brought to you by NIER, University of Bologna (UNIBO), Fusion For Energy (F4E) and United Kingdom Atomic Energy Authority (UKAEA).
 
 Check [JADE official documentation](https://jade-a-nuclear-data-libraries-vv-tool.readthedocs.io/en/latest/)
-for more detailed information on how to use the tool.
+for more detailed information on how to use the tool. Linux installtion to be added. 
 
 For additional information contact: d.laghi@nier.it
 
@@ -67,7 +67,7 @@ jade
 
 Once initialised, the user should configure jade for their system. This can be fone by editing `<jade_root>/Configuration/Config.xlsx`.
 
-Following configuration, the user is free to run `jade` within `<jade_root>` to enter the gui.
+Following configuration, the user can run `jade` within `<jade_root>` to enter the JADE gui.
 
 
 

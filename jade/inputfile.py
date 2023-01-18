@@ -924,8 +924,11 @@ class OpenMCInputFiles:
     def add_stopCard(self, nps):
         for i, line in enumerate(self.settings):
             if '<settings>' in line:
-                nps_line = '  <batches>'+str(nps)+'</batches>\n'
-                self.settings.insert(i+1, nps_line)
+                batches_line = '  <batches>100</batches>\n'
+                self.settings.insert(i+1, batches_line)
+                particles = int(nps/100)
+                particles_line = '  <particles>'+str(particles)+'</particles>\n'
+                self.settings.insert(i+1, particles_line)
                 break
 
     def _to_xml(self, libmanager):

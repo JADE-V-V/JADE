@@ -285,6 +285,50 @@ class SerpentXsdir(Xsdir):
                     table.filename = words[8]
                     table.temperature = float(words[6])/1.1604518025685E+10
 
+class OpenMCXsdir(Xsdir):
+    """
+    OpenMC Xsdir class
+    """
+    def __init__(self, filename, libmanager, library):
+        """Parameters
+        ----------
+        filename : str
+            Path to xsdir file.
+        """
+        self.f = open(filename, 'r')
+        self.filename = os.path.abspath(filename)
+        self.directory = os.path.dirname(filename)
+        self.tables = []
+
+        self.read(libmanager, library)
+
+        # It is useful to have a list of the available tables names to be
+        # computed only once at initializations
+        tablenames = []
+        for table in self:
+            name = table.name
+            zaidname = name[:-4]
+            libname = name[-3:]
+            tablenames.append((zaidname, libname))
+        self.tablenames = tablenames
+
+        
+    def read(self, libmanager, library):
+        for i, line in enumerate(self.f):
+            if '<library' in line:
+                line = line.replace('"', '')
+                parts = line.split()
+                data = {}
+                for part in parts:
+                    if '=' in part:
+                        values = part.split('=')
+                        data[values[0]] = values[1]
+                if data['type'] == 'neutron':
+                    table = XsdirTable()
+                    table.name = libmanager.get_formulazaid(data['materials']) + '.' + library
+                    table.filename = data['path']
+
+
 
 class XsdirTable(object):
     """Stores all information that describes a xsdir table entry, which appears
@@ -411,10 +455,10 @@ class XsdirTable(object):
 
 """ General XSData object added by S. Bradnam """
 class XSData(object):
-    def __init__(self, lib):
-        self.read(lib)
+    def __init__(self, libmanager, lib):
+        self.read(libmanager, lib)
 
-    def read(self, lib):
+    def read(self, libmanager, lib):
         self.libraries = lib['Suffix'].tolist()
         self.mcnp_data = {}
         self.serpent_data = {}
@@ -436,7 +480,7 @@ class XSData(object):
             if openmc_value == '':
                 self.openmc_data[library] = None
             else:
-                self.openmc_data[library] = openmc_value
+                self.openmc_data[library] = OpenMCXsdir(openmc_value, libmanager, library) 
             d1s_value = lib.at[i,"d1S"]
             if d1s_value == '':
                 self.d1s_data[library] = None

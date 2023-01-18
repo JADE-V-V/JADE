@@ -27,6 +27,7 @@ import json
 import re
 import warnings
 import os
+import sys
 
 
 # colors
@@ -77,7 +78,7 @@ class LibManager:
 
         # Initilize the Xsdir object
         #self.XS = xs.Xsdir(xsdir_file)
-        self.XS = xs.XSData(lib)
+        self.XS = xs.XSData(self, lib)
 
         # Identify different libraries installed. This is done checking H
         # libraries = self.check4zaid('1001')
@@ -279,8 +280,12 @@ class LibManager:
     def get_formulazaid(self, formula):
         match = re.match(r"([a-z]+)([0-9]+)", formula, re.I)
         parts = match.groups()
-        """ Complete function here """
-        
+        E, A = parts[0], int(parts[1])
+        newiso = self.isotopes[self.isotopes['E'] == E]
+        Z = newiso['Z'].values[0]
+        zaid = '{0}{1:0>3}'.format(Z,A)
+        return zaid     
+                
     
     def get_zaidname(self, zaid):
         """

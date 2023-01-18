@@ -175,7 +175,7 @@ class Zaid:
         if self.fraction < 0.0:
             ET.SubElement(submaterial, "nuclide", name=nuclide, wo=str(abs(self.fraction)))
         else:
-            ET.SubElement(submaterial, "nuclide", name=nuclide, wo=str(abs(self.fraction)))
+            ET.SubElement(submaterial, "nuclide", name=nuclide, ao=str(abs(self.fraction)))
 
 
     def get_fullname(self, libmanager):

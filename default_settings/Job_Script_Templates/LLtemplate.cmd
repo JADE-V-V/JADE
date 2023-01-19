@@ -10,6 +10,8 @@
 # @ min_processors = 16
 # @ queue
 
+CONFIG_SCRIPT
+
 ENV_VARIABLES
 
 COMMAND

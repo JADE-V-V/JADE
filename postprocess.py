@@ -69,12 +69,33 @@ def _get_output(action, testname, lib, session):
             print(exp_pp_message)
             return False
 
-    elif testname == 'Tiara':
+    elif testname == 'Tiara-BC':
         if action == 'compare':
-            out = expo.TiaraOutput(lib, testname, session)
+            out = expo.TiaraBCOutput(lib, testname, session)
         elif action == 'pp':
             print(exp_pp_message)
             return False
+    
+    elif testname == 'Tiara-FC':
+        if action == 'compare':
+            out = expo.TiaraFCOutput(lib, testname, session)
+        elif action == 'pp':
+            print(exp_pp_message)
+            return False
+
+    elif testname == 'Tiara-BS':
+        if action == 'compare':
+            out = expo.TiaraBSOutput(lib, testname, session)
+        elif action == 'pp':
+            print(exp_pp_message)
+            return False  
+
+    elif testname == 'FNS':
+        if action == 'compare':
+            out = expo.FNSOutput(lib, testname, session)
+        elif action == 'pp':
+            print(exp_pp_message)
+            return False      
 
     elif testname == 'FNG':
         if action == 'compare':

@@ -24,7 +24,7 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import re
 
-MULTI_TEST = ['Sphere', 'Oktavian', 'SphereSDDR', 'FNG', 'Tiara']
+MULTI_TEST = ['Sphere', 'Oktavian', 'SphereSDDR', 'FNG', 'Tiara-BC', 'Tiara-BS', 'Tiara-FC', 'FNS']
 EXP_TAG = 'Exp'
 
 
@@ -429,6 +429,7 @@ class Status():
         """
         lib_input = input(' Libraries to post-process (e.g. 31c-71c): ')
         # Individuate libraries to pp
+
         libs = lib_input.split('-')
         if exp:
             tagpp = 'Comparison'

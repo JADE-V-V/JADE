@@ -635,7 +635,7 @@ class OktavianOutput(ExperimentalOutput):
         maintitle = ' Oktavian Experiment: '
         xlabel = 'Energy [MeV]'
 
-        tables = []  # All C/E tables will be stored here and then concatenated
+        self.tables = []  # All C/E tables will be stored here and then concatenated
 
         # Tally numbers should be fixed
         for tallynum in ['21', '41']:
@@ -665,39 +665,13 @@ class OktavianOutput(ExperimentalOutput):
                 # Get the experimental data
                 file = 'oktavian_'+material+'_tal'+tallynum+'.exp'
                 filepath = os.path.join(self.path_exp_res, material, file)
-                if os.path.isfile(filepath):
-                    x, y, err = self._read_Oktavian_expresult(filepath,
-                                                              tallynum)
-                else:
-                    # Skip the tally if no experimental data is available
+
+                # Skip the tally if no experimental data is available
+                if os.path.isfile(filepath) == 0:
                     continue
-                # lib will be passed to the plotter
-                lib = {'x': x, 'y': y, 'err': err,
-                       'ylabel': material + ' (Experiment)'}
-                # Get also the interpolator
-                interpolator = interp1d(x, y, fill_value=0, bounds_error=False)
-
-                # Collect the data to be plotted
-                data = [lib]  # The first one should be the exp one
-                for lib_tag in self.lib[1:]:  # Avoid exp
-                    lib_name = self.session.conf.get_lib_name(lib_tag)
-                    try:  # The tally may not be defined
-                        # Data for the plotter
-                        values = self.results[material, lib_tag][tallynum]
-                        lib = {'x': values['Energy [MeV]'],
-                               'y': values['C'], 'err': values['Error'],
-                               'ylabel': material + ' ('+lib_name+')'}
-                        data.append(lib)
-                        # data for the table
-                        table = _get_tablevalues(values, interpolator)
-                        table['Particle'] = particle
-                        table['Material'] = material
-                        table['Library'] = lib_name
-                        tables.append(table)
-                    except KeyError:
-                        # The tally is not defined
-                        pass
-
+                else:
+                    data = self._data_collect(material, filepath, tallynum, particle)
+                
                 # Once the data is collected it is passed to the plotter
                 outname = 'tmp'
                 plot = Plotter(data, title, tmp_path, outname, quantity, unit,
@@ -705,16 +679,17 @@ class OktavianOutput(ExperimentalOutput):
                 img_path = plot.plot('Experimental points')
                 # Insert the image in the atlas
                 atlas.insert_img(img_path)
+
         self.mat_off_list = self.materials
         # Dump the global C/E table
-        self._dump_ce_table(tables)
+        self._dump_ce_table()
 
         return atlas
 
-    def _dump_ce_table (self, tables):
+    def _dump_ce_table (self):
 
         print(' Dump the C/E table in Excel...')
-        final_table = pd.concat(tables)
+        final_table = pd.concat(self.tables)
         todump = final_table.set_index(['Material', 'Particle', 'Library'])
         ex_outpath = os.path.join(self.excel_path, 'C over E table.xlsx')
 
@@ -757,7 +732,44 @@ class OktavianOutput(ExperimentalOutput):
         # Close the Pandas Excel writer and output the Excel file.
         writer.save()
         return
+    
+    def _data_collect(self, material, filepath, tallynum, particle):
 
+        x, y, err = self._read_Oktavian_expresult(filepath, tallynum)
+
+        # lib will be passed to the plotter
+        lib = {'x': x, 'y': y, 'err': err,
+                'ylabel': material + ' (Experiment)'}
+        # Get also the interpolator
+        interpolator = interp1d(x, y, fill_value=0, bounds_error=False)
+
+        # Collect the data to be plotted
+        data = [lib]  # The first one should be the exp one
+        for lib_tag in self.lib[1:]:  # Avoid exp
+            lib_name = self.session.conf.get_lib_name(lib_tag)
+            try:  # The tally may not be defined
+                # Data for the plotter
+                if self.testname == 'Tiara-BC':
+                    values = self.results['-'.join(material.split('-')[:-1]), lib_tag][tallynum]
+                else:
+                    values = self.results[material, lib_tag][tallynum]
+                lib = {'x': values['Energy [MeV]'],
+                        'y': values['C'], 'err': values['Error'],
+                        'ylabel': material + ' ('+lib_name+')'}
+                data.append(lib)
+                # data for the table
+                if self.testname == 'Tiara-BC':
+                    table = _get_tablevalues(values, interpolator, e_intervals=[3.5, 10, 20, 30, 40, 50, 60, 70])
+                else:
+                    table = _get_tablevalues(values, interpolator)
+                table['Particle'] = particle
+                table['Material'] = material
+                table['Library'] = lib_name
+                self.tables.append(table)
+            except KeyError:
+                # The tally is not defined
+                pass
+        return data
 
     def _extract_outputs(self):
         # Get results
@@ -885,7 +897,7 @@ class OktavianOutput(ExperimentalOutput):
         if self.testname == 'Oktavian':
             columns = {'21': ['Nominal Energy [MeV]', 'Upper Energy [MeV]',
                             'Lower Energy [MeV]', 'C', 'Error'],
-                    '41': ['Nominal Energy [MeV]', 'Lower Energy [MeV]',
+                       '41': ['Nominal Energy [MeV]', 'Lower Energy [MeV]',
                             'Upper Energy [MeV]', 'C', 'Error']}
         else:
             columns = {'14': ['Nominal Energy [MeV]', 'C', 'Error'], 
@@ -934,107 +946,55 @@ class TiaraBCOutput(OktavianOutput):
         quantity = 'Yield per lethargy'
         msg = ' Printing the '+particle+' Letharghy flux...'
         unit = r'$ 1/u$'
-        tables = []  # All C/E tables will be stored here and then concatenated
+        self.tables = []  # All C/E tables will be stored here and then concatenated
         mat_off_list = []
-        for material in self.materials:
-            for tallynum in self.raw_data[(material,self.lib[1])].keys():
-                file = 'Tiara-BC_'+material+'-00.exp'
-                filepath = os.path.join(self.path_exp_res, material + '-00', file)
-                coll_thickness = material.split("-")[-1]
-                offaxis = 0
-                offaxis_str = '00'
-                if tallynum == 14 and len(self.raw_data[(material,self.lib[1])]) == 2:
-                    file = 'Tiara-BC_'+material+'-20.exp'
-                    filepath = os.path.join(self.path_exp_res, material+'-20', file)
-                    offaxis = 20
-                    offaxis_str = '20'
-                
-                if tallynum == 14 and len(self.raw_data[(material,self.lib[1])]) == 3:
-                    file = 'Tiara-BC_'+material+'-00.exp'
-                    filepath = os.path.join(self.path_exp_res, material+'-00', file)
-                    offaxis = 0
+        print(msg)
+        for material in tqdm(self.materials, desc='Materials: '):
+            for tally in self.outputs[(material, self.lib[1])].mctal.tallies:
+                tallynum = tally.tallyNumber
+                comment = str(tally.tallyComment)
+                if 'on-axis' in comment:
                     offaxis_str = '00'
-
-                if tallynum == 24 and len(self.raw_data[(material,self.lib[1])]) == 2:
-                    file = 'Tiara-BC_'+material+'-40.exp'
-                    filepath = os.path.join(self.path_exp_res, material+'-40', file)
-                    offaxis = 40
-                    offaxis_str = '40'
-                
-                if tallynum == 24 and len(self.raw_data[(material,self.lib[1])]) == 3:
-                    file = 'Tiara-BC_'+material+'-20.exp'
-                    filepath = os.path.join(self.path_exp_res, material+'-20', file)
-                    offaxis = 20
+                    string_off_axis = 'on-axis'
+                elif '20' in comment:
                     offaxis_str = '20'
-                
-                if tallynum == 34:
-                    file = 'Tiara-BC_'+material+'-40.exp'
-                    filepath = os.path.join(self.path_exp_res, material+'-40', file)
-                    offaxis = 40
+                    string_off_axis = '20 cm off-axis'
+                elif '40' in comment:
                     offaxis_str = '40'
-            
+                    string_off_axis = '40 cm off-axis'
                 if material.split('-')[0] == 'cc':
-                    if offaxis == 0:
-                        atlas.doc.add_heading('Material: Concrete, ' + material.split('-')[2] + ' cm, ' + material.split('-')[1] + ' MeV, ' + 'Additional collimator: ' + coll_thickness + ' cm, on-axis', level=2)
-                        title = '\n' + maintitle+tit_tag+', '+'\nMaterial: Concrete, ' + material.split('-')[2] + ' cm, ' + material.split('-')[1] + ' MeV, ' + 'Additional collimator: ' + coll_thickness + ' cm, on-axis' + '\n'
-                    else:
-                        atlas.doc.add_heading('Material: Concrete, ' + material.split('-')[2] + ' cm, ' + material.split('-')[1] + ' MeV, ' + 'Additional collimator: ' + coll_thickness + ' cm, ' + str(offaxis) + ' cm off-axis', level=2)
-                        title = '\n' + maintitle+tit_tag+', '+'\nMaterial: Concrete, ' + material.split('-')[2] + ' cm, ' + material.split('-')[1] + ' MeV, ' + 'Additional collimator: ' + coll_thickness + ' cm, ' + str(offaxis) + ' cm off-axis' + '\n'
-                else:
-                    if offaxis == 0:
-                        atlas.doc.add_heading('Material: Iron, ' + material.split('-')[2] + ' cm, ' + material.split('-')[1] + ' MeV, ' + 'Additional collimator: ' + coll_thickness + ' cm, on-axis', level=2)
-                        title = '\n' + maintitle+tit_tag+', '+'\nMaterial: Iron, ' + material.split('-')[2] + ' cm, ' + material.split('-')[1] + ' MeV, ' + 'Additional collimator: ' + coll_thickness + ' cm, on-axis' + '\n'
-                    else:
-                        atlas.doc.add_heading('Material: Iron, ' + material.split('-')[2] + ' cm, ' + material.split('-')[1] + ' MeV, ' + 'Additional collimator: ' + coll_thickness + ' cm, ' + str(offaxis) + ' cm off-axis', level=2)
-                        title = '\n' + maintitle+tit_tag+', '+'\nMaterial: Iron, ' + material.split('-')[2] + ' cm, ' + material.split('-')[1] + ' MeV, ' + 'Additional collimator: ' + coll_thickness + ' cm, ' + str(offaxis) + ' cm off-axis' + '\n'
-                
+                    material_name = 'Concrete'
+                elif material.split('-')[0] == 'fe':
+                    material_name = 'Iron'
+                atlas.doc.add_heading('Material: ' + material_name + ', ' + 
+                                      material.split('-')[2] + ' cm, ' + 
+                                      material.split('-')[1] + ' MeV, ' + 
+                                      'Additional collimator: ' + 
+                                      material.split('-')[3] + ' cm,' + 
+                                      string_off_axis, level=2)
+                title = '\n' + maintitle + tit_tag + ', '+'\nMaterial: Iron, ' + material.split('-')[2] + ' cm, ' + material.split('-')[1] + ' MeV, ' + 'Additional collimator: ' + material.split('-')[3] + ' cm, ' + string_off_axis + '\n'
+                    
                 mat_off_list.append(material + '-' + offaxis_str)
-                if os.path.isfile(filepath):
-                    x, y, err = self._read_Oktavian_expresult(filepath,
-                                                                str(tallynum))
-                else:
-                    # Skip the tally if no experimental data is available
-                    continue
-                # lib will be passed to the plotter
-                lib = {'x': x, 'y': y, 'err': err,
-                        'ylabel': material + '-' + offaxis_str + ' (Experiment)'}
-                    # Get also the interpolator
-                interpolator = interp1d(x, y, fill_value=0, bounds_error=False)
+                file = 'Tiara-BC_' + material + '-' + offaxis_str + '.exp'
+                filepath = os.path.join(self.path_exp_res, material + '-' + 
+                                        offaxis_str, file)            
 
-                # Collect the data to be plotted
-                data = [lib]  # The first one should be the exp one
-                for lib_tag in self.lib[1:]:  # Avoid exp
-                    lib_name = self.session.conf.get_lib_name(lib_tag)
-                    try:  # The tally may not be defined
-                        # Data for the plotter
-                        values = self.results[material, lib_tag][str(tallynum)]
-                        lib = {'x': values['Energy [MeV]'],
-                                'y': values['C'], 'err': values['Error'],
-                                'ylabel': material + '-' + offaxis_str +
-                                ' ('+lib_name+')'}
-                        data.append(lib)
-                        # data for the table
-                        table = _get_tablevalues(values, interpolator, 
-                                                 e_intervals = [3.5, 10, 20, 30,
-                                                                40, 50, 60, 70])
-                        table['Particle'] = particle
-                        table['Material'] = material + '-' + offaxis_str
-                        table['Library']  = lib_name
-                        tables.append(table)
-                    except KeyError:
-                        # The tally is not defined
-                        pass
-                
+                # Skip the tally if no experimental data is available
+                if os.path.isfile(filepath) == 0:
+                    continue
+                else:
+                    data = self._data_collect(material + '-' + offaxis_str,
+                                    filepath, str(tallynum), particle)
                 # Once the data is collected it is passed to the plotter
                 outname = 'tmp'
                 plot = Plotter(data, title, tmp_path, outname, quantity, unit,
-                            xlabel, self.testname)
+                               xlabel, self.testname)
                 img_path = plot.plot('Experimental points')
                 # Insert the image in the atlas
                 atlas.insert_img(img_path)
 
         self.mat_off_list = mat_off_list
-        self._dump_ce_table(tables)
+        self._dump_ce_table()
 
         return atlas
 

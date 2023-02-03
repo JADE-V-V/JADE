@@ -665,12 +665,16 @@ class OktavianOutput(ExperimentalOutput):
                 # Get the experimental data
                 file = 'oktavian_'+material+'_tal'+tallynum+'.exp'
                 filepath = os.path.join(self.path_exp_res, material, file)
-
+                columns = {'21': ['Nominal Energy [MeV]', 'Upper Energy [MeV]',
+                            'Lower Energy [MeV]', 'C', 'Error'],
+                           '41': ['Nominal Energy [MeV]', 'Lower Energy [MeV]',
+                            'Upper Energy [MeV]', 'C', 'Error']}
                 # Skip the tally if no experimental data is available
                 if os.path.isfile(filepath) == 0:
                     continue
                 else:
-                    data = self._data_collect(material, filepath, tallynum, particle)
+                    data = self._data_collect(material, filepath, tallynum, 
+                                              particle, material, columns)
                 
                 # Once the data is collected it is passed to the plotter
                 outname = 'tmp'
@@ -733,9 +737,10 @@ class OktavianOutput(ExperimentalOutput):
         writer.save()
         return
     
-    def _data_collect(self, material, filepath, tallynum, particle):
+    def _data_collect(self, material, filepath, tallynum, particle, 
+                          mat_read_file, e_intervals, columns):
 
-        x, y, err = self._read_Oktavian_expresult(filepath, tallynum)
+        x, y, err = self._read_Oktavian_expresult(filepath, tallynum, columns)
 
         # lib will be passed to the plotter
         lib = {'x': x, 'y': y, 'err': err,
@@ -749,19 +754,13 @@ class OktavianOutput(ExperimentalOutput):
             lib_name = self.session.conf.get_lib_name(lib_tag)
             try:  # The tally may not be defined
                 # Data for the plotter
-                if self.testname == 'Tiara-BC':
-                    values = self.results['-'.join(material.split('-')[:-1]), lib_tag][tallynum]
-                else:
-                    values = self.results[material, lib_tag][tallynum]
+                values = self.results[mat_read_file, lib_tag][tallynum]
                 lib = {'x': values['Energy [MeV]'],
                         'y': values['C'], 'err': values['Error'],
                         'ylabel': material + ' ('+lib_name+')'}
                 data.append(lib)
                 # data for the table
-                if self.testname == 'Tiara-BC':
-                    table = _get_tablevalues(values, interpolator, e_intervals=[3.5, 10, 20, 30, 40, 50, 60, 70])
-                else:
-                    table = _get_tablevalues(values, interpolator)
+                table = _get_tablevalues(values, interpolator, e_intervals = e_intervals)
                 table['Particle'] = particle
                 table['Material'] = material
                 table['Library'] = lib_name
@@ -853,14 +852,13 @@ class OktavianOutput(ExperimentalOutput):
             ergs = np.array(ergs)
 
             # Different behaviour for photons and neutrons
-            if self.testname == 'Oktavian':
-                if tallynum == '21':
-                    flux = flux/np.log((ergs[1:]/ergs[:-1]))
-                elif tallynum == '41':
-                    flux = flux/(ergs[1:]-ergs[:-1])
-
-            elif self.testname == 'Tiara-BC':
+            for tally in output.mctal.tallies:
+                if tallynum == str(tally.tallyNumber):
+                    particle = tally.particleList[np.where(tally.tallyParticles == 1)[0][0]]
+            if particle == 'Neutron':
                 flux = flux/np.log((ergs[1:]/ergs[:-1]))
+            elif particle == 'Photon':
+                flux = flux/(ergs[1:]-ergs[:-1])
 
             res2['Energy [MeV]'] = energies
             res2['C'] = flux
@@ -870,7 +868,7 @@ class OktavianOutput(ExperimentalOutput):
 
         return res
 
-    def _read_Oktavian_expresult(self, file, tallynum):
+    def _read_Oktavian_expresult(self, file, tallynum, columns):
         """
         Given a file containing the Oktavian experimental results read it and
         return the values to plot.
@@ -893,16 +891,7 @@ class OktavianOutput(ExperimentalOutput):
         y : np.array
             lethargy flux values.
 
-        """
-        if self.testname == 'Oktavian':
-            columns = {'21': ['Nominal Energy [MeV]', 'Upper Energy [MeV]',
-                            'Lower Energy [MeV]', 'C', 'Error'],
-                       '41': ['Nominal Energy [MeV]', 'Lower Energy [MeV]',
-                            'Upper Energy [MeV]', 'C', 'Error']}
-        else:
-            columns = {'14': ['Nominal Energy [MeV]', 'C', 'Error'], 
-                       '24': ['Nominal Energy [MeV]', 'C', 'Error'], 
-                       '34': ['Nominal Energy [MeV]', 'C', 'Error']}           
+        """          
         # First of all understand how many comment lines there are
         with open(file, 'r') as infile:
             counter = 0
@@ -970,7 +959,7 @@ class TiaraBCOutput(OktavianOutput):
                                       material.split('-')[2] + ' cm, ' + 
                                       material.split('-')[1] + ' MeV, ' + 
                                       'Additional collimator: ' + 
-                                      material.split('-')[3] + ' cm,' + 
+                                      material.split('-')[3] + ' cm, ' + 
                                       string_off_axis, level=2)
                 title = '\n' + maintitle + tit_tag + ', '+'\nMaterial: Iron, ' + material.split('-')[2] + ' cm, ' + material.split('-')[1] + ' MeV, ' + 'Additional collimator: ' + material.split('-')[3] + ' cm, ' + string_off_axis + '\n'
                     
@@ -978,13 +967,17 @@ class TiaraBCOutput(OktavianOutput):
                 file = 'Tiara-BC_' + material + '-' + offaxis_str + '.exp'
                 filepath = os.path.join(self.path_exp_res, material + '-' + 
                                         offaxis_str, file)            
-
+                columns = {'14': ['Nominal Energy [MeV]', 'C', 'Error'], 
+                        '24': ['Nominal Energy [MeV]', 'C', 'Error'], 
+                        '34': ['Nominal Energy [MeV]', 'C', 'Error']} 
                 # Skip the tally if no experimental data is available
                 if os.path.isfile(filepath) == 0:
                     continue
                 else:
                     data = self._data_collect(material + '-' + offaxis_str,
-                                    filepath, str(tallynum), particle)
+                                    filepath, str(tallynum), particle, material,
+                                    e_intervals=[3.5, 10, 20, 30, 40, 50, 60, 70],
+                                    columns = columns)
                 # Once the data is collected it is passed to the plotter
                 outname = 'tmp'
                 plot = Plotter(data, title, tmp_path, outname, quantity, unit,
@@ -1330,7 +1323,7 @@ class TiaraBSOutput(ExperimentalOutput):
                     results_path = os.path.join(test_path, folder)
                     pieces = folder.split('_')
                     # Get zaid
-                    material = pieces[1]
+                    material = pieces[-1]
                  
                     mfile, ofile = self._get_output_files(results_path)
                     # Parse output

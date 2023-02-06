@@ -165,8 +165,8 @@ class ExperimentalOutput(BenchmarkOutput):
 
         # Save Atlas
         print(' Producing the PDF...')
-        if atlas is not None:
-            atlas.save(self.atlas_path)
+        
+        atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(tmp_path)
 
@@ -1039,231 +1039,219 @@ def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='C',
 
     return pd.DataFrame(rows)
 
-class TiaraFCOutput(ExperimentalOutput):
-   
-    def _extract_outputs(self):
-        # Get results
-        # results = []
-        # errors = []
-        # stat_checks = []
-        outputs = {}
-        # results = {}
-        materials = []
-        # Iterate on the different libraries results except 'Exp'
-        for lib, test_path in self.test_path.items():
-            if lib != EXP_TAG:
-                for folder in os.listdir(test_path):
-                    results_path = os.path.join(test_path, folder)
-                    pieces = folder.split('_')
-                    # Get zaid
-                    material = pieces[1]
-                 
-                    mfile, ofile = self._get_output_files(results_path)
-                    # Parse output
-                    output = MCNPoutput(mfile, ofile)
-                    outputs[material, lib] = output
-                    # Adjourn raw Data
-                    self.raw_data[material, lib] = output.tallydata
-                    # Get the meaningful results               
-                    # results[material, lib] = self._processMCNPdata(output)
-                    if material not in materials:
-                        materials.append(material)
+class TiaraOutput(OktavianOutput):
 
-        self.outputs = outputs
-        # self.results = results
-        self.materials = materials
+    def _processMCNPdata(self, output):
+
+        return None
+    
+    def _case_tree_df_build(self):
+        case_tree_dict = {}
+        for lib in self.lib[1:]:
+            case_tree = pd.DataFrame()
+
+            for cont, case in enumerate(self.materials):
+                mat_name_list = case.split('-')
+                if mat_name_list[0] == 'cc':
+                    case_tree.loc[cont, 'Shield Material'] = 'Concrete'
+                elif mat_name_list[0] == 'fe':
+                    case_tree.loc[cont, 'Shield Material'] = 'Iron'
+
+                case_tree.loc[cont, 'Energy'] = int(mat_name_list[1])
+                case_tree.loc[cont, 'Shield Thickness'] = int(mat_name_list[2])
+                case_tree.loc[cont, 'Additional Collimator'] = int(mat_name_list[3])
+
+                for tally in self.outputs[(case,lib)].mctal.tallies:
+                    case_tree.loc[cont, tally.tallyComment] =  self.raw_data[(case,lib)][tally.tallyNumber].iloc[-1]['Value']
+                    case_tree.loc[cont, str(tally.tallyComment[0]) + ' Error'] =  self.raw_data[(case,lib)][tally.tallyNumber].iloc[-1]['Error']
+            case_tree.fillna(value=pd.np.nan, inplace=True)
+            case_tree.sort_values(['Shield Material', 'Energy', 'Shield Thickness', 'Additional Collimator'])
+            case_tree_dict[lib] = case_tree
+        return case_tree_dict
+
+
+class TiaraFCOutput(TiaraOutput):
 
     def _pp_excel_comparison(self):
         # This method prints FC output tables in Excel
         # Initializing containers
-        sort_matlist = []
-        sort_dict = {}
-        lib_names = {}
-        exp_data_dict = {}
-        #Create ordered shield thickness list for each energy and material
-        for mat in ['cc','fe']:
-            for energy in ['43', '68']:
-                aux_list = []
-                for material in self.materials:
-                    mat1 = material.split('-')[0]
-                    energy1 = material.split('-')[1]
-                    thickness = int(material.split('-')[2])
-                    if mat == mat1 and energy == energy1:
-                       aux_list.append(thickness)
-                aux_list.sort()
-                sort_dict[(mat,energy)] = aux_list
-        # Collect exp data in ordered dict
-        i = 0
-        for mat in ['fe','cc']:
-            for energy in ['43','68']:
-                exp_data_dict[(mat,energy)] = i
-                i += 1
-        #Collect extended name of libraries for better visualization
-        for x in range(0, len(self.lib)):
-            lib_names[x] = self.name.split('_Vs_')[x]
+        #case_tree = self._case_tree_df_build()
+        # sort_matlist = []
+        # sort_dict = {}
+        # lib_names = {}
+        # exp_data_dict = {}
+        # #Create ordered shield thickness list for each energy and material
+        # for mat in ['cc','fe']:
+        #     for energy in ['43', '68']:
+        #         aux_list = []
+        #         for material in self.materials:
+        #             mat1 = material.split('-')[0]
+        #             energy1 = material.split('-')[1]
+        #             thickness = int(material.split('-')[2])
+        #             if mat == mat1 and energy == energy1:
+        #                aux_list.append(thickness)
+        #         aux_list.sort()
+        #         sort_dict[(mat,energy)] = aux_list
+        # # Collect exp data in ordered dict
+        # i = 0
+        # for mat in ['fe','cc']:
+        #     for energy in ['43','68']:
+        #         exp_data_dict[(mat,energy)] = i
+        #         i += 1
+        # #Collect extended name of libraries for better visualization
+        # for x in range(0, len(self.lib)):
+        #     lib_names[x] = self.name.split('_Vs_')[x]
 
-        #Create ordered case list
-        for mat in ['cc','fe']:
-            for energy in ['43', '68']:
-                for thickness1 in sort_dict[(mat,energy)]:
-                    for material in self.materials:
-                        mat1 = material.split('-')[0]
-                        energy1 = material.split('-')[1]
-                        if mat == mat1 and energy == energy1:
-                            thickness = int(material.split('-')[2])
-                            if thickness1 == thickness:
-                                sort_matlist.append(material)
+        # #Create ordered case list
+        # for mat in ['cc','fe']:
+        #     for energy in ['43', '68']:
+        #         for thickness1 in sort_dict[(mat,energy)]:
+        #             for material in self.materials:
+        #                 mat1 = material.split('-')[0]
+        #                 energy1 = material.split('-')[1]
+        #                 if mat == mat1 and energy == energy1:
+        #                     thickness = int(material.split('-')[2])
+        #                     if thickness1 == thickness:
+        #                         sort_matlist.append(material)
         
-        #Create Excel tables
-        for energy in ['43', '68']:
-            for mat in ['cc','fe']:
-                filepath = self.excel_path + '\\' + self.name + '_' + energy + 'MeV_' + mat + '.xlsx'
-                if os.path.exists(filepath):
-                    os.remove(filepath)
-                workbook = xlsxwriter.Workbook(filepath,{'nan_inf_to_errors': True})
-                worksheet = workbook.add_worksheet()
-                # Formats and alignment for title and library columns   
-                merge_format = workbook.add_format({
-                'align':    'center',
-                'valign':   'vcenter',
-                })
-                title_format = workbook.add_format({
-                'bold': True,
-                })
-                worksheet.merge_range(0,0,0,4, 'Tiara Fission Chambers Benchmark: ' + energy + ' MeV, ' + mat + ' shield', title_format)
-                worksheet.write(3,1, 'Axis offset')
-                worksheet.write(3,0, 'Shield thickness')
-                for counter, lib in enumerate(lib_names.values()):
-                    # Insert Exp data in table
-                    if lib == 'Exp':
-                        worksheet.merge_range(1,2,1,5, 'Exp', merge_format)
-                        worksheet.merge_range(2,2,2,3, 'U', merge_format)
-                        worksheet.merge_range(2,4,2,5, 'Th', merge_format)
-                        worksheet.write(3,2, 'Value')
-                        worksheet.write(3,3, 'Error [ % ]')
-                        worksheet.write(3,4, 'Value')
-                        worksheet.write(3,5, 'Error [ % ]')
-                    #Insert computational data in table
-                    else:
-                        worksheet.merge_range(1, 2+counter * 4, 1, 5 + counter * 4, lib, merge_format)
-                        worksheet.merge_range(2,2  + counter * 4,2,3  + counter * 4, 'U', merge_format)
-                        worksheet.merge_range(2,4  + counter * 4,2,5  + counter * 4, 'Th', merge_format)
-                        worksheet.write(3,2 + counter * 4, 'Value')
-                        worksheet.write(3,3 + counter * 4, 'C/E')
-                        worksheet.write(3,4 + counter * 4, 'Value')
-                        worksheet.write(3,5 + counter * 4, 'C/E')
+        # #Create Excel tables
+        # for energy in ['43', '68']:
+        #     for mat in ['cc','fe']:
+        #         filepath = self.excel_path + '\\' + self.name + '_' + energy + 'MeV_' + mat + '.xlsx'
+        #         if os.path.exists(filepath):
+        #             os.remove(filepath)
+        #         workbook = xlsxwriter.Workbook(filepath,{'nan_inf_to_errors': True})
+        #         worksheet = workbook.add_worksheet()
+        #         # Formats and alignment for title and library columns   
+        #         merge_format = workbook.add_format({
+        #         'align':    'center',
+        #         'valign':   'vcenter',
+        #         })
+        #         title_format = workbook.add_format({
+        #         'bold': True,
+        #         })
+        #         worksheet.merge_range(0,0,0,4, 'Tiara Fission Chambers Benchmark: ' + energy + ' MeV, ' + mat + ' shield', title_format)
+        #         worksheet.write(3,1, 'Axis offset')
+        #         worksheet.write(3,0, 'Shield thickness')
+        #         for counter, lib in enumerate(lib_names.values()):
+        #             # Insert Exp data in table
+        #             if lib == 'Exp':
+        #                 worksheet.merge_range(1,2,1,5, 'Exp', merge_format)
+        #                 worksheet.merge_range(2,2,2,3, 'U', merge_format)
+        #                 worksheet.merge_range(2,4,2,5, 'Th', merge_format)
+        #                 worksheet.write(3,2, 'Value')
+        #                 worksheet.write(3,3, 'Error [ % ]')
+        #                 worksheet.write(3,4, 'Value')
+        #                 worksheet.write(3,5, 'Error [ % ]')
+        #             #Insert computational data in table
+        #             else:
+        #                 worksheet.merge_range(1, 2+counter * 4, 1, 5 + counter * 4, lib, merge_format)
+        #                 worksheet.merge_range(2,2  + counter * 4,2,3  + counter * 4, 'U', merge_format)
+        #                 worksheet.merge_range(2,4  + counter * 4,2,5  + counter * 4, 'Th', merge_format)
+        #                 worksheet.write(3,2 + counter * 4, 'Value')
+        #                 worksheet.write(3,3 + counter * 4, 'C/E')
+        #                 worksheet.write(3,4 + counter * 4, 'Value')
+        #                 worksheet.write(3,5 + counter * 4, 'C/E')
 
 
-                for thick_counter, thickness in enumerate(sort_dict[(mat,energy)]):
-                    worksheet.write(4 + thick_counter, 0, thickness)
-                    worksheet.write(4 + thick_counter, 1, 0)
-                    worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 0, thickness)
-                    worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 1, 20)
+        #         for thick_counter, thickness in enumerate(sort_dict[(mat,energy)]):
+        #             worksheet.write(4 + thick_counter, 0, thickness)
+        #             worksheet.write(4 + thick_counter, 1, 0)
+        #             worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 0, thickness)
+        #             worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 1, 20)
                     
-                    for material in sort_matlist:
+        #             for material in sort_matlist:
 
-                        mat1 = material.split('-')[0]
-                        energy1 = material.split('-')[1]
+        #                 mat1 = material.split('-')[0]
+        #                 energy1 = material.split('-')[1]
 
-                        if mat == mat1 and energy == energy1:
-                            thickness1 = int(material.split('-')[2])
-                            if thickness1 == thickness:
-                                for lib_counter,lib in enumerate(self.lib):
-                                    if lib != 'Exp':
-                                        exp_df = self.exp_data[exp_data_dict[mat,energy]]
-                                        if thickness != 130:
-                                            worksheet.write(4 + thick_counter, 6 + 4 * (lib_counter-1), self.raw_data[(material,lib)][14]['Value'])
-                                            worksheet.write(4 + thick_counter, 8 + 4 * (lib_counter-1), self.raw_data[(material,lib)][24]['Value'])
-                                            try:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 6 + 4 * (lib_counter-1), self.raw_data[(material,lib)][34]['Value'])
-                                            except:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 6 + 4 * (lib_counter-1), '-')
-                                            try:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 8 + 4 * (lib_counter-1), self.raw_data[(material,lib)][44]['Value'])
-                                            except:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 8 + 4 * (lib_counter-1), '-')
-                                            worksheet.write(4 + thick_counter, 7 + 4 * (lib_counter-1), self.raw_data[(material,lib)][14]['Value'] / exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '238 U [/1e24]'].values[0]/1e24)
-                                            worksheet.write(4 + thick_counter, 9 + 4 * (lib_counter-1), self.raw_data[(material,lib)][24]['Value'] / exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '232 Th [/1e24]'].values[0]/1e24)
-                                            try:                                     
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 7 + 4 * (lib_counter-1), self.raw_data[(material,lib)][34]['Value'] / exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '238 U [/1e24]'].values[1]/1e24)
-                                            except:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 7 + 4 * (lib_counter-1), '-')
-                                            try:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 9 + 4 * (lib_counter-1), self.raw_data[(material,lib)][44]['Value'] /exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '232 Th [/1e24]'].values[1]/1e24)
-                                            except:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 9 + 4 * (lib_counter-1), '-')
-                                        else:
-                                            try:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 6 + 4 * (lib_counter-1), self.raw_data[(material,lib)][34]['Value'])
-                                            except:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 6 + 4 * (lib_counter-1), '-')
-                                            try:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 8 + 4 * (lib_counter-1), self.raw_data[(material,lib)][44]['Value'])
-                                            except:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 8 + 4 * (lib_counter-1), '-')
-                                            try:                                     
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 7 + 4 * (lib_counter-1), self.raw_data[(material,lib)][34]['Value'] / exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '238 U [/1e24]'].values[0]/1e24)
-                                            except:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 7 + 4 * (lib_counter-1), '-')
-                                            try:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 9 + 4 * (lib_counter-1), self.raw_data[(material,lib)][44]['Value'] /exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '232 Th [/1e24]'].values[0]/1e24)
-                                            except:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 9 + 4 * (lib_counter-1), '-')
-                                    else:
-                                        exp_df = self.exp_data[exp_data_dict[mat,energy]]
-                                        if thickness != 130:
-                                            worksheet.write(4 + thick_counter, 2, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '238 U [/1e24]'].values[0])
-                                            worksheet.write(4 + thick_counter, 4, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '232 Th [/1e24]'].values[0])
-                                            worksheet.write(4 + thick_counter, 3, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), 'err [%]'].values[0])
-                                            worksheet.write(4 + thick_counter, 5, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), 'err [%].1'].values[0])
+        #                 if mat == mat1 and energy == energy1:
+        #                     thickness1 = int(material.split('-')[2])
+        #                     if thickness1 == thickness:
+        #                         for lib_counter,lib in enumerate(self.lib):
+        #                             if lib != 'Exp':
+        #                                 exp_df = self.exp_data[exp_data_dict[mat,energy]]
+        #                                 if thickness != 130:
+        #                                     worksheet.write(4 + thick_counter, 6 + 4 * (lib_counter-1), self.raw_data[(material,lib)][14]['Value'])
+        #                                     worksheet.write(4 + thick_counter, 8 + 4 * (lib_counter-1), self.raw_data[(material,lib)][24]['Value'])
+        #                                     try:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 6 + 4 * (lib_counter-1), self.raw_data[(material,lib)][34]['Value'])
+        #                                     except:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 6 + 4 * (lib_counter-1), '-')
+        #                                     try:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 8 + 4 * (lib_counter-1), self.raw_data[(material,lib)][44]['Value'])
+        #                                     except:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 8 + 4 * (lib_counter-1), '-')
+        #                                     worksheet.write(4 + thick_counter, 7 + 4 * (lib_counter-1), self.raw_data[(material,lib)][14]['Value'] / exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '238 U [/1e24]'].values[0]/1e24)
+        #                                     worksheet.write(4 + thick_counter, 9 + 4 * (lib_counter-1), self.raw_data[(material,lib)][24]['Value'] / exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '232 Th [/1e24]'].values[0]/1e24)
+        #                                     try:                                     
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 7 + 4 * (lib_counter-1), self.raw_data[(material,lib)][34]['Value'] / exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '238 U [/1e24]'].values[1]/1e24)
+        #                                     except:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 7 + 4 * (lib_counter-1), '-')
+        #                                     try:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 9 + 4 * (lib_counter-1), self.raw_data[(material,lib)][44]['Value'] /exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '232 Th [/1e24]'].values[1]/1e24)
+        #                                     except:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 9 + 4 * (lib_counter-1), '-')
+        #                                 else:
+        #                                     try:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 6 + 4 * (lib_counter-1), self.raw_data[(material,lib)][34]['Value'])
+        #                                     except:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 6 + 4 * (lib_counter-1), '-')
+        #                                     try:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 8 + 4 * (lib_counter-1), self.raw_data[(material,lib)][44]['Value'])
+        #                                     except:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 8 + 4 * (lib_counter-1), '-')
+        #                                     try:                                     
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 7 + 4 * (lib_counter-1), self.raw_data[(material,lib)][34]['Value'] / exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '238 U [/1e24]'].values[0]/1e24)
+        #                                     except:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 7 + 4 * (lib_counter-1), '-')
+        #                                     try:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 9 + 4 * (lib_counter-1), self.raw_data[(material,lib)][44]['Value'] /exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '232 Th [/1e24]'].values[0]/1e24)
+        #                                     except:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 9 + 4 * (lib_counter-1), '-')
+        #                             else:
+        #                                 exp_df = self.exp_data[exp_data_dict[mat,energy]]
+        #                                 if thickness != 130:
+        #                                     worksheet.write(4 + thick_counter, 2, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '238 U [/1e24]'].values[0])
+        #                                     worksheet.write(4 + thick_counter, 4, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '232 Th [/1e24]'].values[0])
+        #                                     worksheet.write(4 + thick_counter, 3, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), 'err [%]'].values[0])
+        #                                     worksheet.write(4 + thick_counter, 5, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), 'err [%].1'].values[0])
                                             
-                                            try:                                      
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 2, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '238 U [/1e24]'].values[1])
-                                            except:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 2, '-')
-                                            try:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 4, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '232 Th [/1e24]'].values[1])
-                                            except:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 4, '-')
-                                            try:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 3, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), 'err [%]'].values[1])
-                                            except:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 3, '-')
-                                            try:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 5, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), 'err [%].1'].values[1])
-                                            except:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 5, '-')
-                                        else:
-                                            try:                                      
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 2, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '238 U [/1e24]'].values[0])
-                                            except:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 2, '-')
-                                            try:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 4, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '232 Th [/1e24]'].values[0])
-                                            except:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 4, '-')
-                                            try:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 3, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), 'err [%]'].values[0])
-                                            except:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 3, '-')
-                                            try:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 5, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), 'err [%].1'].values[0])
-                                            except:
-                                                worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 5, '-')                                                                             
-                workbook.close()
-
-
-    def _print_raw(self):
-        # Generate a folder for each library
-        for lib_name in self.lib[1:]:  # Avoid Exp
-            cd_lib = os.path.join(self.raw_path, lib_name)
-            os.mkdir(cd_lib)
-            # result for each material
-            for material in self.materials:
-                for key, data in self.raw_data[material, lib_name].items():
-                    file = os.path.join(cd_lib, material+' '+str(key)+'.csv')
-                    data.to_csv(file, header=True, index=False)
-
+        #                                     try:                                      
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 2, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '238 U [/1e24]'].values[1])
+        #                                     except:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 2, '-')
+        #                                     try:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 4, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '232 Th [/1e24]'].values[1])
+        #                                     except:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 4, '-')
+        #                                     try:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 3, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), 'err [%]'].values[1])
+        #                                     except:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 3, '-')
+        #                                     try:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 5, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), 'err [%].1'].values[1])
+        #                                     except:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 5, '-')
+        #                                 else:
+        #                                     try:                                      
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 2, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '238 U [/1e24]'].values[0])
+        #                                     except:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 2, '-')
+        #                                     try:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 4, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), '232 Th [/1e24]'].values[0])
+        #                                     except:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 4, '-')
+        #                                     try:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 3, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), 'err [%]'].values[0])
+        #                                     except:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 3, '-')
+        #                                     try:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 5, exp_df.loc[(exp_df['Shield thickness'] == str(thickness)), 'err [%].1'].values[0])
+        #                                     except:
+        #                                         worksheet.write(4 + thick_counter + len(sort_dict[(mat,energy)]), 5, '-')                                                                             
+        #         workbook.close()
+        pass
 
     def _read_exp_results(self):
         """
@@ -1271,7 +1259,6 @@ class TiaraFCOutput(ExperimentalOutput):
 
         """
         filepath = self.path_exp_res +'\\FC_BS_Experimental-results-CONDERC.xlsx'
-
 
         FC_data = [pd.read_excel(filepath, sheet_name = 'Fission cell', usecols = "A:E", skiprows = 2, nrows = 10), 
                     pd.read_excel(filepath, sheet_name = 'Fission cell', usecols = "A:E", skiprows = 16, nrows = 10), 
@@ -1288,181 +1275,127 @@ class TiaraFCOutput(ExperimentalOutput):
         """
         See ExperimentalOutput documentation
         """
-        pass
+        for lib in self.lib[1:]:
+            for idx, row in self.case_tree_dict[lib].iterrows():
+                plot = Plotter(data, title, tmp_path, outname, quantity, unit,
+                               xlabel, self.testname)
+                img_path = plot.plot('Waves')
+        return
 
-    def _processMCNPdata(self, output):
-        """
-        Given an mctal file object return the meaningful data extracted. Some
-        post-processing on the data may be foreseen at this stage.
-
-        Parameters
-        ----------
-        output : MCNPoutput
-            object representing an MCNP output.
-
-        Returns
-        -------
-        item :
-            the type of item can vary based on what the user intends to do
-            whith it. It will be stored in an organized way in the self.results
-            dictionary
-
-        """
-        pass
-
-class TiaraBSOutput(ExperimentalOutput):
-   
-    def _extract_outputs(self):
-        # Get results
-        outputs = {}
-        materials = []
-        # Iterate on the different libraries results except 'Exp'
-        for lib, test_path in self.test_path.items():
-            if lib != EXP_TAG:
-                for folder in os.listdir(test_path):
-                    results_path = os.path.join(test_path, folder)
-                    pieces = folder.split('_')
-                    # Get zaid
-                    material = pieces[-1]
-                 
-                    mfile, ofile = self._get_output_files(results_path)
-                    # Parse output
-                    output = MCNPoutput(mfile, ofile)
-                    outputs[material, lib] = output
-                    # Adjourn raw Data
-                    self.raw_data[material, lib] = output.tallydata
-                    # Get the meaningful results               
-                    # results[material, lib] = self._processMCNPdata(output)
-                    if material not in materials:
-                        materials.append(material)
-
-        self.outputs = outputs
-        # self.results = results
-        self.materials = materials
+class TiaraBSOutput(TiaraOutput):
 
     def _pp_excel_comparison(self):
         # This method prints Tiara BS output tables in Excel
         # Initialization of needed containers
-        sort_matlist = []
-        sort_dict = {}
-        lib_names = {}
+        # case_tree = self._case_tree_df_build()
+        # sort_matlist = []
+        # sort_dict = {}
+        # lib_names = {}
 
-        #Make an ordered dict, to print results in increasing order of thickness
-        for mat in ['cc','fe']:
-            for energy in ['43', '68']:
-                aux_list = []
-                for material in self.materials:
-                    mat1 = material.split('-')[0]
-                    energy1 = material.split('-')[1]
-                    thickness = int(material.split('-')[2])
-                    if mat == mat1 and energy == energy1:
-                       aux_list.append(thickness)
-                aux_list.sort()
-                sort_dict[(mat,energy)] = aux_list
+        # #Make an ordered dict, to print results in increasing order of thickness
+        # for mat in ['cc','fe']:
+        #     for energy in ['43', '68']:
+        #         aux_list = []
+        #         for material in self.materials:
+        #             mat1 = material.split('-')[0]
+        #             energy1 = material.split('-')[1]
+        #             thickness = int(material.split('-')[2])
+        #             if mat == mat1 and energy == energy1:
+        #                aux_list.append(thickness)
+        #         aux_list.sort()
+        #         sort_dict[(mat,energy)] = aux_list
 
-        #Make a list with extended names of libraries, for visualization purposes
-        for x in range(0, len(self.lib)):
-            lib_names[x] = self.name.split('_Vs_')[x]
+        # #Make a list with extended names of libraries, for visualization purposes
+        # for x in range(0, len(self.lib)):
+        #     lib_names[x] = self.name.split('_Vs_')[x]
         
-        #Produce an ordered list of benchmark cases
-        for mat in ['cc','fe']:
-            for energy in ['43', '68']:
-                for thickness1 in sort_dict[(mat,energy)]:
-                    for material in self.materials:
-                        mat1 = material.split('-')[0]
-                        energy1 = material.split('-')[1]
-                        if mat == mat1 and energy == energy1:
-                            thickness = int(material.split('-')[2])
-                            if thickness1 == thickness:
-                                sort_matlist.append(material)
+        # #Produce an ordered list of benchmark cases
+        # for mat in ['cc','fe']:
+        #     for energy in ['43', '68']:
+        #         for thickness1 in sort_dict[(mat,energy)]:
+        #             for material in self.materials:
+        #                 mat1 = material.split('-')[0]
+        #                 energy1 = material.split('-')[1]
+        #                 if mat == mat1 and energy == energy1:
+        #                     thickness = int(material.split('-')[2])
+        #                     if thickness1 == thickness:
+        #                         sort_matlist.append(material)
         
-        # For each energy, shield thickness material, produce Excel tables
-        for energy in ['43', '68']:
-            for mat in ['cc','fe']:
-                # Name of output file, create output file
-                filepath = self.excel_path + '\\' + self.name + '_' + energy + 'MeV_' + mat + '.xlsx'
-                if os.path.exists(filepath):
-                    os.remove(filepath)
-                workbook = xlsxwriter.Workbook(filepath,{'nan_inf_to_errors': True})
-                worksheet = workbook.add_worksheet()
-                # title/alignment formats
-                merge_format = workbook.add_format({
-                'align':    'center',
-                'valign':   'vcenter',
-                })
-                title_format = workbook.add_format({
-                'bold': True,
-                })
-                #Create table
-                worksheet.merge_range(0,0,0,4, 'Tiara Bonner Spheres Benchmark: ' + energy + ' MeV, ' + mat + ' shield', title_format)     
-                worksheet.write(2,0, 'Polyethylene Thickness/Shield thickness')
-                worksheet.write(4,0, 'Bare')
-                worksheet.write(5,0, '15 mm')
-                worksheet.write(6,0, '30 mm')
-                worksheet.write(7,0, '50 mm')
-                worksheet.write(8,0, '90 mm')
-                for counter_lib, lib in enumerate(self.lib):
-                    # Write Exp data in table
-                    if lib == 'Exp':
-                        worksheet.merge_range(1,1,1,len(sort_dict[(mat,energy)]), 'Exp', merge_format)                       
-                        for cont_thick, thickness in enumerate(sort_dict[(mat,energy)]):
-                            worksheet.write(2, 1 + cont_thick, thickness)
-                            worksheet.write(4, 1 + cont_thick, self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['Bare'].values[0])
-                            worksheet.write(5, 1 + cont_thick, self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['15 mm'].values[0])
-                            worksheet.write(6, 1 + cont_thick, self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['30 mm'].values[0])
-                            worksheet.write(7, 1 + cont_thick, self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['50 mm'].values[0])
-                            worksheet.write(8, 1 + cont_thick, self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['90 mm'].values[0])   
+        # # For each energy, shield thickness material, produce Excel tables
+        # for energy in ['43', '68']:
+        #     for mat in ['cc','fe']:
+        #         # Name of output file, create output file
+        #         filepath = self.excel_path + '\\' + self.name + '_' + energy + 'MeV_' + mat + '.xlsx'
+        #         if os.path.exists(filepath):
+        #             os.remove(filepath)
+        #         workbook = xlsxwriter.Workbook(filepath,{'nan_inf_to_errors': True})
+        #         worksheet = workbook.add_worksheet()
+        #         # title/alignment formats
+        #         merge_format = workbook.add_format({
+        #         'align':    'center',
+        #         'valign':   'vcenter',
+        #         })
+        #         title_format = workbook.add_format({
+        #         'bold': True,
+        #         })
+        #         #Create table
+        #         worksheet.merge_range(0,0,0,4, 'Tiara Bonner Spheres Benchmark: ' + energy + ' MeV, ' + mat + ' shield', title_format)     
+        #         worksheet.write(2,0, 'Polyethylene Thickness/Shield thickness')
+        #         worksheet.write(4,0, 'Bare')
+        #         worksheet.write(5,0, '15 mm')
+        #         worksheet.write(6,0, '30 mm')
+        #         worksheet.write(7,0, '50 mm')
+        #         worksheet.write(8,0, '90 mm')
+        #         for counter_lib, lib in enumerate(self.lib):
+        #             # Write Exp data in table
+        #             if lib == 'Exp':
+        #                 worksheet.merge_range(1,1,1,len(sort_dict[(mat,energy)]), 'Exp', merge_format)                       
+        #                 for cont_thick, thickness in enumerate(sort_dict[(mat,energy)]):
+        #                     worksheet.write(2, 1 + cont_thick, thickness)
+        #                     worksheet.write(4, 1 + cont_thick, self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['Bare'].values[0])
+        #                     worksheet.write(5, 1 + cont_thick, self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['15 mm'].values[0])
+        #                     worksheet.write(6, 1 + cont_thick, self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['30 mm'].values[0])
+        #                     worksheet.write(7, 1 + cont_thick, self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['50 mm'].values[0])
+        #                     worksheet.write(8, 1 + cont_thick, self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['90 mm'].values[0])   
 
-                    else:
-                        #Write computational data in table
-                        cont_thick = 0
-                        worksheet.merge_range(1, 1 + len(sort_dict[(mat,energy)]) + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, 1, 3*len(sort_dict[(mat,energy)]) + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, lib_names[counter_lib], merge_format)
-                        for thickness in sort_dict[((mat,energy))]:      
-                            for material in sort_matlist:
-                                mat1 = material.split('-')[0]
-                                energy1 = material.split('-')[1]
-                                thickness1 = int(material.split('-')[2])
-                                if mat1 == mat and energy1 == energy and thickness1 == thickness:
-                                    #Write computational data
-                                    worksheet.merge_range(2, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, 2, 2 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib  - 1)* len(sort_dict[(mat,energy)])*2, thickness, merge_format)
-                                    worksheet.write(3, 1 +len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, 'Value')
-                                    worksheet.write(4, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][14]['Value'].iloc[-1])
-                                    worksheet.write(5, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][24]['Value'].iloc[-1])
-                                    worksheet.write(6, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][34]['Value'].iloc[-1])
-                                    worksheet.write(7, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1 ) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][44]['Value'].iloc[-1])
-                                    worksheet.write(8, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][54]['Value'].iloc[-1])
-                            cont_thick += 2
+        #             else:
+        #                 #Write computational data in table
+        #                 cont_thick = 0
+        #                 worksheet.merge_range(1, 1 + len(sort_dict[(mat,energy)]) + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, 1, 3*len(sort_dict[(mat,energy)]) + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, lib_names[counter_lib], merge_format)
+        #                 for thickness in sort_dict[((mat,energy))]:      
+        #                     for material in sort_matlist:
+        #                         mat1 = material.split('-')[0]
+        #                         energy1 = material.split('-')[1]
+        #                         thickness1 = int(material.split('-')[2])
+        #                         if mat1 == mat and energy1 == energy and thickness1 == thickness:
+        #                             #Write computational data
+        #                             worksheet.merge_range(2, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, 2, 2 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib  - 1)* len(sort_dict[(mat,energy)])*2, thickness, merge_format)
+        #                             worksheet.write(3, 1 +len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, 'Value')
+        #                             worksheet.write(4, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][14]['Value'].iloc[-1])
+        #                             worksheet.write(5, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][24]['Value'].iloc[-1])
+        #                             worksheet.write(6, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][34]['Value'].iloc[-1])
+        #                             worksheet.write(7, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1 ) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][44]['Value'].iloc[-1])
+        #                             worksheet.write(8, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][54]['Value'].iloc[-1])
+        #                     cont_thick += 2
 
-                        cont_thick = 1
-                        for thickness in sort_dict[((mat,energy))]:                         
-                            for material in sort_matlist:
-                                mat1 = material.split('-')[0]
-                                energy1 = material.split('-')[1]
-                                thickness1 = int(material.split('-')[2])
-                                if mat1 == mat and energy1 == energy and thickness1 == thickness:
-                                    #Write C/E
-                                    worksheet.write(3, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, 'C/E')
-                                    worksheet.write(4, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][14]['Value'].iloc[-1]/self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['Bare'].values[0])
-                                    worksheet.write(5, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][24]['Value'].iloc[-1]/self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['15 mm'].values[0])
-                                    worksheet.write(6, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][34]['Value'].iloc[-1]/self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['30 mm'].values[0])
-                                    worksheet.write(7, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][44]['Value'].iloc[-1]/self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['50 mm'].values[0])
-                                    worksheet.write(8, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][54]['Value'].iloc[-1]/self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['90 mm'].values[0])
-                            cont_thick += 2
-                #Create Excel file
-                workbook.close()
-
-
-    def _print_raw(self):
-        # Generate a folder for each library
-        for lib_name in self.lib[1:]:  # Avoid Exp
-            cd_lib = os.path.join(self.raw_path, lib_name)
-            os.mkdir(cd_lib)
-            # result for each material
-            for material in self.materials:
-                for key, data in self.raw_data[material, lib_name].items():
-                    file = os.path.join(cd_lib, material+' '+str(key)+'.csv')
-                    data.to_csv(file, header=True, index=False)
-
+        #                 cont_thick = 1
+        #                 for thickness in sort_dict[((mat,energy))]:                         
+        #                     for material in sort_matlist:
+        #                         mat1 = material.split('-')[0]
+        #                         energy1 = material.split('-')[1]
+        #                         thickness1 = int(material.split('-')[2])
+        #                         if mat1 == mat and energy1 == energy and thickness1 == thickness:
+        #                             #Write C/E
+        #                             worksheet.write(3, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, 'C/E')
+        #                             worksheet.write(4, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][14]['Value'].iloc[-1]/self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['Bare'].values[0])
+        #                             worksheet.write(5, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][24]['Value'].iloc[-1]/self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['15 mm'].values[0])
+        #                             worksheet.write(6, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][34]['Value'].iloc[-1]/self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['30 mm'].values[0])
+        #                             worksheet.write(7, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][44]['Value'].iloc[-1]/self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['50 mm'].values[0])
+        #                             worksheet.write(8, 1 + len(sort_dict[(mat,energy)]) + cont_thick + (counter_lib - 1) * len(sort_dict[(mat,energy)])*2, self.raw_data[(material,lib)][54]['Value'].iloc[-1]/self.exp_data[(mat,energy)][self.exp_data[(mat,energy)]['Polyethylene t./Shield t.'] == thickness]['90 mm'].values[0])
+        #                     cont_thick += 2
+        #         #Create Excel file
+        #         workbook.close()
+        pass
 
     def _read_exp_results(self):
         """
@@ -1478,14 +1411,82 @@ class TiaraBSOutput(ExperimentalOutput):
                     ('cc', '43') : pd.read_excel(filepath, sheet_name = 'Bonner sphere', usecols = "A:F", skiprows = 16, nrows = 4), 
                     ('cc', '68') : pd.read_excel(filepath, sheet_name = 'Bonner sphere', usecols = "A:F", skiprows = 24, nrows = 3) 
                    }
-       
-        self.exp_data = BS_data
+
+        for key, value in BS_data.items():
+            if key[0] == 'cc':
+               value['Shield Material'] = 'Concrete'
+            if key[0] == 'fe':
+               value['Shield Material'] = 'Iron'
+            value['Energy'] = int(key[1])
+
+        exp_data = pd.DataFrame()
+        for value in BS_data.values():
+            exp_data = exp_data.append(value, ignore_index = True)
+        
+        # get the columns in the dataframe
+        columns = exp_data.columns.tolist()
+        # move the last two columns to the first two positions
+        columns = columns[-2:] + columns[:-2]
+        # reorder the columns
+        exp_data = exp_data[columns]
+        exp_data.rename(columns={'Polyethylene t./Shield t.': 'Shield Thickness'}, inplace=True)
+        exp_data.sort_values(['Shield Material', 'Energy', 'Shield Thickness'])
+        self.exp_data = exp_data
 
     def _build_atlas(self, tmp_path, atlas):
         """
         See ExperimentalOutput documentation
         """
-        pass
+        self.case_tree_dict = self._case_tree_df_build()
+        unit = '-'
+        quantity = ['C/E']
+        xlabel = 'Bonner Sphere Radius'
+        
+        x = self.exp_data.columns[-5:].to_numpy()
+        
+        for material in self.materials:
+            data = []
+            mat_item_list = material.split('-')
+            shield_material = mat_item_list[0]
+            if shield_material == 'cc':
+                shield_material = 'Concrete'
+            elif shield_material == 'fe':
+                shield_material = 'Iron'
+            energy = int(mat_item_list[1])
+            shield_thickness = int(mat_item_list[2])
+            try:
+                y = [self.exp_data.loc[(self.exp_data['Energy'] == energy) & 
+                                        (self.exp_data['Shield Thickness'] == shield_thickness) &
+                                        (self.exp_data['Shield Material'] == shield_material)].iloc[:,-5:].to_numpy()[0]]
+                err = [np.zeros(len(y))]
+                ylabel = 'Experiment'
+            except:
+                continue
+            data_p = {'x': x, 'y': y, 'err': err,
+                'ylabel': ylabel}
+            data.append(data_p)
+            for lib in self.lib[1:]:
+                ylabel = self.session.conf.get_lib_name(lib)
+                title = 'Tiara Experiment: Bonner Spheres detector,\nEnergy: ' + str(energy) + ' MeV, Shield material: ' + shield_material + ', Shield thickness: ' + str(shield_thickness) + ' cm'
+                 
+                try:
+                    y = [self.case_tree_dict[lib].loc[(self.case_tree_dict[lib]['Energy'] == energy) & 
+                                        (self.case_tree_dict[lib]['Shield Thickness'] == shield_thickness) &
+                                        (self.case_tree_dict[lib]['Shield Material'] == shield_material)].iloc[:, 4::2].to_numpy()[0]]
+                    err = [self.case_tree_dict[lib].loc[(self.case_tree_dict[lib]['Energy'] == energy) & 
+                                        (self.case_tree_dict[lib]['Shield Thickness'] == shield_thickness) &
+                                        (self.case_tree_dict[lib]['Shield Material'] == shield_material)].iloc[:, 5::2].to_numpy()[0]]
+                    data_p = {'x': x, 'y': y, 'err': err, 'ylabel': ylabel}
+                    data.append(data_p)
+                except KeyError:
+                    continue
+            outname = 'tmp'
+            plot = Plotter(data, title, tmp_path, outname, quantity, unit,
+                               xlabel, self.testname)
+            img_path = plot.plot('Waves')
+            atlas.insert_img(img_path)      
+        return atlas
+        
 
     def _processMCNPdata(self, output):
         """
@@ -1505,302 +1506,4 @@ class TiaraBSOutput(ExperimentalOutput):
             dictionary
 
         """
-        pass
-
-
-
-class FNSOutput(ExperimentalOutput):
-
-    def _build_atlas(self, tmp_path, atlas):
-        """
-        See ExperimentalOutput documentation
-        """
-        maintitle = ' Tiara Experiment: '
-        xlabel = 'Energy [MeV]'
-        particle = 'Neutron'
-        tit_tag = 'Neutron Yield per Unit Lethargy'
-        quantity = 'Yield per lethargy'
-        msg = ' Printing the '+particle+' Letharghy flux...'
-        unit = r'$ 1/u$'
-        tables = []  # All C/E tables will be stored here and then concatenated
-        mat_off_list = []
-        for material in self.materials:
-            for tallynum in self.raw_data[(material,self.lib[1])].keys():
-                file = 'Tiara-BC_'+material+'-00.exp'
-                filepath = os.path.join(self.path_exp_res, material + '-00', file)
-                coll_thickness = material.split("-")[-1]
-                offaxis = 0
-                offaxis_str = '00'
-                if tallynum == 14 and len(self.raw_data[(material,self.lib[1])]) == 2:
-                    file = 'Tiara-BC_'+material+'-20.exp'
-                    filepath = os.path.join(self.path_exp_res, material+'-20', file)
-                    offaxis = 20
-                    offaxis_str = '20'
-                
-                if tallynum == 14 and len(self.raw_data[(material,self.lib[1])]) == 3:
-                    file = 'Tiara-BC_'+material+'-00.exp'
-                    filepath = os.path.join(self.path_exp_res, material+'-00', file)
-                    offaxis = 0
-                    offaxis_str = '00'
-
-                if tallynum == 24 and len(self.raw_data[(material,self.lib[1])]) == 2:
-                    file = 'Tiara-BC_'+material+'-40.exp'
-                    filepath = os.path.join(self.path_exp_res, material+'-40', file)
-                    offaxis = 40
-                    offaxis_str = '40'
-                
-                if tallynum == 24 and len(self.raw_data[(material,self.lib[1])]) == 3:
-                    file = 'Tiara-BC_'+material+'-20.exp'
-                    filepath = os.path.join(self.path_exp_res, material+'-20', file)
-                    offaxis = 20
-                    offaxis_str = '20'
-                
-                if tallynum == 34:
-                    file = 'Tiara-BC_'+material+'-40.exp'
-                    filepath = os.path.join(self.path_exp_res, material+'-40', file)
-                    offaxis = 40
-                    offaxis_str = '40'
-            
-                if material.split('-')[0] == 'cc':
-                    if offaxis == 0:
-                        atlas.doc.add_heading('Material: Concrete, ' + material.split('-')[2] + ' cm, ' + material.split('-')[1] + ' MeV, ' + 'Additional collimator: ' + coll_thickness + ' cm, on-axis', level=2)
-                        title = '\n' + maintitle+tit_tag+', '+'\nMaterial: Concrete, ' + material.split('-')[2] + ' cm, ' + material.split('-')[1] + ' MeV, ' + 'Additional collimator: ' + coll_thickness + ' cm, on-axis' + '\n'
-                    else:
-                        atlas.doc.add_heading('Material: Concrete, ' + material.split('-')[2] + ' cm, ' + material.split('-')[1] + ' MeV, ' + 'Additional collimator: ' + coll_thickness + ' cm, ' + str(offaxis) + ' cm off-axis', level=2)
-                        title = '\n' + maintitle+tit_tag+', '+'\nMaterial: Concrete, ' + material.split('-')[2] + ' cm, ' + material.split('-')[1] + ' MeV, ' + 'Additional collimator: ' + coll_thickness + ' cm, ' + str(offaxis) + ' cm off-axis' + '\n'
-                else:
-                    if offaxis == 0:
-                        atlas.doc.add_heading('Material: Iron, ' + material.split('-')[2] + ' cm, ' + material.split('-')[1] + ' MeV, ' + 'Additional collimator: ' + coll_thickness + ' cm, on-axis', level=2)
-                        title = '\n' + maintitle+tit_tag+', '+'\nMaterial: Iron, ' + material.split('-')[2] + ' cm, ' + material.split('-')[1] + ' MeV, ' + 'Additional collimator: ' + coll_thickness + ' cm, on-axis' + '\n'
-                    else:
-                        atlas.doc.add_heading('Material: Iron, ' + material.split('-')[2] + ' cm, ' + material.split('-')[1] + ' MeV, ' + 'Additional collimator: ' + coll_thickness + ' cm, ' + str(offaxis) + ' cm off-axis', level=2)
-                        title = '\n' + maintitle+tit_tag+', '+'\nMaterial: Iron, ' + material.split('-')[2] + ' cm, ' + material.split('-')[1] + ' MeV, ' + 'Additional collimator: ' + coll_thickness + ' cm, ' + str(offaxis) + ' cm off-axis' + '\n'
-                
-                mat_off_list.append(material + '-' + offaxis_str)
-                if os.path.isfile(filepath):
-                    x, y, err = self._read_TiaraBC_expresult(filepath,
-                                                                tallynum)
-                else:
-                    # Skip the tally if no experimental data is available
-                    continue
-                # lib will be passed to the plotter
-                lib = {'x': x, 'y': y, 'err': err,
-                        'ylabel': material + '-' + offaxis_str + ' (Experiment)'}
-                    # Get also the interpolator
-                interpolator = interp1d(x, y, fill_value=0, bounds_error=False)
-
-                # Collect the data to be plotted
-                data = [lib]  # The first one should be the exp one
-                for lib_tag in self.lib[1:]:  # Avoid exp
-                    lib_name = self.session.conf.get_lib_name(lib_tag)
-                    try:  # The tally may not be defined
-                        # Data for the plotter
-                        values = self.results[material, lib_tag][str(tallynum)]
-                        lib = {'x': values['Energy [MeV]'],
-                                'y': values['C'], 'err': values['Error'],
-                                'ylabel': material + '-' + offaxis_str + ' ('+lib_name+')'}
-                        data.append(lib)
-                        # data for the table
-                        table = _get_tablevalues(values, interpolator,e_intervals = [3.5, 10, 20, 30, 40, 50, 60, 70])
-                        table['Particle'] = particle
-                        table['Material'] = material + '-' + offaxis_str
-                        table['Library']  = lib_name
-                        tables.append(table)
-                    except KeyError:
-                        # The tally is not defined
-                        pass
-
-                # Once the data is collected it is passed to the plotter
-                outname = 'tmp'
-                plot = Plotter(data, title, tmp_path, outname, quantity, unit,
-                            xlabel, self.testname)
-                img_path = plot.plot('Experimental points')
-                # Insert the image in the atlas
-                atlas.insert_img(img_path)
-
-        # Dump the global C/E table
-        print(' Dump the C/E table in Excel...')
-        final_table = pd.concat(tables)
-        todump = final_table.set_index(['Material', 'Particle', 'Library'])
-        ex_outpath = os.path.join(self.excel_path, 'C over E table.xlsx')
-
-        # Create a Pandas Excel writer using XlsxWriter as the engine.
-        writer = pd.ExcelWriter(ex_outpath, engine='xlsxwriter')
-        # dump global table
-        todump = todump[['Min E', 'Max E','C/E','Standard Deviation (σ)',]]
-
-        todump.to_excel(writer, sheet_name='Global')
-
-        # Elaborate table for better output format
-        ft = final_table.set_index(['Material'])
-        #ft['Energy Range [MeV]'] = (ft['Min E'].astype(str) + ' - ' +
-        #                            ft['Max E'].astype(str))
-        ft['E-min [MeV]'] = ft['Min E']
-        ft['E-max [MeV]'] = ft['Max E']
-
-        ft['C/E (mean +/- σ)'] = (ft['C/E'].round(2).astype(str) + ' +/- ' +
-                                  ft['Standard Deviation (σ)'].round(2).astype(str))
-        # Delete all confusing columns
-        for column in [ 'Min E', 'Max E','C/E', 'Standard Deviation (σ)',]:
-            del ft[column]
-
-        # Dump also table material by material
-        for material in mat_off_list:
-            # dump material table
-            todump = ft.loc[material]
-            todump = todump.pivot(index=['Particle', 'E-min [MeV]','E-max [MeV]'],
-                                  columns='Library', values='C/E (mean +/- σ)')
-
-            todump.sort_values(by=['E-min [MeV]'])
-
-            todump.to_excel(writer, sheet_name=material, startrow=2)
-            ws = writer.sheets[material]
-            ws.write_string(0, 0, '"C/E (mean +/- σ)"')
-
-            # adjust columns' width
-            writer.sheets[material].set_column(0, 4, 18)
-
-        # Close the Pandas Excel writer and output the Excel file.
-        writer.save()
-
-        return atlas
-
-        # atlas.insert_df(final_table)
-
-    def _extract_outputs(self):
-        # Get results
-        # results = []
-        # errors = []
-        # stat_checks = []
-        outputs = {}
-        results = {}
-        materials = []
-        # Iterate on the different libraries results except 'Exp'
-        for lib, test_path in self.test_path.items():
-            if lib != EXP_TAG:
-                for folder in os.listdir(test_path):
-                    results_path = os.path.join(test_path, folder)
-                    pieces = folder.split('_')
-                    # Get zaid
-                    material = pieces[1]
-                 
-                    mfile, ofile = self._get_output_files(results_path)
-                    # Parse output
-                    output = MCNPoutput(mfile, ofile)
-                    outputs[material, lib] = output
-                    # Adjourn raw Data
-                    self.raw_data[material, lib] = output.tallydata
-                    # Get the meaningful results               
-                    results[material, lib] = self._processMCNPdata(output)
-                    if material not in materials:
-                        materials.append(material)
-
-        self.outputs = outputs
-        self.results = results
-        self.materials = materials
-
-    def _pp_excel_comparison(self):
-        # Excel is actually printed by the build atlas in this case
-        pass
-
-    def _print_raw(self):
-        # Generate a folder for each library
-        for lib_name in self.lib[1:]:  # Avoid Exp
-            cd_lib = os.path.join(self.raw_path, lib_name)
-            os.mkdir(cd_lib)
-            # result for each material
-            for material in self.materials:
-                for key, data in self.raw_data[material, lib_name].items():
-                    file = os.path.join(cd_lib, material+' '+str(key)+'.csv')
-                    data.to_csv(file, header=True, index=False)
-
-    @staticmethod
-    def _processMCNPdata(output):
-        """
-        given the mctal file the lethargy flux and energies are returned
-        both for all tallies
-
-        Parameters
-        ----------
-        output : MCNPoutput
-            object representing the MCNP output.
-
-        Returns
-        -------
-        res : dic
-            contains the extracted lethargy flux and energies.
-
-        """
-        # res = {}
-        # # Read tally energy binned fluxes
-        # for tallynum, data in output.tallydata.items():
-        #     tallynum = str(tallynum)
-        #     res2 = res[tallynum] = {}
-
-        #     # Delete the total value
-        #     data = data.set_index('Energy').drop('total').reset_index()
-
-        #     flux = data['Value'].values
-        #     energies = data['Energy'].values
-        #     errors = data['Error'].values
-
-        #     # Energies for lethargy computation
-        #     ergs = [1e-10]  # Additional "zero" energy for lethargy computation
-        #     ergs.extend(energies.tolist())
-        #     ergs = np.array(ergs)
-
-        #     # Lethargy normalization
-        #     flux = flux/np.log((ergs[1:]/ergs[:-1]))
-
-        #     res2['Energy [MeV]'] = energies
-        #     res2['C'] = flux
-        #     res2['Error'] = errors
-
-        #     res[tallynum] = res2
-
-        # return res
         return None
-
-    @staticmethod
-    def _read_FNS_expresult(file, tallynum):
-        """
-        Given a file containing the FNS experimental results read it and
-        return the values to plot.
-
-        The values equal to 1e-38 are eliminated since it appears that they
-        are the zero values of the instrument used.
-
-        Parameters
-        ----------
-        file : os.Path or str
-            path to the file to be read.
-        tallynum : int
-            
-
-        Returns
-        -------
-        x : np.array
-            energy values.
-        y : np.array
-            lethargy flux values.
-
-        """
-
-        # then read the file accordingly
-        df = pd.read_csv(file, skipfooter=1, engine='python',       # controlla skipfooter che fa
-                         header=None, sep=r'\s+')
-        df.columns = columns[str(tallynum)]
-        df = df[df['C'] > 2e-38]
-        x = df['Nominal Energy [MeV]'].values
-        y = df['C'].values
-        err = df['Error'].values
-
-        return x, y, err
-
-    def _read_exp_results(self):
-        """
-        This is an older implementation and the reading was done somewhere
-        else
-
-        """
-        pass 

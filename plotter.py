@@ -233,6 +233,10 @@ class Plotter:
         # --- Waves plot ---
         elif plot_type == 'Waves':
             outp = self._waves()
+        
+        # --- Waves plot ---
+        elif plot_type == 'Waves - Tiara':
+            outp = self._waves_tiara()
 
         # --- Deafault ---
         else:
@@ -261,7 +265,9 @@ class Plotter:
         nrows = len(self.quantity)
         fig, axes = plt.subplots(figsize=(18, 13.5), nrows=nrows, sharex=True)
         fig.suptitle(self.title, weight='bold')
-
+        
+        if type(axes != list):
+            axes = [axes]
         # common to all axes
         for i, ax in enumerate(axes):
             # Plot

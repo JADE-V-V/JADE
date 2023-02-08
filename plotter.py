@@ -263,11 +263,11 @@ class Plotter:
 
         """
         nrows = len(self.quantity)
-        fig, axes = plt.subplots(figsize=(18, 13.5), nrows=nrows, sharex=True)
+        fig, axes = plt.subplots(figsize=(18, 7.5 + 2 * nrows), nrows=nrows, sharex=True)
         fig.suptitle(self.title, weight='bold')
-        
-        if type(axes != list):
-            axes = [axes]
+
+        if isinstance(axes, np.ndarray) == False:
+            axes = np.array([axes])
         # common to all axes
         for i, ax in enumerate(axes):
             # Plot

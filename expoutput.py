@@ -893,11 +893,11 @@ class TiaraBCOutput(OktavianOutput):
         """
 
         # Set plot axes details
-        maintitle = ' Tiara Experiment: '
+        maintitle = ' Tiara Experiment'
         xlabel = 'Energy [MeV]'
         particle = 'Neutron'
         tit_tag = 'Neutron Yield per Unit Lethargy'
-        quantity = 'Yield per lethargy'
+        quantity = 'Neutron Yield per Unit lethargy'
         msg = ' Printing the '+particle+' Letharghy flux...'
         unit = r'$ 1/u$'
 
@@ -934,7 +934,7 @@ class TiaraBCOutput(OktavianOutput):
                     + material.split('-')[2] + ' cm, ' + material.split('-')[1] 
                     + ' MeV, ' + 'Additional collimator: ' + material.split('-'
                     )[3] + ' cm, ' + string_off_axis, level=2)
-                title = '\n' + maintitle + tit_tag  
+                title = '\n' + maintitle + 'BC501A scintillator: '+tit_tag  
                 # + ', '+'\nMaterial: ' + material_name + ', ' material.split('-')[2] + ' cm, ' + material.split(
                 # '-')[1] + ' MeV, ' + 'Additional collimator: ' + material.split('-')[3] + ' cm, ' + string_off_axis + '\n'
                 

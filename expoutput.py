@@ -165,7 +165,7 @@ class ExperimentalOutput(BenchmarkOutput):
 
         # Save Atlas
         print(' Producing the PDF...')
-        
+
         atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(tmp_path)
@@ -409,8 +409,10 @@ class FNGOutput(ExperimentalOutput):
             if tnum in [14, 24]:
                 for i in range(tally.nTim):
                     for j in range(tally.nUsr):
-                        val = tally.getValue(0, 0, j, 0, 0, 0, 0, i, 0, 0, 0, 0)
-                        err = tally.getValue(0, 0, j, 0, 0, 0, 0, i, 0, 0, 0, 1)
+                        val = tally.getValue(
+                            0, 0, j, 0, 0, 0, 0, i, 0, 0, 0, 0)
+                        err = tally.getValue(
+                            0, 0, j, 0, 0, 0, 0, i, 0, 0, 0, 1)
 
                         # Store
                         time_res = [i+1, j, val, err]
@@ -460,7 +462,8 @@ class FNGOutput(ExperimentalOutput):
                     com_sddr = alldata[lib+'sddr']
 
                     # compute global error (SRSS)
-                    gl_err = ((com_err**2+exp_err**2)**(1/2)).round(2).astype(str)
+                    gl_err = ((com_err**2+exp_err**2) **
+                              (1/2)).round(2).astype(str)
                     # compute C/E
                     gl_val = (com_sddr/exp_sddr).round(2).astype(str)
 
@@ -497,7 +500,8 @@ class FNGOutput(ExperimentalOutput):
 
         # Avoid exp tag
         for lib in self.lib[1:]:
-            libdf = self.results[folder, lib]['4'].set_index('time').sort_index()
+            libdf = self.results[folder, lib]['4'].set_index(
+                'time').sort_index()
             # add the SDDR and relative column of each library
             df[lib+'sddr'] = libdf['sddr'].values
             df[lib+'err'] = libdf['err'].values
@@ -541,7 +545,8 @@ class FNGOutput(ExperimentalOutput):
                     err = (df['Relative Error']*y).values
                     ylabel = 'Experiment'
                 else:
-                    df = self.results[folder, lib]['4'].set_index('time').sort_index()
+                    df = self.results[folder, lib]['4'].set_index(
+                        'time').sort_index()
                     y = df.sddr.values
                     err = df.err.values*y
                     ylabel = self.session.conf.get_lib_name(lib)
@@ -571,7 +576,8 @@ class FNGOutput(ExperimentalOutput):
                         zaids = patzaid.findall(line)
                         for zaid in zaids:
                             if zaid != '0':
-                                _, formula = self.session.lib_manager.get_zaidname(zaid)
+                                _, formula = self.session.lib_manager.get_zaidname(
+                                    zaid)
                                 strings.append(formula)
 
                     zaid_tracked[tallynum] = strings
@@ -666,16 +672,16 @@ class OktavianOutput(ExperimentalOutput):
                 file = 'oktavian_'+material+'_tal'+tallynum+'.exp'
                 filepath = os.path.join(self.path_exp_res, material, file)
                 columns = {'21': ['Nominal Energy [MeV]', 'Upper Energy [MeV]',
-                            'Lower Energy [MeV]', 'C', 'Error'],
+                                  'Lower Energy [MeV]', 'C', 'Error'],
                            '41': ['Nominal Energy [MeV]', 'Lower Energy [MeV]',
-                            'Upper Energy [MeV]', 'C', 'Error']}
+                                  'Upper Energy [MeV]', 'C', 'Error']}
                 # Skip the tally if no experimental data is available
                 if os.path.isfile(filepath) == 0:
                     continue
                 else:
-                    data = self._data_collect(material, filepath, tallynum, 
+                    data = self._data_collect(material, filepath, tallynum,
                                               particle, material, columns)
-                
+
                 # Once the data is collected it is passed to the plotter
                 outname = 'tmp'
                 plot = Plotter(data, title, tmp_path, outname, quantity, unit,
@@ -700,13 +706,13 @@ class OktavianOutput(ExperimentalOutput):
         # Create a Pandas Excel writer using XlsxWriter as the engine.
         writer = pd.ExcelWriter(ex_outpath, engine='xlsxwriter')
         # dump global table
-        todump = todump[['Min E', 'Max E','C/E','Standard Deviation (σ)',]]
+        todump = todump[['Min E', 'Max E', 'C/E', 'Standard Deviation (σ)', ]]
 
         todump.to_excel(writer, sheet_name='Global')
 
         # Elaborate table for better output format
         ft = final_table.set_index(['Material'])
-        #ft['Energy Range [MeV]'] = (ft['Min E'].astype(str) + ' - ' +
+        # ft['Energy Range [MeV]'] = (ft['Min E'].astype(str) + ' - ' +
         #                            ft['Max E'].astype(str))
         ft['E-min [MeV]'] = ft['Min E']
         ft['E-max [MeV]'] = ft['Max E']
@@ -714,15 +720,15 @@ class OktavianOutput(ExperimentalOutput):
         ft['C/E (mean +/- σ)'] = (ft['C/E'].round(2).astype(str) + ' +/- ' +
                                   ft['Standard Deviation (σ)'].round(2).astype(str))
         # Delete all confusing columns
-        for column in [ 'Min E', 'Max E','C/E', 'Standard Deviation (σ)',]:
+        for column in ['Min E', 'Max E', 'C/E', 'Standard Deviation (σ)', ]:
             del ft[column]
-        
+
         # Dump also table material by material
         for material in self.mat_off_list:
             # dump material table
             todump = ft.loc[material]
-            todump = todump.pivot(index=['Particle', 'E-min [MeV]','E-max [MeV]'],
-                                  columns='Library', values='C/E (mean +/- σ)')
+            todump = todump.pivot(index=[
+                                  'Particle', 'E-min [MeV]', 'E-max [MeV]'], columns='Library', values='C/E (mean +/- σ)')
 
             todump.sort_values(by=['E-min [MeV]'])
 
@@ -736,15 +742,15 @@ class OktavianOutput(ExperimentalOutput):
         # Close the Pandas Excel writer and output the Excel file.
         writer.save()
         return
-    
-    def _data_collect(self, material, filepath, tallynum, particle, 
-                        mat_read_file, e_intervals, columns):
+
+    def _data_collect(self, material, filepath, tallynum, particle,
+                      mat_read_file, e_intervals, columns):
 
         x, y, err = self._read_Oktavian_expresult(filepath, tallynum, columns)
 
         # lib will be passed to the plotter
         lib = {'x': x, 'y': y, 'err': err,
-                'ylabel': material + ' (Experiment)'}
+               'ylabel': material + ' (Experiment)'}
         # Get also the interpolator
         interpolator = interp1d(x, y, fill_value=0, bounds_error=False)
 
@@ -756,11 +762,12 @@ class OktavianOutput(ExperimentalOutput):
                 # Data for the plotter
                 values = self.results[mat_read_file, lib_tag][tallynum]
                 lib = {'x': values['Energy [MeV]'],
-                        'y': values['C'], 'err': values['Error'],
-                        'ylabel': material + ' ('+lib_name+')'}
+                       'y': values['C'], 'err': values['Error'],
+                       'ylabel': material + ' ('+lib_name+')'}
                 data.append(lib)
                 # data for the table
-                table = _get_tablevalues(values, interpolator, e_intervals = e_intervals)
+                table = _get_tablevalues(
+                    values, interpolator, e_intervals=e_intervals)
                 table['Particle'] = particle
                 table['Material'] = material
                 table['Library'] = lib_name
@@ -854,7 +861,8 @@ class OktavianOutput(ExperimentalOutput):
             # Different behaviour for photons and neutrons
             for tally in output.mctal.tallies:
                 if tallynum == str(tally.tallyNumber):
-                    particle = tally.particleList[np.where(tally.tallyParticles == 1)[0][0]]
+                    particle = tally.particleList[np.where(
+                        tally.tallyParticles == 1)[0][0]]
             if particle == 'Neutron':
                 flux = flux/np.log((ergs[1:]/ergs[:-1]))
             elif particle == 'Photon':
@@ -891,14 +899,14 @@ class OktavianOutput(ExperimentalOutput):
         y : np.array
             lethargy flux values.
 
-        """          
+        """
         # First of all understand how many comment lines there are
         with open(file, 'r') as infile:
             counter = 0
             for line in infile:
                 if line[0] == '#':
                     counter += 1
-                else: 
+                else:
                     break
         # then read the file accordingly
         df = pd.read_csv(file, skiprows=counter, skipfooter=1, engine='python',
@@ -955,29 +963,32 @@ class TiaraBCOutput(OktavianOutput):
                     material_name = 'Concrete'
                 elif material.split('-')[0] == 'fe':
                     material_name = 'Iron'
-                atlas.doc.add_heading('Material: ' + material_name + ', ' + 
-                                      material.split('-')[2] + ' cm, ' + 
-                                      material.split('-')[1] + ' MeV, ' + 
-                                      'Additional collimator: ' + 
-                                      material.split('-')[3] + ' cm, ' + 
+                atlas.doc.add_heading('Material: ' + material_name + ', ' +
+                                      material.split('-')[2] + ' cm, ' +
+                                      material.split('-')[1] + ' MeV, ' +
+                                      'Additional collimator: ' +
+                                      material.split('-')[3] + ' cm, ' +
                                       string_off_axis, level=2)
-                title = '\n' + maintitle + tit_tag + ', '+'\nMaterial: Iron, ' + material.split('-')[2] + ' cm, ' + material.split('-')[1] + ' MeV, ' + 'Additional collimator: ' + material.split('-')[3] + ' cm, ' + string_off_axis + '\n'
-                    
+                title = '\n' + maintitle + tit_tag + ', '+'\nMaterial: Iron, ' + material.split('-')[2] + ' cm, ' + material.split(
+                    '-')[1] + ' MeV, ' + 'Additional collimator: ' + material.split('-')[3] + ' cm, ' + string_off_axis + '\n'
+
                 mat_off_list.append(material + '-' + offaxis_str)
                 file = 'Tiara-BC_' + material + '-' + offaxis_str + '.exp'
-                filepath = os.path.join(self.path_exp_res, material + '-' + 
-                                        offaxis_str, file)            
-                columns = {'14': ['Nominal Energy [MeV]', 'C', 'Error'], 
-                        '24': ['Nominal Energy [MeV]', 'C', 'Error'], 
-                        '34': ['Nominal Energy [MeV]', 'C', 'Error']} 
+                filepath = os.path.join(self.path_exp_res, material + '-' +
+                                        offaxis_str, file)
+                columns = {'14': ['Nominal Energy [MeV]', 'C', 'Error'],
+                           '24': ['Nominal Energy [MeV]', 'C', 'Error'],
+                           '34': ['Nominal Energy [MeV]', 'C', 'Error']}
                 # Skip the tally if no experimental data is available
                 if os.path.isfile(filepath) == 0:
                     continue
                 else:
                     data = self._data_collect(material + '-' + offaxis_str,
-                                    filepath, str(tallynum), particle, material,
-                                    e_intervals=[3.5, 10, 20, 30, 40, 50, 60, 70],
-                                    columns = columns)
+                                              filepath, str(
+                                                  tallynum), particle, material,
+                                              e_intervals=[
+                                                  3.5, 10, 20, 30, 40, 50, 60, 70],
+                                              columns=columns)
                 # Once the data is collected it is passed to the plotter
                 outname = 'tmp'
                 plot = Plotter(data, title, tmp_path, outname, quantity, unit,
@@ -990,6 +1001,7 @@ class TiaraBCOutput(OktavianOutput):
         self._dump_ce_table()
 
         return atlas
+
 
 def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='C',
                      e_intervals=[0.1, 1, 5, 10, 20]):
@@ -1039,12 +1051,13 @@ def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='C',
 
     return pd.DataFrame(rows)
 
+
 class TiaraOutput(OktavianOutput):
 
     def _processMCNPdata(self, output):
 
         return None
-    
+
     def _case_tree_df_build(self):
         case_tree_dict = {}
         for lib in self.lib[1:]:
@@ -1057,14 +1070,18 @@ class TiaraOutput(OktavianOutput):
                     case_tree.loc[cont, 'Shield Material'] = 'Iron'
                 case_tree.loc[cont, 'Energy'] = int(mat_name_list[1])
                 case_tree.loc[cont, 'Shield Thickness'] = int(mat_name_list[2])
-                case_tree.loc[cont, 'Additional Collimator'] = int(mat_name_list[3])
+                case_tree.loc[cont, 'Additional Collimator'] = int(
+                    mat_name_list[3])
                 for tally in self.outputs[(case, lib)].mctal.tallies:
-                    case_tree.loc[cont, tally.tallyComment] = self.raw_data[(case,lib)][tally.tallyNumber].iloc[-1]['Value']
-                    case_tree.loc[cont, str(tally.tallyComment[0]) + ' Error'] = self.raw_data[(case,lib)][tally.tallyNumber].iloc[-1]['Error']
-            case_tree.sort_values(['Shield Material', 'Energy', 'Shield Thickness', 'Additional Collimator'], inplace = True)
+                    case_tree.loc[cont, tally.tallyComment] = self.raw_data[(
+                        case, lib)][tally.tallyNumber].iloc[-1]['Value']
+                    case_tree.loc[cont, str(tally.tallyComment[0]) + ' Error'] = self.raw_data[(
+                        case, lib)][tally.tallyNumber].iloc[-1]['Error']
+            case_tree.sort_values(
+                ['Shield Material', 'Energy', 'Shield Thickness', 'Additional Collimator'], inplace=True)
             case_tree_dict[lib] = case_tree
         return case_tree_dict
-    
+
     def exp_comp_case_check(self):
         """
         Removes experimental data which don't have correspondent mcnp inputs
@@ -1073,12 +1090,16 @@ class TiaraOutput(OktavianOutput):
         comp_data = self.case_tree_dict[self.lib[1]]
         for shield_material in comp_data['Shield Material'].unique().tolist():
             for energy in comp_data['Energy'].unique().tolist():
-                data_list = comp_data.loc[(comp_data['Energy'] == energy) & (comp_data['Shield Material'] == shield_material)]
-                exp_data_list = self.exp_data.loc[(self.exp_data['Energy'] == energy) & (self.exp_data['Shield Material'] == shield_material)]
-                for index, row in exp_data_list.iterrows(): 
-                    if row['Shield Thickness'] not in data_list['Shield Thickness'].values: 
-                        self.exp_data = self.exp_data[~((self.exp_data['Energy'] == energy) & (self.exp_data['Shield Material'] == shield_material) & (self.exp_data['Shield Thickness'] == row['Shield Thickness']))]
+                data_list = comp_data.loc[(comp_data['Energy'] == energy) & (
+                    comp_data['Shield Material'] == shield_material)]
+                exp_data_list = self.exp_data.loc[(self.exp_data['Energy'] == energy) & (
+                    self.exp_data['Shield Material'] == shield_material)]
+                for index, row in exp_data_list.iterrows():
+                    if row['Shield Thickness'] not in data_list['Shield Thickness'].values:
+                        self.exp_data = self.exp_data[~((self.exp_data['Energy'] == energy) & (
+                            self.exp_data['Shield Material'] == shield_material) & (self.exp_data['Shield Thickness'] == row['Shield Thickness']))]
         return
+
 
 class TiaraFCOutput(TiaraOutput):
 
@@ -1091,23 +1112,75 @@ class TiaraFCOutput(TiaraOutput):
         for idx, values in self.case_tree_dict.items():
             temp_df = values.copy()
             temp_df['Library'] = self.session.conf.get_lib_name(idx)
-            comp_data = comp_data.append(temp_df, ignore_index = True)
-        exp_data = self.exp_data
-        # comp_data.to_csv('D:\\test1\\comp_data.csv', index=False)
-        # exp_data.to_csv('D:\\test1\\exp_data.csv', index=False)
-        # pass
+            comp_data = comp_data.append(temp_df, ignore_index=True)
+        exp_data = self.exp_data.copy()
+        column_name_list = ['U238 on Value','U238 on Error', 'Th232 on Value',
+                    'Th232 on Error', 'U238 off Value','U238 off Error', 'Th232 off Value','Th232 off Error']
+        on_ax_dict = {0 : 'on', 20 : 'off'}
+        comp_data.rename(columns=dict(
+                    zip(comp_data.columns[4:-1], column_name_list)), inplace=True)
+        exp_data.rename(columns=dict(
+                    zip(exp_data.columns[3:], comp_data.columns.to_list()[4:-1])), inplace=True)
+        filepath = self.excel_path + '\\Tiara_Fission_Cells_CE_tables.xlsx'
+        writer = pd.ExcelWriter(filepath, engine='xlsxwriter')
+        for shield_material in comp_data['Shield Material'].unique().tolist():
+            for energy in comp_data['Energy'].unique().tolist():
+                comp_data_worksheet = comp_data[(comp_data['Energy'] == energy) & (
+                            comp_data['Shield Material'] == shield_material)].copy()
+                exp_data_worksheet = exp_data[(exp_data['Energy'] == energy) & (
+                            exp_data['Shield Material'] == shield_material)].copy()
+                comp_data_worksheet.drop(
+                            ['Energy', 'Shield Material', 'Additional Collimator'], axis=1, inplace=True)
+                exp_data_worksheet.drop(
+                            ['Energy', 'Shield Material'], axis=1, inplace=True)
+                column_names = []
+                for fission_cell in ['U238','Th232']:
+                    column_names.append(('Exp', fission_cell, 'Value'))
+                    column_names.append(('Exp', fission_cell, 'Error'))
+                for lib in comp_data['Library'].unique().tolist():
+                    for fission_cell in ['U238','Th232']:
+                        column_names.append((lib, fission_cell, 'Value'))
+                        column_names.append((lib, fission_cell, 'Error'))
+                        column_names.append((lib, fission_cell, 'C/E'))
+                column_index = pd.MultiIndex.from_tuples(
+                    column_names, names=['Library', 'Fission Cell', ''])
+                row_idx_list = []
+                for on_ax in on_ax_dict.keys():
+                    for shield_thickness in comp_data_worksheet['Shield Thickness'].unique().tolist():
+                        row_idx_list.append((shield_thickness, on_ax))
+                row_idx = pd.MultiIndex.from_tuples(row_idx_list, names = ['Shield Thickness','Axis Offset'])
+                new_dataframe = pd.DataFrame(index=row_idx, columns=column_index)
+                for i, col in enumerate(new_dataframe.columns.to_list()):
+                    for j, idx in enumerate(new_dataframe.index.to_list()):
+                        value_string = col[1] + ' ' + on_ax_dict[idx[1]] + ' ' + col[2]
+                        if col[0] == 'Exp':
+                            new_dataframe.iloc[j, i] = exp_data_worksheet.loc[exp_data_worksheet['Shield Thickness']
+                                                                            == idx[0]][value_string].values[0]
+                        else:
+                            if col[2] == 'C/E':
+                                value_string = col[1] + ' ' + on_ax_dict[idx[1]] + ' ' + 'Value'
+                                new_dataframe.iloc[j, i] = comp_data_worksheet.loc[(comp_data_worksheet['Library'] == col[0]) & 
+                                    (comp_data_worksheet['Shield Thickness'] == idx[0])][value_string].values[0] / exp_data_worksheet.loc[exp_data_worksheet['Shield Thickness'] == idx[0]][value_string].values[0]
+                            else:
+                                new_dataframe.iloc[j, i] = comp_data_worksheet.loc[(comp_data_worksheet['Library'] == col[0]) & 
+                                    (comp_data_worksheet['Shield Thickness'] == idx[0])][value_string].values[0]
+                # Convert the dataframe to an XlsxWriter Excel object
+                new_dataframe.to_excel(
+                    writer, sheet_name='Tiara FC ' + shield_material + ', ' + str(energy) + ' MeV')
+                # Close the Pandas Excel writer object and output the Excel file
+        writer.save()
 
     def _read_exp_results(self):
         """
         Reads conderc Excel file
         """
-        filepath = self.path_exp_res +'\\FC_BS_Experimental-results-CONDERC.xlsx'
+        filepath = self.path_exp_res + '\\FC_BS_Experimental-results-CONDERC.xlsx'
 
-        FC_data = {('fe', '43') : pd.read_excel(filepath, sheet_name = 'Fission cell', usecols = "A:E", skiprows = 2, nrows = 10), 
-                    ('fe', '68') : pd.read_excel(filepath, sheet_name = 'Fission cell', usecols = "A:E", skiprows = 16, nrows = 10), 
-                    ('cc', '43') : pd.read_excel(filepath, sheet_name = 'Fission cell', usecols = "A:E", skiprows = 30, nrows = 8), 
-                    ('cc', '68') : pd.read_excel(filepath, sheet_name = 'Fission cell', usecols = "A:E", skiprows = 42, nrows = 8) 
-                   } 
+        FC_data = {('fe', '43'): pd.read_excel(filepath, sheet_name='Fission cell', usecols="A:E", skiprows=2, nrows=10),
+                   ('fe', '68'): pd.read_excel(filepath, sheet_name='Fission cell', usecols="A:E", skiprows=16, nrows=10),
+                   ('cc', '43'): pd.read_excel(filepath, sheet_name='Fission cell', usecols="A:E", skiprows=30, nrows=8),
+                   ('cc', '68'): pd.read_excel(filepath, sheet_name='Fission cell', usecols="A:E", skiprows=42, nrows=8)
+                   }
         exp_data = pd.DataFrame()
         for idx, element in FC_data.items():
             if idx[0] == 'cc':
@@ -1115,40 +1188,54 @@ class TiaraFCOutput(TiaraOutput):
             elif idx[0] == 'fe':
                 element['Shield Material'] = 'Iron'
             element['Energy'] = int(idx[1])
-            element[["Shield Thickness","Axis offset"]] = element['Fission c./Position (shield t., axis offset)'].str.split(",", expand=True)
-            element['Shield Thickness'] = element['Shield Thickness'].astype('int')
+            element[["Shield Thickness", "Axis offset"]
+                    ] = element['Fission c./Position (shield t., axis offset)'].str.split(",", expand=True)
+            element['Shield Thickness'] = element['Shield Thickness'].astype(
+                'int')
             element['Axis offset'] = element['Axis offset'].astype('int')
-            element.drop('Fission c./Position (shield t., axis offset)', axis=1, inplace=True)
+            element.drop(
+                'Fission c./Position (shield t., axis offset)', axis=1, inplace=True)
             # get the columns in the dataframe
             columns = element.columns.tolist()
             # move the last two columns to the first two positions
             columns = columns[-4:] + columns[:-4]
             # reorder the columns
-            element = element[columns] 
-            element.sort_values(['Shield Material', 'Energy', 'Axis offset', 'Shield Thickness'], inplace = True)
-            exp_data = exp_data.append(element[columns], ignore_index = True)
-        
+            element = element[columns]
+            element.sort_values(
+                ['Shield Material', 'Energy', 'Axis offset', 'Shield Thickness'], inplace=True)
+            exp_data = exp_data.append(element[columns], ignore_index=True)
+
         new_exp_data = pd.DataFrame()
         temp_df = pd.DataFrame()
         cont = 0
         for shield_material in exp_data['Shield Material'].unique().tolist():
             for energy in exp_data['Energy'].unique().tolist():
-                temp_df = exp_data.loc[(exp_data['Energy'] == energy) & (exp_data['Shield Material'] == shield_material)]
+                temp_df = exp_data.loc[(exp_data['Energy'] == energy) & (
+                    exp_data['Shield Material'] == shield_material)]
                 for shield_thickness in temp_df['Shield Thickness'].unique().tolist():
                     new_exp_data.loc[cont, 'Energy'] = energy
                     new_exp_data.loc[cont, 'Shield Material'] = shield_material
-                    new_exp_data.loc[cont, 'Shield Thickness'] = shield_thickness
+                    new_exp_data.loc[cont,
+                                     'Shield Thickness'] = shield_thickness
                     for axis_off in temp_df.loc[temp_df['Shield Thickness'] == shield_thickness]['Axis offset'].unique().tolist():
                         if axis_off == 0:
-                            new_exp_data.loc[cont, 'On-axis 238U FC'] = temp_df.loc[(temp_df['Shield Thickness'] == shield_thickness) & (temp_df['Axis offset'] == axis_off)]['238 U [/1e24]'].iloc[0] * 1e24
-                            new_exp_data.loc[cont, 'On-axis 238U FC Error'] = temp_df.loc[(temp_df['Shield Thickness'] == shield_thickness) & (temp_df['Axis offset'] == axis_off)]['err [%]'].iloc[0] / 100
-                            new_exp_data.loc[cont, 'On-axis 232Th FC'] = temp_df.loc[(temp_df['Shield Thickness'] == shield_thickness) & (temp_df['Axis offset'] == axis_off)]['232 Th [/1e24]'].iloc[0] * 1e24
-                            new_exp_data.loc[cont, 'On-axis 232Th FC Error'] = temp_df.loc[(temp_df['Shield Thickness'] == shield_thickness) & (temp_df['Axis offset'] == axis_off)]['err [%].1'].iloc[0] /100
+                            new_exp_data.loc[cont, 'On-axis 238U FC'] = temp_df.loc[(temp_df['Shield Thickness'] == shield_thickness) & (
+                                temp_df['Axis offset'] == axis_off)]['238 U [/1e24]'].iloc[0] * 1e24
+                            new_exp_data.loc[cont, 'On-axis 238U FC Error'] = temp_df.loc[(
+                                temp_df['Shield Thickness'] == shield_thickness) & (temp_df['Axis offset'] == axis_off)]['err [%]'].iloc[0] / 100
+                            new_exp_data.loc[cont, 'On-axis 232Th FC'] = temp_df.loc[(temp_df['Shield Thickness'] == shield_thickness) & (
+                                temp_df['Axis offset'] == axis_off)]['232 Th [/1e24]'].iloc[0] * 1e24
+                            new_exp_data.loc[cont, 'On-axis 232Th FC Error'] = temp_df.loc[(temp_df['Shield Thickness'] == shield_thickness) & (
+                                temp_df['Axis offset'] == axis_off)]['err [%].1'].iloc[0] / 100
                         if axis_off == 20:
-                            new_exp_data.loc[cont, '20 cm off-axis 238U FC'] = temp_df.loc[(temp_df['Shield Thickness'] == shield_thickness) & (temp_df['Axis offset'] == axis_off)]['238 U [/1e24]'].iloc[0] * 1e24
-                            new_exp_data.loc[cont, '20 cm off-axis 238U FC Error'] = temp_df.loc[(temp_df['Shield Thickness'] == shield_thickness) & (temp_df['Axis offset'] == axis_off)]['err [%]'].iloc[0] / 100
-                            new_exp_data.loc[cont, '20 cm off-axis 232Th FC'] = temp_df.loc[(temp_df['Shield Thickness'] == shield_thickness) & (temp_df['Axis offset'] == axis_off)]['232 Th [/1e24]'].iloc[0] * 1e24
-                            new_exp_data.loc[cont, '20 cm off-axis 232Th FC Error'] = temp_df.loc[(temp_df['Shield Thickness'] == shield_thickness) & (temp_df['Axis offset'] == axis_off)]['err [%].1'].iloc[0] /100
+                            new_exp_data.loc[cont, '20 cm off-axis 238U FC'] = temp_df.loc[(temp_df['Shield Thickness'] == shield_thickness) & (
+                                temp_df['Axis offset'] == axis_off)]['238 U [/1e24]'].iloc[0] * 1e24
+                            new_exp_data.loc[cont, '20 cm off-axis 238U FC Error'] = temp_df.loc[(
+                                temp_df['Shield Thickness'] == shield_thickness) & (temp_df['Axis offset'] == axis_off)]['err [%]'].iloc[0] / 100
+                            new_exp_data.loc[cont, '20 cm off-axis 232Th FC'] = temp_df.loc[(temp_df['Shield Thickness'] == shield_thickness) & (
+                                temp_df['Axis offset'] == axis_off)]['232 Th [/1e24]'].iloc[0] * 1e24
+                            new_exp_data.loc[cont, '20 cm off-axis 232Th FC Error'] = temp_df.loc[(
+                                temp_df['Shield Thickness'] == shield_thickness) & (temp_df['Axis offset'] == axis_off)]['err [%].1'].iloc[0] / 100
                     cont += 1
         self.exp_data = new_exp_data
 
@@ -1159,37 +1246,47 @@ class TiaraFCOutput(TiaraOutput):
         unit = '-'
         quantity = ['On-axis C/E', 'Off-axis 20 cm C/E']
         xlabel = 'Shield thickness [cm]'
-        
+
         self.exp_comp_case_check()
         comp_data = self.case_tree_dict[self.lib[1]]
         for shield_material in comp_data['Shield Material'].unique().tolist():
             for energy in comp_data['Energy'].unique().tolist():
-                data_list = comp_data.loc[(comp_data['Energy'] == energy) & (comp_data['Shield Material'] == shield_material)]
-                exp_data_list = self.exp_data.loc[(self.exp_data['Energy'] == energy) & (self.exp_data['Shield Material'] == shield_material)]
-                for index, row in exp_data_list.iterrows(): 
-                    if row['Shield Thickness'] not in data_list['Shield Thickness'].values: 
-                        self.exp_data = self.exp_data[~((self.exp_data['Energy'] == energy) & (self.exp_data['Shield Material'] == shield_material) & (self.exp_data['Shield Thickness'] == row['Shield Thickness']))]
+                data_list = comp_data.loc[(comp_data['Energy'] == energy) & (
+                    comp_data['Shield Material'] == shield_material)]
+                exp_data_list = self.exp_data.loc[(self.exp_data['Energy'] == energy) & (
+                    self.exp_data['Shield Material'] == shield_material)]
+                for index, row in exp_data_list.iterrows():
+                    if row['Shield Thickness'] not in data_list['Shield Thickness'].values:
+                        self.exp_data = self.exp_data[~((self.exp_data['Energy'] == energy) & (
+                            self.exp_data['Shield Material'] == shield_material) & (self.exp_data['Shield Thickness'] == row['Shield Thickness']))]
 
         for shield_material in comp_data['Shield Material'].unique().tolist():
             for energy in comp_data['Energy'].unique().tolist():
                 data_U_p = []
                 data_Th_p = []
-                data_list = comp_data.loc[(comp_data['Energy'] == energy) & (comp_data['Shield Material'] == shield_material)]
-                x = np.array(data_list['Shield Thickness'].unique().tolist())                   
+                data_list = comp_data.loc[(comp_data['Energy'] == energy) & (
+                    comp_data['Shield Material'] == shield_material)]
+                x = np.array(data_list['Shield Thickness'].unique().tolist())
                 y_U = []
                 y_Th = []
                 err_U = []
                 err_Th = []
-                en_mat_exp_dat = self.exp_data.loc[(self.exp_data['Energy'] == energy) & (self.exp_data['Shield Material'] == shield_material)]
-                
+                en_mat_exp_dat = self.exp_data.loc[(self.exp_data['Energy'] == energy) & (
+                    self.exp_data['Shield Material'] == shield_material)]
+
                 y_U.append(en_mat_exp_dat['On-axis 238U FC'].to_numpy())
                 y_U.append(en_mat_exp_dat['20 cm off-axis 238U FC'].to_numpy())
-                err_U.append(en_mat_exp_dat['On-axis 238U FC Error'].to_numpy())
-                err_U.append(en_mat_exp_dat['20 cm off-axis 238U FC Error'].to_numpy())
+                err_U.append(
+                    en_mat_exp_dat['On-axis 238U FC Error'].to_numpy())
+                err_U.append(
+                    en_mat_exp_dat['20 cm off-axis 238U FC Error'].to_numpy())
                 y_Th.append(en_mat_exp_dat['On-axis 232Th FC'].to_numpy())
-                y_Th.append(en_mat_exp_dat['20 cm off-axis 232Th FC'].to_numpy())
-                err_Th.append(en_mat_exp_dat['On-axis 232Th FC Error'].to_numpy())
-                err_Th.append(en_mat_exp_dat['20 cm off-axis 232Th FC Error'].to_numpy())
+                y_Th.append(
+                    en_mat_exp_dat['20 cm off-axis 232Th FC'].to_numpy())
+                err_Th.append(
+                    en_mat_exp_dat['On-axis 232Th FC Error'].to_numpy())
+                err_Th.append(
+                    en_mat_exp_dat['20 cm off-axis 232Th FC Error'].to_numpy())
                 ylabel = 'Experiment'
                 data_U = {'x': x, 'y': y_U, 'err': err_U, 'ylabel': ylabel}
                 data_Th = {'x': x, 'y': y_Th, 'err': err_Th, 'ylabel': ylabel}
@@ -1198,36 +1295,47 @@ class TiaraFCOutput(TiaraOutput):
                 for lib in self.lib[1:]:
                     ylabel = self.session.conf.get_lib_name(lib)
                     mcnp_data = self.case_tree_dict[lib]
-                    mcnp_thick_data = mcnp_data.loc[(mcnp_data['Energy'] == energy) & (mcnp_data['Shield Material'] == shield_material)]
-                    x = np.array(mcnp_thick_data['Shield Thickness'].unique().tolist())
+                    mcnp_thick_data = mcnp_data.loc[(mcnp_data['Energy'] == energy) & (
+                        mcnp_data['Shield Material'] == shield_material)]
+                    x = np.array(
+                        mcnp_thick_data['Shield Thickness'].unique().tolist())
                     y_U = []
                     y_Th = []
                     err_U = []
-                    err_Th = []                    
+                    err_Th = []
                     y_U.append(mcnp_thick_data['On-axis 238U FC'].to_numpy())
-                    y_U.append(mcnp_thick_data['20 cm off-axis 238U FC'].to_numpy())
-                    err_U.append(mcnp_thick_data['On-axis 238U FC Error'].to_numpy())
-                    err_U.append(mcnp_thick_data['20 cm off-axis 238U FC Error'].to_numpy())
+                    y_U.append(
+                        mcnp_thick_data['20 cm off-axis 238U FC'].to_numpy())
+                    err_U.append(
+                        mcnp_thick_data['On-axis 238U FC Error'].to_numpy())
+                    err_U.append(
+                        mcnp_thick_data['20 cm off-axis 238U FC Error'].to_numpy())
                     y_Th.append(mcnp_thick_data['On-axis 232Th FC'].to_numpy())
-                    y_Th.append(mcnp_thick_data['20 cm off-axis 232Th FC'].to_numpy())
-                    err_Th.append(mcnp_thick_data['On-axis 232Th FC Error'].to_numpy())
-                    err_Th.append(mcnp_thick_data['20 cm off-axis 232Th FC Error'].to_numpy())
+                    y_Th.append(
+                        mcnp_thick_data['20 cm off-axis 232Th FC'].to_numpy())
+                    err_Th.append(
+                        mcnp_thick_data['On-axis 232Th FC Error'].to_numpy())
+                    err_Th.append(
+                        mcnp_thick_data['20 cm off-axis 232Th FC Error'].to_numpy())
                     data_U = {'x': x, 'y': y_U, 'err': err_U, 'ylabel': ylabel}
-                    data_Th = {'x': x, 'y': y_Th, 'err': err_Th, 'ylabel': ylabel}
+                    data_Th = {'x': x, 'y': y_Th,
+                               'err': err_Th, 'ylabel': ylabel}
                     data_U_p.append(data_U)
                     data_Th_p.append(data_Th)
                     fission_cell = ['Uranium-238', 'Thorium-232']
                 for cont, data in enumerate([data_U_p, data_Th_p]):
-                    title = 'Tiara Experiment: ' + fission_cell[cont] + ' Fission Cell detector,\nEnergy: ' + str(int(energy)) + ' MeV, Shield material: ' + shield_material
+                    title = 'Tiara Experiment: ' + fission_cell[cont] + ' Fission Cell detector,\nEnergy: ' + str(
+                        int(energy)) + ' MeV, Shield material: ' + shield_material
                     outname = 'tmp'
                     plot = Plotter(data, title, tmp_path, outname, quantity, unit,
-                                    xlabel, self.testname)
+                                   xlabel, self.testname)
                     img_path = plot.plot('Waves')
-                    atlas.insert_img(img_path)     
+                    atlas.insert_img(img_path)
         return atlas
 
+
 class TiaraBSOutput(TiaraOutput):
-    
+
     def _pp_excel_comparison(self):
         """
         This method prints Tiara C/E tables for Bonner Spheres detectors
@@ -1239,42 +1347,53 @@ class TiaraBSOutput(TiaraOutput):
         for idx, values in self.case_tree_dict.items():
             temp_df = values.copy()
             temp_df['Library'] = self.session.conf.get_lib_name(idx)
-            comp_data = comp_data.append(temp_df, ignore_index = True)
-        exp_data = self.exp_data
-        exp_data.rename(columns = dict(zip(exp_data.columns[-5:], comp_data.columns.to_list()[4:-2:2])), inplace = True)
-        filepath = self.excel_path +  '\\Tiara_Bonner_Spheres_CE_tables.xlsx'
+            comp_data = comp_data.append(temp_df, ignore_index=True)
+        exp_data = self.exp_data.copy()
+        exp_data.rename(columns=dict(
+            zip(exp_data.columns[-5:], comp_data.columns.to_list()[4:-2:2])), inplace=True)
+        filepath = self.excel_path + '\\Tiara_Bonner_Spheres_CE_tables.xlsx'
         writer = pd.ExcelWriter(filepath, engine='xlsxwriter')
         for shield_material in comp_data['Shield Material'].unique().tolist():
             for energy in comp_data['Energy'].unique().tolist():
-                comp_data_worksheet = comp_data[(comp_data['Energy'] == energy) & (comp_data['Shield Material'] == shield_material)].copy()
-                exp_data_worksheet = exp_data[(exp_data['Energy'] == energy) & (exp_data['Shield Material'] == shield_material)].copy()
-                comp_data_worksheet.drop(['Energy', 'Shield Material','Additional Collimator'], axis = 1, inplace = True)
-                exp_data_worksheet.drop(['Energy', 'Shield Material'], axis = 1, inplace = True)
+                comp_data_worksheet = comp_data[(comp_data['Energy'] == energy) & (
+                    comp_data['Shield Material'] == shield_material)].copy()
+                exp_data_worksheet = exp_data[(exp_data['Energy'] == energy) & (
+                    exp_data['Shield Material'] == shield_material)].copy()
+                comp_data_worksheet.drop(
+                    ['Energy', 'Shield Material', 'Additional Collimator'], axis=1, inplace=True)
+                exp_data_worksheet.drop(
+                    ['Energy', 'Shield Material'], axis=1, inplace=True)
                 column_names = []
                 for shield_thickness in comp_data_worksheet['Shield Thickness'].unique().tolist():
-                    column_names.append(('Exp', shield_thickness, 'Value'))    
+                    column_names.append(('Exp', shield_thickness, 'Value'))
                 for lib in comp_data['Library'].unique().tolist():
                     for thickness in comp_data_worksheet['Shield Thickness'].unique().tolist():
-                        column_names.append((lib,thickness,'Value'))
-                        column_names.append((lib,thickness,'Error'))
-                        column_names.append((lib,thickness,'C/E'))
-                index = pd.MultiIndex.from_tuples(column_names, names=['Library', 'Shield Thickness','Bonner Sphere'])
-                new_dataframe = pd.DataFrame(index = comp_data_worksheet.columns.to_list()[1:-1:2], columns = index)
+                        column_names.append((lib, thickness, 'Value'))
+                        column_names.append((lib, thickness, 'Error'))
+                        column_names.append((lib, thickness, 'C/E'))
+                index = pd.MultiIndex.from_tuples(
+                    column_names, names=['Library', 'Shield Thickness', ''])
+                new_dataframe = pd.DataFrame(index=comp_data_worksheet.columns.to_list()[
+                                             1:-1:2], columns=index)
                 for i, col in enumerate(new_dataframe.columns.to_list()):
                     for j, idx in enumerate(new_dataframe.index.to_list()):
                         if col[0] == 'Exp':
-                            new_dataframe.iloc[j,i] = exp_data_worksheet.loc[exp_data_worksheet['Shield Thickness'] == col[1]][idx].values[0]
+                            new_dataframe.iloc[j, i] = exp_data_worksheet.loc[exp_data_worksheet['Shield Thickness']
+                                                                              == col[1]][idx].values[0]
                         else:
-                            if col[2] == 'Value' or col[2]=='C/E':
+                            if col[2] == 'Value' or col[2] == 'C/E':
                                 add_string = ''
                             else:
                                 add_string = ' Error'
-                            if col[2]!='C/E':
-                                new_dataframe.iloc[j,i] = comp_data_worksheet.loc[(comp_data_worksheet['Library'] == col[0]) & (comp_data_worksheet['Shield Thickness'] == col[1])][idx + add_string].values[0]
+                            if col[2] != 'C/E':
+                                new_dataframe.iloc[j, i] = comp_data_worksheet.loc[(comp_data_worksheet['Library'] == col[0]) & (
+                                    comp_data_worksheet['Shield Thickness'] == col[1])][idx + add_string].values[0]
                             else:
-                                new_dataframe.iloc[j,i] = comp_data_worksheet.loc[(comp_data_worksheet['Library'] == col[0]) & (comp_data_worksheet['Shield Thickness'] == col[1])][idx + add_string].values[0]/exp_data_worksheet.loc[exp_data_worksheet['Shield Thickness'] == col[1]][idx].values[0]
+                                new_dataframe.iloc[j, i] = comp_data_worksheet.loc[(comp_data_worksheet['Library'] == col[0]) & (
+                                    comp_data_worksheet['Shield Thickness'] == col[1])][idx + add_string].values[0] / exp_data_worksheet.loc[exp_data_worksheet['Shield Thickness'] == col[1]][idx].values[0]
                 # Convert the dataframe to an XlsxWriter Excel object
-                new_dataframe.to_excel(writer, sheet_name='Tiara ' + shield_material + ', ' + str(energy)+ ' MeV')
+                new_dataframe.to_excel(
+                    writer, sheet_name='Tiara ' + shield_material + ', ' + str(energy) + ' MeV')
                 # Close the Pandas Excel writer object and output the Excel file
         writer.save()
         pass
@@ -1285,34 +1404,36 @@ class TiaraBSOutput(TiaraOutput):
 
         """
         # Get experimental data filepath
-        filepath = self.path_exp_res +'\\FC_BS_Experimental-results-CONDERC.xlsx'
+        filepath = self.path_exp_res + '\\FC_BS_Experimental-results-CONDERC.xlsx'
 
         # Read exp data
-        BS_data = {('fe', '43') : pd.read_excel(filepath, sheet_name = 'Bonner sphere', usecols = "A:F", skiprows = 2, nrows = 3), 
-                    ('fe', '68') : pd.read_excel(filepath, sheet_name = 'Bonner sphere', usecols = "A:F", skiprows = 9, nrows = 3), 
-                    ('cc', '43') : pd.read_excel(filepath, sheet_name = 'Bonner sphere', usecols = "A:F", skiprows = 16, nrows = 4), 
-                    ('cc', '68') : pd.read_excel(filepath, sheet_name = 'Bonner sphere', usecols = "A:F", skiprows = 24, nrows = 3) 
+        BS_data = {('fe', '43'): pd.read_excel(filepath, sheet_name='Bonner sphere', usecols="A:F", skiprows=2, nrows=3),
+                   ('fe', '68'): pd.read_excel(filepath, sheet_name='Bonner sphere', usecols="A:F", skiprows=9, nrows=3),
+                   ('cc', '43'): pd.read_excel(filepath, sheet_name='Bonner sphere', usecols="A:F", skiprows=16, nrows=4),
+                   ('cc', '68'): pd.read_excel(filepath, sheet_name='Bonner sphere', usecols="A:F", skiprows=24, nrows=3)
                    }
 
         for key, value in BS_data.items():
             if key[0] == 'cc':
-               value['Shield Material'] = 'Concrete'
+                value['Shield Material'] = 'Concrete'
             if key[0] == 'fe':
-               value['Shield Material'] = 'Iron'
+                value['Shield Material'] = 'Iron'
             value['Energy'] = int(key[1])
 
         exp_data = pd.DataFrame()
         for value in BS_data.values():
-            exp_data = exp_data.append(value, ignore_index = True)
-        
+            exp_data = exp_data.append(value, ignore_index=True)
+
         # get the columns in the dataframe
         columns = exp_data.columns.tolist()
         # move the last two columns to the first two positions
         columns = columns[-2:] + columns[:-2]
         # reorder the columns
         exp_data = exp_data[columns]
-        exp_data.rename(columns={'Polyethylene t./Shield t.': 'Shield Thickness'}, inplace=True)
-        exp_data.sort_values(['Shield Material', 'Energy', 'Shield Thickness'], inplace = True)
+        exp_data.rename(
+            columns={'Polyethylene t./Shield t.': 'Shield Thickness'}, inplace=True)
+        exp_data.sort_values(
+            ['Shield Material', 'Energy', 'Shield Thickness'], inplace=True)
         self.exp_data = exp_data
 
     def _build_atlas(self, tmp_path, atlas):
@@ -1334,28 +1455,30 @@ class TiaraBSOutput(TiaraOutput):
                 shield_material = 'Iron'
             energy = int(mat_item_list[1])
             shield_thickness = int(mat_item_list[2])
-            y = [self.exp_data.loc[(self.exp_data['Energy'] == energy) & 
-                                    (self.exp_data['Shield Thickness'] == shield_thickness) &
-                                    (self.exp_data['Shield Material'] == shield_material)].iloc[:,-5:].to_numpy()[0]]
+            y = [self.exp_data.loc[(self.exp_data['Energy'] == energy) &
+                                   (self.exp_data['Shield Thickness'] == shield_thickness) &
+                                   (self.exp_data['Shield Material'] == shield_material)].iloc[:, -5:].to_numpy()[0]]
             err = [np.zeros(len(y))]
             ylabel = 'Experiment'
             data_p = {'x': x, 'y': y, 'err': err,
-                'ylabel': ylabel}
+                      'ylabel': ylabel}
             data.append(data_p)
             for lib in self.lib[1:]:
                 ylabel = self.session.conf.get_lib_name(lib)
-                title = 'Tiara Experiment: Bonner Spheres detector,\nEnergy: ' + str(energy) + ' MeV, Shield material: ' + shield_material + ', Shield thickness: ' + str(shield_thickness) + ' cm'
-                y = [self.case_tree_dict[lib].loc[(self.case_tree_dict[lib]['Energy'] == energy) & 
-                                    (self.case_tree_dict[lib]['Shield Thickness'] == shield_thickness) &
-                                    (self.case_tree_dict[lib]['Shield Material'] == shield_material)].iloc[:, 4::2].to_numpy()[0]]
-                err = [self.case_tree_dict[lib].loc[(self.case_tree_dict[lib]['Energy'] == energy) & 
-                                    (self.case_tree_dict[lib]['Shield Thickness'] == shield_thickness) &
-                                    (self.case_tree_dict[lib]['Shield Material'] == shield_material)].iloc[:, 5::2].to_numpy()[0]]
+                title = 'Tiara Experiment: Bonner Spheres detector,\nEnergy: ' + \
+                    str(energy) + ' MeV, Shield material: ' + shield_material + \
+                    ', Shield thickness: ' + str(shield_thickness) + ' cm'
+                y = [self.case_tree_dict[lib].loc[(self.case_tree_dict[lib]['Energy'] == energy) &
+                                                  (self.case_tree_dict[lib]['Shield Thickness'] == shield_thickness) &
+                                                  (self.case_tree_dict[lib]['Shield Material'] == shield_material)].iloc[:, 4::2].to_numpy()[0]]
+                err = [self.case_tree_dict[lib].loc[(self.case_tree_dict[lib]['Energy'] == energy) &
+                                                    (self.case_tree_dict[lib]['Shield Thickness'] == shield_thickness) &
+                                                    (self.case_tree_dict[lib]['Shield Material'] == shield_material)].iloc[:, 5::2].to_numpy()[0]]
                 data_p = {'x': x, 'y': y, 'err': err, 'ylabel': ylabel}
                 data.append(data_p)
             outname = 'tmp'
             plot = Plotter(data, title, tmp_path, outname, quantity, unit,
-                               xlabel, self.testname)
+                           xlabel, self.testname)
             img_path = plot.plot('Waves')
-            atlas.insert_img(img_path)      
-       
+            atlas.insert_img(img_path)
+        return atlas

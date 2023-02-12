@@ -1429,16 +1429,12 @@ class TiaraBSOutput(TiaraOutput):
         """
 
         # Get main dataframe with computational data of all cases, their data and respective tallies, for each library
-
         self.case_tree_dict = self._case_tree_df_build()
 
         # Discard experimental data without correspondent computational data
-
         self.exp_comp_case_check()
-
         # Build copies of computational and experimental dataframes
         # They'll be manipulated to obtain Tiara's paper's tables
-
         comp_data = pd.DataFrame()
         for idx, values in self.case_tree_dict.items():
             temp_df = values.copy()
@@ -1451,17 +1447,13 @@ class TiaraBSOutput(TiaraOutput):
             inplace=True)
 
         # Create ExcelWriter object
-
         filepath = self.excel_path + '\\Tiara_Bonner_Spheres_CE_tables.xlsx'
         writer = pd.ExcelWriter(filepath, engine='xlsxwriter')
-
-        
 
         for shield_material in comp_data['Shield Material'].unique().tolist():
             for energy in comp_data['Energy'].unique().tolist():
 
                 # Select proper shield material/energy combination, discard columns which are not necessary
-
                 comp_data_worksheet = comp_data[(comp_data['Energy'] == energy) 
                     & (comp_data['Shield Material'] == shield_material)].copy()
                 exp_data_worksheet = exp_data[(exp_data['Energy'] == energy) &
@@ -1472,7 +1464,6 @@ class TiaraBSOutput(TiaraOutput):
                     inplace=True)
 
                 # Build MultiIndex structure for the tables
-
                 column_names = []
                 thick_list = comp_data_worksheet['Shield Thickness'
                     ].unique().tolist()
@@ -1490,13 +1481,11 @@ class TiaraBSOutput(TiaraOutput):
                     names=['Library', 'Shield Thickness', ''])
 
                 # Create new dataframe with the MultiIndex structure
-
                 new_dataframe = pd.DataFrame(index = 
                     comp_data_worksheet.columns.to_list()[1:-1:2], columns = 
                     index)
                 
                 # Add the proper values in the new dataframe with MultiIndex structure
-
                 for i, col in enumerate(new_dataframe.columns.to_list()):
 
                     for j, idx in enumerate(new_dataframe.index.to_list()):
@@ -1507,7 +1496,6 @@ class TiaraBSOutput(TiaraOutput):
                                 col[1]][idx].values[0]
 
                         else:
-
                             if col[2] == 'Value' or col[2] == 'C/E':
                                 add_string = ''
                             else:
@@ -1528,7 +1516,6 @@ class TiaraBSOutput(TiaraOutput):
                                     col[1]][idx].values[0]
 
                 # Print the dataframe in a worksheet in Excel file
-
                 new_dataframe.to_excel(writer, 
                     sheet_name='Tiara {}, {} MeV' .format(shield_material, 
                     str(energy)))

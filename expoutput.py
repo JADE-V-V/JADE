@@ -934,7 +934,7 @@ class TiaraBCOutput(OktavianOutput):
                     + material.split('-')[2] + ' cm, ' + material.split('-')[1] 
                     + ' MeV, ' + 'Additional collimator: ' + material.split('-'
                     )[3] + ' cm, ' + string_off_axis, level=2)
-                title = '\n' + maintitle + 'BC501A scintillator: '+tit_tag  
+                title = '\n' + maintitle + ' BC501A scintillator: ' + tit_tag  
                 # + ', '+'\nMaterial: ' + material_name + ', ' material.split('-')[2] + ' cm, ' + material.split(
                 # '-')[1] + ' MeV, ' + 'Additional collimator: ' + material.split('-')[3] + ' cm, ' + string_off_axis + '\n'
                 

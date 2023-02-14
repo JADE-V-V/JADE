@@ -10,7 +10,7 @@ Brought to you by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E
 Check [JADE official documentation](https://jade-a-nuclear-data-libraries-vv-tool.readthedocs.io/en/latest/)
 for more detailed information on how to use the tool.
 
-For additional information contact: d.laghi@nier.it
+For additional information contact: davide.laghi01@gmail.com
 
 ## Requirements
 - Windows operative system (Linux or MacOS compatibility has not been tested);

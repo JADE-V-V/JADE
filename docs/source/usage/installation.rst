@@ -23,6 +23,11 @@ Once Anaconda is set up, proceed with the following steps to complete JADE insta
         |            |----- install_files
         |            |----- templates
         |            |----- tests
+
+#. Ensure that your conda version is up to date using:
+   
+  ``conda update conda``
+
 #. Open an anaconda prompt shell and change directory to ``<JADE_root>\Code``.
    Here, create the JADE virtual environment typing:
 

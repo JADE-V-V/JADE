@@ -1196,7 +1196,7 @@ class TiaraFCOutput(TiaraOutput):
                 new_dataframe.sort_values(sort, axis=0, inplace=True)
                 new_dataframe = new_dataframe.drop_duplicates()
                 new_dataframe.to_excel(writer, sheet_name=sheet_name)
-                conv_df.to_excel(writer, sheet_name=sheet_name, startrow=12)
+                conv_df.to_excel(writer, sheet_name=sheet_name, startrow=18)
         # Close the Pandas Excel writer object and output the Excel file
         writer.save()
 

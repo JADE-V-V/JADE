@@ -617,6 +617,11 @@ class MCTAL:
                         tally.meshInfo[1] = int(line[3]) # number of cora bins
                         tally.meshInfo[2] = int(line[4]) # number of corb bins
                         tally.meshInfo[3] = int(line[5]) # number of corc bins
+                
+                # Fix for detector tallies 
+                if str(tally.tallyNumber)[-1] == '5':
+                        for k in range(tally.nCells):
+                                tally.cells = np.append(tally.cells, k + 1)
 
                 self.line = self.mctalFile.readline()
 

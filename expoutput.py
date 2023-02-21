@@ -1025,6 +1025,16 @@ class TiaraOutput(OktavianOutput):
         return None
 
     def _case_tree_df_build(self):
+        """
+        Builds a dataframe containing library, source energy, shield material 
+        and thickness for each benchmark case, with all tallies for each case
+
+        Returns
+        -------
+        pd.Dataframe
+            DataFrame containing details about each benchmark case and the 
+            output tallies for that case
+        """
         case_tree_df = pd.DataFrame()
 
         # Loop over libraries
@@ -1055,13 +1065,21 @@ class TiaraOutput(OktavianOutput):
             case_tree.sort_values(indexes, inplace=True)
             case_tree = case_tree.set_index(indexes)
             case_tree.index.names = indexes
+            # Add to overall dataframe
             case_tree_df = case_tree_df.append(case_tree)
+        # Return complete dataframe
         return case_tree_df
 
     def _exp_comp_case_check(self, indexes):
         """
-        Removes experimental data which don't have correspondent mcnp inputs
+        Removes from mcnp case dataframe experimental data which don't have 
+        correspondent mcnp outputs and removes mcnp outputs without
+        corresponding experimental data.
 
+        Parameters
+        ----------
+        indexes : list
+            Set of indexes to build the MultiIndex structure of the dataframes
         """
         self.case_tree_df = self.case_tree_df.reset_index()
         self.case_tree_df = self.case_tree_df.set_index(indexes[1:])
@@ -1092,10 +1110,11 @@ class TiaraFCOutput(TiaraOutput):
         # Get computational data structure for each library
         self.case_tree_df = self._case_tree_df_build()
 
-        # Discard experimental data without a correspondent computational data
         off_dict = {0: 'On-axis', 20: '20 cm off-axis'}
         columns = ['U238', 'U238 Error', 'Th232', 'Th232 Error']
         new_idx_list = []
+        # build computational dataframe with the same index structure as exp
+        # dataframe
         for idx in self.case_tree_df.index.values.tolist():
             for offset in [0, 20]:
                 new_idx = idx + (offset,)
@@ -1104,8 +1123,10 @@ class TiaraFCOutput(TiaraOutput):
                    'Axis offset']
         multi_index = pd.MultiIndex.from_tuples(new_idx_list, names=indexes)
         case_tree_df_2 = pd.DataFrame(index=multi_index, columns=columns)
+        # Sort to avoid later warnings
         case_tree_df_2.sort_values(indexes, axis=0, inplace=True)
         self.case_tree_df.sort_values(indexes[:-1], axis=0, inplace=True)
+        # Put values into new dataframe
         for idx in self.case_tree_df.index.values.tolist():
             for offset in [0, 20]:
                 for err_string in ['', ' Error']:
@@ -1119,7 +1140,7 @@ class TiaraFCOutput(TiaraOutput):
                                        'Th232' + err_string] = val
 
         self.case_tree_df = case_tree_df_2.copy()
-
+        # Discard experimental data without a correspondent computational data
         self._exp_comp_case_check(indexes=indexes)
         self.case_tree_df.sort_values(indexes, axis=0, inplace=True)
         # Build ExcelWriter object
@@ -1203,7 +1224,7 @@ class TiaraFCOutput(TiaraOutput):
 
     def _read_exp_results(self):
         """
-        Reads conderc Excel file
+        Reads and manipulatesconderc Excel file
         """
 
         # Read experimental data from CONDERC Excel file
@@ -1248,10 +1269,12 @@ class TiaraFCOutput(TiaraOutput):
             element = element.set_index(index)
             element.index.names = index
             exp_data = exp_data.append(element)
+        # Make exp data normalization compatible with tally outputs
         exp_data['238 U [/1e24]'] *= 1e24
         exp_data['232 Th [/1e24]'] *= 1e24
         exp_data['err [%]'] /= 100
         exp_data['err [%].1'] /= 100
+        # Rename columns and sort values
         exp_data.columns = ['U238', 'U238 Error', 'Th232', 'Th232 Error']
         inde = ['Shield Material', 'Energy', 'Axis offset', 'Shield Thickness']
         exp_data.sort_values(inde, axis=0, inplace=True)
@@ -1262,7 +1285,6 @@ class TiaraFCOutput(TiaraOutput):
         """
         See ExperimentalOutput documentation
         """
-        
         # Set plot and axes details
         unit = '-'
         quantity = ['On-axis C/E', 'Off-axis 20 cm C/E']
@@ -1294,10 +1316,10 @@ class TiaraFCOutput(TiaraOutput):
 
                 y = {}
                 err = {}
-                # This part can be modified to make it nicer...
+                # Put data in proper lists
                 for f_cell in f_cell_list:
-                        y[f_cell] = []
-                        err[f_cell] = []
+                    y[f_cell] = []
+                    err[f_cell] = []
 
                 for f_cell in f_cell_list:
                     for offset in off_list:
@@ -1318,8 +1340,8 @@ class TiaraFCOutput(TiaraOutput):
                 for lib in self.lib[1:]:
                     # Get proper computational data
                     ylabel = self.session.conf.get_lib_name(lib)
-                    mcnp_data = self.case_tree_df.loc(axis=0)[ylabel, 
-                                                              shield_material, 
+                    mcnp_data = self.case_tree_df.loc(axis=0)[ylabel,
+                                                              shield_material,
                                                               energy]
                     thick_list = mcnp_data.index.unique(level='Shield Thickness'
                                                         ).tolist()
@@ -1336,9 +1358,10 @@ class TiaraFCOutput(TiaraOutput):
                                           axis=0, inplace=True)
                     # Save proper computational data in variables
                     x = np.array(thick_list)
-                    
+
                     y = {}
                     err = {}
+                    # Put data in proper lists
                     for f_cell in f_cell_list:
                         y[f_cell] = []
                         err[f_cell] = []
@@ -1378,6 +1401,7 @@ class TiaraBSOutput(TiaraOutput):
 
         # Get main dataframe with computational data of all cases
         self.case_tree_df = self._case_tree_df_build()
+        # Rename columns of mcnp dataframe properly
         columns = ['Bare', '15 mm', '30 mm', '50 mm', '90 mm']
         err_columns = []
         for strings in columns:
@@ -1394,11 +1418,13 @@ class TiaraBSOutput(TiaraOutput):
         # Create ExcelWriter object
         filepath = self.excel_path + '\\Tiara_Bonner_Spheres_CE_tables.xlsx'
         writer = pd.ExcelWriter(filepath, engine='xlsxwriter')
+        # Loop over shield material/energy combinations
         mat_list = self.case_tree_df.index.unique(level='Shield Material'
                                                   ).tolist()
         e_list = self.case_tree_df.index.unique(level='Energy').tolist()
         for shield_material in mat_list:
             for energy in e_list:
+                # Select the cases with the energy/material combination
                 column_names = []
                 comp_data = self.case_tree_df.loc(axis=0)[:,
                                                           shield_material,
@@ -1434,7 +1460,7 @@ class TiaraBSOutput(TiaraOutput):
                                 val = comp_data.loc[row_tuple, idx_row]
                                 new_dataframe.loc[idx_row, idx_col] = val
                             elif idx_col[2] == 'Error':
-                                val = comp_data.loc[row_tuple, 
+                                val = comp_data.loc[row_tuple,
                                                     idx_row + ' Error']
                                 new_dataframe.loc[idx_row, idx_col] = val
                             else:
@@ -1454,13 +1480,11 @@ class TiaraBSOutput(TiaraOutput):
 
     def _read_exp_results(self):
         """
-        Reads conderc Excel file
+        Reads and manipulates conderc Excel file
 
         """
-
         # Get experimental data filepath
         filepath = self.path_exp_res + '\\FC_BS_Experimental-results-CONDERC.xlsx'
-
         # Read exp data from CONDERC excel file
         BS_data = {('Iron', '43'): pd.read_excel(filepath, 
                                                  sheet_name='Bonner sphere',
@@ -1501,29 +1525,26 @@ class TiaraBSOutput(TiaraOutput):
         """
         See ExperimentalOutput documentation
         """
-        
         # Set plot axes
         unit = '-'
         quantity = ['C/E']
         xlabel = 'Bonner Sphere Radius [mm]'
         x = ['Bare', '15', '30', '50', '90']
-        
+
         # Loop over all benchmark cases (materials)
         for idx, values in self.exp_data.iterrows():
             data = []
             # Get experimental data and errors for the selected benchmark case
             y = [values]
             err = [np.zeros(len(y))]
-            
-            # Append experimental data to data list (sent to plotter)
 
+            # Append experimental data to data list (sent to plotter)
             ylabel = 'Experiment'
             data_p = {'x': x, 'y': y, 'err': err, 'ylabel': ylabel}
             data.append(data_p)
 
             # Loop over selected libraries
             for lib in self.lib[1:]:
-
                 # Get library name, assign title to the plot
                 ylabel = self.session.conf.get_lib_name(lib)
                 title = 'Tiara Experiment: Bonner Spheres detector,\nEnergy: ' + \
@@ -1536,7 +1557,7 @@ class TiaraBSOutput(TiaraOutput):
                 err = self.case_tree_df.loc[comp_idx]
                 err = [err.iloc[1::2]]
 
-                # Append computational data to data list (sent to plotter)
+                # Append computational data to data list(to be sent to plotter)
                 data_p = {'x': x, 'y': y, 'err': err, 'ylabel': ylabel}
                 data.append(data_p)
 
@@ -1548,3 +1569,4 @@ class TiaraBSOutput(TiaraOutput):
             atlas.insert_img(img_path)
 
         return atlas
+        

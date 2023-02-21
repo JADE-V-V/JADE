@@ -24,9 +24,9 @@ and `Fusion For Energy (F4E) <https://fusionforenergy.europa.eu/>`_.
       - Institution/Company
       - Contacts
     * - Davide Laghi
-      - Main developer
-      - NIER and UNIBO
-      - d.laghi@nier.it
+      - Founding developer
+      - ATG at F4E (prev. NIER/UNIBO)
+      - davide.laghi@ext.f4e.europa.eu
     * - Marco Fabbri
       - Project manager and expert
       - F4E
@@ -39,4 +39,8 @@ and `Fusion For Energy (F4E) <https://fusionforenergy.europa.eu/>`_.
       - Expert
       - UNIBO
       - marco.sumini@unibo.it
+    * - Alberto Bittesnich
+      - Developer
+      - F4E
+      - alberto.bittesnich@ext.f4e.europa.eu
 

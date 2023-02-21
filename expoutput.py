@@ -945,7 +945,7 @@ class TiaraBCOutput(OktavianOutput):
                     'Additional collimator: ' + material.split('-')[3] + \
                     ' cm, ' + string_off_axis
                 atlas.doc.add_heading(head, level=2)
-                title = '\n' + 'Tiara' + ' BC: ' + head
+                title = '\n' + 'Tiara:' + head
 
                 # Open the correspondent experimental data file
                 mat_off_list.append(material + '-' + offaxis_str)

@@ -923,7 +923,7 @@ class TiaraBCOutput(OktavianOutput):
                 elif '40' in comment:
                     offaxis_str = '40'
                     string_off_axis = '40 cm off-axis'
-                
+
                 # Assign shielding material
                 if material.split('-')[0] == 'cc':
                     material_name = 'Concrete'
@@ -936,7 +936,7 @@ class TiaraBCOutput(OktavianOutput):
                     + ' MeV, ' + 'Additional collimator: ' + material.split('-'
                     )[3] + ' cm, ' + string_off_axis, level=2)
                 title = '\n' + maintitle + ' BC501A scintillator: ' + tit_tag  
-                
+
                 # Open the correspondent experimental data file
                 mat_off_list.append(material + '-' + offaxis_str)
                 file = 'Tiara-BC_' + material + '-' + offaxis_str + '.exp'
@@ -1162,7 +1162,8 @@ class TiaraFCOutput(TiaraOutput):
                 # Fill the new dataframe with proper values
                 for idx_row in new_dataframe.index.values.tolist():
                     for idx_col in new_dataframe.columns.values.tolist():
-                        row_tuple = (shield_material, energy, idx_row[0], idx_row[1])
+                        row_tuple = (shield_material, energy, idx_row[0], 
+                                     idx_row[1])
                         if idx_col[0] == 'Exp':
                             if idx_col[2] == 'Value':
                                 val = self.exp_data.loc[row_tuple, idx_col[1]]
@@ -1321,7 +1322,7 @@ class TiaraFCOutput(TiaraOutput):
                                                               shield_material, 
                                                               energy]
                     thick_list = mcnp_data.index.unique(level='Shield Thickness'
-                                                         ).tolist()
+                                                        ).tolist()
                     off_list = mcnp_data.index.unique(level='Axis offset'
                                                       ).tolist()
                     for thick in thick_list:
@@ -1329,9 +1330,9 @@ class TiaraFCOutput(TiaraOutput):
                             idx = (thick, offset)
                             if idx not in mcnp_data.index.values.tolist():
                                 mcnp_data.loc[idx, :] = [None] * len(mcnp_data.columns)
-                    mcnp_data.replace(to_replace=[None], value=np.nan, 
+                    mcnp_data.replace(to_replace=[None], value=np.nan,
                                       inplace=True)
-                    mcnp_data.sort_values(['Axis offset', 'Shield Thickness'], 
+                    mcnp_data.sort_values(['Axis offset', 'Shield Thickness'],
                                           axis=0, inplace=True)
                     # Save proper computational data in variables
                     x = np.array(thick_list)
@@ -1346,11 +1347,11 @@ class TiaraFCOutput(TiaraOutput):
                             y_dat = mcnp_data.loc(axis=0)[:, offset]
                             y[f_cell].append(y_dat[f_cell].to_numpy())
                             err[f_cell].append(y_dat[f_cell + ' Error'
-                                                     ].to_numpy()) 
+                                                     ].to_numpy())
 
                     # Append computational data to data dict
-                    data_U = {'x': x, 'y': y['U238'], 'err': err['U238'], 
-                               'ylabel': ylabel}
+                    data_U = {'x': x, 'y': y['U238'], 'err': err['U238'],
+                              'ylabel': ylabel}
                     data_Th = {'x': x, 'y': y['Th232'],
                                'err': err['Th232'], 'ylabel': ylabel}
                     data_U_p.append(data_U)
@@ -1419,7 +1420,7 @@ class TiaraBSOutput(TiaraOutput):
 
                 # Create new dataframe with the MultiIndex structure
                 new_dataframe = pd.DataFrame(index=columns, columns=index)
-                
+
                 # Add the proper values in the new dataframe
                 for idx_row in new_dataframe.index.values.tolist():
                     for idx_col in new_dataframe.columns.values.tolist():

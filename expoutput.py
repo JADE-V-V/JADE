@@ -700,13 +700,17 @@ class OktavianOutput(ExperimentalOutput):
         return
 
     def _data_collect(self, material, filepath, tallynum, particle,
-                      mat_read_file, e_intervals, columns):
+                      mat_read_file, e_intervals, columns, ylab=True):
 
         x, y, err = self._read_Oktavian_expresult(filepath, tallynum, columns)
 
         # lib will be passed to the plotter
-        lib = {'x': x, 'y': y, 'err': err,
-               'ylabel': material + ' (Experiment)'}
+        if ylab is True:
+            lib = {'x': x, 'y': y, 'err': err,
+                   'ylabel': material + ' (Experiment)'}
+        else:
+            lib = {'x': x, 'y': y, 'err': err,
+                   'ylabel': 'Experiment'}
         # Get also the interpolator
         interpolator = interp1d(x, y, fill_value=0, bounds_error=False)
 
@@ -717,9 +721,14 @@ class OktavianOutput(ExperimentalOutput):
             try:  # The tally may not be defined
                 # Data for the plotter
                 values = self.results[mat_read_file, lib_tag][tallynum]
-                lib = {'x': values['Energy [MeV]'],
-                       'y': values['C'], 'err': values['Error'],
-                       'ylabel': material + ' ('+lib_name+')'}
+                if ylab is True:
+                    lib = {'x': values['Energy [MeV]'],
+                           'y': values['C'], 'err': values['Error'],
+                           'ylabel': material + ' ('+lib_name+')'}
+                else:
+                    lib = {'x': values['Energy [MeV]'],
+                           'y': values['C'], 'err': values['Error'],
+                           'ylabel': lib_name}
                 data.append(lib)
                 # data for the table
                 table = _get_tablevalues(
@@ -897,12 +906,12 @@ class TiaraBCOutput(OktavianOutput):
         maintitle = ' Tiara Experiment'
         xlabel = 'Energy [MeV]'
         particle = 'Neutron'
-        tit_tag = 'Neutron Yield per Unit Lethargy'
         quantity = 'Neutron Yield per Unit lethargy'
         msg = ' Printing the '+particle+' Letharghy flux...'
         unit = r'$ 1/u$'
 
-        self.tables = []  # All C/E tables will be stored here and then concatenated
+        self.tables = []
+        # All C/E tables will be stored here and then concatenated
         mat_off_list = []
         print(msg)
 
@@ -931,16 +940,17 @@ class TiaraBCOutput(OktavianOutput):
                     material_name = 'Iron'
 
                 # Set title and header
-                atlas.doc.add_heading('Material: ' + material_name + ', ' 
-                    + material.split('-')[2] + ' cm, ' + material.split('-')[1] 
-                    + ' MeV, ' + 'Additional collimator: ' + material.split('-'
-                    )[3] + ' cm, ' + string_off_axis, level=2)
-                title = '\n' + maintitle + ' BC501A scintillator: ' + tit_tag  
+                head = material_name + ', ' + material.split('-')[2] + \
+                    ' cm, ' + material.split('-')[1] + ' MeV, ' + \
+                    'Additional collimator: ' + material.split('-')[3] + \
+                    ' cm, ' + string_off_axis
+                atlas.doc.add_heading(head, level=2)
+                title = '\n' + 'Tiara' + ' BC: ' + head
 
                 # Open the correspondent experimental data file
                 mat_off_list.append(material + '-' + offaxis_str)
                 file = 'Tiara-BC_' + material + '-' + offaxis_str + '.exp'
-                filepath = os.path.join(self.path_exp_res, 
+                filepath = os.path.join(self.path_exp_res,
                                         material + '-' + offaxis_str, file)
                 columns = {'14': ['Nominal Energy [MeV]', 'C', 'Error'],
                            '24': ['Nominal Energy [MeV]', 'C', 'Error'],
@@ -950,10 +960,12 @@ class TiaraBCOutput(OktavianOutput):
                     continue
                 else:
                     # Collect data
+                    e_int = [3.5, 10, 20, 30, 40, 50, 60, 70]
                     data = self._data_collect(material + '-' + offaxis_str,
-                        filepath, str(tallynum), particle, material,
-                        e_intervals=[3.5, 10, 20, 30, 40, 50, 60, 70],
-                        columns=columns)
+                                              filepath, str(tallynum),
+                                              particle, material,
+                                              e_intervals=e_int,
+                                              columns=columns, ylab=False)
                 # Once the data is collected it is passed to the plotter
                 outname = 'tmp'
                 plot = Plotter(data, title, tmp_path, outname, quantity, unit,
@@ -1026,13 +1038,13 @@ class TiaraOutput(OktavianOutput):
 
     def _case_tree_df_build(self):
         """
-        Builds a dataframe containing library, source energy, shield material 
+        Builds a dataframe containing library, source energy, shield material
         and thickness for each benchmark case, with all tallies for each case
 
         Returns
         -------
         pd.Dataframe
-            DataFrame containing details about each benchmark case and the 
+            DataFrame containing details about each benchmark case and the
             output tallies for that case
         """
         case_tree_df = pd.DataFrame()
@@ -1072,7 +1084,7 @@ class TiaraOutput(OktavianOutput):
 
     def _exp_comp_case_check(self, indexes):
         """
-        Removes from mcnp case dataframe experimental data which don't have 
+        Removes from mcnp case dataframe experimental data which don't have
         correspondent mcnp outputs and removes mcnp outputs without
         corresponding experimental data.
 
@@ -1084,9 +1096,9 @@ class TiaraOutput(OktavianOutput):
         self.case_tree_df = self.case_tree_df.reset_index()
         self.case_tree_df = self.case_tree_df.set_index(indexes[1:])
         # Delete experimental data
-        common_index = self.case_tree_df.index.intersection(self.exp_data.index)
-        self.exp_data = self.exp_data[self.exp_data.index.isin(common_index)]
-        self.case_tree_df = self.case_tree_df[self.case_tree_df.index.isin(common_index)]
+        com_index = self.case_tree_df.index.intersection(self.exp_data.index)
+        self.exp_data = self.exp_data[self.exp_data.index.isin(com_index)]
+        self.case_tree_df = self.case_tree_df[self.case_tree_df.index.isin(com_index)]
         self.case_tree_df = self.case_tree_df.reset_index()
         self.case_tree_df = self.case_tree_df.set_index(indexes)
         return
@@ -1132,11 +1144,11 @@ class TiaraFCOutput(TiaraOutput):
                 for err_string in ['', ' Error']:
                     val_str = off_dict[offset] + ' 238U FC' + err_string
                     val = self.case_tree_df.loc[idx, val_str]
-                    case_tree_df_2.loc[idx + (offset,), 
+                    case_tree_df_2.loc[idx + (offset,),
                                        'U238' + err_string] = val
                     val_str = off_dict[offset] + ' 232Th FC' + err_string
                     val = self.case_tree_df.loc[idx, val_str]
-                    case_tree_df_2.loc[idx + (offset,), 
+                    case_tree_df_2.loc[idx + (offset,),
                                        'Th232' + err_string] = val
 
         self.case_tree_df = case_tree_df_2.copy()
@@ -1151,7 +1163,7 @@ class TiaraFCOutput(TiaraOutput):
         mats = self.case_tree_df.index.unique(level='Shield Material').tolist()
         ens = self.case_tree_df.index.unique(level='Energy').tolist()
         for shield_material in mats:
-            for energy in ens:                
+            for energy in ens:
                 # Set MultiIndex structure of the table
                 # Set column names
                 column_names = []
@@ -1177,13 +1189,12 @@ class TiaraFCOutput(TiaraOutput):
                 row_idx = pd.MultiIndex.from_tuples(row_idx_list, names=names)
 
                 # Build new dataframe with desired multindex structure
-                new_dataframe = pd.DataFrame(columns=column_index, 
+                new_dataframe = pd.DataFrame(columns=column_index,
                                              index=row_idx)
-
                 # Fill the new dataframe with proper values
                 for idx_row in new_dataframe.index.values.tolist():
                     for idx_col in new_dataframe.columns.values.tolist():
-                        row_tuple = (shield_material, energy, idx_row[0], 
+                        row_tuple = (shield_material, energy, idx_row[0],
                                      idx_row[1])
                         if idx_col[0] == 'Exp':
                             if idx_col[2] == 'Value':
@@ -1199,7 +1210,7 @@ class TiaraFCOutput(TiaraOutput):
                                 val = temp_df.loc[row_tuple, idx_col[1]]
                                 new_dataframe.loc[idx_row, idx_col] = val
                             elif idx_col[2] == 'C/E Error':
-                                val1 = temp_df.loc[row_tuple, 
+                                val1 = temp_df.loc[row_tuple,
                                                    idx_col[1] + ' Error']
                                 val2 = self.exp_data.loc[row_tuple[1:],
                                                          idx_col[1] + ' Error']
@@ -1228,8 +1239,8 @@ class TiaraFCOutput(TiaraOutput):
         """
 
         # Read experimental data from CONDERC Excel file
-        filepath = (self.path_exp_res +
-                    '\\FC_BS_Experimental-results-CONDERC.xlsx')
+        filepath = self.path_exp_res + \
+            '\\FC_BS_Experimental-results-CONDERC.xlsx'
         FC_data = {('Iron', '43'): pd.read_excel(filepath,
                                                  sheet_name='Fission cell',
                                                  usecols="A:E",
@@ -1256,7 +1267,7 @@ class TiaraFCOutput(TiaraOutput):
         for idx, element in FC_data.items():
             # Build a first useful structure from CONDERC data
             element['Shield Material'] = idx[0]
-            element['Energy'] = int(idx[1])  
+            element['Energy'] = int(idx[1])
             element[["Shield Thickness", "Axis offset"]
                     ] = element['Fission c./Position (shield t., axis offset)'
                                 ].str.split(",", expand=True)
@@ -1325,13 +1336,12 @@ class TiaraFCOutput(TiaraOutput):
                     for offset in off_list:
                         y_dat = exp_dat.loc(axis=0)[:, offset]
                         y[f_cell].append(y_dat[f_cell].to_numpy())
-                        err[f_cell].append(y_dat[f_cell + ' Error'].to_numpy()) 
-
+                        err[f_cell].append(y_dat[f_cell + ' Error'].to_numpy())
                 # Append experimental data
                 ylabel = 'Experiment'
-                data_U = {'x': x, 'y': y['U238'], 'err': err['U238'], 
+                data_U = {'x': x, 'y': y['U238'], 'err': err['U238'],
                           'ylabel': ylabel}
-                data_Th = {'x': x, 'y': y['Th232'], 'err': err['Th232'], 
+                data_Th = {'x': x, 'y': y['Th232'], 'err': err['Th232'],
                            'ylabel': ylabel}
                 data_U_p.append(data_U)
                 data_Th_p.append(data_Th)
@@ -1351,7 +1361,8 @@ class TiaraFCOutput(TiaraOutput):
                         for offset in off_list:
                             idx = (thick, offset)
                             if idx not in mcnp_data.index.values.tolist():
-                                mcnp_data.loc[idx, :] = [None] * len(mcnp_data.columns)
+                                col = mcnp_data.columns
+                                mcnp_data.loc[idx, :] = [None] * len(col)
                     mcnp_data.replace(to_replace=[None], value=np.nan,
                                       inplace=True)
                     mcnp_data.sort_values(['Axis offset', 'Shield Thickness'],
@@ -1484,23 +1495,27 @@ class TiaraBSOutput(TiaraOutput):
 
         """
         # Get experimental data filepath
-        filepath = self.path_exp_res + '\\FC_BS_Experimental-results-CONDERC.xlsx'
+        filepath = self.path_exp_res + \
+            '\\FC_BS_Experimental-results-CONDERC.xlsx'
         # Read exp data from CONDERC excel file
-        BS_data = {('Iron', '43'): pd.read_excel(filepath, 
-                                                 sheet_name='Bonner sphere',
+        s_name = 'Bonner sphere'
+        BS_data = {('Iron', '43'): pd.read_excel(filepath,
+                                                 sheet_name=s_name,
                                                  usecols="A:F", skiprows=2,
                                                  nrows=3),
-                   ('Iron', '68'): pd.read_excel(filepath, 
-                                                 sheet_name='Bonner sphere',
+                   ('Iron', '68'): pd.read_excel(filepath,
+                                                 sheet_name=s_name,
                                                  usecols="A:F", skiprows=9,
                                                  nrows=3),
                    ('Concrete', '43'): pd.read_excel(filepath,
-                                                     sheet_name='Bonner sphere',
-                                                     usecols="A:F", skiprows=16,
+                                                     sheet_name=s_name,
+                                                     usecols="A:F",
+                                                     skiprows=16,
                                                      nrows=4),
-                   ('Concrete', '68'): pd.read_excel(filepath, 
-                                                     sheet_name='Bonner sphere',
-                                                     usecols="A:F", skiprows=24,
+                   ('Concrete', '68'): pd.read_excel(filepath,
+                                                     sheet_name=s_name,
+                                                     usecols="A:F",
+                                                     skiprows=24,
                                                      nrows=3)}
 
         for key, value in BS_data.items():
@@ -1512,7 +1527,7 @@ class TiaraBSOutput(TiaraOutput):
             exp_data = exp_data.append(value, ignore_index=True)
 
         # Adjust experimental data dataframe's structure
-        exp_data.rename(columns={'Polyethylene t./Shield t.': 
+        exp_data.rename(columns={'Polyethylene t./Shield t.':
                                  'Shield Thickness'}, inplace=True)
         indexes = ['Shield Material', 'Energy', 'Shield Thickness']
         exp_data = exp_data.set_index(indexes)
@@ -1569,4 +1584,3 @@ class TiaraBSOutput(TiaraOutput):
             atlas.insert_img(img_path)
 
         return atlas
-        

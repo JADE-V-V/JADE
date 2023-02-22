@@ -210,7 +210,10 @@ class Plotter:
 
         # --- Experimental Points Plot ---
         elif plot_type == 'Experimental points':
-            outp = self._exp_points_plot()
+            if self.testname == 'Tiara-BC':  # Special actions for Tiara-BC
+                outp = self._exp_points_plot(x_scale='linear')
+            elif self.testname == 'Oktavian':
+                outp = self._exp_points_plot()
 
         # --- Experimental Points Plot ---
         elif plot_type == 'Discreet Experimental points':
@@ -233,6 +236,10 @@ class Plotter:
         # --- Waves plot ---
         elif plot_type == 'Waves':
             outp = self._waves()
+        
+        # --- Waves plot ---
+        elif plot_type == 'Waves - Tiara':
+            outp = self._waves_tiara()
 
         # --- Deafault ---
         else:
@@ -259,9 +266,12 @@ class Plotter:
 
         """
         nrows = len(self.quantity)
-        fig, axes = plt.subplots(figsize=(18, 13.5), nrows=nrows, sharex=True)
+        fig, axes = plt.subplots(figsize=(18, 7.5 + 2 * nrows), nrows=nrows, 
+                                 sharex=True)
         fig.suptitle(self.title, weight='bold')
 
+        if isinstance(axes, np.ndarray) is False:
+            axes = np.array([axes])
         # common to all axes
         for i, ax in enumerate(axes):
             # Plot
@@ -452,7 +462,7 @@ class Plotter:
 
         return self._save()
 
-    def _exp_points_plot(self, y_scale='log', markersize=6):
+    def _exp_points_plot(self, y_scale='log', markersize=6, x_scale='log'):
         """
         Plot a simple plot that compares experimental data points with
         computational calculation.
@@ -531,7 +541,7 @@ class Plotter:
 
         # Common for all axes
         for ax in axes:
-            ax.set_xscale('log')
+            ax.set_xscale(x_scale)
 
         # # Tiks positioning and dimensions
         # ax.xaxis.set_major_locator(AutoLocator())

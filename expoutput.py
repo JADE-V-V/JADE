@@ -25,6 +25,7 @@ import numpy as np
 import os
 import atlas as at
 import shutil
+import math
 
 from output import BenchmarkOutput
 from output import MCNPoutput
@@ -42,7 +43,6 @@ class ExperimentalOutput(BenchmarkOutput):
         """
         This extends the Benchmark Output and creates an abstract class
         for all experimental outputs.
-
         Parameters
         ----------
         *args : TYPE
@@ -52,11 +52,9 @@ class ExperimentalOutput(BenchmarkOutput):
         multiplerun : bool
             this additional keyword specifies if the benchmark is composed
             by more than one MCNP run. It defaults to False.
-
         Returns
         -------
         None.
-
         """
         # Add a special keyword for experimental benchmarks
         try:
@@ -83,16 +81,13 @@ class ExperimentalOutput(BenchmarkOutput):
         """
         Always raise an Attribute Error since no single post-processing is
         foreseen for experimental benchmarks
-
         Raises
         ------
         AttributeError
             DESCRIPTION.
-
         Returns
         -------
         None.
-
         """
         raise AttributeError('\n No single pp is foreseen for exp benchmark')
 
@@ -100,11 +95,9 @@ class ExperimentalOutput(BenchmarkOutput):
         """
         Complete the routines that perform the comparison of one or more
         libraries results with the experimental ones.
-
         Returns
         -------
         None.
-
         """
         print(' Exctracting outputs...')
         self._extract_outputs()
@@ -127,7 +120,6 @@ class ExperimentalOutput(BenchmarkOutput):
         to be implemented in each child class. Some standard procedures may be
         added in the feature in order to reduce the amount of ex-novo coding
         necessary to implement a new experimental benchmark.
-
         Returns
         -------
         None.
@@ -139,11 +131,9 @@ class ExperimentalOutput(BenchmarkOutput):
         Creation and saving of the atlas are handled by this function while
         the actual filling of the atlas is left to _build_atlas which needs
         to be implemented for each child class.
-
         Returns
         -------
         None.
-
         """
         # Build a temporary folder for images
         tmp_path = os.path.join(self.atlas_path, 'tmp')
@@ -171,11 +161,9 @@ class ExperimentalOutput(BenchmarkOutput):
     def _extract_outputs(self):
         """
         Extract, organize and store the results coming from the MCNP runs
-
         Returns
         -------
         None.
-
         """
         outputs = {}
         results = {}
@@ -218,11 +206,9 @@ class ExperimentalOutput(BenchmarkOutput):
         different files will be generated.
         All files need to be in .csv format. If a more complex format is
         provided, the user should ovveride the _read_exp_file method.
-
         Returns
         -------
         None.
-
         """
         exp_results = {}
         if self.multiplerun:
@@ -251,28 +237,23 @@ class ExperimentalOutput(BenchmarkOutput):
     def _read_exp_file(filepath):
         """
         Default way of reading a csv file
-
         Parameters
         ----------
         filepath : path/str
             experimental file results to be read.
-
         Returns
         -------
         pd.DataFrame
             Contain the data read.
-
         """
         return pd.read_csv(filepath)
 
     def _print_raw(self):
         """
         Dump all the raw data
-
         Returns
         -------
         None.
-
         """
         # Multiple tests in the benchmark scope
         if self.multiplerun:
@@ -305,19 +286,16 @@ class ExperimentalOutput(BenchmarkOutput):
         """
         Given an mctal file object return the meaningful data extracted. Some
         post-processing on the data may be foreseen at this stage.
-
         Parameters
         ----------
         output : MCNPoutput
             object representing an MCNP output.
-
         Returns
         -------
         item :
             the type of item can vary based on what the user intends to do
             whith it. It will be stored in an organized way in the self.results
             dictionary
-
         """
         item = None
         return item
@@ -326,7 +304,6 @@ class ExperimentalOutput(BenchmarkOutput):
     def _pp_excel_comparison(self):
         '''
         Responsible for producing excel outputs
-
         Returns
         -------
         '''
@@ -337,19 +314,16 @@ class ExperimentalOutput(BenchmarkOutput):
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
-
         Parameters
         ----------
         tmp_path : path
             path to the temporary folder where to dump images.
         atlas : Atlas
             Object representing the plot Atlas.
-
         Returns
         -------
         atlas : Atlas
             After being filled the atlas is returned.
-
         """
         atlas = None
         return atlas
@@ -369,17 +343,14 @@ class FNGOutput(ExperimentalOutput):
         aslo needs to ovveride the raw data since unfortunately it appears
         that the user bins necessary for tracking daughters and parents are
         not correclty written to the mctal file.
-
         Parameters
         ----------
         output : MCNPoutput
             object representing the MCNP output.
-
         Returns
         -------
         df : pd.DataFrame
             table of the SDDR at different cooling timesbadi
-
         """
         res = {}
         mctal = output.mctal
@@ -474,19 +445,16 @@ class FNGOutput(ExperimentalOutput):
         """
         Given a campaign it builds a single table containing all experimental
         and computational data available for the total SDDR tally.
-
         Parameters
         ----------
         folder : str
             campaign name.
         tally : str
             tally number
-
         Returns
         -------
         df : pd.DataFrame
             collective data on the campaing.
-
         """
         idx = ['Cooldown Time [s]', 'Cooldown Time [d]']
         # Initialize the table with the experimental results
@@ -506,19 +474,16 @@ class FNGOutput(ExperimentalOutput):
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
-
         Parameters
         ----------
         tmp_path : path
             path to the temporary folder where to dump images.
         atlas : Atlas
             Object representing the plot Atlas.
-
         Returns
         -------
         atlas : Atlas
             After being filled the atlas is returned.
-
         """
         patzaid = re.compile(r'(?<=[\s\-\t])\d+(?=[\s\t\n])')
 
@@ -619,7 +584,6 @@ class FNGOutput(ExperimentalOutput):
         '''
         Override parent method since the separator for these experimental
         files is ";"
-
         '''
         return pd.read_csv(filepath, sep=';')
 
@@ -633,8 +597,8 @@ class OktavianOutput(ExperimentalOutput):
         maintitle = ' Oktavian Experiment: '
         xlabel = 'Energy [MeV]'
 
-        tables = []  # All C/E tables will be stored here and then concatenated
-
+        self.tables = []  # All C/E tables will be stored here and then concatenated
+        e_intervals = [0.1, 1, 5, 10, 20]
         # Tally numbers should be fixed
         for tallynum in ['21', '41']:
             if tallynum == '21':
@@ -663,38 +627,17 @@ class OktavianOutput(ExperimentalOutput):
                 # Get the experimental data
                 file = 'oktavian_'+material+'_tal'+tallynum+'.exp'
                 filepath = os.path.join(self.path_exp_res, material, file)
-                if os.path.isfile(filepath):
-                    x, y, err = self._read_Oktavian_expresult(filepath,
-                                                              tallynum)
-                else:
-                    # Skip the tally if no experimental data is available
+                columns = {'21': ['Nominal Energy [MeV]', 'Upper Energy [MeV]',
+                                  'Lower Energy [MeV]', 'C', 'Error'],
+                           '41': ['Nominal Energy [MeV]', 'Lower Energy [MeV]',
+                                  'Upper Energy [MeV]', 'C', 'Error']}
+                # Skip the tally if no experimental data is available
+                if os.path.isfile(filepath) == 0:
                     continue
-                # lib will be passed to the plotter
-                lib = {'x': x, 'y': y, 'err': err,
-                       'ylabel': material + ' (Experiment)'}
-                # Get also the interpolator
-                interpolator = interp1d(x, y, fill_value=0, bounds_error=False)
-
-                # Collect the data to be plotted
-                data = [lib]  # The first one should be the exp one
-                for lib_tag in self.lib[1:]:  # Avoid exp
-                    lib_name = self.session.conf.get_lib_name(lib_tag)
-                    try:  # The tally may not be defined
-                        # Data for the plotter
-                        values = self.results[material, lib_tag][tallynum]
-                        lib = {'x': values['Energy [MeV]'],
-                               'y': values['C'], 'err': values['Error'],
-                               'ylabel': material + ' ('+lib_name+')'}
-                        data.append(lib)
-                        # data for the table
-                        table = _get_tablevalues(values, interpolator)
-                        table['Particle'] = particle
-                        table['Material'] = material
-                        table['Library'] = lib_name
-                        tables.append(table)
-                    except KeyError:
-                        # The tally is not defined
-                        pass
+                else:
+                    data = self._data_collect(material, filepath, tallynum,
+                                              particle, material, e_intervals,
+                                              columns)
 
                 # Once the data is collected it is passed to the plotter
                 outname = 'tmp'
@@ -704,22 +647,29 @@ class OktavianOutput(ExperimentalOutput):
                 # Insert the image in the atlas
                 atlas.insert_img(img_path)
 
+        self.mat_off_list = self.materials
         # Dump the global C/E table
+        self._dump_ce_table()
+
+        return atlas
+
+    def _dump_ce_table(self):
+
         print(' Dump the C/E table in Excel...')
-        final_table = pd.concat(tables)
+        final_table = pd.concat(self.tables)
         todump = final_table.set_index(['Material', 'Particle', 'Library'])
         ex_outpath = os.path.join(self.excel_path, 'C over E table.xlsx')
 
         # Create a Pandas Excel writer using XlsxWriter as the engine.
         writer = pd.ExcelWriter(ex_outpath, engine='xlsxwriter')
         # dump global table
-        todump = todump[['Min E', 'Max E','C/E','Standard Deviation (σ)',]]
+        todump = todump[['Min E', 'Max E', 'C/E', 'Standard Deviation (σ)', ]]
 
         todump.to_excel(writer, sheet_name='Global')
 
         # Elaborate table for better output format
         ft = final_table.set_index(['Material'])
-        #ft['Energy Range [MeV]'] = (ft['Min E'].astype(str) + ' - ' +
+        # ft['Energy Range [MeV]'] = (ft['Min E'].astype(str) + ' - ' +
         #                            ft['Max E'].astype(str))
         ft['E-min [MeV]'] = ft['Min E']
         ft['E-max [MeV]'] = ft['Max E']
@@ -727,15 +677,15 @@ class OktavianOutput(ExperimentalOutput):
         ft['C/E (mean +/- σ)'] = (ft['C/E'].round(2).astype(str) + ' +/- ' +
                                   ft['Standard Deviation (σ)'].round(2).astype(str))
         # Delete all confusing columns
-        for column in [ 'Min E', 'Max E','C/E', 'Standard Deviation (σ)',]:
+        for column in ['Min E', 'Max E', 'C/E', 'Standard Deviation (σ)', ]:
             del ft[column]
 
         # Dump also table material by material
-        for material in self.materials:
+        for material in self.mat_off_list:
             # dump material table
             todump = ft.loc[material]
-            todump = todump.pivot(index=['Particle', 'E-min [MeV]','E-max [MeV]'],
-                                  columns='Library', values='C/E (mean +/- σ)')
+            todump = todump.pivot(index=['Particle', 'E-min [MeV]', 
+                'E-max [MeV]'], columns='Library', values='C/E (mean +/- σ)')
 
             todump.sort_values(by=['E-min [MeV]'])
 
@@ -748,10 +698,50 @@ class OktavianOutput(ExperimentalOutput):
 
         # Close the Pandas Excel writer and output the Excel file.
         writer.save()
+        return
 
-        return atlas
+    def _data_collect(self, material, filepath, tallynum, particle,
+                      mat_read_file, e_intervals, columns, ylab=True):
 
-        # atlas.insert_df(final_table)
+        x, y, err = self._read_Oktavian_expresult(filepath, tallynum, columns)
+
+        # lib will be passed to the plotter
+        if ylab is True:
+            lib = {'x': x, 'y': y, 'err': err,
+                   'ylabel': material + ' (Experiment)'}
+        else:
+            lib = {'x': x, 'y': y, 'err': err,
+                   'ylabel': 'Experiment'}
+        # Get also the interpolator
+        interpolator = interp1d(x, y, fill_value=0, bounds_error=False)
+
+        # Collect the data to be plotted
+        data = [lib]  # The first one should be the exp one
+        for lib_tag in self.lib[1:]:  # Avoid exp
+            lib_name = self.session.conf.get_lib_name(lib_tag)
+            try:  # The tally may not be defined
+                # Data for the plotter
+                values = self.results[mat_read_file, lib_tag][tallynum]
+                if ylab is True:
+                    lib = {'x': values['Energy [MeV]'],
+                           'y': values['C'], 'err': values['Error'],
+                           'ylabel': material + ' ('+lib_name+')'}
+                else:
+                    lib = {'x': values['Energy [MeV]'],
+                           'y': values['C'], 'err': values['Error'],
+                           'ylabel': lib_name}
+                data.append(lib)
+                # data for the table
+                table = _get_tablevalues(
+                    values, interpolator, e_intervals=e_intervals)
+                table['Particle'] = particle
+                table['Material'] = material
+                table['Library'] = lib_name
+                self.tables.append(table)
+            except KeyError:
+                # The tally is not defined
+                pass
+        return data
 
     def _extract_outputs(self):
         # Get results
@@ -800,8 +790,7 @@ class OktavianOutput(ExperimentalOutput):
                     file = os.path.join(cd_lib, material+' '+str(key)+'.csv')
                     data.to_csv(file, header=True, index=False)
 
-    @staticmethod
-    def _processMCNPdata(output):
+    def _processMCNPdata(self, output):
         """
         given the mctal file the lethargy flux and energies are returned
         both for the neutron and photon tally
@@ -836,10 +825,13 @@ class OktavianOutput(ExperimentalOutput):
             ergs = np.array(ergs)
 
             # Different behaviour for photons and neutrons
-            if tallynum == '21':
+            for tally in output.mctal.tallies:
+                if tallynum == str(tally.tallyNumber):
+                    particle = tally.particleList[np.where(
+                        tally.tallyParticles == 1)[0][0]]
+            if particle == 'Neutron':
                 flux = flux/np.log((ergs[1:]/ergs[:-1]))
-
-            elif tallynum == '41':
+            elif particle == 'Photon':
                 flux = flux/(ergs[1:]-ergs[:-1])
 
             res2['Energy [MeV]'] = energies
@@ -850,8 +842,7 @@ class OktavianOutput(ExperimentalOutput):
 
         return res
 
-    @staticmethod
-    def _read_Oktavian_expresult(file, tallynum):
+    def _read_Oktavian_expresult(self, file, tallynum, columns):
         """
         Given a file containing the Oktavian experimental results read it and
         return the values to plot.
@@ -875,10 +866,6 @@ class OktavianOutput(ExperimentalOutput):
             lethargy flux values.
 
         """
-        columns = {'21': ['Nominal Energy [MeV]', 'Upper Energy [MeV]',
-                          'Lower Energy [MeV]', 'C', 'Error'],
-                   '41': ['Nominal Energy [MeV]', 'Lower Energy [MeV]',
-                          'Upper Energy [MeV]', 'C', 'Error']}
         # First of all understand how many comment lines there are
         with open(file, 'r') as infile:
             counter = 0
@@ -909,78 +896,77 @@ class OktavianOutput(ExperimentalOutput):
         pass
 
 
-class TiaraOutput(ExperimentalOutput):
+class TiaraBCOutput(OktavianOutput):
 
     def _build_atlas(self, tmp_path, atlas):
         """
         See ExperimentalOutput documentation
         """
-        maintitle = ' Oktavian Experiment: '
+
+        # Set plot axes details
+        maintitle = ' Tiara Experiment'
         xlabel = 'Energy [MeV]'
+        particle = 'Neutron'
+        quantity = 'Neutron Yield per Unit lethargy'
+        msg = ' Printing the '+particle+' Letharghy flux...'
+        unit = r'$ 1/u$'
 
-        tables = []  # All C/E tables will be stored here and then concatenated
+        self.tables = []
+        # All C/E tables will be stored here and then concatenated
+        mat_off_list = []
+        print(msg)
 
-        # Tally numbers should be fixed
-        for tallynum in ['21', '41']:
-            if tallynum == '21':
-                particle = 'Neutron'
-                tit_tag = 'Neutron Leakage Current per Unit Lethargy'
-                quantity = 'Neutron Leakage Current'
-                msg = ' Printing the '+particle+' Letharghy flux...'
-                unit = r'$ 1/u\cdot n_s$'
-            else:
-                particle = 'Photon'
-                tit_tag = 'Photon Leakage Current per unit energy'
-                quantity = 'Photon Leakage Current'
-                msg = ' Printing the '+particle+' spectrum...'
-                unit = r'$ 1/MeV\cdot n_s$'
+        # Loop over benchmark cases
+        for material in tqdm(self.materials, desc='Materials: '):
+            # Loop over tallies
+            for tally in self.outputs[(material, self.lib[1])].mctal.tallies:
+                # Get tally number and info
+                tallynum = tally.tallyNumber
+                comment = str(tally.tallyComment)
+                # Assign on/off axis value
+                if 'on-axis' in comment:
+                    offaxis_str = '00'
+                    string_off_axis = 'on-axis'
+                elif '20' in comment:
+                    offaxis_str = '20'
+                    string_off_axis = '20 cm off-axis'
+                elif '40' in comment:
+                    offaxis_str = '40'
+                    string_off_axis = '40 cm off-axis'
 
-            print(msg)
+                # Assign shielding material
+                if material.split('-')[0] == 'cc':
+                    material_name = 'Concrete'
+                elif material.split('-')[0] == 'fe':
+                    material_name = 'Iron'
 
-            atlas.doc.add_heading(quantity, level=1)
+                # Set title and header
+                head = material_name + ', ' + material.split('-')[2] + \
+                    ' cm, ' + material.split('-')[1] + ' MeV, ' + \
+                    'Additional collimator: ' + material.split('-')[3] + \
+                    ' cm, ' + string_off_axis
+                atlas.doc.add_heading(head, level=2)
+                title = '\n' + 'Tiara:' + head
 
-            for material in tqdm(self.materials, desc='Materials: '):
-
-                atlas.doc.add_heading('Material: '+material, level=2)
-
-                title = material+maintitle+tit_tag
-
-                # Get the experimental data
-                file = 'oktavian_'+material+'_tal'+tallynum+'.exp'
-                filepath = os.path.join(self.path_exp_res, material, file)
-                if os.path.isfile(filepath):
-                    x, y, err = self._read_Oktavian_expresult(filepath,
-                                                              tallynum)
-                else:
-                    # Skip the tally if no experimental data is available
+                # Open the correspondent experimental data file
+                mat_off_list.append(material + '-' + offaxis_str)
+                file = 'Tiara-BC_' + material + '-' + offaxis_str + '.exp'
+                filepath = os.path.join(self.path_exp_res,
+                                        material + '-' + offaxis_str, file)
+                columns = {'14': ['Nominal Energy [MeV]', 'C', 'Error'],
+                           '24': ['Nominal Energy [MeV]', 'C', 'Error'],
+                           '34': ['Nominal Energy [MeV]', 'C', 'Error']}
+                # Skip the tally if no experimental data is available
+                if os.path.isfile(filepath) == 0:
                     continue
-                # lib will be passed to the plotter
-                lib = {'x': x, 'y': y, 'err': err,
-                       'ylabel': material + ' (Experiment)'}
-                # Get also the interpolator
-                interpolator = interp1d(x, y, fill_value=0, bounds_error=False)
-
-                # Collect the data to be plotted
-                data = [lib]  # The first one should be the exp one
-                for lib_tag in self.lib[1:]:  # Avoid exp
-                    lib_name = self.session.conf.get_lib_name(lib_tag)
-                    try:  # The tally may not be defined
-                        # Data for the plotter
-                        values = self.results[material, lib_tag][tallynum]
-                        lib = {'x': values['Energy [MeV]'],
-                               'y': values['C'], 'err': values['Error'],
-                               'ylabel': material + ' ('+lib_name+')'}
-                        data.append(lib)
-                        # data for the table
-                        table = _get_tablevalues(values, interpolator)
-                        table['Particle'] = particle
-                        table['Material'] = material
-                        table['Library']  = lib_name
-                        tables.append(table)
-                    except KeyError:
-                        # The tally is not defined
-                        pass
-
+                else:
+                    # Collect data
+                    e_int = [3.5, 10, 20, 30, 40, 50, 60, 70]
+                    data = self._data_collect(material + '-' + offaxis_str,
+                                              filepath, str(tallynum),
+                                              particle, material,
+                                              e_intervals=e_int,
+                                              columns=columns, ylab=False)
                 # Once the data is collected it is passed to the plotter
                 outname = 'tmp'
                 plot = Plotter(data, title, tmp_path, outname, quantity, unit,
@@ -989,209 +975,11 @@ class TiaraOutput(ExperimentalOutput):
                 # Insert the image in the atlas
                 atlas.insert_img(img_path)
 
-        # Dump the global C/E table
-        print(' Dump the C/E table in Excel...')
-        final_table = pd.concat(tables)
-        todump = final_table.set_index(['Material', 'Particle', 'Library'])
-        ex_outpath = os.path.join(self.excel_path, 'C over E table.xlsx')
-
-        # Create a Pandas Excel writer using XlsxWriter as the engine.
-        writer = pd.ExcelWriter(ex_outpath, engine='xlsxwriter')
-        # dump global table
-        todump = todump[['Min E', 'Max E','C/E','Standard Deviation (σ)',]]
-
-        todump.to_excel(writer, sheet_name='Global')
-
-        # Elaborate table for better output format
-        ft = final_table.set_index(['Material'])
-        #ft['Energy Range [MeV]'] = (ft['Min E'].astype(str) + ' - ' +
-        #                            ft['Max E'].astype(str))
-        ft['E-min [MeV]'] = ft['Min E']
-        ft['E-max [MeV]'] = ft['Max E']
-
-        ft['C/E (mean +/- σ)'] = (ft['C/E'].round(2).astype(str) + ' +/- ' +
-                                  ft['Standard Deviation (σ)'].round(2).astype(str))
-        # Delete all confusing columns
-        for column in [ 'Min E', 'Max E','C/E', 'Standard Deviation (σ)',]:
-            del ft[column]
-
-        # Dump also table material by material
-        for material in self.materials:
-            # dump material table
-            todump = ft.loc[material]
-            todump = todump.pivot(index=['Particle', 'E-min [MeV]','E-max [MeV]'],
-                                  columns='Library', values='C/E (mean +/- σ)')
-
-            todump.sort_values(by=['E-min [MeV]'])
-
-            todump.to_excel(writer, sheet_name=material, startrow=2)
-            ws = writer.sheets[material]
-            ws.write_string(0, 0, '"C/E (mean +/- σ)"')
-
-            # adjust columns' width
-            writer.sheets[material].set_column(0, 4, 18)
-
-        # Close the Pandas Excel writer and output the Excel file.
-        writer.save()
+        self.mat_off_list = mat_off_list
+        # Dump C/E table
+        self._dump_ce_table()
 
         return atlas
-
-        # atlas.insert_df(final_table)
-
-    def _extract_outputs(self):
-        # Get results
-        # results = []
-        # errors = []
-        # stat_checks = []
-        outputs = {}
-        results = {}
-        materials = []
-        # Iterate on the different libraries results except 'Exp'
-        for lib, test_path in self.test_path.items():
-            if lib != EXP_TAG:
-                for folder in os.listdir(test_path):
-                    results_path = os.path.join(test_path, folder)
-                    pieces = folder.split('_')
-                    # Get zaid
-                    material = pieces[-1]
-
-                    mfile, ofile = self._get_output_files(results_path)
-                    # Parse output
-                    output = MCNPoutput(mfile, ofile)
-                    outputs[material, lib] = output
-                    # Adjourn raw Data
-                    self.raw_data[material, lib] = output.tallydata
-                    # Get the meaningful results
-                    results[material, lib] = self._processMCNPdata(output)
-                    if material not in materials:
-                        materials.append(material)
-
-        self.outputs = outputs
-        self.results = results
-        self.materials = materials
-
-    def _pp_excel_comparison(self):
-        # Excel is actually printed by the build atlas in this case
-        pass
-
-    def _print_raw(self):
-        # Generate a folder for each library
-        for lib_name in self.lib[1:]:  # Avoid Exp
-            cd_lib = os.path.join(self.raw_path, lib_name)
-            os.mkdir(cd_lib)
-            # result for each material
-            for material in self.materials:
-                for key, data in self.raw_data[material, lib_name].items():
-                    file = os.path.join(cd_lib, material+' '+str(key)+'.csv')
-                    data.to_csv(file, header=True, index=False)
-
-    @staticmethod
-    def _processMCNPdata(output):
-        """
-        given the mctal file the lethargy flux and energies are returned
-        both for the neutron and photon tally
-
-        Parameters
-        ----------
-        output : MCNPoutput
-            object representing the MCNP output.
-
-        Returns
-        -------
-        res : dic
-            contains the extracted lethargy flux and energies.
-
-        """
-        res = {}
-        # Read tally energy binned fluxes
-        for tallynum, data in output.tallydata.items():
-            tallynum = str(tallynum)
-            res2 = res[tallynum] = {}
-
-            # Delete the total value
-            data = data.set_index('Energy').drop('total').reset_index()
-
-            flux = data['Value'].values
-            energies = data['Energy'].values
-            errors = data['Error'].values
-
-            # Energies for lethargy computation
-            ergs = [1e-10]  # Additional "zero" energy for lethargy computation
-            ergs.extend(energies.tolist())
-            ergs = np.array(ergs)
-
-            # Different behaviour for photons and neutrons
-            if tallynum == '21':
-                flux = flux/np.log((ergs[1:]/ergs[:-1]))
-
-            elif tallynum == '41':
-                flux = flux/(ergs[1:]-ergs[:-1])
-
-            res2['Energy [MeV]'] = energies
-            res2['C'] = flux
-            res2['Error'] = errors
-
-            res[tallynum] = res2
-
-        return res
-
-    @staticmethod
-    def _read_Oktavian_expresult(file, tallynum):
-        """
-        Given a file containing the Oktavian experimental results read it and
-        return the values to plot.
-
-        The values equal to 1e-38 are eliminated since it appears that they
-        are the zero values of the instrument used.
-
-        Parameters
-        ----------
-        file : os.Path or str
-            path to the file to be read.
-        tallynum : str
-            either '21' or '41'. the data is different for neutrons and
-            photons
-
-        Returns
-        -------
-        x : np.array
-            energy values.
-        y : np.array
-            lethargy flux values.
-
-        """
-        columns = {'21': ['Nominal Energy [MeV]', 'Upper Energy [MeV]',
-                          'Lower Energy [MeV]', 'C', 'Error'],
-                   '41': ['Nominal Energy [MeV]', 'Lower Energy [MeV]',
-                          'Upper Energy [MeV]', 'C', 'Error']}
-        # First of all understand how many comment lines there are
-        with open(file, 'r') as infile:
-            counter = 0
-            for line in infile:
-                if line[0] == '#':
-                    counter += 1
-                else:
-                    break
-        # then read the file accordingly
-        df = pd.read_csv(file, skiprows=counter, skipfooter=1, engine='python',
-                         header=None, sep=r'\s+')
-        df.columns = columns[tallynum]
-        df = df[df['C'] > 2e-38]
-
-        x = df['Nominal Energy [MeV]'].values
-        y = df['C'].values
-
-        err = df['Error'].values
-
-        return x, y, err
-
-    def _read_exp_results(self):
-        """
-        This is an older implementation and the reading was done somewhere
-        else
-
-        """
-        pass 
 
 
 def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='C',
@@ -1241,3 +1029,559 @@ def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='C',
         e_min = e_max
 
     return pd.DataFrame(rows)
+
+
+class TiaraOutput(OktavianOutput):
+
+    def _processMCNPdata(self, output):
+
+        return None
+
+    def _case_tree_df_build(self):
+        """
+        Builds a dataframe containing library, source energy, shield material
+        and thickness for each benchmark case, with all tallies for each case
+
+        Returns
+        -------
+        pd.Dataframe
+            DataFrame containing details about each benchmark case and the
+            output tallies for that case
+        """
+        case_tree_df = pd.DataFrame()
+
+        # Loop over libraries
+        for lib in self.lib[1:]:
+            # Declare empty dataframes
+            case_tree = pd.DataFrame()
+            for cont, case in enumerate(self.materials):
+                # Get data from benchmark's cases' names
+                mat_name_list = case.split('-')
+                if mat_name_list[0] == 'cc':
+                    case_tree.loc[cont, 'Shield Material'] = 'Concrete'
+                elif mat_name_list[0] == 'fe':
+                    case_tree.loc[cont, 'Shield Material'] = 'Iron'
+                case_tree.loc[cont, 'Energy'] = int(mat_name_list[1])
+                case_tree.loc[cont, 'Shield Thickness'] = int(mat_name_list[2])
+                case_tree.loc[cont,
+                              'Library'] = self.session.conf.get_lib_name(lib)
+                # Put tally values in dataframe
+                for tally in self.outputs[(case, lib)].mctal.tallies:
+                    temp = self.raw_data[(case, lib)]
+                    val = temp[tally.tallyNumber].iloc[-1]['Value']
+                    err = temp[tally.tallyNumber].iloc[-1]['Error']
+                    case_tree.loc[cont, tally.tallyComment] = val
+                    case_tree.loc[cont,
+                                  str(tally.tallyComment[0])+' Error'] = err
+            # Sort data in dataframe and assign to variable
+            indexes = ['Library', 'Shield Material', 'Energy', 'Shield Thickness']
+            case_tree.sort_values(indexes, inplace=True)
+            case_tree = case_tree.set_index(indexes)
+            case_tree.index.names = indexes
+            # Add to overall dataframe
+            case_tree_df = case_tree_df.append(case_tree)
+        # Return complete dataframe
+        return case_tree_df
+
+    def _exp_comp_case_check(self, indexes):
+        """
+        Removes from mcnp case dataframe experimental data which don't have
+        correspondent mcnp outputs and removes mcnp outputs without
+        corresponding experimental data.
+
+        Parameters
+        ----------
+        indexes : list
+            Set of indexes to build the MultiIndex structure of the dataframes
+        """
+        self.case_tree_df = self.case_tree_df.reset_index()
+        self.case_tree_df = self.case_tree_df.set_index(indexes[1:])
+        # Delete experimental data
+        com_index = self.case_tree_df.index.intersection(self.exp_data.index)
+        self.exp_data = self.exp_data[self.exp_data.index.isin(com_index)]
+        self.case_tree_df = self.case_tree_df[self.case_tree_df.index.isin(com_index)]
+        self.case_tree_df = self.case_tree_df.reset_index()
+        self.case_tree_df = self.case_tree_df.set_index(indexes)
+        return
+
+    def _get_conv_df(self, df):
+        conv_df = pd.DataFrame()
+        for library in df.index.unique(level='Library').tolist():
+            lib_df = df.loc[library]
+            lib_err_df = lib_df.iloc[:, 1::2]
+            max = lib_err_df.max().max()
+            avg = lib_err_df.mean().mean()
+            conv_df.loc['Max Error', library] = max
+            conv_df.loc['Average Error', library] = avg
+        return conv_df
+
+
+class TiaraFCOutput(TiaraOutput):
+
+    def _pp_excel_comparison(self):
+
+        # Get computational data structure for each library
+        self.case_tree_df = self._case_tree_df_build()
+
+        off_dict = {0: 'On-axis', 20: '20 cm off-axis'}
+        columns = ['U238', 'U238 Error', 'Th232', 'Th232 Error']
+        new_idx_list = []
+        # build computational dataframe with the same index structure as exp
+        # dataframe
+        for idx in self.case_tree_df.index.values.tolist():
+            for offset in [0, 20]:
+                new_idx = idx + (offset,)
+                new_idx_list.append(new_idx)
+        indexes = ['Library', 'Shield Material', 'Energy', 'Shield Thickness',
+                   'Axis offset']
+        multi_index = pd.MultiIndex.from_tuples(new_idx_list, names=indexes)
+        case_tree_df_2 = pd.DataFrame(index=multi_index, columns=columns)
+        # Sort to avoid later warnings
+        case_tree_df_2.sort_values(indexes, axis=0, inplace=True)
+        self.case_tree_df.sort_values(indexes[:-1], axis=0, inplace=True)
+        # Put values into new dataframe
+        for idx in self.case_tree_df.index.values.tolist():
+            for offset in [0, 20]:
+                for err_string in ['', ' Error']:
+                    val_str = off_dict[offset] + ' 238U FC' + err_string
+                    val = self.case_tree_df.loc[idx, val_str]
+                    case_tree_df_2.loc[idx + (offset,),
+                                       'U238' + err_string] = val
+                    val_str = off_dict[offset] + ' 232Th FC' + err_string
+                    val = self.case_tree_df.loc[idx, val_str]
+                    case_tree_df_2.loc[idx + (offset,),
+                                       'Th232' + err_string] = val
+
+        self.case_tree_df = case_tree_df_2.copy()
+        # Discard experimental data without a correspondent computational data
+        self._exp_comp_case_check(indexes=indexes)
+        self.case_tree_df.sort_values(indexes, axis=0, inplace=True)
+        # Build ExcelWriter object
+        filepath = self.excel_path + '\\Tiara_Fission_Cells_CE_tables.xlsx'
+        writer = pd.ExcelWriter(filepath, engine='xlsxwriter')
+
+        # Create 1 worksheet for each energy/material combination
+        mats = self.case_tree_df.index.unique(level='Shield Material').tolist()
+        ens = self.case_tree_df.index.unique(level='Energy').tolist()
+        for shield_material in mats:
+            for energy in ens:
+                # Set MultiIndex structure of the table
+                # Set column names
+                column_names = []
+                temp_df = self.case_tree_df.loc(axis=0)[:, shield_material,
+                                                        energy].copy()
+                for fission_cell in ['U238', 'Th232']:
+                    column_names.append(('Exp', fission_cell, 'Value'))
+                    column_names.append(('Exp', fission_cell, 'Error'))
+                libs = self.case_tree_df.index.unique(level='Library').tolist()
+                for lib in libs:
+                    for fission_cell in ['U238', 'Th232']:
+                        column_names.append((lib, fission_cell, 'Value'))
+                        column_names.append((lib, fission_cell, 'C/E'))
+                        column_names.append((lib, fission_cell, 'C/E Error'))
+                names = ['Library', 'Fission Cell', '']
+                column_index = pd.MultiIndex.from_tuples(column_names,
+                                                         names=names)
+                # Set row indexes
+                row_idx_list = []
+                for idx in temp_df.index.values.tolist():
+                    row_idx_list.append((idx[-2], idx[-1]))
+                names = ['Shield Thickness', 'Axis offset']
+                row_idx = pd.MultiIndex.from_tuples(row_idx_list, names=names)
+
+                # Build new dataframe with desired multindex structure
+                new_dataframe = pd.DataFrame(columns=column_index,
+                                             index=row_idx)
+                # Fill the new dataframe with proper values
+                for idx_row in new_dataframe.index.values.tolist():
+                    for idx_col in new_dataframe.columns.values.tolist():
+                        row_tuple = (shield_material, energy, idx_row[0],
+                                     idx_row[1])
+                        if idx_col[0] == 'Exp':
+                            if idx_col[2] == 'Value':
+                                val = self.exp_data.loc[row_tuple, idx_col[1]]
+                                new_dataframe.loc[idx_row, idx_col] = val
+                            else:
+                                val = self.exp_data.loc[row_tuple,
+                                                        idx_col[1] + ' Error']
+                                new_dataframe.loc[idx_row, idx_col] = val
+                        else:
+                            row_tuple = (idx_col[0],) + row_tuple
+                            if idx_col[2] == 'Value':
+                                val = temp_df.loc[row_tuple, idx_col[1]]
+                                new_dataframe.loc[idx_row, idx_col] = val
+                            elif idx_col[2] == 'C/E Error':
+                                val1 = temp_df.loc[row_tuple,
+                                                   idx_col[1] + ' Error']
+                                val2 = self.exp_data.loc[row_tuple[1:],
+                                                         idx_col[1] + ' Error']
+                                ce_err = math.sqrt(val1 ** 2 + val2 ** 2)
+                                new_dataframe.loc[idx_row, idx_col] = ce_err
+                            else:
+                                val = temp_df.loc[row_tuple, idx_col[1]]
+                                val2 = self.exp_data.loc[row_tuple[1:],
+                                                         idx_col[1]]
+                                new_dataframe.loc[idx_row, idx_col] = val/val2
+                # Assign worksheet title and put into Excel
+                conv_df = self._get_conv_df(temp_df)
+                sheet_name = 'Tiara FC {}, {} MeV'.format(shield_material,
+                                                          str(energy))
+                sort = ['Axis offset', 'Shield Thickness']
+                new_dataframe.sort_values(sort, axis=0, inplace=True)
+                new_dataframe = new_dataframe.drop_duplicates()
+                new_dataframe.to_excel(writer, sheet_name=sheet_name)
+                conv_df.to_excel(writer, sheet_name=sheet_name, startrow=18)
+        # Close the Pandas Excel writer object and output the Excel file
+        writer.save()
+
+    def _read_exp_results(self):
+        """
+        Reads and manipulatesconderc Excel file
+        """
+
+        # Read experimental data from CONDERC Excel file
+        filepath = self.path_exp_res + \
+            '\\FC_BS_Experimental-results-CONDERC.xlsx'
+        FC_data = {('Iron', '43'): pd.read_excel(filepath,
+                                                 sheet_name='Fission cell',
+                                                 usecols="A:E",
+                                                 skiprows=2,
+                                                 nrows=10),
+                   ('Iron', '68'): pd.read_excel(filepath,
+                                                 sheet_name='Fission cell',
+                                                 usecols="A:E",
+                                                 skiprows=16,
+                                                 nrows=10),
+                   ('Concrete', '43'): pd.read_excel(filepath,
+                                                     sheet_name='Fission cell',
+                                                     usecols="A:E",
+                                                     skiprows=30,
+                                                     nrows=8),
+                   ('Concrete', '68'): pd.read_excel(filepath,
+                                                     sheet_name='Fission cell',
+                                                     usecols="A:E",
+                                                     skiprows=42,
+                                                     nrows=8)}
+        # Build experimental dataframe
+        exp_data = pd.DataFrame()
+        index = ['Shield Material', 'Energy', 'Shield Thickness', 'Axis offset']
+        for idx, element in FC_data.items():
+            # Build a first useful structure from CONDERC data
+            element['Shield Material'] = idx[0]
+            element['Energy'] = int(idx[1])
+            element[["Shield Thickness", "Axis offset"]
+                    ] = element['Fission c./Position (shield t., axis offset)'
+                                ].str.split(",", expand=True)
+            element['Shield Thickness'] = element['Shield Thickness'].astype(
+                'int')
+            element['Axis offset'] = element['Axis offset'].astype('int')
+            element.drop('Fission c./Position (shield t., axis offset)',
+                         axis=1, inplace=True)
+
+            element = element.set_index(index)
+            element.index.names = index
+            exp_data = exp_data.append(element)
+        # Make exp data normalization compatible with tally outputs
+        exp_data['238 U [/1e24]'] *= 1e24
+        exp_data['232 Th [/1e24]'] *= 1e24
+        exp_data['err [%]'] /= 100
+        exp_data['err [%].1'] /= 100
+        # Rename columns and sort values
+        exp_data.columns = ['U238', 'U238 Error', 'Th232', 'Th232 Error']
+        inde = ['Shield Material', 'Energy', 'Axis offset', 'Shield Thickness']
+        exp_data.sort_values(inde, axis=0, inplace=True)
+        # Assign exp data variable
+        self.exp_data = exp_data
+
+    def _build_atlas(self, tmp_path, atlas):
+        """
+        See ExperimentalOutput documentation
+        """
+        # Set plot and axes details
+        unit = '-'
+        quantity = ['On-axis C/E', 'Off-axis 20 cm C/E']
+        xlabel = 'Shield thickness [cm]'
+        f_cell_list = ['U238', 'Th232']
+        # Loop over shield material/energy combinations
+        mat_list = self.case_tree_df.index.unique(level='Shield Material'
+                                                  ).tolist()
+        e_list = self.case_tree_df.index.unique(level='Energy').tolist()
+
+        for shield_material in mat_list:
+            for energy in e_list:
+                # Put proper data in data dict to be sent to plotter
+                data_U_p = []
+                data_Th_p = []
+                exp_dat = self.exp_data.loc(axis=0)[shield_material, energy]
+                thick_list = exp_dat.index.unique(level='Shield Thickness'
+                                                  ).tolist()
+                off_list = exp_dat.index.unique(level='Axis offset').tolist()
+                for thick in thick_list:
+                    for offset in off_list:
+                        idx = (thick, offset)
+                        if idx not in exp_dat.index.values.tolist():
+                            exp_dat.loc[idx, :] = [None] * len(exp_dat.columns)
+                exp_dat.replace(to_replace=[None], value=np.nan, inplace=True)
+                sort_idx = ['Axis offset', 'Shield Thickness']
+                exp_dat.sort_values(sort_idx, axis=0, inplace=True)
+                x = np.array(thick_list)
+
+                y = {}
+                err = {}
+                # Put data in proper lists
+                for f_cell in f_cell_list:
+                    y[f_cell] = []
+                    err[f_cell] = []
+
+                for f_cell in f_cell_list:
+                    for offset in off_list:
+                        y_dat = exp_dat.loc(axis=0)[:, offset]
+                        y[f_cell].append(y_dat[f_cell].to_numpy())
+                        err[f_cell].append(y_dat[f_cell + ' Error'].to_numpy())
+                # Append experimental data
+                ylabel = 'Experiment'
+                data_U = {'x': x, 'y': y['U238'], 'err': err['U238'],
+                          'ylabel': ylabel}
+                data_Th = {'x': x, 'y': y['Th232'], 'err': err['Th232'],
+                           'ylabel': ylabel}
+                data_U_p.append(data_U)
+                data_Th_p.append(data_Th)
+
+                # Loop over libraries
+                for lib in self.lib[1:]:
+                    # Get proper computational data
+                    ylabel = self.session.conf.get_lib_name(lib)
+                    mcnp_data = self.case_tree_df.loc(axis=0)[ylabel,
+                                                              shield_material,
+                                                              energy]
+                    thick_list = mcnp_data.index.unique(level='Shield Thickness'
+                                                        ).tolist()
+                    off_list = mcnp_data.index.unique(level='Axis offset'
+                                                      ).tolist()
+                    for thick in thick_list:
+                        for offset in off_list:
+                            idx = (thick, offset)
+                            if idx not in mcnp_data.index.values.tolist():
+                                col = mcnp_data.columns
+                                mcnp_data.loc[idx, :] = [None] * len(col)
+                    mcnp_data.replace(to_replace=[None], value=np.nan,
+                                      inplace=True)
+                    mcnp_data.sort_values(['Axis offset', 'Shield Thickness'],
+                                          axis=0, inplace=True)
+                    # Save proper computational data in variables
+                    x = np.array(thick_list)
+
+                    y = {}
+                    err = {}
+                    # Put data in proper lists
+                    for f_cell in f_cell_list:
+                        y[f_cell] = []
+                        err[f_cell] = []
+                    for f_cell in f_cell_list:
+                        for offset in off_list:
+                            y_dat = mcnp_data.loc(axis=0)[:, offset]
+                            y[f_cell].append(y_dat[f_cell].to_numpy())
+                            err[f_cell].append(y_dat[f_cell + ' Error'
+                                                     ].to_numpy())
+
+                    # Append computational data to data dict
+                    data_U = {'x': x, 'y': y['U238'], 'err': err['U238'],
+                              'ylabel': ylabel}
+                    data_Th = {'x': x, 'y': y['Th232'],
+                               'err': err['Th232'], 'ylabel': ylabel}
+                    data_U_p.append(data_U)
+                    data_Th_p.append(data_Th)
+                    fission_cell = ['Uranium-238', 'Thorium-232']
+
+                for cont, data in enumerate([data_U_p, data_Th_p]):
+                    # Set title and send to plotter
+                    title = 'Tiara Experiment: {} Fission Cell detector,\nEnergy: {} MeV, Shield material: {}'.format(fission_cell[cont], str(energy), shield_material)
+                    outname = 'tmp'
+                    plot = Plotter(data, title, tmp_path, outname, quantity,
+                                   unit, xlabel, self.testname)
+                    img_path = plot.plot('Waves')
+                    atlas.insert_img(img_path)
+        return atlas
+
+
+class TiaraBSOutput(TiaraOutput):
+
+    def _pp_excel_comparison(self):
+        """
+        This method prints Tiara C/E tables for Bonner Spheres detectors
+        """
+
+        # Get main dataframe with computational data of all cases
+        self.case_tree_df = self._case_tree_df_build()
+        # Rename columns of mcnp dataframe properly
+        columns = ['Bare', '15 mm', '30 mm', '50 mm', '90 mm']
+        err_columns = []
+        for strings in columns:
+            err_columns.append(strings + ' Error')
+        columns_mcnp = []
+        for i, col in enumerate(columns):
+            columns_mcnp.append(columns[i])
+            columns_mcnp.append(err_columns[i])
+
+        self.case_tree_df.rename(columns=dict(zip(self.case_tree_df.columns,
+                                 columns_mcnp)), inplace=True)
+        indexes = ['Library', 'Shield Material', 'Energy', 'Shield Thickness']
+        self._exp_comp_case_check(indexes=indexes)
+        # Create ExcelWriter object
+        filepath = self.excel_path + '\\Tiara_Bonner_Spheres_CE_tables.xlsx'
+        writer = pd.ExcelWriter(filepath, engine='xlsxwriter')
+        # Loop over shield material/energy combinations
+        mat_list = self.case_tree_df.index.unique(level='Shield Material'
+                                                  ).tolist()
+        e_list = self.case_tree_df.index.unique(level='Energy').tolist()
+        for shield_material in mat_list:
+            for energy in e_list:
+                # Select the cases with the energy/material combination
+                column_names = []
+                comp_data = self.case_tree_df.loc(axis=0)[:,
+                                                          shield_material,
+                                                          energy]
+                exp_data = self.exp_data.loc(axis=0)[shield_material, energy]
+                thick_list = exp_data.index.unique().tolist()
+                for shield_thickness in thick_list:
+                    column_names.append(('Exp', shield_thickness, 'Value'))
+                lib_list = comp_data.index.unique(level='Library').tolist()
+                for lib in lib_list:
+                    thick_list = comp_data.index.unique(level='Shield Thickness'
+                                                        ).tolist()
+                    for shield_thickness in thick_list:
+                        column_names.append((lib, shield_thickness, 'Value'))
+                        column_names.append((lib, shield_thickness, 'Error'))
+                        column_names.append((lib, shield_thickness, 'C/E'))
+                names = ['Library', 'Shield Thickness', '']
+                index = pd.MultiIndex.from_tuples(column_names, names=names)
+
+                # Create new dataframe with the MultiIndex structure
+                new_dataframe = pd.DataFrame(index=columns, columns=index)
+
+                # Add the proper values in the new dataframe
+                for idx_row in new_dataframe.index.values.tolist():
+                    for idx_col in new_dataframe.columns.values.tolist():
+                        if idx_col[0] == 'Exp':
+                            val = exp_data.loc[idx_col[1], idx_row]
+                            new_dataframe.loc[idx_row, idx_col] = val
+                        else:
+                            row_tuple = (idx_col[0], shield_material, energy,
+                                         idx_col[1])
+                            if idx_col[2] == 'Value':
+                                val = comp_data.loc[row_tuple, idx_row]
+                                new_dataframe.loc[idx_row, idx_col] = val
+                            elif idx_col[2] == 'Error':
+                                val = comp_data.loc[row_tuple,
+                                                    idx_row + ' Error']
+                                new_dataframe.loc[idx_row, idx_col] = val
+                            else:
+                                val = comp_data.loc[row_tuple, idx_row]
+                                val2 = exp_data.loc[idx_col[1], idx_row]
+                                new_dataframe.loc[idx_row, idx_col] = val/val2
+
+                # Print the dataframe in a worksheet in Excel file
+                conv_df = self._get_conv_df(comp_data)
+                sheet_name = 'Tiara {}, {} MeV' .format(shield_material,
+                                                        str(energy))
+                new_dataframe.to_excel(writer, sheet_name=sheet_name)
+                conv_df.to_excel(writer, sheet_name=sheet_name, startrow=12)
+        # Close the Pandas Excel writer object and output the Excel file
+        writer.save()
+        pass
+
+    def _read_exp_results(self):
+        """
+        Reads and manipulates conderc Excel file
+
+        """
+        # Get experimental data filepath
+        filepath = self.path_exp_res + \
+            '\\FC_BS_Experimental-results-CONDERC.xlsx'
+        # Read exp data from CONDERC excel file
+        s_name = 'Bonner sphere'
+        BS_data = {('Iron', '43'): pd.read_excel(filepath,
+                                                 sheet_name=s_name,
+                                                 usecols="A:F", skiprows=2,
+                                                 nrows=3),
+                   ('Iron', '68'): pd.read_excel(filepath,
+                                                 sheet_name=s_name,
+                                                 usecols="A:F", skiprows=9,
+                                                 nrows=3),
+                   ('Concrete', '43'): pd.read_excel(filepath,
+                                                     sheet_name=s_name,
+                                                     usecols="A:F",
+                                                     skiprows=16,
+                                                     nrows=4),
+                   ('Concrete', '68'): pd.read_excel(filepath,
+                                                     sheet_name=s_name,
+                                                     usecols="A:F",
+                                                     skiprows=24,
+                                                     nrows=3)}
+
+        for key, value in BS_data.items():
+            value["Shield Material"] = key[0]
+            value['Energy'] = int(key[1])
+
+        exp_data = pd.DataFrame()
+        for value in BS_data.values():
+            exp_data = exp_data.append(value, ignore_index=True)
+
+        # Adjust experimental data dataframe's structure
+        exp_data.rename(columns={'Polyethylene t./Shield t.':
+                                 'Shield Thickness'}, inplace=True)
+        indexes = ['Shield Material', 'Energy', 'Shield Thickness']
+        exp_data = exp_data.set_index(indexes)
+        exp_data.sort_values(indexes, axis=0, inplace=True)
+
+        # Save experimental data
+        self.exp_data = exp_data
+
+    def _build_atlas(self, tmp_path, atlas):
+        """
+        See ExperimentalOutput documentation
+        """
+        # Set plot axes
+        unit = '-'
+        quantity = ['C/E']
+        xlabel = 'Bonner Sphere Radius [mm]'
+        x = ['Bare', '15', '30', '50', '90']
+
+        # Loop over all benchmark cases (materials)
+        for idx, values in self.exp_data.iterrows():
+            data = []
+            # Get experimental data and errors for the selected benchmark case
+            y = [values]
+            err = [np.zeros(len(y))]
+
+            # Append experimental data to data list (sent to plotter)
+            ylabel = 'Experiment'
+            data_p = {'x': x, 'y': y, 'err': err, 'ylabel': ylabel}
+            data.append(data_p)
+
+            # Loop over selected libraries
+            for lib in self.lib[1:]:
+                # Get library name, assign title to the plot
+                ylabel = self.session.conf.get_lib_name(lib)
+                title = 'Tiara Experiment: Bonner Spheres detector,\nEnergy: ' + \
+                    str(idx[1]) + ' MeV, Shield material: ' + idx[0] + \
+                    ', Shield thickness: ' + str(idx[2]) + ' cm'
+
+                # Get computational data and errors for the selected case
+                comp_idx = (ylabel,) + idx
+                y = [self.case_tree_df.loc[comp_idx, ::2]]
+                err = self.case_tree_df.loc[comp_idx]
+                err = [err.iloc[1::2]]
+
+                # Append computational data to data list(to be sent to plotter)
+                data_p = {'x': x, 'y': y, 'err': err, 'ylabel': ylabel}
+                data.append(data_p)
+
+            # Send data to plotter
+            outname = 'tmp'
+            plot = Plotter(data, title, tmp_path, outname, quantity, unit,
+                           xlabel, self.testname)
+            img_path = plot.plot('Waves')
+            atlas.insert_img(img_path)
+
+        return atlas

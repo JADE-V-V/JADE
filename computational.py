@@ -96,7 +96,7 @@ def executeBenchmarksRoutines(session, lib, exp=False):
             elif testname == 'Sphere SDDR':
                 test = testrun.SphereTestSDDR(*args)
 
-            elif fname in ['Oktavian', 'Tiara']:
+            elif fname in ['Oktavian', 'Tiara-BC', 'Tiara-BS', 'Tiara-FC', 'FNS']:
                 test = testrun.MultipleTest(*args)
 
             elif fname == 'FNG':

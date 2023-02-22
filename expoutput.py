@@ -598,7 +598,7 @@ class OktavianOutput(ExperimentalOutput):
         xlabel = 'Energy [MeV]'
 
         self.tables = []  # All C/E tables will be stored here and then concatenated
-
+        e_intervals = [0.1, 1, 5, 10, 20]
         # Tally numbers should be fixed
         for tallynum in ['21', '41']:
             if tallynum == '21':
@@ -636,7 +636,8 @@ class OktavianOutput(ExperimentalOutput):
                     continue
                 else:
                     data = self._data_collect(material, filepath, tallynum,
-                                              particle, material, columns)
+                                              particle, material, e_intervals,
+                                              columns)
 
                 # Once the data is collected it is passed to the plotter
                 outname = 'tmp'

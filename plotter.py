@@ -236,10 +236,6 @@ class Plotter:
         # --- Waves plot ---
         elif plot_type == 'Waves':
             outp = self._waves()
-        
-        # --- Waves plot ---
-        elif plot_type == 'Waves - Tiara':
-            outp = self._waves_tiara()
 
         # --- Deafault ---
         else:

@@ -43,6 +43,7 @@ GitHub repository [link].
    :maxdepth: 2
    :caption: JADE Developer Guide:
 
+   dev/codemod
    dev/insertbenchmarks
    dev/docmodify
 

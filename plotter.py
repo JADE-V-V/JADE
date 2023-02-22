@@ -212,7 +212,7 @@ class Plotter:
         elif plot_type == 'Experimental points':
             if self.testname == 'Tiara-BC':  # Special actions for Tiara-BC
                 outp = self._exp_points_plot(x_scale='linear')
-            elif self.testname == 'Oktavian':
+            else:
                 outp = self._exp_points_plot()
 
         # --- Experimental Points Plot ---

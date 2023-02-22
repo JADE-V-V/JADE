@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Post-Processing &mdash; JADE v2.0.0 documentation</title>
+  <title>Post-Processing &mdash; JADE v2.1.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,7 +17,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="JADE Testing" href="../testing/testing.html" />
+    <link rel="next" title="JADE CI and automatic testing" href="../testing/testing.html" />
     <link rel="prev" title="Input Generation" href="inputgeneration.html" /> 
 </head>
 
@@ -81,7 +81,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
@@ -372,48 +372,15 @@ None</p></li>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">expoutput.</span></span><span class="sig-name descname"><span class="pre">ExperimentalOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#output.BenchmarkOutput" title="output.BenchmarkOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">output.BenchmarkOutput</span></code></a></p>
 <p>This extends the Benchmark Output and creates an abstract class
-for all experimental outputs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>*args</strong> (<em>TYPE</em>) – see BenchmarkOutput doc.</p></li>
-<li><p><strong>**kwargs</strong> (<em>TYPE</em>) – see BenchmarkOutput doc.</p></li>
-<li><p><strong>multiplerun</strong> (<em>bool</em>) – this additional keyword specifies if the benchmark is composed
-by more than one MCNP run. It defaults to False.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>None.</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="expoutput.ExperimentalOutput._build_atlas">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_build_atlas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmp_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atlas</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput._build_atlas" title="Permalink to this definition"></a></dt>
-<dd><p>Fill the atlas with the customized plots. Creation and saving of the
-atlas are handled elsewhere.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>tmp_path</strong> (<em>path</em>) – path to the temporary folder where to dump images.</p></li>
-<li><p><strong>atlas</strong> (<em>Atlas</em>) – Object representing the plot Atlas.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>atlas</strong> – After being filled the atlas is returned.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Atlas</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="expoutput.ExperimentalOutput._extract_outputs">
-<span class="sig-name descname"><span class="pre">_extract_outputs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput._extract_outputs" title="Permalink to this definition"></a></dt>
-<dd><p>Extract, organize and store the results coming from the MCNP runs</p>
+for all experimental outputs.
+:param *args: see BenchmarkOutput doc.
+:type *args: TYPE
+:param **kwargs: see BenchmarkOutput doc.
+:type **kwargs: TYPE
+:param multiplerun: this additional keyword specifies if the benchmark is composed</p>
+<blockquote>
+<div><p>by more than one MCNP run. It defaults to False.</p>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p></p>
@@ -422,6 +389,31 @@ atlas are handled elsewhere.</p>
 <dd class="field-even"><p>None.</p>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="expoutput.ExperimentalOutput._build_atlas">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_build_atlas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmp_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atlas</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput._build_atlas" title="Permalink to this definition"></a></dt>
+<dd><p>Fill the atlas with the customized plots. Creation and saving of the
+atlas are handled elsewhere.
+:param tmp_path: path to the temporary folder where to dump images.
+:type tmp_path: path
+:param atlas: Object representing the plot Atlas.
+:type atlas: Atlas</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>atlas</strong> – After being filled the atlas is returned.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Atlas</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="expoutput.ExperimentalOutput._extract_outputs">
+<span class="sig-name descname"><span class="pre">_extract_outputs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput._extract_outputs" title="Permalink to this definition"></a></dt>
+<dd><p>Extract, organize and store the results coming from the MCNP runs
+:returns:
+:rtype: None.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -433,33 +425,26 @@ atlas are handled elsewhere.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="expoutput.ExperimentalOutput._print_raw">
 <span class="sig-name descname"><span class="pre">_print_raw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput._print_raw" title="Permalink to this definition"></a></dt>
-<dd><p>Dump all the raw data</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None.</p>
-</dd>
-</dl>
+<dd><p>Dump all the raw data
+:returns:
+:rtype: None.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="expoutput.ExperimentalOutput._processMCNPdata">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_processMCNPdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput._processMCNPdata" title="Permalink to this definition"></a></dt>
 <dd><p>Given an mctal file object return the meaningful data extracted. Some
-post-processing on the data may be foreseen at this stage.</p>
+post-processing on the data may be foreseen at this stage.
+:param output: object representing an MCNP output.
+:type output: MCNPoutput</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>output</strong> (<a class="reference internal" href="#output.MCNPoutput" title="output.MCNPoutput"><em>MCNPoutput</em></a>) – object representing an MCNP output.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the type of item can vary based on what the user intends to do
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the type of item can vary based on what the user intends to do
 whith it. It will be stored in an organized way in the self.results
 dictionary</p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>item</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>item</p>
 </dd>
 </dl>
 </dd></dl>
@@ -467,16 +452,15 @@ dictionary</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="expoutput.ExperimentalOutput._read_exp_file">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_read_exp_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput._read_exp_file" title="Permalink to this definition"></a></dt>
-<dd><p>Default way of reading a csv file</p>
+<dd><p>Default way of reading a csv file
+:param filepath: experimental file results to be read.
+:type filepath: path/str</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>filepath</strong> (<em>path/str</em>) – experimental file results to be read.</p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Contain the data read.</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Contain the data read.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>pd.DataFrame</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>pd.DataFrame</p>
 </dd>
 </dl>
 </dd></dl>
@@ -491,15 +475,9 @@ consist in the different folders and the second layer will be the
 different files. If it is not multirun, insetead, only one layer of the
 different files will be generated.
 All files need to be in .csv format. If a more complex format is
-provided, the user should ovveride the _read_exp_file method.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None.</p>
-</dd>
-</dl>
+provided, the user should ovveride the _read_exp_file method.
+:returns:
+:rtype: None.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -507,30 +485,18 @@ provided, the user should ovveride the _read_exp_file method.</p>
 <span class="sig-name descname"><span class="pre">build_atlas</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput.build_atlas" title="Permalink to this definition"></a></dt>
 <dd><p>Creation and saving of the atlas are handled by this function while
 the actual filling of the atlas is left to _build_atlas which needs
-to be implemented for each child class.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None.</p>
-</dd>
-</dl>
+to be implemented for each child class.
+:returns:
+:rtype: None.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="expoutput.ExperimentalOutput.compare">
 <span class="sig-name descname"><span class="pre">compare</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput.compare" title="Permalink to this definition"></a></dt>
 <dd><p>Complete the routines that perform the comparison of one or more
-libraries results with the experimental ones.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None.</p>
-</dd>
-</dl>
+libraries results with the experimental ones.
+:returns:
+:rtype: None.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -539,31 +505,23 @@ libraries results with the experimental ones.</p>
 <dd><p>At the moment everything is handled by _pp_excel_comparison that needs
 to be implemented in each child class. Some standard procedures may be
 added in the feature in order to reduce the amount of ex-novo coding
-necessary to implement a new experimental benchmark.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None.</p>
-</dd>
-</dl>
+necessary to implement a new experimental benchmark.
+:returns:
+:rtype: None.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="expoutput.ExperimentalOutput.single_postprocess">
 <span class="sig-name descname"><span class="pre">single_postprocess</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#expoutput.ExperimentalOutput.single_postprocess" title="Permalink to this definition"></a></dt>
 <dd><p>Always raise an Attribute Error since no single post-processing is
-foreseen for experimental benchmarks</p>
+foreseen for experimental benchmarks
+:raises AttributeError: DESCRIPTION.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><strong>AttributeError</strong> – DESCRIPTION.</p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>None.</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -666,7 +624,7 @@ data1 = {‘x’: x data, ‘y’: y data, ‘err’: error data,
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="inputgeneration.html" class="btn btn-neutral float-left" title="Input Generation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../testing/testing.html" class="btn btn-neutral float-right" title="JADE Testing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../testing/testing.html" class="btn btn-neutral float-right" title="JADE CI and automatic testing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

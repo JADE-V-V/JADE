@@ -52,3 +52,5 @@ Experimental Benchmarks
 .. include:: benchdesc/oktavian.rst
 
 .. include:: benchdesc/fng.rst
+
+.. include:: benchdesc/tiara.rst

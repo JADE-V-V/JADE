@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tips &amp; Tricks &mdash; JADE v2.0.0 documentation</title>
+  <title>Tips &amp; Tricks &mdash; JADE v2.1.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -49,7 +49,9 @@
 <li class="toctree-l1"><a class="reference internal" href="utilities.html">Utilities</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tips &amp; Tricks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#external-run-of-a-benchmark">External Run of a benchmark</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#change-the-plots-fontsizes">Change the plots fontsizes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#change-the-plots-parameters">Change the plots parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#add-a-new-material-to-the-spherical-benchmarks">Add a new material to the spherical benchmarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compare-design-solutions-instead-of-libraries">Compare design solutions instead of libraries</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
@@ -68,7 +70,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
@@ -125,8 +127,8 @@ for instance:</p>
 <li><p>normally run the post-processing.</p></li>
 </ol>
 </div>
-<div class="section" id="change-the-plots-fontsizes">
-<h2>Change the plots fontsizes<a class="headerlink" href="#change-the-plots-fontsizes" title="Permalink to this headline"></a></h2>
+<div class="section" id="change-the-plots-parameters">
+<h2>Change the plots parameters<a class="headerlink" href="#change-the-plots-parameters" title="Permalink to this headline"></a></h2>
 <p>Font size in plots is hardcoded in JADE. Nevertheless to change these value globally
 for all plots it is quite easy since they are all defined at the beginning of the
 <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Code\plotter.py</span></code> file trough the matplotlib.pyplot.rc attribute:</p>
@@ -134,6 +136,8 @@ for all plots it is quite easy since they are all defined at the beginning of th
 <span class="c1"># ============================================================================</span>
 <span class="c1">#                   Specify parameters for plots</span>
 <span class="c1"># ============================================================================</span>
+<span class="n">DEFAULT_EXTENSION</span> <span class="o">=</span> <span class="s1">&#39;.png&#39;</span>
+
 <span class="n">SMALL_SIZE</span> <span class="o">=</span> <span class="mi">22</span>
 <span class="n">MEDIUM_SIZE</span> <span class="o">=</span> <span class="mi">26</span>
 <span class="n">BIGGER_SIZE</span> <span class="o">=</span> <span class="mi">30</span>
@@ -148,6 +152,45 @@ for all plots it is quite easy since they are all defined at the beginning of th
 <span class="n">plt</span><span class="o">.</span><span class="n">rc</span><span class="p">(</span><span class="s1">&#39;lines&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>          <span class="c1"># Marker default size</span>
 </pre></div>
 </div>
+<p>Also the default extension of the plots can be changed in this way (it needs
+to be supported by <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> though).</p>
+</div>
+<div class="section" id="add-a-new-material-to-the-spherical-benchmarks">
+<h2>Add a new material to the spherical benchmarks<a class="headerlink" href="#add-a-new-material-to-the-spherical-benchmarks" title="Permalink to this headline"></a></h2>
+<p>To add a new material to both the Sphere Leakage and Sphere SDDR is fairly simple.
+The steps to follow are the following:</p>
+<ul class="simple">
+<li><p>Add the material card defining the material to the MCNP input named
+<strong>TypicalMaterials</strong> in the <code class="docutils literal notranslate"><span class="pre">JADE_root&gt;\Benchmarks</span> <span class="pre">inputs</span></code> folder.
+Chose a material number that has not been already used.</p></li>
+<li><p>Modify the <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Benchmarks</span> <span class="pre">Configuration\Sphere\MaterialSettings.csv</span></code>
+and the <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Benchmarks</span> <span class="pre">Configuration\SphereSDDR\MaterialSettings.csv</span></code>
+to specify the run parameters for the new materials. See <a class="reference internal" href="configuration.html#runconf"><span class="std std-ref">Benchmark run configuration</span></a> for
+additional details on such files.</p></li>
+</ul>
+</div>
+<div class="section" id="compare-design-solutions-instead-of-libraries">
+<h2>Compare design solutions instead of libraries<a class="headerlink" href="#compare-design-solutions-instead-of-libraries" title="Permalink to this headline"></a></h2>
+<p>It is possible to “inappropriately” use JADE to compare different
+design solution or in general different version of a same MCNP input instead
+of libraries and still exploit JADE automatic post-processing. For instance
+let us imagine to test which is the effect of different level of impurities
+in a specific material inside a particular geometry. Then the following steps
+would allow to use JADE post-processing features to obtain comparisons of results
+at different impurities:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../dev/insertbenchmarks.html#customcompbench"><span class="std std-ref">Insert Custom Computational Benchmark</span></a> containing the problem of interest;</p></li>
+<li><p>run the first version of the benchmark with a library of choice;</p></li>
+<li><p>rename the obtained output folder (e.g. “01.d”);</p></li>
+<li><p>change the impurity level in the MCNP template and run again the bechmark;</p></li>
+<li><p>rename the obtained folder (e.g. “02.d”);</p></li>
+<li><p>repeat the previous steps for all the different benchmark versions;</p></li>
+<li><p>map the fake library names to more significant ones using the <a class="reference internal" href="configuration.html#mainconfig"><span class="std std-ref">Main Configuration</span></a> file;</p></li>
+<li><p>run a comparison post-processing listing all the fake libraries (e.g. 01.d-02.d-…).</p></li>
+</ul>
+<p>Note that the benchmarks could also be run separately and only the simulation
+results be brought in JADE. Clearly, all benchmarks should be run using the same
+nuclear data library.</p>
 </div>
 </div>
 

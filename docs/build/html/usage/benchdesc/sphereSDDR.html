@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sphere SDDR &mdash; JADE v2.0.0 documentation</title>
+  <title>Sphere SDDR &mdash; JADE v2.1.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -62,7 +62,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../testing/testing.html">JADE Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributors.html">Contributors</a></li>
@@ -115,7 +115,8 @@ sphere, a void spherical shell has been defined having a 10 cm radial thickness.
 This is the cell used to tally the contact shut down dose rate.</p>
 <p>Similarly to what was done for the Sphere Leakage benchmark, the user have control on
 the densities to be applied for each element and material (default is set to NTP
-conditions with few exceptions) and control on the STOP parameters to be used.</p>
+conditions with few exceptions) and control on the STOP parameters to be used.
+The same 0-14 MeV uniform neutron point source is also defined.</p>
 </div>
 <div class="section" id="sddr-parameters">
 <h2>SDDR parameters<a class="headerlink" href="#sddr-parameters" title="Permalink to this headline"></a></h2>
@@ -185,9 +186,16 @@ originated in the material will be included. The irradiation file will be then g
 <h2>Tallies<a class="headerlink" href="#tallies" title="Permalink to this headline"></a></h2>
 <p>All neutron and photon related tallies defined in Sphere Leakage benchmark have also been imported
 in the Sphere SDDR benchmark. For photons, the time binning necessary to cover all the cool-down
-times of interest have been added. Tally n. 104 have been also defined to tally the contact shut
-down dose rate in air at all cool-down times in the additional spherical shell added for this
+times of interest have been added. Tally n. 104 have been also defined to tally the shut
+down dose rate at all cool-down times in the additional spherical shell added for this
 specific purpose [Sv/h].</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>For additional information on SA2 irradiation scenario
+and ITER irradiation scenarios in general the reader is
+referred to Loughlin M. and Taylor N., 2009, “Recommendation on Plasma scenarios”,
+[ITER IDM 2V3V8G v1.2].</p>
+</div>
 </div>
 </div>
 

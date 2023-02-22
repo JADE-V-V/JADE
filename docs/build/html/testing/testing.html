@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JADE Testing &mdash; JADE v2.0.0 documentation</title>
+  <title>JADE CI and automatic testing &mdash; JADE v2.1.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -64,7 +64,11 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">JADE Testing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">JADE CI and automatic testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#brief-introduction">Brief introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing-in-jade">Testing in JADE</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
@@ -85,7 +89,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>JADE Testing</li>
+      <li>JADE CI and automatic testing</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/testing/testing.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -95,20 +99,64 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="jade-testing">
-<h1>JADE Testing<a class="headerlink" href="#jade-testing" title="Permalink to this headline"></a></h1>
+  <div class="section" id="jade-ci-and-automatic-testing">
+<h1>JADE CI and automatic testing<a class="headerlink" href="#jade-ci-and-automatic-testing" title="Permalink to this headline"></a></h1>
+<div class="section" id="brief-introduction">
+<h2>Brief introduction<a class="headerlink" href="#brief-introduction" title="Permalink to this headline"></a></h2>
 <p>Following software developing best practices, JADE supports automating testing
-of its code and continuous integration on GitHub.</p>
-<p>Unit testing is performed through <code class="docutils literal notranslate"><span class="pre">pytest</span></code> while the code test coverage is
-monitored through <code class="docutils literal notranslate"><span class="pre">coverage</span></code>.</p>
+of its code and Continuous Integration (CI) on GitHub. These concepts are briefly
+described hereafter.</p>
+<p>There are many ways to perform automatic testing on code.
+The choice fell upon <strong>unit testing</strong> which is commonly used in software development
+and consists of stress-testing single units of code, i.e., the minimal portion
+of the software that have an autonomous operation like single classes or methods.
+These set of tests are usually defined with the help of specific libraries and
+are automated in order to be executed frequently.</p>
+<p>This approach guarantees a series of advantages:</p>
+<ul class="simple">
+<li><p>it is easier to accept new features from new developers because the risk of
+them breaking the code will be way lower if it passed the tests;</p></li>
+<li><p>it generally improves the reliability of the code;</p></li>
+<li><p>it enhances the stability of the code through the years, since, when a bug is
+found, it is good practice to add a specific test able to catch it and ensure
+that it will never present itself again in the future;</p></li>
+<li><p>it generally improves the quality of the code since unit testing forces
+developers to write code in a more schematic and clear way (retrofitting unit
+testing to code already written, on the contrary, can cause a bit of an
+headache);</p></li>
+<li><p>if done correctly, it can actually speed up the development of new features
+when the complexity of the code is high due to a more easy identification of
+the issues (i.e. the failed tests).</p></li>
+</ul>
+<p>Unit testing is also a key component of the so-called Continuous Integration (CI)
+which is needed when many developers start to collaborate to the same project.
+In order to do so, each of them will work on a local copy of the code which will
+gradually become less representative of the master repository due to the
+constant modifications applied by others. If a single developer waits too much
+before committing his modifications to the master repository, the main code
+could have become so different that trying to merge a commitment with success
+(i.e. without conflicts) could become more time consuming than just restart the
+development of the new feature from scratch. This situation is usually referred
+to as “integration hell” or “merge hell”. In short, continuous integration
+consists of committing your code modifications fast and often, trying to avoid
+at all costs integration hell and save effort and time. Tools like GitHub are
+instrumental to the diffusion of the CI philosophy thanks to it many
+collaborative features and robust version control. Nevertheless, key principles
+of the process are considered to be the automatic build and automatic testing
+of the code which need to be performed each time the master code is adjourned.</p>
+</div>
+<div class="section" id="testing-in-jade">
+<h2>Testing in JADE<a class="headerlink" href="#testing-in-jade" title="Permalink to this headline"></a></h2>
+<p>Unit testing in JADE is defined and run with the help of the <code class="docutils literal notranslate"><span class="pre">pytest</span></code> module
+while the code test coverage is monitored through the <code class="docutils literal notranslate"><span class="pre">coverage</span></code> one.</p>
 <p>The automatic testing is performed each time there is a merge operation on the
-main JADE branch on GitHub but at anytime the user may test the code throgh the
+main JADE branch on GitHub although, at any time, the user may test the code throgh the
 following steps:</p>
 <ol class="arabic">
 <li><p>Open an Anaconda prompt and activate jade environment;</p></li>
 <li><p>Change directory to <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code</span></code>;</p></li>
 <li><p>run:</p>
-<p><code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--cov-report</span> <span class="pre">html</span> <span class="pre">--cov=.</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--cov=.</span> <span class="pre">--cov-report</span> <span class="pre">html</span> <span class="pre">-cov-config=.coveragerc</span></code></p>
 </li>
 </ol>
 <p>This will automatically collect and run all tests contained in
@@ -117,6 +165,7 @@ information about the code coverage that can be found in
 <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code\htmlcov\index.html</span></code>.</p>
 <p>The routine for continuous integration in GitHub are specified in
 <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code\.github\workflows</span></code>.</p>
+</div>
 </div>
 
 

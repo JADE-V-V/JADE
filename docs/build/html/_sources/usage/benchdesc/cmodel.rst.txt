@@ -1,5 +1,5 @@
 C-Model
-^^^^^^^
+-------
 
 .. important::
 

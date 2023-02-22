@@ -12,6 +12,10 @@ Publications featuring JADE
 * D. Laghi, M. Fabbri, L. Isolan, M. Sumini, G. Shnabel and A. Trkov, 2021,
   "Application Of JADE V&V Capabilities To The New FENDL v3.2 Beta Release",
   *Nuclear Fusion*, **61** 116073. doi: https://doi.org/10.1088/1741-4326/ac121a
+* D.Laghi, M. Fabbri, S. La Rovere, L. Isolan, R. Pampin, A. Portone and M. Sumini,
+  2022, "Status of JADE, an open-source software for nuclear data libraries V&V",
+  *Fusion Engineering and Design*, **187** 113380, doi: https://doi.org/10.1016/j.fusengdes.2022.113380
+
 
 Benchmarks Related Publications
 ===============================
@@ -42,3 +46,8 @@ Benchmarks Related Publications
 
 Miscellaneous
 =============
+* **MCNP**, Werner C.J., 2017, "MCNP User’S Manual Code", Los Alamos: LAUR-17-29981 (version 6.2).
+* **D1S-UNED**, P. Sauvan et al, 2020, "D1SUNED system for the determination of decay photon related quantities",
+  *Fusion Eng. Des.*, **151** 111399.
+* Loughlin M. and Taylor N., 2009, "Recommendation on Plasma scenarios",
+  [ITER IDM 2V3V8G v1.2]

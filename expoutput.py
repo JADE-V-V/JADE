@@ -55,6 +55,7 @@ class ExperimentalOutput(BenchmarkOutput):
         Returns
         -------
         None.
+
         """
         # Add a special keyword for experimental benchmarks
         try:
@@ -901,6 +902,7 @@ class TiaraBCOutput(OktavianOutput):
     def _build_atlas(self, tmp_path, atlas):
         """
         See ExperimentalOutput documentation
+
         """
 
         # Set plot axes details

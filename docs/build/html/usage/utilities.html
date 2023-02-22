@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Utilities &mdash; JADE v2.0.0 documentation</title>
+  <title>Utilities &mdash; JADE v2.1.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -57,6 +57,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#switch-material-fractions">Switch material fractions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#change-ace-libraries-suffix">Change .ace libraries suffix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#produce-d1s-uned-reaction-files">Produce D1S-UNED reaction files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#remove-runtpe-files">Remove runtpe files</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tipstricks.html">Tips &amp; Tricks</a></li>
@@ -76,7 +77,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
@@ -296,6 +297,16 @@ listed. The complete list of available reactions for each D1S activation
 library is provided (and may be modified) in the <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Activation.xlsx</span></code>
 file.</p>
 <p>The generated reaction files are dumped in the <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Utilities\Reactions</span></code> folder</p>
+</div>
+<div class="section" id="remove-runtpe-files">
+<h2>Remove runtpe files<a class="headerlink" href="#remove-runtpe-files" title="Permalink to this headline"></a></h2>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version v2.0.2: </span><code class="docutils literal notranslate"><span class="pre">rmvruntpe</span></code></p>
+</div>
+<p>This function allows to remove all MCNP runtpe files produced during the
+library assessment. These files, once the simulations are terminated correctly,
+are kind of useless for the post-processing and they consume a large amount
+of storage memory (up to 95% for MCNP produced outputs).</p>
 </div>
 </div>
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sphere Leakage &mdash; JADE v2.0.0 documentation</title>
+  <title>Sphere Leakage &mdash; JADE v2.1.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -62,7 +62,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../testing/testing.html">JADE Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributors.html">Contributors</a></li>
@@ -143,6 +143,17 @@ finding a good balance between computational cost and enough precise results.
 These parameters are provided by default in JADE, but the user may modify them if necessary through
 benchmark-specific configuration files. Density values can be modified too. The files are located in
 <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Benchmarks</span> <span class="pre">Configuration\Sphere</span></code>.</p>
+<p>Even after all these optimizations, it is clear to the developers that a “fair”
+test for all isotopes has not been reached yet. For example, in materials with cross sections
+having 1/V dependencies, the output of the simulations could be dominated by the cross
+sections at lower energies. Moreover, particles
+will not have the same mean free paths in the different spheres meaning that the number
+of times the cross-sections are sampled will vary, with consequance
+also on integral results (e.g. heating). In short, some isotopes will necessarly
+be tested “better” than others. The solution to this issue is not trivial and will
+certainly receive further attention in future developments. It should be noticed
+that users can easily modify both density and source parameters at anytime if they
+do not agree with the default settings that are provided.</p>
 </div>
 <div class="section" id="tallies">
 <h2>Tallies<a class="headerlink" href="#tallies" title="Permalink to this headline"></a></h2>

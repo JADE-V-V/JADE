@@ -80,7 +80,7 @@ def executeBenchmarksRoutines(session, lib, exp=False):
                 libpath = lib
 
             if testname == 'FNG Bulk Blanket and Shielding Experiment':
-                lib = {lib: '00c', '34y': '34y'}
+                lib = {'00c': lib, '34y': '34y'}
             # get path to libdir
             outpath = os.path.join(session.path_run, libpath)
             safemkdir(outpath)

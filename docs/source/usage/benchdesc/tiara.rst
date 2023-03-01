@@ -52,7 +52,13 @@ Because three different types of detectors are used, with different type of
 output data, TIARA benchmark is divided into three separated benchmarks. 
 For each detector benchmark, measurements with different neutron source energies,
 shielding material, shield thickness and additional collimator thickness are 
-made. The three cases with three different detectors were modelled with 3 
+made. 
+Because TIARA is a deep shielding problem, variance reduction is needed to perform
+effective and fast simulations. The variance reduction is performed at the source,
+with its geometry being limited to a conical shape, and with energy
+dependant weight windows determined by the ADVANTG hybrid deterministic/Monte
+Carlo code. The weight windows files can be provided on request.
+The three cases with three different detectors were modelled with 3 
 different tallies:
 
 BC 501A scintillators:

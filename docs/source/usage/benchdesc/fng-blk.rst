@@ -72,5 +72,4 @@ Tally n. 4
 
 .. seealso:: **Related papers and contributions:**
 
-    * Bor Kos and I. A. Kodeli, "MCNP modelling of the TIARA 
-      SINBAD shielding benchmark", September 2018
+    * ...

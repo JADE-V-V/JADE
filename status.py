@@ -24,7 +24,7 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import re
 
-MULTI_TEST = ['Sphere', 'Oktavian', 'SphereSDDR', 'FNG', 'Tiara-BC', 'Tiara-BS', 'Tiara-FC', 'FNS', 'FNG-BKT']
+MULTI_TEST = ['Sphere', 'Oktavian', 'SphereSDDR', 'FNG', 'Tiara-BC', 'Tiara-BS', 'Tiara-FC', 'FNS', 'FNG-BKT', 'FNG-W']
 EXP_TAG = 'Exp'
 
 

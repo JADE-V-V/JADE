@@ -1608,7 +1608,7 @@ class FNGBKTOutput(OktavianOutput):
 
         names = ['Library', '']
         column_index = pd.MultiIndex.from_tuples(column_names, names=names)
-        filepath = self.excel_path + '\\FNG-BKT_CE_tables.xlsx'
+        filepath = self.excel_path + '\\' + self.testname + '_CE_tables.xlsx'
         writer = pd.ExcelWriter(filepath, engine='xlsxwriter')
         for mat in self.materials:
             exp_folder = os.path.join(self.path_exp_res, mat)
@@ -1649,7 +1649,8 @@ class FNGBKTOutput(OktavianOutput):
 
             # Assign worksheet title and put into Excel
             conv_df = self._get_conv_df(mat, len(x))
-            sheet_name = 'FNG BLK, Foil {}'.format(mat)
+            sheet = self.testname.replace('-', ' ')
+            sheet_name = sheet + ', Foil {}'.format(mat)
             df_tab.to_excel(writer, sheet_name=sheet_name)
             conv_df.to_excel(writer, sheet_name=sheet_name, startrow=18)
             # Close the Pandas Excel writer object and output the Excel file
@@ -1662,7 +1663,7 @@ class FNGBKTOutput(OktavianOutput):
         # Set plot and axes details
         unit = '-'
         quantity = ['C/E']
-        xlabel = 'Blanket thickness [cm]'
+        xlabel = 'Shielding thickness [cm]'
         data = []
         for material in tqdm(self.materials, desc='Foil: '):
             data = []
@@ -1685,7 +1686,7 @@ class FNGBKTOutput(OktavianOutput):
             for lib in self.lib[1:]:
                 # Get library name, assign title to the plot
                 ylabel = self.session.conf.get_lib_name(lib)
-                title = 'FNG Bulk Blanket experiment, Foil: ' + material
+                title = self.testname + ' experiment, Foil: ' + material
                 y = []
                 err = []
                 v = self.raw_data[(material, lib)][4]['Value'].values[:len(x)]

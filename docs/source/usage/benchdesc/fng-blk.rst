@@ -1,7 +1,9 @@
+.. _fngblk:
+
 FNG Bulk Blanket and Shield Experiment
 --------------------------------------
 
-The aim of the experiment is to carry out a series of neutronics experiments, 
+The aim of the experiment is to carry out a series of neutronics measurements, 
 using 14 MeV neutrons, on a mockup of ITER inboard shielding system, with 
 the purpose of validating the ITER shielding blanket design. 
 To achieve the objective, mockup assembly configuration and material composition 
@@ -72,4 +74,4 @@ Tally n. 4
 
 .. seealso:: **Related papers and contributions:**
 
-    * ...
+    * P. Batistoni, M. Angelone, W. Daenner, U. Fischer, L. Petrizzi, M. Pillon, A. santamarina, K. Seidel, "Neutronics Shield Experiment for ITER at the Frascati Neutron Generator FNG", 17th Symposium on Fusion Technology, Lisboa, Portugal, September 16-20, 1996.

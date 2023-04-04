@@ -1,3 +1,5 @@
+.. _fngsddr:
+
 Frascati Neutron Generator SDDR Experiment
 ------------------------------------------
 

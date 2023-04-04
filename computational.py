@@ -79,6 +79,11 @@ def executeBenchmarksRoutines(session, lib, exp=False):
             else:
                 libpath = lib
 
+            if testname in ['FNG Bulk Blanket and Shielding Experiment', 'FNG Tungsten']:
+                var = {'00c': lib, '34y': '34y'}
+            else:
+                var = lib
+
             # get path to libdir
             outpath = os.path.join(session.path_run, libpath)
             safemkdir(outpath)
@@ -88,7 +93,7 @@ def executeBenchmarksRoutines(session, lib, exp=False):
             confpath = os.path.join(session.path_cnf, fname.split('.')[0])
 
             # Generate test
-            args = (inpfile, lib, row, log, VRTpath, confpath)
+            args = (inpfile, var, row, log, VRTpath, confpath)
             # Handle special cases
             if testname == 'Sphere Leakage Test':
                 test = testrun.SphereTest(*args)
@@ -96,7 +101,7 @@ def executeBenchmarksRoutines(session, lib, exp=False):
             elif testname == 'Sphere SDDR':
                 test = testrun.SphereTestSDDR(*args)
 
-            elif fname in ['Oktavian', 'Tiara-BC', 'Tiara-BS', 'Tiara-FC', 'FNS']:
+            elif fname in ['Oktavian', 'Tiara-BC', 'Tiara-BS', 'Tiara-FC', 'FNS', 'FNG-BKT', 'FNG-W']:
                 test = testrun.MultipleTest(*args)
 
             elif fname == 'FNG':

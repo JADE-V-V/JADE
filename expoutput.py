@@ -1587,3 +1587,133 @@ class TiaraBSOutput(TiaraOutput):
             atlas.insert_img(img_path)
 
         return atlas
+
+
+class FNGBKTOutput(OktavianOutput):
+
+    def _processMCNPdata(self, output):
+
+        return None
+
+    def _pp_excel_comparison(self):
+
+        lib_names_dict = {}
+        column_names = []
+        column_names.append(('Exp', 'Value'))
+        column_names.append(('Exp', 'Error'))
+        for lib in self.lib[1:]:
+            namelib = self.session.conf.get_lib_name(lib)
+            lib_names_dict[namelib] = lib
+            column_names.append((namelib, 'Value'))
+            column_names.append((namelib, 'C/E'))
+            column_names.append((namelib, 'C/E Error'))
+
+        names = ['Library', '']
+        column_index = pd.MultiIndex.from_tuples(column_names, names=names)
+        filepath = self.excel_path + '\\' + self.testname + '_CE_tables.xlsx'
+        writer = pd.ExcelWriter(filepath, engine='xlsxwriter')
+        for mat in self.materials:
+            exp_folder = os.path.join(self.path_exp_res, mat)
+            exp_filename = self.testname + '_' + mat + '.csv'
+            exp_filepath = os.path.join(exp_folder, exp_filename)
+            exp_data_df = pd.read_csv(exp_filepath)
+            # Get experimental data and errors for the selected benchmark case
+            x = exp_data_df['Depth'].values.tolist()
+            indexes = pd.Index(data=x, name='Depth [cm]')
+            df_tab = pd.DataFrame(index=indexes, columns=column_index)
+            for idx_col in df_tab.columns.values.tolist():
+                if idx_col[0] == 'Exp':
+                    if idx_col[1] == 'Value':
+                        vals = exp_data_df.loc[:, 'Reaction Rate'].tolist()
+                        df_tab[idx_col] = vals
+                    else:
+                        vals = exp_data_df.loc[:, 'Error'].to_numpy() / 100
+                        vals = vals.tolist()
+                        df_tab[idx_col] = vals
+                else:
+                    t = (mat, lib_names_dict[idx_col[0]])
+                    if idx_col[1] == 'Value':
+                        vals = self.raw_data[t][4]['Value'].values[:len(x)]
+                        df_tab[idx_col] = vals
+                    elif idx_col[1] == 'C/E Error':
+                        errs = self.raw_data[t][4]['Error'].values[:len(x)]
+                        vals1 = np.square(errs)
+                        vals2 = np.square(exp_data_df.loc[:, 'Error'].to_numpy() / 100)
+                        ce_err = np.sqrt(vals1 + vals2)
+                        ce_err = ce_err.tolist()
+                        df_tab[idx_col] = ce_err
+                    else:
+                        vals1 = self.raw_data[t][4]['Value'].values[:len(x)]
+                        vals2 = exp_data_df.loc[:, 'Reaction Rate'].to_numpy()
+                        ratio = vals1 / vals2
+                        ratio = ratio.tolist()
+                        df_tab[idx_col] = vals1 / vals2
+
+            # Assign worksheet title and put into Excel
+            conv_df = self._get_conv_df(mat, len(x))
+            sheet = self.testname.replace('-', ' ')
+            sheet_name = sheet + ', Foil {}'.format(mat)
+            df_tab.to_excel(writer, sheet_name=sheet_name)
+            conv_df.to_excel(writer, sheet_name=sheet_name, startrow=18)
+            # Close the Pandas Excel writer object and output the Excel file
+        writer.save()
+
+    def _build_atlas(self, tmp_path, atlas):
+        """
+        See ExperimentalOutput documentation
+        """
+        # Set plot and axes details
+        unit = '-'
+        quantity = ['C/E']
+        xlabel = 'Shielding thickness [cm]'
+        data = []
+        for material in tqdm(self.materials, desc='Foil: '):
+            data = []
+            exp_folder = os.path.join(self.path_exp_res, material)
+            exp_filename = self.testname + '_' + material + '.csv'
+            exp_filepath = os.path.join(exp_folder, exp_filename)
+            exp_data_df = pd.read_csv(exp_filepath)
+            # Get experimental data and errors for the selected benchmark case
+            x = exp_data_df['Depth'].values
+            y = []
+            err = []
+            y.append(exp_data_df['Reaction Rate'].values)
+            err.append(exp_data_df['Error'].values / 100)
+            # Append experimental data to data list (sent to plotter)
+            ylabel = 'Experiment'
+            data_exp = {'x': x, 'y': y, 'err': err, 'ylabel': ylabel}
+            data.append(data_exp)
+
+            # Loop over selected libraries
+            for lib in self.lib[1:]:
+                # Get library name, assign title to the plot
+                ylabel = self.session.conf.get_lib_name(lib)
+                title = self.testname + ' experiment, Foil: ' + material
+                y = []
+                err = []
+                v = self.raw_data[(material, lib)][4]['Value'].values[:len(x)]
+                y.append(v)
+                v = self.raw_data[(material, lib)][4]['Error'].values[:len(x)]
+                err.append(v)
+                # Append computational data to data list(to be sent to plotter)
+                data_comp = {'x': x, 'y': y, 'err': err, 'ylabel': ylabel}
+                data.append(data_comp)
+
+            # Send data to plotter
+            outname = 'tmp'
+            plot = Plotter(data, title, tmp_path, outname, quantity, unit,
+                           xlabel, self.testname)
+            img_path = plot.plot('Waves')
+            atlas.insert_img(img_path)
+
+        return atlas
+
+    def _get_conv_df(self, mat, size):
+        conv_df = pd.DataFrame()
+        for lib in self.lib[1:]:
+            max = self.raw_data[(mat, lib)][4]['Error'].values[:size].max()
+            avg = self.raw_data[(mat, lib)][4]['Error'].values[:size].mean()
+            library = self.session.conf.get_lib_name(lib)
+            conv_df.loc['Max Error', library] = max
+            conv_df.loc['Average Error', library] = avg
+        return conv_df

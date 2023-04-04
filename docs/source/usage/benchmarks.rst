@@ -54,3 +54,7 @@ Experimental Benchmarks
 .. include:: benchdesc/fng.rst
 
 .. include:: benchdesc/tiara.rst
+
+.. include:: benchdesc/fng-blk.rst
+
+.. include:: benchdesc/fng-w.rst

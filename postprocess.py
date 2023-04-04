@@ -95,7 +95,14 @@ def _get_output(action, testname, lib, session):
             out = expo.FNSOutput(lib, testname, session)
         elif action == 'pp':
             print(exp_pp_message)
-            return False      
+            return False
+
+    elif testname == 'FNG-BKT' or testname == 'FNG-W':
+        if action == 'compare':
+            out = expo.FNGBKTOutput(lib, testname, session)
+        elif action == 'pp':
+            print(exp_pp_message)
+            return False
 
     elif testname == 'FNG':
         if action == 'compare':

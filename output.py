@@ -184,7 +184,10 @@ class BenchmarkOutput(AbstractOutput):
         # SINGLE-LIBRARY
         else:
             self.single = True  # Indicator for single or comparison
-            self.lib = str(lib)  # In case of 1-item list
+            if type(lib) is list and len(lib) == 1:
+                self.lib = lib[0] # In case of 1-item list
+            else:
+                self.lib = lib
             self.test_path = os.path.join(session.path_run, lib, testname)
 
             # Generate library output path

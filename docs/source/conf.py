@@ -17,11 +17,11 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'JADE'
-copyright = '2021, Davide Laghi'
-author = 'Davide Laghi'
+copyright = '2023, JADE team'
+author = 'JADE Team'
 
 # The full version, including alpha/beta/rc tags
-release = 'v2.1.1'
+release = 'v2.2.0'
 
 
 # -- General configuration ---------------------------------------------------

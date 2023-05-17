@@ -23,6 +23,7 @@
 
 import jade.inputfile as ipt
 import jade.matreader as mat
+import jade.unix as unix
 import os
 import subprocess
 import shutil
@@ -448,7 +449,6 @@ class Test():
         mpi_tasks = int(config.openmp_threads) * int(config.mpi_tasks)
         run_mpi = False
         if mpi_tasks > 1:
-            mpistring = 'mpirun -n ' + str(mpi_tasks)
             run_mpi = True
         executable = config.mcnp_exec
         env_variables = config.mcnp_config
@@ -456,7 +456,6 @@ class Test():
         outputstring = 'n=' + name
         xsstring = 'xs='+lib_manager.XS.mcnp_data[self.lib].filename
         if run_mpi:
-            #command = ' '.join([mpistring, executable, inputstring, outputstring])
             run_command = ['mpirun', '-n', str(mpi_tasks), executable, inputstring, outputstring, xsstring]
         else:
             run_command = [executable, inputstring, outputstring, xsstring]
@@ -474,12 +473,11 @@ class Test():
             if os.path.exists(runtpe):
                 command = command+' runtpe='+name+'.r'
 
-            print(directory)
-            print(cwd)
             # Execution
             if pd.isnull(config.batch_system) is True:
-                subprocess.Popen(env_variables, shell=True)
-                subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
+                unix.configure(env_variables)
+                #subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
+                subprocess.run(" ".join(run_command), cwd=directory, shell=True)
             else:
                 self.job_submission(config, directory, run_command, mpi_tasks, env_variables)
             os.chdir(cwd)
@@ -492,34 +490,42 @@ class Test():
 
     #@staticmethod
     def run_serpent(self, config, lib_manager, name, directory, timeout=None):
-        mpi_tasks = int(config.openmp_threads) * int(config.mpi_tasks)
+        mpi_tasks = int(config.mpi_tasks)
+        omp_threads = int(config.openmp_threads)
         run_mpi = False
+        run_omp = False
         if mpi_tasks > 1:
-            mpistring = 'mpirun -n ' + str(mpi_tasks)
             run_mpi = True
+        if omp_threads > 1:
+            run_omp = True
         executable = config.serpent_exec
         env_variables = config.serpent_config
         inputstring = name
         libpath = Path(str(lib_manager.XS.serpent_data[self.lib].filename))
         data_command = "export SERPENT_DATA=" + str(libpath.parent) + " \nexport SERPENT_ACELIB=" + str(libpath)
-        if run_mpi:
-            #command = ' '.join([mpistring, executable, inputstring, outputstring])
-            run_command = ['mpirun', '-n', str(mpi_tasks), executable, inputstring]
+        if run_omp:
+            if run_mpi:
+                run_command = ['mpirun', '-np', str(mpi_tasks), '-omp', str(omp_threads), executable, inputstring]
+            else:
+                run_command = [executable, '-omp', str(omp_threads), inputstring]
         else:
-            run_command = [executable, inputstring]
+            if run_mpi:
+                run_command = ['mpirun', '-np', str(mpi_tasks), executable, inputstring]
+            else:
+                run_command = [executable, inputstring]
         flagnotrun = False
         try:
             cwd = os.getcwd()
             os.chdir(directory)
 
-            print(run_command)
-            print(cwd)
             # Execution
             if pd.isnull(config.batch_system) is True:
                 os.environ['SERPENT_DATA'] = str(libpath.parent)
-                os.environ['SERPENT_ACELIB'] = str(libpath)
-                subprocess.Popen(env_variables, shell=True)
-                subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
+                os.environ['SERPENT_ACELIB'] = str(str(libpath))
+                unix.configure(env_variables)
+                print(" ".join(run_command))
+                #subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
+                subprocess.run(" ".join(run_command), cwd=directory, shell=True)
             else:
                 self.job_submission(config, directory, run_command, mpi_tasks, env_variables, data_command)
             os.chdir(cwd)
@@ -528,38 +534,42 @@ class Test():
             pass
 
         return flagnotrun
-        pass
 
     #@staticmethod
     def run_openmc(self, config, lib_manager, name, directory, timeout=None):
-        mpi_tasks = int(config.openmp_threads) * int(config.mpi_tasks)
+        mpi_tasks = int(config.mpi_tasks)
+        omp_threads = int(config.openmp_threads)
         run_mpi = False
-        print(mpi_tasks)
+        run_omp = False
         if mpi_tasks > 1:
-            mpistring = 'mpirun -np ' + str(mpi_tasks)
             run_mpi = True
+        if omp_threads > 1:
+            run_omp = True
         executable = config.openmc_exec
         env_variables = config.openmc_config
         libpath = Path(str(lib_manager.XS.openmc_data[self.lib].filename))
         data_command = "export OPENMC_CROSS_SECTIONS=" + str(libpath)
-        if run_mpi:
-            #command = ' '.join([mpistring, executable, inputstring, outputstring])
-            run_command = ['mpirun', '-np', str(mpi_tasks), executable]
+        if run_omp:
+            if run_mpi:
+                run_command = ['mpirun', '-np', str(mpi_tasks), executable, '--threads', str(omp_threads)]
+            else:
+                run_command = [executable, '--threads', str(omp_threads)]            
         else:
-            run_command = [executable]
+            if run_mpi:
+                run_command = ['mpirun', '-np', str(mpi_tasks), executable]
+            else:
+                run_command = [executable]
         flagnotrun = False
         try:
             cwd = os.getcwd()
             os.chdir(directory)
 
-            print(directory)
-            print(run_command)
-            print(cwd)
             # Execution
             if pd.isnull(config.batch_system) is True:
                 os.environ['OPENMC_CROSS_SECTIONS'] = str(libpath)
-                subprocess.Popen(env_variables, shell=True)
-                subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
+                unix.configure(env_variables)
+                #subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
+                subprocess.run(" ".join(run_command), cwd=directory, shell=True)
             else:
                 self.job_submission(config, directory, run_command, mpi_tasks, env_variables, data_command)
             os.chdir(cwd)
@@ -567,7 +577,7 @@ class Test():
             pass
 
         return flagnotrun
-        pass
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     # Legacy MCNP runner
     @staticmethod

@@ -421,7 +421,13 @@ class Test():
                 self.run_openmc(config, name, openmc_directory)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Edited by D. Wheeler ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
     #job submission currently tailored for LoadLeveler, may be applicable to other submission systems with equivalent dummy variables
-    def job_submission(self, config, directory, run_command, mpi_tasks, env_variables, data_command=str()):
+    def job_submission(self, config, directory, run_command, mpi_tasks, omp_threads, env_variables, data_command=str()):
+        with open(env_variables, 'r') as f:
+            config_script = ''
+            for line in f:
+                if not line.startswith('#!'):
+                    config_script += line 
+        user = subprocess.run("whoami", capture_output=True).stdout.decode("utf-8").strip()
         os.chdir(directory)
         job_script = directory+"/"+os.path.basename(directory)+"_job_script"
         fout = open(job_script, "wt")
@@ -433,12 +439,14 @@ class Test():
             contents = contents.replace("OUT_FILE", job_script+".out")
             contents = contents.replace("ERROR_FILE", job_script+".err")
             contents = contents.replace("MPI_TASKS", str(mpi_tasks))
-            contents = contents.replace("CONFIG_SCRIPT", env_variables)
+            contents = contents.replace("OMP_THREADS", str(omp_threads))
+            contents = contents.replace("CONFIG_SCRIPT", config_script)
+            contents = contents.replace("USER", user)
             fout.write(contents)
         
         fin.close()
         fout.close()
-        os.system(config.batch_system + " " +job_script)
+        subprocess.run(config.batch_system + " " +job_script, cwd=directory, shell=True)
          
     #@staticmethod
     def run_d1s(self, config, libmanager, name, directory):
@@ -447,6 +455,7 @@ class Test():
     #@staticmethod
     def run_mcnp(self, config, lib_manager, name, directory, timeout=None):
         mpi_tasks = int(config.openmp_threads) * int(config.mpi_tasks)
+        omp_threads = 1
         run_mpi = False
         if mpi_tasks > 1:
             run_mpi = True
@@ -479,7 +488,7 @@ class Test():
                 #subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
                 subprocess.run(" ".join(run_command), cwd=directory, shell=True)
             else:
-                self.job_submission(config, directory, run_command, mpi_tasks, env_variables)
+                self.job_submission(config, directory, run_command, mpi_tasks, omp_threads, env_variables)
             os.chdir(cwd)
             
         except subprocess.TimeoutExpired:
@@ -505,7 +514,7 @@ class Test():
         data_command = "export SERPENT_DATA=" + str(libpath.parent) + " \nexport SERPENT_ACELIB=" + str(libpath)
         if run_omp:
             if run_mpi:
-                run_command = ['mpirun', '-np', str(mpi_tasks), '-omp', str(omp_threads), executable, inputstring]
+                run_command = ['mpirun', '-np', str(mpi_tasks), executable, '-omp', str(omp_threads), inputstring]
             else:
                 run_command = [executable, '-omp', str(omp_threads), inputstring]
         else:
@@ -527,7 +536,7 @@ class Test():
                 #subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
                 subprocess.run(" ".join(run_command), cwd=directory, shell=True)
             else:
-                self.job_submission(config, directory, run_command, mpi_tasks, env_variables, data_command)
+                self.job_submission(config, directory, run_command, mpi_tasks, omp_threads, env_variables, data_command)
             os.chdir(cwd)
             
         except subprocess.TimeoutExpired:
@@ -571,7 +580,7 @@ class Test():
                 #subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
                 subprocess.run(" ".join(run_command), cwd=directory, shell=True)
             else:
-                self.job_submission(config, directory, run_command, mpi_tasks, env_variables, data_command)
+                self.job_submission(config, directory, run_command, mpi_tasks, omp_threads, env_variables, data_command)
             os.chdir(cwd)
         except subprocess.TimeoutExpired:
             pass

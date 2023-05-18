@@ -3,11 +3,10 @@
 # @ output = OUT_FILE
 # @ error = ERROR_FILE
 # @ initialdir = INITIAL_DIR
-# @ notify_user = zb0135
-# @ notification = complete
+# @ notify_user = USER
 # @ jobtype = openmpi
-# @ max_processors = 32
-# @ min_processors = 16
+# @ max_processors = MPI_TASKS
+# @ min_processors = MPI_TASKS
 # @ queue
 
 CONFIG_SCRIPT

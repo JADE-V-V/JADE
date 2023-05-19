@@ -21,7 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 
-import os, re, subprocess
+import os, re, subprocess, sys
 
 if 'MODULEPATH' not in os.environ:
     f = open(os.environ['MODULESHOME'] + "/init/.modulespath", "r")
@@ -35,25 +35,31 @@ if 'LOADEDMODULES' not in os.environ:
     os.environ['LOADEDMODULES'] = ''
 
 def module(*args):
-	if type(args[0]) == type([]):
-		args = args[0]
-	else:
-		args = list(args)
-	(output, error) = subprocess.Popen(['/usr/bin/modulecmd', 'python'] + 
-			args, stdout=subprocess.PIPE).communicate()
-	exec(output)
+    if type(args[0]) == type([]):
+        args = args[0]
+    else:
+        args = list(args)
+    (output, error) = subprocess.Popen(['/usr/bin/modulecmd', 'python'] + 
+            args, stdout=subprocess.PIPE).communicate()
+    exec(output)
         
 def export(*args):
-	if type(args[0]) == type([]):
-		args = args[0]
-	else:
-		args = list(args)
-	args = ''.join(args)
-	environ, value = args.split('=')
-	if environ not in os.environ:
-		os.environ[environ] = ''
-	os.environ[environ] = value.replace('$'+environ, os.environ[environ])
-		
+    if type(args[0]) == type([]):
+        args = args[0]
+    else:
+        args = list(args)
+    args = ''.join(args)
+    environ, value = args.split('=')
+    if environ not in os.environ:
+        os.environ[environ] = ''
+    value = value.replace('$'+environ, os.environ[environ])
+    if '$' in value:
+        parts = value.split('$')
+        for string in parts[1:]:
+            parent = string[:string.find('/')]
+            value = value.replace('$'+parent, os.environ[parent])
+    os.environ[environ] = value
+
 def configure(config_file):
     with open(config_file, 'r') as f:
         for line in f:

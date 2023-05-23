@@ -104,7 +104,7 @@ class AbstractOutput(abc.ABC):
 
 class BenchmarkOutput(AbstractOutput):
 
-    def __init__(self, lib, testname, session):
+    def __init__(self, lib, config, session):
         """
         General class for a Benchmark output
 
@@ -112,8 +112,8 @@ class BenchmarkOutput(AbstractOutput):
         ----------
         lib : str
             library to post-process
-        testname : str
-            Name of the benchmark
+        config : pd.DataFrame (single row)
+            configuration options for the test.
         session : Session
             Jade Session
         exp : str
@@ -126,25 +126,43 @@ class BenchmarkOutput(AbstractOutput):
         """
         self.raw_data = {}  # Raw data
         self.outputs = {}  # outputs linked to the benchmark
-        self.testname = testname  # test name
+        self.testname = config['Folder Name']  # test name
         self.code_path = os.getcwd()  # path to code
         self.state = session.state
         self.session = session
 
         # Read specific configuration
-        cnf_path = os.path.join(session.path_cnf, testname+'.xlsx')
+        cnf_path = os.path.join(session.path_cnf, self.testname+'.xlsx')
         if os.path.isfile(cnf_path):
             self.cnf_path = cnf_path
         # It can be assumed that there is a folder containing multiple files
         else:
-            self.cnf_path = os.path.join(session.path_cnf, testname)
+            self.cnf_path = os.path.join(session.path_cnf, self.testname)
+
+        # Updated to handle multiple codes
+        try:
+            self.mcnp = bool(config['MCNP'])
+        except KeyError:
+            self.mcnp = False
+        try:
+            self.serpent = bool(config['Serpent'])
+        except KeyError:
+            self.serpent = False
+        try:
+            self.openmc = bool(config['OpenMC'])
+        except KeyError:
+            self.openmc = False
+        try:
+            self.d1s = bool(config['d1S'])
+        except KeyError:
+            self.d1s = False
 
         # COMPARISON
         if type(lib) == list and len(lib) > 1:
             self.single = False  # Indicator for single or comparison
             self.lib = lib
             couples = []
-            tp = os.path.join(session.path_run, lib[0], testname)
+            tp = os.path.join(session.path_run, lib[0], self.testname)
             self.test_path = {lib[0]: tp}
             refname = session.conf.get_lib_name(lib[0])
             name = refname
@@ -156,7 +174,7 @@ class BenchmarkOutput(AbstractOutput):
                 name = name+'_Vs_'+libname
                 dirname = dirname+'_Vs_'+library
                 couples.append((lib[0], library, name_couple))
-                tp = os.path.join(session.path_run, library, testname)
+                tp = os.path.join(session.path_run, library, self.testname)
                 self.test_path[library] = tp
 
             self.name = name
@@ -165,7 +183,7 @@ class BenchmarkOutput(AbstractOutput):
             if not os.path.exists(out):
                 os.mkdir(out)
 
-            out = os.path.join(out, testname)
+            out = os.path.join(out, self.testname)
             if os.path.exists(out):
                 shutil.rmtree(out)
             os.mkdir(out)
@@ -185,26 +203,57 @@ class BenchmarkOutput(AbstractOutput):
         else:
             self.single = True  # Indicator for single or comparison
             self.lib = str(lib)  # In case of 1-item list
-            self.test_path = os.path.join(session.path_run, lib, testname)
+            self.test_path = os.path.join(session.path_run, lib, self.testname)
 
             # Generate library output path
             out = os.path.join(session.path_single, lib)
             if not os.path.exists(out):
                 os.mkdir(out)
 
-            out = os.path.join(out, testname)
+            out = os.path.join(out, self.testname)
             if os.path.exists(out):
                 shutil.rmtree(out)
             os.mkdir(out)
-            excel_path = os.path.join(out, 'Excel')
+            #excel_path = os.path.join(out, 'Excel')
             atlas_path = os.path.join(out, 'Atlas')
             raw_path = os.path.join(out, 'Raw Data')
-            os.mkdir(excel_path)
+            #os.mkdir(excel_path)
             os.mkdir(atlas_path)
             os.mkdir(raw_path)
-            self.excel_path = excel_path
+            #self.excel_path = excel_path
             self.raw_path = raw_path
             self.atlas_path = atlas_path
+            
+            # Generate folders for each code
+            if self.mcnp:
+                atlas_path_mcnp = os.path.join(self.atlas_path, 'mcnp')
+                os.mkdir(atlas_path_mcnp)
+                self.atlas_path_mcnp = atlas_path_mcnp
+                raw_path_mcnp = os.path.join(self.raw_path, 'mcnp')
+                os.mkdir(raw_path_mcnp)
+                self.raw_path_mcnp = raw_path_mcnp
+            if self.serpent:
+                atlas_path_serpent = os.path.join(self.atlas_path, 'serpent')
+                os.mkdir(atlas_path_serpent)
+                self.atlas_path_serpent = atlas_path_serpent
+                raw_path_serpent = os.path.join(self.raw_path, 'serpent')
+                os.mkdir(raw_path_serpent)
+                self.raw_path_serpent = raw_path_serpent
+            if self.openmc:
+                atlas_path_openmc = os.path.join(self.atlas_path, 'openmc')
+                os.mkdir(atlas_path_openmc)
+                self.atlas_path_openmc = atlas_path_openmc
+                raw_path_openmc = os.path.join(self.raw_path, 'openmc')
+                os.mkdir(raw_path_openmc)
+                self.raw_path_openmc = raw_path_openmc
+            if self.d1s:
+                atlas_path_d1s = os.path.join(self.atlas_path, 'd1s')
+                os.mkdir(atlas_path_d1s)
+                self.atlas_path_d1s = atlas_path_d1s
+                raw_path_d1s = os.path.join(self.raw_path, 'd1s')
+                os.mkdir(raw_path_d1s)
+                self.raw_path_d1s = raw_path_d1s                
+
 
     def single_postprocess(self):
         """

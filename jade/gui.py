@@ -435,7 +435,7 @@ def pploop(session):
             if ans:
                 lib = to_single_pp[0]
                 # Check active tests
-                to_perform = session.check_active_tests('Post-Processing')
+                #to_perform = session.check_active_tests('Post-Processing')
                 # For the moment no pp is foreseen for experimental benchmarks
                 # to_perf_exp = session.check_active_tests('Post-Processing',
                 #                                          exp=True)
@@ -446,17 +446,17 @@ def pploop(session):
                 session.log.bar_adjourn(bartext)
                 session.log.adjourn('Selected Library: '+lib, spacing=False)
                 print('\n ########################### POST-PROCESSING STARTED ###########################\n')
-
-                for testname in to_perform:
-                    try:
-                        pp.postprocessBenchmark(session, lib, testname)
-                    except PermissionError as e:
-                        clear_screen()
-                        print(pp_menu)
-                        print(' '+str(e))
-                        print(' Please close all excel/word files and retry')
-                        continue
-
+                # Core function
+                pp.postprocessBenchmark(session, lib)                
+                #for testname in to_perform:
+                #    try:
+                #        pp.postprocessBenchmark(session, lib, testname)
+                #    except PermissionError as e:
+                #        clear_screen()
+                #        print(pp_menu)
+                #        print(' '+str(e))
+                #        print(' Please close all excel/word files and retry')
+                #        continue
                 print('\n ######################### POST-PROCESSING ENDED ###############################\n')
                 t = 'Post-Processing completed'
                 session.log.bar_adjourn(t, spacing=False)

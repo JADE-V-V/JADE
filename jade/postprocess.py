@@ -40,50 +40,58 @@ def compareBenchmark(session, lib_input, testname):
                         '    ' + str(datetime.datetime.now()))
 
 
-def postprocessBenchmark(session, lib, testname):
-    print('\n Post-Processing '+testname+':' +
-          '    '+str(datetime.datetime.now()))
-    # get the correct output object
-    out = _get_output('pp', testname, lib, session)
-    if out:
-        out.single_postprocess()
+def postprocessBenchmark(session, lib):
+    # Get the settings for the tests
+    config = session.conf.comp_default.set_index('Description')
+    # Get the log
+    log = session.log
 
-    session.log.adjourn(testname+' benchmark post-processing completed' +
-                        '    ' + str(datetime.datetime.now()))
+    for testname, row in config.iterrows():
+        if (bool(row['Post-Processing'])) and (bool(row['MCNP']) or bool(row['Serpent']) or bool(row['OpenMC']) or bool(row['d1S'])):
+            print('\n Post-Processing '+testname+':' +
+                '    '+str(datetime.datetime.now()))
+            # get the correct output object
+            out = _get_output('pp', row, lib, session)
+            if out:
+                out.single_postprocess()
+
+            log.adjourn(testname+' benchmark post-processing completed' +
+                                '    ' + str(datetime.datetime.now()))
 
 
-def _get_output(action, testname, lib, session):
+def _get_output(action, config, lib, session):
 
     exp_pp_message = '\n No single pp is foreseen for experimental benchmarks'
+    testname = config['Folder Name']
 
     if testname == 'Sphere':
-        out = spho.SphereOutput(lib, testname, session)
+        out = spho.SphereOutput(lib, config, session)
 
     elif testname == 'SphereSDDR':
-        out = spho.SphereSDDRoutput(lib, testname, session)
+        out = spho.SphereSDDRoutput(lib, config, session)
 
     elif testname == 'Oktavian':
         if action == 'compare':
-            out = expo.OktavianOutput(lib, testname, session)
+            out = expo.OktavianOutput(lib, config, session)
         elif action == 'pp':
             print(exp_pp_message)
             return False
 
     elif testname == 'Tiara':
         if action == 'compare':
-            out = expo.TiaraOutput(lib, testname, session)
+            out = expo.TiaraOutput(lib, config, session)
         elif action == 'pp':
             print(exp_pp_message)
             return False
 
     elif testname == 'FNG':
         if action == 'compare':
-            out = expo.FNGOutput(lib, testname, session, multiplerun=True)
+            out = expo.FNGOutput(lib, config, session, multiplerun=True)
         elif action == 'pp':
             print(exp_pp_message)
             return False
 
     else:
-        out = bencho.BenchmarkOutput(lib, testname, session)
+        out = bencho.BenchmarkOutput(lib, config, session)
 
     return out

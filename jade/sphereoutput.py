@@ -42,14 +42,14 @@ from jade.output import MCNPoutput
 
 class SphereOutput(BenchmarkOutput):
 
-    def __init__(self, lib, testname, session):
-        super().__init__(lib, testname, session)
+    def __init__(self, lib, config, session):
+        super().__init__(lib, config, session)
 
         # Load the settings for zaids and materials
-        mat_path = os.path.join(self.cnf_path, 'MaterialsSettings.csv')
+        mat_path = os.path.join(self.cnf_path, self.name, 'MaterialsSettings.csv')
         self.mat_settings = pd.read_csv(mat_path, sep=';').set_index('Symbol')
 
-        zaid_path = os.path.join(self.cnf_path, 'ZaidSettings.csv')
+        zaid_path = os.path.join(self.cnf_path, self.name, 'ZaidSettings.csv')
         self.zaid_settings = pd.read_csv(zaid_path, sep=';').set_index('Z')
 
     def single_postprocess(self):
@@ -62,17 +62,17 @@ class SphereOutput(BenchmarkOutput):
         None.
 
         """
-        print(' Generating Excel Recap...')
+        #print(' Generating Excel Recap...')
         self.pp_excel_single()
         print(' Dumping Raw Data...')
         self.print_raw()
         print(' Generating plots...')
-        outpath = os.path.join(self.atlas_path, 'tmp')
-        os.mkdir(outpath)
-        self._generate_single_plots(outpath)
+        #outpath = os.path.join(self.atlas_path, 'tmp')
+        #os.mkdir(outpath)
+        self._generate_single_plots()
         print(' Single library post-processing completed')
 
-    def _generate_single_plots(self, outpath):
+    def _generate_single_plots(self):
         """
         Generate all the requested plots in a temporary folder
 
@@ -92,23 +92,28 @@ class SphereOutput(BenchmarkOutput):
              (32, 'Leakage Gamma Flux (24 groups)',
               'Gamma Flux', r'$\#/cm^2$')]:
 
-            print(' Plotting tally n.'+str(tally))
-            for zaidnum, output in tqdm(self.outputs.items()):
-                title = title
-                tally_data = output.tallydata.set_index('Tally N.').loc[tally]
-                energy = tally_data['Energy'].values
-                values = tally_data['Value'].values
-                error = tally_data['Error'].values
-                lib_name = self.session.conf.get_lib_name(self.lib)
-                lib = {'x': energy, 'y': values, 'err': error,
-                       'ylabel': str(zaidnum)+' ('+lib_name+')'}
-                data = [lib]
-                outname = str(zaidnum)+'-'+self.lib+'-'+str(tally)
-                plot = plotter.Plotter(data, title, outpath, outname, quantity,
-                                       unit, 'Energy [MeV]', self.testname)
-                plot.plot('Binned graph')
+            for code, outputs in self.outputs.items():
+                out = os.path.join(self.atlas_path, code)
+                os.mkdir(out)
+                outpath = os.path.join(out, 'tmp')
+                os.mkdir(outpath)
+                print(' Plotting tally n.'+str(tally))
+                for zaidnum, output in tqdm(outputs.items()):
+                    title = title
+                    tally_data = output.tallydata.set_index('Tally N.').loc[tally]
+                    energy = tally_data['Energy'].values
+                    values = tally_data['Value'].values
+                    error = tally_data['Error'].values
+                    lib_name = self.session.conf.get_lib_name(self.lib)
+                    lib = {'x': energy, 'y': values, 'err': error,
+                        'ylabel': str(zaidnum)+' ('+lib_name+')'}
+                    data = [lib]
+                    outname = str(zaidnum)+'-'+self.lib+'-'+str(tally)
+                    plot = plotter.Plotter(data, title, outpath, outname, quantity,
+                                        unit, 'Energy [MeV]', self.testname)
+                    plot.plot('Binned graph')
 
-        self._build_atlas(outpath)
+                self._build_atlas(outpath)
 
     def _build_atlas(self, outpath):
         """
@@ -217,6 +222,89 @@ class SphereOutput(BenchmarkOutput):
 
         return libraries, allzaids, outputs
 
+    def _read_mcnp_output(self):
+        # Get results
+        results = []
+        errors = []
+        stat_checks = []
+        outputs = {}
+        test_path_mcnp = os.path.join(self.test_path, 'mcnp')
+        for folder in os.listdir(test_path_mcnp):
+            results_path = os.path.join(self.test_path, folder)
+            pieces = folder.split('_')
+            # Get zaid
+            zaidnum = pieces[-2]
+            # Check for material exception
+            if zaidnum == 'Sphere':
+                zaidnum = pieces[-1].upper()
+                zaidname = self.mat_settings.loc[zaidnum, 'Name']
+            else:
+                zaidname = pieces[-1]
+            # Get mfile
+            for file in os.listdir(results_path):
+                if file[-1] == 'm':
+                    mfile = file
+                elif file[-1] == 'o':
+                    ofile = file
+            # Parse output
+            output = SphereMCNPoutput(os.path.join(results_path, mfile),
+                                      os.path.join(results_path, ofile))
+            outputs[zaidnum] = output
+            # Adjourn raw Data
+            self.raw_data[zaidnum] = output.tallydata
+            # Recover statistical checks
+            st_ck = output.stat_checks
+            # Recover results and precisions
+            res, err = output.get_single_excel_data()
+            for dic in [res, err, st_ck]:
+                dic['Zaid'] = zaidnum
+                dic['Zaid Name'] = zaidname
+            results.append(res)
+            errors.append(err)
+            stat_checks.append(st_ck)
+        return outputs, results, errors, stat_checks
+
+    def _read_serpent_output(self):
+        # Get results
+        results = []
+        errors = []
+        stat_checks = []
+        outputs = {}
+        test_path_serpent = os.path.join(self.test_path, 'serpent')
+        for folder in os.listdir(test_path_serpent):
+            # Call parser here
+            continue
+        return outputs, results, errors, stat_checks
+        
+    def _read_openmc_output(self):
+        # Get results
+        results = []
+        errors = []
+        stat_checks = []
+        outputs = {}
+        test_path_openmc = os.path.join(self.test_path, 'openmc')
+        for folder in os.listdir(test_path_openmc):
+            # Call parser here
+            continue
+        return outputs, results, errors, stat_checks
+
+    def _generate_dataframe(self, results, errors, stat_checks):
+        # Generate DataFrames
+        results = pd.DataFrame(results)
+        errors = pd.DataFrame(errors)
+        stat_checks = pd.DataFrame(stat_checks)
+
+        # Swap Columns and correct zaid sorting
+        # results
+        for df in [results, errors, stat_checks]:
+            df['index'] = pd.to_numeric(df['Zaid'].values, errors='coerce')
+            df.sort_values('index', inplace=True)
+            del df['index']
+
+            df.set_index(['Zaid', 'Zaid Name'], inplace=True)
+            df.reset_index(inplace=True)
+        return results, errors, stat_checks
+    
     def pp_excel_single(self):
         """
         Generate the single library results excel
@@ -226,9 +314,32 @@ class SphereOutput(BenchmarkOutput):
         None.
 
         """
-        template = os.path.join(os.getcwd(), 'templates', 'Sphere_single.xlsx')
-        outpath = os.path.join(self.excel_path, 'Sphere_single_' +
-                               self.lib+'.xlsx')
+        self.outputs = {}
+        self.results = {}
+        self.errors = {}
+        self.stat_checks = {}
+        
+        if self.mcnp:
+            outputs, results, errors, stat_checks = self._read_mcnp_output()
+            results, errors, stat_checks = self._generate_dataframe(results, errors, stat_checks)
+            self.outputs['mcnp'] = outputs
+            self.results['mcnp'] = results
+            self.errors['mcnp'] = errors
+            self.stat_checks['mcnp'] = stat_checks
+
+        if self.serpent:
+            pass
+
+        if self.openmc:
+            pass
+
+        if self.d1s:
+            pass
+
+        #template = os.path.join(os.getcwd(), 'templates', 'Sphere_single.xlsx')
+        #outpath = os.path.join(self.excel_path, 'Sphere_single_' +
+        #                       self.lib+'.xlsx')
+        """
         # Get results
         results = []
         errors = []
@@ -287,16 +398,17 @@ class SphereOutput(BenchmarkOutput):
         self.results = results
         self.errors = errors
         self.stat_checks = stat_checks
-
-        # Write excel
-        ex = SphereExcelOutputSheet(template, outpath)
-        # Results
-        ex.insert_df(9, 2, results, 0)
-        ex.insert_df(9, 2, errors, 1)
-        ex.insert_df(9, 2, stat_checks, 2)
-        lib_name = self.session.conf.get_lib_name(self.lib)
-#        ex.wb.sheets[0].range('D1').value = lib_name
-        ex.save()
+        """
+        """ Excel writer removed by S. Bradnam """
+        ## Write excel
+        #ex = SphereExcelOutputSheet(template, outpath)
+        ## Results
+        #ex.insert_df(9, 2, results, 0)
+        #ex.insert_df(9, 2, errors, 1)
+        #ex.insert_df(9, 2, stat_checks, 2)
+        #lib_name = self.session.conf.get_lib_name(self.lib)
+#       # ex.wb.sheets[0].range('D1').value = lib_name
+        #ex.save()
 
     def pp_excel_comparison(self):
         """

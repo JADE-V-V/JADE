@@ -87,6 +87,7 @@ class Session:
         jade_root = os.getcwd()
         
         self.path_default_settings = os.path.join(code_root, 'default_settings')
+        self.path_templates = os.path.join(code_root, 'templates')
 
         # --- INITIALIZATION ---
         # --- Create/memorize JADE folder structure ---

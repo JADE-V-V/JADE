@@ -130,6 +130,7 @@ class BenchmarkOutput(AbstractOutput):
         self.code_path = os.getcwd()  # path to code
         self.state = session.state
         self.session = session
+        self.path_templates = session.path_templates
 
         # Read specific configuration
         cnf_path = os.path.join(session.path_cnf, self.testname+'.xlsx')

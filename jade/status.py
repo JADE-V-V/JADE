@@ -132,7 +132,7 @@ class Status():
         single_tree = {}
         cp = self.single_path
         for lib in os.listdir(cp):
-            single_tree[lib] = []
+            single_tree[lib] = {}
             cp1 = os.path.join(cp, lib)
             for test in os.listdir(cp1):
                 single_tree[lib][test] = []

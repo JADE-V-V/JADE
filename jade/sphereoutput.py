@@ -46,11 +46,11 @@ class SphereOutput(BenchmarkOutput):
         super().__init__(lib, config, session)
 
         # Load the settings for zaids and materials
-        mat_path = os.path.join(self.cnf_path, self.name, 'MaterialsSettings.csv')
-        self.mat_settings = pd.read_csv(mat_path, sep=';').set_index('Symbol')
+        mat_path = os.path.join(self.cnf_path, 'MaterialsSettings.csv')
+        self.mat_settings = pd.read_csv(mat_path, sep=',').set_index('Symbol')
 
-        zaid_path = os.path.join(self.cnf_path, self.name, 'ZaidSettings.csv')
-        self.zaid_settings = pd.read_csv(zaid_path, sep=';').set_index('Z')
+        zaid_path = os.path.join(self.cnf_path, 'ZaidSettings.csv')
+        self.zaid_settings = pd.read_csv(zaid_path, sep=',').set_index('Z')
 
     def single_postprocess(self):
         """
@@ -93,9 +93,7 @@ class SphereOutput(BenchmarkOutput):
               'Gamma Flux', r'$\#/cm^2$')]:
 
             for code, outputs in self.outputs.items():
-                out = os.path.join(self.atlas_path, code)
-                os.mkdir(out)
-                outpath = os.path.join(out, 'tmp')
+                outpath = os.path.join(self.atlas_path, code, 'tmp')
                 os.mkdir(outpath)
                 print(' Plotting tally n.'+str(tally))
                 for zaidnum, output in tqdm(outputs.items()):
@@ -129,8 +127,10 @@ class SphereOutput(BenchmarkOutput):
         None.
 
         """
+        atlas_path = os.path.join(outpath, '..')
+        print(atlas_path)
         # Printing Atlas
-        template = os.path.join(self.code_path, 'templates',
+        template = os.path.join(self.path_templates,
                                 'AtlasTemplate.docx')
         if self.single:
             name = self.lib
@@ -139,7 +139,7 @@ class SphereOutput(BenchmarkOutput):
 
         atlas = at.Atlas(template, 'Sphere '+name)
         atlas.build(outpath, self.session.lib_manager, self.mat_settings)
-        atlas.save(self.atlas_path)
+        atlas.save(atlas_path)
         # Remove tmp images
         shutil.rmtree(outpath)
 
@@ -230,7 +230,7 @@ class SphereOutput(BenchmarkOutput):
         outputs = {}
         test_path_mcnp = os.path.join(self.test_path, 'mcnp')
         for folder in os.listdir(test_path_mcnp):
-            results_path = os.path.join(self.test_path, folder)
+            results_path = os.path.join(test_path_mcnp, folder)
             pieces = folder.split('_')
             # Get zaid
             zaidnum = pieces[-2]

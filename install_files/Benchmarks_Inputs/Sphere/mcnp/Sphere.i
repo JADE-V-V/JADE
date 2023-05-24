@@ -18,9 +18,9 @@ PHYS:P J 1
 c
 PRDMP  2J  -1 $ Flag to print the mctal
 C
-FC2 Neutron Flux at the external surface in Vitamin-J 175 energy groups
-F2:N 2
-E2   1.000E-07  4.140E-07  5.316E-07  6.826E-07  8.764E-07  1.125E-06
+FC4 Neutron Flux in material cell in Vitamin-J 175 energy groups
+F4:N 2
+E4   1.000E-07  4.140E-07  5.316E-07  6.826E-07  8.764E-07  1.125E-06
      1.445E-06  1.855E-06  2.382E-06  3.059E-06  3.928E-06  5.043E-06
      6.476E-06  8.315E-06  1.068E-05  1.371E-05  1.760E-05  2.260E-05
      2.902E-05  3.727E-05  4.785E-05  6.144E-05  7.889E-05  1.013E-04
@@ -51,48 +51,10 @@ E2   1.000E-07  4.140E-07  5.316E-07  6.826E-07  8.764E-07  1.125E-06
      1.455E+01  1.492E+01  1.568E+01  1.649E+01  1.690E+01  1.733E+01
      1.964E+01         
 C
-FC22 Gamma flux at the external surface 
-F22:P 2
-E22: 1e-2 1e-1 1 5 20
 C
-FC32 Gamma flux at the external surface [FINE@FISPACT MANUAL 24 Group Structure]
-F32:P 2
-E32: 0.01 0.02 0.05 0.10 0.20 0.30 0.40 0.60 0.80 1.00 1.22 1.44 1.66 2.00 2.50
+FC14 Gamma flux in material cell [FINE@FISPACT MANUAL 24 Group Structure]
+F14:P 2
+E14: 0.01 0.02 0.05 0.10 0.20 0.30 0.40 0.60 0.80 1.00 1.22 1.44 1.66 2.00 2.50
      3.00 4.00 5.00 6.50 8.00 10.00 12.00 14.00 20.00
 C
-FC4 Neutron heating with F4+FM multiplier
-F4:N 2
-FM4 -1 1 1 -4
-SD4 1
-C
-FC44 Gamma heating with F4+FM multiplier
-F44:P 2
-FM44 -1 1 -5 -6
-SD44 1
-C
-FC6 Neutron heating F6
-F6:N 2
-SD6 1
-C 
-FC46 Gamma heating F6
-F46:P 2
-SD46 1
-C
-FC12 Neutron Flux at the external surface in course energy groups
-F12:N 2
-E12 1e-6 0.1 1 10 20
-C
-FC24 T production
-F24:N 2
-FM24 1 1 205
-SD24 1
-C
-FC14 He ppm production
-F14:N 2
-FM14 1 1 207
-SD14 1
-C
-FC34 DPA production
-F34:N 2
-FM34 1 1 444
-SD34 1
+

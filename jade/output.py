@@ -1015,6 +1015,10 @@ class MCNPoutput:
 
         return tallydata, totalbin
 
+class OpenMCOutput:
+    def __init__(self, output_file):
+        self.output_file = output_file
+        
 
 class ExcelOutputSheet:
     # Common variables

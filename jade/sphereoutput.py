@@ -94,7 +94,8 @@ class SphereOutput(BenchmarkOutput):
 
             for code, outputs in self.outputs.items():
                 outpath = os.path.join(self.atlas_path, code, 'tmp')
-                os.mkdir(outpath)
+                if not os.path.exists(outpath):
+                    os.mkdir(outpath)
                 print(' Plotting tally n.'+str(tally))
                 for zaidnum, output in tqdm(outputs.items()):
                     title = title

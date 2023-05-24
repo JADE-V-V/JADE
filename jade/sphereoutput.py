@@ -86,16 +86,17 @@ class SphereOutput(BenchmarkOutput):
         None.
 
         """
-        for tally, title, quantity, unit in \
-            [(2, 'Leakage Neutron Flux (175 groups)',
-              'Neutron Flux', r'$\#/cm^2$'),
-             (32, 'Leakage Gamma Flux (24 groups)',
-              'Gamma Flux', r'$\#/cm^2$')]:
-
-            for code, outputs in self.outputs.items():
-                outpath = os.path.join(self.atlas_path, code, 'tmp')
-                if not os.path.exists(outpath):
-                    os.mkdir(outpath)
+        
+        for code, outputs in self.outputs.items():
+            outpath = os.path.join(self.atlas_path, code, 'tmp')
+            if not os.path.exists(outpath):
+                os.mkdir(outpath)        
+            
+            for tally, title, quantity, unit in \
+                [(4, 'Averaged Neutron Flux (175 groups)',
+                'Neutron Flux', r'$\#/cm^2$'),
+                (14, 'Averaged Gamma Flux (24 groups)',
+                'Gamma Flux', r'$\#/cm^2$')]:
                 print(' Plotting tally n.'+str(tally))
                 for zaidnum, output in tqdm(outputs.items()):
                     title = title
@@ -112,7 +113,7 @@ class SphereOutput(BenchmarkOutput):
                                         unit, 'Energy [MeV]', self.testname)
                     plot.plot('Binned graph')
 
-                self._build_atlas(outpath)
+            self._build_atlas(outpath)
 
     def _build_atlas(self, outpath):
         """
@@ -129,7 +130,6 @@ class SphereOutput(BenchmarkOutput):
 
         """
         atlas_path = os.path.join(outpath, '..')
-        print(atlas_path)
         # Printing Atlas
         template = os.path.join(self.path_templates,
                                 'AtlasTemplate.docx')
@@ -252,7 +252,7 @@ class SphereOutput(BenchmarkOutput):
                                       os.path.join(results_path, ofile))
             outputs[zaidnum] = output
             # Adjourn raw Data
-            self.raw_data[zaidnum] = output.tallydata
+            self.raw_data['mcnp'][zaidnum] = output.tallydata
             # Recover statistical checks
             st_ck = output.stat_checks
             # Recover results and precisions
@@ -583,9 +583,10 @@ class SphereOutput(BenchmarkOutput):
             ex.save()
 
     def print_raw(self):
-        for key, data in self.raw_data.items():
-            file = os.path.join(self.raw_path, key+'.csv')
-            data.to_csv(file, header=True, index=False)
+        for code in self.raw_data:
+            for key, data in self.raw_data[code].items():
+                file = os.path.join(self.raw_path, code, key+'.csv')
+                data.to_csv(file, header=True, index=False)
 
 
 class SphereMCNPoutput(MCNPoutput):
@@ -687,8 +688,9 @@ class SphereMCNPoutput(MCNPoutput):
 
         """
         # Tallies to post process
-        tallies2pp = ['2', '32', '24', '14', '34']
-        heating_tallies = ['4', '6', '44', '46']
+        #tallies2pp = ['2', '32', '24', '14', '34']
+        #heating_tallies = ['4', '6', '44', '46']
+        tallies2pp = ['4' '14']
         data = self.tallydata.set_index(['Tally Description', 'Energy'])
         totbins = self.totalbin.set_index('Tally Description')
         results = {}  # Store excel results of different tallies
@@ -730,22 +732,22 @@ class SphereMCNPoutput(MCNPoutput):
                 results[tally.tallyComment[0]] = res
                 errors[tally.tallyComment[0]] = mean_error
 
-            elif num in heating_tallies:
-                heating_res[num] = float(masked['Value'].values[0])
-                errors[tally.tallyComment[0]] = mean_error
+            #elif num in heating_tallies:
+            #    heating_res[num] = float(masked['Value'].values[0])
+            #    errors[tally.tallyComment[0]] = mean_error
 
-        comp = 'Heating comparison [F4 vs F6]'
-        try:
-            results['Neutron '+comp] = ((heating_res['6'] - heating_res['4']) /
-                                        heating_res['6'])
-        except ZeroDivisionError:
-            results['Neutron '+comp] = 0
-
-        try:
-            results['Gamma '+comp] = ((heating_res['46'] - heating_res['44']) /
-                                      heating_res['46'])
-        except ZeroDivisionError:
-            results['Gamma '+comp] = 0
+        #comp = 'Heating comparison [F4 vs F6]'
+        #try:
+        #    results['Neutron '+comp] = ((heating_res['6'] - heating_res['4']) /
+        #                                heating_res['6'])
+        #except ZeroDivisionError:
+        #    results['Neutron '+comp] = 0
+        #
+        #try:
+        #    results['Gamma '+comp] = ((heating_res['46'] - heating_res['44']) /
+        #                              heating_res['46'])
+        #except ZeroDivisionError:
+        #    results['Gamma '+comp] = 0
 
         # Notes adding
         if len(notes) > initial_notes_length:

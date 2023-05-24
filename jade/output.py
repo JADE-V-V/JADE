@@ -143,18 +143,26 @@ class BenchmarkOutput(AbstractOutput):
         # Updated to handle multiple codes
         try:
             self.mcnp = bool(config['MCNP'])
+            self.raw_data['mcnp'] = {}
+            self.outputs['mcnp'] = {}
         except KeyError:
             self.mcnp = False
         try:
             self.serpent = bool(config['Serpent'])
+            self.raw_data['serpent'] = {}
+            self.outputs['serpent'] = {}
         except KeyError:
             self.serpent = False
         try:
             self.openmc = bool(config['OpenMC'])
+            self.raw_data['openmc'] = {}
+            self.outputs['openmc'] = {}
         except KeyError:
             self.openmc = False
         try:
             self.d1s = bool(config['d1S'])
+            self.raw_data['d1s'] = {}
+            self.outputs['d1s'] = {}
         except KeyError:
             self.d1s = False
 

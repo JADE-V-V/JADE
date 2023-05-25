@@ -1018,7 +1018,61 @@ class MCNPoutput:
 class OpenMCOutput:
     def __init__(self, output_file):
         self.output_file = output_file
-        
+        self.output_file_data = self.read(output_file)
+        self.tallydata, self.totalbin = self.process_tally()
+        self.stat_checks = None
+
+    def _create_dataframe(self, rows):
+        columns = ['Cells', 'User', 'Segments',
+                   'Cosine', 'Energy', 'Time',
+                   'Cor C', 'Cor B', 'Cor A', 'Value', 'Error']
+        df = pd.DataFrame(rows, columns=columns)
+        cells = list(df.Cells.unique())
+        total = 'Energy'
+        for cell in cells:
+            value = df.loc[df['Cells'] == cell, 'Values'].sum()
+            error = np.sqrt(sum(df.loc[df['Cells'] == cell, 'Values'] ** 2))
+            row = [cell, False, False, False, total, False, False, False, False, value, error]
+            df.loc[len(df)] = row
+        dftotal = df[df[total] == 'total']
+        return df, dftotal
+    
+    def read(self, output_file):
+        with open(output_file, 'r') as f:
+            output_file_data = f.readlines()
+        return output_file_data
+    
+    def process_tally(self):
+        tallydata = {}
+        totalbin = {}
+        rows = []
+        for line in self.output_file_data:
+            if 'tally' in line.lower():
+                if len(rows) > 0:
+                    tallydata[tallynum], totalbin[tallynum] = self._create_dataframe(rows)
+                    rows = []
+                parts = line.split()
+                tallynum = int(parts[2].replace(':', ''))
+                cells = False
+                user = False
+                segments = False
+                cosine = False
+                energy = False
+                time = False
+                cor_c = False
+                cor_b = False
+                cor_a = False
+                value = False
+                error = False
+            if 'incoming energy' in line.lower():
+                parts = line.split()
+                energy = 1e-6 * float(parts[3].replace(')', ''))
+            if 'flux' in line.lower():
+                parts = line.split()
+                value, error = float(parts[1]), float(parts[2])
+                rows.append([cells, user, segments, cosine, energy, time, cor_c, cor_b, cor_a, value, error])
+            tallydata[tallynum], totalbin[tallynum]= self._create_dataframe(rows)
+        return tallydata, totalbin
 
 class ExcelOutputSheet:
     # Common variables

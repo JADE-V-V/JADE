@@ -22,6 +22,7 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import sys
 import xlwings as xw
 import jade.excel_support as exsupp
 import pandas as pd
@@ -38,6 +39,7 @@ import jade.atlas as at
 import numpy as np
 from jade.output import BenchmarkOutput
 from jade.output import MCNPoutput
+from jade.output import OpenMCOutput
 
 
 class SphereOutput(BenchmarkOutput):
@@ -256,7 +258,7 @@ class SphereOutput(BenchmarkOutput):
             # Recover statistical checks
             st_ck = output.stat_checks
             # Recover results and precisions
-            res, err = output.get_single_excel_data()
+            res, err = output.get_single_excel_data(['4' '14'])
             for dic in [res, err, st_ck]:
                 dic['Zaid'] = zaidnum
                 dic['Zaid Name'] = zaidname
@@ -285,8 +287,31 @@ class SphereOutput(BenchmarkOutput):
         outputs = {}
         test_path_openmc = os.path.join(self.test_path, 'openmc')
         for folder in os.listdir(test_path_openmc):
-            # Call parser here
-            continue
+            results_path = os.path.join(test_path_openmc, folder)
+            pieces = folder.split('_')
+            # Get zaid
+            zaidnum = pieces[-2]
+            # Check for material exception
+            if zaidnum == 'Sphere':
+                zaidnum = pieces[-1].upper()
+                zaidname = self.mat_settings.loc[zaidnum, 'Name']
+            else:
+                zaidname = pieces[-1]
+            # Parse output
+            output = SphereOpenMCOutput(os.path.join(results_path, 'tallies.out'))
+            outputs[zaidnum] = output
+            # Adjourn raw Data
+            self.raw_data['openmc'][zaidnum] = output.tallydata
+            # Recover statistical checks
+            st_ck = output.stat_checks
+            # Recover results and precisions
+            res, err = output.get_single_excel_data(['4' '14'])
+            for dic in [res, err, st_ck]:
+                dic['Zaid'] = zaidnum
+                dic['Zaid Name'] = zaidname
+            results.append(res)
+            errors.append(err)
+            stat_checks.append(st_ck)
         return outputs, results, errors, stat_checks
 
     def _generate_dataframe(self, results, errors, stat_checks):
@@ -332,7 +357,12 @@ class SphereOutput(BenchmarkOutput):
             pass
 
         if self.openmc:
-            pass
+            outputs, results, errors, stat_checks = self._read_openmc_output()
+            results, errors, stat_checks = self._generate_dataframe(results, errors, stat_checks)
+            self.outputs['openmc'] = outputs
+            self.results['openmc'] = results
+            self.errors['openmc'] = errors
+            self.stat_checks['openmc'] = stat_checks
 
         if self.d1s:
             pass
@@ -588,8 +618,145 @@ class SphereOutput(BenchmarkOutput):
                 file = os.path.join(self.raw_path, code, key+'.csv')
                 data.to_csv(file, header=True, index=False)
 
+class SphereTallyOutput:
+    
 
-class SphereMCNPoutput(MCNPoutput):
+    """SB to replace this next! """
+    def get_single_excel_data(self, tallies2pp):
+        """
+        Get the excel data of a single MCNP output
+
+        Returns
+        -------
+        results : dic
+            Excel result for different tallies
+        errors : dic
+            Error average in all tallies
+
+        """
+        # Tallies to post process
+        #tallies2pp = ['2', '32', '24', '14', '34']
+        #heating_tallies = ['4', '6', '44', '46']
+        #tallies2pp = ['4' '14']
+        data = self.tallydata.set_index(['Tally Description', 'Energy'])
+        totbins = self.totalbin.set_index('Tally Description')
+        results = {}  # Store excel results of different tallies
+        errors = {}  # Store average error in different tallies
+        keys = {}  # Tally names and numbers
+        #heating_res = {}  # Mid-process heating results
+        notes = 'Negative Bins:'  # Record negative bins here
+        initial_notes_length = len(notes)  # To check if notes are registered
+        for tally in self.mctal.tallies:
+            num = str(tally.tallyNumber)
+            keys[num] = tally.tallyComment[0]
+            # Isolate tally
+            masked = data.loc[tally.tallyComment[0]]
+
+            # Get mean error among bins, different for single bin
+            if tally.ergTC == 't':
+                mean_error = totbins.loc[tally.tallyComment[0]]['Error']
+            else:
+                mean_error = masked['Error'].mean()
+
+            if num in tallies2pp:
+                masked_zero = masked[masked['Value'] == 0]
+                original_length = len(masked)
+                masked = masked[masked['Value'] < 0]
+                if len(masked) > 0:
+                    res = 'Value < 0 in '+str(len(masked))+' bin(s)'
+                    # Get energy bins
+                    bins = list(masked.reset_index()['Energy'].values)
+                    notes = notes+'\n('+str(num)+'): '
+                    for ebin in bins:
+                        notes = notes+str(ebin)+', '
+                    notes = notes[:-2]  # Clear string from excess commas
+
+                elif len(masked_zero) == original_length:
+                    res = 'Value = 0 for all bins'
+                else:
+                    res = 'Value > 0 for all bins'
+
+                results[tally.tallyComment[0]] = res
+                errors[tally.tallyComment[0]] = mean_error
+
+            #elif num in heating_tallies:
+            #    heating_res[num] = float(masked['Value'].values[0])
+            #    errors[tally.tallyComment[0]] = mean_error
+
+        #comp = 'Heating comparison [F4 vs F6]'
+        #try:
+        #    results['Neutron '+comp] = ((heating_res['6'] - heating_res['4']) /
+        #                                heating_res['6'])
+        #except ZeroDivisionError:
+        #    results['Neutron '+comp] = 0
+        #
+        #try:
+        #    results['Gamma '+comp] = ((heating_res['46'] - heating_res['44']) /
+        #                              heating_res['46'])
+        #except ZeroDivisionError:
+        #    results['Gamma '+comp] = 0
+
+        # Notes adding
+        if len(notes) > initial_notes_length:
+            results['Notes'] = notes
+        else:
+            results['Notes'] = ''
+
+        return results, errors
+
+    def get_comparison_data(self, tallies2pp):
+        """
+        Get Data for single zaid to be used in comparison.
+
+        Returns
+        -------
+        results : list
+            All results per tally to compare
+        columns : list
+            Tally names
+
+        """
+        # Tallies to post process
+        #tallies2pp = ['12', '22', '24', '14', '34', '6', '46']
+        data = self.tallydata.set_index(['Tally Description', 'Energy'])
+        totalbins = self.totalbin.set_index('Tally Description')
+        results = []  # Store data to compare for different tallies
+        columns = []  # Tally names and numbers
+        # Reorder tallies
+        tallies = []
+        for tallynum in tallies2pp:
+            for tally in self.mctal.tallies:
+                num = str(tally.tallyNumber)
+                if num == tallynum:
+                    tallies.append(tally)
+
+        for tally in tallies:
+            num = str(tally.tallyNumber)
+            # Isolate tally
+
+            masked = data.loc[tally.tallyComment[0]]
+            if num in tallies2pp:
+                if num in ['12', '22']:  # Coarse Flux bins
+                    masked_tot = totalbins.loc[tally.tallyComment[0]]
+                    # Get energy bins
+                    bins = list(masked.reset_index()['Energy'].values)
+                    for ebin in bins:
+                        # colname = '(T.ly '+str(num)+') '+str(ebin)
+                        colname = str(ebin)+' [MeV]'+' [t'+num+']'
+                        columns.append(colname)
+                        results.append(masked['Value'].loc[ebin])
+                    # Add the total bin
+                    colname = 'Total'+' [t'+num+']'
+                    columns.append(colname)
+                    results.append(masked_tot['Value'])
+
+                else:
+                    columns.append(tally.tallyComment[0])
+                    results.append(masked['Value'].values[0])
+
+        return results, columns
+
+class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
 
     def organize_mctal(self):
         """
@@ -675,139 +842,183 @@ class SphereMCNPoutput(MCNPoutput):
                                                    'Value', 'Error'])
         return df, dftotal
 
-    def get_single_excel_data(self):
-        """
-        Get the excel data of a single MCNP output
+#    def get_single_excel_data(self, tallies2pp):
+#        """
+#        Get the excel data of a single MCNP output
+#
+#        Returns
+#        -------
+#        results : dic
+#            Excel result for different tallies
+#        errors : dic
+#            Error average in all tallies
+#
+#        """
+#        # Tallies to post process
+#        #tallies2pp = ['2', '32', '24', '14', '34']
+#        #heating_tallies = ['4', '6', '44', '46']
+#        #tallies2pp = ['4' '14']
+#        data = self.tallydata.set_index(['Tally Description', 'Energy'])
+#        totbins = self.totalbin.set_index('Tally Description')
+#        results = {}  # Store excel results of different tallies
+#        errors = {}  # Store average error in different tallies
+#        keys = {}  # Tally names and numbers
+#        #heating_res = {}  # Mid-process heating results
+#        notes = 'Negative Bins:'  # Record negative bins here
+#        initial_notes_length = len(notes)  # To check if notes are registered
+#        for tally in self.mctal.tallies:
+#            num = str(tally.tallyNumber)
+#            keys[num] = tally.tallyComment[0]
+#            # Isolate tally
+#            masked = data.loc[tally.tallyComment[0]]
+#
+#            # Get mean error among bins, different for single bin
+#            if tally.ergTC == 't':
+#                mean_error = totbins.loc[tally.tallyComment[0]]['Error']
+#            else:
+#                mean_error = masked['Error'].mean()
+#
+#            if num in tallies2pp:
+#                masked_zero = masked[masked['Value'] == 0]
+#                original_length = len(masked)
+#                masked = masked[masked['Value'] < 0]
+#                if len(masked) > 0:
+#                    res = 'Value < 0 in '+str(len(masked))+' bin(s)'
+#                    # Get energy bins
+#                    bins = list(masked.reset_index()['Energy'].values)
+#                    notes = notes+'\n('+str(num)+'): '
+#                    for ebin in bins:
+#                        notes = notes+str(ebin)+', '
+#                    notes = notes[:-2]  # Clear string from excess commas
+#
+#                elif len(masked_zero) == original_length:
+#                    res = 'Value = 0 for all bins'
+#                else:
+#                    res = 'Value > 0 for all bins'
+#
+#                results[tally.tallyComment[0]] = res
+#                errors[tally.tallyComment[0]] = mean_error
+#
+#            #elif num in heating_tallies:
+#            #    heating_res[num] = float(masked['Value'].values[0])
+#            #    errors[tally.tallyComment[0]] = mean_error
+#
+#        #comp = 'Heating comparison [F4 vs F6]'
+#        #try:
+#        #    results['Neutron '+comp] = ((heating_res['6'] - heating_res['4']) /
+#        #                                heating_res['6'])
+#        #except ZeroDivisionError:
+#        #    results['Neutron '+comp] = 0
+#        #
+#        #try:
+#        #    results['Gamma '+comp] = ((heating_res['46'] - heating_res['44']) /
+#        #                              heating_res['46'])
+#        #except ZeroDivisionError:
+#        #    results['Gamma '+comp] = 0
+#
+#        # Notes adding
+#        if len(notes) > initial_notes_length:
+#            results['Notes'] = notes
+#        else:
+#            results['Notes'] = ''
+#
+#        return results, errors
+#
+#    def get_comparison_data(self, tallies2pp):
+#        """
+#        Get Data for single zaid to be used in comparison.
+#
+#        Returns
+#        -------
+#        results : list
+#            All results per tally to compare
+#        columns : list
+#            Tally names
+#
+#        """
+#        # Tallies to post process
+#        #tallies2pp = ['12', '22', '24', '14', '34', '6', '46']
+#        data = self.tallydata.set_index(['Tally Description', 'Energy'])
+#        totalbins = self.totalbin.set_index('Tally Description')
+#        results = []  # Store data to compare for different tallies
+#        columns = []  # Tally names and numbers
+#        # Reorder tallies
+#        tallies = []
+#        for tallynum in tallies2pp:
+#            for tally in self.mctal.tallies:
+#                num = str(tally.tallyNumber)
+#                if num == tallynum:
+#                    tallies.append(tally)
+#
+#        for tally in tallies:
+#            num = str(tally.tallyNumber)
+#            # Isolate tally
+#
+#            masked = data.loc[tally.tallyComment[0]]
+#            if num in tallies2pp:
+#                if num in ['12', '22']:  # Coarse Flux bins
+#                    masked_tot = totalbins.loc[tally.tallyComment[0]]
+#                    # Get energy bins
+#                    bins = list(masked.reset_index()['Energy'].values)
+#                    for ebin in bins:
+#                        # colname = '(T.ly '+str(num)+') '+str(ebin)
+#                        colname = str(ebin)+' [MeV]'+' [t'+num+']'
+#                        columns.append(colname)
+#                        results.append(masked['Value'].loc[ebin])
+#                    # Add the total bin
+#                    colname = 'Total'+' [t'+num+']'
+#                    columns.append(colname)
+#                    results.append(masked_tot['Value'])
+#
+#                else:
+#                    columns.append(tally.tallyComment[0])
+#                    results.append(masked['Value'].values[0])
+#
+#        return results, columns
 
-        Returns
-        -------
-        results : dic
-            Excel result for different tallies
-        errors : dic
-            Error average in all tallies
-
-        """
-        # Tallies to post process
-        #tallies2pp = ['2', '32', '24', '14', '34']
-        #heating_tallies = ['4', '6', '44', '46']
-        tallies2pp = ['4' '14']
-        data = self.tallydata.set_index(['Tally Description', 'Energy'])
-        totbins = self.totalbin.set_index('Tally Description')
-        results = {}  # Store excel results of different tallies
-        errors = {}  # Store average error in different tallies
-        keys = {}  # Tally names and numbers
-        heating_res = {}  # Mid-process heating results
-        notes = 'Negative Bins:'  # Record negative bins here
-        initial_notes_length = len(notes)  # To check if notes are registered
-        for tally in self.mctal.tallies:
-            num = str(tally.tallyNumber)
-            keys[num] = tally.tallyComment[0]
-            # Isolate tally
-            masked = data.loc[tally.tallyComment[0]]
-
-            # Get mean error among bins, different for single bin
-            if tally.ergTC == 't':
-                mean_error = totbins.loc[tally.tallyComment[0]]['Error']
-            else:
-                mean_error = masked['Error'].mean()
-
-            if num in tallies2pp:
-                masked_zero = masked[masked['Value'] == 0]
-                original_length = len(masked)
-                masked = masked[masked['Value'] < 0]
-                if len(masked) > 0:
-                    res = 'Value < 0 in '+str(len(masked))+' bin(s)'
-                    # Get energy bins
-                    bins = list(masked.reset_index()['Energy'].values)
-                    notes = notes+'\n('+str(num)+'): '
-                    for ebin in bins:
-                        notes = notes+str(ebin)+', '
-                    notes = notes[:-2]  # Clear string from excess commas
-
-                elif len(masked_zero) == original_length:
-                    res = 'Value = 0 for all bins'
-                else:
-                    res = 'Value > 0 for all bins'
-
-                results[tally.tallyComment[0]] = res
-                errors[tally.tallyComment[0]] = mean_error
-
-            #elif num in heating_tallies:
-            #    heating_res[num] = float(masked['Value'].values[0])
-            #    errors[tally.tallyComment[0]] = mean_error
-
-        #comp = 'Heating comparison [F4 vs F6]'
-        #try:
-        #    results['Neutron '+comp] = ((heating_res['6'] - heating_res['4']) /
-        #                                heating_res['6'])
-        #except ZeroDivisionError:
-        #    results['Neutron '+comp] = 0
-        #
-        #try:
-        #    results['Gamma '+comp] = ((heating_res['46'] - heating_res['44']) /
-        #                              heating_res['46'])
-        #except ZeroDivisionError:
-        #    results['Gamma '+comp] = 0
-
-        # Notes adding
-        if len(notes) > initial_notes_length:
-            results['Notes'] = notes
-        else:
-            results['Notes'] = ''
-
-        return results, errors
-
-    def get_comparison_data(self):
-        """
-        Get Data for single zaid to be used in comparison.
-
-        Returns
-        -------
-        results : list
-            All results per tally to compare
-        columns : list
-            Tally names
-
-        """
-        # Tallies to post process
-        tallies2pp = ['12', '22', '24', '14', '34', '6', '46']
-        data = self.tallydata.set_index(['Tally Description', 'Energy'])
-        totalbins = self.totalbin.set_index('Tally Description')
-        results = []  # Store data to compare for different tallies
-        columns = []  # Tally names and numbers
-        # Reorder tallies
-        tallies = []
-        for tallynum in tallies2pp:
-            for tally in self.mctal.tallies:
-                num = str(tally.tallyNumber)
-                if num == tallynum:
-                    tallies.append(tally)
-
-        for tally in tallies:
-            num = str(tally.tallyNumber)
-            # Isolate tally
-
-            masked = data.loc[tally.tallyComment[0]]
-            if num in tallies2pp:
-                if num in ['12', '22']:  # Coarse Flux bins
-                    masked_tot = totalbins.loc[tally.tallyComment[0]]
-                    # Get energy bins
-                    bins = list(masked.reset_index()['Energy'].values)
-                    for ebin in bins:
-                        # colname = '(T.ly '+str(num)+') '+str(ebin)
-                        colname = str(ebin)+' [MeV]'+' [t'+num+']'
-                        columns.append(colname)
-                        results.append(masked['Value'].loc[ebin])
-                    # Add the total bin
-                    colname = 'Total'+' [t'+num+']'
-                    columns.append(colname)
-                    results.append(masked_tot['Value'])
-
-                else:
-                    columns.append(tally.tallyComment[0])
-                    results.append(masked['Value'].values[0])
-
-        return results, columns
+class SphereOpenMCOutput(OpenMCOutput, SphereTallyOutput):
+                                              
+    def _create_dataframe(self, rows):
+        df = pd.DataFrame(rows, columns=['Tally N.', 'Tally Description',
+                                         'Energy', 'Value', 'Error'])
+        #rowstotal = [[rows[-1][0], rows[-1][1], 0.0, 0.0]]
+        #for row in rows:
+        #    rowstotal[0][2] += row[3]
+        #    rowstotal[0][3] += row[4] ** 2
+        #rowstotal[0][3] = np.sqrt(rowstotal[0][3])
+        tallies = df['Tally N.'].unique().tolist()
+        descriptions = df['Tally Description'].unique().tolist()
+        rowstotal = []
+        for tally, description in zip(tallies, descriptions):
+            value = df.loc[df['Tally N.'] == tally, 'Value'].sum()
+            error = np.sqrt((df.loc[df['Tally N.'] == tally, 'Error'] ** 2).sum())
+            rowstotal.append([tally, description, value, error])
+        dftotal = pd.DataFrame(rowstotal, columns=['Tally N.',
+                                                   'Tally Description',
+                                                   'Value', 'Error'])
+        return df, dftotal
+    
+    def process_tally(self):
+        #tallydata = {}
+        #totalbin = {}
+        rows = []
+        for line in self.output_file_data:
+            if 'tally' in line.lower():
+                #if len(rows) > 0:
+                #    tallydata[tally_n], totalbin[tally_n] = self._create_dataframe(rows)
+                #    rows = []
+                parts = line.split()
+                tally_n = int(parts[2].replace(':', ''))
+                tally_description = ' '.join([parts[3].title(), parts[4].title()])
+            if 'incoming energy' in line.lower():
+                parts = line.split()
+                energy = 1e-6 * float(parts[3].replace(')', ''))
+            if 'flux' in line.lower():
+                parts = line.split()
+                value, error = float(parts[1]), float(parts[3])
+                rows.append([tally_n, tally_description, energy, value, error])
+        tallydata, totalbin = self._create_dataframe(rows)
+        return tallydata, totalbin
 
 
 class SphereSDDRoutput(SphereOutput):

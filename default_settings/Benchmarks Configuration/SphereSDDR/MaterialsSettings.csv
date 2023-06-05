@@ -1,7 +1,0 @@
-NPS cut-off;CTME cut-off;Relative Error cut-off;Density [g/cc];Name;Symbol;Let Override
-;;F32-0.0005;7.93;SS316L(N)-IG;M101;True
-;;F32-0.0005;0.946;Water;M400;True
-;;F32-0.0005;2.3;Boron Carbide;M203;True
-;;F32-0.0005;2.2875;Ordinary Concrete;M200;True
-;;F32-0.0005;2.33;Natural Silicon;M900;True
-;;F32-0.0005;0.93;Polyethylene, non-borated;M901;True

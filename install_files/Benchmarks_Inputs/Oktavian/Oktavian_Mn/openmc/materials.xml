@@ -1,0 +1,12 @@
+<materials>
+  <material id="1" name="M1">
+    <density units="g/cc" value="4.36894" />
+    <nuclide ao="0.9997710294273264" name="Mn55" />
+    <nuclide ao="0.00022652058754602276" name="C12" />
+    <nuclide ao="2.4499851276078476e-06" name="C13" />
+  </material>
+  <material id="2" name="M2">
+    <density units="g/cc" value="7.824" />
+    <nuclide name="Cr50" wo="1.0" />
+  </material>
+</materials>

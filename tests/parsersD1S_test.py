@@ -28,9 +28,9 @@ cp = os.path.dirname(os.path.abspath(__file__))
 modules_path = os.path.dirname(cp)
 sys.path.insert(1, modules_path)
 
-from parsersD1S import (Reaction, ReactionFile, Irradiation, IrradiationFile,
+from jade.parsersD1S import (Reaction, ReactionFile, Irradiation, IrradiationFile,
                         REACFORMAT)
-from libmanager import LibManager
+from jade.libmanager import LibManager
 
 
 INP = os.path.join(cp, 'TestFiles', 'parserD1S', 'reac_fe')

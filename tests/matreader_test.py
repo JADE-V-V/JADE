@@ -29,8 +29,8 @@ cp = os.path.dirname(os.path.abspath(__file__))
 modules_path = os.path.dirname(cp)
 sys.path.insert(1, modules_path)
 
-from matreader import (Element, Zaid, MatCardsList)
-from libmanager import LibManager
+from jade.matreader import (Element, Zaid, MatCardsList)
+from jade.libmanager import LibManager
 
 
 # Files

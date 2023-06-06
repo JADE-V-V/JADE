@@ -22,7 +22,7 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import docx
-#import win32com.client
+# import win32com.client
 import aspose.words
 from docx.shared import Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH

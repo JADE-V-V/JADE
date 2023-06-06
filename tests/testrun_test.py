@@ -28,10 +28,10 @@ cp = os.path.dirname(os.path.abspath(__file__))
 modules_path = os.path.dirname(cp)
 sys.path.insert(1, modules_path)
 
-from configuration import Log
-from testrun import Test, SphereTest, SphereTestSDDR, FNGTest, MultipleTest
+from jade.configuration import Log
+from jade.testrun import Test, SphereTest, SphereTestSDDR, FNGTest, MultipleTest
 from tests.configuration_test import LOGFILE
-from libmanager import LibManager
+from jade.libmanager import LibManager
 
 # Get a libmanager
 ACTIVATION_FILE = os.path.join(cp, 'TestFiles', 'libmanager',

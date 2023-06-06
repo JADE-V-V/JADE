@@ -2,7 +2,7 @@
 
 # Created on Mon Nov  4 16:52:09 2019
 
-# @author: Davide Laghi
+# @author: JADE Team
 
 # Copyright 2021, the JADE Development Team. All rights reserved.
 
@@ -23,7 +23,8 @@
 
 import os, re, subprocess, sys
 
-if 'MODULEPATH' not in os.environ:
+
+if 'MODULEPATH' not in os.environ and 'win' not in sys.platform:
     f = open(os.environ['MODULESHOME'] + "/init/.modulespath", "r")
     path = []
     for line in f.readlines():
@@ -31,8 +32,10 @@ if 'MODULEPATH' not in os.environ:
         if line is not '':
             path.append(line)
     os.environ['MODULEPATH'] = ':'.join(path)
-if 'LOADEDMODULES' not in os.environ:
+
+if 'LOADEDMODULES' not in os.environ and 'win' not in sys.platform:
     os.environ['LOADEDMODULES'] = ''
+
 
 def module(*args):
     if type(args[0]) == type([]):
@@ -42,7 +45,8 @@ def module(*args):
     (output, error) = subprocess.Popen(['/usr/bin/modulecmd', 'python'] + 
             args, stdout=subprocess.PIPE).communicate()
     exec(output)
-        
+
+
 def export(*args):
     if type(args[0]) == type([]):
         args = args[0]
@@ -59,6 +63,7 @@ def export(*args):
             parent = string[:string.find('/')]
             value = value.replace('$'+parent, os.environ[parent])
     os.environ[environ] = value
+
 
 def configure(config_file):
     with open(config_file, 'r') as f:

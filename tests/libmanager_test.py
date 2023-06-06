@@ -29,8 +29,8 @@ cp = os.path.dirname(os.path.abspath(__file__))
 modules_path = os.path.dirname(cp)
 sys.path.insert(1, modules_path)
 
-from libmanager import LibManager
-from matreader import Zaid
+from jade.libmanager import LibManager
+from jade.matreader import Zaid
 
 
 ACTIVATION_FILE = os.path.join(cp, 'TestFiles', 'libmanager',

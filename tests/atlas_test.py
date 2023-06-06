@@ -31,7 +31,7 @@ cp = os.path.dirname(os.path.abspath(__file__))
 modules_path = os.path.dirname(cp)
 sys.path.insert(1, modules_path)
 
-from atlas import Atlas
+from jade.atlas import Atlas
 
 TEMPLATE_PATH = os.path.join(cp, 'TestFiles', 'atlas', 'template.docx')
 KEYARGS_DF = [{'caption': 'yo', 'highlight': True},

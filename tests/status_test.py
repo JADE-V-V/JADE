@@ -30,6 +30,7 @@ from jade.status import Status
 from jade.configuration import Configuration
 from tests.configuration_test import MAIN_CONFIG_FILE
 import shutil
+import pytest
 
 
 class SessionMockUp:
@@ -58,10 +59,12 @@ class LogMockUp:
 
 class TestStatus:
 
-    def_config = Configuration(MAIN_CONFIG_FILE)
+    @pytest.fixture
+    def def_config(self):
+        return Configuration(MAIN_CONFIG_FILE)
 
-    def test_update_run_status(self):
-        session = SessionMockUp(self.def_config)
+    def test_update_run_status(self, def_config):
+        session = SessionMockUp(def_config)
         status = Status(session)
         init_run_tree = status.run_tree
 
@@ -85,8 +88,8 @@ class TestStatus:
         status.update_run_status()
         assert init_run_tree == status.run_tree
 
-    def test_update_pp_status(self):
-        session = SessionMockUp(self.def_config)
+    def test_update_pp_status(self, def_config):
+        session = SessionMockUp(def_config)
         status = Status(session)
         init_single_tree = status.single_tree
         init_comparison_tree = status.comparison_tree
@@ -112,8 +115,8 @@ class TestStatus:
         assert init_single_tree == status.single_tree
         assert init_comparison_tree == status.comparison_tree
 
-    def test_get_path(self):
-        session = SessionMockUp(self.def_config)
+    def test_get_path(self, def_config):
+        session = SessionMockUp(def_config)
         status = Status(session)
 
         itinerary = ['00c', 'Sphere', 'Sphere_1001_H-1']
@@ -131,16 +134,16 @@ class TestStatus:
         assert status.get_path('single', []) == status.single_path
         assert status.get_path('comparison', []) == status.comparison_path
 
-    def test_get_unfinished_zaid(self):
-        session = SessionMockUp(self.def_config)
+    def test_get_unfinished_zaid(self, def_config):
+        session = SessionMockUp(def_config)
         status = Status(session)
         lib = '00c'
         unfinished, motherdir = status.get_unfinished_zaids(lib)
         assert unfinished == ['Sphere_1002_H-2']
         assert motherdir == os.path.join(status.run_path, lib, 'Sphere')
 
-    def test_check_override_run(self, monkeypatch):
-        session = SessionMockUp(self.def_config)
+    def test_check_override_run(self, monkeypatch, def_config):
+        session = SessionMockUp(def_config)
         status = Status(session)
 
         # If no tests are run it is safe to override
@@ -156,8 +159,8 @@ class TestStatus:
         ans = status.check_override_run('31c', session)
         assert not ans
 
-    def test_check_lib_run(self):
-        session = SessionMockUp(self.def_config)
+    def test_check_lib_run(self, def_config):
+        session = SessionMockUp(def_config)
         status = Status(session)
 
         # config option is not important since the session is just a mock-up
@@ -170,8 +173,8 @@ class TestStatus:
                                            exp=option)
             assert testrun == expected
 
-    def test_check_pp_single(self):
-        session = SessionMockUp(self.def_config)
+    def test_check_pp_single(self, def_config):
+        session = SessionMockUp(def_config)
         status = Status(session)
 
         # Single
@@ -191,8 +194,8 @@ class TestStatus:
             ans = status.check_pp_single(lib, session, tree=tree, exp=exp)
             assert ans == answer
 
-    def test_check_override_pp(self, monkeypatch):
-        session = SessionMockUp(self.def_config)
+    def test_check_override_pp(self, monkeypatch, def_config):
+        session = SessionMockUp(def_config)
         status = Status(session)
 
         # The library has been run and pp. do not ovveride

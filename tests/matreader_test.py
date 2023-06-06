@@ -31,6 +31,7 @@ sys.path.insert(1, modules_path)
 
 from jade.matreader import (Element, Zaid, MatCardsList)
 from jade.libmanager import LibManager
+import pytest
 
 
 # Files
@@ -40,7 +41,11 @@ ACTIVATION_INP = os.path.join(cp, 'TestFiles', 'matreader', 'activation.i')
 XSDIR = os.path.join(cp, 'TestFiles', 'matreader', 'xsdir_mcnp6.2')
 ISOTOPES_FILE = os.path.join(modules_path, 'Isotopes.txt')
 # Other
-LIBMAN = LibManager(XSDIR, defaultlib='81c', isotopes_file=ISOTOPES_FILE)
+
+
+@pytest.fixture
+def LIBMAN():
+    return LibManager(XSDIR, defaultlib='81c', isotopes_file=ISOTOPES_FILE)
 
 
 class TestZaid:
@@ -80,7 +85,7 @@ class TestElement:
         elem = Element(zaids)
         return elem
 
-    def test_update_zaidinfo(self):
+    def test_update_zaidinfo(self, LIBMAN):
         """
         Test ability to get additional info for the zaids
         """
@@ -108,7 +113,7 @@ class TestElement:
 
 
 class Testmaterial:
-    def test_switch_fraction(self):
+    def test_switch_fraction(self, LIBMAN):
         # Read a material
         matcard = MatCardsList.from_input(INP)
         # Fake translation in order to normalize the fractions
@@ -140,7 +145,7 @@ class Testmaterial:
         massnorm = material.to_text()
         assert massnorm == mass
 
-    def test_switch_pnnl(self):
+    def test_switch_pnnl(self, LIBMAN):
         # --- Test the PNNL with Bismuth Germanate (BGO) ---
         # read the material cards
         inp = os.path.join(cp, 'TestFiles', 'matreader', 'BGO_mass.i')
@@ -233,7 +238,7 @@ class TestMatCardList:
             for i, submat in enumerate(matcard[key].submaterials):
                 assert len(submat.zaidList) == zaids[i]
 
-    def test_translation(self):
+    def test_translation(self, LIBMAN):
         """
         Test that translation works (all possile modes)
         """
@@ -270,7 +275,7 @@ class TestMatCardList:
         translation = matcard.to_text()
         assert translation.count('21c') == 10
 
-    def test_get_info(self):
+    def test_get_info(self, LIBMAN):
         """
         Barely tests that everything is created
         """

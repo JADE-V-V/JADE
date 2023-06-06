@@ -801,7 +801,7 @@ class SerpentInputFile:
                    name=os.path.basename(inputfile).split('.')[0])
 
     def add_stopCard(self, nps):
-        self.lines.append(\n'set nps '+str(int(nps))+'\n')
+        self.lines.append('\nset nps '+str(int(nps))+'\n')
 
     def _to_text(self):
         """

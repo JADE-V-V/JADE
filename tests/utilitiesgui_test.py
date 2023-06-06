@@ -23,18 +23,20 @@ import os
 import shutil
 
 cp = os.path.dirname(os.path.abspath(__file__))
-modules_path = os.path.dirname(cp)
-sys.path.insert(1, modules_path)
+# TODO change this using the files and resources support in Python>10
+root = os.path.dirname(cp)
+sys.path.insert(1, root)
 
 import jade.utilitiesgui as uty
 from jade.libmanager import LibManager
 import shutil
 import pandas as pd
+import pytest
 
 ACTIVATION_FILE = os.path.join(cp, 'TestFiles', 'libmanager',
                                'Activation libs.xlsx')
 XSDIR_FILE = os.path.join(cp, 'TestFiles', 'libmanager', 'xsdir')
-ISOTOPES_FILE = os.path.join(modules_path, 'Isotopes.txt')
+ISOTOPES_FILE = os.path.join(root, 'jade', 'resources', 'Isotopes.txt')
 
 
 class SessionMockup:
@@ -46,33 +48,42 @@ class SessionMockup:
 
 
 class TestUtilities:
-    session = SessionMockup()
-    inputfile = os.path.join(cp, 'TestFiles', 'utilitiesgui', 'test.i')
-    outpath = os.path.join(cp, 'tmp')
 
-    def test_translate_input(self):
+    @pytest.fixture
+    def session(self):
+        return SessionMockup()
+
+    @pytest.fixture
+    def inputfile(self):
+        return os.path.join(cp, 'TestFiles', 'utilitiesgui', 'test.i')
+
+    @pytest.fixture
+    def outpath(self):
+        return os.path.join(cp, 'tmp')
+
+    def test_translate_input(self, session, inputfile, outpath):
         """
         the correctness of the translations is already tested in matreader_test
         """
         lib = '00c'
-        ans = uty.translate_input(self.session, lib, self.inputfile,
-                                  outpath=self.outpath)
-        shutil.rmtree(self.outpath)
+        ans = uty.translate_input(session, lib, inputfile,
+                                  outpath=outpath)
+        shutil.rmtree(outpath)
         assert ans
 
-    def test_print_libraries(self):
+    def test_print_libraries(self, session):
         """
         This is properly tested in libmanager_test
         """
-        uty.print_libraries(self.session.lib_manager)
+        uty.print_libraries(session.lib_manager)
         assert True
 
-    def test_print_material_info(self):
-        uty.print_material_info(self.session, self.inputfile,
-                                outpath=self.outpath)
-        testfilename = os.path.basename(self.inputfile)
+    def test_print_material_info(self, session, inputfile, outpath):
+        uty.print_material_info(session, inputfile,
+                                outpath=outpath)
+        testfilename = os.path.basename(inputfile)
         tag = 'materialinfo.xlsx'
-        fileA = os.path.join(self.outpath, testfilename+'_'+tag)
+        fileA = os.path.join(outpath, testfilename+'_'+tag)
         fileB = os.path.join(cp, 'TestFiles', 'utilitiesgui', tag)
 
         # --- Do some consistency check on the results ---
@@ -84,27 +95,27 @@ class TestUtilities:
 
         # Check for equivalence with an expected output
         excel_equal(fileA, fileB, 2)
-        shutil.rmtree(self.outpath)
+        shutil.rmtree(outpath)
 
-    def test_generate_material(self):
+    def test_generate_material(self, inputfile, session):
         # using atom fraction
-        sourcefile = self.inputfile
+        sourcefile = inputfile
         materials = ['m1', 'M2']
         percentages = [0.5, 0.5]
         newlib = '31c'
         fraction_type = 'atom'
-        outpath = self.outpath
-        uty.generate_material(self.session, sourcefile, materials, percentages,
+        outpath = outpath
+        uty.generate_material(session, sourcefile, materials, percentages,
                               newlib, fractiontype=fraction_type,
                               outpath=outpath)
-        filename = os.path.basename(self.inputfile)
+        filename = os.path.basename(inputfile)
         fileA = os.path.join(cp, 'TestFiles', 'utilitiesgui', 'newmat_atom')
         fileB = os.path.join(outpath, filename+'_new Material')
         txt_equal(fileA, fileB)
 
         # using mass fraction
         fraction_type = 'mass'
-        uty.generate_material(self.session, sourcefile, materials, percentages,
+        uty.generate_material(session, sourcefile, materials, percentages,
                               newlib, fractiontype=fraction_type,
                               outpath=outpath)
         fileA = os.path.join(cp, 'TestFiles', 'utilitiesgui', 'newmat_mass')
@@ -112,14 +123,14 @@ class TestUtilities:
 
         shutil.rmtree(outpath)
 
-    def test_switch_fractions(self):
+    def test_switch_fractions(self, session, inputfile, outpath):
 
         # Switches are properly tested in matreader
-        uty.switch_fractions(self.session, self.inputfile, 'mass',
-                             outpath=self.outpath)
-        uty.switch_fractions(self.session, self.inputfile, 'atom',
-                             outpath=self.outpath)
-        shutil.rmtree(self.outpath)
+        uty.switch_fractions(session, inputfile, 'mass',
+                             outpath=outpath)
+        uty.switch_fractions(session, inputfile, 'atom',
+                             outpath=outpath)
+        shutil.rmtree(outpath)
         assert True
 
     def test_change_ACElib_suffix(self, monkeypatch):
@@ -144,13 +155,13 @@ class TestUtilities:
                     break
         shutil.rmtree(newfolder)
 
-    def test_get_reaction_file(self, monkeypatch):
+    def test_get_reaction_file(self, monkeypatch, session, outpath):
         # The correctness of the file is already tested in parserD1S
         filepath = os.path.join(cp, 'TestFiles', 'utilitiesgui', 'd1stest.i')
         responses = iter([str(filepath), '99c'])
         monkeypatch.setattr('builtins.input', lambda msg: next(responses))
-        uty.get_reaction_file(self.session, outpath=self.outpath)
-        shutil.rmtree(self.outpath)
+        uty.get_reaction_file(session, outpath=outpath)
+        shutil.rmtree(outpath)
         assert True
 
     def test_input_with_option(self, monkeypatch):

@@ -25,32 +25,38 @@ import pandas as pd
 from shutil import rmtree
 
 cp = os.path.dirname(os.path.abspath(__file__))
-modules_path = os.path.dirname(cp)
-sys.path.insert(1, modules_path)
+# TODO change this using the files and resources support in Python>10
+root = os.path.dirname(cp)
+sys.path.insert(1, root)
 
 from jade.configuration import Log
 from jade.testrun import Test, SphereTest, SphereTestSDDR, FNGTest, MultipleTest
 from tests.configuration_test import LOGFILE
 from jade.libmanager import LibManager
+import pytest
 
 # Get a libmanager
 ACTIVATION_FILE = os.path.join(cp, 'TestFiles', 'libmanager',
                                'Activation libs.xlsx')
 XSDIR_FILE = os.path.join(cp, 'TestFiles', 'libmanager', 'xsdir')
-ISOTOPES_FILE = os.path.join(modules_path, 'Isotopes.txt')
-LM = LibManager(XSDIR_FILE, activationfile=ACTIVATION_FILE,
-                isotopes_file=ISOTOPES_FILE)
+ISOTOPES_FILE = os.path.join(root, 'jade', 'resources', 'Isotopes.txt')
 
 # Useful files
 FILES = os.path.join(cp, 'TestFiles', 'testrun')
 LOGFILE = Log('dummy.txt')
 
 
+@pytest.fixture
+def LM():
+    return LibManager(XSDIR_FILE, activationfile=ACTIVATION_FILE,
+                      isotopes_file=ISOTOPES_FILE)
+
+
 class TestTest:
     files = os.path.join(FILES, 'Test')
     dummyout = os.path.join(FILES, 'dummy')
 
-    def test_build_normal(self):
+    def test_build_normal(self, LM):
         # Just check that nothing breaks
         lib = '81c'
         inp_name = 'ITER_1D.i'
@@ -79,7 +85,7 @@ class TestTest:
 
         assert True
 
-    def test_build_d1s(self):
+    def test_build_d1s(self, LM):
         # Just check that nothing breaks
         lib = '99c-31c'
         inp_name = 'ITER_Cyl_SDDR.i'
@@ -112,7 +118,7 @@ class TestSphereTest:
     files = os.path.join(FILES, 'SphereTest')
     dummyout = os.path.join(FILES, 'dummy')
 
-    def test_build(self):
+    def test_build(self, LM):
         # Just check that nothing breaks
         lib = '31c'
         inp_name = 'Sphere.i'
@@ -145,7 +151,7 @@ class TestSphereTestSDDR:
     files = os.path.join(FILES, 'SphereTestSDDR')
     dummyout = os.path.join(FILES, 'dummy')
 
-    def test_build(self):
+    def test_build(self, LM):
         # Just check that nothing breaks
         lib = '99c-31c'
         inp_name = 'SphereSDDR.i'
@@ -178,7 +184,7 @@ class TestMultipleTest:
     files = os.path.join(FILES, 'MultipleTest')
     dummyout = os.path.join(FILES, 'dummy')
 
-    def test_build(self):
+    def test_build(self, LM):
         # Just check that nothing breaks
         lib = '31c'
         inp_folder = os.path.join(self.files, 'Inputs')

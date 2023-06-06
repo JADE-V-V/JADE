@@ -23,13 +23,14 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import sys
 import os
+import pytest
 
 cp = os.path.dirname(os.path.abspath(__file__))
-modules_path = os.path.dirname(cp)
-sys.path.insert(1, modules_path)
+root = os.path.dirname(cp)
+sys.path.insert(1, root)
 
-from jade.parsersD1S import (Reaction, ReactionFile, Irradiation, IrradiationFile,
-                        REACFORMAT)
+from jade.parsersD1S import (Reaction, ReactionFile, Irradiation,
+                             IrradiationFile, REACFORMAT)
 from jade.libmanager import LibManager
 
 
@@ -188,9 +189,12 @@ class TestReaction:
 
 
 class TestReactionFile:
-    xsdirpath = os.path.join(cp, 'TestFiles', 'libmanager', 'xsdir')
-    isotopes_file = os.path.join(modules_path, 'Isotopes.txt')
-    lm = LibManager(xsdirpath, isotopes_file=isotopes_file)
+
+    @pytest.fixture
+    def lm(self):
+        xsdirpath = os.path.join(cp, 'TestFiles', 'libmanager', 'xsdir')
+        isotopes_file = os.path.join(root, 'jade', 'resources', 'Isotopes.txt')
+        return LibManager(xsdirpath, isotopes_file=isotopes_file)
 
     def test_fromtext(self):
         """
@@ -220,7 +224,7 @@ class TestReactionFile:
         assert rx.daughter == '26055'
         assert rx.comment == 'Fe55'
 
-    def test_translation(self):
+    def test_translation(self, lm):
         """
         test translation with libmanager where parents are available
 
@@ -228,12 +232,12 @@ class TestReactionFile:
         newlib = '98c'
 
         reac_file = ReactionFile.from_text(INP)
-        reac_file.change_lib(newlib, libmanager=self.lm)
+        reac_file.change_lib(newlib, libmanager=lm)
 
         for reaction in reac_file.reactions:
             assert reaction.parent[-3:] == newlib
 
-    def test_translation2(self):
+    def test_translation2(self, lm):
         """
         test translation with libmanager where parents are not available
 
@@ -244,7 +248,7 @@ class TestReactionFile:
         newlib = '99c'
 
         reac_file = ReactionFile.from_text(filepath)
-        reac_file.change_lib(newlib, libmanager=self.lm)
+        reac_file.change_lib(newlib, libmanager=lm)
 
         for reaction in reac_file.reactions:
             assert reaction.parent[-3:] != newlib

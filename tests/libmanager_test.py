@@ -24,10 +24,12 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
 import os
+import pytest
 
 cp = os.path.dirname(os.path.abspath(__file__))
-modules_path = os.path.dirname(cp)
-sys.path.insert(1, modules_path)
+# TODO change this using the files and resources support in Python>10
+root = os.path.dirname(cp)
+sys.path.insert(1, root)
 
 from jade.libmanager import LibManager
 from jade.matreader import Zaid
@@ -36,33 +38,35 @@ from jade.matreader import Zaid
 ACTIVATION_FILE = os.path.join(cp, 'TestFiles', 'libmanager',
                                'Activation libs.xlsx')
 XSDIR_FILE = os.path.join(cp, 'TestFiles', 'libmanager', 'xsdir')
-ISOTOPES_FILE = os.path.join(modules_path, 'Isotopes.txt')
+ISOTOPES_FILE = os.path.join(root, 'jade', 'resources', 'Isotopes.txt')
 
 
 class TestLibManger:
 
-    lm = LibManager(XSDIR_FILE, activationfile=ACTIVATION_FILE,
-                    isotopes_file=ISOTOPES_FILE)
+    @pytest.fixture
+    def lm(self):
+        return LibManager(XSDIR_FILE, activationfile=ACTIVATION_FILE,
+                          isotopes_file=ISOTOPES_FILE)
 
-    def test_reactionfilereading(self):
-        assert len(self.lm.reactions['99c']) == 100
-        assert len(self.lm.reactions['98c']) == 34
+    def test_reactionfilereading(self, lm):
+        assert len(lm.reactions['99c']) == 100
+        assert len(lm.reactions['98c']) == 34
 
-    def test_get_reactions1(self):
+    def test_get_reactions1(self, lm):
         """
         Test ability to recover reactions for parent zaid (one)
         """
         parent = '9019'
-        reaction = self.lm.get_reactions('99c', parent)[0]
+        reaction = lm.get_reactions('99c', parent)[0]
         assert reaction[0] == '16'
         assert reaction[1] == '9018'
 
-    def test_get_reactions2(self):
+    def test_get_reactions2(self, lm):
         """
         Test ability to recover reactions for parent zaid (multiple)
         """
         parent = '11023'
-        reactions = self.lm.get_reactions('99c', parent)
+        reactions = lm.get_reactions('99c', parent)
         print(reactions)
         reaction1 = reactions[0]
         reaction2 = reactions[1]
@@ -72,36 +76,36 @@ class TestLibManger:
         assert reaction2[0] == '102'
         assert reaction2[1] == '11024'
 
-    def test_formula_conversion(self):
+    def test_formula_conversion(self, lm):
         """
         Test the abilty to switch between isotopes formulas and zaid number
         """
         tests = ['N15', 'Er164', 'Kr83']
         finals = ['N-15', 'Er-164', 'Kr-83']
         for test, final in zip(tests, finals):
-            conversion = self.lm.get_zaidnum(test)
-            name, formula = self.lm.get_zaidname(conversion)
+            conversion = lm.get_zaidnum(test)
+            name, formula = lm.get_zaidname(conversion)
 
             assert final == formula
 
-    def test_check4zaid(self):
+    def test_check4zaid(self, lm):
         """
         Correctly checks availability of zaids
         """
         zaid = '1001'
-        libs = self.lm.check4zaid(zaid)
+        libs = lm.check4zaid(zaid)
         assert len(libs) > 1
         assert len(libs[0]) == 3
 
         zaid = '1010'
-        assert len(self.lm.check4zaid(zaid)) == 0
+        assert len(lm.check4zaid(zaid)) == 0
 
-    def test_convertZaid(self):
+    def test_convertZaid(self, lm):
         # --- Exception if library is not available ---
         try:
             zaid = '1001'
             lib = '44c'
-            self.lm.convertZaid(zaid, lib)
+            lm.convertZaid(zaid, lib)
             assert False
         except ValueError:
             assert True
@@ -110,107 +114,107 @@ class TestLibManger:
         # 1 to 1
         zaid = '12000'
         lib = '21c'
-        translation = self.lm.convertZaid(zaid, lib)
+        translation = lm.convertZaid(zaid, lib)
         assert translation == {zaid: (lib, 1, 1)}
         # expansion
         lib = '31c'
-        translation = self.lm.convertZaid(zaid, lib)
+        translation = lm.convertZaid(zaid, lib)
         assert len(translation) == 3
         # not available in the requested lib but available in default
         
         # not available
         try:
             zaid = '84000'
-            translation = self.lm.convertZaid(zaid, lib)
+            translation = lm.convertZaid(zaid, lib)
             assert False
         except ValueError:
             assert True
 
         # --- 1 to 1 ---
         zaid = '1001'
-        translation = self.lm.convertZaid(zaid, lib)
+        translation = lm.convertZaid(zaid, lib)
         assert translation == {zaid: (lib, 1, 1)}
 
         # --- absent ---
         # Use the natural zaid
         zaid = '12024'
         lib = '21c'
-        translation = self.lm.convertZaid(zaid, lib)
+        translation = lm.convertZaid(zaid, lib)
         assert translation == {'12000': (lib, 1, 1)}
 
         # zaid available in default or other library
         zaid = '84210'
-        translation = self.lm.convertZaid(zaid, lib)
+        translation = lm.convertZaid(zaid, lib)
         assert translation[zaid][0] != lib
 
         # zaid does not exist or not available in any library
         zaid = '84200'
         try:
-            translation = self.lm.convertZaid(zaid, lib)
+            translation = lm.convertZaid(zaid, lib)
             assert False
         except ValueError:
             assert True
 
-    def test_get_libzaids(self):
+    def test_get_libzaids(self, lm):
         lib = '44c'
-        zaids = self.lm.get_libzaids(lib)
+        zaids = lm.get_libzaids(lib)
         assert len(zaids) == 0
 
         lib = '21c'
-        zaids = self.lm.get_libzaids(lib)
+        zaids = lm.get_libzaids(lib)
         assert len(zaids) == 76
         assert zaids[0] == '1001'
 
-    def test_get_zaidname(self):
+    def test_get_zaidname(self, lm):
         zaid = '1001'
-        name, formula = self.lm.get_zaidname(zaid)
+        name, formula = lm.get_zaidname(zaid)
         assert name == 'hydrogen'
         assert formula == 'H-1'
 
         zaid = '1000'
-        name, formula = self.lm.get_zaidname(zaid)
+        name, formula = lm.get_zaidname(zaid)
         assert name == 'hydrogen'
         assert formula == 'H-0'
 
-    def test_get_zaidnum(self):
+    def test_get_zaidnum(self, lm):
         zaid = '92235'
         try:
-            zaidnum = self.lm.get_zaidnum(zaid)
+            zaidnum = lm.get_zaidnum(zaid)
             assert False
         except ValueError:
             assert True
 
         zaid = 'U235'
-        zaidnum = self.lm.get_zaidnum(zaid)
+        zaidnum = lm.get_zaidnum(zaid)
         assert zaidnum == '92235'
 
-    def test_select_lib(self, monkeypatch):
+    def test_select_lib(self, monkeypatch, lm):
         # monkeypatch the "input" function
 
         # Good trials
         for lib in ['31c', '{"21c": "31c", "00c": "71c"}', '21c-31c']:
             monkeypatch.setattr('builtins.input', lambda _: lib)
-            selectedlib = self.lm.select_lib()
+            selectedlib = lm.select_lib()
             assert selectedlib == lib
 
         # Not found
         for lib in ['44c', '{"21c": "44c", "44c": "71c"}', '21c-44c']:
             monkeypatch.setattr('builtins.input', lambda _: lib)
             try:
-                selectedlib = self.lm.select_lib()
+                selectedlib = lm.select_lib()
                 print(lib)
                 assert False
             except ValueError:
                 assert True
 
-    def test_get_zaid_mass(self):
+    def test_get_zaid_mass(self, lm):
         # Normal zaid
         zaid = '99235.31c  -1'
         zaid = Zaid.from_string(zaid)
-        mass = self.lm.get_zaid_mass(zaid)
+        mass = lm.get_zaid_mass(zaid)
         assert mass == 252.08298
         # Natural zaid
         zaid = '8000.21c  1'
         zaid = Zaid.from_string(zaid)
-        mass = self.lm.get_zaid_mass(zaid)
+        mass = lm.get_zaid_mass(zaid)
         assert mass == 15.99937442590581

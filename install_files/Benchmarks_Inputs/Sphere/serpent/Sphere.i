@@ -8,9 +8,9 @@ cell 2 0 1 ( 1 -2 )
 cell 3 0 outside 2  
 
 % --- Tally definitions --- %
-det 4 n dc 4 dv 1 de vitJ
+det 4 n dc 2 dv 1 de vitJ
 
-det 14 p dc 4 dv 1 de 24_group
+det 14 p dc 2 dv 1 de 24_group
 
 ene vitJ 4 nj17
 ene 24_group 1 1e-11 0.01 0.02 0.05 0.10 0.20 0.30 0.40 0.60 0.80 1.00 1.22 1.44 1.66 2.00 2.50

@@ -484,7 +484,8 @@ class Test():
 
             # Execution
             if pd.isnull(config.batch_system) is True:
-                unix.configure(env_variables)
+                if pd.isnull(env_variables) is False:
+                    unix.configure(env_variables)
                 #subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
                 subprocess.run(" ".join(run_command), cwd=directory, shell=True)
             else:

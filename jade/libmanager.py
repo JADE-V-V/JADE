@@ -93,21 +93,28 @@ class LibManager:
         self.isotope_parser = IsotopeDataParser(isotopes_file)
         self.isotopes = self.isotope_parser.isotopes
 
+        # Convert all columns to lower case
+        new_columns = []
+        for column in lib_df:
+            new_columns.append(column.lower())
+        lib_df.columns = new_columns
+
         if defaultlib is None:
-            self.defaultlib = lib_df[lib_df['Default'] == 'yes']['Suffix'].values[0]
+            self.defaultlib = lib_df[lib_df['default'] == 'yes']['suffix'].values[0]
         else:
             self.defaultlib = defaultlib
 
         self.data = {}
         self.codes = []
-        lib_df.set_index('Suffix', inplace=True)
+        lib_df.set_index('suffix', inplace=True)
         # Initilize the Xsdir object
         # self.XS = xs.Xsdir(xsdir_file)
-        for code in lib_df.columns[3:]:
+        for code in lib_df.columns[2:]:
             code = code.lower()
             self.codes.append(code)
             self.data[code] = {}
-            for library, path in lib_df[code].iterrows():
+            for library, row in lib_df.iterrows():
+                path = row[code]
 
                 if path != '' or path is not None:
 
@@ -245,7 +252,7 @@ class LibManager:
                         # zaid availability must be checked
                         if XS.find_table(idx+'.'+lib, mode='exact'):
                             newlib = lib
-                        elif XS.find_table(idx+'.'+self.defaultlib,
+                        elif self.data[code][self.defaultlib].find_table(idx+'.'+self.defaultlib,
                                                 mode='exact'):
                             warnings.warn(MSG_DEFLIB.format(self.defaultlib, zaid))
                             newlib = self.defaultlib

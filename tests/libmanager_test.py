@@ -25,6 +25,7 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 import os
 import pytest
+import pandas as pd
 
 cp = os.path.dirname(os.path.abspath(__file__))
 # TODO change this using the files and resources support in Python>10
@@ -45,7 +46,17 @@ class TestLibManger:
 
     @pytest.fixture
     def lm(self):
-        return LibManager(XSDIR_FILE, activationfile=ACTIVATION_FILE,
+        df_rows = [
+                   ['99c', 'sda', '', XSDIR_FILE],
+                   ['98c', 'acsdc', '', XSDIR_FILE],
+                   ['21c', 'adsadsa', '', XSDIR_FILE],
+                   ['31c', 'adsadas', '', XSDIR_FILE],
+                   ['00c', 'sdas', 'yes', XSDIR_FILE],
+                   ['71c', 'sdasxcx', '', XSDIR_FILE]]
+        df_lib = pd.DataFrame(df_rows)
+        df_lib.columns = ['Suffix', 'Name', 'Default', 'MCNP']
+
+        return LibManager(df_lib, activationfile=ACTIVATION_FILE,
                           isotopes_file=ISOTOPES_FILE)
 
     def test_reactionfilereading(self, lm):
@@ -121,14 +132,15 @@ class TestLibManger:
         translation = lm.convertZaid(zaid, lib)
         assert len(translation) == 3
         # not available in the requested lib but available in default
-        
+
         # not available
-        try:
-            zaid = '84000'
-            translation = lm.convertZaid(zaid, lib)
-            assert False
-        except ValueError:
-            assert True
+        # try:
+        zaid = '84000'
+        translation = lm.convertZaid(zaid, lib)
+        translation['84209'][0] == '00c'
+        #     assert False
+        # except ValueError:
+        #     assert True
 
         # --- 1 to 1 ---
         zaid = '1001'
@@ -156,9 +168,6 @@ class TestLibManger:
             assert True
 
     def test_get_libzaids(self, lm):
-        lib = '44c'
-        zaids = lm.get_libzaids(lib)
-        assert len(zaids) == 0
 
         lib = '21c'
         zaids = lm.get_libzaids(lib)

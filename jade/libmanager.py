@@ -21,7 +21,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 import jade.xsdirpyne as xs
+from jade.xsdirpyne import Xsdir, SerpentXsdir, OpenMCXsdir
 import pandas as pd
 import json
 import re
@@ -38,22 +40,41 @@ CEND = '\033[0m'
 MSG_DEFLIB = ' The Default library {} was used for zaid {}'
 
 
+class IsotopeDataParser:
+    def __init__(self, isotopes_file: os.PathLike) -> None:
+        # load the natural abundance file
+        abundances = pd.read_csv(isotopes_file, skiprows=2)
+        abundances['idx'] = abundances['idx'].astype(str)
+        abundances.set_index('idx', inplace=True)
+        self.isotopes = abundances
+
+    def get_formulazaid(self, formula):
+        match = re.match(r"([a-z]+)([0-9]+)", formula, re.I)
+        parts = match.groups()
+        E, A = parts[0], int(parts[1])
+        newiso = self.isotopes[self.isotopes['E'] == E]
+        Z = newiso['Z'].values[0]
+        zaid = '{0}{1:0>3}'.format(Z, A)
+        return zaid
+
+
 class LibManager:
 
-    #def __init__(self, xsdir_file, defaultlib='81c', activationfile=None,
+    # def __init__(self, xsdir_file, defaultlib='81c', activationfile=None,
     #             isotopes_file=None):
-    def __init__(self, lib, defaultlib='81c', activationfile=None,
-                 isotopes_file=None):
+    def __init__(self, lib_df: pd.DataFrame, defaultlib: str = None,
+                 activationfile: os.PathLike = None,
+                 isotopes_file: os.PathLike = None):
         """
         Object dealing with all complex operations that involves nuclear data
 
         Parameters
         ----------
-        xsdir_file : str or path
-            path to the MCNP xsdir reference file.
+        lib_df : pd.DataFrame
+            table related to libraries variables.
         defaultlib : str, optional
             lib suffix to be used as default in translation operations.
-            The default is '81c'.
+            If None, it reads from lib_df
         activationfile : str or path, optional
             path to the config file containing the reactions data for
             activation libraries. The default is None.
@@ -66,19 +87,44 @@ class LibManager:
         None.
 
         """
-        # load the natural abundance file
         if isotopes_file is None:
-            isotopes_file = 'Isotopes.txt'
-        abundances = pd.read_csv(isotopes_file, skiprows=2)
-        abundances['idx'] = abundances['idx'].astype(str)
-        abundances.set_index('idx', inplace=True)
-        self.isotopes = abundances
+            isotopes_file = os.path.join('resources', 'Isotopes.txt')
 
-        self.defaultlib = defaultlib
+        self.isotope_parser = IsotopeDataParser(isotopes_file)
+        self.isotopes = self.isotope_parser.isotopes
 
+        if defaultlib is None:
+            self.defaultlib = lib_df[lib_df['Default'] == 'yes']['Suffix'].values[0]
+        else:
+            self.defaultlib = defaultlib
+
+        self.data = {}
+        self.codes = []
+        lib_df.set_index('Suffix', inplace=True)
         # Initilize the Xsdir object
-        #self.XS = xs.Xsdir(xsdir_file)
-        self.XS = xs.XSData(self, lib)
+        # self.XS = xs.Xsdir(xsdir_file)
+        for code in lib_df.columns[3:]:
+            code = code.lower()
+            self.codes.append(code)
+            self.data[code] = {}
+            for library, path in lib_df[code].iterrows():
+
+                if path != '' or path is not None:
+
+                    if code == 'mcnp':
+                        self.data[code][library] = Xsdir(path)
+
+                    elif code == 'openmc':
+                        pass
+
+                    elif code == 'serpent':
+                        self.data[code][library] = SerpentXsdir(path)
+
+                    elif code == 'd1s':
+                        self.data[code][library] = Xsdir(path)
+
+                    else:
+                        raise ValueError('{} code not implemented'.format(code))
 
         # Identify different libraries installed. This is done checking H
         # libraries = self.check4zaid('1001')
@@ -93,7 +139,7 @@ class LibManager:
 
         self.libraries = libraries
         """
-        self.libraries = self.XS.libraries
+        self.libraries = list(lib_df.index)
 
         # Load the activation reaction data if available
         if activationfile is not None:
@@ -108,19 +154,7 @@ class LibManager:
 
         self.reactions = reactions
 
-    def _get_xs(self, code, lib):
-        # Check which code is being used
-        if code == 'd1s':
-            XS = self.XS.d1s_data[lib]
-        if code == 'mcnp':
-            XS = self.XS.mcnp_data[lib]
-        if code == 'serpent':
-            XS = self.XS.serpent_data[lib]
-        if code == 'openmc':
-            XS = self.XS.openmc_data[lib]
-        return XS
-    
-    def check4zaid(self, zaid, code):
+    def check4zaid(self, zaid: str, code: str = 'mcnp'):
         # Needs fixing
         """
         Check which libraries are available for the selected zaid and return it
@@ -129,6 +163,8 @@ class LibManager:
         ----------
         zaid : str
             zaid string (e.g. 1001).
+        code: str, optional
+            code to be looked up. default is 'mcnp'
 
         Returns
         -------
@@ -137,21 +173,26 @@ class LibManager:
 
         """
         libraries = []
-        for libname in self.XS.find_table(zaid, mode='default-fast'):
-            libraries.append(libname)
+        if code == 'mcnp':
+            for lib in self.libraries:
+                xsdir = self.data[code][lib]
+                if lib in xsdir.find_table(zaid, mode='default-fast'):
+                    libraries.append(lib)
+        else:
+            raise NotImplementedError('{} not implemented yet'.format(code))
 
         return libraries
 
-    def check_zaid(self, zaid, lib, code):
-        XS = self._get_xs(code, lib)
-        if isinstance(XS, str) or XS is None:
-            return True
-        elif len(XS.find_table(zaid, mode='default-fast')) > 0:
-            return True
-        else:
-            return False
+    # def check_zaid(self, zaid, lib, code):
+    #     XS = self._get_xs(code, lib)
+    #     if isinstance(XS, str) or XS is None:
+    #         return True
+    #     elif len(XS.find_table(zaid, mode='default-fast')) > 0:
+    #         return True
+    #     else:
+    #         return False
 
-    def convertZaid(self, zaid, lib, code):
+    def convertZaid(self, zaid, lib, code: str = 'mcnp'):
         # Needs fixing
         """
         This methods will convert a zaid into the requested library
@@ -168,6 +209,8 @@ class LibManager:
             zaid name (ex. 1001).
         lib : str
             library suffix (ex. 21c).
+        code : str, optional
+            code for which the translation is performed. default is MCNP
 
         Raises
         ------
@@ -181,17 +224,14 @@ class LibManager:
             {zaidname:(lib,nat_abundance,Atomic mass)}.
 
         """
-        # Get xs data for code and lib
-        XS = self._get_xs(code, lib)
-        
         # Check if library is available in Xsdir
         if lib not in self.libraries:
             raise ValueError('Library '+lib+' is not available in xsdir file')
 
-        #zaidlibs = self.check4zaid(zaid, code)
-        zaidlib = self.check_zaid(zaid, lib, code)
+        zaidlibs = self.check4zaid(zaid, code)
 
-        if isinstance(XS, xs.Xsdir) or isinstance(XS, xs.SerpentXsdir):
+        if code in ['mcnp', 'd1s', 'serpent']:
+            XS = self.data[code][lib]
             # Natural zaid
             if zaid[-3:] == '000':
                 # Check if zaid has natural info
@@ -216,8 +256,7 @@ class LibManager:
                         translation[idx] = (newlib, row['Mean value'],
                                             row['Atomic Mass'])
             # 1to1
-            #elif lib in zaidlibs:
-            elif zaidlib:
+            elif lib in zaidlibs:
                 translation = {zaid: (lib, 1, 1)}  # mass not important
 
             # No possible correspondence, natural or default lib has to be used
@@ -227,29 +266,18 @@ class LibManager:
                 if XS.find_table(natzaid+'.'+lib, mode='exact'):
                     translation = {natzaid: (lib, 1, 1)}  # mass not important
                 # Check if default lib is available
-                elif XS.find_table(zaid+'.'+self.defaultlib, mode='exact'):
+                elif self.data[code][self.defaultlib].find_table(zaid+'.'+self.defaultlib, mode='exact'):
                     warnings.warn(MSG_DEFLIB.format(self.defaultlib, zaid))
                     translation = {zaid: (self.defaultlib, 1, 1)}  # mass not imp
                 else:
-                    # Check if any zaid cross section is available
-                    libraries = self.check4zaid(zaid)
-                    # It has to be for the same type of particles
-                    found = False
-                    for library in libraries:
-                        if library[-1] == lib[-1]:
-                            found = True
-                    # If found no lib is assigned
-                    if found:
-                        translation = {zaid: (None, 1, 1)}  # no masses
-                    # If no possible translation is found raise error
-                    else:
-                        raise ValueError('No available translation for zaid :' +
-                                        zaid)
+                    raise ValueError('No available translation for zaid :' +
+                                     zaid)
         else:
             raise ValueError('Translation not required for code '+code)
+
         return translation
 
-    def get_libzaids(self, lib, code):
+    def get_libzaids(self, lib: str, code: str = 'mcnp'):
         # Needs fixing
         """
         Given a library, returns all zaids available
@@ -258,6 +286,8 @@ class LibManager:
         ----------
         lib : str
             suffix of the library.
+        code : str, optional
+            code for which the zaids are recovered. default is MCNP
 
         Returns
         -------
@@ -265,8 +295,8 @@ class LibManager:
             list of zaid names available in the library.
 
         """
-        XS = self._get_xs(code, lib)
-        
+        XS = self.data[code][lib]
+
         zaids = []
 
         if isinstance(XS, xs.Xsdir):
@@ -274,19 +304,14 @@ class LibManager:
                 zaid = table.name.split('.')[0]
                 if zaid not in zaids:
                     zaids.append(zaid)
+        else:
+            raise NotImplementedError('{} code is not yet implemented'.format(code))
 
         return zaids
 
     def get_formulazaid(self, formula):
-        match = re.match(r"([a-z]+)([0-9]+)", formula, re.I)
-        parts = match.groups()
-        E, A = parts[0], int(parts[1])
-        newiso = self.isotopes[self.isotopes['E'] == E]
-        Z = newiso['Z'].values[0]
-        zaid = '{0}{1:0>3}'.format(Z,A)
-        return zaid     
-                
-    
+        return self.isotope_parser.get_formulazaid(formula)
+
     def get_zaidname(self, zaid):
         """
         Given a zaid, its element name and formula are returned. E.g.,

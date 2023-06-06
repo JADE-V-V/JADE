@@ -49,10 +49,10 @@ class Configuration:
     def _process_path(self, file_path):
         if pd.isnull(file_path) is not True:
             if os.path.isabs(file_path) is not True:
-                file_path = os.path.join(os.path.dirname(self.conf_file), file_path)
+                file_path = os.path.join(os.path.dirname(self.conf_file),
+                                         file_path)
         return file_path
 
-    
     def read_settings(self):
         """
         Parse the configuration file
@@ -81,12 +81,12 @@ class Configuration:
         self.mpi_tasks = main['Value'].loc['MPI tasks']
         self.batch_system = main['Value'].loc['Batch system']
         self.batch_file = self._process_path(main['Value'].loc['Batch file']) 
-        
+
         """ Legacy config variables """
-        #self.xsdir_path = main['Value'].loc['xsdir Path']
-        #self.suppressW = main['Value'].loc['Suppress warnings']
-        #self.multi_threads = main['Value'].loc['multithread']
-        #self.cpu = main['Value'].loc['CPU']
+        # self.xsdir_path = main['Value'].loc['xsdir Path']
+        # self.suppressW = main['Value'].loc['Suppress warnings']
+        # self.multi_threads = main['Value'].loc['multithread']
+        # self.cpu = main['Value'].loc['CPU']
 
         # Computational
         comp_default = pd.read_excel(conf_file,
@@ -104,7 +104,7 @@ class Configuration:
         lib = pd.read_excel(conf_file, sheet_name='Libraries', keep_default_na=False)
         self.lib = lib
 
-        self.default_lib = lib[lib['Default'] == 'yes']['Suffix'].values[0]
+        # self.default_lib = lib[lib['Default'] == 'yes']['Suffix'].values[0]
 
     def get_lib_name(self, suffix):
         """

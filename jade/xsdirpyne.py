@@ -35,6 +35,7 @@ import math
 from typing import List, Tuple
 import sys
 
+
 class Xsdir(object):
     """This class stores the information contained in a single MCNP xsdir file.
 
@@ -223,9 +224,9 @@ class Xsdir(object):
         tables : list
             All XsdirTable objects for a given library.
         """
-        
+
         tables = []
-        
+
         for table in self:
             tablelib = table.name.split('.')[-1]
             if lib == tablelib:
@@ -249,7 +250,6 @@ class Xsdir(object):
                 xsdata.write(table.to_serpent() + '\n')
         xsdata.close()
 
-
     def __iter__(self):
         for table in self.tables:
             yield table
@@ -268,6 +268,7 @@ class Xsdir(object):
                          nucname.isnuclide(table.name.split('.')[0]))
         return valid_nucs
 
+
 class SerpentXsdir(Xsdir):
     """
     Serpent Xsdir class
@@ -284,6 +285,7 @@ class SerpentXsdir(Xsdir):
                     table.awr = float(words[5])/1.0086649670000
                     table.filename = words[8]
                     table.temperature = float(words[6])/1.1604518025685E+10
+
 
 class OpenMCXsdir(Xsdir):
     """
@@ -312,7 +314,6 @@ class OpenMCXsdir(Xsdir):
             tablenames.append((zaidname, libname))
         self.tablenames = tablenames
 
-        
     def read(self, libmanager, library):
         for i, line in enumerate(self.f):
             if '<library' in line:
@@ -327,7 +328,6 @@ class OpenMCXsdir(Xsdir):
                     table = XsdirTable()
                     table.name = libmanager.get_formulazaid(data['materials']) + '.' + library
                     table.filename = data['path']
-
 
 
 class XsdirTable(object):
@@ -449,41 +449,42 @@ class XsdirTable(object):
             self.awr, self.temperature/8.6173423e-11, self.filetype - 1,
             directory + self.filename)
 
-
     def __repr__(self):
         return "<XsDirTable: {0}>".format(self.name)
 
-""" General XSData object added by S. Bradnam """
-class XSData(object):
-    def __init__(self, libmanager, lib):
-        self.read(libmanager, lib)
 
-    def read(self, libmanager, lib):
-        self.libraries = lib['Suffix'].tolist()
-        self.mcnp_data = {}
-        self.serpent_data = {}
-        self.openmc_data = {}
-        self.d1s_data = {}
+# """ General XSData object added by S. Bradnam """
+# class XSData(object):
+#     def __init__(self, libmanager, lib):
+#         self.read(libmanager, lib)
+#         self.data = None
 
-        for i, library in enumerate(self.libraries):
-            mcnp_value = lib.at[i,"MCNP"]
-            if mcnp_value == '':
-                self.mcnp_data[library] = None
-            else:
-                self.mcnp_data[library] = Xsdir(mcnp_value)
-            serpent_value = lib.at[i,"Serpent"]
-            if serpent_value == '':
-                self.serpent_data[library] = None
-            else:
-                self.serpent_data[library] = SerpentXsdir(serpent_value)           
-            openmc_value = lib.at[i,"OpenMC"]
-            if openmc_value == '':
-                self.openmc_data[library] = None
-            else:
-                self.openmc_data[library] = OpenMCXsdir(openmc_value, libmanager, library) 
-            d1s_value = lib.at[i,"d1S"]
-            if d1s_value == '':
-                self.d1s_data[library] = None
-            else:
-                self.d1s_data[library] = Xsdir(d1s_value)           
+#     def read(self, libmanager, lib):
+#         self.libraries = lib['Suffix'].tolist()
+#         # self.mcnp_data = {}
+#         # self.serpent_data = {}
+#         # self.openmc_data = {}
+#         # self.d1s_data = {}
 
+#         for i, library in enumerate(self.libraries):
+#             mcnp_value = lib.at[i, "MCNP"]
+#             if mcnp_value == '':
+#                 self.mcnp_data[library] = None
+#             else:
+#                 self.mcnp_data[library] = Xsdir(mcnp_value)
+#             serpent_value = lib.at[i, "Serpent"]
+#             if serpent_value == '':
+#                 self.serpent_data[library] = None
+#             else:
+#                 self.serpent_data[library] = SerpentXsdir(serpent_value)           
+#             openmc_value = lib.at[i, "OpenMC"]
+#             if openmc_value == '':
+#                 self.openmc_data[library] = None
+#             else:
+#                 self.openmc_data[library] = OpenMCXsdir(openmc_value,
+#                                                         libmanager, library) 
+#             d1s_value = lib.at[i, "d1S"]
+#             if d1s_value == '':
+#                 self.d1s_data[library] = None
+#             else:
+#                 self.d1s_data[library] = Xsdir(d1s_value)

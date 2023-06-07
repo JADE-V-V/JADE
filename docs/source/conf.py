@@ -14,6 +14,8 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../..'))
 
+from jade.__version__ import __version__
+
 # -- Project information -----------------------------------------------------
 
 project = 'JADE'
@@ -21,7 +23,7 @@ copyright = '2023, JADE team'
 author = 'JADE Team'
 
 # The full version, including alpha/beta/rc tags
-release = 'v2.2.0'
+release = __version__
 
 
 # -- General configuration ---------------------------------------------------

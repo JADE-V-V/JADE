@@ -30,9 +30,11 @@ import jade.testrun as testrun
 
 from tqdm import tqdm
 from jade.status import EXP_TAG
+from jade.__version__ import __version__
 
 date = '10/05/2022'
-version = 'v2.1.1'
+version = __version__
+POWERED_BY = 'NIER, UNIBO, F4E, UKAEA'
 
 
 def clear_screen():
@@ -53,7 +55,7 @@ header = """
 principal_menu = header+"""
                  MAIN MENU
 
-        Powered by NIER, UNIBO, F4E
+        Powered by {}
  ***********************************************
  MAIN FUNCTIONS
 
@@ -76,7 +78,7 @@ principal_menu = header+"""
  -----------------------------------------------
 
  * Exit                                   (exit)
-"""
+""".format(POWERED_BY)
 
 
 def mainloop(session):
@@ -216,7 +218,7 @@ def mainloop(session):
 computational_menu = header+"""
           COMPUTATIONAL BENCHMARK MENU
 
-        Powered by NIER, UNIBO, F4E
+        Powered by {}
  ***********************************************
 
  * Print available libraries          (printlib)
@@ -224,7 +226,7 @@ computational_menu = header+"""
  * Continue assessment                (continue)
  * Back to main menu                      (back)
  * Exit                                   (exit)
-"""
+""".format(POWERED_BY)
 
 
 def comploop(session):
@@ -318,7 +320,7 @@ def comploop(session):
 experimental_menu = header+"""
           EXPERIMENTAL BENCHMARK MENU
 
-        Powered by NIER, UNIBO, F4E
+        Powered by {}
  ***********************************************
 
  * Print available libraries          (printlib)
@@ -326,7 +328,7 @@ experimental_menu = header+"""
  * Continue assessment                (continue)
  * Back to main menu                      (back)
  * Exit                                   (exit)
-"""
+""".format(POWERED_BY)
 
 
 def exploop(session):
@@ -398,7 +400,7 @@ def exploop(session):
 pp_menu = header+"""
           POST PROCESSING MENU
 
-        Powered by NIER, UNIBO, F4E
+        Powered by {}
  ***********************************************
 
  * Print tested libraries             (printlib)
@@ -407,7 +409,7 @@ pp_menu = header+"""
  * Compare Vs Experiments              (compexp)
  * Back to main menu                      (back)
  * Exit                                   (exit)
-"""
+""".format(POWERED_BY)
 
 
 def pploop(session):

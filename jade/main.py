@@ -82,7 +82,7 @@ class Session:
 
         """
 
-        code_root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+        code_root = os.path.join(os.path.dirname(os.path.abspath(__file__)))
         #jade_root = os.path.dirname(code_root)
         jade_root = os.getcwd()
         
@@ -151,11 +151,10 @@ class Session:
         self.log = cnf.Log(log)
 
         # --- Create the library manager ---
-        dl = self.conf.default_lib
+        #dl = self.conf.default_lib
         activationfile = os.path.join(jade_root, 'Configuration', 'Activation.xlsx')
-        isotopes_file = os.path.join(code_root, 'jade', 'resources', 'Isotopes.txt')
+        isotopes_file = os.path.join(code_root, 'resources', 'Isotopes.txt')
         self.lib_manager = libmanager.LibManager(self.conf.lib,
-                                                 defaultlib=dl,
                                                  activationfile=activationfile,
                                                  isotopes_file=isotopes_file)
 

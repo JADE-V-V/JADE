@@ -43,4 +43,16 @@ and `Fusion For Energy (F4E) <https://fusionforenergy.europa.eu/>`_.
       - Developer
       - F4E
       - alberto.bittesnich@ext.f4e.europa.eu
+    * - Alex Valentine
+      - Developer
+      - UKAEA
+      - alex.valentine@ukaea.uk
+    * - Steve Bradnam
+      - Developer
+      - UKAEA
+      - steve.bradnam@ukaea.uk
+    * - Dylan Wheeler
+      - Developer
+      - UKAEA
+      - dylan.wheeler@ukaea.uk
 

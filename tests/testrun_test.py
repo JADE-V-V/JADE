@@ -48,8 +48,19 @@ LOGFILE = Log('dummy.txt')
 
 @pytest.fixture
 def LM():
-    return LibManager(XSDIR_FILE, activationfile=ACTIVATION_FILE,
-                      isotopes_file=ISOTOPES_FILE)
+    df_rows = [
+                   ['99c', 'sda', '', XSDIR_FILE],
+                   ['98c', 'acsdc', '', XSDIR_FILE],
+                   ['21c', 'adsadsa', '', XSDIR_FILE],
+                   ['31c', 'adsadas', '', XSDIR_FILE],
+                   ['00c', 'sdas', '', XSDIR_FILE],
+                   ['71c', 'sdasxcx', '', XSDIR_FILE],
+                   ['81c', 'sdasxcx', 'yes', XSDIR_FILE]]
+    df_lib = pd.DataFrame(df_rows)
+    df_lib.columns = ['Suffix', 'Name', 'Default', 'MCNP']
+
+    return LibManager(df_lib, activationfile=ACTIVATION_FILE,
+                            isotopes_file=ISOTOPES_FILE)
 
 
 class TestTest:
@@ -62,7 +73,7 @@ class TestTest:
         inp_name = 'ITER_1D.i'
         inp = os.path.join(self.files, inp_name)
         config_data = {'Description': 'dummy',
-                       'File Name': inp_name,
+                       'Folder Name': inp_name,
                        'OnlyInput': True,
                        'Run': False,
                        'Post-Processing': False,
@@ -70,7 +81,8 @@ class TestTest:
                        'CTME cut-off': 10,
                        'Relative Error cut-off': 'F1-0.1',
                        'Custom Input': 2,
-                       'Code': 'mcnp6'}
+                       'Code': 'mcnp6'
+                       }
         config = pd.Series(config_data)
         VRTpath = 'dummy'
         conf_path = 'dummy'
@@ -91,7 +103,7 @@ class TestTest:
         inp_name = 'ITER_Cyl_SDDR.i'
         inp = os.path.join(self.files, inp_name)
         config_data = {'Description': 'dummy',
-                       'File Name': inp_name,
+                       'Folder Name': inp_name,
                        'OnlyInput': True,
                        'Run': False,
                        'Post-Processing': False,
@@ -190,7 +202,7 @@ class TestMultipleTest:
         inp_folder = os.path.join(self.files, 'Inputs')
         inp_name = 'Oktavian'
         config_data = {'Description': 'dummy',
-                       'File Name': inp_name,
+                       'Folder Name': inp_name,
                        'OnlyInput': True,
                        'Run': False,
                        'Post-Processing': False,

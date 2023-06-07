@@ -242,6 +242,10 @@ class TestD1S_Input:
     @pytest.fixture
     def inp(self):
         return D1S_Input.from_text(DIS_INP_PATH)
+    
+    @pytest.fixture
+    def inp_1(self):
+        return D1S_Input.from_text(DIS_INP_PATH)
 
     @pytest.fixture
     def irrad(self):
@@ -292,7 +296,7 @@ class TestD1S_Input:
         for parent, test in zip(parents_file, parents):
             assert parent == test
 
-    def test_add_track_contribution(self, inp):
+    def test_add_track_contribution(self, inp, inp_1):
         zaids = ['1001', '1002']
         tallyID = 'F124:p'
 
@@ -311,12 +315,12 @@ class TestD1S_Input:
         assert card.lines[0] == 'FU124 0 -1001 -1002\n'
 
         # --- Test daughter---
-        inp = deepcopy(inp)
-        res = inp.add_track_contribution(tallyID, zaids, who='daughter')
+        inp_1 = deepcopy(inp_1)
+        res = inp_1.add_track_contribution(tallyID, zaids, who='daughter')
         assert res
         # dump and reread the input
         tmpfile = 'tmp.i'
-        inp.write(tmpfile)
+        inp_1.write(tmpfile)
         newinp = D1S_Input.from_text(tmpfile)
         # Remove tmp file
         os.remove(tmpfile)

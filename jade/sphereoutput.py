@@ -23,7 +23,6 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import sys
-import xlwings as xw
 import jade.excel_support as exsupp
 import pandas as pd
 import os

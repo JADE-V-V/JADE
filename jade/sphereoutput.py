@@ -95,9 +95,9 @@ class SphereOutput(BenchmarkOutput):
                 os.mkdir(outpath)        
             
             for tally, title, quantity, unit in \
-                [(4, 'Averaged Neutron Flux (175 groups)',
+                [(2, 'Averaged Neutron Flux (175 groups)',
                 'Neutron Flux', r'$\#/cm^2$'),
-                (14, 'Averaged Gamma Flux (24 groups)',
+                (32, 'Averaged Gamma Flux (24 groups)',
                 'Gamma Flux', r'$\#/cm^2$')]:
                 print(' Plotting tally n.'+str(tally))
                 for zaidnum, output in tqdm(outputs.items()):
@@ -258,7 +258,7 @@ class SphereOutput(BenchmarkOutput):
             # Recover statistical checks
             st_ck = output.stat_checks
             # Recover results and precisions
-            res, err = output.get_single_excel_data(['4' '14'])
+            res, err = output.get_single_excel_data(['2', '4', '6' , '12', '14', '24', '34', '22', '32', '44', '46'])
             for dic in [res, err, st_ck]:
                 dic['Zaid'] = zaidnum
                 dic['Zaid Name'] = zaidname
@@ -346,12 +346,30 @@ class SphereOutput(BenchmarkOutput):
         self.stat_checks = {}
         
         if self.mcnp:
+            outpath = os.path.join(self.excel_path, 'Sphere_single_' + 'MCNP_' +
+                                   self.lib+'.xlsx')
             outputs, results, errors, stat_checks = self._read_mcnp_output()
             results, errors, stat_checks = self._generate_dataframe(results, errors, stat_checks)
             self.outputs['mcnp'] = outputs
             self.results['mcnp'] = results
             self.errors['mcnp'] = errors
             self.stat_checks['mcnp'] = stat_checks
+            # Generate DataFrames
+            results = pd.DataFrame(results)
+            errors = pd.DataFrame(errors)
+            stat_checks = pd.DataFrame(stat_checks)
+
+            # Swap Columns and correct zaid sorting
+            # results
+            for df in [results, errors, stat_checks]:
+                df['index'] = pd.to_numeric(df['Zaid'].values, errors='coerce')
+                df.sort_values('index', inplace=True)
+                del df['index']
+
+                df.set_index(['Zaid', 'Zaid Name'], inplace=True)
+                df.reset_index(inplace=True)
+            self.SphereSingleExcelWriter(outpath, self.lib, results, errors, stat_checks)
+            
 
         if self.serpent:
             pass
@@ -440,6 +458,283 @@ class SphereOutput(BenchmarkOutput):
         #lib_name = self.session.conf.get_lib_name(self.lib)
 #       # ex.wb.sheets[0].range('D1').value = lib_name
         #ex.save()
+
+    def SphereSingleExcelWriter(self, outpath, lib, values, errors, stats):
+                """
+        Produces single library summary excel file using XLSXwriter
+
+        Parameters
+        ----------
+        outpath : path or str
+            path to the output in Tests/Postprocessing.
+        lib : str
+            Shorthand representation of data library (i.e 00c, 31c).
+        values : Dataframe
+            Summary of tally values
+        errors: Dataframe
+            Errors on tally values
+        stats: Dataframe
+            Results of statistical checks 
+
+        Returns
+        -------
+        None
+        """
+        writer = pd.ExcelWriter(outpath, engine='xlsxwriter')  
+
+        for df in (values, errors, stats):
+            df = df.set_index('Zaid', inplace=True)
+
+        values.to_excel(writer, startrow=8, startcol=1, sheet_name="Values")
+        errors.to_excel(writer, startrow=8, startcol=1, sheet_name="Errors")
+        stats.to_excel(writer, startrow=8, startcol=1, sheet_name="Statistical Checks")
+
+        wb = writer.book
+        val_sheet = writer.sheets['Values']
+        err_sheet = writer.sheets['Errors']
+        stat_sheet =  writer.sheets['Statistical Checks']
+
+        values_len, values_width = values.shape
+        errors_len, errors_width = errors.shape
+        stats_len, stats_width = stats.shape
+
+        # Formatting styles
+        plain_format = wb.add_format({'bg_color':'#FFFFFF'})
+        oob_format = wb.add_format({'align':'center','valign':'center','bg_color':'#D9D9D9','text_wrap':True})
+        tally_format = wb.add_format({'bg_color':'#D9D9D9'})
+        merge_format = wb.add_format({'align':'center','valign':'center','border':2})
+        title_merge_format = wb.add_format({'font_size':'36','align':'center','valign':'center','bold':True,'border':2})
+        subtitle_merge_format = wb.add_format({'font_size':'16','align':'center','valign':'center','bold':True,'border':2})
+        legend_text_format = wb.add_format({'align':'center','bg_color':'white'})
+        red_cell_format = wb.add_format({'bg_color':'red'})
+        orange_cell_format = wb.add_format({'bg_color':'orange'})
+        yellow_cell_format = wb.add_format({'bg_color':'yellow'})
+        green_cell_format = wb.add_format({'bg_color':'#A6D86E'})
+        value_allzero_format = wb.add_format({'bg_color':'#EDEDED'})
+        value_belowzero_format = wb.add_format({'bg_color':'#FFC7CE'})
+        value_abovezero_format = wb.add_format({'bg_color':'#C6EFCE'})
+        
+        # VALUES
+        
+        # Title Format
+        val_sheet.merge_range('B1:C2','LIBRARY', subtitle_merge_format)
+        val_sheet.merge_range('D1:D2', lib, subtitle_merge_format)
+        val_sheet.merge_range('B3:L7','SPHERE LEAKAGE TEST RESULTS RECAP: VALUES', title_merge_format)
+        val_sheet.merge_range('B8:C8','ZAID', subtitle_merge_format)
+        val_sheet.merge_range('D8:L8','TALLY', subtitle_merge_format)
+
+        #Freeze title
+        val_sheet.freeze_panes(9,0)
+
+        #out of bounds
+        val_sheet.set_column(0,0, 4, oob_format)
+        val_sheet.set_column(values_width+2,1000, 4, oob_format)
+        for i in range(9):
+            val_sheet.set_row(i, None, oob_format)
+        for i in range(9+values_len,1000):
+            val_sheet.set_row(i, None, oob_format)
+
+        #Column widths for values, set up to 15th col to ensure title format correct
+        val_sheet.set_column(1, 14, 20)
+        val_sheet.set_column(1, values_width+2, 20)
+
+        #Row Heights
+        val_sheet.set_row(7,31)
+        val_sheet.set_row(8,73.25)
+
+        #Legend
+        val_sheet.merge_range('N3:O3','LEGEND', merge_format)
+        val_sheet.merge_range('N8:O8','According to MCNP manual', oob_format)
+        val_sheet.write('N4', '', red_cell_format)
+        val_sheet.write('O4', '>|5|%', legend_text_format)
+        val_sheet.write('N5', '', orange_cell_format)
+        val_sheet.write('O5', '|1|%≤|5|%', legend_text_format)
+        val_sheet.write('N6', '', yellow_cell_format)
+        val_sheet.write('O6', '|0.5|%≤|1|%', legend_text_format)
+        val_sheet.write('N7', '', green_cell_format)
+        val_sheet.write('O7', '<|0.5|%', legend_text_format)
+
+        # Conditional Formatting
+        val_sheet.conditional_format(9,3,8+values_len,values_width+1, {'type':     'blanks',
+                                                'format':   plain_format})      
+        val_sheet.conditional_format(9,3,8+values_len,values_width+1, {'type':     'text',
+                                                'criteria': 'containing',
+                                                'value':    'Value = 0',
+                                                'format':   value_allzero_format})
+        val_sheet.conditional_format(9,3,8+values_len,values_width+1, {'type':     'text',
+                                                'criteria': 'containing',
+                                                'value':    'Value < 0',
+                                                'format':   value_belowzero_format})
+        val_sheet.conditional_format(9,3,8+values_len,values_width+1, {'type':     'text',
+                                                'criteria': 'containing',
+                                                'value':    'Value > 0',
+                                                'format':   value_abovezero_format})    
+        val_sheet.conditional_format(9,3,8+values_len,values_width+1, {'type':     'cell',
+                                                'criteria': 'greater than',
+                                                'value':    0.05,
+                                                'format':   red_cell_format})
+        val_sheet.conditional_format(9,3,8+values_len,values_width+1, {'type':     'cell',
+                                                'criteria': 'between',
+                                                'minimum':    0.01,
+                                                'maximum':    0.05,
+                                                'format':   orange_cell_format})
+        val_sheet.conditional_format(9,3,8+values_len,values_width+1, {'type':     'cell',
+                                                'criteria': 'between',
+                                                'minimum':    0.005,
+                                                'maximum':    0.01,
+                                                'format':   yellow_cell_format})                               
+        val_sheet.conditional_format(9,3,8+values_len,values_width+1, {'type':     'cell',
+                                                'criteria': 'less than',
+                                                'value':    -0.05,
+                                                'format':   red_cell_format})
+        val_sheet.conditional_format(9,3,8+values_len,values_width+1, {'type':     'cell',
+                                                'criteria': 'between',
+                                                'minimum':    -0.05,
+                                                'maximum':    -0.01,
+                                                'format':   orange_cell_format})
+        val_sheet.conditional_format(9,3,8+values_len,values_width+1, {'type':     'cell',
+                                                'criteria': 'between',
+                                                'minimum':    -0.01,
+                                                'maximum':    -0.005,
+                                                'format':   yellow_cell_format})       
+        val_sheet.conditional_format(9,3,8+values_len,values_width+1, {'type':     'cell',
+                                                'criteria': 'between',
+                                                'minimum':    -0.005,
+                                                'maximum':    0.005,
+                                                'format':   green_cell_format})
+
+        # ERRORS
+
+        # Title
+        err_sheet.merge_range('B1:C2','LIBRARY', subtitle_merge_format)
+        err_sheet.merge_range('D1:D2', lib, subtitle_merge_format)
+        err_sheet.merge_range('B3:L7','SPHERE LEAKAGE TEST RESULTS RECAP: ERRORS', title_merge_format)
+        err_sheet.merge_range('B8:C8','ZAID', subtitle_merge_format)
+        err_sheet.merge_range('D8:L8','TALLY', subtitle_merge_format)
+
+        #Freeze title
+        err_sheet.freeze_panes(9,0)
+
+        #out of bounds
+        err_sheet.set_column(0,0, 4, oob_format)
+        err_sheet.set_column(errors_width+2,1000, 4, oob_format)
+        for i in range(9):
+            err_sheet.set_row(i, None, oob_format)
+        for i in range(9+errors_len,1000):
+            err_sheet.set_row(i, None, oob_format)
+
+        #Column widths for errors, set up to 15th col by default to ensure title format correct
+        err_sheet.set_column(1, 14, 20)
+        err_sheet.set_column(1, errors_width+2, 20)
+
+        #Row Heights
+        err_sheet.set_row(7,31)
+        err_sheet.set_row(8,73.25)
+
+        #Legend
+        err_sheet.merge_range('N3:O3','LEGEND', merge_format)
+        err_sheet.merge_range('N8:O8','According to MCNP manual', oob_format)
+        err_sheet.write('N4', '', red_cell_format)
+        err_sheet.write('O4', '> 50%', legend_text_format)
+        err_sheet.write('N5', '', orange_cell_format)
+        err_sheet.write('O5', '20% ≤ 50%', legend_text_format)
+        err_sheet.write('N6', '', yellow_cell_format)
+        err_sheet.write('O6', '10% ≤ 20%', legend_text_format)
+        err_sheet.write('N7', '', green_cell_format)
+        err_sheet.write('O7', '< 10%', legend_text_format)
+
+        #Conditional Formatting
+        err_sheet.conditional_format(9,3,8+errors_len,errors_width+1, {'type':     'blanks',
+                                                'format':   plain_format})      
+        err_sheet.conditional_format(9,3,8+errors_len,errors_width+1, {'type':     'cell',
+                                                'criteria': '>',
+                                                'value':    0.5,
+                                                'format':   red_cell_format})
+        err_sheet.conditional_format(9,3,8+errors_len,errors_width+1, {'type':     'cell',
+                                                'criteria': 'between',
+                                                'minimum':    0.2,
+                                                'maximum':    0.5,
+                                                'format':   orange_cell_format})
+        err_sheet.conditional_format(9,3,8+errors_len,errors_width+1, {'type':     'cell',
+                                                'criteria': 'between',
+                                                'minimum':    0.1,
+                                                'maximum':    0.2,
+                                                'format':   yellow_cell_format})                               
+        err_sheet.conditional_format(9,3,8+errors_len,errors_width+1, {'type':     'cell',
+                                                'criteria': '<',
+                                                'value':    -0.5,
+                                                'format':   red_cell_format})
+        err_sheet.conditional_format(9,3,8+errors_len,errors_width+1, {'type':     'cell',
+                                                'criteria': 'between',
+                                                'minimum':    -0.5,
+                                                'maximum':    -0.2,
+                                                'format':   orange_cell_format})
+        err_sheet.conditional_format(9,3,8+errors_len,errors_width+1, {'type':     'cell',
+                                                'criteria': 'between',
+                                                'minimum':    -0.2,
+                                                'maximum':    -0.1,
+                                                'format':   yellow_cell_format})       
+        err_sheet.conditional_format(9,3,8+errors_len,errors_width+1, {'type':     'cell',
+                                                'criteria': 'between',
+                                                'minimum':    -0.1,
+                                                'maximum':    0.1,
+                                                'format':   green_cell_format})       
+
+        # STAT CHECKS
+
+        # Title
+        stat_sheet.merge_range('B1:C2','LIBRARY', subtitle_merge_format)
+        stat_sheet.merge_range('D1:D2', lib, subtitle_merge_format)
+        stat_sheet.merge_range('B3:L7','SPHERE LEAKAGE TEST RESULTS RECAP: ERRORS', title_merge_format)
+        stat_sheet.merge_range('B8:C8','ZAID', subtitle_merge_format)
+        stat_sheet.merge_range('D8:L8','TALLY', subtitle_merge_format)
+
+        #Freeze title
+        stat_sheet.freeze_panes(9,0)
+
+        #out of bounds
+        stat_sheet.set_column(0,0, 4, oob_format)
+        stat_sheet.set_column(stats_width+2,1000, 4, oob_format)
+        for i in range(9):
+            stat_sheet.set_row(i, None, oob_format)
+        for i in range(9+stats_len,1000):
+            stat_sheet.set_row(i, None, oob_format)
+
+        #Column widths for errors, set up to 15th col by default to ensure title format correct
+        stat_sheet.set_column(1, 14, 20)
+        stat_sheet.set_column(1, stats_width+2, 20)
+
+        #Row Heights
+        stat_sheet.set_row(7,31)
+        stat_sheet.set_row(8,73.25)
+
+        #Legend
+        stat_sheet.merge_range('N3:O3','LEGEND', merge_format)
+        stat_sheet.merge_range('N8:O8','According to MCNP manual', oob_format)
+        stat_sheet.write('N4', '', red_cell_format)
+        stat_sheet.write('O4', '> 50%', legend_text_format)
+        stat_sheet.write('N5', '', orange_cell_format)
+        stat_sheet.write('O5', '20% ≤ 50%', legend_text_format)
+        stat_sheet.write('N6', '', yellow_cell_format)
+        stat_sheet.write('O6', '10% ≤ 20%', legend_text_format)
+        stat_sheet.write('N7', '', green_cell_format)
+        stat_sheet.write('O7', '< 10%', legend_text_format)
+        stat_sheet.conditional_format(9,3,8+stats_len,stats_width+1, {'type':     'blanks',
+                                                'format':   plain_format})      
+        stat_sheet.conditional_format(9,3,8+stats_len,stats_width+1, {'type':     'text',
+                                                'criteria': 'containing',
+                                                'value':    'Passed',
+                                                'format':   value_abovezero_format})
+        stat_sheet.conditional_format(9,3,8+stats_len,stats_width+1, {'type':     'text',
+                                                'criteria': 'containing',
+                                                'value':    'All zeros',
+                                                'format':   value_allzero_format})
+        stat_sheet.conditional_format(9,3,8+stats_len,stats_width+1, {'type':     'text',
+                                                'criteria': 'containing',
+                                                'value':    'Missed',
+                                                'format':   value_belowzero_format})                            
+
+        wb.close()
 
     def pp_excel_comparison(self):
         """
@@ -1655,7 +1950,6 @@ class SphereSDDRMCNPoutput(SphereMCNPoutput):
                            axis=0)
 
         return vals, errors
-
 
 class SphereExcelOutputSheet:
     def __init__(self, template, outpath):

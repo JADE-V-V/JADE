@@ -1,0 +1,3 @@
+recursive-include jade/install_files *
+recursive-include jade/default_settings *
+recursive-include jade/templates *

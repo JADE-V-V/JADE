@@ -460,7 +460,7 @@ class SphereOutput(BenchmarkOutput):
         #ex.save()
 
     def SphereSingleExcelWriter(self, outpath, lib, values, errors, stats):
-                """
+        """
         Produces single library summary excel file using XLSXwriter
 
         Parameters
@@ -492,7 +492,7 @@ class SphereOutput(BenchmarkOutput):
         wb = writer.book
         val_sheet = writer.sheets['Values']
         err_sheet = writer.sheets['Errors']
-        stat_sheet =  writer.sheets['Statistical Checks']
+        stat_sheet = writer.sheets['Statistical Checks']
 
         values_len, values_width = values.shape
         errors_len, errors_width = errors.shape

@@ -180,7 +180,7 @@ class LibManager:
 
         """
         libraries = []
-        if code == 'mcnp':
+        if code != 'openmc':
             for lib in self.libraries:
                 xsdir = self.data[code][lib]
                 if lib in xsdir.find_table(zaid, mode='default-fast'):

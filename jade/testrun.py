@@ -463,7 +463,7 @@ class Test():
         env_variables = config.mcnp_config
         inputstring = 'i=' + name
         outputstring = 'n=' + name
-        xsstring = 'xs='+lib_manager.XS.mcnp_data[self.lib].filename
+        xsstring = 'xs='+lib_manager.data['mcnp'][self.lib].filename
         if run_mpi:
             run_command = ['mpirun', '-n', str(mpi_tasks), executable, inputstring, outputstring, xsstring]
         else:
@@ -511,7 +511,7 @@ class Test():
         executable = config.serpent_exec
         env_variables = config.serpent_config
         inputstring = name
-        libpath = Path(str(lib_manager.XS.serpent_data[self.lib].filename))
+        libpath = Path(str(lib_manager.data['serpent'][self.lib].filename))
         data_command = "export SERPENT_DATA=" + str(libpath.parent) + " \nexport SERPENT_ACELIB=" + str(libpath)
         if run_omp:
             if run_mpi:
@@ -557,7 +557,7 @@ class Test():
             run_omp = True
         executable = config.openmc_exec
         env_variables = config.openmc_config
-        libpath = Path(str(lib_manager.XS.openmc_data[self.lib].filename))
+        libpath = Path(str(lib_manager.data['openmc'][self.lib].filename))
         data_command = "export OPENMC_CROSS_SECTIONS=" + str(libpath)
         if run_omp:
             if run_mpi:

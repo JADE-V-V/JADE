@@ -23,7 +23,7 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import sys
-import xlwings as xw
+#import xlwings as xw
 import jade.excel_support as exsupp
 import pandas as pd
 import os
@@ -31,9 +31,9 @@ import shutil
 import jade.plotter as plotter
 #import pythoncom
 import math
-import openpyxl
+#import openpyxl
 
-from openpyxl.utils.dataframe import dataframe_to_rows
+#from openpyxl.utils.dataframe import dataframe_to_rows
 from tqdm import tqdm
 import jade.atlas as at
 import numpy as np
@@ -1669,7 +1669,7 @@ class SphereExcelOutputSheet:
         shutil.copy(template, outpath)
 #        self.app = xw.App(visible=False)
 #        self.wb = self.app.books.open(outpath)
-        self.wb=openpyxl.load_workbook(filename=outpath)
+        #self.wb=openpyxl.load_workbook(filename=outpath)
 
     def insert_df(self, startrow, startcolumn, df, ws, header=True):
         '''

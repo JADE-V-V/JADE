@@ -23,7 +23,7 @@
 
 
 import jade.MCTAL_READER2 as mtal
-import xlwings as xw
+#import xlwings as xw
 import pandas as pd
 import os
 import shutil
@@ -1100,7 +1100,7 @@ class ExcelOutputSheet:
         self.outpath = outpath  # Path to the excel file
         # Open template
         shutil.copy(template, outpath)
-        self.app = xw.App(visible=False)
+        #self.app = xw.App(visible=False)
         self.wb = self.app.books.open(outpath)
         # The first open row in current ws
         self.free_row = self._starting_free_row

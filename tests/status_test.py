@@ -35,7 +35,7 @@ import pytest
 
 class SessionMockUp:
     path_test = os.path.join(cp, 'TestFiles', 'status')
-    path_run = os.path.join(path_test, 'MCNP simulations')
+    path_run = os.path.join(path_test, 'Simulations')
     path_single = os.path.join(path_test, 'Post-Processing',
                                'Single Libraries')
     path_comparison = os.path.join(path_test, 'Post-Processing', 'Comparison')

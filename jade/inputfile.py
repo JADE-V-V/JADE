@@ -187,7 +187,7 @@ class InputFile:
 
         return toprint
 
-    def translate(self, newlib, libmanager, code):
+    def translate(self, newlib, libmanager, code='mcnp'):
         """
         Translate the input to another library
 

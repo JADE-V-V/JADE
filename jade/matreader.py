@@ -847,7 +847,7 @@ class Material:
             for submaterial in self.submaterials:
                 submaterial.to_xml(libmanager, material_tree, id, self.density)
 
-    def translate(self, newlib, lib_manager, code, update=True):
+    def translate(self, newlib, lib_manager, code='mcnp', update=True):
         """
         This method allows to translate all submaterials to another library
 
@@ -1144,7 +1144,7 @@ class MatCardsList(Sequence):
         
         return ET.tostring(material_tree, encoding='unicode', method='xml')
 
-    def translate(self, newlib, lib_manager):
+    def translate(self, newlib, lib_manager, code='mcnp'):
         """
         This method allows to translate the material cards to another library.
         The zaid are collapsed again to get the new elements
@@ -1172,7 +1172,7 @@ class MatCardsList(Sequence):
 
         """
         for material in self.materials:
-            material.translate(newlib, lib_manager)
+            material.translate(newlib, lib_manager, code)
 
             # Rebuild elements
             for submat in material.submaterials:

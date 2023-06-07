@@ -29,23 +29,41 @@ cp = os.path.dirname(os.path.abspath(__file__))
 modules_path = os.path.dirname(cp)
 sys.path.insert(1, modules_path)
 
+# TODO change this using the files and resources support in Python>10
+root = os.path.dirname(cp)
+sys.path.insert(1, root)
+
 from jade.matreader import (Element, Zaid, MatCardsList)
 from jade.libmanager import LibManager
 import pytest
-
+import pandas as pd
 
 # Files
 INP = os.path.join(cp, 'TestFiles', 'matreader', 'mat_test.i')
 INP2 = os.path.join(cp, 'TestFiles', 'matreader', 'mat_test2.i')
 ACTIVATION_INP = os.path.join(cp, 'TestFiles', 'matreader', 'activation.i')
 XSDIR = os.path.join(cp, 'TestFiles', 'matreader', 'xsdir_mcnp6.2')
-ISOTOPES_FILE = os.path.join(modules_path, 'Isotopes.txt')
 # Other
-
+ISOTOPES_FILE = os.path.join(root, 'jade', 'resources', 'Isotopes.txt')
+ACTIVATION_FILE = os.path.join(cp, 'TestFiles', 'libmanager',
+                               'Activation libs.xlsx')
+# XSDIR_FILE = os.path.join(cp, 'TestFiles', 'libmanager', 'xsdir')
 
 @pytest.fixture
 def LIBMAN():
-    return LibManager(XSDIR, defaultlib='81c', isotopes_file=ISOTOPES_FILE)
+    df_rows = [
+                   ['99c', 'sda', '', XSDIR],
+                   ['98c', 'acsdc', '', XSDIR],
+                   ['21c', 'adsadsa', '', XSDIR],
+                   ['31c', 'adsadas', '', XSDIR],
+                   ['00c', 'sdas', '', XSDIR],
+                   ['71c', 'sdasxcx', '', XSDIR],
+                   ['81c', 'sdasxcx', 'yes', XSDIR]]
+    df_lib = pd.DataFrame(df_rows)
+    df_lib.columns = ['Suffix', 'Name', 'Default', 'MCNP']
+
+    return LibManager(df_lib, activationfile=ACTIVATION_FILE,
+                          isotopes_file=ISOTOPES_FILE)
 
 
 class TestZaid:

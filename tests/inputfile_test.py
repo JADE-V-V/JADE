@@ -35,6 +35,7 @@ from jade.parsersD1S import (IrradiationFile, ReactionFile)
 from copy import deepcopy
 import numpy as np
 import pytest
+import pandas as pd
 
 INP_PATH = os.path.join(cp, 'TestFiles/inputfile/test.i')
 INP_EX_PATH = os.path.join(cp, 'TestFiles/inputfile/test_exceptions.i')
@@ -63,8 +64,20 @@ class TestInputFile:
 
     @pytest.fixture
     def lm(self):
-        return LibManager(XSDIR_FILE, activationfile=ACTIVATION_FILE,
-                          isotopes_file=ISOTOPES_FILE)
+        df_rows = [
+                   ['99c', 'sda', '', XSDIR_FILE],
+                   ['98c', 'acsdc', '', XSDIR_FILE],
+                   ['21c', 'adsadsa', '', XSDIR_FILE],
+                   ['31c', 'adsadas', '', XSDIR_FILE],
+                   ['00c', 'sdas', '', XSDIR_FILE],
+                   ['71c', 'sdasxcx', '', XSDIR_FILE],
+                   ['81c', 'sdasxcx', 'yes', XSDIR_FILE]]
+        df_lib = pd.DataFrame(df_rows)
+        df_lib.columns = ['Suffix', 'Name', 'Default', 'MCNP']
+
+        return LibManager(df_lib, activationfile=ACTIVATION_FILE,
+                            isotopes_file=ISOTOPES_FILE)
+
 
     def test_read_write(self, testInput):
         oldtext = testInput._to_text()
@@ -79,9 +92,9 @@ class TestInputFile:
 
         assert oldtext == newtext
 
-    def test_update_zaidinfo(self, testInput):
+    def test_update_zaidinfo(self, testInput, lm):
         newinput = deepcopy(testInput)
-        newinput.update_zaidinfo(self.lm)
+        newinput.update_zaidinfo(lm)
         assert True
 
     def test_add_stopCard(self, testInput):
@@ -240,14 +253,25 @@ class TestD1S_Input:
 
     @pytest.fixture
     def lm(self):
-        return LibManager(XSDIR_FILE, activationfile=ACTIVATION_FILE,
-                          isotopes_file=ISOTOPES_FILE)
+        df_rows = [
+                   ['99c', 'sda', '', XSDIR_FILE],
+                   ['98c', 'acsdc', '', XSDIR_FILE],
+                   ['21c', 'adsadsa', '', XSDIR_FILE],
+                   ['31c', 'adsadas', '', XSDIR_FILE],
+                   ['00c', 'sdas', '', XSDIR_FILE],
+                   ['71c', 'sdasxcx', '', XSDIR_FILE],
+                   ['81c', 'sdasxcx', 'yes', XSDIR_FILE]]
+        df_lib = pd.DataFrame(df_rows)
+        df_lib.columns = ['Suffix', 'Name', 'Default', 'MCNP']
 
-    def test_translated1s(self, inp, irrad, react):
+        return LibManager(df_lib, activationfile=ACTIVATION_FILE,
+                            isotopes_file=ISOTOPES_FILE)
+
+    def test_translated1s(self, inp, irrad, react, lm):
         # This test needs to be improved
         newinp = deepcopy(inp)
         lib = '99c-00c'
-        newinp.translate(lib, self.lm, original_irradfile=irrad,
+        newinp.translate(lib, lm, original_irradfile=irrad,
                          original_reacfile=react)
         assert True
 
@@ -259,16 +283,16 @@ class TestD1S_Input:
         assert card.lines[1] == '         1001    0\n'
         assert card.lines[2] == '         8016    0\n'
 
-    def test_get_reaction_file(self):
+    def test_get_reaction_file(self, lm):
         newinp = D1S_Input.from_text(DIS_GETREACT_PATH)
         lib = '99c'
-        reacfile = newinp.get_reaction_file(self.lm, lib)
+        reacfile = newinp.get_reaction_file(lm, lib)
         parents = ['13027', '22046', '24050']
         parents_file = reacfile.get_parents()
         for parent, test in zip(parents_file, parents):
             assert parent == test
 
-    def test_add_track_contribution(self):
+    def test_add_track_contribution(self, inp):
         zaids = ['1001', '1002']
         tallyID = 'F124:p'
 

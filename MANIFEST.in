@@ -1,0 +1,3 @@
+recursive-include install_files *
+recursive-include default_settings *
+recursive-include templates *

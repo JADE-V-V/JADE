@@ -39,6 +39,7 @@ from matplotlib.patches import Rectangle
 # ============================================================================
 #                   Specify parameters for plots
 # ============================================================================
+np.seterr(divide = 'ignore') # Suppressing divide by zero error in plots 
 DEFAULT_EXTENSION = '.png'
 
 SMALL_SIZE = 22
@@ -874,7 +875,7 @@ class Plotter:
         ax2.axhline(y=10, linestyle='--', color='black')
         ax2.set_ylabel('1σ [%]', labelpad=35)
         ax2.set_yscale('log')
-        ax2.set_ylim(bottom=0, top=100)
+        ax2.set_ylim(bottom=1, top=100)
         ax2.yaxis.set_major_locator(LogLocator(base=10, numticks=15))
         ax2.yaxis.set_minor_locator(LogLocator(base=10.0, subs=subs,
                                                numticks=12))
@@ -1007,7 +1008,6 @@ class Plotter:
         return self._save()
 
     def _save(self):
-        plt.tight_layout()
 
         plt.savefig(self.outpath, bbox_inches='tight')
         plt.close()

@@ -31,14 +31,30 @@ def compareBenchmark(session, lib_input, testname):
     print('\n Comparing '+testname+':' +
           '    '+str(datetime.datetime.now()))
     lib = lib_input.split('-')
-    # get the correct output object
+    '''# get the correct output object
     out = _get_output('compare', testname, lib, session)
     if out:
         out.compare()
 
     session.log.adjourn(testname+' benchmark comparison completed' +
-                        '    ' + str(datetime.datetime.now()))
+                        '    ' + str(datetime.datetime.now()))'''
 
+    # Get the settings for the tests
+    config = session.conf.comp_default.set_index('Description')
+    # Get the log
+    log = session.log
+
+    for testname, row in config.iterrows():
+        if (bool(row['Post-Processing'])) and (bool(row['MCNP']) or bool(row['Serpent']) or bool(row['OpenMC']) or bool(row['d1S'])):
+            print('\n Post-Processing '+testname+':' +
+                '    '+str(datetime.datetime.now()))
+            # get the correct output object
+            out = _get_output('compare', row, lib, session)
+            if out:
+                out.compare()
+
+            log.adjourn(testname+' benchmark post-processing completed' +
+                                '    ' + str(datetime.datetime.now()))
 
 def postprocessBenchmark(session, lib):
     # Get the settings for the tests
@@ -60,9 +76,9 @@ def postprocessBenchmark(session, lib):
 
 
 def _get_output(action, config, lib, session):
-
     exp_pp_message = '\n No single pp is foreseen for experimental benchmarks'
     testname = config['Folder Name']
+    print(testname)
 
     if testname == 'Sphere':
         out = spho.SphereOutput(lib, config, session)

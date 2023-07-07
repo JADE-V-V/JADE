@@ -483,10 +483,12 @@ def pploop(session):
 
                 # Execute single pp
                 for lib in to_single_pp:
+                    print('to single pp', to_single_pp)
                     for testname in to_perform:
+                        print("to_perform",to_perform)
                         try:
                             print(' Single PP of library '+lib+' required')
-                            pp.postprocessBenchmark(session, lib, testname)
+                            pp.postprocessBenchmark(session, lib)
                             session.log.adjourn("""
 Additional Post-Processing of library:"""+lib+' completed\n', spacing=False)
                         except PermissionError as e:

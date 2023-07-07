@@ -227,13 +227,13 @@ class BenchmarkOutput(AbstractOutput):
             if os.path.exists(out):
                 shutil.rmtree(out)
             os.mkdir(out)
-            # excel_path = os.path.join(out, 'Excel')
+            excel_path = os.path.join(out, 'Excel')
             atlas_path = os.path.join(out, 'Atlas')
             raw_path = os.path.join(out, 'Raw Data')
-            # os.mkdir(excel_path)
+            os.mkdir(excel_path)
             os.mkdir(atlas_path)
             os.mkdir(raw_path)
-            # self.excel_path = excel_path
+            self.excel_path = excel_path
             self.raw_path = raw_path
             self.atlas_path = atlas_path
 
@@ -596,9 +596,9 @@ class BenchmarkOutput(AbstractOutput):
                         main_value_df.index.name = x_name
                     except ValueError:
                         print(CRED+"""
- A ValueError was triggered, a probable cause may be that more than 2 binnings
- are defined in tally {}. This is a fatal exception,  application will now
- close""".format(str(num))+CEND)
+    A ValueError was triggered, a probable cause may be that more than 2 binnings
+     are defined in tally {}. This is a fatal exception,  application will now
+    close""".format(str(num))+CEND)
                         # Safely exit from excel and from application
                         ex.save()
                         sys.exit()

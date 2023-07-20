@@ -364,7 +364,7 @@ class Plotter:
                 except KeyError:
                     labels.append(lab)
 
-        # Assuming nobody will never print 20 libraries, will introduce a 
+        # Assuming nobody will never print 20 libraries, will introduce a
         # check though
         single_width = 1 / len(self.data) - 0.05  # the width of the bars
 

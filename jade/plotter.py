@@ -364,8 +364,9 @@ class Plotter:
                 except KeyError:
                     labels.append(lab)
 
-        single_width = 0.35  # the width of the bars
-        tot_width = single_width*len(self.data)
+        # Assuming nobody will never print 20 libraries, will introduce a 
+        # check though
+        single_width = 1 / len(self.data) - 0.05  # the width of the bars
 
         # Check if the data is higher than max
         if len(labels) > maxgroups:
@@ -423,7 +424,10 @@ class Plotter:
         # Plot everything
         for ax, datachunk, x, labels in zip(axes, datasets, x_array,
                                             label_chunks):
-            pos = -tot_width/2
+            if len(datachunk) % 2 == 0:
+                pos = - len(datachunk) / 2 * single_width + single_width / 2
+            else:
+                pos = - len(datachunk) / 2 * single_width
             for dataset in datachunk:
                 ax.bar(x + pos, dataset['y'], single_width,
                        label=dataset['ylabel'],

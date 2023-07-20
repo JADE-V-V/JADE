@@ -75,6 +75,7 @@ principal_menu = header+"""
  * Change ACE lib suffix                (acelib)
  * Produce D1S Reaction file             (react)
  * Remove all runtpe files           (rmvruntpe)
+ * Compare ACE/EXFOR                (comparelib)
  -----------------------------------------------
 
  * Exit                                   (exit)
@@ -204,6 +205,9 @@ def mainloop(session):
         elif option == 'rmvruntpe':
             uty.clean_runtpe(session.path_run)
             print('\n Runtpe files have been removed\n')
+
+        elif option == 'comparelib':
+            uty.print_XS_EXFOR(session)
 
         elif option == 'exit':
             session.log.adjourn('\nSession concluded normally \n')

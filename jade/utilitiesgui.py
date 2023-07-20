@@ -32,6 +32,12 @@ from tqdm import tqdm
 from jade.inputfile import D1S_Input
 
 
+import matplotlib.pyplot as plt
+import numpy as np
+
+from functools import reduce
+from acepyne import *
+
 ###############################################################################
 # ------------------------ UTILITIES ------------------------------------------
 ###############################################################################
@@ -514,3 +520,331 @@ def _rmv_runtpe_file(folder):
         ans = False
 
     return ans
+
+def print_XS_EXFOR(session):
+    # MT_to_print: list, isotope_zai: str, exp_?data: Bool if you wantexp data
+    # libs_to_print: list
+    ENDF_X4_dict = {1: "N,TOT",
+                    2: "N,EL",
+                    3: "N,NON",
+                    4: "N,INL",
+                    5: "N,X",
+                    10: "N,TOT",
+                    11: "N,2N+D",
+                    16: "N,2N",
+                    17: "N,3N",
+                    18: "N,F",
+                    19: "N,F'",
+                    20: "N,N+F",
+                    21: "N,2N+F",
+                    22: "N,N+A",
+                    23: "N,N+3A",
+                    24: "N,2N+A",
+                    25: "N,3N+A",
+                    27: "N,ABS",
+                    28: "N,N+P",
+                    29: "N,N+2A",
+                    32: "N,N+D",
+                    33: "N,N+T",
+                    34: "N,N+HE3",
+                    37: "N,4N",
+                    38: "N,3N+F",
+                    41: "N,2N+P",
+                    42: "N,3N+P",
+                    44: "N,N+2P",
+                    45: "N,N+P+A",
+                    51: "N,N'",
+                    89: "N,N'",
+                    90: "N,N'",
+                    91: "N,N'",
+                    101: "N,DIS",
+                    102: "N,G",
+                    103: "N,P",
+                    104: "N,D",
+                    105: "N,T",
+                    106: "N,HE3",
+                    107: "N,A",
+                    108: "N,2A",
+                    111: "N,2P",
+                    112: "N,P+A",
+                    113: "N,T+2A",
+                    115: "N,P+D",
+                    116: "N,P+T",
+                    117: "N,D+A",
+                    151: "N,RES",
+                    201: "N,XN",
+                    202: "N,XG",
+                    203: "N,XP",
+                    204: "N,XD",
+                    205: "N,XT",
+                    206: "N,XHE3",
+                    207: "N,XA",
+                    208: "N,XPi_pos",
+                    209: "N,XPi_0",
+                    210: "N,XPi_neg",
+                    444: "damage-energy production",
+                    452: "N,nu_tot",
+                    454: "N,ind_FY",
+                    455: "N,nu_d",
+                    456: "N,nu_p",
+                    458: "N,rel_fis",
+                    459: "FY_cum",
+                    460: "N,g_bdf",
+                    600: "N,P",
+                    601: "N,P'",
+                    649: "N,P'",
+                    650: "N,D",
+                    651: "N,D'",
+                    699: "N,D'",
+                    700: "N,T",
+                    701: "N,T'",
+                    749: "N,T'",
+                    750: "N,HE3'",
+                    751: "N,HE3'",
+                    799: "N,HE3'",
+                    800: "N,A",
+                    801: "N,A'",
+                    849: "N,A'",
+                    875: "N,2N",
+                    876: "N,2N",
+                    889: "N,2N",
+                    890: "N,2N"}
+    MT_to_print = []
+    libs_to_print = []
+
+    # should introduce a check for zaids
+    flag = True
+
+    while flag is True:
+        isotope_zai = input(' Enter nuclide ZAI: ')
+        isot_list = list(session.lib_manager.XS.awr.keys())
+        if type(isotope_zai) is not str or isotope_zai not in isot_list:
+            print(' Enter a valid ZAI ID')
+            continue
+        if int(isotope_zai[-3:]) > 260:
+            print(' Cannot print metastable nuclides')
+            continue
+        else:
+            break
+
+    while flag is True:
+        mt_num = input(' Enter reaction MT (Enter "continue" to go on): ')
+        if mt_num == "continue":
+            break
+        try:
+            mt_num = int(mt_num)
+        except ValueError:
+            print(' Enter a number!')
+        if mt_num not in list(ENDF_X4_dict.keys()):
+            print(' Enter a valid MT ID')
+            continue
+        else:
+            MT_to_print.append(mt_num)
+
+    while flag is True:
+        msg = ' Enter library suffix to compare (Enter "stop" to go on): '
+        lib_compare = input(msg)
+        if lib_compare == 'stop':
+            break
+        if lib_compare not in session.conf.lib['Suffix'].values:
+            print(' Enter a library present in CONFIG')
+            continue
+        elif lib_compare != 'stop':
+            libs_to_print.append(lib_compare)
+
+    while flag is True:
+        exp_data_flag = input(' Do you want to plot experimental data?(y/n) ')
+        if exp_data_flag == 'y':
+            try:
+                from x4i3 import exfor_manager
+            except ModuleNotFoundError:
+                print('Experimental data package not installed')
+                exp_flag = False
+                break
+            exp_flag = True
+            break
+        elif exp_data_flag == 'n':
+            exp_flag = False
+            break
+        else:
+            print(' please select one between "y" or "n"')
+
+    markers = ['s', "8", "1", "o", "v", "^", "<", ">", 'x', '2', '*', 'd', 'h',
+               '4']
+    fill_markers = ['s', '8', ".", "o", "v", "^", "<", ">", '*', 'd', 'h']
+    colors = ['m', 'r', 'c', 'b', 'k', '#BBF90F', '#FFFF00', 'm', 'r', 'c',
+              'b', 'k', '#BBF90F', '#FFFF00']
+
+    marker_styles = {}
+
+    for i in range(len(markers)):
+        if markers[i] in fill_markers:
+            marker_styles[i] = dict(marker=markers[i], facecolors='none',
+                                    edgecolors=colors[i], zorder=3)
+        else:
+            marker_styles[i] = dict(marker=markers[i], color=colors[i],
+                                    zorder=3)
+
+    elem_dict = {}
+
+    for index, row in session.lib_manager.isotopes.iterrows():
+        elem = row['E']
+        z = row['Z']
+        if z not in elem_dict.keys():
+            elem_dict[z] = elem
+
+    XS_dict = {}
+    for index, row in session.conf.lib.iterrows():
+        suffix = row['Suffix']
+        name = row['Name']
+        XS_dict[suffix] = {'suffix': suffix, 'name': name}
+
+    # from env variable datapath
+    datapath = os.path.dirname(session.conf.xsdir_path)
+    XSDIR = session.lib_manager.XS
+
+    linestyles = ['-', '--', '-.', ':', (0, (3, 5, 1, 5, 1, 5))]
+
+    err_flag = 0
+    isotope_name = elem_dict[int(int(isotope_zai) / 1000)
+                             ] + '-' + str(int(isotope_zai) % 1000)
+
+    bookXS = {}
+
+    for key, value in XS_dict.items():
+        suffix = value["suffix"]
+        name = value["name"]
+        if suffix in libs_to_print:
+            bookXS[key] = {"suffix": suffix, "name": name}
+
+    for i in bookXS.keys():
+        bookXS[i]['ZAID'] = isotope_zai + '.' + bookXS[i]['suffix']
+
+    for j in bookXS.keys():
+        for i in XSDIR.tables:
+            if bookXS[j]['ZAID'] == i.name:
+                bookXS[j]['datapath'] = i.filename.replace("/", "\\")
+
+    for j in bookXS.keys():
+        if 'datapath' in bookXS[j]:
+            try:
+                bookXS[j]['dataXS'] = Library(datapath + "\\" + bookXS[j
+                                              ]['datapath'])
+            except FileNotFoundError:
+                print('File not Found Error: ACEfile of nuclide ' + 
+                      isotope_name + ' not found in library ' + j + '\n')
+                err_flag = 1
+                break
+            try:
+                bookXS[j]['dataXS'].read()
+            except:
+                print('Error in reading ACEfile of nuclide ' + isotope_zai +'\n')
+                err_flag = 1
+                break
+            if j != '00c':
+                bookXS[j]['dataT'] = bookXS[j]['dataXS'
+                                               ].tables[bookXS[j]['ZAID']]
+            else:
+                ace_zaid = bookXS[j]['ZAID'].split('.')[0] + '.800nc'
+                bookXS[j]['dataT'] = bookXS[j]['dataXS'].tables[ace_zaid]
+
+    if err_flag == 1:
+        # If the reading od
+        return
+
+    for i in MT_to_print:
+        if i != 1:
+            for k, j in enumerate(bookXS.keys()):
+                if 'datapath' in bookXS[j]:
+                    try:
+                        MT = 'MT'+str(i)
+                        bookXS[j][MT] = bookXS[j]['dataT'].reactions[i]
+                    except KeyError:
+                        print("Channel MT" + str(i) + ' ' + 'not present in '+ bookXS[j]['name'])
+                        continue
+
+    for i in MT_to_print:
+        MT = 'MT' + str(i)
+        legend_plot = []
+        data_list = []
+        plt.figure(figsize=(18, 11))
+        if i != 444 and exp_flag is True:
+            db = exfor_manager.X4DBManagerDefault()
+            iso_reac_exfor_data = db.retrieve(target=isotope_name,
+                                              reaction=ENDF_X4_dict[i],
+                                              quantity='SIG')
+            for entry_key, entry in iso_reac_exfor_data.items():
+                datasets = entry.getSimplifiedDataSets()
+                for subentry_key, subentry in datasets.items():
+                    if subentry.simplified is True and isinstance(subentry.reaction[0].quantity, list) and len(subentry.reaction[0].quantity) == 1 and subentry.reaction[0].quantity[0] == 'SIG': # and len(subentry.reaction[0]) == 2 and subentry.reaction[0] == 'SIG':
+                        x_subentry = []
+                        y_subentry = []
+                        en_idx = datasets[subentry_key].labels.index('Energy')
+                        data_idx = datasets[subentry_key].labels.index('Data')
+                        for rows in subentry.data:
+                            x_subentry.append(rows[en_idx])
+                            y_subentry.append(rows[data_idx])
+                        data_list.append((x_subentry, y_subentry,
+                                          len(x_subentry),
+                                          subentry.author[0] + ', ' + subentry.year))
+
+            sorted_data_list = sorted(data_list, key=lambda x: x[2],
+                                      reverse=True)
+
+        for k, j in enumerate(bookXS.keys()):
+            if k > 4:
+                # should not occur
+                # by default more than 4 libraries cannot be required
+                break
+            if MT == 'MT1' and bookXS[j]['suffix'] in libs_to_print and 'datapath' in bookXS[j]:
+                X = bookXS[j]['dataT'].energy
+                y_set = bookXS[j]['dataT'].sigma_t
+                if len(X) == len(y_set):
+                    legend_plot.append(bookXS[j]['name'])
+                    plt.plot(X, y_set, linestyle=linestyles[k],
+                             linewidth=4, zorder=2)
+                else:
+                    print(isotope_zai + 'LENERR\n')
+                    continue
+
+            elif MT in bookXS[j] and bookXS[j]['suffix'] in libs_to_print and 'datapath' in bookXS[j]:
+                r = bookXS[j]['dataT'].reactions[i]
+                X = bookXS[j]['dataT'].energy[r.IE:]
+                y_set = r.sigma
+                if len(X) == len(y_set):
+                    legend_plot.append(bookXS[j]['name'])
+                    plt.plot(X, y_set, linestyle=linestyles[k], linewidth=4,
+                             zorder=2)
+                else:
+                    print(isotope_zai + 'LENERR\n')
+                    continue
+
+        if len(data_list) > 0:
+            for idx, elem in enumerate(sorted_data_list):
+                if idx > (len(fill_markers) - 1):
+                    break
+                else:
+                    legend_plot.append(elem[3])
+                    plt.scatter(sorted_data_list[idx][0],
+                                sorted_data_list[idx][1],
+                                s=135, **marker_styles[idx], linewidth=2)
+
+        if not legend_plot:
+            plt.close()
+            print('No data to print for ' + MT + '\n')
+            continue
+
+        else:
+            plt.grid(visible=True)
+            plt.xscale('log')
+            plt.yscale('log')
+            plt.legend(legend_plot, loc="lower left", fontsize=10,
+                       markerscale=0.5)
+            plt.xlabel("Energy (MeV)", fontsize=12)
+            plt.ylabel("$\sigma$ (barn)", fontsize=12)
+            plt.xticks(fontsize=12)
+            plt.yticks(fontsize=12)
+            plt.title(isotope_name + ' ' + MT + ' (' + ENDF_X4_dict[i] + ')',
+                      fontsize=12)
+            plt.show(block=False)
+            print(' Cross Section printed')

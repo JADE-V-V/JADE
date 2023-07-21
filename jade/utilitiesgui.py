@@ -36,7 +36,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from functools import reduce
-from acepyne import *
+from jade.acepyne import *
 
 ###############################################################################
 # ------------------------ UTILITIES ------------------------------------------

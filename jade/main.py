@@ -251,6 +251,6 @@ def main():
     session = Session()
     gui.mainloop(session)
 
+
 if __name__ == "__main__":
     main()
-

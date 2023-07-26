@@ -521,6 +521,7 @@ def _rmv_runtpe_file(folder):
 
     return ans
 
+
 def print_XS_EXFOR(session):
     # MT_to_print: list, isotope_zai: str, exp_?data: Bool if you wantexp data
     # libs_to_print: list
@@ -617,7 +618,7 @@ def print_XS_EXFOR(session):
 
     while flag is True:
         isotope_zai = input(' Enter nuclide ZAI: ')
-        isot_list = list(session.lib_manager.XS.awr.keys())
+        isot_list = list(list(session.lib_manager.data['mcnp'].values())[0].awr.keys())
         if type(isotope_zai) is not str or isotope_zai not in isot_list:
             print(' Enter a valid ZAI ID')
             continue
@@ -646,7 +647,7 @@ def print_XS_EXFOR(session):
         lib_compare = input(msg)
         if lib_compare == 'stop':
             break
-        if lib_compare not in session.conf.lib['Suffix'].values:
+        if lib_compare not in session.conf.lib.index.tolist():
             print(' Enter a library present in CONFIG')
             continue
         elif lib_compare != 'stop':
@@ -695,13 +696,13 @@ def print_XS_EXFOR(session):
 
     XS_dict = {}
     for index, row in session.conf.lib.iterrows():
-        suffix = row['Suffix']
-        name = row['Name']
+        suffix = index
+        name = row['name']
         XS_dict[suffix] = {'suffix': suffix, 'name': name}
 
-    # from env variable datapath
-    datapath = os.path.dirname(session.conf.xsdir_path)
-    XSDIR = session.lib_manager.XS
+
+    datapath = list(session.lib_manager.data['mcnp'].values())[0].directory
+    XSDIR = list(session.lib_manager.data['mcnp'].values())[0]
 
     linestyles = ['-', '--', '-.', ':', (0, (3, 5, 1, 5, 1, 5))]
 

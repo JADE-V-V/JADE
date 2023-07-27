@@ -523,8 +523,7 @@ def _rmv_runtpe_file(folder):
 
 
 def print_XS_EXFOR(session):
-    # MT_to_print: list, isotope_zai: str, exp_?data: Bool if you wantexp data
-    # libs_to_print: list
+    # dict of ENDF reactions MT number
     ENDF_X4_dict = {1: "N,TOT",
                     2: "N,EL",
                     3: "N,NON",
@@ -613,12 +612,14 @@ def print_XS_EXFOR(session):
     MT_to_print = []
     libs_to_print = []
 
-    # should introduce a check for zaids
+    # Used for checks
     flag = True
 
+    # choose ZAI to print
     while flag is True:
         isotope_zai = input(' Enter nuclide ZAI: ')
-        isot_list = list(list(session.lib_manager.data['mcnp'].values())[0].awr.keys())
+        awr_key = list(session.lib_manager.data['mcnp'].values())[0].awr.keys()
+        isot_list = list(awr_key)
         if type(isotope_zai) is not str or isotope_zai not in isot_list:
             print(' Enter a valid ZAI ID')
             continue
@@ -628,10 +629,16 @@ def print_XS_EXFOR(session):
         else:
             break
 
+    # choose reactions MT to print
     while flag is True:
-        mt_num = input(' Enter reaction MT (Enter "continue" to go on): ')
+        mt_num = input(' Enter reaction MT (Enter "continue" to go on, \
+                       "print" to list reactions MT): ')
         if mt_num == "continue":
             break
+        if mt_num == "print":
+            print("{" + "\n".join("{!r}: {!r},".format(k, v)
+                  for k, v in ENDF_X4_dict.items()) + "}")
+            continue
         try:
             mt_num = int(mt_num)
         except ValueError:
@@ -642,6 +649,7 @@ def print_XS_EXFOR(session):
         else:
             MT_to_print.append(mt_num)
 
+    # Choose libraries to compare
     while flag is True:
         msg = ' Enter library suffix to compare (Enter "stop" to go on): '
         lib_compare = input(msg)
@@ -653,6 +661,7 @@ def print_XS_EXFOR(session):
         elif lib_compare != 'stop':
             libs_to_print.append(lib_compare)
 
+    # Check for experimental data package
     while flag is True:
         exp_data_flag = input(' Do you want to plot experimental data?(y/n) ')
         if exp_data_flag == 'y':
@@ -670,6 +679,7 @@ def print_XS_EXFOR(session):
         else:
             print(' please select one between "y" or "n"')
 
+    # some variables for plotting
     markers = ['s', "8", "1", "o", "v", "^", "<", ">", 'x', '2', '*', 'd', 'h',
                '4']
     fill_markers = ['s', '8', ".", "o", "v", "^", "<", ">", '*', 'd', 'h']
@@ -677,7 +687,7 @@ def print_XS_EXFOR(session):
               'b', 'k', '#BBF90F', '#FFFF00']
 
     marker_styles = {}
-
+    linestyles = ['-', '--', '-.', ':', (0, (3, 5, 1, 5, 1, 5))]
     for i in range(len(markers)):
         if markers[i] in fill_markers:
             marker_styles[i] = dict(marker=markers[i], facecolors='none',
@@ -688,30 +698,30 @@ def print_XS_EXFOR(session):
 
     elem_dict = {}
 
+    # Build elements dict for visualization purposes
     for index, row in session.lib_manager.isotopes.iterrows():
         elem = row['E']
         z = row['Z']
         if z not in elem_dict.keys():
             elem_dict[z] = elem
-
+    isotope_name = elem_dict[int(int(isotope_zai) / 1000)
+                             ] + '-' + str(int(isotope_zai) % 1000)
+    
+    # Build dict of nuclear data libraries
     XS_dict = {}
     for index, row in session.conf.lib.iterrows():
         suffix = index
         name = row['name']
         XS_dict[suffix] = {'suffix': suffix, 'name': name}
 
-
+    # Get xsdir object and libraries folderpath
     datapath = list(session.lib_manager.data['mcnp'].values())[0].directory
     XSDIR = list(session.lib_manager.data['mcnp'].values())[0]
 
-    linestyles = ['-', '--', '-.', ':', (0, (3, 5, 1, 5, 1, 5))]
-
     err_flag = 0
-    isotope_name = elem_dict[int(int(isotope_zai) / 1000)
-                             ] + '-' + str(int(isotope_zai) % 1000)
-
     bookXS = {}
 
+    # Populate main dict
     for key, value in XS_dict.items():
         suffix = value["suffix"]
         name = value["name"]
@@ -728,20 +738,24 @@ def print_XS_EXFOR(session):
 
     for j in bookXS.keys():
         if 'datapath' in bookXS[j]:
+            # Check for missing acefiles in JEFF4.0T1
             try:
-                bookXS[j]['dataXS'] = Library(datapath + "\\" + bookXS[j
-                                              ]['datapath'])
+                lib_path = datapath + "\\" + bookXS[j]['datapath']
+                bookXS[j]['dataXS'] = Library(lib_path)
             except FileNotFoundError:
-                print('File not Found Error: ACEfile of nuclide ' + 
-                      isotope_name + ' not found in library ' + j + '\n')
+                print('File not Found Error: ACEfile of nuclide \
+                      ' + isotope_name + ' not found in library ' + j + '\n')
                 err_flag = 1
                 break
+            # Check for some bad ENDF-VIII not working acefiles
             try:
                 bookXS[j]['dataXS'].read()
-            except:
-                print('Error in reading ACEfile of nuclide ' + isotope_zai +'\n')
+            except ValueError:
+                s = 'Error in reading ACEfile of nuclide ' + isotope_zai + '\n'
+                print(s)
                 err_flag = 1
                 break
+            # Check for ENDF-VIII acefiles
             if j != '00c':
                 bookXS[j]['dataT'] = bookXS[j]['dataXS'
                                                ].tables[bookXS[j]['ZAID']]
@@ -750,7 +764,6 @@ def print_XS_EXFOR(session):
                 bookXS[j]['dataT'] = bookXS[j]['dataXS'].tables[ace_zaid]
 
     if err_flag == 1:
-        # If the reading od
         return
 
     for i in MT_to_print:
@@ -760,10 +773,14 @@ def print_XS_EXFOR(session):
                     try:
                         MT = 'MT'+str(i)
                         bookXS[j][MT] = bookXS[j]['dataT'].reactions[i]
+                    # Don't print if MT is not present in library
                     except KeyError:
-                        print("Channel MT" + str(i) + ' ' + 'not present in '+ bookXS[j]['name'])
+                        s = "Channel MT" + str(i) + ' ' + \
+                            'not present in ' + bookXS[j]['name']
+                        print(s)
                         continue
 
+    # Get experimental data
     for i in MT_to_print:
         MT = 'MT' + str(i)
         legend_plot = []
@@ -787,11 +804,12 @@ def print_XS_EXFOR(session):
                             y_subentry.append(rows[data_idx])
                         data_list.append((x_subentry, y_subentry,
                                           len(x_subentry),
-                                          subentry.author[0] + ', ' + subentry.year))
-
+                                          subentry.author[0] + ', \
+                                            ' + subentry.year))
             sorted_data_list = sorted(data_list, key=lambda x: x[2],
                                       reverse=True)
 
+        # plot acefiles reactions
         for k, j in enumerate(bookXS.keys()):
             if k > 4:
                 # should not occur
@@ -805,6 +823,7 @@ def print_XS_EXFOR(session):
                     plt.plot(X, y_set, linestyle=linestyles[k],
                              linewidth=4, zorder=2)
                 else:
+                    # x and y axis nor od same length
                     print(isotope_zai + 'LENERR\n')
                     continue
 
@@ -820,6 +839,7 @@ def print_XS_EXFOR(session):
                     print(isotope_zai + 'LENERR\n')
                     continue
 
+        # plot exfor data
         if len(data_list) > 0:
             for idx, elem in enumerate(sorted_data_list):
                 if idx > (len(fill_markers) - 1):
@@ -830,11 +850,13 @@ def print_XS_EXFOR(session):
                                 sorted_data_list[idx][1],
                                 s=135, **marker_styles[idx], linewidth=2)
 
+        # Skip if no data found for the reaction
         if not legend_plot:
             plt.close()
             print('No data to print for ' + MT + '\n')
             continue
 
+        # Plot visualization
         else:
             plt.grid(visible=True)
             plt.xscale('log')

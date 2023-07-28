@@ -42,7 +42,16 @@ ISOTOPES_FILE = os.path.join(root, 'jade', 'resources', 'Isotopes.txt')
 class SessionMockup:
 
     def __init__(self):
-        self.lib_manager = LibManager(XSDIR_FILE,
+        df_rows = [
+                   ['99c', 'sda', '', XSDIR_FILE],
+                   ['98c', 'acsdc', '', XSDIR_FILE],
+                   ['21c', 'adsadsa', '', XSDIR_FILE],
+                   ['31c', 'adsadas', '', XSDIR_FILE],
+                   ['00c', 'sdas', 'yes', XSDIR_FILE],
+                   ['71c', 'sdasxcx', '', XSDIR_FILE]]
+        df_lib = pd.DataFrame(df_rows)
+        df_lib.columns = ['Suffix', 'Name', 'Default', 'MCNP']
+        self.lib_manager = LibManager(df_lib,
                                       activationfile=ACTIVATION_FILE,
                                       isotopes_file=ISOTOPES_FILE)
 
@@ -104,7 +113,7 @@ class TestUtilities:
         percentages = [0.5, 0.5]
         newlib = '31c'
         fraction_type = 'atom'
-        outpath = outpath
+        outpath = None
         uty.generate_material(session, sourcefile, materials, percentages,
                               newlib, fractiontype=fraction_type,
                               outpath=outpath)
@@ -198,6 +207,13 @@ class TestUtilities:
             # Whatever happens, clean the tmp folder
             shutil.rmtree(folders_copy)
 
+    def test_print_XS_EXFOR(self, session):
+        """
+        the correctness of the translations is already tested in matreader_test
+        """
+
+        uty.print_XS_EXFOR(session)
+        assert True
 
 def excel_equal(fileA, fileB, n_sheets):
     for i in range(n_sheets):

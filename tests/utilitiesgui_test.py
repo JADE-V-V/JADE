@@ -54,6 +54,7 @@ class SessionMockup:
         self.lib_manager = LibManager(df_lib,
                                       activationfile=ACTIVATION_FILE,
                                       isotopes_file=ISOTOPES_FILE)
+        self.path_uti = 'D:\\JADE-linux\\Utilities'
 
 
 class TestUtilities:

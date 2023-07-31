@@ -116,13 +116,13 @@ class LibManager:
             for library, row in lib_df.iterrows():
                 path = row[code]
 
-                if path != '' or path is not None:
+                if len(path) != 0 :
 
                     if code == 'mcnp':
                         self.data[code][library] = Xsdir(path)
 
                     elif code == 'openmc':
-                        pass
+                        self.data[code][library] = OpenMCXsdir(path, self, library)
 
                     elif code == 'serpent':
                         self.data[code][library] = SerpentXsdir(path)

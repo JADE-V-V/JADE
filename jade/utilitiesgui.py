@@ -824,7 +824,7 @@ def print_XS_EXFOR(session):
                              linewidth=4, zorder=2)
                 else:
                     # x and y axis nor od same length
-                    print(isotope_zai + 'LENERR\n')
+                    print(isotope_zai + ': x and y axis nor od same length\n')
                     continue
 
             elif MT in bookXS[j] and bookXS[j]['suffix'] in libs_to_print and 'datapath' in bookXS[j]:
@@ -836,7 +836,7 @@ def print_XS_EXFOR(session):
                     plt.plot(X, y_set, linestyle=linestyles[k], linewidth=4,
                              zorder=2)
                 else:
-                    print(isotope_zai + 'LENERR\n')
+                    print(isotope_zai + ': x and y axis are not of the same length\n')
                     continue
 
         # plot exfor data

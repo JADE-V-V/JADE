@@ -24,6 +24,7 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
 import xlsxwriter
+from xlsxwriter.utility import xl_rowcol_to_cell
 import jade.excel_support as exsupp
 import pandas as pd
 import os
@@ -177,9 +178,9 @@ class SphereOutput(BenchmarkOutput):
     def _generate_plots(self, libraries, allzaids, outputs, globalname,
                         outpath):
 
-        for tally, title, quantity, unit in [(2, 'Leakage Neutron Flux (175 groups)',
+        for tally, title, quantity, unit in [(4, 'Leakage Neutron Flux (175 groups)',
                                              'Neutron Flux', r'$\#/cm^2$'),
-                                             (32, 'Leakage Gamma Flux (24 groups)',
+                                             (14, 'Leakage Gamma Flux (24 groups)',
                                              'Gamma Flux', r'$\#/cm^2$')]:
 
             print(' Plotting tally n.'+str(tally))
@@ -215,7 +216,6 @@ class SphereOutput(BenchmarkOutput):
             libraries.append(libname)
             outputs.append(outputslib)
             zaids.append(list(outputslib.keys()))
-
         # Extend list to all zaids
         allzaids = zaids[0]
         for zaidlist in zaids[1:]:
@@ -801,7 +801,7 @@ class SphereOutput(BenchmarkOutput):
                     if iteration == 1:
                         outputs[reflib] = outputs_lib
 
-                    if test_path == self.test_path[tarlib]:
+                    if test_path == os.path.join(self.test_path[tarlib],'mcnp'):
                         outputs[tarlib] = outputs_lib
 
                     # Generate DataFrames
@@ -969,10 +969,10 @@ class SphereOutput(BenchmarkOutput):
         comp_sheet.set_column(1, comp_width+5, 18)
 
         # Summary background formatting workaround using conditional formatting
-        comp_sheet.conditional_format(12+comp_len,3,comp_len+summ_len+12,summ_width+2, {'type': 'cell',
+        comp_sheet.conditional_format(12+comp_len,3,comp_len+summ_len+12,summ_width+3, {'type': 'cell',
                                      'criteria': '>=',
                                      'value': 0, 'format': plain_format})
-        comp_sheet.conditional_format(12+comp_len,3,comp_len+summ_len+22,summ_width+2, {'type': 'cell',
+        comp_sheet.conditional_format(12+comp_len,3,comp_len+summ_len+22,summ_width+3, {'type': 'cell',
                                      'criteria': '<',
                                      'value': 0, 'format': plain_format})  
         
@@ -1048,9 +1048,11 @@ class SphereOutput(BenchmarkOutput):
                                         'format':   green_cell_format})       
 
         # Summary totals
-
-        for row in range(12+comp_len,comp_len+summ_len+12):
-            comp_sheet.write_formula(row,summ_width+3, "=SUM")
+        for row in range(13+comp_len,comp_len+summ_len+13):
+            start = xl_rowcol_to_cell(row, 3)
+            stop = xl_rowcol_to_cell(row, summ_width+2)
+            comp_sheet.write_formula(row,summ_width+3, "=SUM({start}:{stop})/{len}"
+            .format(start = start, stop = stop, len = summ_width), )   
         '''absdiff'''
         # Merged Cells
         absdiff_sheet.merge_range('B1:C2','LIBRARY', subtitle_merge_format)

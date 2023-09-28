@@ -2,6 +2,8 @@
 Insert Custom Benchmarks
 ########################
 
+The easiest way to contribute to JADE is to widen its benchmarks suite.
+
 This section of the guide describes how to add custom benchmarks to the JADE suite. The procedures
 necessary to implement new computational and experimental benchmarks are different and are
 described respectively in :ref:`customcompbench` and :ref:`customexpbench`.

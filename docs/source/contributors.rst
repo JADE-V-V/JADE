@@ -1,3 +1,5 @@
+.. _contributor_list:
+
 ############
 Contributors
 ############

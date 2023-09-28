@@ -43,9 +43,9 @@ GitHub repository <https://github.com/JADE-V-V/JADE/issues>`_.
    :maxdepth: 2
    :caption: JADE Developer Guide:
 
-   dev/codemodify
+   dev/workflow
    dev/insertbenchmarks
-   dev/docmodify
+   dev/testing
 
 .. toctree::
    :maxdepth: 2
@@ -60,7 +60,6 @@ GitHub repository <https://github.com/JADE-V-V/JADE/issues>`_.
    :maxdepth: 2
    :caption: More on JADE:
 
-   testing/testing
    futuredev
    LICENSE
    contributors

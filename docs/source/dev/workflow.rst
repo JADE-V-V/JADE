@@ -24,7 +24,7 @@ There are different ways to contribute to JADE, and not all of them require you 
   and benchmarks, helping steering JADE priorities
 * A *Contributor* is any individual creating or commenting on an issue or pull request.
 * An *Approver* is a subset of contributors who are authorized to review and merge pull requests.
-* The *Project Leader* is currently Davide Laghi (davide.laghi01@gmail.com) who has the authority
+* The *Technical Leader* is currently Davide Laghi (davide.laghi01@gmail.com) who has the authority
   to tag new releases.
 
 A list of all the people contributing to JADE can be found at :ref:`contributor_list`.

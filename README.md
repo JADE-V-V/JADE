@@ -36,19 +36,20 @@ source jade/bin/activate
 ```
 Note that once the venv is created, only the source command is required in future use.
  
-Next clone the repository, and rename it to Code, and cd into it:
+Next clone the repository, and rename it to Code, and cd into it. SSH recommended for developers.
 
 ```
 git clone https://github.com/sbradnam/JADE.git
 mv JADE Code
 cd Code
+git checkout linux
 ```
 
-Now upgrade pip, and install the pip requirements:
+Now upgrade pip, and install the pip requirements. Use the '-e' option if performing development. 
 
 ```
 pip install --upgrade pip
-pip install .
+pip install . 
 ```
 
 JADE has now been installed as a command line tool. JADE should now be initialised in the top level JADE folder. To do this, cd up one level and run jade:

@@ -56,7 +56,7 @@ class InputFile:
 
         """
 
-        # All cards from parser epurated by the materials
+        # All cards from parser separated by the materials
         self.cards = cards
 
         # Materials list (see matreader.py)
@@ -758,7 +758,7 @@ class SerpentInputFile:
 
         """
 
-        # All cards from parser epurated by the materials
+        # All cards from parser separated by the materials
         self.lines = lines
         
         # Materials list (see matreader.py)
@@ -853,7 +853,7 @@ class SerpentInputFile:
 
 class OpenMCInputFiles:
     def __init__(self, geometry, settings, tallies, materials, matlist, name=None):
-        """_summary_
+        """Object representing an OpenMC input file.
 
         Parameters
         ----------
@@ -866,11 +866,12 @@ class OpenMCInputFiles:
         materials : List[str], optional 
             OpenMC materials
         matlist : List[str], optional 
-            OpenMC material list
-        name : _type_, optional
-            _description_, by default None
+            material list in the input
+        name : str, optional
+            name associated with the file, by default None
         """
-        # All cards from parser epurated by the materials
+        
+        # Geometry, settings and tallies for OpenMC
         self.geometry = geometry
         self.settings = settings
         self.tallies = tallies
@@ -884,7 +885,19 @@ class OpenMCInputFiles:
         self.name = name
 
     # This should be updated to use xml elements rather than strings
-    def _get_lines(self, path):
+    def _get_lines(self, path: str):
+        """Read in lines from file.
+
+        Parameters
+        ----------
+        path : str
+            Path to file
+
+        Returns
+        -------
+        Optional[List[str]]
+            List of lines from the file or none if file not found. 
+        """
         if os.path.exists(path):
             with open(path, 'r') as f:
                 lines = f.readlines()
@@ -893,23 +906,20 @@ class OpenMCInputFiles:
         return lines        
     
     @classmethod
-    def from_path(cls, path):
-        """
-        This method use the numjuggler parser to help identify the mcards in
-        the input which will usually undergo special treatments in the input
-        creation
+    def from_path(cls, path: str) -> 'OpenMCInputFiles':
+        """Reads contents of geometry, settings, tallies, materials from XML files.
 
         Parameters
         ----------
-        cls : TYPE
-            DESCRIPTION.
-        path : path like object
-            path to the OpenMC input files directory.
+        path : str
+            path to the files
 
         Returns
         -------
-        None.
+        OpenMCInputFiles
+            Intance of class initialised with data from XML files.
         """
+
         geometry_file = os.path.join(path, 'geometry.xml')
         geometry = cls._get_lines(cls, geometry_file)
 
@@ -928,7 +938,14 @@ class OpenMCInputFiles:
 
         return cls(geometry, settings, tallies, materials, matlist, name=name)
 
-    def add_stopCard(self, nps):
+    def add_stopCard(self, nps: int) -> None:
+        """Add number of particles to simulate 
+
+        Parameters
+        ----------
+        nps : int
+            number of particles to simulate
+        """
         for i, line in enumerate(self.settings):
             if '<settings>' in line:
                 batches_line = '  <batches>100</batches>\n'
@@ -938,14 +955,18 @@ class OpenMCInputFiles:
                 self.settings.insert(i+1, particles_line)
                 break
 
-    def _to_xml(self, libmanager):
-        """
-        Get the inputs in openMC formatted text
+    def _to_xml(self, libmanager) -> tuple:
+        """Convert Class data to XML format
+
+        Parameters
+        ----------
+        libmanager : libmanager
+            Library manager
 
         Returns
         -------
-        str
-            OpenMC formatted text for the input files
+        tuple
+            A tuple containing XML representations of geometry, settings, tallies, and materials.
         """
 
         # Add materials
@@ -967,7 +988,7 @@ class OpenMCInputFiles:
 
         return geometry, settings, tallies, materials
 
-    def write(self, path, libmanager):
+    def write(self, path, libmanager) -> None:
         """
         Write the input to a file
 

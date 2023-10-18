@@ -23,20 +23,19 @@
 # You should have received a copy of the GNU General Public License
 # along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 
-# -------------------------------------
-#         == IMPORTS ==
-# -------------------------------------
-import re
-import pandas as pd
-from numjuggler import parser as par
-from collections.abc import Sequence
-from decimal import Decimal
 import copy
-import sys
 import os
-from contextlib import contextmanager
+import re
+import sys
 import warnings
 import xml.etree.ElementTree as ET
+from collections.abc import Sequence
+from contextlib import contextmanager
+from decimal import Decimal
+
+import pandas as pd
+
+from numjuggler import parser as par
 
 # -------------------------------------
 #         == COMMON PATTERNS ==
@@ -46,9 +45,21 @@ PAT_MAT = re.compile(r'[\s\t]*[mM]\d+')
 PAT_MX = re.compile(r'[\s\t]*mx\d+', re.IGNORECASE)
 
 
-def indent(elem, level=0):
+def indent(elem, level=0) -> None:
+    """Indent an XML element and its children to make the XML structure more human-readable.
+
+    Parameters
+    ----------
+    elem : xml.etree.ElementTree.Element
+        XML element to be indented
+    level : int, optional
+        Current level of indentation, by default 0
+    """
+    
+    # Create the indentation string based on the specified level
     i = "\n" + level * "  "
     if len(elem):
+        # If the element has child elements
         if not elem.text or not elem.text.strip():
             elem.text = i + "  "
         if not elem.tail or not elem.tail.strip():
@@ -144,7 +155,7 @@ class Zaid:
 
     def to_text(self):
         """
-         Get the zaid string ready for MCNP material card
+         Get the zaid string ready for a material card
 
         Returns
         -------
@@ -157,7 +168,7 @@ class Zaid:
             zaidname = self.element+self.isotope
         else:
             zaidname = self.element+self.isotope+'.'+self.library
-        # Add INFO
+        # formats abundance floating point number as a string 
         try:
             abundance = '%s' % float('%.5g' % float(self.ab))
         except ValueError:
@@ -169,8 +180,16 @@ class Zaid:
 
         return '{0:>15} {1:>18} {2:<12} {3:<10}'.format(*args)
 
-    def to_xml(self, libmanager, submaterial):
-        # OpenMC output writer        
+    def to_xml(self, libmanager, submaterial) -> None:
+        """Generate XML content for a nuclide within a material.
+
+        Parameters
+        ----------
+        libmanager : 
+            libmanager
+        submaterial :
+            The XML element for the material where the nuclide content will be added.
+        """
         nuclide = self.get_fullname(libmanager).replace('-', '')
         if self.fraction < 0.0:
             ET.SubElement(submaterial, "nuclide", name=nuclide, wo=str(abs(self.fraction)))
@@ -456,8 +475,21 @@ class SubMaterial:
 
         return text.strip('\n')
 
-    def to_xml(self, libmanager, material_tree, id, density):
-        # OpenMC output writer
+    def to_xml(self, libmanager, material_tree, id: int, density: float) -> None:
+        """Generate XML content for a material and add it to a material tree.
+
+        Parameters
+        ----------
+        libmanager : 
+            libmanager handling the libraries operations.
+        material_tree : 
+            The XML tree where the material content will be added.
+        id : int
+            material id
+        density : float
+            material density
+        """
+
         matid = id
         matname = str(self.name)
         matdensity = str(abs(density))
@@ -659,20 +691,34 @@ class SubMaterial:
 
 
 # Support function for Submaterial
-def readLine(string):
+# Could be moved to static method
+def readLine(string: str):
+    """Peforms various operations on a string
+
+    Parameters
+    ----------
+    string : str
+        string to operate on
+
+    Returns
+    -------
+    tuple
+        Contains zaids and additional keys as lists
+    """
+    # Define regular expressions
     patSpacing = re.compile(r'[\s\t]+')
     patComment = re.compile(r'\$')
     patnumber = re.compile(r'\d+')
 
     pieces = patSpacing.split(string)
-    # kill first piece if it is void
+    # Remove first piece if it is empty
     if pieces[0] == '':
         del pieces[0]
-    # kill last piece if it is void
+    # Remove last piece if it is empty
     if pieces[-1] == '':
         del pieces[-1]
 
-    # kill comment section
+    # Remove comment section
     i = 0
     for i, piece in enumerate(pieces):
         if patComment.match(pieces[i]) is not None:
@@ -706,7 +752,7 @@ class Material:
     def __init__(self, zaids, elem, name, submaterials=None, mx_cards=[],
                  header=None, density=None):
         """
-        Object representing an MCNP material
+        Object representing a material
 
         Parameters
         ----------
@@ -756,14 +802,14 @@ class Material:
     @classmethod
     def from_text(cls, text):
         """
-        Create a material from MCNP formatted text
+        Create a material from transport code formatted text.
 
         Parameters
         ----------
         cls : TYPE
             DESCRIPTION.
         text : list[str]
-            MCNP formatted text.
+            Transport code formatted text.
 
         Returns
         -------
@@ -805,12 +851,12 @@ class Material:
 
     def to_text(self):
         """
-        Write the material to MCNP formatted text
+        Write the material to transport code formatted text.
 
         Returns
         -------
         str
-            MCNP formatte text representing the material.
+            Transport code formatted text representing the material.
 
         """
         if self.density is not None:

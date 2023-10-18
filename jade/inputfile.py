@@ -21,16 +21,18 @@
 # You should have received a copy of the GNU General Public License
 # along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 
-import re
 import json
-import textwrap
-import jade.matreader as mat
-from numjuggler import parser as par
 import os
+import re
 import sys
-from contextlib import contextmanager
+import textwrap
 import warnings
-from jade.parsersD1S import (ReactionFile, Reaction)
+from contextlib import contextmanager
+
+import jade.matreader as mat
+from jade.parsersD1S import Reaction, ReactionFile
+
+from numjuggler import parser as par
 
 
 class InputFile:
@@ -739,7 +741,7 @@ def check_transport_activation(lib):
 class SerpentInputFile:
     def __init__(self, lines, matlist, name=None):
         """
-        Object representing an Serpent input file
+        Object representing a Serpent input file
 
         Parameters
         ----------
@@ -768,25 +770,24 @@ class SerpentInputFile:
     @classmethod
     def from_text(cls, inputfile):
         """
-        This method use the numjuggler parser to help identify the mcards in
-        the input which will usually undergo special treatments in the input
-        creation
+        Reads input file into list. Removes trailing empty lines. 
 
         Parameters
         ----------
-        cls : TYPE
-            DESCRIPTION.
+        cls : 'SerpentInputFile'
+            The class itself. 
         inputfile : path like object
-            path to the MCNP input file.
+            path to the Serpent input file.
 
         Returns
         -------
-        None.
+        SerpentInputFile instance with data from the input file. 
 
         """
         with open(inputfile, 'r') as f:
             lines = f.readlines()
 
+        # Remove trailing empty lines
         idx = len(lines) - 1
         while True:
             if lines[idx].strip() == '':
@@ -800,10 +801,17 @@ class SerpentInputFile:
         return cls(lines, matlist,
                    name=os.path.basename(inputfile).split('.')[0])
 
-    def add_stopCard(self, nps):
+    def add_stopCard(self, nps: int) -> None:
+        """Add number of particles card
+
+        Parameters
+        ----------
+        nps : int
+            number of particles to simulate
+        """
         self.lines.append('\nset nps '+str(int(nps))+'\n')
 
-    def _to_text(self):
+    def _to_text(self) -> str:
         """
         Get the input in Serpent formatted text
 
@@ -824,7 +832,7 @@ class SerpentInputFile:
         return toprint
 
     
-    def write(self, out):
+    def write(self, out) -> None:
         """
         Write the input to a file
 
@@ -845,24 +853,23 @@ class SerpentInputFile:
 
 class OpenMCInputFiles:
     def __init__(self, geometry, settings, tallies, materials, matlist, name=None):
-        """
-        Object representing an Serpent input file
+        """_summary_
 
         Parameters
         ----------
-        cards : dic
-            contains the cells, surfaces, settings and title cards.
-        matlist : matreader.MatCardList
-            material list in the input.
-        name : str, optional
-            name associated with the file. The default is None.
-
-        Returns
-        -------
-        None.
-
+        geometry : List[str], optional 
+            OpenMC geometry
+        settings : List[str], optional 
+            OpenMC settings
+        tallies : List[str], optional 
+            OpenMC tallies
+        materials : List[str], optional 
+            OpenMC materials
+        matlist : List[str], optional 
+            OpenMC material list
+        name : _type_, optional
+            _description_, by default None
         """
-
         # All cards from parser epurated by the materials
         self.geometry = geometry
         self.settings = settings

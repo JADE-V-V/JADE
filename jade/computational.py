@@ -21,14 +21,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
-import jade.testrun as testrun
-import os
 import datetime
+import os
 import re
 import sys
 
+import jade.testrun as testrun
 
-def executeBenchmarksRoutines(session, lib, exp=False):
+
+def executeBenchmarksRoutines(session, lib: str, exp=False) -> None:
     """
     Check which benchmarks have to be generated and/or run and execute their
     routines
@@ -51,20 +52,29 @@ def executeBenchmarksRoutines(session, lib, exp=False):
     """
     # Get the settings for the tests
     if exp:
-        config = session.conf.exp_default.set_index('Description')
+        config = session.conf.exp_default.set_index("Description")
     else:
-        config = session.conf.comp_default.set_index('Description')
+        config = session.conf.comp_default.set_index("Description")
     # Get the log
     log = session.log
 
     for testname, row in config.iterrows():
         # Check for active test first
-        if bool(row['OnlyInput']) or bool(row['MCNP']) or bool(row['Serpent']) or bool(row['OpenMC']) or bool(row['d1S']):
-            print('        -- '+testname.upper()+' STARTED --\n')
-            print(' Generating input files:'+'    ' +
-                  str(datetime.datetime.now()))
-            log.adjourn(testname.upper()+' run started' + '    ' +
-                        str(datetime.datetime.now()))
+        if (
+            bool(row["OnlyInput"])
+            or bool(row["MCNP"])
+            or bool(row["Serpent"])
+            or bool(row["OpenMC"])
+            or bool(row["d1S"])
+        ):
+            print("        -- " + testname.upper() + " STARTED --\n")
+            print(" Generating input files:" + "    " + str(datetime.datetime.now()))
+            log.adjourn(
+                testname.upper()
+                + " run started"
+                + "    "
+                + str(datetime.datetime.now())
+            )
 
             # --- Input Generation ---
             # Collect infos
@@ -72,49 +82,60 @@ def executeBenchmarksRoutines(session, lib, exp=False):
 
             # Handle dic string as lib
             pat_libs = re.compile(r'"\d\d[a-zA-Z]"')
-            if lib[0] == '{':
+            if lib[0] == "{":
                 libs = pat_libs.findall(lib)
                 libpath = libs[1][1:-1]
-            elif '-' in lib:
+            elif "-" in lib:
                 libpath = lib[:3]
             else:
                 libpath = lib
 
-            if testname in ['FNG Bulk Blanket and Shielding Experiment', 'FNG Tungsten']:
-                var = {'00c': lib, '34y': '34y'}
+            if testname in [
+                "FNG Bulk Blanket and Shielding Experiment",
+                "FNG Tungsten",
+            ]:
+                var = {"00c": lib, "34y": "34y"}
             else:
                 var = lib
 
             # get path to libdir
             outpath = os.path.join(session.path_run, libpath)
             safemkdir(outpath)
-            fname = row['Folder Name']
+            fname = row["Folder Name"]
             inppath = os.path.join(session.path_inputs, fname)
-            VRTpath = os.path.join(session.path_inputs, 'ITER_Cyl_SDDR', 'd1S')
-            confpath = os.path.join(session.path_cnf, fname.split('.')[0])
+            VRTpath = os.path.join(session.path_inputs, "ITER_Cyl_SDDR", "d1S")
+            confpath = os.path.join(session.path_cnf, fname.split(".")[0])
 
             # Generate test
             args = (inppath, var, row, log, VRTpath, confpath)
             # Handle special cases
-            if testname == 'Sphere Leakage Test':
+            if testname == "Sphere Leakage Test":
                 test = testrun.SphereTest(*args)
 
-            elif testname == 'Sphere SDDR':
+            elif testname == "Sphere SDDR":
                 test = testrun.SphereTestSDDR(*args)
 
-            elif fname in ['Oktavian', 'Tiara-BC', 'Tiara-BS', 'Tiara-FC', 'FNS', 'FNG-BKT', 'FNG-W']:
+            elif fname in [
+                "Oktavian",
+                "Tiara-BC",
+                "Tiara-BS",
+                "Tiara-FC",
+                "FNS",
+                "FNG-BKT",
+                "FNG-W",
+            ]:
                 test = testrun.MultipleTest(*args)
 
-            elif fname == 'FNG':
+            elif fname == "FNG":
                 test = testrun.MultipleTest(*args, TestOb=testrun.FNGTest)
 
             else:
                 test = testrun.Test(*args)
 
             # write the input(s)
-            if testname in ['Sphere Leakage Test', 'Sphere SDDR']:
+            if testname in ["Sphere Leakage Test", "Sphere SDDR"]:
                 try:
-                    limit = int(row['Custom Input'])
+                    limit = int(row["Custom Input"])
                 except ValueError:
                     # go back do the default which is None
                     limit = None
@@ -122,21 +143,28 @@ def executeBenchmarksRoutines(session, lib, exp=False):
             else:
                 test.generate_test(outpath, libmanager)
             # Adjourn log
-            log.adjourn(testname.upper()+' test input generated with success' +
-                        '    ' + str(datetime.datetime.now()))
+            log.adjourn(
+                testname.upper()
+                + " test input generated with success"
+                + "    "
+                + str(datetime.datetime.now())
+            )
 
-            if bool(row['OnlyInput']):
-                print('\n        -- '+testname.upper()+' COMPLETED --\n')
+            if bool(row["OnlyInput"]):
+                print("\n        -- " + testname.upper() + " COMPLETED --\n")
             else:
                 # --- Input Run ---
-                print(' MCNP run running:         ' +
-                      str(datetime.datetime.now()))
-                #test.run(cpu=session.conf.cpu)
+                print(" MCNP run running:         " + str(datetime.datetime.now()))
+                # test.run(cpu=session.conf.cpu)
                 test.run(session.conf, session.lib_manager)
-                print('\n        -- '+testname.upper()+' COMPLETED --\n')
+                print("\n        -- " + testname.upper() + " COMPLETED --\n")
                 # Adjourn log
-                log.adjourn(testname.upper()+' run completed with success'
-                            + '    '+str(datetime.datetime.now()))
+                log.adjourn(
+                    testname.upper()
+                    + " run completed with success"
+                    + "    "
+                    + str(datetime.datetime.now())
+                )
 
 
 def safemkdir(directory):

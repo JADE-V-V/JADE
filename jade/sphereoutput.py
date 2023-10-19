@@ -2149,7 +2149,7 @@ class SphereExcelOutputSheet:
         shutil.copy(template, outpath)
         #        self.app = xw.App(visible=False)
         #        self.wb = self.app.books.open(outpath)
-        self.wb=openpyxl.load_workbook(filename=outpath)
+        # self.wb=openpyxl.load_workbook(filename=outpath)
 
     def insert_df(self, startrow, startcolumn, df, ws, header=True):
         '''

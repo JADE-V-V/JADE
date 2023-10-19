@@ -57,7 +57,7 @@ class Configuration:
         Returns
         -------
         str
-            An abolsute file path.
+            An absolute file path.
         """
         if pd.isnull(file_path) is not True:
             if os.path.isabs(file_path) is not True:

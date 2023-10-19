@@ -220,7 +220,6 @@ class Status():
 
         return unfinished, motherdir
 
-    #@staticmethod
     def check_test_run(self, files, code):
         if code == 'mcnp' or code == 'd1s':
             flag_run_test = self._check_test_mcnp(files)
@@ -231,7 +230,6 @@ class Status():
 
         return flag_run_test
 
-    #@staticmethod
     def _check_test_mcnp(self, files):
         """
         Check if a test has been run
@@ -256,12 +254,10 @@ class Status():
 
         return flag_run_test
 
-    #@staticmethod
     def _check_test_serpent(self, files):
         # Add check for serpent output data
         return False
 
-    #@staticmethod
     def _check_test_openmc(self, files):
         # Add check for openmc output data
         return False

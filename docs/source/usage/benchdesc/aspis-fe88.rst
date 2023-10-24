@@ -207,10 +207,36 @@ Tally n. 4
   * S-32(n,p)P-32
   * Au-197(n,g)Au-198
 
+A FM multiplier card with the normalization factor has been used to obtain the results in
+units of reactions per second per atom at 30 kW NESTOR power.
 
 .. seealso:: **Related papers and contributions:**
 
-    * Oyama, Y., Yamaguchi, S., Maekawa, H., Experimental results of angular neutron flux spectra leaking
-      from slabs of fusion reactor candidate materials, I, JAERI-M 90-092, 124p. (1990).
-    * Sub Working Group of Fusion Reactor Physics Subcommittee (Ed.), “Collection of Experimental Data
-      for Fusion Neutronics Benchmark”, JAERI-M 94-014 (1994) 302p.
+    *   G.A. Wright, M. J. Grimstone,
+        Benchmark Testing of JEF-2.2 Data for Shielding Applications: Analysis
+        of the Winfrith Iron 88 Benchmark Experiment, Report No. AEA-RS-1231,
+        EFF-Doc-229 and JEF-Doc-421 (1993).
+    *   I. J. Curl,
+        CRISP - A Computer Code to Define Fission Plate Source Profiles, 
+        RPD/IJC/934.
+    *   M. J. Armishaw, J. Butler, M. D. Carter, I. J. Curl, A. K. McCracken,
+        A Transportable Neutron Spectrometer (TNS) for Radiological Applications,
+        AEEW-M2365 (1986).
+    *   G. A. Wright, A. Avery, M. J. Grimstone, H. F. Locke, S. Newbon,
+        Benchmarking of the JEFF2.2 Data Library for Shielding Applications,
+        Proceedings, 8th International Conference on Radiation Shielding, 
+        April 24-28, 1994, Arlington, Texas, U.S.A., vol.2, p.816.
+    *   M. PESCARINI and R. ORSI, Validation of the BUGJEFF311.BOLIB, BUGENDF70.BOLIB,
+        BUGLE-B7 and BUGLE-96 Cross Section Libraries on the Iron-88 Neutron Shielding
+        Benchmark Experiment, ADPFISS-LP1-106, ENEA-Bologna Technical Report (2018).
+    *   A. Milocco, Quality Assessment of SINBAD Evaluated Experiments ASPIS Iron
+        (NEA-1517/34), ASPIS Iron-88 (NEA-1517/35), ASPIS Graphite (NEA-1517/36),
+        ASPIS Water (NEA-1517/37), ASPIS N/G Water/Steel (NEA-1517/49), ASPIS PCA
+        Replica (NEA-1517/75), Dec. 2015.
+    *   A. Milocco, B. Zefran, I. Kodeli. Validation of nuclear data based on the ASPIS
+        experimeents from the SINBAD database. V: Proc. RPSD-2018, 20th Topical meeting
+        of the radiation protection and shielding division, 26-31 August 2018, Santa Fe.,
+        American Nuclear Society. 2018.
+    *   I. Kodeli, Transport and S/U analysis of the ASPIS-IRON88 Benchmark using
+        recent and older iron cross-section evaluations. Proc. PHYSOR 2018, Reactor physics
+        paving the way towards more efficient systems, 22 - 26 April 2018, Cancun. ANS. 2018.

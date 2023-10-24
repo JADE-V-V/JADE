@@ -1,3 +1,5 @@
+.. _fngw:
+
 FNG Benchmark Experiment on Tungsten
 ------------------------------------
 

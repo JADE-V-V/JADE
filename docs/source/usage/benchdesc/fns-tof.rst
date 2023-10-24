@@ -138,9 +138,30 @@ shown in the figure below
 In this model, the collimator is simulated by cylindrical hole with the radius 
 of effective measured area :math:`A_s`. This cylindrical hole is surrounded by 
 no-importance regions in which neutron histories are immediately terminated. 
-The calculated flux are reduced to the measured quantity by multiplying by 
-:math:`L^2/A_s` for each detector position.
 
+
+One point detector tally has been used for each detector position:
+
+Tally n. 5
+  This detector-flux tally has been used to collect the energy-binned neutron
+  leakage flux at 0 degrees
+Tally n. 15
+  This detector-flux tally has been used to collect the energy-binned neutron
+  leakage flux at 12.2 degrees
+Tally n. 25
+  This detector-flux tally has been used to collect the energy-binned neutron
+  leakage flux at 24.9 degrees
+Tally n. 35
+  This detector-flux tally has been used to collect the energy-binned neutron
+  leakage flux at 41.8 degrees
+Tally n. 45
+  This detector-flux tally has been used to collect the energy-binned neutron
+  leakage flux at 66.8 degrees
+
+No FM card was used as the experimental results were given per unit source neutron.
+During the post-processing the value in each energy bin is divided by the lethargy bin width.
+The calculated leakage lethargy flux are reduced to the measured quantity by multiplying by 
+:math:`L^2/A_s` for each detector position.
 
 .. seealso:: **Related papers and contributions:**
 

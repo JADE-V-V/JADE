@@ -57,13 +57,19 @@ Point-flux-detectors for neutrons and photons were
 used as detector tallies in the locations corresponding to the detectors in the experiment:
 
 Tally n. 5
-    Neutron spectral fluence [#/cm^2/MeV/n] (binned in energy groups)
+    Neutron fluence (binned in energy groups)
 Tally n. 15
-    Neutron spectral time-of-arrival fluence [#/cm^2/shakes/n] (binned in time groups)
+    Neutron fluence (binned in time groups)
     For comparison with the experimental time-of-arrival spectrum, the
     calculated neutron fluence PHI(t,E) was folded with the neutron detection
     efficiency EPS(E) (DE/DF MCNP cards) of the NE213 detector in accordance with the
     measurement.
+
+No FM card was used as the experimental results were given per unit source neutron.
+During the post-processing the value of the fluence in each energy bin is divided by the bin width
+so that to obtain the spectral fluence [#/cm^2/MeV/n] and spectral time-of-arrival fluence
+[#/cm^2/shakes/n] to be compared with experimental data from
+the detectors.
 
 .. figure:: /img/benchmarks/TUD-Fe_2.PNG
     :align: center

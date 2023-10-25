@@ -282,13 +282,48 @@ class Status:
 
         return flag_run_test
 
-    def _check_test_serpent(self, files):
-        # Add check for serpent output data
-        return False
+    def _check_test_serpent(self, files: list) -> bool:
+        """Checks to see if Serpent simualtion has been run.
 
-    def _check_test_openmc(self, files):
-        # Add check for openmc output data
-        return False
+        Parameters
+        ----------
+        files : list
+            file names inside test folder.
+
+        Returns
+        -------
+        bool
+            True if test has been run.
+        """
+        flag_run_test = False
+        for file in files:
+            c1 = file[-6:] == "_res.m"  # Serpent outputs matlab format
+            c2 = file[-3:] == "out"  # Collects nuclear and material data
+            if c1 or c2:
+                flag_run_test = True
+        return flag_run_test
+
+    def _check_test_openmc(self, files: list) -> bool:
+        """Checks to see if OpenMC simualtion has been run.
+
+        Parameters
+        ----------
+        files : list
+            file names inside test folder.
+
+        Returns
+        -------
+        bool
+            True if test has been run.
+        """
+        flag_run_test = False
+        for file in files:
+            print("files in folder", file)
+            c1 = file[-3:] == "out"
+            c2 = file[-2:] == "h5"
+            if c1 or c2:
+                flag_run_test = True
+        return flag_run_test
 
     # TODO checking for multiple codes
     def check_override_run(self, lib, session, exp=False):

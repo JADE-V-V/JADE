@@ -36,9 +36,6 @@ import pandas as pd
 from jade.parsersD1S import IrradiationFile, Reaction, ReactionFile
 from tqdm import tqdm
 
-CODE_TAGS = {"mcnp6": "mcnp6", "D1S5": "d1suned3.1.2"}
-D1S_CODES = ["D1S5"]
-
 # colors
 CRED = "\033[91m"
 CORANGE = "\033[93m"
@@ -757,57 +754,6 @@ class Test:
                     data_command,
                 )
             os.chdir(cwd)
-        except subprocess.TimeoutExpired:
-            pass
-
-        return flagnotrun
-
-    # Legacy MCNP runner
-    @staticmethod
-    def _runMCNP(code, name, directory, cpu=1, timeout=None):
-        """
-        Run or continue test execution
-
-        Parameters
-        ----------
-        code : str
-            tag of the code to be used (e.g. mcnp6)
-        name : str
-            MCNP inputfile name.
-        directory : str/path
-            path to the test.
-        cpu : int, optional
-            Number of CPU to use. The default is 1.
-        timeout : int, optional
-            Time in s for emergency timeout. The default is None.
-
-        Returns
-        -------
-        flagnotrun : Bool
-            If true the timeout was reached.
-
-        """
-        command = "name=" + name + " wwinp=wwinp tasks " + str(cpu)
-        flagnotrun = False
-        try:
-            # cancel eventual previous output file
-            outputfile = os.path.join(directory, name + "o")
-            if os.path.exists(outputfile):
-                os.remove(outputfile)
-
-            # check if runtpe exits
-            runtpe = os.path.join(directory, name + "r")
-            if os.path.exists(runtpe):
-                command = command + " runtpe=" + name + "r"
-
-            # Execution
-            subprocess.run(
-                [shutil.which(code), command],
-                cwd=directory,
-                # creationflags=subprocess.CREATE_NEW_CONSOLE,
-                timeout=timeout,
-            )
-
         except subprocess.TimeoutExpired:
             pass
 

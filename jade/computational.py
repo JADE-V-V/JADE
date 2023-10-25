@@ -154,7 +154,7 @@ def executeBenchmarksRoutines(session, lib: str, exp=False) -> None:
                 print("\n        -- " + testname.upper() + " COMPLETED --\n")
             else:
                 # --- Input Run ---
-                print(" MCNP run running:         " + str(datetime.datetime.now()))
+                print(" Simulation running:         " + str(datetime.datetime.now()))
                 # test.run(cpu=session.conf.cpu)
                 test.run(session.conf, session.lib_manager)
                 print("\n        -- " + testname.upper() + " COMPLETED --\n")

@@ -26,8 +26,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from matplotlib.ticker import (LogLocator, AutoMinorLocator, MultipleLocator,
-                               AutoLocator)
+from matplotlib.ticker import LogLocator, AutoMinorLocator, MultipleLocator, AutoLocator
 from matplotlib.markers import CARETUPBASE
 from matplotlib.markers import CARETDOWNBASE
 from matplotlib.patches import Patch
@@ -39,89 +38,111 @@ from matplotlib.patches import Rectangle
 # ============================================================================
 #                   Specify parameters for plots
 # ============================================================================
-np.seterr(divide = 'ignore') # Suppressing divide by zero error in plots 
-DEFAULT_EXTENSION = '.png'
+np.seterr(divide="ignore")  # Suppressing divide by zero error in plots
+DEFAULT_EXTENSION = ".png"
 
 SMALL_SIZE = 22
 MEDIUM_SIZE = 26
 BIGGER_SIZE = 30
 
-plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
-plt.rc('axes', titlesize=BIGGER_SIZE)     # fontsize of the axes title
-plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
-plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
-plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
-plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
-plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
-plt.rc('lines', markersize=12)          # Marker default size
+plt.rc("font", size=SMALL_SIZE)  # controls default text sizes
+plt.rc("axes", titlesize=BIGGER_SIZE)  # fontsize of the axes title
+plt.rc("axes", labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
+plt.rc("xtick", labelsize=SMALL_SIZE)  # fontsize of the tick labels
+plt.rc("ytick", labelsize=SMALL_SIZE)  # fontsize of the tick labels
+plt.rc("legend", fontsize=SMALL_SIZE)  # legend fontsize
+plt.rc("figure", titlesize=BIGGER_SIZE)  # fontsize of the figure title
+plt.rc("lines", markersize=12)  # Marker default size
 
 # ============================================================================
 #                   Specific data for benchmarks plots
 # ============================================================================
 
 # --- TBM HCPB ---
-TBM_HCPB_RECT = [['Void', 'White', 840, 850.3],
-                 ['Eurofer97', '#377eb8', 850.3, 850.6],
-                 ['Water cooled Eurofer97', '#ff7f00', 850.6, 851.3],
-                 ['Eurofer97', '#377eb8', 851.3, 853.3],
-                 ['Breeding Area pt1', '#4daf4a', 853.3, 855.4],
-                 ['Breeding Area pt2', '#f781bf', 855.4, 859.9],
-                 ['Breeding Area pt3', '#a65628', 859.9, 893.3],
-                 ['Breeding Unit Pipework', '#984ea3', 893.3, 918.8],
-                 ['Gap', '#999999', 918.8, 946.3],
-                 ['SS316L(N)-IG/Water', '#e41a1c', 946.3, 1084.2]]
+TBM_HCPB_RECT = [
+    ["Void", "White", 840, 850.3],
+    ["Eurofer97", "#377eb8", 850.3, 850.6],
+    ["Water cooled Eurofer97", "#ff7f00", 850.6, 851.3],
+    ["Eurofer97", "#377eb8", 851.3, 853.3],
+    ["Breeding Area pt1", "#4daf4a", 853.3, 855.4],
+    ["Breeding Area pt2", "#f781bf", 855.4, 859.9],
+    ["Breeding Area pt3", "#a65628", 859.9, 893.3],
+    ["Breeding Unit Pipework", "#984ea3", 893.3, 918.8],
+    ["Gap", "#999999", 918.8, 946.3],
+    ["SS316L(N)-IG/Water", "#e41a1c", 946.3, 1084.2],
+]
 TBM_HCPB_RECT = pd.DataFrame(TBM_HCPB_RECT)
-TBM_HCPB_RECT.columns = ['name', 'color', 'xmin', 'xmax']
+TBM_HCPB_RECT.columns = ["name", "color", "xmin", "xmax"]
 XLIM_HCPB = (830, 1090)
 
 # --- TBM WCLL ---
-TBM_WCLL_RECT = [['Void', 'White', 840, 850.3],
-                 ['Eurofer97', '#377eb8', 850.3, 850.6],
-                 ['Water cooled Eurofer97', '#ff7f00', 850.6, 851.3],
-                 ['Eurofer97', '#377eb8', 851.3, 853.3],
-                 ['Breeding Area pt1', '#4daf4a', 853.3, 854.3],
-                 ['Breeding Area pt2', '#f781bf', 854.3, 862.5],
-                 ['Breeding Area pt3', '#a65628', 862.5, 903.4],
-                 ['Breeding Unit Pipework', '#984ea3', 903.4, 918.8],
-                 ['Gap', '#999999', 918.8, 946.3],
-                 ['SS316L(N)-IG/Water', '#e41a1c', 946.3, 1084.2]]
+TBM_WCLL_RECT = [
+    ["Void", "White", 840, 850.3],
+    ["Eurofer97", "#377eb8", 850.3, 850.6],
+    ["Water cooled Eurofer97", "#ff7f00", 850.6, 851.3],
+    ["Eurofer97", "#377eb8", 851.3, 853.3],
+    ["Breeding Area pt1", "#4daf4a", 853.3, 854.3],
+    ["Breeding Area pt2", "#f781bf", 854.3, 862.5],
+    ["Breeding Area pt3", "#a65628", 862.5, 903.4],
+    ["Breeding Unit Pipework", "#984ea3", 903.4, 918.8],
+    ["Gap", "#999999", 918.8, 946.3],
+    ["SS316L(N)-IG/Water", "#e41a1c", 946.3, 1084.2],
+]
 TBM_WCLL_RECT = pd.DataFrame(TBM_WCLL_RECT)
-TBM_WCLL_RECT.columns = ['name', 'color', 'xmin', 'xmax']
+TBM_WCLL_RECT.columns = ["name", "color", "xmin", "xmax"]
 XLIM_WCLL = (830, 1090)
 
 # --- ITER 1D ---
-ADD_LABELS_ITER1D = {'major': [('INBOARD', 0.21), ('PLASMA', 0.45),
-                               ('OUTBOARD', 0.70)],
-                     'minor': [('TF Coil', 0.1), ('VV', 0.26),
-                               ('FW/B/S', 0.37), ('FW/B/S', 0.55),
-                               ('VV', 0.70), ('TF Coil', 0.87)]}
-VERT_LINES_ITER1D = {'major': [49, 53], 'minor': [23, 32, 70, 84]}
+ADD_LABELS_ITER1D = {
+    "major": [("INBOARD", 0.21), ("PLASMA", 0.45), ("OUTBOARD", 0.70)],
+    "minor": [
+        ("TF Coil", 0.1),
+        ("VV", 0.26),
+        ("FW/B/S", 0.37),
+        ("FW/B/S", 0.55),
+        ("VV", 0.70),
+        ("TF Coil", 0.87),
+    ],
+}
+VERT_LINES_ITER1D = {"major": [49, 53], "minor": [23, 32, 70, 84]}
 
 # --- ITER CYLINDER SDDR ---
-CYL_SDDR_XTICKS = {"'22-1'": 'Hole Front',
-                   "'22-2'": 'Cyl. Front',
-                   "'22-3'": 'Gap Front',
-                   "'22-4'": 'SS Front',
-                   "'23-1'": 'Hole Rear',
-                   "'23-2'": 'Cyl. Rear',
-                   "'23-3'": 'Gap Rear',
-                   "'23-4'": 'SS Rear',
-                   "'24-1'": 'P. Front (Hole)',
-                   "'24-2'": 'P. Front (Cyl.)',
-                   "'24-3'": 'P. Front (Gap)',
-                   "'24-4'": 'SS Back Front',
-                   "'25-1'": 'P. Rear (Hole)',
-                   "'25-2'": 'P. Rear (Cyl.)',
-                   "'25-3'": 'P. Rear (Gap)',
-                   "'25-4'": 'SS Back Rear'}
+CYL_SDDR_XTICKS = {
+    "'22-1'": "Hole Front",
+    "'22-2'": "Cyl. Front",
+    "'22-3'": "Gap Front",
+    "'22-4'": "SS Front",
+    "'23-1'": "Hole Rear",
+    "'23-2'": "Cyl. Rear",
+    "'23-3'": "Gap Rear",
+    "'23-4'": "SS Rear",
+    "'24-1'": "P. Front (Hole)",
+    "'24-2'": "P. Front (Cyl.)",
+    "'24-3'": "P. Front (Gap)",
+    "'24-4'": "SS Back Front",
+    "'25-1'": "P. Rear (Hole)",
+    "'25-2'": "P. Rear (Cyl.)",
+    "'25-3'": "P. Rear (Gap)",
+    "'25-4'": "SS Back Rear",
+}
 
 
 # ============================================================================
 #                   Plotter Class
 # ============================================================================
 class Plotter:
-    def __init__(self, data, title, outpath, outname, quantity, unit, xlabel,
-                 testname, ext=DEFAULT_EXTENSION):
+    def __init__(
+        self,
+        data,
+        title,
+        outpath,
+        outname,
+        quantity,
+        unit,
+        xlabel,
+        testname,
+        ext=DEFAULT_EXTENSION,
+    ):
         """
         Object Handling plots
 
@@ -155,7 +176,7 @@ class Plotter:
         """
         self.data = data
         self.title = title
-        self.outpath = os.path.join(outpath, outname+ext)
+        self.outpath = os.path.join(outpath, outname + ext)
         self.xlabel = xlabel
         self.unit = unit
         self.quantity = quantity
@@ -164,10 +185,19 @@ class Plotter:
         # --- Useful plots parameters ---
         # May be improved in the future with additional markers and colors
         # plot decorators
-        self.markers = ['o', 's', 'D', '^', 'X', 'p', 'd', '*']*50
+        self.markers = ["o", "s", "D", "^", "X", "p", "d", "*"] * 50
         # Color-blind saver palette
-        self.colors = ['#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628',
-                       '#984ea3', '#999999', '#e41a1c', '#dede00']*50
+        self.colors = [
+            "#377eb8",
+            "#ff7f00",
+            "#4daf4a",
+            "#f781bf",
+            "#a65628",
+            "#984ea3",
+            "#999999",
+            "#e41a1c",
+            "#dede00",
+        ] * 50
 
     def plot(self, plot_type):
         """
@@ -192,40 +222,49 @@ class Plotter:
 
         """
         # --- Binned Plot ---
-        if plot_type == 'Binned graph':
+        if plot_type == "Binned graph":
             outp = self._binned_plot()
 
         # --- Ratio Plot ---
-        elif plot_type == 'Ratio graph':
-            if self.testname == 'ITER_1D':  # Special actions for ITER 1D
-                outp = self._ratio_plot(additional_labels=ADD_LABELS_ITER1D,
-                                        v_lines=VERT_LINES_ITER1D)
-            elif self.testname == 'HCPB_TBM_1D':
-                outp = self._ratio_plot(recs=TBM_HCPB_RECT, xlimits=XLIM_HCPB,
-                                        markers=True, figsize=(24, 13.5))
-            elif self.testname == 'WCLL_TBM_1D':
-                outp = self._ratio_plot(recs=TBM_WCLL_RECT, xlimits=XLIM_WCLL,
-                                        markers=True, figsize=(24, 13.5))
+        elif plot_type == "Ratio graph":
+            if self.testname == "ITER_1D":  # Special actions for ITER 1D
+                outp = self._ratio_plot(
+                    additional_labels=ADD_LABELS_ITER1D, v_lines=VERT_LINES_ITER1D
+                )
+            elif self.testname == "HCPB_TBM_1D":
+                outp = self._ratio_plot(
+                    recs=TBM_HCPB_RECT,
+                    xlimits=XLIM_HCPB,
+                    markers=True,
+                    figsize=(24, 13.5),
+                )
+            elif self.testname == "WCLL_TBM_1D":
+                outp = self._ratio_plot(
+                    recs=TBM_WCLL_RECT,
+                    xlimits=XLIM_WCLL,
+                    markers=True,
+                    figsize=(24, 13.5),
+                )
             else:
                 outp = self._ratio_plot()
 
         # --- Experimental Points Plot ---
-        elif plot_type == 'Experimental points':
-            if self.testname == 'Tiara-BC':  # Special actions for Tiara-BC
-                outp = self._exp_points_plot(x_scale='linear')
+        elif plot_type == "Experimental points":
+            if self.testname == "Tiara-BC":  # Special actions for Tiara-BC
+                outp = self._exp_points_plot(x_scale="linear")
             else:
                 outp = self._exp_points_plot()
 
         # --- Experimental Points Plot ---
-        elif plot_type == 'Discreet Experimental points':
+        elif plot_type == "Discreet Experimental points":
             outp = self._exp_points_discreet_plot()
 
         # --- Grouped bars chart ---
-        elif plot_type == 'Grouped bars':
-            if self.testname == 'C_Model':
+        elif plot_type == "Grouped bars":
+            if self.testname == "C_Model":
                 log = True
                 xlegend = None
-            elif self.testname == 'ITER_Cyl_SDDR':
+            elif self.testname == "ITER_Cyl_SDDR":
                 log = True
                 xlegend = CYL_SDDR_XTICKS
             else:
@@ -235,12 +274,12 @@ class Plotter:
             outp = self._grouped_bar(log=log, xlegend=xlegend)
 
         # --- Waves plot ---
-        elif plot_type == 'Waves':
+        elif plot_type == "Waves":
             outp = self._waves()
 
         # --- Deafault ---
         else:
-            raise ValueError(plot_type+' is not an admissible plot type')
+            raise ValueError(plot_type + " is not an admissible plot type")
 
         return outp
 
@@ -263,65 +302,73 @@ class Plotter:
 
         """
         nrows = len(self.quantity)
-        fig, axes = plt.subplots(figsize=(18, 7.5 + 2 * nrows), nrows=nrows, 
-                                 sharex=True)
-        fig.suptitle(self.title, weight='bold')
+        fig, axes = plt.subplots(
+            figsize=(18, 7.5 + 2 * nrows), nrows=nrows, sharex=True
+        )
+        fig.suptitle(self.title, weight="bold")
 
         if isinstance(axes, np.ndarray) is False:
             axes = np.array([axes])
         # common to all axes
         for i, ax in enumerate(axes):
             # Plot
-            refy = np.array(self.data[0]['y'][i])
+            refy = np.array(self.data[0]["y"][i])
             for j, libdata in enumerate(self.data[1:]):
-                tary = np.array(libdata['y'][i])
-                y = tary/refy
+                tary = np.array(libdata["y"][i])
+                y = tary / refy
 
                 # Compute the plot limits
-                norm, upper, lower = _get_limits(lowerlimit, upperlimit,
-                                                 y, libdata['x'])
+                norm, upper, lower = _get_limits(
+                    lowerlimit, upperlimit, y, libdata["x"]
+                )
                 # This Should ensure that the x labels order is kept fixed
-                axes[i].scatter(libdata['x'], np.ones(len(libdata['x'])),
-                                alpha=0)
+                axes[i].scatter(libdata["x"], np.ones(len(libdata["x"])), alpha=0)
                 # Plot everything
-                axes[i].scatter(norm[0], norm[1], color=self.colors[j],
-                                marker=self.markers[i],
-                                label=libdata['ylabel'])
-                axes[i].scatter(upper[0], upper[1], marker=CARETUPBASE,
-                                c=self.colors[j])
-                axes[i].scatter(lower[0], lower[1], marker=CARETDOWNBASE,
-                                c=self.colors[j])
+                axes[i].scatter(
+                    norm[0],
+                    norm[1],
+                    color=self.colors[j],
+                    marker=self.markers[i],
+                    label=libdata["ylabel"],
+                )
+                axes[i].scatter(
+                    upper[0], upper[1], marker=CARETUPBASE, c=self.colors[j]
+                )
+                axes[i].scatter(
+                    lower[0], lower[1], marker=CARETDOWNBASE, c=self.colors[j]
+                )
 
             # Write title
-            ax.set_title('{}'.format(self.quantity[i]))
+            ax.set_title("{}".format(self.quantity[i]))
             # Draw the ratio line
-            ax.axhline(1, color='black', linestyle='--')
+            ax.axhline(1, color="black", linestyle="--")
             # Get minor ticks on the y axis
             ax.yaxis.set_minor_locator(AutoMinorLocator())
             # Ticks style
-            ax.tick_params(which='major', width=1.00, length=5)
-            ax.tick_params(which='minor', width=0.75, length=2.50)
+            ax.tick_params(which="major", width=1.00, length=5)
+            ax.tick_params(which="minor", width=0.75, length=2.50)
             # Grid stylying
-            ax.grid('True', which='major', linewidth=0.75, axis='y')
-            ax.grid('True', which='minor', linewidth=0.30, axis='y')
+            ax.grid("True", which="major", linewidth=0.75, axis="y")
+            ax.grid("True", which="minor", linewidth=0.30, axis="y")
             # limits
-            toadd = (upperlimit-lowerlimit)/8
-            ax.set_ylim(lowerlimit-toadd, upperlimit+toadd)
-            ax.axhline(lowerlimit, color='red', linewidth=0.5)
-            ax.axhline(upperlimit, color='red', linewidth=0.5)
+            toadd = (upperlimit - lowerlimit) / 8
+            ax.set_ylim(lowerlimit - toadd, upperlimit + toadd)
+            ax.axhline(lowerlimit, color="red", linewidth=0.5)
+            ax.axhline(upperlimit, color="red", linewidth=0.5)
 
         # Add the legend
-        axes[0].legend(loc='upper center', bbox_to_anchor=(0.88, 1.5),
-                       fancybox=True, shadow=True)
+        axes[0].legend(
+            loc="upper center", bbox_to_anchor=(0.88, 1.5), fancybox=True, shadow=True
+        )
         # Handle x and y global axes
-        plt.setp(axes[-1].get_xticklabels(), rotation=45, ha="right",
-                 rotation_mode="anchor")
+        plt.setp(
+            axes[-1].get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor"
+        )
         axes[-1].set_xlabel(self.xlabel)
 
         return self._save()
 
-    def _grouped_bar(self, log=False, maxgroups=35, xlegend=None,
-                     minspread=2):
+    def _grouped_bar(self, log=False, maxgroups=35, xlegend=None, minspread=2):
         """
         Plot a grouped bar chart on a "categorical" x axis.
 
@@ -354,10 +401,10 @@ class Plotter:
 
         # Override x ticks labels if requested
         if xlegend is None:
-            labels = self.data[0]['x']
+            labels = self.data[0]["x"]
         else:
             labels = []
-            for lab in self.data[0]['x']:
+            for lab in self.data[0]["x"]:
                 lab = repr(lab)
                 try:
                     labels.append(xlegend[lab])
@@ -370,7 +417,7 @@ class Plotter:
 
         # Check if the data is higher than max
         if len(labels) > maxgroups:
-            nrows = int(len(labels)/maxgroups)+1  # rows of the plot
+            nrows = int(len(labels) / maxgroups) + 1  # rows of the plot
             nlabels = maxgroups  # number of labels in first row
         else:
             nlabels = len(labels)  # number of labels in first row
@@ -385,27 +432,27 @@ class Plotter:
         for i in range(nrows):
             x = np.arange(nlabels)  # the label locations
             x_array.append(x)
-            lab_chunk = labels[added_labels: added_labels+nlabels]
+            lab_chunk = labels[added_labels : added_labels + nlabels]
             label_chunks.append(lab_chunk)
             # Select the correspondent dataset
             data = []
             for libdata in self.data:
                 chunks = {}
                 for key, item in libdata.items():
-                    if key == 'ylabel':
+                    if key == "ylabel":
                         chunks[key] = item
                     else:
-                        chunks[key] = item[added_labels: added_labels+nlabels]
+                        chunks[key] = item[added_labels : added_labels + nlabels]
 
                 data.append(chunks)
             datasets.append(data)
 
             # Adjourn nlabels
             added_labels += nlabels
-            if len(labels)-added_labels > maxgroups:
+            if len(labels) - added_labels > maxgroups:
                 nlabels = maxgroups
             else:
-                nlabels = len(labels)-added_labels
+                nlabels = len(labels) - added_labels
 
         # Initialize plot
         fig, axes = plt.subplots(figsize=(18, 13.5), nrows=nrows)
@@ -422,34 +469,37 @@ class Plotter:
         axes[0].set_title(self.title)
 
         # Plot everything
-        for ax, datachunk, x, labels in zip(axes, datasets, x_array,
-                                            label_chunks):
+        for ax, datachunk, x, labels in zip(axes, datasets, x_array, label_chunks):
             if len(datachunk) % 2 == 0:
-                pos = - len(datachunk) / 2 * single_width + single_width / 2
+                pos = -len(datachunk) / 2 * single_width + single_width / 2
             else:
-                pos = - len(datachunk) / 2 * single_width
+                pos = -len(datachunk) / 2 * single_width
             for dataset in datachunk:
-                ax.bar(x + pos, dataset['y'], single_width,
-                       label=dataset['ylabel'],
-                       yerr=dataset['err']*dataset['y'],
-                       align='edge')
-                pos = pos+single_width  # Adourn relative position
+                ax.bar(
+                    x + pos,
+                    dataset["y"],
+                    single_width,
+                    label=dataset["ylabel"],
+                    yerr=dataset["err"] * dataset["y"],
+                    align="edge",
+                )
+                pos = pos + single_width  # Adourn relative position
 
             # log scale optional
             if log:
-                ax.set_yscale('log')
+                ax.set_yscale("log")
                 ax.yaxis.set_major_locator(LogLocator())
             else:
                 ax.yaxis.set_major_locator(AutoLocator())
 
             # --- Plot details ---
             # Legend and ticks
-            ax.legend(loc='best')
-            ax.tick_params(which='major', width=1.00, length=5)
-            ax.tick_params(which='minor', width=0.75, length=2.50)
+            ax.legend(loc="best")
+            ax.tick_params(which="major", width=1.00, length=5)
+            ax.tick_params(which="minor", width=0.75, length=2.50)
 
             # title and labels
-            ylabel = self.quantity+' ['+self.unit+']'
+            ylabel = self.quantity + " [" + self.unit + "]"
             ax.set_ylabel(ylabel)
             ax.set_xlabel(self.xlabel)
 
@@ -458,12 +508,12 @@ class Plotter:
             ax.set_xticklabels(labels, rotation=60)
 
             # Grid
-            ax.grid('True', which='major', linewidth=0.75, axis='y')
-            ax.grid('True', which='minor', linewidth=0.30, axis='y')
+            ax.grid("True", which="major", linewidth=0.75, axis="y")
+            ax.grid("True", which="minor", linewidth=0.30, axis="y")
 
         return self._save()
 
-    def _exp_points_plot(self, y_scale='log', markersize=6, x_scale='log'):
+    def _exp_points_plot(self, y_scale="log", markersize=6, x_scale="log"):
         """
         Plot a simple plot that compares experimental data points with
         computational calculation.
@@ -488,37 +538,52 @@ class Plotter:
 
         ref = data[0]
         # Adjounrn ylabel
-        ylabel = self.quantity+' ['+self.unit+']'
+        ylabel = self.quantity + " [" + self.unit + "]"
 
         # Grid info
-        gridspec_kw = {'height_ratios': [3, 1], 'hspace': 0.13}
+        gridspec_kw = {"height_ratios": [3, 1], "hspace": 0.13}
         figsize = (18, 13.5)
 
         # Initialize plot
-        fig, axes = plt.subplots(nrows=2, ncols=1, sharex=True,
-                                 figsize=figsize,
-                                 gridspec_kw=gridspec_kw)
+        fig, axes = plt.subplots(
+            nrows=2, ncols=1, sharex=True, figsize=figsize, gridspec_kw=gridspec_kw
+        )
 
         ax1 = axes[0]
         ax2 = axes[1]
 
         # Plot referece
-        ax1.plot(ref['x'], ref['y'], 's', color=self.colors[0],
-                 label=ref['ylabel'], markersize=markersize)
+        ax1.plot(
+            ref["x"],
+            ref["y"],
+            "s",
+            color=self.colors[0],
+            label=ref["ylabel"],
+            markersize=markersize,
+        )
         # Get the linear interpolation for C/E
-        interpolate = interp1d(ref['x'], ref['y'], fill_value=0,
-                               bounds_error=False)
+        interpolate = interp1d(ref["x"], ref["y"], fill_value=0, bounds_error=False)
 
         # Plot all data
         try:
             for i, dic in enumerate(data[1:]):
                 # Plot the flux
-                ax1.plot(dic['x'], dic['y'], color=self.colors[i+1],
-                         drawstyle='steps-pre', label=dic['ylabel'])
+                ax1.plot(
+                    dic["x"],
+                    dic["y"],
+                    color=self.colors[i + 1],
+                    drawstyle="steps-pre",
+                    label=dic["ylabel"],
+                )
                 # plot the C/E
-                interp_ref = interpolate(dic['x'])
-                ax2.plot(dic['x'], dic['y']/interp_ref, color=self.colors[i+1],
-                         drawstyle='steps-pre', label=dic['ylabel'])
+                interp_ref = interpolate(dic["x"])
+                ax2.plot(
+                    dic["x"],
+                    dic["y"] / interp_ref,
+                    color=self.colors[i + 1],
+                    drawstyle="steps-pre",
+                    label=dic["ylabel"],
+                )
         except KeyError:
             # it is a single pp
             return self._save()
@@ -528,15 +593,15 @@ class Plotter:
         ax1.set_yscale(y_scale)
         ax1.set_title(self.title)
         ax1.set_ylabel(ylabel)
-        ax1.legend(loc='best')
+        ax1.legend(loc="best")
 
         # limit the ax 2 to [0, 2]
         ax2.set_ylim(bottom=0, top=2)
-        ax2.set_ylabel('C/E')
+        ax2.set_ylabel("C/E")
         yticks = np.arange(0, 2.5, 0.5)
         ax2.set_yticks(yticks)
         ax2.set_xlabel(self.xlabel)
-        ax2.axhline(y=1, linestyle='--', color='black')
+        ax2.axhline(y=1, linestyle="--", color="black")
         # # Draw the exp error
         # ax2.fill_between(ref['x'], 1+ref['err'], 1-ref['err'], alpha=0.2)
 
@@ -544,23 +609,22 @@ class Plotter:
         for ax in axes:
             ax.set_xscale(x_scale)
 
-        # # Tiks positioning and dimensions
-        # ax.xaxis.set_major_locator(AutoLocator())
-        # ax.yaxis.set_major_locator(AutoLocator())
-        # ax.xaxis.set_minor_locator(AutoMinorLocator())
-        # ax.yaxis.set_minor_locator(AutoMinorLocator())
+            # # Tiks positioning and dimensions
+            # ax.xaxis.set_major_locator(AutoLocator())
+            # ax.yaxis.set_major_locator(AutoLocator())
+            # ax.xaxis.set_minor_locator(AutoMinorLocator())
+            # ax.yaxis.set_minor_locator(AutoMinorLocator())
 
-            ax.tick_params(which='major', width=1.00, length=5)
-            ax.tick_params(which='minor', width=0.75, length=2.50)
+            ax.tick_params(which="major", width=1.00, length=5)
+            ax.tick_params(which="minor", width=0.75, length=2.50)
 
             # Grid
-            ax.grid('True', which='major', linewidth=0.50)
-            ax.grid('True', which='minor', linewidth=0.20)
+            ax.grid("True", which="major", linewidth=0.50)
+            ax.grid("True", which="minor", linewidth=0.20)
 
         return self._save()
 
-    def _exp_points_discreet_plot(self, y_scale='log', lowerlimit=0.5,
-                                  upperlimit=1.5):
+    def _exp_points_discreet_plot(self, y_scale="log", lowerlimit=0.5, upperlimit=1.5):
         """
         Plot a simple plot that compares experimental data points with
         computational calculation. Differently from _exp_points_plot here
@@ -587,91 +651,106 @@ class Plotter:
         data = self.data
 
         # Adjourn ylabel
-        ylabel = self.quantity+' ['+self.unit+']'
+        ylabel = self.quantity + " [" + self.unit + "]"
 
         # Grid info
-        gridspec_kw = {'height_ratios': [3, 1], 'hspace': 0.13}
+        gridspec_kw = {"height_ratios": [3, 1], "hspace": 0.13}
         figsize = (18, 13.5)
 
         # Initialize plot
-        fig, axes = plt.subplots(nrows=2, ncols=1, sharex=True,
-                                 figsize=figsize,
-                                 gridspec_kw=gridspec_kw)
+        fig, axes = plt.subplots(
+            nrows=2, ncols=1, sharex=True, figsize=figsize, gridspec_kw=gridspec_kw
+        )
 
         ax1 = axes[0]
         ax2 = axes[1]
 
-        ref_x = data[0]['x']
-        ref_y = data[0]['y']
+        ref_x = data[0]["x"]
+        ref_y = data[0]["y"]
 
         # -- Main plot --
         for i, libdata in enumerate(data):
-            x = libdata['x']
-            y = libdata['y']
-            err = libdata['err']
-            label = libdata['ylabel']
+            x = libdata["x"]
+            y = libdata["y"]
+            err = libdata["err"]
+            label = libdata["ylabel"]
 
-            ax1.errorbar(x, y, yerr=err, marker=self.markers[i], linestyle='',
-                         capsize=10, color=self.colors[i], label=label)
+            ax1.errorbar(
+                x,
+                y,
+                yerr=err,
+                marker=self.markers[i],
+                linestyle="",
+                capsize=10,
+                color=self.colors[i],
+                label=label,
+            )
 
         # -- C/E --
         for i, libdata in enumerate(data[1:]):
-            x = libdata['x']
-            y = libdata['y']
-            label = libdata['ylabel']
+            x = libdata["x"]
+            y = libdata["y"]
+            label = libdata["ylabel"]
             try:
                 assert (x == ref_x).all()
             except AttributeError:
                 # it may be directly a boolean
-                assert (x == ref_x)
+                assert x == ref_x
 
             # Compute the plot limits
-            norm, upper, lower = _get_limits(lowerlimit, upperlimit,
-                                             y/ref_y, x)
+            norm, upper, lower = _get_limits(lowerlimit, upperlimit, y / ref_y, x)
             # This Should ensure that the x labels order is kept fixed
             ax2.scatter(x, np.ones(len(x)), alpha=0)
             # Plot everything
-            ax2.scatter(norm[0], norm[1], color=self.colors[i+1],
-                        marker=self.markers[i+1], label=label)
-            ax2.scatter(upper[0], upper[1], marker=CARETUPBASE,
-                        c=self.colors[i+1])
-            ax2.scatter(lower[0], lower[1], marker=CARETDOWNBASE,
-                        c=self.colors[i+1])
+            ax2.scatter(
+                norm[0],
+                norm[1],
+                color=self.colors[i + 1],
+                marker=self.markers[i + 1],
+                label=label,
+            )
+            ax2.scatter(upper[0], upper[1], marker=CARETUPBASE, c=self.colors[i + 1])
+            ax2.scatter(lower[0], lower[1], marker=CARETDOWNBASE, c=self.colors[i + 1])
 
         # --- Plot details ---
         # ax 1 details
         ax1.set_yscale(y_scale)
         ax1.set_title(self.title)
         ax1.set_ylabel(ylabel)
-        ax1.legend(loc='best')
+        ax1.legend(loc="best")
 
         # ax 2 details
-        toadd = (upperlimit-lowerlimit)/8
-        ax2.set_ylim(bottom=lowerlimit-toadd, top=upperlimit+toadd)
-        ax2.set_ylabel('C/E')
+        toadd = (upperlimit - lowerlimit) / 8
+        ax2.set_ylim(bottom=lowerlimit - toadd, top=upperlimit + toadd)
+        ax2.set_ylabel("C/E")
         ax2.set_xlabel(self.xlabel)
-        ax2.axhline(y=1, linestyle='--', color='black')
+        ax2.axhline(y=1, linestyle="--", color="black")
         yticks = np.arange(0, 2.5, 0.5)
         ax2.set_yticks(yticks)
-        plt.setp(ax2.get_xticklabels(), rotation=45, ha="right",
-                 rotation_mode="anchor")
-        ax2.axhline(lowerlimit, color='red', linewidth=0.5)
-        ax2.axhline(upperlimit, color='red', linewidth=0.5)
+        plt.setp(ax2.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
+        ax2.axhline(lowerlimit, color="red", linewidth=0.5)
+        ax2.axhline(upperlimit, color="red", linewidth=0.5)
 
         # Common for all axes
         for ax in axes:
-
-            ax.tick_params(which='major', width=1.00, length=5)
-            ax.tick_params(which='minor', width=0.75, length=2.50)
+            ax.tick_params(which="major", width=1.00, length=5)
+            ax.tick_params(which="minor", width=0.75, length=2.50)
 
             # Grid
-            ax.grid('True', which='major', linewidth=0.50)
-            ax.grid('True', which='minor', linewidth=0.20)
+            ax.grid("True", which="major", linewidth=0.50)
+            ax.grid("True", which="minor", linewidth=0.20)
 
         return self._save()
 
-    def _ratio_plot(self, additional_labels=None, v_lines=None, recs=None,
-                    xlimits=None, markers=False, figsize=(16, 9)):
+    def _ratio_plot(
+        self,
+        additional_labels=None,
+        v_lines=None,
+        recs=None,
+        xlimits=None,
+        markers=False,
+        figsize=(16, 9),
+    ):
         """
         Plot a ratio plot where all data dictionaries are plotted against the
         first one which is used as reference
@@ -707,7 +786,7 @@ class Plotter:
 
         ref = data[0]
         # Adjounrn ylabel
-        ylabel = 'Ratio of '+self.quantity+' (vs. '+ref['ylabel']+')'
+        ylabel = "Ratio of " + self.quantity + " (vs. " + ref["ylabel"] + ")"
 
         # Initialize plot
         fig, ax = plt.subplots(figsize=figsize)
@@ -717,7 +796,7 @@ class Plotter:
         y_min = 0
         try:
             for i, dic in enumerate(data[1:]):
-                y = dic['y']/ref['y']
+                y = dic["y"] / ref["y"]
                 # Adjourn y max and min
                 if i == 0:
                     y_max = max(y)
@@ -732,9 +811,14 @@ class Plotter:
                     marker = self.markers[i]
                 else:
                     marker = None
-                ax.plot(dic['x'], y, color=self.colors[i],
-                        drawstyle='steps-mid', label=dic['ylabel'],
-                        marker=marker)
+                ax.plot(
+                    dic["x"],
+                    y,
+                    color=self.colors[i],
+                    drawstyle="steps-mid",
+                    label=dic["ylabel"],
+                    marker=marker,
+                )
 
         except KeyError:
             # it is a single pp
@@ -742,7 +826,7 @@ class Plotter:
 
         # Plot details
         ax.set_title(self.title)
-        ax.legend(loc='best')
+        ax.legend(loc="best")
         ax.set_xlabel(self.xlabel)
         ax.set_ylabel(ylabel)
 
@@ -752,64 +836,78 @@ class Plotter:
         ax.xaxis.set_minor_locator(AutoMinorLocator())
         ax.yaxis.set_minor_locator(AutoMinorLocator())
 
-        ax.tick_params(which='major', width=1.00, length=5)
-        ax.tick_params(which='minor', width=0.75, length=2.50)
+        ax.tick_params(which="major", width=1.00, length=5)
+        ax.tick_params(which="minor", width=0.75, length=2.50)
 
         # Grid
-        ax.grid('True', which='major', linewidth=0.50)
-        ax.grid('True', which='minor', linewidth=0.20)
+        ax.grid("True", which="major", linewidth=0.50)
+        ax.grid("True", which="minor", linewidth=0.20)
 
         # Add additional labels if requested
         if additional_labels is not None:
             # major labels
-            labels = additional_labels['major']
+            labels = additional_labels["major"]
             for label, xpos in labels:
-                bbox_dic = {'boxstyle': 'round,pad=0.5', 'facecolor': 'white',
-                            'alpha': 1}
-                ax.text(xpos, 0.95, label,
-                        bbox=bbox_dic, transform=ax.transAxes)
+                bbox_dic = {
+                    "boxstyle": "round,pad=0.5",
+                    "facecolor": "white",
+                    "alpha": 1,
+                }
+                ax.text(xpos, 0.95, label, bbox=bbox_dic, transform=ax.transAxes)
 
             # minor labels
-            labels = additional_labels['minor']
+            labels = additional_labels["minor"]
             for label, xpos in labels:
                 ax.text(xpos, 0.87, label, transform=ax.transAxes)
 
         # Add vertical lines if requested
         if v_lines is not None:
             # major lines
-            lines = v_lines['major']
+            lines = v_lines["major"]
             for line in lines:
-                ax.axvline(line, color='black')
+                ax.axvline(line, color="black")
 
             # minor lines
-            lines = v_lines['minor']
+            lines = v_lines["minor"]
             for line in lines:
-                ax.axvline(line, color='black', ymin=0.10, ymax=0.90,
-                           linestyle='--', linewidth=1)
+                ax.axvline(
+                    line,
+                    color="black",
+                    ymin=0.10,
+                    ymax=0.90,
+                    linestyle="--",
+                    linewidth=1,
+                )
 
         # Add Rectangles if requested
         if recs is not None:
             # Plot the rects
-            height = y_max-y_min
+            height = y_max - y_min
             _add_recs(ax, recs, height, y_origin=y_min)
 
             # Build the additional legend
             # Drop duplicates
-            df = TBM_HCPB_RECT[['color', 'name']].drop_duplicates()
+            df = TBM_HCPB_RECT[["color", "name"]].drop_duplicates()
             legend_elements = []
             for key, row in df.iterrows():
-                patch = Patch(facecolor=row['color'], edgecolor='black',
-                              label=row['name'], alpha=0.2)
+                patch = Patch(
+                    facecolor=row["color"],
+                    edgecolor="black",
+                    label=row["name"],
+                    alpha=0.2,
+                )
                 legend_elements.append(patch)
 
-            additional_legend = ax.legend(handles=legend_elements,
-                                          loc='upper center',
-                                          bbox_to_anchor=(0.5, -0.1),
-                                          fancybox=True,
-                                          ncol=5,
-                                          shadow=True)
+            additional_legend = ax.legend(
+                handles=legend_elements,
+                loc="upper center",
+                bbox_to_anchor=(0.5, -0.1),
+                fancybox=True,
+                ncol=5,
+                shadow=True,
+            )
             # Normal legend needs to be reprinted
-            ax.legend(loc='best')
+            ax.legend(loc="best")
             # And now the custom one
             ax.add_artist(additional_legend)
 
@@ -840,7 +938,7 @@ class Plotter:
         data = self.data
         title = self.title
         colors = self.colors
-        ylabel = self.quantity+' ['+self.unit+']'
+        ylabel = self.quantity + " [" + self.unit + "]"
         if len(data) > 1:
             nrows = 3
         else:
@@ -848,13 +946,17 @@ class Plotter:
 
         # Set properties for the plot spacing
         if len(data) > 1:
-            gridspec_kw = {'height_ratios': [4, 1, 1], 'hspace': 0.13}
+            gridspec_kw = {"height_ratios": [4, 1, 1], "hspace": 0.13}
         else:
-            gridspec_kw = {'height_ratios': [4, 1], 'hspace': 0.13}
+            gridspec_kw = {"height_ratios": [4, 1], "hspace": 0.13}
         # Initiate plot
-        fig, axes = plt.subplots(nrows=nrows, ncols=1, sharex=True,
-                                 figsize=(18, 13.5),
-                                 gridspec_kw=gridspec_kw)
+        fig, axes = plt.subplots(
+            nrows=nrows,
+            ncols=1,
+            sharex=True,
+            figsize=(18, 13.5),
+            gridspec_kw=gridspec_kw,
+        )
 
         # --- Main plot ---
         ax1 = axes[0]
@@ -864,116 +966,144 @@ class Plotter:
 
         # Ticks
         subs = (0.2, 0.4, 0.6, 0.8)
-        ax1.set_xscale('log')
+        ax1.set_xscale("log")
 
-        ax1.set_yscale('log')
+        ax1.set_yscale("log")
         ax1.xaxis.set_major_locator(LogLocator(base=10, numticks=15))
         ax1.yaxis.set_major_locator(LogLocator(base=10, numticks=15))
-        ax1.xaxis.set_minor_locator(LogLocator(base=10.0, subs=subs,
-                                               numticks=12))
-        ax1.yaxis.set_minor_locator(LogLocator(base=10.0, subs=subs,
-                                               numticks=12))
+        ax1.xaxis.set_minor_locator(LogLocator(base=10.0, subs=subs, numticks=12))
+        ax1.yaxis.set_minor_locator(LogLocator(base=10.0, subs=subs, numticks=12))
 
         # --- Error Plot ---
         ax2 = axes[1]
-        ax2.axhline(y=10, linestyle='--', color='black')
-        ax2.set_ylabel('1σ [%]', labelpad=35)
-        ax2.set_yscale('log')
+        ax2.axhline(y=10, linestyle="--", color="black")
+        ax2.set_ylabel("1σ [%]", labelpad=35)
+        ax2.set_yscale("log")
         ax2.set_ylim(bottom=1, top=100)
         ax2.yaxis.set_major_locator(LogLocator(base=10, numticks=15))
-        ax2.yaxis.set_minor_locator(LogLocator(base=10.0, subs=subs,
-                                               numticks=12))
+        ax2.yaxis.set_minor_locator(LogLocator(base=10.0, subs=subs, numticks=12))
 
         # --- Comparison Plot ---
         if len(data) > 1:
             ax3 = axes[2]
-            ax3.axhline(y=1, linestyle='--', color='black')
-            ax3.set_ylabel('$T_i/R$', labelpad=30)
+            ax3.axhline(y=1, linestyle="--", color="black")
+            ax3.set_ylabel("$T_i/R$", labelpad=30)
             ax3.yaxis.set_major_locator(MultipleLocator(0.5))
             ax3.yaxis.set_minor_locator(AutoMinorLocator(5))
-            ax3.axhline(y=2, linestyle='--', color='red', linewidth=0.5)
-            ax3.axhline(y=0.5, linestyle='--', color='red', linewidth=0.5)
+            ax3.axhline(y=2, linestyle="--", color="red", linewidth=0.5)
+            ax3.axhline(y=0.5, linestyle="--", color="red", linewidth=0.5)
             ax3.set_ylim(bottom=0.3, top=2.2)
 
         # Generate X axis for bin properties
-        oldX = np.array([0]+list(data[0]['x']))
+        oldX = np.array([0] + list(data[0]["x"]))
         base = np.log(oldX[:-1])
         shifted = np.log(oldX[1:])
-        newX = np.exp((base+shifted)/2)
-        newX[0] = (oldX[1]+oldX[0])/2
+        newX = np.exp((base + shifted) / 2)
+        newX[0] = (oldX[1] + oldX[0]) / 2
         # --- Plot Data ---
         for idx, dic_data in enumerate(data):
-
-            x = np.array([0]+list(dic_data['x']))
-            y = np.array([0]+list(dic_data['y']))
+            x = np.array([0] + list(dic_data["x"]))
+            y = np.array([0] + list(dic_data["y"]))
 
             if normalize:
                 # Find global area
-                hist_areas = np.diff(x)*y[1:]
+                hist_areas = np.diff(x) * y[1:]
                 tot_area = hist_areas.sum()
                 # Normalize values
-                y = [0]+list(np.diff(x)*y[1:]/tot_area)
+                y = [0] + list(np.diff(x) * y[1:] / tot_area)
 
-            err = np.array(dic_data['err'])
-            err_multi = np.array(y[1:])*np.abs(err)
+            err = np.array(dic_data["err"])
+            err_multi = np.array(y[1:]) * np.abs(err)
 
             # Main plot
             if idx > 0:
-                tag = 'T'+str(idx)+': '
+                tag = "T" + str(idx) + ": "
             else:
-                tag = 'R: '
+                tag = "R: "
             ax1.step(x, y, color=colors[idx])
-            ax1.errorbar(newX, y[1:], linewidth=0,
-                         yerr=err_multi, elinewidth=0.5, color=colors[idx])
+            ax1.errorbar(
+                newX,
+                y[1:],
+                linewidth=0,
+                yerr=err_multi,
+                elinewidth=0.5,
+                color=colors[idx],
+            )
 
             # Error Plot
-            ax2.plot(newX, np.array(dic_data['err'])*100, 'o',
-                     label=dic_data['ylabel'], markersize=2,
-                     color=colors[idx])
+            ax2.plot(
+                newX,
+                np.array(dic_data["err"]) * 100,
+                "o",
+                label=dic_data["ylabel"],
+                markersize=2,
+                color=colors[idx],
+            )
 
             # Comparison
             if len(data) > 1:
                 for idx, dic_data in enumerate(data[1:]):
-                    ratio = np.array(dic_data['y'])/np.array(data[0]['y'])
+                    ratio = np.array(dic_data["y"]) / np.array(data[0]["y"])
                     # Uniform plots actions
                     norm, upper, lower = _get_limits(0.5, 2, ratio, newX)
 
-                    ax3.plot(norm[0], norm[1], 'o', markersize=2,
-                             color=colors[idx+1])
-                    ax3.scatter(upper[0], upper[1], marker=CARETUPBASE, s=50,
-                                c=colors[idx+1])
-                    ax3.scatter(lower[0], lower[1], marker=CARETDOWNBASE, s=50,
-                                c=colors[idx+1])
+                    ax3.plot(norm[0], norm[1], "o", markersize=2, color=colors[idx + 1])
+                    ax3.scatter(
+                        upper[0], upper[1], marker=CARETUPBASE, s=50, c=colors[idx + 1]
+                    )
+                    ax3.scatter(
+                        lower[0],
+                        lower[1],
+                        marker=CARETDOWNBASE,
+                        s=50,
+                        c=colors[idx + 1],
+                    )
 
                 # Build ax3 legend
-                leg = [Line2D([0], [0], marker=CARETUPBASE, color='black',
-                              label='> 2', markerfacecolor='black',
-                              markersize=8, lw=0),
-                       Line2D([0], [0], marker=CARETDOWNBASE,
-                              color='black', label='< 0.5',
-                              markerfacecolor='black', markersize=8, lw=0)]
-                ax3.legend(handles=leg, loc='best')
+                leg = [
+                    Line2D(
+                        [0],
+                        [0],
+                        marker=CARETUPBASE,
+                        color="black",
+                        label="> 2",
+                        markerfacecolor="black",
+                        markersize=8,
+                        lw=0,
+                    ),
+                    Line2D(
+                        [0],
+                        [0],
+                        marker=CARETDOWNBASE,
+                        color="black",
+                        label="< 0.5",
+                        markerfacecolor="black",
+                        markersize=8,
+                        lw=0,
+                    ),
+                ]
+                ax3.legend(handles=leg, loc="best")
 
         # Final operations
-        ax1.legend(loc='best')
+        ax1.legend(loc="best")
         axes[-1].set_xlabel(self.xlabel)
 
         # --- Common Features ---
         for ax in axes:
             # Grid control
             ax.grid()
-            ax.grid('True', which='minor', linewidth=0.25)
+            ax.grid("True", which="minor", linewidth=0.25)
             # Ticks
-            ax.tick_params(which='major', width=1.00, length=5)
-            ax.tick_params(which='minor', width=0.75, length=2.50)
+            ax.tick_params(which="major", width=1.00, length=5)
+            ax.tick_params(which="minor", width=0.75, length=2.50)
 
         return self._save()
 
-    def _contribution(self, yscale='linear', legend_outside='False'):
+    def _contribution(self, yscale="linear", legend_outside="False"):
         data = self.data
 
         # Adjounrn ylabel
-        ylabel = self.quantity+' ['+self.unit+']'
+        ylabel = self.quantity + " [" + self.unit + "]"
 
         # Grid info
         # gridspec_kw = {'height_ratios': [3, 1], 'hspace': 0.13}
@@ -984,8 +1114,13 @@ class Plotter:
 
         # Plot all data
         for i, libdata in enumerate(data):
-            ax.plot(libdata['x'], libdata['y'], color=self.colors[i],
-                    marker=self.markers[i], label=libdata['ylabel'])
+            ax.plot(
+                libdata["x"],
+                libdata["y"],
+                color=self.colors[i],
+                marker=self.markers[i],
+                label=libdata["ylabel"],
+            )
 
         # --- Plot details ---
         # ax details
@@ -997,23 +1132,21 @@ class Plotter:
         if legend_outside:
             ax.legend(bbox_to_anchor=(1, 1))
         else:
-            ax.legend(loc='best')
+            ax.legend(loc="best")
 
-        ax.tick_params(which='major', width=1.00, length=5)
-        ax.tick_params(axis='y', which='minor', width=0.75, length=2.50)
+        ax.tick_params(which="major", width=1.00, length=5)
+        ax.tick_params(axis="y", which="minor", width=0.75, length=2.50)
 
-        plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
-                 rotation_mode="anchor")
+        plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
 
         # Grid
-        ax.grid('True', axis='y', which='major', linewidth=0.50)
-        ax.grid('True', axis='y', which='minor', linewidth=0.20)
+        ax.grid("True", axis="y", which="major", linewidth=0.50)
+        ax.grid("True", axis="y", which="minor", linewidth=0.20)
 
         return self._save()
 
     def _save(self):
-
-        plt.savefig(self.outpath, bbox_inches='tight')
+        plt.savefig(self.outpath, bbox_inches="tight")
         plt.close()
         plt.clf()
         return self.outpath
@@ -1049,12 +1182,13 @@ def _add_recs(ax, rec_data, height, y_origin=0):
 
     for _, rec in rec_data.iterrows():
         # Create the rectangle
-        width = rec['xmax']-rec['xmin']
-        origin = (rec['xmin'], y_origin)
-        color = rec['color']
+        width = rec["xmax"] - rec["xmin"]
+        origin = (rec["xmin"], y_origin)
+        color = rec["color"]
 
-        rectangle = Rectangle(origin, width=width, height=height,
-                              color=color, alpha=0.2)
+        rectangle = Rectangle(
+            origin, width=width, height=height, color=color, alpha=0.2
+        )
         ax.add_patch(rectangle)
 
 
@@ -1092,8 +1226,7 @@ def _get_limits(lowerlimit, upperlimit, ydata, xdata):
     # Get the three logical maps
     upmap = ydata > upperlimit
     lowmap = ydata < lowerlimit
-    normalmap = np.logical_and(np.logical_not(upmap),
-                               np.logical_not(lowmap))
+    normalmap = np.logical_and(np.logical_not(upmap), np.logical_not(lowmap))
 
     # Apply maps to divide the original sets
     normalY = ydata[normalmap]
@@ -1130,8 +1263,8 @@ def checkYspread(datadics):
     minval = 1e36
 
     for data in datadics:
-        ymin = data['y'].min()
-        ymax = data['y'].max()
+        ymin = data["y"].min()
+        ymax = data["y"].max()
 
         # If min is a negative value, spread computation loses meaning.
         if ymin < 0:
@@ -1154,6 +1287,6 @@ def checkYspread(datadics):
     except ValueError:
         down = 0
 
-    spread = up-down
+    spread = up - down
 
     return spread

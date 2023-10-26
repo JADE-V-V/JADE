@@ -19,10 +19,10 @@ When using JADE for scientific publications you are kindly encouraged to cite th
   "Application Of JADE V&V Capabilities To The New FENDL v3.2 Beta Release",
   *Nuclear Fusion*, **61** 116073. doi: https://doi.org/10.1088/1741-4326/ac121a
 
-For additional information contact: d.laghi@nier.it
+For additional information contact: davide.laghi01@gmail.com
 
-For additional information on future developments please check the issues list on the
-GitHub repository [link].
+For additional information on future developments please check the `issues list on the
+GitHub repository <https://github.com/JADE-V-V/JADE/issues>`_.
 
 .. toctree::
    :maxdepth: 2
@@ -43,9 +43,9 @@ GitHub repository [link].
    :maxdepth: 2
    :caption: JADE Developer Guide:
 
-   dev/codemodify
+   dev/workflow
    dev/insertbenchmarks
-   dev/docmodify
+   dev/testing
 
 .. toctree::
    :maxdepth: 2
@@ -60,7 +60,6 @@ GitHub repository [link].
    :maxdepth: 2
    :caption: More on JADE:
 
-   testing/testing
    futuredev
    LICENSE
    contributors

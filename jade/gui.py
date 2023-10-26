@@ -23,14 +23,14 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
 import sys
+
 import jade.computational as cmp
-import jade.utilitiesgui as uty
 import jade.postprocess as pp
 import jade.testrun as testrun
-
-from tqdm import tqdm
-from jade.status import EXP_TAG
+import jade.utilitiesgui as uty
 from jade.__version__ import __version__
+from jade.status import EXP_TAG
+from tqdm import tqdm
 
 date = '10/05/2022'
 version = __version__
@@ -75,6 +75,7 @@ principal_menu = header+"""
  * Change ACE lib suffix                (acelib)
  * Produce D1S Reaction file             (react)
  * Remove all runtpe files           (rmvruntpe)
+ * Compare ACE/EXFOR                (comparelib)
  -----------------------------------------------
 
  * Exit                                   (exit)
@@ -204,6 +205,9 @@ def mainloop(session):
         elif option == 'rmvruntpe':
             uty.clean_runtpe(session.path_run)
             print('\n Runtpe files have been removed\n')
+
+        elif option == 'comparelib':
+            uty.print_XS_EXFOR(session)
 
         elif option == 'exit':
             session.log.adjourn('\nSession concluded normally \n')

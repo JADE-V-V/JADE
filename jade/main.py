@@ -238,6 +238,7 @@ def fatal_exception(message=None):
     print(CRED+' FATAL EXCEPTION: \n'+message+CEND)
     sys.exit()
 
+
 def main():
     # Module having problem with log(0) for tick position in graphs
     warnings.filterwarnings('ignore',
@@ -251,6 +252,6 @@ def main():
     session = Session()
     gui.mainloop(session)
 
+
 if __name__ == "__main__":
     main()
-

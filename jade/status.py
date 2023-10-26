@@ -24,11 +24,22 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import re
 
-MULTI_TEST = ['Sphere', 'Oktavian', 'SphereSDDR', 'FNG', 'Tiara-BC', 'Tiara-BS', 'Tiara-FC', 'FNS', 'FNG-BKT', 'FNG-W']
-EXP_TAG = 'Exp'
+MULTI_TEST = [
+    "Sphere",
+    "Oktavian",
+    "SphereSDDR",
+    "FNG",
+    "Tiara-BC",
+    "Tiara-BS",
+    "Tiara-FC",
+    "FNS",
+    "FNG-BKT",
+    "FNG-W",
+]
+EXP_TAG = "Exp"
 
 
-class Status():
+class Status:
     def __init__(self, session):
         """
         Stores the state of the JADE runs and post-processing.
@@ -69,7 +80,7 @@ class Status():
 
         """
 
-
+        # Create nested dictionaries to store info on libraries, tests, codes and files.
         libraries = {}
         for lib in os.listdir(self.run_path):
             libraries[lib] = {}
@@ -100,8 +111,8 @@ class Status():
 
         return libraries
 
-    # Updated by S. Bradnam to include new level, code.
-    def update_pp_status(self):
+    # Updated by S. Bradnam, UKAEA to include new level, code.
+    def update_pp_status(self) -> tuple:
         """
         Read/Update the post processing tree status. All files produced by
         post processing registered
@@ -146,7 +157,7 @@ class Status():
 
         return comparison_tree, single_tree
 
-    def get_path(self, tree, itinerary):
+    def get_path(self, tree: str, itinerary: list) -> str:
         """
         Get the resulting path of an itinery on one tree
 
@@ -169,24 +180,24 @@ class Status():
         """
 
         # Identify Tree and starting path
-        if tree == 'run':
+        if tree == "run":
             # tree = self.run_tree
             cp = self.run_path
-        elif tree == 'single':
+        elif tree == "single":
             # tree = self.single_tree
             cp = self.single_path
-        elif tree == 'comparison':
+        elif tree == "comparison":
             # tree = self.comparison_tree
             cp = self.comparison_path
         else:
-            raise KeyError(str(tree)+' is not a valid option.')
+            raise KeyError(str(tree) + " is not a valid option.")
 
         for step in itinerary:
             cp = os.path.join(cp, step)
 
         return cp
 
-    def get_unfinished_zaids(self, lib):
+    def get_unfinished_zaids(self, lib) -> tuple:
         """
         Identify zaids to run for rerun or continuation purposes
 
@@ -201,8 +212,10 @@ class Status():
             zaids/typical materials not run.
 
         """
+
+        # Populate dictionaries
         self.update_run_status()
-        test = 'Sphere'
+        test = "Sphere"
         try:
             folders = self.run_tree[lib][test]
         except KeyError:
@@ -220,19 +233,32 @@ class Status():
 
         return unfinished, motherdir
 
-    #@staticmethod
-    def check_test_run(self, files, code):
-        if code == 'mcnp' or code == 'd1s':
+    def check_test_run(self, files: list, code: str) -> bool:
+        """Check if a test was run successfully for the specified code.
+
+        Parameters
+        ----------
+        files : list
+            filenames inside the test folder
+        code : str
+            Transport code
+
+        Returns
+        -------
+        bool
+            True if test was ran successfully, False otherwise
+        """
+
+        if code == "mcnp" or code == "d1s":
             flag_run_test = self._check_test_mcnp(files)
-        if code == 'serpent':
+        if code == "serpent":
             flag_run_test = self._check_test_serpent(files)
-        if code == 'openmc':
-            flag_run_test = self._check_test_openmc(files)            
+        if code == "openmc":
+            flag_run_test = self._check_test_openmc(files)
 
         return flag_run_test
 
-    #@staticmethod
-    def _check_test_mcnp(self, files):
+    def _check_test_mcnp(self, files: list) -> bool:
         """
         Check if a test has been run
 
@@ -249,24 +275,57 @@ class Status():
         """
         flag_run_test = False
         for file in files:
-            c1 = (file[-1] == 'm')  # mctal file
-            c2 = (file[-4:] == 'msht')  # meshtally file
+            c1 = file[-1] == "m"  # mctal file
+            c2 = file[-4:] == "msht"  # meshtally file
             if c1 or c2:
                 flag_run_test = True
 
         return flag_run_test
 
-    #@staticmethod
-    def _check_test_serpent(self, files):
-        # Add check for serpent output data
-        return False
+    def _check_test_serpent(self, files: list) -> bool:
+        """Checks to see if Serpent simualtion has been run.
 
-    #@staticmethod
-    def _check_test_openmc(self, files):
-        # Add check for openmc output data
-        return False
+        Parameters
+        ----------
+        files : list
+            file names inside test folder.
 
-    # Fix checking for multiple codes
+        Returns
+        -------
+        bool
+            True if test has been run.
+        """
+        flag_run_test = False
+        for file in files:
+            c1 = file[-6:] == "_res.m"  # Serpent outputs matlab format
+            c2 = file[-3:] == "out"  # Collects nuclear and material data
+            if c1 or c2:
+                flag_run_test = True
+        return flag_run_test
+
+    def _check_test_openmc(self, files: list) -> bool:
+        """Checks to see if OpenMC simualtion has been run.
+
+        Parameters
+        ----------
+        files : list
+            file names inside test folder.
+
+        Returns
+        -------
+        bool
+            True if test has been run.
+        """
+        flag_run_test = False
+        for file in files:
+            print("files in folder", file)
+            c1 = file[-3:] == "out"
+            c2 = file[-2:] == "h5"
+            if c1 or c2:
+                flag_run_test = True
+        return flag_run_test
+
+    # TODO checking for multiple codes
     def check_override_run(self, lib, session, exp=False):
         """
         Check status of the requested run. If overridden is required permission
@@ -289,28 +348,50 @@ class Status():
         """
 
         test_runned = self.check_lib_run(lib, session, exp=exp)
+
+        # # AV implement to search list population not just dictionary.
+        # if any(value for value in test_runned.values()):
+        #     for code, test in test_runned.items():
+        #         if test:  # Check if the list is non-empty
+        #             print(f"Code: {test}, Test: {test}")
+        #             # Insert line 369 + here.
+        # else:
+        #     ans = True
+                  
         # Ask for override
         if len(test_runned) > 0:
             while True:
-                print(' The following benchmark(s) have already been run:')
+                print(" The following benchmark(s) have already been run:")
                 for code in test_runned:
                     for test in test_runned[code]:
-                        print(' - '+code+': '+test)
+                        print(" - " + code + ": " + test)
 
-                print("""
+                print(
+                    """
      You can manage the selection of benchmarks to run in the Config.xlsx file
-    """)
-                i = input(' Would you like to override the results?(y/n) ')
+    """
+                )
+                i = input(" Would you like to override the results?(y/n) ")
 
-                if i == 'y':
+                if i == "y":
                     ans = True
-                    logtext = '\nThe following test results have been overwritten:'
+                    logtext = "\nThe following test results have been overwritten:"
                     for code in test_runned:
                         for test in test_runned[code]:
-                            logtext = logtext+'\n'+'- '+code+': '+test+' ['+lib+']'
+                            logtext = (
+                                logtext
+                                + "\n"
+                                + "- "
+                                + code
+                                + ": "
+                                + test
+                                + " ["
+                                + lib
+                                + "]"
+                            )
                     session.log.adjourn(logtext)
                     break
-                elif i == 'n':
+                elif i == "n":
                     ans = False
                     break
                 else:
@@ -321,10 +402,10 @@ class Status():
 
         return ans
 
-    def check_lib_run(self, lib, session, config_option='Run', exp=False):
+    def check_lib_run(self, lib, session, config_option="Run", exp=False) -> dict:
         """
         Check if a library has been run. To be considered run a meshtally or
-        meshtal have to be produced. Only active benchmarks (specified in
+        meshtal have to be produced (for MCNP). Only active benchmarks (specified in
         the configuration file) are checked.
 
         Parameters
@@ -346,9 +427,9 @@ class Status():
 
         """
         # Correctly parse the lib input. It may be a dic than only the first
-        # dic value needs to be cosidered
+        # dic value needs to be considered
         pat_libs = re.compile(r'"\d\d[a-zA-Z]"')
-        if lib[0] == '{':
+        if lib[0] == "{":
             libs = pat_libs.findall(lib)
             lib = libs[1][1:-1]
 
@@ -360,15 +441,18 @@ class Status():
         else:
             config = self.config.comp_default
 
-        to_perform = {'mcnp' : session.check_active_tests('MCNP', exp=exp),
-                      'serpent' : session.check_active_tests('Serpent', exp=exp),
-                      'openmc' : session.check_active_tests('OpenMC', exp=exp),
-                      'd1s' : session.check_active_tests('d1S', exp=exp)}
-       
+        # Populate dictionary for each test to perform
+        to_perform = {
+            "mcnp": session.check_active_tests("MCNP", exp=exp),
+            "serpent": session.check_active_tests("Serpent", exp=exp),
+            "openmc": session.check_active_tests("OpenMC", exp=exp),
+            "d1s": session.check_active_tests("d1S", exp=exp),
+        }
+
         test_runned = {}
         for idx, row in config.iterrows():
-            filename = str(row['Folder Name'])
-            testname = filename.split('.')[0]
+            filename = str(row["Folder Name"])
+            testname = filename.split(".")[0]
             for code in to_perform:
                 # Check if test is active
                 test_runned[code] = []
@@ -384,8 +468,8 @@ class Status():
                                     flag_test_run = False
                             if flag_test_run:
                                 test_runned[code].append(testname)
-                            #flag_test_run = True
-                            #for zaid, files in test.items():
+                            # flag_test_run = True
+                            # for zaid, files in test.items():
                             #    # Check if output is present
                             #    flag_run_zaid = False
                             #    for file in files:
@@ -401,7 +485,7 @@ class Status():
                             flag_test_run = self.check_test_run(test, code)
                             if flag_test_run:
                                 test_runned[code].append(testname)
-                            #for file in test:
+                            # for file in test:
                             #    c1 = file[-1] == 'm'  # mctal file
                             #    c2 = file[-4:] == 'msht'  # meshtally file
                             #    if not c1 and not c2:
@@ -413,7 +497,7 @@ class Status():
 
         return test_runned
 
-    def check_pp_single(self, lib, session, tree='single', exp=False):
+    def check_pp_single(self, lib, session, tree="single", exp=False):
         """
         Check if the post processing of a single library or a comparison has
         been already done. To consider it done, all benchmarks must have been
@@ -438,11 +522,10 @@ class Status():
 
         """
         self.update_pp_status()
-        trees = {'single': self.single_tree,
-                 'comparison': self.comparison_tree}
+        trees = {"single": self.single_tree, "comparison": self.comparison_tree}
         try:
             library_tests = trees[tree][lib]
-            to_pp = session.check_active_tests('Post-Processing', exp=exp)
+            to_pp = session.check_active_tests("Post-Processing", exp=exp)
             # to_pp_exp = session.check_active_tests('Post-Processing', exp=True)
             # to_pp.extend(to_pp_exp)
 
@@ -480,23 +563,22 @@ class Status():
             libraries input that were given
 
         """
-        lib_input = input(' Libraries to post-process (e.g. 31c-71c): ')
+        lib_input = input(" Libraries to post-process (e.g. 31c-71c): ")
         # Individuate libraries to pp
 
-        libs = lib_input.split('-')
+        libs = lib_input.split("-")
         if exp:
-            tagpp = 'Comparison'
+            tagpp = "Comparison"
         else:
             if len(libs) == 1:
-                tagpp = 'Single Libraries'
+                tagpp = "Single Libraries"
             else:
-                tagpp = 'Comparison'
+                tagpp = "Comparison"
 
         # Check if libraries have been run
         flag_not_run = False
         for lib in libs:
-            test_run = self.check_lib_run(lib, session, 'Post-Processing',
-                                          exp=exp)
+            test_run = self.check_lib_run(lib, session, "Post-Processing", exp=exp)
             if len(test_run) == 0:  # TODO not checking for each benchmark
                 flag_not_run = True
                 lib_not_run = lib
@@ -505,33 +587,38 @@ class Status():
 
         if flag_not_run:
             ans = False
-            print(' '+lib_not_run+' was not run. Please run it first.')
+            print(" " + lib_not_run + " was not run. Please run it first.")
         else:
-            # Check if single pp has been done (if not experimantal benchmark)
+            # Check if single pp has been done (if not experimental benchmark)
             if not exp:
                 for lib in libs:
                     if not self.check_pp_single(lib, session):
                         to_single_pp.append(lib)
 
             # Single Library PP
-            if tagpp == 'Single Libraries':
+            if tagpp == "Single Libraries":
                 # Ask for override
                 if len(to_single_pp) == 0:
                     lib = libs[0]
                     to_single_pp = [lib]
                     while True:
-                        print("""
+                        print(
+                            """
  One or more benchmark were already post-processed for this library.
  You can manage the selection of benchmarks in the Config.xlsx file.
-""")
-                        i = input(' Would you like to override the results?(y/n) ')
-                        if i == 'y':
+"""
+                        )
+                        i = input(" Would you like to override the results?(y/n) ")
+                        if i == "y":
                             ans = True
-                            logtext = '\nThe Post-Process for library ' + \
-                                str(lib)+' has been overwritten'
+                            logtext = (
+                                "\nThe Post-Process for library "
+                                + str(lib)
+                                + " has been overwritten"
+                            )
                             session.log.adjourn(logtext)
                             break
-                        elif i == 'n':
+                        elif i == "n":
                             ans = False
                             break
                         else:
@@ -541,34 +628,39 @@ class Status():
                     ans = True
 
             # Libraries comparison PP
-            elif tagpp == 'Comparison':
+            elif tagpp == "Comparison":
                 # Check if comparisons have been done
                 if exp:
                     name = EXP_TAG
                     for lib in libs:
-                        name = name+'_Vs_'+lib
+                        name = name + "_Vs_" + lib
                 else:
                     name = libs[0]
                     for lib in libs[1:]:
-                        name = name+'_Vs_'+lib
+                        name = name + "_Vs_" + lib
 
-                override = self.check_pp_single(name, session,
-                                                tree='comparison', exp=exp)
+                override = self.check_pp_single(
+                    name, session, tree="comparison", exp=exp
+                )
                 # Ask for override
                 if override:
-
                     while True:
-                        print("""
+                        print(
+                            """
  A comparison for these libraries was already performed.
-""")
-                        i = input(' Would you like to override the results?(y/n) ')
-                        if i == 'y':
+"""
+                        )
+                        i = input(" Would you like to override the results?(y/n) ")
+                        if i == "y":
                             ans = True
-                            logtext = '\nThe Post-Process for libraries ' + \
-                                str(lib)+' has been overwritten'
+                            logtext = (
+                                "\nThe Post-Process for libraries "
+                                + str(lib)
+                                + " has been overwritten"
+                            )
                             session.log.adjourn(logtext)
                             break
-                        elif i == 'n':
+                        elif i == "n":
                             ans = False
                             break
                         else:

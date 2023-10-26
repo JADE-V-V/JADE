@@ -26,6 +26,7 @@ and experimental benchmarks. The post-processing output includes:
 
 Additional JADE features are:
 
+* run JADE with the transport codes OpenMC and Serpent. 
 * the possibility to implement user-defined benchmarks;
 * operate on the material card of an MCNP input (e.g. create material mixtures, 
   translate it to a different nuclear data library or switch between atom and

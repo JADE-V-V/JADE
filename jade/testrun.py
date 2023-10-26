@@ -21,33 +21,28 @@
 # You should have received a copy of the GNU General Public License
 # along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
+import shutil
+import subprocess
+import sys
+from copy import deepcopy
+from pathlib import Path
+
 import jade.inputfile as ipt
 import jade.matreader as mat
 import jade.unix as unix
-import os
-import subprocess
-import shutil
-import pandas as pd
 import numpy as np
-import sys
-
-from pathlib import Path
-from copy import deepcopy
+import pandas as pd
+from jade.parsersD1S import IrradiationFile, Reaction, ReactionFile
 from tqdm import tqdm
-from jade.parsersD1S import (IrradiationFile, ReactionFile, Reaction)
-
-
-CODE_TAGS = {'mcnp6': 'mcnp6', 'D1S5': 'd1suned3.1.2'}
-D1S_CODES = ['D1S5']
 
 # colors
-CRED = '\033[91m'
-CORANGE = '\033[93m'
-CEND = '\033[0m'
+CRED = "\033[91m"
+CORANGE = "\033[93m"
+CEND = "\033[0m"
 
 
-class Test():
-
+class Test:
     def __init__(self, inp, lib, config, log, VRTpath, confpath):
         """
         Class representing a general test. This class will have to be extended
@@ -107,36 +102,36 @@ class Test():
 
         # Path variables
         self.run_dir = None
-        #self.serpent_dir = None
-        #self.openmc_dir = None
-        #self.d1s_dir = None
+        # self.serpent_dir = None
+        # self.openmc_dir = None
+        # self.d1s_dir = None
 
         config = config.dropna()
 
-        self.name = config['Folder Name']
+        self.name = config["Folder Name"]
 
         try:
-            self.nps = config['NPS cut-off']
+            self.nps = config["NPS cut-off"]
         except KeyError:
             self.nps = None
         if self.nps is np.nan:
-            self.nps = None        
-        
+            self.nps = None
+
         # Updated to handle multiple codes
         try:
-            self.mcnp = bool(config['MCNP'])
+            self.mcnp = bool(config["MCNP"])
         except KeyError:
             self.mcnp = False
         try:
-            self.serpent = bool(config['Serpent'])
+            self.serpent = bool(config["Serpent"])
         except KeyError:
             self.serpent = False
         try:
-            self.openmc = bool(config['OpenMC'])
+            self.openmc = bool(config["OpenMC"])
         except KeyError:
             self.openmc = False
         try:
-            self.d1s = bool(config['d1S'])
+            self.d1s = bool(config["d1S"])
         except KeyError:
             self.d1s = False
 
@@ -149,45 +144,43 @@ class Test():
         else:
             self.code = code  # transport code to be used for the benchmark
         """
-        # Generate input file template according to code
-        #if code == 'D1S5':
+        # Generate input file template according to transport code
         if self.d1s:
-            d1s_ipt = os.path.join(inp, 'd1s', self.name+'.i')
+            d1s_ipt = os.path.join(inp, "d1s", self.name + ".i")
             self.d1s_inp = ipt.D1S5_InputFile.from_text(d1s_ipt)
             # It also have additional files then that must be in the
             # VRT folder (irradiation and reaction files)
-            irrfile = os.path.join(VRTpath, self.d1s_inp.name,
-                                   self.inp.name+'_irrad')
-            reacfile = os.path.join(VRTpath, self.d1s_inp.name,
-                                    self.d1s_inp.name+'_react')
+            irrfile = os.path.join(VRTpath, self.d1s_inp.name, self.inp.name + "_irrad")
+            reacfile = os.path.join(
+                VRTpath, self.d1s_inp.name, self.d1s_inp.name + "_react"
+            )
             try:
                 self.irrad = IrradiationFile.from_text(irrfile)
                 self.react = ReactionFile.from_text(reacfile)
             except FileNotFoundError:
-                self.log.adjourn('d1S irradition and reaction files not found, skipping...')
+                self.log.adjourn(
+                    "d1S irradition and reaction files not found, skipping..."
+                )
                 # For instance in sphere test they are not provided
                 # There may be reasons why these files are not provided, it is
                 # responsability of the user to make them available or not.
-                #self.irrad = None
-                #self.react = None
+                # self.irrad = None
+                # self.react = None
         if self.mcnp:
-            mcnp_ipt = os.path.join(inp, 'mcnp',  self.name+'.i')
+            mcnp_ipt = os.path.join(inp, "mcnp", self.name + ".i")
             self.mcnp_inp = ipt.InputFile.from_text(mcnp_ipt)
-            #self.irrad = None
-            #self.react = None
+            # self.irrad = None
+            # self.react = None
         if self.serpent:
-            # Add serpent initialisation here
-            #self.log.adjourn('Serpent running not implimented yet, skipping...')
-            serpent_ipt = os.path.join(inp, 'serpent',  self.name+'.i')
-            self.serpent_inp = ipt.SerpentInputFile.from_text(serpent_ipt)           
+            serpent_ipt = os.path.join(inp, "serpent", self.name + ".i")
+            self.serpent_inp = ipt.SerpentInputFile.from_text(serpent_ipt)
         if self.openmc:
-            # Add openmc initialisation here
-            #self.log.adjourn('Serpent running not implimented yet, skipping...')
-            openmc_ipt = os.path.join(inp, 'openmc')
+            openmc_ipt = os.path.join(inp, "openmc")
             self.openmc_inp = ipt.OpenMCInputFiles.from_path(openmc_ipt)
         # Name of input file
-        #self.name = self.inp.name
+        # self.name = self.inp.name
 
+        # Need to add this back if user only running MCNP
         # Add the stop card according to config
         """
         config = config.dropna()
@@ -235,20 +228,24 @@ class Test():
         None.
 
         """
-        #if isinstance(self.inp, ipt.D1S_Input):
+
         if self.d1s:
             # Then it was the translation of a D1S input, additional
             # actions are required
-            add = self.d1s_inp.translate(lib, libmanager, 'd1s',
-                                         original_irradfile=self.irrad,
-                                         original_reacfile=self.react)
+            add = self.d1s_inp.translate(
+                lib,
+                libmanager,
+                "d1s",
+                original_irradfile=self.irrad,
+                original_reacfile=self.react,
+            )
             newirradiations = add[0]
             newreactions = add[1]
             self.irrad.irr_schedules = newirradiations
             self.react.reactions = newreactions
             self.d1s_inp.update_zaidinfo(libmanager)
         if self.mcnp:
-            self.mcnp_inp.translate(lib, libmanager, 'mcnp')
+            self.mcnp_inp.translate(lib, libmanager, "mcnp")
             self.mcnp_inp.update_zaidinfo(libmanager)
         if self.serpent:
             # Add serpent file translation here
@@ -279,7 +276,8 @@ class Test():
         self._translate_input(self.lib, libmanager)
 
         # Add stop card
-        #self.inp.add_stopCard(self.nps, self.ctme, self.precision)
+        # Need to retain adding ctme and precision for MCNP
+        # self.inp.add_stopCard(self.nps, self.ctme, self.precision)
         if self.d1s:
             self.d1s_inp.add_stopCard(self.nps)
         if self.mcnp:
@@ -290,14 +288,14 @@ class Test():
             self.openmc_inp.add_stopCard(self.nps)
 
         # Identify working directory
-        #testname = self.inp.name
+        # testname = self.inp.name
         testname = self.name
         if run_dir is None:
-            motherdir = os.path.join(lib_directory, testname) 
+            motherdir = os.path.join(lib_directory, testname)
         else:
             motherdir = run_dir
         self.run_dir = motherdir
-        # If previous results are present they are canceled
+        # If previous results are present they are cancelled
         if os.path.exists(motherdir):
             shutil.rmtree(motherdir)
         os.mkdir(motherdir)
@@ -312,37 +310,37 @@ class Test():
         self.custom_inp_modifications()
 
         if self.d1s:
-            os.mkdir(os.path.join(motherdir, 'd1s'))
-            outinpfile = os.path.join(motherdir, testname, 'd1s')
+            os.mkdir(os.path.join(motherdir, "d1s"))
+            outinpfile = os.path.join(motherdir, testname, "d1s")
             self.d1s_inp.write(outinpfile)
             # And accessory files if needed
             if self.irrad is not None:
-                self.irrad.write(motherdir, testname, 'd1s')
+                self.irrad.write(motherdir, testname, "d1s")
             if self.react is not None:
-                self.react.write(motherdir, testname, 'd1s')
+                self.react.write(motherdir, testname, "d1s")
             # Get VRT files if available
-            wwinp = os.path.join(self.path_VRT, testname, 'wwinp')
+            wwinp = os.path.join(self.path_VRT, testname, "wwinp")
             if os.path.exists(wwinp):
-                outfile = os.path.join(motherdir, testname, 'mcnp', 'wwinp')
+                outfile = os.path.join(motherdir, testname, "mcnp", "wwinp")
                 shutil.copyfile(wwinp, outfile)
 
         if self.mcnp:
-            os.mkdir(os.path.join(motherdir, 'mcnp'))
-            outinpfile = os.path.join(motherdir, testname, 'mcnp')
+            os.mkdir(os.path.join(motherdir, "mcnp"))
+            outinpfile = os.path.join(motherdir, testname, "mcnp")
             self.mcnp_inp.write(outinpfile)
             # Get VRT files if available
-            wwinp = os.path.join(self.path_VRT, testname, 'wwinp')
+            wwinp = os.path.join(self.path_VRT, testname, "wwinp")
             if os.path.exists(wwinp):
-                outfile = os.path.join(motherdir, testname, 'mcnp', 'wwinp')
+                outfile = os.path.join(motherdir, testname, "mcnp", "wwinp")
                 shutil.copyfile(wwinp, outfile)
-        
+
         if self.serpent:
             # Impliment serpent outputfile generation here
             pass
 
         if self.openmc:
             # Impliment openmc outputfile generation here
-            pass            
+            pass
 
         """
         # Write new input file
@@ -374,7 +372,6 @@ class Test():
         # It does not do anything in the default benchmark
         pass
 
-    #def run(self, cpu=1, timeout=None):
     def run(self, config, libmanager):
         """
         run the input
@@ -404,83 +401,155 @@ class Test():
         directory = self.run_dir
 
         if self.d1s:
-            d1s_directory = os.path.join(directory, name, 'd1s')
-            if config.d1s_exec != '':
+            d1s_directory = os.path.join(directory, name, "d1s")
+            if config.d1s_exec != "":
                 self.run_d1s(config, name, d1s_directory)
         if self.mcnp:
-            mcnp_directory = os.path.join(directory, name, 'mcnp')
-            if config.mcnp_exec != '':
+            mcnp_directory = os.path.join(directory, name, "mcnp")
+            if config.mcnp_exec != "":
                 self.run_mcnp(config, name, mcnp_directory)
         if self.serpent:
-            serpent_directory = os.path.join(directory, name, 'serpent')
-            if config.serpent_exec != '':
+            serpent_directory = os.path.join(directory, name, "serpent")
+            if config.serpent_exec != "":
                 self.run_serpent(config, name, serpent_directory)
         if self.openmc:
-            openmc_directory = os.path.join(directory, name, 'openmc')
-            if config.openmc_exec != '':
+            openmc_directory = os.path.join(directory, name, "openmc")
+            if config.openmc_exec != "":
                 self.run_openmc(config, name, openmc_directory)
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Edited by D. Wheeler ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-    #job submission currently tailored for LoadLeveler, may be applicable to other submission systems with equivalent dummy variables
-    def job_submission(self, config, directory, run_command, mpi_tasks, omp_threads, env_variables, data_command=str()):
-        with open(env_variables, 'r') as f:
-            config_script = ''
+
+    # Edited by D.Wheeler, UKAEA
+    # Job submission currently tailored for LoadLeveler, may be applicable to other submission systems with equivalent dummy variables
+    def job_submission(
+        self,
+        config,
+        directory: str,
+        run_command: list,
+        mpi_tasks: int,
+        omp_threads: int,
+        env_variables: str,
+        data_command=str(),
+    ) -> None:
+        """Submits a job script to the users batch system for running in parallel.
+
+        Parameters
+        ----------
+        config :
+            Configuration settings
+        directory :
+            Job working directory
+        run_command : list
+            Executable command
+        mpi_tasks : int
+            Number of MPI tasks
+        omp_threads : int
+            Number of OMP threads
+        env_variables : str
+            user specified/ code specific environment variables
+        data_command : str, optional
+            user specified/ code specific environment variables, by default str()
+        """
+
+        # Read contents of batch file template.
+        with open(env_variables, "r") as f:
+            config_script = ""
             for line in f:
-                if not line.startswith('#!'):
-                    config_script += line 
-        user = subprocess.run("whoami", capture_output=True).stdout.decode("utf-8").strip()
+                if not line.startswith("#!"):
+                    config_script += line
+        user = (
+            subprocess.run("whoami", capture_output=True).stdout.decode("utf-8").strip()
+        )
         os.chdir(directory)
-        job_script = directory+"/"+os.path.basename(directory)+"_job_script"
+        job_script = directory + "/" + os.path.basename(directory) + "_job_script"
         fout = open(job_script, "wt")
         with open(config.batch_file, "rt") as fin:
+            # Replace placeholders in batch file template with actual values
             contents = fin.read()
             contents = contents.replace("COMMAND", " ".join(run_command))
             contents = contents.replace("ENV_VARIABLES", str(data_command))
             contents = contents.replace("INITIAL_DIR", directory)
-            contents = contents.replace("OUT_FILE", job_script+".out")
-            contents = contents.replace("ERROR_FILE", job_script+".err")
+            contents = contents.replace("OUT_FILE", job_script + ".out")
+            contents = contents.replace("ERROR_FILE", job_script + ".err")
             contents = contents.replace("MPI_TASKS", str(mpi_tasks))
             contents = contents.replace("OMP_THREADS", str(omp_threads))
             contents = contents.replace("CONFIG_SCRIPT", config_script)
             contents = contents.replace("USER", user)
             fout.write(contents)
-        
+
         fin.close()
         fout.close()
-        subprocess.run(config.batch_system + " " +job_script, cwd=directory, shell=True)
-         
-    #@staticmethod
+
+        # Submit the job using the specified batch system
+        subprocess.run(
+            config.batch_system + " " + job_script, cwd=directory, shell=True
+        )
+
     def run_d1s(self, config, libmanager, name, directory):
         pass
- 
-    #@staticmethod
-    def run_mcnp(self, config, lib_manager, name, directory, timeout=None):
+
+    def run_mcnp(
+        self, config, lib_manager, name: str, directory: Path, timeout=None
+    ) -> bool:
+        """Run MCNP simulation either on the command line or submitted as a job.
+
+        Parameters
+        ----------
+        config :
+            Configuration settings
+        lib_manager :
+            libmanager
+        name : str
+            Name of the simulation
+        directory : str, path
+            Directory where the simulation will be executed
+        timeout : float, optional
+            Maximum time to wait for simulation of complete, by default None
+
+        Returns
+        -------
+        bool
+            Flag if simulation not run
+        """
+
+        # Calculate MPI tasks and OpenMP threads
         mpi_tasks = int(config.openmp_threads) * int(config.mpi_tasks)
         omp_threads = 1
         run_mpi = False
         if mpi_tasks > 1:
             run_mpi = True
+
         executable = config.mcnp_exec
         env_variables = config.mcnp_config
-        inputstring = 'i=' + name
-        outputstring = 'n=' + name
-        xsstring = 'xs='+lib_manager.data['mcnp'][self.lib].filename
+        inputstring = "i=" + name
+        outputstring = "n=" + name
+        xsstring = "xs=" + lib_manager.data["mcnp"][self.lib].filename
+
         if run_mpi:
-            run_command = ['mpirun', '-n', str(mpi_tasks), executable, inputstring, outputstring, xsstring]
+            run_command = [
+                "mpirun",
+                "-n",
+                str(mpi_tasks),
+                executable,
+                inputstring,
+                outputstring,
+                xsstring,
+            ]
         else:
             run_command = [executable, inputstring, outputstring, xsstring]
+
         flagnotrun = False
+
         try:
             cwd = os.getcwd()
             os.chdir(directory)
             # cancel eventual previous output file
-            outputfile = name+'.o'
+            outputfile = name + ".o"
             if os.path.exists(outputfile):
                 os.remove(outputfile)
 
-            # check if runtpe exits
-            runtpe = name+'.r'
+            # check if runtpe exists
+            runtpe = name + ".r"
             if os.path.exists(runtpe):
-                command = command+' runtpe='+name+'.r'
+                command = command + " runtpe=" + name + ".r"
 
             # Execution
             if pd.isnull(config.batch_system) is True:
@@ -489,153 +558,207 @@ class Test():
                 # subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
                 subprocess.run(" ".join(run_command), cwd=directory, shell=True)
             else:
-                self.job_submission(config, directory, run_command, mpi_tasks, omp_threads, env_variables)
+                self.job_submission(
+                    config,
+                    directory,
+                    run_command,
+                    mpi_tasks,
+                    omp_threads,
+                    env_variables,
+                )
             os.chdir(cwd)
-            
-        except subprocess.TimeoutExpired:
-            pass
 
-        return flagnotrun
-        
-
-    #@staticmethod
-    def run_serpent(self, config, lib_manager, name, directory, timeout=None):
-        mpi_tasks = int(config.mpi_tasks)
-        omp_threads = int(config.openmp_threads)
-        run_mpi = False
-        run_omp = False
-        if mpi_tasks > 1:
-            run_mpi = True
-        if omp_threads > 1:
-            run_omp = True
-        executable = config.serpent_exec
-        env_variables = config.serpent_config
-        inputstring = name
-        libpath = Path(str(lib_manager.data['serpent'][self.lib].filename))
-        data_command = "export SERPENT_DATA=" + str(libpath.parent) + " \nexport SERPENT_ACELIB=" + str(libpath)
-        if run_omp:
-            if run_mpi:
-                run_command = ['mpirun', '-np', str(mpi_tasks), executable, '-omp', str(omp_threads), inputstring]
-            else:
-                run_command = [executable, '-omp', str(omp_threads), inputstring]
-        else:
-            if run_mpi:
-                run_command = ['mpirun', '-np', str(mpi_tasks), executable, inputstring]
-            else:
-                run_command = [executable, inputstring]
-        flagnotrun = False
-        try:
-            cwd = os.getcwd()
-            os.chdir(directory)
-
-            # Execution
-            if pd.isnull(config.batch_system) is True:
-                os.environ['SERPENT_DATA'] = str(libpath.parent)
-                os.environ['SERPENT_ACELIB'] = str(str(libpath))
-                unix.configure(env_variables)
-                print(" ".join(run_command))
-                #subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
-                subprocess.run(" ".join(run_command), cwd=directory, shell=True)
-            else:
-                self.job_submission(config, directory, run_command, mpi_tasks, omp_threads, env_variables, data_command)
-            os.chdir(cwd)
-            
         except subprocess.TimeoutExpired:
             pass
 
         return flagnotrun
 
-    #@staticmethod
-    def run_openmc(self, config, lib_manager, name, directory, timeout=None):
-        mpi_tasks = int(config.mpi_tasks)
-        omp_threads = int(config.openmp_threads)
-        run_mpi = False
-        run_omp = False
-        if mpi_tasks > 1:
-            run_mpi = True
-        if omp_threads > 1:
-            run_omp = True
-        executable = config.openmc_exec
-        env_variables = config.openmc_config
-        libpath = Path(str(lib_manager.data['openmc'][self.lib].filename))
-        data_command = "export OPENMC_CROSS_SECTIONS=" + str(libpath)
-        if run_omp:
-            if run_mpi:
-                run_command = ['mpirun', '-np', str(mpi_tasks), executable, '--threads', str(omp_threads)]
-            else:
-                run_command = [executable, '--threads', str(omp_threads)]            
-        else:
-            if run_mpi:
-                run_command = ['mpirun', '-np', str(mpi_tasks), executable]
-            else:
-                run_command = [executable]
-        flagnotrun = False
-        try:
-            cwd = os.getcwd()
-            os.chdir(directory)
-
-            # Execution
-            if pd.isnull(config.batch_system) is True:
-                os.environ['OPENMC_CROSS_SECTIONS'] = str(libpath)
-                unix.configure(env_variables)
-                #subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
-                subprocess.run(" ".join(run_command), cwd=directory, shell=True)
-            else:
-                self.job_submission(config, directory, run_command, mpi_tasks, omp_threads, env_variables, data_command)
-            os.chdir(cwd)
-        except subprocess.TimeoutExpired:
-            pass
-
-        return flagnotrun
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-    # Legacy MCNP runner
-    @staticmethod
-    def _runMCNP(code, name, directory, cpu=1, timeout=None):
-        """
-        Run or continue test execution
+    def run_serpent(
+        self, config, lib_manager, name: str, directory: Path, timeout=None
+    ) -> bool:
+        """Run Serpent simulation either on the command line or submitted as a job.
 
         Parameters
         ----------
-        code : str
-            tag of the code to be used (e.g. mcnp6)
+        config :
+            Configuration settings
+        lib_manager :
+            libmanager
         name : str
-            MCNP inputfile name.
-        directory : str/path
-            path to the test.
-        cpu : int, optional
-            Number of CPU to use. The default is 1.
-        timeout : int, optional
-            Time in s for emergency timeout. The default is None.
+            Name of the simulation
+        directory : str, path
+            Directory where the simulation will be executed
+        timeout : float, optional
+            Maximum time to wait for simulation of complete, by default None
 
         Returns
         -------
-        flagnotrun : Bool
-            If true the timeout was reached.
-
+        bool
+            Flag if simulation not run
         """
-        command = 'name='+name+' wwinp=wwinp tasks '+str(cpu)
-        flagnotrun = False
-        try:
-            # cancel eventual previous output file
-            outputfile = os.path.join(directory, name+'o')
-            if os.path.exists(outputfile):
-                os.remove(outputfile)
 
-            # check if runtpe exits
-            runtpe = os.path.join(directory, name+'r')
-            if os.path.exists(runtpe):
-                command = command+' runtpe='+name+'r'
+        # Calculate MPI tasks and OpenMP threads
+        mpi_tasks = int(config.mpi_tasks)
+        omp_threads = int(config.openmp_threads)
+        run_mpi = False
+        run_omp = False
+
+        if mpi_tasks > 1:
+            run_mpi = True
+        if omp_threads > 1:
+            run_omp = True
+
+        executable = config.serpent_exec
+        env_variables = config.serpent_config
+        inputstring = name
+        libpath = Path(str(lib_manager.data["serpent"][self.lib].filename))
+        data_command = (
+            "export SERPENT_DATA="
+            + str(libpath.parent)
+            + " \nexport SERPENT_ACELIB="
+            + str(libpath)
+        )
+
+        # Run Serpent from command line either OMP, MPI or hybrid MPI-OMP
+        if run_omp:
+            if run_mpi:
+                run_command = [
+                    "mpirun",
+                    "-np",
+                    str(mpi_tasks),
+                    executable,
+                    "-omp",
+                    str(omp_threads),
+                    inputstring,
+                ]
+            else:
+                run_command = [executable, "-omp", str(omp_threads), inputstring]
+        else:
+            if run_mpi:
+                run_command = ["mpirun", "-np", str(mpi_tasks), executable, inputstring]
+            else:
+                run_command = [executable, inputstring]
+
+        flagnotrun = False
+
+        # Run Serpent as a job
+        try:
+            cwd = os.getcwd()
+            os.chdir(directory)
 
             # Execution
-            subprocess.run([shutil.which(code), command], cwd=directory,
-                           #creationflags=subprocess.CREATE_NEW_CONSOLE,
-                            timeout=timeout)
+            if pd.isnull(config.batch_system) is True:
+                os.environ["SERPENT_DATA"] = str(libpath.parent)
+                os.environ["SERPENT_ACELIB"] = str(str(libpath))
+                unix.configure(env_variables)
+                print(" ".join(run_command))
+                # subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
+                subprocess.run(" ".join(run_command), cwd=directory, shell=True)
+            else:
+                self.job_submission(
+                    config,
+                    directory,
+                    run_command,
+                    mpi_tasks,
+                    omp_threads,
+                    env_variables,
+                    data_command,
+                )
+            os.chdir(cwd)
 
         except subprocess.TimeoutExpired:
             pass
 
         return flagnotrun
+
+    def run_openmc(
+        self, config, lib_manager, name: str, directory, timeout=None
+    ) -> bool:
+        """Run OpenMC simulation either on the command line or submitted as a job.
+
+        Parameters
+        ----------
+        config :
+            Configuration settings
+        lib_manager :
+            libmanager
+        name : str
+            Name of the simulation
+        directory : str, path
+            Directory where the simulation will be executed
+        timeout : float, optional
+            Maximum time to wait for simulation of complete, by default None
+
+        Returns
+        -------
+        bool
+            Flag if simulation not run
+        """
+
+        # Calculate MPI tasks and OpenMP threads
+        mpi_tasks = int(config.mpi_tasks)
+        omp_threads = int(config.openmp_threads)
+        run_mpi = False
+        run_omp = False
+
+        if mpi_tasks > 1:
+            run_mpi = True
+        if omp_threads > 1:
+            run_omp = True
+
+        executable = config.openmc_exec
+        env_variables = config.openmc_config
+        libpath = Path(str(lib_manager.data["openmc"][self.lib].filename))
+        data_command = "export OPENMC_CROSS_SECTIONS=" + str(libpath)
+
+        # Run OpenMC from command line either OMP, MPI or hybrid MPI-OMP
+        if run_omp:
+            if run_mpi:
+                run_command = [
+                    "mpirun",
+                    "-np",
+                    str(mpi_tasks),
+                    executable,
+                    "--threads",
+                    str(omp_threads),
+                ]
+            else:
+                run_command = [executable, "--threads", str(omp_threads)]
+        else:
+            if run_mpi:
+                run_command = ["mpirun", "-np", str(mpi_tasks), executable]
+            else:
+                run_command = [executable]
+
+        flagnotrun = False
+
+        # Run OpenMC as a job
+        try:
+            cwd = os.getcwd()
+            os.chdir(directory)
+
+            # Execution
+            if pd.isnull(config.batch_system) is True:
+                os.environ["OPENMC_CROSS_SECTIONS"] = str(libpath)
+                unix.configure(env_variables)
+                # subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
+                subprocess.run(" ".join(run_command), cwd=directory, shell=True)
+            else:
+                self.job_submission(
+                    config,
+                    directory,
+                    run_command,
+                    mpi_tasks,
+                    omp_threads,
+                    env_variables,
+                    data_command,
+                )
+            os.chdir(cwd)
+        except subprocess.TimeoutExpired:
+            pass
+
+        return flagnotrun
+
 
 class SphereTest(Test):
     """
@@ -665,15 +788,15 @@ class SphereTest(Test):
             lib = self.lib
         # Get typical materials input
         dirmat = os.path.dirname(self.original_inp)
-        matpath = os.path.join(dirmat, 'TypicalMaterials')
+        matpath = os.path.join(dirmat, "TypicalMaterials")
         inpmat = ipt.InputFile.from_text(matpath)
         matlist = inpmat.matlist
         # Get zaids available into the selected library
-        zaids = libmanager.get_libzaids(lib, 'mcnp')
+        zaids = libmanager.get_libzaids(lib, "mcnp")
 
-        #testname = self.inp.name
+        # testname = self.inp.name
         testname = self.name
-        
+
         motherdir = os.path.join(directory, testname)
         # If previous results are present they are canceled
         if os.path.exists(motherdir):
@@ -681,49 +804,48 @@ class SphereTest(Test):
         os.mkdir(motherdir)
 
         if self.d1s:
-            os.mkdir(os.path.join(motherdir, 'd1s'))
+            os.mkdir(os.path.join(motherdir, "d1s"))
         if self.mcnp:
-            os.mkdir(os.path.join(motherdir, 'mcnp'))       
+            os.mkdir(os.path.join(motherdir, "mcnp"))
         if self.serpent:
-            os.mkdir(os.path.join(motherdir, 'serpent'))
+            os.mkdir(os.path.join(motherdir, "serpent"))
         if self.openmc:
-            os.mkdir(os.path.join(motherdir, 'openmc'))
+            os.mkdir(os.path.join(motherdir, "openmc"))
 
         # GET SETTINGS
         # Zaids
-        settings = os.path.join(self.test_conf_path, 'ZaidSettings.csv')
-        settings = pd.read_csv(settings, sep=',').set_index('Z')
+        settings = os.path.join(self.test_conf_path, "ZaidSettings.csv")
+        settings = pd.read_csv(settings, sep=",").set_index("Z")
         # Materials
-        settings_mat = os.path.join(self.test_conf_path,
-                                    'MaterialsSettings.csv')
-        settings_mat = pd.read_csv(settings_mat, sep=',').set_index('Symbol')
+        settings_mat = os.path.join(self.test_conf_path, "MaterialsSettings.csv")
+        settings_mat = pd.read_csv(settings_mat, sep=",").set_index("Symbol")
 
         self.run_dir = motherdir
 
-        print(' Zaids:')
+        print(" Zaids:")
         # for zaid in tqdm(zaids):
         for zaid in tqdm(zaids[:limit]):
             Z = int(zaid[:-3])
             # Get Density
-            density = settings.loc[Z, 'Density [g/cc]']
+            density = settings.loc[Z, "Density [g/cc]"]
 
-            if settings.loc[Z, 'Let Override']:
+            if settings.loc[Z, "Let Override"]:
                 # get stop parameters
                 if self.nps is None:
-                    nps = settings.loc[Z, 'NPS cut-off']
+                    nps = settings.loc[Z, "NPS cut-off"]
                     if nps is np.nan:
                         nps = None
                 else:
                     nps = self.nps
 
-                #if self.ctme is None:
+                # if self.ctme is None:
                 #    ctme = settings.loc[Z, 'CTME cut-off']
                 #    if ctme is np.nan:
                 #        ctme = None
-                #else:
+                # else:
                 #    ctme = self.ctme
                 #
-                #if self.precision is None:
+                # if self.precision is None:
                 #    prec = settings.loc[Z, 'Relative Error cut-off']
                 #    if prec is np.nan:
                 #        precision = None
@@ -731,45 +853,56 @@ class SphereTest(Test):
                 #        tally = prec.split('-')[0]
                 #        error = prec.split('-')[1]
                 #        precision = (tally, error)
-                #else:
+                # else:
                 #    precision = self.precision
 
             # Zaid local settings are prioritized
             else:
-                nps = settings.loc[Z, 'NPS cut-off']
+                nps = settings.loc[Z, "NPS cut-off"]
                 if nps is np.nan:
                     nps = None
 
-                #ctme = settings.loc[Z, 'CTME cut-off']
-                #if ctme is np.nan:
+                # ctme = settings.loc[Z, 'CTME cut-off']
+                # if ctme is np.nan:
                 #    ctme = None
                 #
-                #prec = settings.loc[Z, 'Relative Error cut-off']
-                #if prec is np.nan:
+                # prec = settings.loc[Z, 'Relative Error cut-off']
+                # if prec is np.nan:
                 #    precision = None
-                #else:
+                # else:
                 #    tally = prec.split('-')[0]
                 #    error = prec.split('-')[1]
                 #    precision = (tally, error)
 
-            self.generate_zaid_test(zaid, libmanager, testname,
-                                    motherdir, -1*density, nps)
+            self.generate_zaid_test(
+                zaid, libmanager, testname, motherdir, -1 * density, nps
+            )
 
-        print(' Materials:')
+        print(" Materials:")
         # for material in tqdm(matlist.materials):
         for material in tqdm(matlist.materials[:limit]):
             # Get density
-            density = settings_mat.loc[material.name.upper(), 'Density [g/cc]']
+            density = settings_mat.loc[material.name.upper(), "Density [g/cc]"]
 
-            self.generate_material_test(material, -1*density, libmanager,
-                                        testname, motherdir)
+            self.generate_material_test(
+                material, -1 * density, libmanager, testname, motherdir
+            )
 
-#    def generate_zaid_test(self, zaid, libmanager, testname, motherdir,
-#                           density, nps, ctme, precision, addtag=None,
-#                           parentlist=None, lib=None):
-    def generate_zaid_test(self, zaid, libmanager, testname, motherdir,
-                           density, nps, addtag=None,
-                           parentlist=None, lib=None):
+    #    def generate_zaid_test(self, zaid, libmanager, testname, motherdir,
+    #                           density, nps, ctme, precision, addtag=None,
+    #                           parentlist=None, lib=None):
+    def generate_zaid_test(
+        self,
+        zaid,
+        libmanager,
+        testname,
+        motherdir,
+        density,
+        nps,
+        addtag=None,
+        parentlist=None,
+        lib=None,
+    ):
         """
         Generate input for a single zaid sphere leakage benchmark run.
 
@@ -807,8 +940,8 @@ class SphereTest(Test):
 
         # Get VRT files
         directoryVRT = os.path.join(self.path_VRT, zaid)
-        edits_file = os.path.join(directoryVRT, 'inp_edits.txt')
-        ww_file = os.path.join(directoryVRT, 'wwinp')
+        edits_file = os.path.join(directoryVRT, "inp_edits.txt")
+        ww_file = os.path.join(directoryVRT, "wwinp")
 
         # Adjourn the material cards for the zaid
         zaid = mat.Zaid(1, zaid[:-3], zaid[-3:], lib)
@@ -816,22 +949,21 @@ class SphereTest(Test):
 
         if self.d1s:
             # Add d1s function here
-            pass           
-        
+            pass
+
         if self.mcnp:
             # Create MCNP material card
-            submat = mat.SubMaterial('M1', [zaid],
-                                     header='C '+name+' '+formula)
-            material = mat.Material([zaid], None, 'M1', submaterials=[submat])
-            matlist = mat.MatCardsList([material])            
-            
+            submat = mat.SubMaterial("M1", [zaid], header="C " + name + " " + formula)
+            material = mat.Material([zaid], None, "M1", submaterials=[submat])
+            matlist = mat.MatCardsList([material])
+
             # Generate the new input
             newinp = deepcopy(self.mcnp_inp)
             newinp.matlist = matlist  # Assign material
             # adjourn density
             newinp.change_density(density)
             # assign stop card
-            newinp.add_stopCard(nps)#, ctme, precision)
+            newinp.add_stopCard(nps)  # , ctme, precision)
             # add PIKMT if requested
             if parentlist is not None:
                 newinp.add_PIKMT_card(parentlist)
@@ -840,75 +972,89 @@ class SphereTest(Test):
                 newinp.add_edits(edits_file)  # Add variance reduction
 
             # Write new input file
-            outfile, outdir = self._get_zaidtestname(testname, zaid, formula,
-                                                    addtag=addtag)
-            outpath = os.path.join(motherdir, 'mcnp', outdir)
+            outfile, outdir = self._get_zaidtestname(
+                testname, zaid, formula, addtag=addtag
+            )
+            outpath = os.path.join(motherdir, "mcnp", outdir)
             os.mkdir(outpath)
             outinpfile = os.path.join(outpath, outfile)
             newinp.write(outinpfile)
 
             # Copy also wwinp file
             if os.path.exists(directoryVRT):
-                outwwfile = os.path.join(outpath, 'wwinp')
+                outwwfile = os.path.join(outpath, "wwinp")
                 shutil.copyfile(ww_file, outwwfile)
 
         if self.serpent:
             # Create Serpent material card
-            submat = mat.SubMaterial('mat 1', [zaid],
-                                     header='% '+name+' '+formula)
-            material = mat.Material([zaid], None, 'mat 1', submaterials=[submat], density=density)
+            submat = mat.SubMaterial(
+                "mat 1", [zaid], header="% " + name + " " + formula
+            )
+            material = mat.Material(
+                [zaid], None, "mat 1", submaterials=[submat], density=density
+            )
             matlist = mat.MatCardsList([material])
 
             # Generate the new input
             newinp = deepcopy(self.serpent_inp)
             newinp.matlist = matlist  # Assign material
-            
+
             # assign stop card
             newinp.add_stopCard(nps)
 
             # Write new input file
-            outfile, outdir = self._get_zaidtestname(testname, zaid, formula,
-                                                    addtag=addtag)
-            outpath = os.path.join(motherdir, 'serpent', outdir)
+            outfile, outdir = self._get_zaidtestname(
+                testname, zaid, formula, addtag=addtag
+            )
+            outpath = os.path.join(motherdir, "serpent", outdir)
             os.mkdir(outpath)
             outinpfile = os.path.join(outpath, outfile)
             newinp.write(outinpfile)
 
         if self.openmc:
             # Create MCNP material card
-            submat = mat.SubMaterial('m1', [zaid])
-            material = mat.Material([zaid], None, 'm1', submaterials=[submat], density=density)
+            submat = mat.SubMaterial("m1", [zaid])
+            material = mat.Material(
+                [zaid], None, "m1", submaterials=[submat], density=density
+            )
             matlist = mat.MatCardsList([material])
 
             # Generate the new input
             newinp = deepcopy(self.openmc_inp)
             newinp.matlist = matlist  # Assign material
-            
+
             # assign stop card
             newinp.add_stopCard(nps)
 
             # Write new input file
-            outfile, outdir = self._get_zaidtestname(testname, zaid, formula,
-                                                    addtag=addtag)
-            outpath = os.path.join(motherdir, 'openmc', outdir)
+            outfile, outdir = self._get_zaidtestname(
+                testname, zaid, formula, addtag=addtag
+            )
+            outpath = os.path.join(motherdir, "openmc", outdir)
             os.mkdir(outpath)
             newinp.write(outpath, libmanager)
 
-
     @staticmethod
     def _get_zaidtestname(testname, zaid, formula, addtag=None):
-
-        outfile = (testname+'_'+zaid.element+zaid.isotope+'_'+formula+'_')
-        outdir = testname+'_'+zaid.element+zaid.isotope+'_'+formula
+        outfile = testname + "_" + zaid.element + zaid.isotope + "_" + formula + "_"
+        outdir = testname + "_" + zaid.element + zaid.isotope + "_" + formula
 
         if addtag is not None:
-            outfile = outfile+addtag+'_'
-            outdir = outdir+'_'+addtag
+            outfile = outfile + addtag + "_"
+            outdir = outdir + "_" + addtag
 
         return outfile, outdir
 
-    def generate_material_test(self, material, density, libmanager, testname,
-                               motherdir, parentlist=None, lib=None):
+    def generate_material_test(
+        self,
+        material,
+        density,
+        libmanager,
+        testname,
+        motherdir,
+        parentlist=None,
+        lib=None,
+    ):
         """
         Generate a sphere leakage benchmark input for a single typical
         material.
@@ -938,19 +1084,19 @@ class SphereTest(Test):
         truename = material.name
         # Get VRT file
         directoryVRT = os.path.join(self.path_VRT, truename)
-        edits_file = os.path.join(directoryVRT, 'inp_edits.txt')
-        ww_file = os.path.join(directoryVRT, 'wwinp')
+        edits_file = os.path.join(directoryVRT, "inp_edits.txt")
+        ww_file = os.path.join(directoryVRT, "wwinp")
 
         if self.d1s:
             # Add d1s function here
             pass
-        
+
         if self.mcnp:
             newmat = deepcopy(material)
             # Translate and assign the material
-            newmat.translate(lib, libmanager, 'mcnp')
-            newmat.header = material.header+'C\nC True name:'+truename
-            newmat.name = 'M1'
+            newmat.translate(lib, libmanager, "mcnp")
+            newmat.header = material.header + "C\nC True name:" + truename
+            newmat.name = "M1"
             matlist = mat.MatCardsList([newmat])
 
             # Generate the new input
@@ -959,7 +1105,7 @@ class SphereTest(Test):
             # adjourn density
             newinp.change_density(density)
             # add stop card
-            newinp.add_stopCard(self.nps)#, self.ctme, self.precision)
+            newinp.add_stopCard(self.nps)  # , self.ctme, self.precision)
             # Add PIKMT card if required
             if parentlist is not None:
                 newinp.add_PIKMT_card(parentlist)
@@ -968,24 +1114,24 @@ class SphereTest(Test):
                 newinp.add_edits(edits_file)  # Add variance reduction
 
             # Write new input file
-            outfile = testname+'_'+truename+'_'
-            outdir = testname+'_'+truename
-            outpath = os.path.join(motherdir, 'mcnp', outdir)
+            outfile = testname + "_" + truename + "_"
+            outdir = testname + "_" + truename
+            outpath = os.path.join(motherdir, "mcnp", outdir)
             os.mkdir(outpath)
             outinpfile = os.path.join(outpath, outfile)
             newinp.write(outinpfile)
 
             # Copy also wwinp file
             if os.path.exists(directoryVRT):
-                outwwfile = os.path.join(outpath, 'wwinp')
+                outwwfile = os.path.join(outpath, "wwinp")
                 shutil.copyfile(ww_file, outwwfile)
 
         if self.serpent:
             newmat = deepcopy(material)
             # Translate and assign the material
-            newmat.translate(lib, libmanager, 'serpent')
-            newmat.header = material.header+'%\n% True name:'+truename
-            newmat.name = 'mat 1'
+            newmat.translate(lib, libmanager, "serpent")
+            newmat.header = material.header + "%\n% True name:" + truename
+            newmat.name = "mat 1"
             newmat.density = density
             matlist = mat.MatCardsList([newmat])
 
@@ -993,12 +1139,12 @@ class SphereTest(Test):
             newinp = deepcopy(self.serpent_inp)
             newinp.matlist = matlist  # Assign material
             # add stop card
-            newinp.add_stopCard(self.nps)#, self.ctme, self.precision)
+            newinp.add_stopCard(self.nps)  # , self.ctme, self.precision)
 
             # Write new input file
-            outfile = testname+'_'+truename+'_'
-            outdir = testname+'_'+truename
-            outpath = os.path.join(motherdir, 'serpent', outdir)
+            outfile = testname + "_" + truename + "_"
+            outdir = testname + "_" + truename
+            outpath = os.path.join(motherdir, "serpent", outdir)
             os.mkdir(outpath)
             outinpfile = os.path.join(outpath, outfile)
             newinp.write(outinpfile)
@@ -1006,8 +1152,8 @@ class SphereTest(Test):
         if self.openmc:
             newmat = deepcopy(material)
             # Translate and assign the material (not supported yet for openmc)
-            #newmat.translate(lib, libmanager, 'openmc')
-            newmat.name = 'm1'
+            # newmat.translate(lib, libmanager, 'openmc')
+            newmat.name = "m1"
             newmat.density = density
             matlist = mat.MatCardsList([newmat])
 
@@ -1015,74 +1161,59 @@ class SphereTest(Test):
             newinp = deepcopy(self.openmc_inp)
             newinp.matlist = matlist  # Assign material
             # add stop card
-            newinp.add_stopCard(self.nps)#, self.ctme, self.precision)
+            newinp.add_stopCard(self.nps)  # , self.ctme, self.precision)
 
             # Write new input file
-            outfile = testname+'_'+truename+'_'
-            outdir = testname+'_'+truename
-            outpath = os.path.join(motherdir, 'openmc', outdir)
+            outfile = testname + "_" + truename + "_"
+            outdir = testname + "_" + truename
+            outpath = os.path.join(motherdir, "openmc", outdir)
             os.mkdir(outpath)
             newinp.write(outpath, libmanager)
 
-#    def run(self, cpu=1, timeout=None):
-    def run(self, config, libmanager):
-        """
-        Sphere test needs an ad-hoc run method to run all zaids tests
-        """
-        """
-        flagnotrun = False
-        for folder in tqdm(os.listdir(self.run_dir)):
-            path = os.path.join(self.MCNPdir, folder)
-            name = folder+'_'
-            code = '/home/mcnp/mcnpexecs/freia/mcnp6v2_ifort2020_openmpi4.1_220505'
-            command = 'name='+name+ ' xs=/home/mcnp/xs/xsdir_mcnp6.2_fendl31d_jeff33_endfb71_irdff105_mcplib84_el03'+' wwinp=wwinp tasks '+str(cpu)
-            try:
-                subprocess.run([code, command], cwd=path,
-                               #creationflags=subprocess.CREATE_NEW_CONSOLE,
-                               timeout=timeout)
+    def run(self, config, libmanager) -> None:
+        """Sphere leakage requries ad-hoc run method.
 
-            except subprocess.TimeoutExpired:
-                flagnotrun = True
-                self.log.adjourn(name+' reached timeout, eliminate folder')
-                continue
-
+        Parameters
+        ----------
+        config :
+            Configuration settings
+        libmanager :
+            libmanager
         """
- #       if flagnotrun:
- #           print("""
- #Some MCNP run reached timeout, they are listed in the log file.
- #Please remove their folders before attempting to postprocess the library""")
 
-        
         directory = self.run_dir
 
         if self.d1s:
-            d1s_directory = os.path.join(directory, 'd1s')
+            d1s_directory = os.path.join(directory, "d1s")
             if pd.isnull(config.d1s_exec) is not True:
                 for folder in tqdm(os.listdir(d1s_directory)):
                     run_directory = os.path.join(d1s_directory, folder)
-                    self.run_d1s(config, libmanager, folder+'_', run_directory)
+                    self.run_d1s(config, libmanager, folder + "_", run_directory)
+
         if self.mcnp:
-            mcnp_directory = os.path.join(directory, 'mcnp')
+            mcnp_directory = os.path.join(directory, "mcnp")
             if pd.isnull(config.mcnp_exec) is not True:
                 for folder in tqdm(os.listdir(mcnp_directory)):
-                    run_directory = os.path.join(mcnp_directory, folder)           
-                    self.run_mcnp(config, libmanager, folder+'_', run_directory)
+                    run_directory = os.path.join(mcnp_directory, folder)
+                    self.run_mcnp(config, libmanager, folder + "_", run_directory)
+
         if self.serpent:
-            serpent_directory = os.path.join(directory, 'serpent')
+            serpent_directory = os.path.join(directory, "serpent")
             if pd.isnull(config.serpent_exec) is not True:
                 for folder in tqdm(os.listdir(serpent_directory)):
-                    run_directory = os.path.join(serpent_directory, folder)                 
-                    self.run_serpent(config, libmanager, folder+'_', run_directory)
+                    run_directory = os.path.join(serpent_directory, folder)
+                    self.run_serpent(config, libmanager, folder + "_", run_directory)
+
         if self.openmc:
-            openmc_directory = os.path.join(directory, 'openmc')
+            openmc_directory = os.path.join(directory, "openmc")
             if pd.isnull(config.openmc_exec) is not True:
                 for folder in tqdm(os.listdir(openmc_directory)):
-                    run_directory = os.path.join(openmc_directory, folder)                 
-                    self.run_openmc(config, libmanager, folder+'_', run_directory)
+                    run_directory = os.path.join(openmc_directory, folder)
+                    self.run_openmc(config, libmanager, folder + "_", run_directory)
+
 
 # Fix from here
 class SphereTestSDDR(SphereTest):
-
     def __init__(self, *args, **keyargs):
         super().__init__(*args, **keyargs)
         # Lib needs to be provided in the {activation lib}-{transportlib}
@@ -1091,12 +1222,13 @@ class SphereTestSDDR(SphereTest):
         self.transportlib = transportlib
 
     def generate_test(self, directory, libmanager, limit=None, lib=None):
+        super().generate_test(
+            directory, libmanager, limit=limit, lib=self.activationlib
+        )
 
-        super().generate_test(directory, libmanager, limit=limit,
-                              lib=self.activationlib)
-
-    def generate_zaid_test(self, zaid, libmanager, testname, motherdir,
-                           density, nps, ctme, precision):
+    def generate_zaid_test(
+        self, zaid, libmanager, testname, motherdir, density, nps, ctme, precision
+    ):
         """
         Generate input for a single zaid sphere SDDR benchmark run.
         Depending on the number of reactions, multiple inputs may be generated
@@ -1134,11 +1266,19 @@ class SphereTestSDDR(SphereTest):
             MT = reaction[0]
             daughter = reaction[1]
             # generate the input file
-            super().generate_zaid_test(zaid, libmanager, testname,
-                                       motherdir, density, nps, ctme,
-                                       precision, addtag=MT,
-                                       parentlist=[zaid],
-                                       lib=self.activationlib)
+            super().generate_zaid_test(
+                zaid,
+                libmanager,
+                testname,
+                motherdir,
+                density,
+                nps,
+                ctme,
+                precision,
+                addtag=MT,
+                parentlist=[zaid],
+                lib=self.activationlib,
+            )
 
             # --- Add the irradiation file ---
             # generate file
@@ -1146,8 +1286,7 @@ class SphereTestSDDR(SphereTest):
             # Recover ouput directory
             name, formula = libmanager.get_zaidname(zaid)
             zaidob = mat.Zaid(1, zaid[:-3], zaid[-3:], self.activationlib)
-            _, outdir = self._get_zaidtestname(testname, zaidob, formula,
-                                               addtag=MT)
+            _, outdir = self._get_zaidtestname(testname, zaidob, formula, addtag=MT)
             outpath = os.path.join(motherdir, outdir)
             reacfile.write(outpath)
 
@@ -1155,12 +1294,15 @@ class SphereTestSDDR(SphereTest):
             irrfile, ans = self._generate_irradiation_file([daughter])
             irrfile.write(outpath)
             if not ans:
-                print(CORANGE +
-                      ' Warning: {} irr file was not generated'.format(outdir)+
-                      CEND)
+                print(
+                    CORANGE
+                    + " Warning: {} irr file was not generated".format(outdir)
+                    + CEND
+                )
 
-    def generate_material_test(self, material, density, libmanager, testname,
-                               motherdir):
+    def generate_material_test(
+        self, material, density, libmanager, testname, motherdir
+    ):
         """
         Generate a sphere leakage benchmark input for a single typical
         material.
@@ -1195,9 +1337,8 @@ class SphereTestSDDR(SphereTest):
         transportlist = []
         for submat in material.submaterials:
             for zaid in submat.zaidList:
-                parent = zaid.element+zaid.isotope
-                zaidreactions = libmanager.get_reactions(self.activationlib,
-                                                         parent)
+                parent = zaid.element + zaid.isotope
+                zaidreactions = libmanager.get_reactions(self.activationlib, parent)
                 if len(zaidreactions) > 0:
                     # it is a parent only if reactions are available
                     parentlist.append(parent)
@@ -1220,16 +1361,20 @@ class SphereTestSDDR(SphereTest):
             return
         else:
             # generate the input
-            libs = {self.activationlib: parentlist,
-                    self.transportlib: transportlist}
-            super().generate_material_test(material, density, libmanager,
-                                           testname,
-                                           motherdir, parentlist=parentlist,
-                                           lib=libs)
+            libs = {self.activationlib: parentlist, self.transportlib: transportlist}
+            super().generate_material_test(
+                material,
+                density,
+                libmanager,
+                testname,
+                motherdir,
+                parentlist=parentlist,
+                lib=libs,
+            )
             # Generate the reaction file
             reac_file = self._generate_reaction_file(reactions)
             # recover output directory and write file
-            outdir = testname+'_'+truename
+            outdir = testname + "_" + truename
             outpath = os.path.join(motherdir, outdir)
             reac_file.write(outpath)
 
@@ -1237,9 +1382,11 @@ class SphereTestSDDR(SphereTest):
             irrfile, ans = self._generate_irradiation_file(set(daughterlist))
             irrfile.write(outpath)
             if not ans:
-                print(CORANGE +
-                      ' Warning: {} irr file was not generated'.format(outdir)+
-                      CEND)
+                print(
+                    CORANGE
+                    + " Warning: {} irr file was not generated".format(outdir)
+                    + CEND
+                )
 
     def _generate_reaction_file(self, reactions):
         """
@@ -1261,7 +1408,7 @@ class SphereTestSDDR(SphereTest):
         """
         reaction_list = []
         for parent, MT, daughter in reactions:
-            parent = parent+'.'+self.activationlib
+            parent = parent + "." + self.activationlib
             rx = Reaction(parent, MT, daughter)
             reaction_list.append(rx)
 
@@ -1286,12 +1433,18 @@ class SphereTestSDDR(SphereTest):
 
         """
         try:
-            filepath = os.path.join(self.test_conf_path, 'irrad_'+self.activationlib)
+            filepath = os.path.join(self.test_conf_path, "irrad_" + self.activationlib)
         except FileNotFoundError:
-            print(CRED+"""
+            print(
+                CRED
+                + """
  Please provide an irradiation file summary for lib {}. Check the documentation
  for additional details. The application will now exit.
-                  """.format(self.activationlib)+CEND)
+                  """.format(
+                    self.activationlib
+                )
+                + CEND
+            )
             sys.exit()
 
         irradfile = IrradiationFile.from_text(filepath)
@@ -1302,9 +1455,13 @@ class SphereTestSDDR(SphereTest):
                 new_irradiations.append(irradiation)
 
         if len(new_irradiations) != len(daughters):
-            print(CORANGE+"""
+            print(
+                CORANGE
+                + """
  Warning: irradiations schedules were not find for all specified daughters.
- """+CEND)
+ """
+                + CEND
+            )
             ans = False
         else:
             ans = True
@@ -1317,15 +1474,14 @@ class FNGTest(Test):
     def custom_inp_modifications(self):
         # Add the tracking for daughters in tally 14
         zaids = self.irrad.get_daughters()
-        self.inp.add_track_contribution('F14:p', zaids, who='daughter')
+        self.inp.add_track_contribution("F14:p", zaids, who="daughter")
         # Add the tracking for daughters in tally 24
         zaids = self.react.get_parents()
-        self.inp.add_track_contribution('F24:p', zaids, who='parent')
+        self.inp.add_track_contribution("F24:p", zaids, who="parent")
 
 
 class MultipleTest:
-    def __init__(self, inpsfolder, lib, config, log, VRTpath, confpath,
-                 TestOb=Test):
+    def __init__(self, inpsfolder, lib, config, log, VRTpath, confpath, TestOb=Test):
         """
         A collection of Tests
 
@@ -1420,12 +1576,12 @@ def check_transport_activation(lib):
  (e.g. 99c-31c). See additional details on the documentation.
             """
     try:
-        activationlib = lib.split('-')[0]
-        transportlib = lib.split('-')[1]
+        activationlib = lib.split("-")[0]
+        transportlib = lib.split("-")[1]
     except IndexError:
         raise ValueError(errmsg)
     # Check that libraries have been correctly defined
-    if activationlib+'-'+transportlib != lib:
+    if activationlib + "-" + transportlib != lib:
         raise ValueError(errmsg)
 
     return activationlib, transportlib

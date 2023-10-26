@@ -1,0 +1,19 @@
+Benchmark, MCNP Status, OpenMC Status, Serpent Status
+Oktavian (Al; Co; Cr; Cu; LiF; Mn; Mo; Pb; Si; Ti; W; Zr), I, W, W
+FNG SSDR, I, W, W
+Tiara Shielding (BC; BS; FC), I, W, W
+FNG Bulk Blanket and Shield, I, W, W
+FNG W, I, W, W
+FNS (Be; C; Fe; N; O; Pb; V), D, D, W
+ASPIS Fe-88, I, W, W
+Iron Slab (TUD), D, W, W
+TUD/FNG Bulk Shield, D, W, W
+FNG/TUD W, D, W, W
+FNG/TUD SiC, D, D, W
+LLNL Pulsed Sphere, W, W, W
+JET activation foils, W, W, W
+PCA REPLICA, W, W, W
+FNG Si
+FNG HCPB, W, W, W
+CIAE Fe, W, W, W
+IPPE V, D, D, W

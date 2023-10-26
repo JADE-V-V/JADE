@@ -3,6 +3,9 @@
 *.pyc
 Untitled.ipynb
 .coverage
+Benchmarks_Inputs/
+Configuration/
+Experimental_Results/
 
 # These are generated folders for cache 
 .ipynb_checkpoints/

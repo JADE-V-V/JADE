@@ -374,7 +374,7 @@ class BenchmarkOutput(AbstractOutput):
         # Printing Atlas
         template = os.path.join(self.code_path, 'templates',
                                 'AtlasTemplate.docx')
-        atlas = at.Atlas(template, self.testname+' '+self.lib)
+        atlas = at.Atlas(template, self.testname+'_'+self.lib)
 
         # Iterate over each type of plot (first one is quantity
         # and second one the measure unit)
@@ -472,7 +472,7 @@ class BenchmarkOutput(AbstractOutput):
         template = os.path.join(self.code_path, 'templates',
                                 'AtlasTemplate.docx')
 
-        atlas = at.Atlas(template, self.testname+' '+self.name)
+        atlas = at.Atlas(template, self.testname+'_'+self.name)
 
         # Recover data
         outputs_dic = {}

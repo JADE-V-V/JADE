@@ -314,3 +314,85 @@ Unit
 
     .. seealso::
         :ref:`plotstyles` for an additional description of the available plot styles.
+
+.. _spectrumconfig:
+
+SpectrumOutput class benchmarks configuration files
+---------------------------------------------------
+When a binned-values daat benchmark is inserted (see :ref:`insbin`), a Configuration file 
+has to be defined based on the desired final plot result. The filepath is expected to be:
+``<JADE_root>\Configuration\Benchmarks Configuration\<BenchmarkName>.xlsx``. The Excel file
+must have the following structure: 
+
+.. figure:: /img/dev_guide/Example_config_oktavian.PNG
+    :width: 600
+    :align: center
+    
+    Example of Oktavian configuration file structure
+
+The Atlas will contain one plot for each tally of the MCNP input, for each MCNP input if
+multiple runs are foreseen. each column corresponds to some details in the resulting plot,
+for instance:
+
+.. figure:: /img/dev_guide/plot_example.PNG
+    :width: 600
+    :align: center
+    
+    Example of Oktavian plot with all the corresponding configurations
+
+Again, in case of multiple runs each tally number must represent the same quantity in all MCNP inputs for 
+consistency of the parameters in the configuration file. If a tally in the configuration file is not present
+in a MCNP input file (e.g. a spectrum is collected in all MCNP inputs except one), it will be skipped.
+If a tally is present in a MCNP input but experimental data is not available for that tally, it will e skipped.
+Obviously, the quantity and the units in the configuration file and in the experimental data file
+must be consistent.
+
+The ``C/E X quantity intervals`` column must be defined as a series of numbers separated
+by a ``-``, which will be the upper values of the energy bins used for the interpolation and
+the printing of C/E tables:
+
+.. figure:: /img/dev_guide/CE_example.PNG
+    :width: 600
+    :align: center
+    
+    Example of C/E tables for SpectrumOutput class
+
+The values in the column ``Y label`` must be different for each tally in the MCNP input
+and should identify univocally the plotted quantity
+
+.. _multspectrumconfig:
+
+MultipleSpectrumOutput class benchmarks configuration files
+-----------------------------------------------------------
+All the considerations made in :ref:`spectrumconfig` still hold, but the Excel file
+must have a different structure: 
+
+.. figure:: /img/dev_guide/Example_config_fnstof.PNG
+    :width: 600
+    :align: center
+    
+    Example of FNS-TOF configuration file structure
+
+Every tally an its parameters from every MCNP input file must be listed as a row in the 
+configuration file. A group number must be assigned to each row. Tallies belonging to the same group
+will be plotted together. The user should pay attention on the fact that only plots
+with the same quantities in both X and Y axis and with the same units are consistent.
+Groups should be numbered starting from 1 to the last group number and their number corresponds
+to their position in the ``Atlas``. In the example above, for instance, all tallies in
+each MCNP input are plotted together (neutron leakage spectra at different detectors' locations'),
+but in principle also tallies from different MCNP inputs can be plotted together.
+
+In the following, an example of a resulting plot and the meaning of the parameters
+from the configuration file are shown:
+
+.. figure:: /img/dev_guide/plot_example_tof.PNG
+    :width: 600
+    :align: center
+    
+    Example of FNS-TOF plot and parameters
+
+The title of the plot can be personalized in the code, the default is the name of the benchmark +
+the name of the quantity.       
+The combination of ``Particle``, ``Quantity`` and ``Y label`` must univocally identify the tally
+inside the group, i.e. no tally can have the same ``Particle``, ``Quantity`` and ``Y label``
+parameters at the same time.

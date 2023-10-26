@@ -1,3 +1,4 @@
+.. _fnstof:
 FNS Time-of-Flight Experiment
 -----------------------------
 

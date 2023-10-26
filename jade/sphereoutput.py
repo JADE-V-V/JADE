@@ -92,7 +92,25 @@ class SphereOutput(BenchmarkOutput):
         for code, outputs in self.outputs.items():
             outpath = os.path.join(self.atlas_path, code, 'tmp')
             if not os.path.exists(outpath):
-                os.mkdir(outpath)        
+               os.mkdir(outpath)
+            """
+            if self.mcnp:
+                outpath = os.path.join(self.atlas_path_mcnp, 'tmp')
+                if not os.path.exists(outpath):
+                    os.mkdir(outpath)
+            if self.serpent:
+                outpath = os.path.join(self.atlas_path_serpent, 'tmp')
+                if not os.path.exists(outpath):
+                    os.mkdir(outpath)
+            if self.openmc:
+                outpath = os.path.join(self.atlas_path_openmc, 'tmp')
+                if not os.path.exists(outpath):
+                    os.mkdir(outpath)
+            if self.d1s:
+                outpath = os.path.join(self.atlas_path_d1s, 'tmp')
+                if not os.path.exists(outpath):
+                    os.mkdir(outpath)"""
+                    
             
             for tally, title, quantity, unit in \
                 [(4, 'Averaged Neutron Flux (175 groups)',
@@ -112,7 +130,7 @@ class SphereOutput(BenchmarkOutput):
                     data = [lib]
                     outname = str(zaidnum)+'-'+self.lib+'-'+str(tally)
                     plot = plotter.Plotter(data, title, outpath, outname, quantity,
-                                        unit, 'Energy [MeV]', self.testname)
+                                            unit, 'Energy [MeV]', self.testname)
                     plot.plot('Binned graph')
 
             self._build_atlas(outpath)
@@ -159,8 +177,8 @@ class SphereOutput(BenchmarkOutput):
         print(' Generating Excel Recap...')
         self.pp_excel_comparison()
         print(' Creating Atlas...')
-        outpath = os.path.join(self.atlas_path, 'tmp')
-        os.mkdir(outpath)
+        #outpath = os.path.join(self.atlas_path, 'tmp')
+        #os.mkdir(outpath)
         # Recover all libraries and zaids involved
         libraries, allzaids, outputs = self._get_organized_output()
 
@@ -172,39 +190,56 @@ class SphereOutput(BenchmarkOutput):
 
         # Plot everything
         print(' Generating Plots Atlas...')
-        self._generate_plots(libraries, allzaids, outputs, globalname, outpath)
+        self._generate_plots(libraries, allzaids, outputs, globalname)
         print(' Comparison post-processing completed')
 
-    def _generate_plots(self, libraries, allzaids, outputs, globalname,
-                        outpath):
-
+    def _generate_plots(self, libraries, allzaids, outputs, globalname):
+        for lib, outputs in self.outputs.items():
+            print(lib, outputs)
+        if self.mcnp:
+            outpath = os.path.join(self.atlas_path_mcnp, 'tmp')
+            if not os.path.exists(outpath):
+                os.mkdir(outpath)
+        if self.openmc:
+            outpath = os.path.join(self.atlas_path_openmc, 'tmp')
+            if not os.path.exists(outpath):
+                os.mkdir(outpath)
+        if self.serpent:
+            pass
+        if self.d1s:
+            pass
+        
         for tally, title, quantity, unit in [(4, 'Leakage Neutron Flux (175 groups)',
-                                             'Neutron Flux', r'$\#/cm^2$'),
-                                             (14, 'Leakage Gamma Flux (24 groups)',
-                                             'Gamma Flux', r'$\#/cm^2$')]:
+                                                'Neutron Flux', r'$\#/cm^2$'),
+                                                (14, 'Leakage Gamma Flux (24 groups)',
+                                                'Gamma Flux', r'$\#/cm^2$')]:
 
             print(' Plotting tally n.'+str(tally))
             for zaidnum in tqdm(allzaids):
                 # title = title
                 data = []
-                for idx, output in enumerate(outputs):
+                print(outputs)
+                for zaid, output in outputs.items():
                     try:  # Zaid could not be common to the libraries
-                        tally_data = output[zaidnum].tallydata.set_index('Tally N.').loc[tally]
+                        print(output.tallydata)
+                        tally_data = output.tallydata.set_index('Tally N.').loc[tally]
                         energy = tally_data['Energy'].values
                         values = tally_data['Value'].values
                         error = tally_data['Error'].values
-                        lib_name = self.session.conf.get_lib_name(libraries[idx])
+                        #lib_name = self.session.conf.get_lib_name(libraries[idx])
+                        lib_name = lib
                         lib = {'x': energy, 'y': values, 'err': error,
-                               'ylabel': str(zaidnum)+' ('+lib_name+')'}
+                                'ylabel': str(zaidnum)+' ('+str(lib_name)+')'}
                         data.append(lib)
+                        outname = str(zaidnum)+'-'+globalname+'-'+str(tally)
+                        plot = plotter.Plotter(data, title, outpath, outname, quantity,
+                                               unit, 'Energy [MeV]', self.testname)
+                        plot.plot('Binned graph')
                     except KeyError:
                         # It is ok, simply nothing to plot here
                         pass
 
-                outname = str(zaidnum)+'-'+globalname+'-'+str(tally)
-                plot = plotter.Plotter(data, title, outpath, outname, quantity,
-                                       unit, 'Energy [MeV]', self.testname)
-                plot.plot('Binned graph')
+
 
         self._build_atlas(outpath)
 
@@ -257,7 +292,9 @@ class SphereOutput(BenchmarkOutput):
             # Recover statistical checks
             st_ck = output.stat_checks
             # Recover results and precisions
-            res, err = output.get_single_excel_data(['2', '4', '6' , '12', '14', '24', '34', '22', '32', '44', '46'])
+            res, err = output.get_single_excel_data(['2', '4', '6', '12', 
+                                                    '14', '24', '34', '22',
+                                                    '32', '44', '46'])
             for dic in [res, err, st_ck]:
                 dic['Zaid'] = zaidnum
                 dic['Zaid Name'] = zaidname
@@ -282,7 +319,7 @@ class SphereOutput(BenchmarkOutput):
         # Get results
         results = []
         errors = []
-        stat_checks = []
+        #stat_checks = []
         outputs = {}
         test_path_openmc = os.path.join(self.test_path, 'openmc')
         for folder in os.listdir(test_path_openmc):
@@ -302,32 +339,41 @@ class SphereOutput(BenchmarkOutput):
             # Adjourn raw Data
             self.raw_data['openmc'][zaidnum] = output.tallydata
             # Recover statistical checks
-            st_ck = output.stat_checks
+            #st_ck = output.stat_checks
             # Recover results and precisions
-            res, err = output.get_single_excel_data(['4' '14'])
-            for dic in [res, err, st_ck]:
+            res, err = output.get_single_excel_data(['4', '14'])
+            for dic in [res, err]:
                 dic['Zaid'] = zaidnum
                 dic['Zaid Name'] = zaidname
             results.append(res)
             errors.append(err)
-            stat_checks.append(st_ck)
-        return outputs, results, errors, stat_checks
+            #stat_checks.append(st_ck)
+        return outputs, results, errors, #stat_checks
 
-    def _generate_dataframe(self, results, errors, stat_checks):
+    def _generate_dataframe(self, results, errors, stat_checks=None):
         # Generate DataFrames
         results = pd.DataFrame(results)
         errors = pd.DataFrame(errors)
-        stat_checks = pd.DataFrame(stat_checks)
+        
 
         # Swap Columns and correct zaid sorting
         # results
-        for df in [results, errors, stat_checks]:
+        for df in [results, errors]:
             df['index'] = pd.to_numeric(df['Zaid'].values, errors='coerce')
             df.sort_values('index', inplace=True)
             del df['index']
 
             df.set_index(['Zaid', 'Zaid Name'], inplace=True)
             df.reset_index(inplace=True)
+        
+        if stat_checks is not None:
+            stat_checks = pd.DataFrame(stat_checks)
+            stat_checks['index'] = pd.to_numeric(stat_checks['Zaid'].values, errors='coerce')
+            stat_checks.sort_values('index', inplace=True)
+            del stat_checks['index']
+
+            stat_checks.set_index(['Zaid', 'Zaid Name'], inplace=True)
+            stat_checks.reset_index(inplace=True)
         return results, errors, stat_checks
     
     def pp_excel_single(self):
@@ -347,6 +393,7 @@ class SphereOutput(BenchmarkOutput):
         if self.mcnp:
             outfolder_path = os.path.join(self.excel_path, 'mcnp')
             os.mkdir(outfolder_path)
+            #outpath = os.path.join(self.excel_path_mcnp,'Sphere_single_' + 'MCNP_' + self.lib+'.xlsx')
             outpath = os.path.join(outfolder_path,'Sphere_single_' + 'MCNP_' + self.lib+'.xlsx')
             outputs, results, errors, stat_checks = self._read_mcnp_output()
             results, errors, stat_checks = self._generate_dataframe(results, errors, stat_checks)
@@ -355,19 +402,19 @@ class SphereOutput(BenchmarkOutput):
             self.errors['mcnp'] = errors
             self.stat_checks['mcnp'] = stat_checks
             # Generate DataFrames
-            results = pd.DataFrame(results)
-            errors = pd.DataFrame(errors)
-            stat_checks = pd.DataFrame(stat_checks)
+            #results = pd.DataFrame(results)
+            #errors = pd.DataFrame(errors)
+            #stat_checks = pd.DataFrame(stat_checks)
 
             # Swap Columns and correct zaid sorting
             # results
-            for df in [results, errors, stat_checks]:
-                df['index'] = pd.to_numeric(df['Zaid'].values, errors='coerce')
-                df.sort_values('index', inplace=True)
-                del df['index']
+            #for df in [results, errors, stat_checks]:
+            #    df['index'] = pd.to_numeric(df['Zaid'].values, errors='coerce')
+            #    df.sort_values('index', inplace=True)
+            #    del df['index']
 
-                df.set_index(['Zaid', 'Zaid Name'], inplace=True)
-                df.reset_index(inplace=True)
+            #    df.set_index(['Zaid', 'Zaid Name'], inplace=True)
+            #    df.reset_index(inplace=True)
             self.sphere_single_excel_writer(outpath, self.lib, results, errors, stat_checks)
             
 
@@ -375,12 +422,18 @@ class SphereOutput(BenchmarkOutput):
             pass
 
         if self.openmc:
-            outputs, results, errors, stat_checks = self._read_openmc_output()
-            results, errors, stat_checks = self._generate_dataframe(results, errors, stat_checks)
+            outfolder_path = os.path.join(self.excel_path, 'openmc')
+            os.mkdir(outfolder_path)
+            #outpath = os.path.join(self.excel_path_openmc,'Sphere_single_' + 'OpenMC_' + self.lib+'.xlsx')
+            outpath = os.path.join(outfolder_path,'Sphere_single_' + 'OpenMC_' + self.lib+'.xlsx')
+            outputs, results, errors = self._read_openmc_output()
+            results, errors, stat_checks = self._generate_dataframe(results, errors)
             self.outputs['openmc'] = outputs
             self.results['openmc'] = results
             self.errors['openmc'] = errors
             self.stat_checks['openmc'] = stat_checks
+
+            self.sphere_single_excel_writer(outpath, self.lib, results, errors)
 
         if self.d1s:
             pass
@@ -459,7 +512,7 @@ class SphereOutput(BenchmarkOutput):
         # ex.wb.sheets[0].range('D1').value = lib_name
         #ex.save()
 
-    def sphere_single_excel_writer(self, outpath, lib, values, errors, stats):
+    def sphere_single_excel_writer(self, outpath, lib, values, errors, stats = None):
         """
         Produces single library summary excel file using XLSXwriter
 
@@ -482,22 +535,25 @@ class SphereOutput(BenchmarkOutput):
         """
         writer = pd.ExcelWriter(outpath, engine='xlsxwriter')  
 
-        for df in (values, errors, stats):
-            df = df.set_index('Zaid', inplace=True)
+        for df in (values, errors):
+            df.set_index('Zaid', inplace=True)
 
         values.to_excel(writer, startrow=8, startcol=1, sheet_name="Values")
         errors.to_excel(writer, startrow=8, startcol=1, sheet_name="Errors")
-        stats.to_excel(writer, startrow=8, startcol=1, sheet_name="Statistical Checks")
 
         wb = writer.book
         val_sheet = writer.sheets['Values']
         err_sheet = writer.sheets['Errors']
-        stat_sheet = writer.sheets['Statistical Checks']
-
+        
         values_len, values_width = values.shape
         errors_len, errors_width = errors.shape
-        stats_len, stats_width = stats.shape
 
+        if stats is not None:
+            stats.set_index('Zaid', inplace=True)
+            stats.to_excel(writer, startrow=8, startcol=1, sheet_name="Statistical Checks")
+            stat_sheet = writer.sheets['Statistical Checks']
+            stats_len, stats_width = stats.shape
+        
         # Formatting styles
         plain_format = wb.add_format({'bg_color':'#FFFFFF'})
         oob_format = wb.add_format({'align':'center','valign':'center','bg_color':'#D9D9D9','text_wrap':True})
@@ -528,7 +584,7 @@ class SphereOutput(BenchmarkOutput):
 
         #out of bounds
         val_sheet.set_column(0,0, 4, oob_format)
-        val_sheet.set_column(values_width+2,1000, 4, oob_format)
+        val_sheet.set_column(values_width+2,1000, 18, oob_format)
         for i in range(9):
             val_sheet.set_row(i, None, oob_format)
         for i in range(9+values_len,1000):
@@ -617,7 +673,7 @@ class SphereOutput(BenchmarkOutput):
 
         #out of bounds
         err_sheet.set_column(0,0, 4, oob_format)
-        err_sheet.set_column(errors_width+2,1000, 4, oob_format)
+        err_sheet.set_column(errors_width+2,1000, 18, oob_format)
         for i in range(9):
             err_sheet.set_row(i, None, oob_format)
         for i in range(9+errors_len,1000):
@@ -681,58 +737,48 @@ class SphereOutput(BenchmarkOutput):
                                                 'format':   green_cell_format})       
 
         # STAT CHECKS
-
+        if stats is not None:
         # Title
-        stat_sheet.merge_range('B1:C2','LIBRARY', subtitle_merge_format)
-        stat_sheet.merge_range('D1:D2', lib, subtitle_merge_format)
-        stat_sheet.merge_range('B3:L7','SPHERE LEAKAGE TEST RESULTS RECAP: ERRORS', title_merge_format)
-        stat_sheet.merge_range('B8:C8','ZAID', subtitle_merge_format)
-        stat_sheet.merge_range('D8:L8','TALLY', subtitle_merge_format)
+            stat_sheet.merge_range('B1:C2','LIBRARY', subtitle_merge_format)
+            stat_sheet.merge_range('D1:D2', lib, subtitle_merge_format)
+            stat_sheet.merge_range('B3:L7','SPHERE LEAKAGE TEST RESULTS RECAP: STATISTICAL CHECKS', title_merge_format)
+            stat_sheet.merge_range('B8:C8','ZAID', subtitle_merge_format)
+            stat_sheet.merge_range('D8:L8','TALLY', subtitle_merge_format)
 
-        #Freeze title
-        stat_sheet.freeze_panes(9,0)
+            #Freeze title
+            stat_sheet.freeze_panes(9,0)
 
-        #out of bounds
-        stat_sheet.set_column(0,0, 4, oob_format)
-        stat_sheet.set_column(stats_width+2,1000, 4, oob_format)
-        for i in range(9):
-            stat_sheet.set_row(i, None, oob_format)
-        for i in range(9+stats_len,1000):
-            stat_sheet.set_row(i, None, oob_format)
+            #out of bounds
+            stat_sheet.set_column(0,0, 4, oob_format)
+            stat_sheet.set_column(stats_width+2,1000, 18, oob_format)
+            for i in range(9):
+                stat_sheet.set_row(i, None, oob_format)
+            for i in range(9+stats_len,1000):
+                stat_sheet.set_row(i, None, oob_format)
 
-        #Column widths for errors, set up to 15th col by default to ensure title format correct
-        stat_sheet.set_column(1, 14, 20)
-        stat_sheet.set_column(1, stats_width+2, 20)
+            #Column widths for errors, set up to 15th col by default to ensure title format correct
+            stat_sheet.set_column(1, 14, 20)
+            stat_sheet.set_column(1, stats_width+2, 20)
 
-        #Row Heights
-        stat_sheet.set_row(7,31)
-        stat_sheet.set_row(8,73.25)
+            #Row Heights
+            stat_sheet.set_row(7,31)
+            stat_sheet.set_row(8,73.25)
 
-        #Legend
-        stat_sheet.merge_range('N3:O3','LEGEND', merge_format)
-        stat_sheet.merge_range('N8:O8','According to MCNP manual', oob_format)
-        stat_sheet.write('N4', '', red_cell_format)
-        stat_sheet.write('O4', '> 50%', legend_text_format)
-        stat_sheet.write('N5', '', orange_cell_format)
-        stat_sheet.write('O5', '20% ≤ 50%', legend_text_format)
-        stat_sheet.write('N6', '', yellow_cell_format)
-        stat_sheet.write('O6', '10% ≤ 20%', legend_text_format)
-        stat_sheet.write('N7', '', green_cell_format)
-        stat_sheet.write('O7', '< 10%', legend_text_format)
-        stat_sheet.conditional_format(9,3,8+stats_len,stats_width+1, {'type':     'blanks',
-                                                'format':   plain_format})      
-        stat_sheet.conditional_format(9,3,8+stats_len,stats_width+1, {'type':     'text',
-                                                'criteria': 'containing',
-                                                'value':    'Passed',
-                                                'format':   value_abovezero_format})
-        stat_sheet.conditional_format(9,3,8+stats_len,stats_width+1, {'type':     'text',
-                                                'criteria': 'containing',
-                                                'value':    'All zeros',
-                                                'format':   value_allzero_format})
-        stat_sheet.conditional_format(9,3,8+stats_len,stats_width+1, {'type':     'text',
-                                                'criteria': 'containing',
-                                                'value':    'Missed',
-                                                'format':   value_belowzero_format})                            
+            #Formatting
+            stat_sheet.conditional_format(9,3,8+stats_len,stats_width+1, {'type':     'blanks',
+                                                    'format':   plain_format})      
+            stat_sheet.conditional_format(9,3,8+stats_len,stats_width+1, {'type':     'text',
+                                                    'criteria': 'containing',
+                                                    'value':    'Passed',
+                                                    'format':   value_abovezero_format})
+            stat_sheet.conditional_format(9,3,8+stats_len,stats_width+1, {'type':     'text',
+                                                    'criteria': 'containing',
+                                                    'value':    'All zeros',
+                                                    'format':   value_allzero_format})
+            stat_sheet.conditional_format(9,3,8+stats_len,stats_width+1, {'type':     'text',
+                                                    'criteria': 'containing',
+                                                    'value':    'Missed',
+                                                    'format':   value_belowzero_format})                            
 
         wb.close()
 
@@ -747,20 +793,28 @@ class SphereOutput(BenchmarkOutput):
         None.
 
         """
-        template = os.path.join(os.getcwd(), 'templates',
-                                'Sphere_comparison.xlsx')
+        #template = os.path.join(os.getcwd(), 'templates',
+        #                        'Sphere_comparison.xlsx')
 
-        outputs = {}
+        self.outputs = {}
+        self.results = {}
+        self.errors = {}
         iteration = 0
         if self.mcnp:
             for reflib, tarlib, name in self.couples:
-                outpath = os.path.join(self.excel_path, 'Sphere_comparison_' +
-                                       name+'.xlsx')
+                outfolder_path = os.path.join(self.excel_path, 'mcnp')
+                os.mkdir(outfolder_path)
+                outpath = os.path.join(outfolder_path, 'Sphere_comparison_' +
+                                       name+'_mcnp.xlsx')
+                #outpath = os.path.join(self.excel_path_mcnp, 'Sphere_comparison_' +
+                #                       name+'.xlsx')
                 # Get results
-                dfs = []
-
+                comp_dfs = []
+                error_dfs = []
                 for test_path in [os.path.join(self.test_path[reflib],'mcnp'), os.path.join(self.test_path[tarlib],'mcnp')]:
                     results = []
+                    errors = []
+                    outputs = {}
                     iteration = iteration+1
                     outputs_lib = {}
                     for folder in os.listdir(test_path):
@@ -787,16 +841,19 @@ class SphereOutput(BenchmarkOutput):
                         outfile = os.path.join(results_path, outfile)
                         output = SphereMCNPoutput(mfile, outfile)
                         outputs_lib[zaidnum] = output
-                        res, columns = output.get_comparison_data(['4','14'])
+                        res, err, columns = output.get_comparison_data(['4','14'], "mcnp")
                         try:
                             zn = int(zaidnum)
                         except ValueError:  # Happens for typical materials
                             zn = zaidnum
 
                         res.append(zn)
+                        err.append(zn)
                         res.append(zaidname)
+                        err.append(zaidname)
 
                         results.append(res)
+                        errors.append(err)
                     # Add reference library outputs
                     if iteration == 1:
                         outputs[reflib] = outputs_lib
@@ -806,28 +863,41 @@ class SphereOutput(BenchmarkOutput):
 
                     # Generate DataFrames
                     columns.extend(['Zaid', 'Zaid Name'])
-                    df = pd.DataFrame(results, columns=columns)
-                    df.set_index(['Zaid', 'Zaid Name'], inplace=True)
-                    dfs.append(df)
+                    comp_df = pd.DataFrame(results, columns=columns)
+                    error_df = pd.DataFrame(errors, columns=columns)
+                    comp_df.set_index(['Zaid', 'Zaid Name'], inplace=True)
+                    error_df.set_index(['Zaid', 'Zaid Name'], inplace=True)
+                    comp_dfs.append(comp_df)
+                    error_dfs.append(error_df)
 
                     # outputs_couple = outputs
-                    # self.results = results
+                    self.outputs = outputs
+                    self.results = results
+                    self.errors = errors
 
-                self.outputs = outputs
+                #self.outputs = outputs
                 # Consider only common zaids
-                idx1 = dfs[0].index
-                idx2 = dfs[1].index
+                idx1 = comp_dfs[0].index
+                idx2 = comp_dfs[1].index
                 newidx = idx1.intersection(idx2)
 
                 # Build the final excel data
-                final = (dfs[0].loc[newidx]-dfs[1].loc[newidx])/dfs[0].loc[newidx]
-                absdiff = (dfs[0].loc[newidx]-dfs[1].loc[newidx])
+                final = (comp_dfs[0].loc[newidx]-comp_dfs[1].loc[newidx])/comp_dfs[0].loc[newidx]
+                absdiff = (comp_dfs[0].loc[newidx]-comp_dfs[1].loc[newidx])
 
                 self.diff_data = final
                 self.absdiff = absdiff
 
+                # Standard deviation
+                idx1 = absdiff.index
+                idx2 = error_dfs[0].index
+                newidx = idx1.intersection(idx2)
+                
+                std_dev = (absdiff.loc[newidx]/error_dfs[0].loc[newidx])
+
+                self.std_dev = std_dev
                 # Correct sorting
-                for df in [final, absdiff]:
+                for df in [final, absdiff, std_dev]:
                     df.reset_index(inplace=True)
                     df['index'] = pd.to_numeric(df['Zaid'].values, errors='coerce')
                     df.sort_values('index', inplace=True)
@@ -867,7 +937,7 @@ class SphereOutput(BenchmarkOutput):
                 summary = pd.DataFrame(rows)
                 summary.set_index('Range', inplace=True)        
                 # If it is zero the CS are equal! (NaN if both zeros)
-                for df in [final, absdiff]:
+                for df in [final, absdiff, std_dev]:
                     #df[df == np.nan] = 'Not Available'
                     df.astype({col: float for col in df.columns[1:]})   
                     df.replace(np.nan, 'Not Available', inplace = True)
@@ -877,7 +947,7 @@ class SphereOutput(BenchmarkOutput):
 
                 # --- Write excel ---
                 # Generate the excel                
-                self.sphere_comp_excel_writer(outpath, name, final, absdiff, summary)
+                self.sphere_comp_excel_writer(outpath, name, final, absdiff, std_dev, summary)
                 """
                 # ex = SphereExcelOutputSheet(template, outpath)
                 # Prepare the copy of the comparison sheet
@@ -908,23 +978,174 @@ class SphereOutput(BenchmarkOutput):
 
                 ex.save()
                 """
-    def sphere_comp_excel_writer(self, outpath, name, final, absdiff, summary):
+        if self.openmc:
+            for reflib, tarlib, name in self.couples:
+                outfolder_path = os.path.join(self.excel_path, 'openmc')
+                os.mkdir(outfolder_path)
+                outpath = os.path.join(outfolder_path, 'Sphere_comparison_' +
+                                       name+'_openmc.xlsx')
+                #outpath = os.path.join(self.excel_path_openmc, 'Sphere_comparison_' +
+                #                       name+'openmc.xlsx')
+                # Get results
+                comp_dfs = []
+                error_dfs = []
+                
+                for test_path in [os.path.join(self.test_path[reflib],'openmc'), os.path.join(self.test_path[tarlib],'openmc')]:
+                    results = []
+                    errors = []
+                    iteration = iteration+1
+                    outputs_lib = {}
+                    for folder in os.listdir(test_path):
+                        results_path = os.path.join(test_path, folder)
+                        pieces = folder.split('_')
+                        # Get zaid
+                        zaidnum = pieces[-2]
+                        # Check for material exception
+                        if zaidnum == 'Sphere':
+                            zaidnum = pieces[-1].upper()
+                            zaidname = self.mat_settings.loc[zaidnum, 'Name']
+                        else:
+                            zaidname = pieces[-1]
+
+                        # Get mfile
+                        for file in os.listdir(results_path):
+                            if "tallies.out" in file:
+                                outfile = file
+
+                        # Parse output
+                        outfile = os.path.join(results_path, outfile)
+                        output = SphereOpenMCOutput(outfile)
+                        outputs_lib[zaidnum] = output
+                        res, err, columns = output.get_comparison_data(['4','14'], 'openmc')
+                        try:
+                            zn = int(zaidnum)
+                        except ValueError:  # Happens for typical materials
+                            zn = zaidnum
+
+                        res.append(zn)
+                        err.append(zn)
+                        res.append(zaidname)
+                        err.append(zaidname)
+
+                        results.append(res)
+                        errors.append(err)
+                    # Add reference library outputs
+                    if iteration == 1:
+                        outputs[reflib] = outputs_lib
+
+                    if test_path == os.path.join(self.test_path[tarlib],'openmc'):
+                        outputs[tarlib] = outputs_lib
+
+                    # Generate DataFrames
+                    columns.extend(['Zaid', 'Zaid Name'])
+                    comp_df = pd.DataFrame(results, columns=columns)
+                    error_df = pd.DataFrame(errors, columns=columns)
+                    comp_df.set_index(['Zaid', 'Zaid Name'], inplace=True)
+                    error_df.set_index(['Zaid', 'Zaid Name'], inplace=True)
+                    comp_dfs.append(comp_df)
+                    error_dfs.append(error_df)
+
+                    # outputs_couple = outputs
+                    # self.results = results
+
+                self.outputs = outputs
+                # Consider only common zaids
+                idx1 = comp_dfs[0].index
+                idx2 = comp_dfs[1].index
+                newidx = idx1.intersection(idx2)
+
+                # Build the final excel data
+                final = (comp_dfs[0].loc[newidx]-comp_dfs[1].loc[newidx])/comp_dfs[0].loc[newidx]
+                absdiff = (comp_dfs[0].loc[newidx]-comp_dfs[1].loc[newidx])
+
+                self.diff_data = final
+                self.absdiff = absdiff
+
+                # Standard deviation
+                idx1 = absdiff.index
+                idx2 = error_dfs[0].index
+                newidx = idx1.intersection(idx2)
+                
+                std_dev = (absdiff.loc[newidx]/error_dfs[0].loc[newidx])
+
+                self.std_dev = std_dev
+
+                # Correct sorting
+                for df in [final, absdiff, std_dev]:
+                    df.reset_index(inplace=True)
+                    df['index'] = pd.to_numeric(df['Zaid'].values, errors='coerce')
+                    df.sort_values('index', inplace=True)
+                    del df['index']
+                    df.set_index(['Zaid', 'Zaid Name'], inplace=True)
+                # Create and concat the summary
+                old_l = 0
+                old_lim = 0
+                rows = []
+                limits = [0, 0.05, 0.1, 0.2, 0.2]
+                for i, sup_lim in enumerate(limits[1:]):
+                    if i == len(limits)-2:
+                        row = {'Range': '% of cells > '+str(sup_lim*100)}
+                        for column in final.columns:
+                            cleaned = final[column].replace('', np.nan).dropna()
+                            l_range = len(cleaned[abs(cleaned) > sup_lim])
+                            try:
+                                row[column] = l_range/len(cleaned)
+                            except ZeroDivisionError:
+                                row[column] = np.nan
+                    else:
+                        row = {'Range': str(old_lim*100)+' < '+'% of cells' +
+                               ' < ' + str(sup_lim*100)}
+                        for column in final.columns:
+                            cleaned = final[column].replace('', np.nan).dropna()
+                            lenght = len(cleaned[abs(cleaned) < sup_lim])
+                            old_l = len(cleaned[abs(cleaned) < limits[i]])
+                            l_range = lenght-old_l
+                            try:
+                                row[column] = l_range/len(cleaned)
+                            except ZeroDivisionError:
+                                row[column] = np.nan
+
+                    old_lim = sup_lim
+                    rows.append(row)
+
+                summary = pd.DataFrame(rows)
+                summary.set_index('Range', inplace=True)        
+                # If it is zero the CS are equal! (NaN if both zeros)
+                for df in [final, absdiff, std_dev]:
+                    #df[df == np.nan] = 'Not Available'
+                    df.astype({col: float for col in df.columns[1:]})   
+                    df.replace(np.nan, 'Not Available', inplace = True)
+                    df.replace(float(0), 'Identical', inplace = True)
+                    df.replace(-np.inf, 'Reference = 0', inplace = True)
+                    df.replace(1, 'Target = 0', inplace = True)
+
+                # --- Write excel ---
+                # Generate the excel                
+                self.sphere_comp_excel_writer(outpath, name, final, absdiff, std_dev, summary)
+        if self.serpent:
+            pass
+
+    def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summary):
         
         writer = pd.ExcelWriter(outpath, engine='xlsxwriter', engine_kwargs={'options': {'strings_to_numbers': True}})
         
         comp_len, comp_width = final.shape
         absdiff_len, absdiff_width = absdiff.shape
+        std_dev_len, std_dev_width = std_dev.shape
         summ_len, summ_width = summary.shape
         
+        
         # Insert DataFrame
-        final.to_excel(writer, startrow=9, startcol=1, sheet_name="Comparison")
-        summary.to_excel(writer, startrow=comp_len+12, startcol=2, sheet_name="Comparison")
+        final.to_excel(writer, startrow=9, startcol=1, sheet_name="Comparison (%)")
+        summary.to_excel(writer, startrow=comp_len+12, startcol=2, sheet_name="Comparison (%)")
+        std_dev.to_excel(writer, startrow=9, startcol=1, sheet_name="Comparison (std. dev.)")
         absdiff.to_excel(writer, startrow=9, startcol=1, sheet_name="Comparison (abs diff)")
 
 
 
         wb = writer.book
-        comp_sheet = writer.sheets['Comparison']
+        comp_sheet = writer.sheets['Comparison (%)']
+        std_dev_sheet = writer.sheets['Comparison (std. dev.)']
         absdiff_sheet = writer.sheets['Comparison (abs diff)']
 
         # Formatting styles
@@ -1053,7 +1274,110 @@ class SphereOutput(BenchmarkOutput):
             stop = xl_rowcol_to_cell(row, summ_width+2)
             comp_sheet.write_formula(row,summ_width+3, "=SUM({start}:{stop})/{len}"
             .format(start = start, stop = stop, len = summ_width), )   
-        '''absdiff'''
+
+        '''STANDARD DEVIATIONS FROM MEAN'''
+        std_dev_sheet.merge_range('B1:C2','LIBRARY', subtitle_merge_format)
+        std_dev_sheet.merge_range('D1:E2',name, subtitle_merge_format)
+        std_dev_sheet.merge_range('B3:L7','SPHERE LEAKAGE % COMPARISON RECAP', title_merge_format)
+        std_dev_sheet.merge_range('B8:C8','ZAID', subtitle_merge_format)
+        std_dev_sheet.merge_range('D8:L8','TALLY', subtitle_merge_format)
+        std_dev_sheet.merge_range('F1:L2', "Target library Vs Reference library\n(Reference-Target)/Reference", subtitle_merge_format)
+        std_dev_sheet.merge_range(11+std_dev_len,3,11+std_dev_len,11, "GLOBAL QUICK RESULT: % of cells per range of comparison differences", subtitle_merge_format)
+        #Freeze title
+        std_dev_sheet.freeze_panes(10,3)
+
+        #out of bounds
+        std_dev_sheet.set_column(0,0, 4, oob_format)
+        std_dev_sheet.set_column(std_dev_width+3,1000, 4, oob_format)
+        for i in range(9):
+            std_dev_sheet.set_row(i, None, oob_format)
+        for i in range(9+std_dev_len,1000):
+            std_dev_sheet.set_row(i, None, oob_format)
+
+        # Column widths for values, set up to 15th col to ensure title format correct
+
+        std_dev_sheet.set_column(1, 14, 18)
+        std_dev_sheet.set_column(1, std_dev_width+5, 18)
+
+        # Summary background formatting workaround using conditional formatting
+        std_dev_sheet.conditional_format(12+std_dev_len,3,std_dev_len+summ_len+12,summ_width+3, {'type': 'cell',
+                                     'criteria': '>=',
+                                     'value': 0, 'format': plain_format})
+        std_dev_sheet.conditional_format(12+std_dev_len,3,std_dev_len+summ_len+22,summ_width+3, {'type': 'cell',
+                                     'criteria': '<',
+                                     'value': 0, 'format': plain_format})  
+        
+        #Row Heights
+        std_dev_sheet.set_row(0,25,oob_format)
+        std_dev_sheet.set_row(1,25,oob_format)
+        std_dev_sheet.set_row(7,31,oob_format)
+        std_dev_sheet.set_row(8,40,oob_format)
+        std_dev_sheet.set_row(9,40,oob_format)
+
+        #Legend
+        std_dev_sheet.merge_range('N3:O3','LEGEND', merge_format)
+        std_dev_sheet.write('N4', '', red_cell_format)
+        std_dev_sheet.write('O4', '>|20|%', legend_text_format)
+        std_dev_sheet.write('N5', '', orange_cell_format)
+        std_dev_sheet.write('O5', '|20|%≤|10|%', legend_text_format)
+        std_dev_sheet.write('N6', '', yellow_cell_format)
+        std_dev_sheet.write('O6', '|10|%≤|5|%', legend_text_format)
+        std_dev_sheet.write('N7', '', green_cell_format)
+        std_dev_sheet.write('O7', '<|5|%', legend_text_format)
+
+        # Conditional Formatting
+        std_dev_sheet.conditional_format(10,3,9+std_dev_len,std_dev_width+2, {'type':     'blanks',
+                                        'format':   plain_format})      
+        std_dev_sheet.conditional_format(10,3,9+std_dev_len,std_dev_width+2, {'type':     'text',
+                                        'criteria': 'containing',
+                                        'value':    'Not Available',
+                                        'format':   not_avail_format})
+        std_dev_sheet.conditional_format(10,3,9+std_dev_len,std_dev_width+2, {'type':     'text',
+                                        'criteria': 'containing',
+                                        'value':    'Target = 0',
+                                        'format':   target_ref_format})
+        std_dev_sheet.conditional_format(10,3,9+std_dev_len,std_dev_width+2, {'type':     'text',
+                                        'criteria': 'containing',
+                                        'value':    'Reference = 0',
+                                        'format':   target_ref_format})
+        std_dev_sheet.conditional_format(10,3,9+std_dev_len,std_dev_width+2, {'type':     'text',
+                                        'criteria': 'containing',
+                                        'value':    'Identical',
+                                        'format':   identical_format})    
+        std_dev_sheet.conditional_format(10,3,9+std_dev_len,std_dev_width+2, {'type':     'cell',
+                                        'criteria': 'greater than',
+                                        'value':    0.2,
+                                        'format':   red_cell_format})
+        std_dev_sheet.conditional_format(10,3,9+std_dev_len,std_dev_width+2, {'type':     'cell',
+                                        'criteria': 'between',
+                                        'minimum':    0.1,
+                                        'maximum':    0.2,
+                                        'format':   orange_cell_format})
+        std_dev_sheet.conditional_format(10,3,9+std_dev_len,std_dev_width+2, {'type':     'cell',
+                                        'criteria': 'between',
+                                        'minimum':    0.05,
+                                        'maximum':    0.1,
+                                        'format':   yellow_cell_format})                               
+        std_dev_sheet.conditional_format(10,3,9+std_dev_len,std_dev_width+2, {'type':     'cell',
+                                        'criteria': 'less than',
+                                        'value':    -0.2,
+                                        'format':   red_cell_format})
+        std_dev_sheet.conditional_format(10,3,9+std_dev_len,std_dev_width+1, {'type':     'cell',
+                                        'criteria': 'between',
+                                        'minimum':    -0.5,
+                                        'maximum':    -0.1,
+                                        'format':   orange_cell_format})
+        std_dev_sheet.conditional_format(10,3,9+std_dev_len,std_dev_width+2, {'type':     'cell',
+                                        'criteria': 'between',
+                                        'minimum':    -0.1,
+                                        'maximum':    -0.05,
+                                        'format':   yellow_cell_format})       
+        std_dev_sheet.conditional_format(10,3,9+std_dev_len,std_dev_width+2, {'type':     'cell',
+                                        'criteria': 'between',
+                                        'minimum':    -0.05,
+                                        'maximum':    0.05,
+                                        'format':   green_cell_format})
+        '''ABS DIFF'''
         # Merged Cells
         absdiff_sheet.merge_range('B1:C2','LIBRARY', subtitle_merge_format)
         absdiff_sheet.merge_range('D1:E2',name, subtitle_merge_format)
@@ -1095,10 +1419,27 @@ class SphereOutput(BenchmarkOutput):
         wb.close()
 
     def print_raw(self):
-        for code in self.raw_data:
-            for key, data in self.raw_data[code].items():
-                file = os.path.join(self.raw_path, code, key+'.csv')
+        #for code in self.raw_data:
+        #    for key, data in self.raw_data[code].items():
+        #        file = os.path.join(self.raw_path, code, key+'.csv')
+        #        data.to_csv(file, header=True, index=False)
+        if self.mcnp:
+            for key, data in self.raw_data['mcnp'].items():
+                file = os.path.join(self.raw_path_mcnp, "mcnp"+key+'.csv')
                 data.to_csv(file, header=True, index=False)
+        if self.serpent:
+            for key, data in self.raw_data['serpent'].items():
+                file = os.path.join(self.raw_path_serpent, "serpent"+key+'.csv')
+                data.to_csv(file, header=True, index=False)
+        if self.openmc:
+            for key, data in self.raw_data['openmc'].items():
+                file = os.path.join(self.raw_path_openmc, "openmc"+key+'.csv')
+                data.to_csv(file, header=True, index=False)
+        if self.d1s:
+            for key, data in self.raw_data['d1s'].items():
+                file = os.path.join(self.raw_path_d1s, "d1s"+key+'.csv')
+                data.to_csv(file, header=True, index=False)
+        
 
 class SphereTallyOutput:
     
@@ -1120,7 +1461,7 @@ class SphereTallyOutput:
         #tallies2pp = ['2', '32', '24', '14', '34']
         #heating_tallies = ['4', '6', '44', '46']
         #tallies2pp = ['4' '14']
-        data = self.tallydata.set_index(['Tally Description', 'Energy'])
+        data = self.tallydata.set_index(['Energy'])
         totbins = self.totalbin.set_index('Tally Description')
         results = {}  # Store excel results of different tallies
         errors = {}  # Store average error in different tallies
@@ -1128,38 +1469,61 @@ class SphereTallyOutput:
         #heating_res = {}  # Mid-process heating results
         notes = 'Negative Bins:'  # Record negative bins here
         initial_notes_length = len(notes)  # To check if notes are registered
-        for tally in self.mctal.tallies:
-            num = str(tally.tallyNumber)
-            keys[num] = tally.tallyComment[0]
-            # Isolate tally
-            masked = data.loc[tally.tallyComment[0]]
-
-            # Get mean error among bins, different for single bin
-            if tally.ergTC == 't':
-                mean_error = totbins.loc[tally.tallyComment[0]]['Error']
-            else:
-                mean_error = masked['Error'].mean()
-
-            if num in tallies2pp:
-                masked_zero = masked[masked['Value'] == 0]
-                original_length = len(masked)
-                masked = masked[masked['Value'] < 0]
-                if len(masked) > 0:
-                    res = 'Value < 0 in '+str(len(masked))+' bin(s)'
+        tally_list = [d for _, d in data.groupby(['Tally N.'])]
+        for tally in tally_list:
+            tally_num = str(tally['Tally N.'].iloc[0])
+            tally_description = tally['Tally Description'].iloc[0]
+            mean_error = tally['Error'].mean()
+            if tally_num in tallies2pp:
+                tally_zero= tally[tally['Value'] == 0]
+                original_length = len(tally)
+                tally = tally[tally['Value'] < 0]
+                if len(tally) > 0:
+                    res = 'Value < 0 in '+str(len(tally))+' bin(s)'
                     # Get energy bins
-                    bins = list(masked.reset_index()['Energy'].values)
-                    notes = notes+'\n('+str(num)+'): '
+                    bins = list(tally.reset_index()['Energy'].values)
+                    notes = notes+'\n('+str(tally_num)+'): '
                     for ebin in bins:
                         notes = notes+str(ebin)+', '
                     notes = notes[:-2]  # Clear string from excess commas
-
-                elif len(masked_zero) == original_length:
+                elif len(tally_zero) == original_length:
                     res = 'Value = 0 for all bins'
                 else:
                     res = 'Value > 0 for all bins'
-
-                results[tally.tallyComment[0]] = res
-                errors[tally.tallyComment[0]] = mean_error
+                results[tally_description] = res
+                errors[tally_description] = mean_error
+        #for tally in self.mctal.tallies:
+        #    num = str(tally.tallyNumber)
+        #    keys[num] = tally.tallyComment[0]
+        #    # Isolate tally
+        #    masked = data.loc[tally.tallyComment[0]]
+        #    print(masked)
+        #    # Get mean error among bins, different for single bin
+        #    if tally.ergTC == 't':
+        #        mean_error = totbins.loc[tally.tallyComment[0]]['Error']
+        #    else:
+        #        mean_error = masked['Error'].mean()
+        #
+        #    if num in tallies2pp:
+        #        masked_zero = masked[masked['Value'] == 0]
+        #        original_length = len(masked)
+        #        masked = masked[masked['Value'] < 0]
+        #        if len(masked) > 0:
+        #            res = 'Value < 0 in '+str(len(masked))+' bin(s)'
+        #            # Get energy bins
+        #            bins = list(masked.reset_index()['Energy'].values)
+        #            notes = notes+'\n('+str(num)+'): '
+        #            for ebin in bins:
+        #                notes = notes+str(ebin)+', '
+        #            notes = notes[:-2]  # Clear string from excess commas
+        #
+        #        elif len(masked_zero) == original_length:
+        #            res = 'Value = 0 for all bins'
+        #        else:
+        #            res = 'Value > 0 for all bins'
+        #
+        #        results[tally.tallyComment[0]] = res
+        #        errors[tally.tallyComment[0]] = mean_error
 
             #elif num in heating_tallies:
             #    heating_res[num] = float(masked['Value'].values[0])
@@ -1183,10 +1547,9 @@ class SphereTallyOutput:
             results['Notes'] = notes
         else:
             results['Notes'] = ''
-
         return results, errors
 
-    def get_comparison_data(self, tallies2pp):
+    def get_comparison_data(self, tallies2pp, code):
         """
         Get Data for single zaid to be used in comparison.
 
@@ -1200,42 +1563,70 @@ class SphereTallyOutput:
         """
         # Tallies to post process
         #tallies2pp = ['12', '22', '24', '14', '34', '6', '46']
-        data = self.tallydata.set_index(['Tally Description', 'Energy'])
+        data = self.tallydata.set_index(['Energy'])
         totalbins = self.totalbin.set_index('Tally Description')
         results = []  # Store data to compare for different tallies
+        errors = []
         columns = []  # Tally names and numbers
         # Reorder tallies
         tallies = []
-        for tallynum in tallies2pp:
-            for tally in self.mctal.tallies:
-                num = str(tally.tallyNumber)
-                if num == str(tallynum):
-                    tallies.append(tally)
-        for tally in tallies:
-            num = str(tally.tallyNumber)
-            # Isolate tally
+        tally_list = [d for _, d in data.groupby(['Tally N.'])]
+        
+        for tally in tally_list:
+            tally = str(tally['Tally N.'].iloc[0])
+            if tally in tallies2pp:
+                tallies.append(tally)
 
-            masked = data.loc[tally.tallyComment[0]]
-            if num in tallies2pp:
-                if num in ['12', '22', '4', '14']:  # Coarse Flux bins
+        """if code == "mcnp":
+            for tally in tallies:
+                tally_num = str(tally.tallyNumber)
+                # Isolate tally
+                masked = data.loc[tally.tallyComment[0]]
+
+                if tally_num in ['12', '22', '4', '14']:  # Coarse Flux bins
                     masked_tot = totalbins.loc[tally.tallyComment[0]]
                     # Get energy bins
                     bins = list(masked.reset_index()['Energy'].values)
                     for ebin in bins:
                         # colname = '(T.ly '+str(num)+') '+str(ebin)
-                        colname = str(ebin)+' [MeV]'+' [t'+num+']'
+                        colname = str(ebin)+' [MeV]'+' [t'+tally_num+']'
                         columns.append(colname)
                         results.append(masked['Value'].loc[ebin])
+                        errors.append(masked['Error'].loc[ebin])
                     # Add the total bin
-                    colname = 'Total'+' [t'+num+']'
+                    colname = 'Total'+' [t'+tally_num+']'
                     columns.append(colname)
                     results.append(masked_tot['Value'])
-
+                    errors.append(masked_tot['Error'])
                 else:
                     columns.append(tally.tallyComment[0])
                     results.append(masked['Value'].values[0])
+                    errors.append(masked['Error'].values[0])
 
-        return results, columns
+        if code == "openmc":"""
+        for tally in tally_list:
+            tally_num = str(tally['Tally N.'].iloc[0])
+            tally_description = tally['Tally Description'].iloc[0]
+            if tally_num in ['12', '22', '4', '14']:  # Coarse Flux bins
+                # Get energy bins
+                bins = tally.index.tolist()
+                for ebin in bins:
+                    # colname = '(T.ly '+str(num)+') '+str(ebin)
+                    colname = str(ebin)+' [MeV]'+' [t'+tally_num+']'
+                    columns.append(colname)
+                    results.append(tally['Value'].loc[ebin])
+                    errors.append(tally['Error'].loc[ebin])
+                # Add the total bin
+                colname = 'Total'+' [t'+tally_num+']'
+                columns.append(colname)
+                results.append(totalbins['Value'].loc[tally_description])
+                errors.append(totalbins['Error'].loc[tally_description])
+            else:
+                columns.append(tally_description)
+                results.append(tally['Value'])
+                errors.append(tally['Error'])
+        #print(results,errors,columns)        
+        return results, errors, columns
 
 class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
 
@@ -1495,9 +1886,12 @@ class SphereOpenMCOutput(OpenMCOutput, SphereTallyOutput):
                 parts = line.split()
                 energy = 1e-6 * float(parts[3].replace(')', ''))
             if 'flux' in line.lower():
-                parts = line.split()
-                value, error = float(parts[1]), float(parts[3])
-                rows.append([tally_n, tally_description, energy, value, error])
+                if ":" in line:
+                    continue
+                else:
+                    parts = line.split()
+                    value, error = float(parts[1]), float(parts[3])
+                    rows.append([tally_n, tally_description, energy, value, error])
         tallydata, totalbin = self._create_dataframe(rows)
         return tallydata, totalbin
 

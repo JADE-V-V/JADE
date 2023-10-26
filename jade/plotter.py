@@ -918,7 +918,7 @@ class Plotter:
                 tag = 'T'+str(idx)+': '
             else:
                 tag = 'R: '
-            ax1.step(x, y, label=tag+dic_data['ylabel'], color=colors[idx])
+            ax1.step(x, y, color=colors[idx])
             ax1.errorbar(newX, y[1:], linewidth=0,
                          yerr=err_multi, elinewidth=0.5, color=colors[idx])
 
@@ -1011,7 +1011,7 @@ class Plotter:
 
         plt.savefig(self.outpath, bbox_inches='tight')
         plt.close()
-
+        plt.clf()
         return self.outpath
 
 

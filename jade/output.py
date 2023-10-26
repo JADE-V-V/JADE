@@ -196,17 +196,46 @@ class BenchmarkOutput(AbstractOutput):
             if os.path.exists(out):
                 shutil.rmtree(out)
             os.mkdir(out)
+            
             excel_path = os.path.join(out, 'Excel')
             atlas_path = os.path.join(out, 'Atlas')
-            # raw_path = os.path.join(out, 'Raw Data')
+            raw_path = os.path.join(out, 'Raw Data')
             os.mkdir(excel_path)
             os.mkdir(atlas_path)
-            # os.mkdir(raw_path)
-            self.excel_path = excel_path
-            # self.raw_path = raw_path
+            os.mkdir(raw_path)
+            self.excel_path = excel_path 
+            self.raw_path = raw_path
             self.atlas_path = atlas_path
 
             self.couples = couples  # Couples of libraries to post process
+            if self.mcnp:
+                atlas_path_mcnp = os.path.join(self.atlas_path, 'mcnp')
+                os.mkdir(atlas_path_mcnp)
+                self.atlas_path_mcnp = atlas_path_mcnp
+                raw_path_mcnp = os.path.join(self.raw_path, 'mcnp')
+                os.mkdir(raw_path_mcnp)
+                self.raw_path_mcnp = raw_path_mcnp
+            if self.serpent:
+                atlas_path_serpent = os.path.join(self.atlas_path, 'serpent')
+                os.mkdir(atlas_path_serpent)
+                self.atlas_path_serpent = atlas_path_serpent
+                raw_path_serpent = os.path.join(self.raw_path, 'serpent')
+                os.mkdir(raw_path_serpent)
+                self.raw_path_serpent = raw_path_serpent
+            if self.openmc:
+                atlas_path_openmc = os.path.join(self.atlas_path, 'openmc')
+                os.mkdir(atlas_path_openmc)
+                self.atlas_path_openmc = atlas_path_openmc
+                raw_path_openmc = os.path.join(self.raw_path, 'openmc')
+                os.mkdir(raw_path_openmc)
+                self.raw_path_openmc = raw_path_openmc
+            if self.d1s:
+                atlas_path_d1s = os.path.join(self.atlas_path, 'd1s')
+                os.mkdir(atlas_path_d1s)
+                self.atlas_path_d1s = atlas_path_d1s
+                raw_path_d1s = os.path.join(self.raw_path, 'd1s')
+                os.mkdir(raw_path_d1s)
+                self.raw_path_d1s = raw_path_d1s
 
         # SINGLE-LIBRARY
         else:
@@ -215,7 +244,6 @@ class BenchmarkOutput(AbstractOutput):
                 self.lib = lib[0]  # In case of 1-item list
             else:
                 self.lib = lib
-
             self.test_path = os.path.join(session.path_run, lib, self.testname)
 
             # Generate library output path
@@ -266,7 +294,61 @@ class BenchmarkOutput(AbstractOutput):
                 raw_path_d1s = os.path.join(self.raw_path, 'd1s')
                 os.mkdir(raw_path_d1s)
                 self.raw_path_d1s = raw_path_d1s
-
+            """
+            # Attempt to fix folder structure - unfinished
+            if self.mcnp:
+                path_mcnp = os.path.join(out, 'mcnp')
+                os.mkdir(path_mcnp)
+                self.path_mcnp = path_mcnp
+                atlas_path_mcnp = os.path.join(path_mcnp, 'Atlas')
+                os.mkdir(atlas_path_mcnp)
+                self.atlas_path_mcnp = atlas_path_mcnp
+                excel_path_mcnp = os.path.join(path_mcnp, 'Excel')
+                os.mkdir(excel_path_mcnp)
+                self.excel_path_mcnp = excel_path_mcnp
+                raw_path_mcnp = os.path.join(path_mcnp, 'Raw')
+                os.mkdir(raw_path_mcnp)
+                self.raw_path_mcnp = raw_path_mcnp
+            if self.serpent:
+                path_serpent = os.path.join(out, 'serpent')
+                os.mkdir(path_serpent)
+                self.path_serpent = path_serpent
+                atlas_path_serpent = os.path.join(path_serpent, 'Atlas')
+                os.mkdir(atlas_path_serpent)
+                self.atlas_path_serpent = atlas_path_serpent
+                excel_path_serpent = os.path.join(path_serpent, 'Excel')
+                os.mkdir(excel_path_serpent)
+                self.excel_path_serpent = excel_path_serpent
+                raw_path_serpent = os.path.join(path_serpent, 'Raw')
+                os.mkdir(raw_path_serpent)
+                self.raw_path_serpent = raw_path_serpent
+            if self.openmc:
+                path_openmc = os.path.join(out, 'openmc')
+                os.mkdir(path_openmc)
+                self.path_openmc = path_openmc
+                atlas_path_openmc = os.path.join(path_openmc, 'Atlas')
+                os.mkdir(atlas_path_openmc)
+                self.atlas_path_openmc = atlas_path_openmc
+                excel_path_openmc = os.path.join(path_openmc, 'Excel')
+                os.mkdir(excel_path_openmc)
+                self.excel_path_openmc = excel_path_openmc
+                raw_path_openmc = os.path.join(path_openmc, 'Raw')
+                os.mkdir(raw_path_openmc)
+                self.raw_path_openmc = raw_path_openmc
+            if self.d1s:
+                path_d1s = os.path.join(out, 'd1s')
+                os.mkdir(path_d1s)
+                self.path_d1s = path_d1s
+                atlas_path_d1s = os.path.join(path_d1s, 'Atlas')
+                os.mkdir(atlas_path_d1s)
+                self.atlas_path_d1s = atlas_path_d1s
+                excel_path_d1s = os.path.join(path_d1s, 'Excel')
+                os.mkdir(excel_path_d1s)
+                self.excel_path_d1s = excel_path_d1s
+                raw_path_d1s = os.path.join(path_d1s, 'Raw')
+                os.mkdir(raw_path_d1s)
+                self.raw_path_d1s = raw_path_d1s
+    """
     def single_postprocess(self):
         """
         Execute the full post-processing of a single library (i.e. excel,
@@ -641,6 +723,7 @@ class BenchmarkOutput(AbstractOutput):
 
             # memorize data for atlas
             self.outputs = outputs
+            print(outputs)
             # Dump them for comparisons
             outpath = os.path.join(self.raw_path, self.lib+'.pickle')
             with open(outpath, 'wb') as outfile:

@@ -77,6 +77,16 @@ Experimental Benchmarks
 
 .. include:: benchdesc/tiara.rst
 
+.. include:: benchdesc/fns-tof.rst
+
+.. include:: benchdesc/aspis-fe88.rst
+
 .. include:: benchdesc/fng-blk.rst
 
 .. include:: benchdesc/fng-w.rst
+
+.. include:: benchdesc/tud-fe.rst
+
+.. include:: benchdesc/tud-fng.rst
+
+.. include:: benchdesc/tud-w.rst

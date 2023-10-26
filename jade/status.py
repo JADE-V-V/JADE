@@ -348,6 +348,16 @@ class Status:
         """
 
         test_runned = self.check_lib_run(lib, session, exp=exp)
+
+        # # AV implement to search list population not just dictionary.
+        # if any(value for value in test_runned.values()):
+        #     for code, test in test_runned.items():
+        #         if test:  # Check if the list is non-empty
+        #             print(f"Code: {test}, Test: {test}")
+        #             # Insert line 369 + here.
+        # else:
+        #     ans = True
+                  
         # Ask for override
         if len(test_runned) > 0:
             while True:

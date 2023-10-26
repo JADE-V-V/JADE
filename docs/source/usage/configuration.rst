@@ -207,8 +207,8 @@ Let Override
 
 .. _ppconf:
 
-Benchmark post-processing configuration
-=======================================
+Computational benchmark post-processing configuration
+=====================================================
 It is possible to control (to some extent) the post-processing of each benchmark via its 
 specific configuration file. These files are located in the ``<JADE_root>\Configuration\Benchmarks Configuration``
 folder and their name must be identical to the one used in the ``File Name`` field in the main configuration file
@@ -317,9 +317,12 @@ Unit
 
 .. _spectrumconfig:
 
+Experimental benchmark post-processing configuration
+====================================================
+
 SpectrumOutput class benchmarks configuration files
 ---------------------------------------------------
-When a binned-values daat benchmark is inserted (see :ref:`insbin`), a Configuration file 
+When a binned-values data benchmark is inserted (see :ref:`insbin`), a Configuration file 
 has to be defined based on the desired final plot result. The filepath is expected to be:
 ``<JADE_root>\Configuration\Benchmarks Configuration\<BenchmarkName>.xlsx``. The Excel file
 must have the following structure: 
@@ -343,7 +346,7 @@ for instance:
 Again, in case of multiple runs each tally number must represent the same quantity in all MCNP inputs for 
 consistency of the parameters in the configuration file. If a tally in the configuration file is not present
 in a MCNP input file (e.g. a spectrum is collected in all MCNP inputs except one), it will be skipped.
-If a tally is present in a MCNP input but experimental data is not available for that tally, it will e skipped.
+If a tally is present in a MCNP input but experimental data is not available for that tally, it will be skipped.
 Obviously, the quantity and the units in the configuration file and in the experimental data file
 must be consistent.
 

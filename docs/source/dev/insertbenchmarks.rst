@@ -115,6 +115,7 @@ If the benchmark is a multirun one, an additional *elif* statement needs to be a
 to what has been done for the FNG benchmark.
 
 .. _insbin:
+
 Insert binned-value plot experimental benchmarks
 ------------------------------------------------
 Experimental results often come as quantities like spectra, leakage fluxes, etc.

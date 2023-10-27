@@ -1,5 +1,5 @@
-FNG Bulk Blanket and Shield Experiment
---------------------------------------
+FNG/TUD Tungsten Experiment
+---------------------------
 
 The purpose of the experiment is transport data benchmark by determination of spectral neutron flux and
 spectral photon flux at four positions in a thick block of W irradiated

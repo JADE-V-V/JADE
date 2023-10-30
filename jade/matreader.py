@@ -479,37 +479,33 @@ class SubMaterial:
 
         return text.strip("\n")
 
-    def to_xml(self, libmanager, material_tree, id: int, density: float) -> None:
+    def to_xml(self, libmanager, material) -> None:
         """Generate XML content for a material and add it to a material tree.
 
         Parameters
         ----------
         libmanager :
             libmanager handling the libraries operations.
-        material_tree :
+        material :
             The XML tree where the material content will be added.
-        id : int
-            material id
-        density : float
-            material density
         """
 
-        matid = id
-        matname = str(self.name)
-        matdensity = str(abs(density))
-        if density < 0:
-            density_units = "g/cc"
-        else:
-            density_units = "atom/b-cm"
-        submaterial = ET.SubElement(material_tree, "material", id=matid, name=matname)
-        ET.SubElement(submaterial, "density", value=matdensity, units=density_units)
+        #matid = id
+        #matname = str(self.name)
+        #matdensity = str(abs(density))
+        #if density < 0:
+        #    density_units = "g/cc"
+        #else:
+        #    density_units = "atom/b-cm"
+        #submaterial = ET.SubElement(material_tree, "material", id=matid, name=matname)
+        #ET.SubElement(submaterial, "density", value=matdensity, units=density_units)
         if self.elements is not None:
             for elem in self.elements:
                 for zaid in elem.zaids:
-                    zaid.to_xml(libmanager, submaterial)
+                    zaid.to_xml(libmanager, material)
         else:
             for zaid in self.zaidList:
-                zaid.to_xml(libmanager, submaterial)
+                zaid.to_xml(libmanager, material)
 
     def translate(self, newlib, lib_manager, code):
         """
@@ -926,10 +922,18 @@ class Material:
         material_tree :
             The XML element for the material where content will be added.
         """
-        id = re.sub("[^0-9]", "", str(self.name))
+        matid = re.sub("[^0-9]", "", str(self.name))
+        matname = str(self.name)
+        matdensity = str(abs(self.density))
+        if self.density < 0:
+            density_units = "g/cc"
+        else:
+            density_units = "atom/b-cm"
+        material = ET.SubElement(material_tree, "material", id=matid, name=matname)
+        ET.SubElement(material, "density", value=matdensity, units=density_units)
         if self.submaterials is not None:
             for submaterial in self.submaterials:
-                submaterial.to_xml(libmanager, material_tree, id, self.density)
+                submaterial.to_xml(libmanager, material)
 
     def translate(self, newlib, lib_manager, code="mcnp", update=True):
         """

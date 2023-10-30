@@ -318,7 +318,6 @@ class Status:
         """
         flag_run_test = False
         for file in files:
-            print("files in folder", file)
             c1 = file[-3:] == "out"
             c2 = file[-2:] == "h5"
             if c1 or c2:

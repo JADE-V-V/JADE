@@ -23,6 +23,7 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
 import re
+import sys
 
 MULTI_TEST = [
     "Sphere",
@@ -347,15 +348,6 @@ class Status:
         """
 
         test_runned = self.check_lib_run(lib, session, exp=exp)
-
-        # # AV implement to search list population not just dictionary.
-        # if any(value for value in test_runned.values()):
-        #     for code, test in test_runned.items():
-        #         if test:  # Check if the list is non-empty
-        #             print(f"Code: {test}, Test: {test}")
-        #             # Insert line 369 + here.
-        # else:
-        #     ans = True
                   
         # Ask for override
         if len(test_runned) > 0:
@@ -449,12 +441,11 @@ class Status:
         }
 
         test_runned = {}
+
         for idx, row in config.iterrows():
             filename = str(row["Folder Name"])
             testname = filename.split(".")[0]
-            for code in to_perform:
-                # Check if test is active
-                test_runned[code] = []
+            for code in to_perform:    
                 if testname in to_perform[code]:
                     # Check if benchmark folder exists
                     try:
@@ -466,31 +457,16 @@ class Status:
                                 if not flag_run_zaid:
                                     flag_test_run = False
                             if flag_test_run:
+                                if code not in test_runned:
+                                    test_runned[code] = []
                                 test_runned[code].append(testname)
-                            # flag_test_run = True
-                            # for zaid, files in test.items():
-                            #    # Check if output is present
-                            #    flag_run_zaid = False
-                            #    for file in files:
-                            #        c1 = (file[-1] == 'm')  # mctal file
-                            #        c2 = (file[-4:] == 'msht')  # meshtally file
-                            #        if c1 or c2:
-                            #            flag_run_zaid = True
-                            #
-                            #    if not flag_run_zaid:
-                            #        flag_test_run = False
                         else:
                             # Check if output is present
                             flag_test_run = self.check_test_run(test, code)
                             if flag_test_run:
+                                if code not in test_runned:
+                                    test_runned[code] = []
                                 test_runned[code].append(testname)
-                            # for file in test:
-                            #    c1 = file[-1] == 'm'  # mctal file
-                            #    c2 = file[-4:] == 'msht'  # meshtally file
-                            #    if not c1 and not c2:
-                            #        pass  # It has not been run correctly
-                            #    else:
-                            #        test_runned.append(testname)
                     except KeyError:  # Folder does not exist
                         pass
 

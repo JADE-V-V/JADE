@@ -1020,7 +1020,8 @@ class Plotter:
                 tag = "T" + str(idx) + ": "
             else:
                 tag = "R: "
-            ax1.step(x, y, color=colors[idx])
+            ax1.step(x, y, label=tag+dic_data['ylabel'], 
+                     color=colors[idx])
             ax1.errorbar(
                 newX,
                 y[1:],

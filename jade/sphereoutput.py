@@ -204,8 +204,8 @@ class SphereOutput(BenchmarkOutput):
         print(" Comparison post-processing completed")
 
     def _generate_plots(self, libraries, allzaids, outputs, globalname):
-        for lib, outputs in self.outputs.items():
-            print(lib, outputs)
+        #for lib, outputs in self.outputs.items():
+        #    print(lib, outputs)
         if self.mcnp:
             outpath = os.path.join(self.atlas_path_mcnp, "tmp")
             if not os.path.exists(outpath):
@@ -227,16 +227,13 @@ class SphereOutput(BenchmarkOutput):
             for zaidnum in tqdm(allzaids):
                 # title = title
                 data = []
-                print(outputs)
-                for zaid, output in outputs.items():
+                for idx, output in enumerate(outputs):
                     try:  # Zaid could not be common to the libraries
-                        print(output.tallydata)
-                        tally_data = output.tallydata.set_index("Tally N.").loc[tally]
+                        tally_data = output[zaidnum].tallydata.set_index('Tally N.').loc[tally]
                         energy = tally_data["Energy"].values
                         values = tally_data["Value"].values
                         error = tally_data["Error"].values
-                        # lib_name = self.session.conf.get_lib_name(libraries[idx])
-                        lib_name = lib
+                        lib_name = self.session.conf.get_lib_name(libraries[idx])
                         lib = {
                             "x": energy,
                             "y": values,
@@ -244,21 +241,23 @@ class SphereOutput(BenchmarkOutput):
                             "ylabel": str(zaidnum) + " (" + str(lib_name) + ")",
                         }
                         data.append(lib)
-                        outname = str(zaidnum) + "-" + globalname + "-" + str(tally)
-                        plot = plotter.Plotter(
-                            data,
-                            title,
-                            outpath,
-                            outname,
-                            quantity,
-                            unit,
-                            "Energy [MeV]",
-                            self.testname,
-                        )
-                        plot.plot("Binned graph")
                     except KeyError:
                         # It is ok, simply nothing to plot here
                         pass
+                
+                outname = str(zaidnum) + "-" + globalname + "-" + str(tally)
+                plot = plotter.Plotter(
+                    data,
+                    title,
+                    outpath,
+                    outname,
+                    quantity,
+                    unit,
+                    "Energy [MeV]",
+                    self.testname,
+                )
+                plot.plot("Binned graph")
+
 
         self._build_atlas(outpath)
 
@@ -1028,9 +1027,9 @@ class SphereOutput(BenchmarkOutput):
         # template = os.path.join(os.getcwd(), 'templates',
         #                        'Sphere_comparison.xlsx')
 
-        self.outputs = {}
-        self.results = {}
-        self.errors = {}
+        outputs = {}
+        results = {}
+        errors = {}
         iteration = 0
         if self.mcnp:
             for reflib, tarlib, name in self.couples:
@@ -1050,7 +1049,6 @@ class SphereOutput(BenchmarkOutput):
                 ]:
                     results = []
                     errors = []
-                    outputs = {}
                     iteration = iteration + 1
                     outputs_lib = {}
                     for folder in os.listdir(test_path):
@@ -1109,11 +1107,11 @@ class SphereOutput(BenchmarkOutput):
                     error_dfs.append(error_df)
 
                     # outputs_couple = outputs
-                    self.outputs = outputs
+                    #self.outputs = outputs
                     self.results = results
                     self.errors = errors
 
-                # self.outputs = outputs
+                self.outputs = outputs
                 # Consider only common zaids
                 idx1 = comp_dfs[0].index
                 idx2 = comp_dfs[1].index

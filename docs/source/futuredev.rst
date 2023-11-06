@@ -22,6 +22,8 @@ major OS system. Nevertheless,
 key modules like ``xlwings`` or ``python-docx`` which are used respectively
 to interact with Excel and Word do not fully support Linux operative systems.
 
+This is currently under development on the Linux branch.
+
 Implementation of open-source Monte Carlo codes
 ===============================================
 The science world is more and more going in the direction of open-source
@@ -34,3 +36,5 @@ the JADE project in many ways like:
 * give the possibility to JADE not only to compare libraries but also to
   compare different MC code results using the same library;
 * allow JADE to be used more effectively in libraries continuous integration.
+
+The addition of OpenMC and Serpent is currently under development on the Linux branch.

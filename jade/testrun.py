@@ -461,9 +461,14 @@ class Test:
         os.chdir(directory)
         job_script = directory + "/" + os.path.basename(directory) + "_job_script"
         fout = open(job_script, "wt")
+        essential_commands = ["COMMAND", "OUT_FILE"]
         with open(config.batch_file, "rt") as fin:
             # Replace placeholders in batch file template with actual values
             contents = fin.read()
+            for cmd in essential_commands:
+                if cmd not in contents:
+                    raise Exception("Unable to find essential dummy variable {} in job "
+                                    "script template, please check and re-run".format(cmd))
             contents = contents.replace("COMMAND", " ".join(run_command))
             contents = contents.replace("ENV_VARIABLES", str(data_command))
             contents = contents.replace("INITIAL_DIR", directory)
@@ -558,14 +563,20 @@ class Test:
                 # subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
                 subprocess.run(" ".join(run_command), cwd=directory, shell=True)
             else:
-                self.job_submission(
-                    config,
-                    directory,
-                    run_command,
-                    mpi_tasks,
-                    omp_threads,
-                    env_variables,
-                )
+                if sys.platform == "win32":
+                    print("Job submission not available on windows based systems, running on head node")
+                    if pd.isnull(env_variables) is False:
+                        unix.configure(env_variables)
+                    # subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
+                    subprocess.run(" ".join(run_command), cwd=directory, shell=True)
+                else:
+                    self.job_submission(config,
+                                        directory,
+                                        run_command,
+                                        mpi_tasks,
+                                        omp_threads,
+                                        env_variables,
+                                        )
             os.chdir(cwd)
 
         except subprocess.TimeoutExpired:
@@ -655,15 +666,20 @@ class Test:
                 # subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
                 subprocess.run(" ".join(run_command), cwd=directory, shell=True)
             else:
-                self.job_submission(
-                    config,
-                    directory,
-                    run_command,
-                    mpi_tasks,
-                    omp_threads,
-                    env_variables,
-                    data_command,
-                )
+                if sys.platform == "win32":
+                    print("Job submission not available on windows based systems, running on head node")
+                    if pd.isnull(env_variables) is False:
+                        unix.configure(env_variables)
+                    # subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
+                    subprocess.run(" ".join(run_command), cwd=directory, shell=True)
+                else:
+                    self.job_submission(config,
+                                        directory,
+                                        run_command,
+                                        mpi_tasks,
+                                        omp_threads,
+                                        env_variables,
+                                        )
             os.chdir(cwd)
 
         except subprocess.TimeoutExpired:
@@ -744,15 +760,20 @@ class Test:
                 # subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
                 subprocess.run(" ".join(run_command), cwd=directory, shell=True)
             else:
-                self.job_submission(
-                    config,
-                    directory,
-                    run_command,
-                    mpi_tasks,
-                    omp_threads,
-                    env_variables,
-                    data_command,
-                )
+                if sys.platform == "win32":
+                    print("Job submission not available on windows based systems, running on head node")
+                    if pd.isnull(env_variables) is False:
+                        unix.configure(env_variables)
+                    # subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
+                    subprocess.run(" ".join(run_command), cwd=directory, shell=True)
+                else:
+                    self.job_submission(config,
+                                        directory,
+                                        run_command,
+                                        mpi_tasks,
+                                        omp_threads,
+                                        env_variables,
+                                        )
             os.chdir(cwd)
         except subprocess.TimeoutExpired:
             pass

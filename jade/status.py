@@ -542,6 +542,10 @@ class Status:
         # Individuate libraries to pp
 
         libs = lib_input.split("-")
+        
+        if lib_input == "back" or "exit":
+            return None, None, lib_input
+
         if exp:
             tagpp = "Comparison"
         else:

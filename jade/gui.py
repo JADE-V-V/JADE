@@ -132,6 +132,11 @@ def mainloop(session):
 
         elif option == 'trans':
             newlib = session.lib_manager.select_lib()
+            if newlib == "back":
+                mainloop(session)
+            if newlib == "exit":
+                session.log.adjourn(exit_text)
+                sys.exit()
             inputfile = input(' Input to translate: ')
 
             if newlib in session.lib_manager.libraries:
@@ -172,7 +177,11 @@ def mainloop(session):
             materials = input(' Source materials (e.g. m1-m10): ')
             percentages = input(' Materials percentages (e.g. 0.1-0.9): ')
             lib = session.lib_manager.select_lib()
-
+            if lib == "back":
+                mainloop(session)
+            if lib == "exit":
+                session.log.adjourn(exit_text)
+                sys.exit()
             materials = materials.split('-')
             percentages = percentages.split('-')
 
@@ -268,6 +277,11 @@ def comploop(session):
         elif option == 'assess':
             # Select and check library
             lib = session.lib_manager.select_lib()
+            if lib == "back":
+                comploop(session)
+            if lib == "exit":
+                session.log.adjourn(exit_text)
+                sys.exit()
             ans = session.state.check_override_run(lib, session)
             runoption = run_option(session)
             # If checks are ok perform assessment
@@ -291,6 +305,11 @@ def comploop(session):
             # Select and check library
             # Warning: this is done only for sphere test at the moment
             lib = session.lib_manager.select_lib()
+            if lib == "back":
+                comploop(session)
+            if lib == "exit":
+                session.log.adjourn(exit_text)
+                sys.exit()
             try:
                 unfinished, motherdir = session.state.get_unfinished_zaids(lib)
             except TypeError:
@@ -373,6 +392,11 @@ def exploop(session):
             session.conf.read_settings()
             # Select and check library
             lib = session.lib_manager.select_lib()
+            if lib == "back":
+                exploop(session)
+            if lib == "exit":
+                session.log.adjourn(exit_text)
+                sys.exit()
             # it may happen that lib are two but only the first is the assessed
             pieces = lib.split('-')
             if len(pieces) > 1:
@@ -455,6 +479,10 @@ def pploop(session):
             session.conf.read_settings()
             # Select and check library
             ans, to_single_pp, lib_input = session.state.check_override_pp(session)
+            if lib_input == "back":
+                pploop(session)
+            if lib_input == "exit":
+                sys.exit()
             # If checks are ok perform assessment
             if ans:
                 lib = to_single_pp[0]

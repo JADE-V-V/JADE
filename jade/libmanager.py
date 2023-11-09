@@ -434,6 +434,12 @@ class LibManager:
                         flag = False
                 if flag:
                     break
+            
+            elif lib == 'back':
+                break
+            
+            elif lib == "exit":
+                break 
 
             else:
                 print(error.format(lib))

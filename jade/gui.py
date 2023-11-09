@@ -81,6 +81,23 @@ principal_menu = header+"""
  * Exit                                   (exit)
 """.format(POWERED_BY)
 
+def run_option(session):
+    while True:
+        if sys.platform.startswith('win'):
+            runoption = 'c'
+            break
+        else:
+            runoption = input(' Would you like to run in the command line, c, or submit as a job, s?')
+            if runoption == 'c' or runoption == 's':
+                break
+            elif runoption == 'back':
+                mainloop(session)
+            elif runoption == 'exit':
+                session.log.adjourn(exit_text)
+                sys.exit()
+            else:
+                print('please enter valid option')
+    return runoption
 
 def mainloop(session):
     """
@@ -252,6 +269,7 @@ def comploop(session):
             # Select and check library
             lib = session.lib_manager.select_lib()
             ans = session.state.check_override_run(lib, session)
+            runoption = run_option(session)
             # If checks are ok perform assessment
             if ans:
                 # Logging
@@ -260,7 +278,7 @@ def comploop(session):
                 session.log.adjourn('Selected Library: '+lib,
                                     spacing=False, time=True)
                 print(' ########################### COMPUTATIONAL BENCHMARKS EXECUTION ###########################\n')
-                cmp.executeBenchmarksRoutines(session, lib)  # Core function
+                cmp.executeBenchmarksRoutines(session, lib, runoption)  # Core function
                 print(' ####################### COMPUTATIONAL BENCHMARKS RUN ENDED ###############################\n')
                 t = 'Computational benchmark execution ended'
                 session.log.bar_adjourn(t)

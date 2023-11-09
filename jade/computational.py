@@ -29,7 +29,7 @@ import sys
 import jade.testrun as testrun
 
 
-def executeBenchmarksRoutines(session, lib: str, exp=False) -> None:
+def executeBenchmarksRoutines(session, lib: str, runoption, exp=False) -> None:
     """
     Check which benchmarks have to be generated and/or run and execute their
     routines
@@ -107,7 +107,7 @@ def executeBenchmarksRoutines(session, lib: str, exp=False) -> None:
             confpath = os.path.join(session.path_cnf, fname.split(".")[0])
 
             # Generate test
-            args = (inppath, var, row, log, VRTpath, confpath)
+            args = (inppath, var, row, log, VRTpath, confpath, runoption)
             # Handle special cases
             if testname == "Sphere Leakage Test":
                 test = testrun.SphereTest(*args)
@@ -156,7 +156,7 @@ def executeBenchmarksRoutines(session, lib: str, exp=False) -> None:
                 # --- Input Run ---
                 print(" Simulation running:         " + str(datetime.datetime.now()))
                 # test.run(cpu=session.conf.cpu)
-                test.run(session.conf, session.lib_manager)
+                test.run(session.conf, session.lib_manager, runoption)
                 print("\n        -- " + testname.upper() + " COMPLETED --\n")
                 # Adjourn log
                 log.adjourn(

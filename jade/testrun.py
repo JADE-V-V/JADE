@@ -43,7 +43,7 @@ CEND = "\033[0m"
 
 
 class Test:
-    def __init__(self, inp, lib, config, log, VRTpath, confpath):
+    def __init__(self, inp, lib, config, log, VRTpath, confpath, runoption):
         """
         Class representing a general test. This class will have to be extended
         for specific tests.
@@ -75,6 +75,9 @@ class Test:
         """
         # Test Library
         self.lib = lib
+
+        # Parallel execution
+        self.runoption = runoption
 
         # Configuration options for the test
         self.config = config
@@ -492,7 +495,7 @@ class Test:
         pass
 
     def run_mcnp(
-        self, config, lib_manager, name: str, directory: Path, timeout=None
+        self, config, lib_manager, name: str, directory: Path, runoption: str, timeout=None
     ) -> bool:
         """Run MCNP simulation either on the command line or submitted as a job.
 
@@ -506,6 +509,8 @@ class Test:
             Name of the simulation
         directory : str, path
             Directory where the simulation will be executed
+        runoption: str
+            Whether JADE run in parallel or command line
         timeout : float, optional
             Maximum time to wait for simulation of complete, by default None
 
@@ -556,37 +561,38 @@ class Test:
             if os.path.exists(runtpe):
                 command = command + " runtpe=" + name + ".r"
 
-            # Execution
-            if pd.isnull(config.batch_system) is True:
-                if pd.isnull(env_variables) is False:
+            if runoption.lower() == 'c':
+                try:
                     unix.configure(env_variables)
-                # subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
-                subprocess.run(" ".join(run_command), cwd=directory, shell=True)
-            else:
-                if sys.platform == "win32":
-                    print("Job submission not available on windows based systems, running on head node")
-                    if pd.isnull(env_variables) is False:
-                        unix.configure(env_variables)
-                    # subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
-                    subprocess.run(" ".join(run_command), cwd=directory, shell=True)
-                else:
-                    self.job_submission(config,
-                                        directory,
-                                        run_command,
-                                        mpi_tasks,
-                                        omp_threads,
-                                        env_variables,
-                                        )
-            os.chdir(cwd)
+                    print(" ".join(run_command))
+                    subprocess.run(" ".join(run_command), cwd=directory, shell=True, timeout=43200)          
+            
+                except subprocess.TimeoutExpired:
+                    print('Sesion timed out after 12 hours. Consider submitting as a job.')
+                    flagnotrun = True
 
+            elif runoption.lower() == 's':
+                # Run MCNP as a job
+                cwd = os.getcwd()
+                os.chdir(directory)
+                self.job_submission(
+                        config,
+                        directory,
+                        run_command,
+                        mpi_tasks,
+                        omp_threads,
+                        env_variables,
+                        data_command,
+                    )
+                os.chdir(cwd)
         except subprocess.TimeoutExpired:
             pass
 
         return flagnotrun
-
+        
     def run_serpent(
-        self, config, lib_manager, name: str, directory: Path, timeout=None
-    ) -> bool:
+            self, config, lib_manager, name: str, directory: Path, runoption: str, timeout=None
+        ) -> bool:
         """Run Serpent simulation either on the command line or submitted as a job.
 
         Parameters
@@ -599,6 +605,8 @@ class Test:
             Name of the simulation
         directory : str, path
             Directory where the simulation will be executed
+        runoption: str
+            Whether JADE run in parallel or command line
         timeout : float, optional
             Maximum time to wait for simulation of complete, by default None
 
@@ -607,7 +615,7 @@ class Test:
         bool
             Flag if simulation not run
         """
-
+        print(runoption)
         # Calculate MPI tasks and OpenMP threads
         mpi_tasks = int(config.mpi_tasks)
         omp_threads = int(config.openmp_threads)
@@ -629,8 +637,7 @@ class Test:
             + " \nexport SERPENT_ACELIB="
             + str(libpath)
         )
-
-        # Run Serpent from command line either OMP, MPI or hybrid MPI-OMP
+        # Construct the run commands based on user OMP and MPI inputs.
         if run_omp:
             if run_mpi:
                 run_command = [
@@ -652,43 +659,39 @@ class Test:
 
         flagnotrun = False
 
-        # Run Serpent as a job
-        try:
-            cwd = os.getcwd()
-            os.chdir(directory)
 
-            # Execution
-            if pd.isnull(config.batch_system) is True:
+        if runoption.lower() == 'c':
+            try:
                 os.environ["SERPENT_DATA"] = str(libpath.parent)
                 os.environ["SERPENT_ACELIB"] = str(str(libpath))
                 unix.configure(env_variables)
                 print(" ".join(run_command))
                 # subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
-                subprocess.run(" ".join(run_command), cwd=directory, shell=True)
-            else:
-                if sys.platform == "win32":
-                    print("Job submission not available on windows based systems, running on head node")
-                    if pd.isnull(env_variables) is False:
-                        unix.configure(env_variables)
-                    # subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
-                    subprocess.run(" ".join(run_command), cwd=directory, shell=True)
-                else:
-                    self.job_submission(config,
-                                        directory,
-                                        run_command,
-                                        mpi_tasks,
-                                        omp_threads,
-                                        env_variables,
-                                        )
-            os.chdir(cwd)
+                subprocess.run(" ".join(run_command), cwd=directory, shell=True, timeout=43200)          
+        
+            except subprocess.TimeoutExpired:
+                print('Sesion timed out after 12 hours. Consider submitting as a job.')
+                flagnotrun = True
 
-        except subprocess.TimeoutExpired:
-            pass
+        elif runoption.lower() == 's':
+            # Run Serpent as a job
+            cwd = os.getcwd()
+            os.chdir(directory)
+            self.job_submission(
+                    config,
+                    directory,
+                    run_command,
+                    mpi_tasks,
+                    omp_threads,
+                    env_variables,
+                    data_command,
+                )
+            os.chdir(cwd)
 
         return flagnotrun
 
     def run_openmc(
-        self, config, lib_manager, name: str, directory, timeout=None
+        self, config, lib_manager, name: str, directory, runoption, timeout=None
     ) -> bool:
         """Run OpenMC simulation either on the command line or submitted as a job.
 
@@ -702,6 +705,8 @@ class Test:
             Name of the simulation
         directory : str, path
             Directory where the simulation will be executed
+        runoption: str
+            Whether JADE run in parallel or command line
         timeout : float, optional
             Maximum time to wait for simulation of complete, by default None
 
@@ -748,35 +753,31 @@ class Test:
 
         flagnotrun = False
 
-        # Run OpenMC as a job
-        try:
-            cwd = os.getcwd()
-            os.chdir(directory)
-
-            # Execution
-            if pd.isnull(config.batch_system) is True:
+        if runoption.lower() == 'c':
+            try:
                 os.environ["OPENMC_CROSS_SECTIONS"] = str(libpath)
                 unix.configure(env_variables)
-                # subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
-                subprocess.run(" ".join(run_command), cwd=directory, shell=True)
-            else:
-                if sys.platform == "win32":
-                    print("Job submission not available on windows based systems, running on head node")
-                    if pd.isnull(env_variables) is False:
-                        unix.configure(env_variables)
-                    # subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
-                    subprocess.run(" ".join(run_command), cwd=directory, shell=True)
-                else:
-                    self.job_submission(config,
-                                        directory,
-                                        run_command,
-                                        mpi_tasks,
-                                        omp_threads,
-                                        env_variables,
-                                        )
+                print(" ".join(run_command))
+                subprocess.run(" ".join(run_command), cwd=directory, shell=True, timeout=43200)          
+        
+            except subprocess.TimeoutExpired:
+                print('Sesion timed out after 12 hours. Consider submitting as a job.')
+                flagnotrun = True
+
+        elif runoption.lower() == 's':
+            # Run Serpent as a job
+            cwd = os.getcwd()
+            os.chdir(directory)
+            self.job_submission(
+                    config,
+                    directory,
+                    run_command,
+                    mpi_tasks,
+                    omp_threads,
+                    env_variables,
+                    data_command,
+                )
             os.chdir(cwd)
-        except subprocess.TimeoutExpired:
-            pass
 
         return flagnotrun
 
@@ -1191,7 +1192,7 @@ class SphereTest(Test):
             os.mkdir(outpath)
             newinp.write(outpath, libmanager)
 
-    def run(self, config, libmanager) -> None:
+    def run(self, config, libmanager, runoption: str) -> None:
         """Sphere leakage requries ad-hoc run method.
 
         Parameters
@@ -1200,6 +1201,7 @@ class SphereTest(Test):
             Configuration settings
         libmanager :
             libmanager
+        runoption : str
         """
 
         directory = self.run_dir
@@ -1216,21 +1218,21 @@ class SphereTest(Test):
             if pd.isnull(config.mcnp_exec) is not True:
                 for folder in tqdm(os.listdir(mcnp_directory)):
                     run_directory = os.path.join(mcnp_directory, folder)
-                    self.run_mcnp(config, libmanager, folder + "_", run_directory)
+                    self.run_mcnp(config, libmanager, folder + "_", run_directory, runoption)
 
         if self.serpent:
             serpent_directory = os.path.join(directory, "serpent")
             if pd.isnull(config.serpent_exec) is not True:
                 for folder in tqdm(os.listdir(serpent_directory)):
                     run_directory = os.path.join(serpent_directory, folder)
-                    self.run_serpent(config, libmanager, folder + "_", run_directory)
+                    self.run_serpent(config, libmanager, folder + "_", run_directory, runoption)
 
         if self.openmc:
             openmc_directory = os.path.join(directory, "openmc")
             if pd.isnull(config.openmc_exec) is not True:
                 for folder in tqdm(os.listdir(openmc_directory)):
                     run_directory = os.path.join(openmc_directory, folder)
-                    self.run_openmc(config, libmanager, folder + "_", run_directory)
+                    self.run_openmc(config, libmanager, folder + "_", run_directory, runoption)
 
 
 # Fix from here

@@ -451,11 +451,11 @@ class Status:
                     try:
                         test = self.run_tree[lib][testname][code]
                         if testname in MULTI_TEST:
-                            flag_test_run = True
+                            flag_test_run = False
                             for zaid, files in test.items():
                                 flag_run_zaid = self.check_test_run(files, code)
-                                if not flag_run_zaid:
-                                    flag_test_run = False
+                                if flag_run_zaid:
+                                    flag_test_run = True
                             if flag_test_run:
                                 if code not in test_runned:
                                     test_runned[code] = []

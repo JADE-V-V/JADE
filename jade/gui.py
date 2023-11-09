@@ -81,7 +81,19 @@ principal_menu = header+"""
  * Exit                                   (exit)
 """.format(POWERED_BY)
 
-def run_option(session):
+def run_option(session) -> str:
+    """Allow user to specify whether to run in parallel or command line
+
+    Parameters
+    ----------
+    session : session
+        session
+
+    Returns
+    -------
+    str
+        command line or submitted as a job.
+    """
     while True:
         if sys.platform.startswith('win'):
             runoption = 'c'

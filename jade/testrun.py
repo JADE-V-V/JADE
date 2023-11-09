@@ -394,72 +394,22 @@ class Test:
         if self.d1s:
             d1s_directory = os.path.join(directory, "d1s")
             if pd.isnull(config.d1s_exec) is not True:
-                #run_directory = os.path.join(d1s_directory, folder)
                 self.run_d1s(config, libmanager, name, d1s_directory)
 
         if self.mcnp:
             mcnp_directory = os.path.join(directory, "mcnp")
             if pd.isnull(config.mcnp_exec) is not True:
-                #run_directory = os.path.join(mcnp_directory, folder)
                 self.run_mcnp(config, libmanager, name, mcnp_directory, runoption)
 
         if self.serpent:
             serpent_directory = os.path.join(directory, "serpent")
             if pd.isnull(config.serpent_exec) is not True:
-                #run_directory = os.path.join(serpent_directory, folder)
                 self.run_serpent(config, libmanager, name, serpent_directory, runoption)
 
         if self.openmc:
             openmc_directory = os.path.join(directory, "openmc")
             if pd.isnull(config.openmc_exec) is not True:
-                #run_directory = os.path.join(openmc_directory, folder)
                 self.run_openmc(config, libmanager, name, openmc_directory, runoption)    
-    
-    
-#    def run(self, config, libmanager):
-#        """
-#        run the input
-#
-#        Parameters
-#        ----------
-#        cpu : int, optional
-#            number of CPU to be used. The default is 1.
-#        timeout : int, optional
-#            number of seconds after the simulation should be killed.
-#            The default is None.def run
-#
-#        Returns
-#        -------
-#        None.
-#
-#        """
-#        """
-#        name = self.name
-#        directory = self.MCNPdir
-#        code_tag = CODE_TAGS[self.code]
-#
-#        self._runMCNP(code_tag, name, directory, cpu=cpu, timeout=timeout)
-#
-#        """
-#        name = self.name
-#        directory = self.run_dir
-#
-#        if self.d1s:
-#            d1s_directory = os.path.join(directory, name, "d1s")
-#            if config.d1s_exec != "":
-#                self.run_d1s(config, name, d1s_directory)
-#        if self.mcnp:
-#            mcnp_directory = os.path.join(directory, name, "mcnp")
-#            if config.mcnp_exec != "":
-#                self.run_mcnp(config, name, mcnp_directory)
-#        if self.serpent:
-#            serpent_directory = os.path.join(directory, name, "serpent")
-#            if config.serpent_exec != "":
-#                self.run_serpent(config, name, serpent_directory)
-#        if self.openmc:
-#            openmc_directory = os.path.join(directory, name, "openmc")
-#            if config.openmc_exec != "":
-#                self.run_openmc(config, name, openmc_directory)
 
     # Edited by D.Wheeler, UKAEA
     # Job submission currently tailored for LoadLeveler, may be applicable to other submission systems with equivalent dummy variables

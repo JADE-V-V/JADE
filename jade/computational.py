@@ -66,7 +66,20 @@ def executeBenchmarksRoutines(session, lib: str, runoption, exp=False) -> None:
             or bool(row["Serpent"])
             or bool(row["OpenMC"])
             or bool(row["d1S"])
-        ):
+        ): 
+            if (
+                bool(row["OnlyInput"])
+                and not any([
+                    bool(row["MCNP"]),
+                    bool(row["Serpent"]),
+                    bool(row["OpenMC"]),
+                    bool(row["d1S"]),
+                ])
+            ):
+                print("Transport code was not specified, defaulting to MCNP")
+                print("")
+                row["MCNP"]=True
+
             print("        -- " + testname.upper() + " STARTED --\n")
             print(" Generating input files:" + "    " + str(datetime.datetime.now()))
             log.adjourn(

@@ -572,8 +572,7 @@ class Test:
                         run_command,
                         mpi_tasks,
                         omp_threads,
-                        env_variables,
-                        data_command,
+                        env_variables
                     )
                 os.chdir(cwd)
         except subprocess.TimeoutExpired:

@@ -111,7 +111,7 @@ class Test:
 
         config = config.dropna()
 
-        self.name = config["Folder Name"]
+        #self.name = config["Folder Name"]
         
         try:
             self.nps = config["NPS cut-off"]
@@ -172,6 +172,7 @@ class Test:
         if self.mcnp:
             mcnp_ipt = os.path.join(inp, "mcnp", os.path.basename(inp) + ".i")
             self.mcnp_inp = ipt.InputFile.from_text(mcnp_ipt)
+            self.name = self.mcnp_inp.name
             # self.irrad = None
             # self.react = None
         if self.serpent:
@@ -180,8 +181,7 @@ class Test:
         if self.openmc:
             openmc_ipt = os.path.join(inp, "openmc")
             self.openmc_inp = ipt.OpenMCInputFiles.from_path(openmc_ipt)
-        # Name of input file
-        # self.name = self.inp.name
+
 
         # Need to add this back if user only running MCNP
         # Add the stop card according to config
@@ -806,7 +806,7 @@ class SphereTest(Test):
         zaids = libmanager.get_libzaids(lib, "mcnp")
 
         # testname = self.inp.name
-        testname = self.name
+        testname = 'Sphere'
 
         motherdir = os.path.join(directory, testname)
         # If previous results are present they are canceled

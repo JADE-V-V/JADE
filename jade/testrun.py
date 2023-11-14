@@ -94,7 +94,7 @@ class Test:
         # Get the configuration files path
         self.test_conf_path = confpath
 
-        # Inout variables
+        # Input variables
         self.mcnp_ipt = None
         self.serpent_ipt = None
         self.openmc_ipt = None
@@ -112,7 +112,7 @@ class Test:
         config = config.dropna()
 
         self.name = config["Folder Name"]
-
+        
         try:
             self.nps = config["NPS cut-off"]
         except KeyError:
@@ -170,12 +170,12 @@ class Test:
                 # self.irrad = None
                 # self.react = None
         if self.mcnp:
-            mcnp_ipt = os.path.join(inp, "mcnp", self.name + ".i")
+            mcnp_ipt = os.path.join(inp, "mcnp", os.path.basename(inp) + ".i")
             self.mcnp_inp = ipt.InputFile.from_text(mcnp_ipt)
             # self.irrad = None
             # self.react = None
         if self.serpent:
-            serpent_ipt = os.path.join(inp, "serpent", self.name + ".i")
+            serpent_ipt = os.path.join(inp, "serpent", os.path.basename(inp) + ".i")
             self.serpent_inp = ipt.SerpentInputFile.from_text(serpent_ipt)
         if self.openmc:
             openmc_ipt = os.path.join(inp, "openmc")
@@ -605,7 +605,6 @@ class Test:
         bool
             Flag if simulation not run
         """
-        print(runoption)
         # Calculate MPI tasks and OpenMP threads
         mpi_tasks = int(config.mpi_tasks)
         omp_threads = int(config.openmp_threads)
@@ -1548,7 +1547,7 @@ class MultipleTest:
         safe_override(self.MCNPdir)
         for test in self.tests:
             mcnp_dir = os.path.join(self.MCNPdir, test.name)
-            test.generate_test(lib_directory, libmanager, MCNP_dir=mcnp_dir)
+            test.generate_test(lib_directory, libmanager, run_dir=mcnp_dir)
 
     def run(self, cpu=1, timeout=None):
         """

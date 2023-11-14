@@ -132,7 +132,7 @@ class Status:
         comparison_tree = {}
         cp = self.comparison_path
         for lib in os.listdir(cp):
-            comparison_tree[lib] = []
+            comparison_tree[lib] = {}
             cp1 = os.path.join(cp, lib)
             for test in os.listdir(cp1):
                 comparison_tree[lib][test] = []
@@ -543,9 +543,11 @@ class Status:
 
         libs = lib_input.split("-")
         
-        if lib_input == "back" or "exit":
+        if lib_input == "back":
             return None, None, lib_input
 
+        if lib_input == "exit":
+            return None, None, lib_input
         if exp:
             tagpp = "Comparison"
         else:

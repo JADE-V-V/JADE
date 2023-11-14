@@ -81,7 +81,8 @@ principal_menu = header+"""
  * Exit                                   (exit)
 """.format(POWERED_BY)
 
-def run_option(session) -> str:
+
+def run_option(session, exp=False) -> str:
     """Allow user to specify whether to run in parallel or command line
 
     Parameters
@@ -94,22 +95,42 @@ def run_option(session) -> str:
     str
         command line or submitted as a job.
     """
-    while True:
-        if sys.platform.startswith('win'):
-            runoption = 'c'
-            break
-        else:
-            runoption = input(' Would you like to run in the command line, c, or submit as a job, s?')
-            if runoption == 'c' or runoption == 's':
+    if exp:
+        config = session.conf.exp_default.set_index("Description")
+    else:
+        config = session.conf.comp_default.set_index("Description")
+
+    if sys.platform.startswith('win'):
+        runoption = 'c'
+    else:
+        runoption = 'c'  # Default value
+        for testname, row in config.iterrows():
+            if (
+                bool(row["OnlyInput"])
+                and not any([
+                    bool(row["MCNP"]),
+                    bool(row["Serpent"]),
+                    bool(row["OpenMC"]),
+                    bool(row["d1S"]),
+                ])
+            ):
+                runoption = 'c'
                 break
-            elif runoption == 'back':
-                mainloop(session)
-            elif runoption == 'exit':
-                session.log.adjourn(exit_text)
-                sys.exit()
-            else:
-                print('please enter valid option')
+        else:
+            while True:
+                runoption = input('Would you like to run in the command line, c, or submit as a job, s? ')
+                if runoption == 'c' or runoption == 's':
+                    break
+                elif runoption == 'back':
+                    mainloop(session)
+                elif runoption == 'exit':
+                    session.log.adjourn(exit_text)
+                    sys.exit()
+                else:
+                    print('Please enter a valid option')
+
     return runoption
+
 
 def mainloop(session):
     """
@@ -417,6 +438,7 @@ def exploop(session):
                 libtocheck = lib
             ans = session.state.check_override_run(libtocheck,
                                                    session, exp=True)
+            runoption = run_option(session)
             # If checks are ok perform assessment
             if ans:
                 # Logging
@@ -426,7 +448,7 @@ def exploop(session):
                                     spacing=False, time=True)
                 print(' ########################### EXPERIMENTAL BENCHMARKS EXECUTION ###########################\n')
                 # Core function
-                cmp.executeBenchmarksRoutines(session, lib, exp=True)
+                cmp.executeBenchmarksRoutines(session, lib, runoption, exp=True)
                 print(' ####################### EXPERIMENTAL BENCHMARKS RUN ENDED ###############################\n')
                 t = 'Experimental benchmark execution ended'
                 session.log.bar_adjourn(t)

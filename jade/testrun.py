@@ -1494,7 +1494,7 @@ class FNGTest(Test):
 
 
 class MultipleTest:
-    def __init__(self, inpsfolder, lib, config, log, VRTpath, confpath, TestOb=Test):
+    def __init__(self, inpsfolder, lib, config, log, VRTpath, confpath, runoption, TestOb=Test):
         """
         A collection of Tests
 
@@ -1523,7 +1523,7 @@ class MultipleTest:
         tests = []
         for folder in os.listdir(inpsfolder):
             inp = os.path.join(inpsfolder, folder)
-            test = TestOb(inp, lib, config, log, VRTpath, confpath)
+            test = TestOb(inp, lib, config, log, VRTpath, confpath, runoption)
             tests.append(test)
         self.tests = tests
         self.name = os.path.basename(inpsfolder)

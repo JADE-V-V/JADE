@@ -206,69 +206,74 @@ class SphereOutput(BenchmarkOutput):
     def _generate_plots(self, libraries, allzaids, outputs, globalname):
         #for lib, outputs in self.outputs.items():
         #    print(lib, outputs)
-        if self.mcnp:
-            outpath = os.path.join(self.atlas_path_mcnp, "tmp")
+        for code, code_outputs in self.outputs.items():
+            outpath = os.path.join(self.atlas_path, code, "tmp")
             if not os.path.exists(outpath):
                 os.mkdir(outpath)
-        if self.openmc:
-            outpath = os.path.join(self.atlas_path_openmc, "tmp")
-            if not os.path.exists(outpath):
-                os.mkdir(outpath)
-        if self.serpent:
-            pass
-        if self.d1s:
-            pass
+            """if self.mcnp:
+                outpath = os.path.join(self.atlas_path_mcnp, "tmp")
+                if not os.path.exists(outpath):
+                    os.mkdir(outpath)
+            if self.openmc:
+                outpath = os.path.join(self.atlas_path_openmc, "tmp")
+                if not os.path.exists(outpath):
+                    os.mkdir(outpath)
+            if self.serpent:
+                pass
+            if self.d1s:
+                pass"""
+            for tally, title, quantity, unit in [
+                (4, "Leakage Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
+                (14, "Leakage Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
+            ]:
+                print(" Plotting tally n." + str(tally))
+                for zaidnum in tqdm(allzaids):
+                    # title = title
+                    data = []
+                    for library, lib_outputs in code_outputs.items():
+                        try:  # Zaid could not be common to the libraries
+                            tally_data = lib_outputs[zaidnum].tallydata.set_index('Tally N.').loc[tally]
+                            #print(lib_outputs[zaidnum])
+                            energy = tally_data["Energy"].values
+                            values = tally_data["Value"].values
+                            error = tally_data["Error"].values
+                            lib_name = self.session.conf.get_lib_name(library)
+                            lib = {
+                                "x": energy,
+                                "y": values,
+                                "err": error,
+                                "ylabel": str(zaidnum) + " (" + str(lib_name) + ")",
+                            }
+                            data.append(lib)
+                        except KeyError:
+                            # It is ok, simply nothing to plot here
+                            pass
 
-        for tally, title, quantity, unit in [
-            (4, "Leakage Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-            (14, "Leakage Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
-        ]:
-            print(" Plotting tally n." + str(tally))
-            for zaidnum in tqdm(allzaids):
-                # title = title
-                data = []
-                for idx, output in enumerate(outputs):
-                    try:  # Zaid could not be common to the libraries
-                        tally_data = output[zaidnum].tallydata.set_index('Tally N.').loc[tally]
-                        energy = tally_data["Energy"].values
-                        values = tally_data["Value"].values
-                        error = tally_data["Error"].values
-                        lib_name = self.session.conf.get_lib_name(libraries[idx])
-                        lib = {
-                            "x": energy,
-                            "y": values,
-                            "err": error,
-                            "ylabel": str(zaidnum) + " (" + str(lib_name) + ")",
-                        }
-                        data.append(lib)
-                    except KeyError:
-                        # It is ok, simply nothing to plot here
-                        pass
-                
-                outname = str(zaidnum) + "-" + globalname + "-" + str(tally)
-                plot = plotter.Plotter(
-                    data,
-                    title,
-                    outpath,
-                    outname,
-                    quantity,
-                    unit,
-                    "Energy [MeV]",
-                    self.testname,
-                )
-                plot.plot("Binned graph")
+                    outname = str(zaidnum) + "-" + globalname + "-" + str(tally)
+                    plot = plotter.Plotter(
+                        data,
+                        title,
+                        outpath,
+                        outname,
+                        quantity,
+                        unit,
+                        "Energy [MeV]",
+                        self.testname,
+                    )
+                    plot.plot("Binned graph")
 
 
-        self._build_atlas(outpath)
+            self._build_atlas(outpath)
 
     def _get_organized_output(self):
         libraries = []
         outputs = []
         zaids = []
-        for libname, outputslib in self.outputs.items():
-            libraries.append(libname)
-            outputs.append(outputslib)
-            zaids.append(list(outputslib.keys()))
+        for code, library_outputs in self.outputs.items():
+            for libname, outputslib in library_outputs.items():
+                libraries.append(libname)
+                outputs.append(outputslib)
+                zaids.append(list(outputslib.keys()))
         # Extend list to all zaids
         allzaids = zaids[0]
         for zaidlist in zaids[1:]:
@@ -1020,18 +1025,18 @@ class SphereOutput(BenchmarkOutput):
 
 
         Returns
-        -------
-        None.
+        ------- 
+       6b  None.
 
         """
         # template = os.path.join(os.getcwd(), 'templates',
         #                        'Sphere_comparison.xlsx')
+        
+        code_outputs = {}
 
-        outputs = {}
-        results = {}
-        errors = {}
-        iteration = 0
         if self.mcnp:
+            iteration = 0
+            outputs = {}
             for reflib, tarlib, name in self.couples:
                 outfolder_path = os.path.join(self.excel_path, "mcnp")
                 os.mkdir(outfolder_path)
@@ -1043,6 +1048,7 @@ class SphereOutput(BenchmarkOutput):
                 # Get results
                 comp_dfs = []
                 error_dfs = []
+                
                 for test_path in [
                     os.path.join(self.test_path[reflib], "mcnp"),
                     os.path.join(self.test_path[tarlib], "mcnp"),
@@ -1090,6 +1096,7 @@ class SphereOutput(BenchmarkOutput):
 
                         results.append(res)
                         errors.append(err)
+                
                     # Add reference library outputs
                     if iteration == 1:
                         outputs[reflib] = outputs_lib
@@ -1105,13 +1112,13 @@ class SphereOutput(BenchmarkOutput):
                     error_df.set_index(["Zaid", "Zaid Name"], inplace=True)
                     comp_dfs.append(comp_df)
                     error_dfs.append(error_df)
+                
+                # outputs_couple = outputs
+                code_outputs["mcnp"] = outputs
+                self.outputs = code_outputs
+                #self.results["mcnp"] = results
+                #self.errors["mcnp"] = errors
 
-                    # outputs_couple = outputs
-                    #self.outputs = outputs
-                    self.results = results
-                    self.errors = errors
-
-                self.outputs = outputs
                 # Consider only common zaids
                 idx1 = comp_dfs[0].index
                 idx2 = comp_dfs[1].index
@@ -1123,8 +1130,8 @@ class SphereOutput(BenchmarkOutput):
                 ].loc[newidx]
                 absdiff = comp_dfs[0].loc[newidx] - comp_dfs[1].loc[newidx]
 
-                self.diff_data = final
-                self.absdiff = absdiff
+                #self.diff_data["mcnp"] = final
+                #self.absdiff["mcnp"] = absdiff
 
                 # Standard deviation
                 idx1 = absdiff.index
@@ -1133,7 +1140,7 @@ class SphereOutput(BenchmarkOutput):
 
                 std_dev = absdiff.loc[newidx] / error_dfs[0].loc[newidx]
 
-                self.std_dev = std_dev
+                #self.std_dev["mcnp"] = std_dev
                 # Correct sorting
                 for df in [final, absdiff, std_dev]:
                     df.reset_index(inplace=True)
@@ -1224,6 +1231,8 @@ class SphereOutput(BenchmarkOutput):
                 ex.save()
                 """
         if self.openmc:
+            iteration = 0
+            outputs = {}
             for reflib, tarlib, name in self.couples:
                 outfolder_path = os.path.join(self.excel_path, "openmc")
                 os.mkdir(outfolder_path)
@@ -1240,6 +1249,7 @@ class SphereOutput(BenchmarkOutput):
                     os.path.join(self.test_path[reflib], "openmc"),
                     os.path.join(self.test_path[tarlib], "openmc"),
                 ]:
+                    print(test_path)
                     results = []
                     errors = []
                     iteration = iteration + 1
@@ -1298,8 +1308,11 @@ class SphereOutput(BenchmarkOutput):
 
                     # outputs_couple = outputs
                     # self.results = results
-
-                self.outputs = outputs
+                print(outputs)
+                code_outputs["openmc"] = outputs
+                self.outputs = code_outputs
+                #self.results["openmc"] = results
+                #self.errors["openmc"] = errors
                 # Consider only common zaids
                 idx1 = comp_dfs[0].index
                 idx2 = comp_dfs[1].index
@@ -1311,8 +1324,8 @@ class SphereOutput(BenchmarkOutput):
                 ].loc[newidx]
                 absdiff = comp_dfs[0].loc[newidx] - comp_dfs[1].loc[newidx]
 
-                self.diff_data = final
-                self.absdiff = absdiff
+                #self.diff_data["openmc"] = final
+                #self.absdiff["openmc"] = absdiff
 
                 # Standard deviation
                 idx1 = absdiff.index
@@ -1321,7 +1334,7 @@ class SphereOutput(BenchmarkOutput):
 
                 std_dev = absdiff.loc[newidx] / error_dfs[0].loc[newidx]
 
-                self.std_dev = std_dev
+                #self.std_dev["openmc"] = std_dev
 
                 # Correct sorting
                 for df in [final, absdiff, std_dev]:

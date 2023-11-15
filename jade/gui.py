@@ -170,7 +170,7 @@ def mainloop(session):
             if newlib == "exit":
                 session.log.adjourn(exit_text)
                 sys.exit()
-            inputfile = input(' Input to translate: ')
+            inputfile = input(' MCNP input file: ')
 
             if newlib in session.lib_manager.libraries:
                 ans = uty.translate_input(session, newlib, inputfile)
@@ -203,7 +203,7 @@ def mainloop(session):
                       ''')
 
         elif option == 'generate':
-            inputfile = uty.select_inputfile(' Materials source file: ')
+            inputfile = uty.select_inputfile(' MCNP input file: ')
             message = " Fraction type (either 'mass' or 'atom'): "
             options = ['mass', 'atom']
             fraction_type = uty.input_with_options(message, options)

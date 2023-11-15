@@ -4,8 +4,9 @@ C-Model
 .. important::
 
     This benchmark input cannot be distributed directly with JADE. The user must request to obtain it
-    from ITER organization and insert it in the ``<JADE root>\Benchmarks inputs`` directory renaming it
-    'C_Model.i'.
+    from ITER organization and insert it in the ``<JADE root>\Benchmarks inputs\C_Model\mcnp`` directory which 
+    must be created by the user and the input renamed to 'C_Model.i'. If the user has OpenMC and Serpent inputs
+    they should be added to openmc and serpent directories respectively. 
 
     The NPS card needs to be removed from the input. It is recommended to also delete total bins
     from standard tallies for a clearer post-processing results.

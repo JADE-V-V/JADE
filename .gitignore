@@ -3,7 +3,6 @@
 *.pyc
 Untitled.ipynb
 .coverage
-Benchmarks_Inputs/
 Configuration/
 Experimental_Results/
 

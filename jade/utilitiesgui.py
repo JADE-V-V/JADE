@@ -617,11 +617,11 @@ def print_XS_EXFOR(session):
 
     # choose ZAI to print
     while flag is True:
-        isotope_zai = input(' Enter nuclide ZAI: ')
+        isotope_zai = input(' Enter nuclide ZAID (e.g. 6012): ')
         awr_key = list(session.lib_manager.data['mcnp'].values())[0].awr.keys()
         isot_list = list(awr_key)
         if type(isotope_zai) is not str or isotope_zai not in isot_list:
-            print(' Enter a valid ZAI ID')
+            print(' Enter a valid ZAID')
             continue
         if int(isotope_zai[-3:]) > 260:
             print(' Cannot print metastable nuclides')
@@ -631,7 +631,7 @@ def print_XS_EXFOR(session):
 
     # choose reactions MT to print
     while flag is True:
-        mt_num = input(' Enter reaction MT (Enter "continue" to go on, \
+        mt_num = input(' Enter reaction MT(s) (Enter "continue" once finished, \
                        "print" to list reactions MT): ')
         if mt_num == "continue":
             break
@@ -651,14 +651,15 @@ def print_XS_EXFOR(session):
 
     # Choose libraries to compare
     while flag is True:
-        msg = ' Enter library suffix to compare (Enter "stop" to go on): '
+        print(session.conf.lib.index.tolist())
+        msg = ' Enter library/libraries suffix to compare (Enter "continue" once finished): '
         lib_compare = input(msg)
-        if lib_compare == 'stop':
+        if lib_compare == 'continue':
             break
         if lib_compare not in session.conf.lib.index.tolist():
             print(' Enter a library present in CONFIG')
             continue
-        elif lib_compare != 'stop':
+        elif lib_compare != 'continue':
             libs_to_print.append(lib_compare)
 
     # Check for experimental data package
@@ -730,7 +731,7 @@ def print_XS_EXFOR(session):
 
     for i in bookXS.keys():
         bookXS[i]['ZAID'] = isotope_zai + '.' + bookXS[i]['suffix']
-
+    
     for j in bookXS.keys():
         for i in XSDIR.tables:
             if bookXS[j]['ZAID'] == i.name:

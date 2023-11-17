@@ -228,21 +228,24 @@ are kind of useless for the post-processing and they consume a large amount
 of storage memory (up to 95% for MCNP produced outputs).
 
 Interactive acefile and EXFOR data plotter
-=========================
+==========================================
 ``comparelib``
 
 This function is used to generate comparison plots of microscopic neutron 
-cross-sections from acefile data from different data libraries. It also provides
+cross-sections from ACE file data from different data libraries. It also provides
 the possibility of including EXFOR experimental data in the comparison plots.
 Once the utility is launched, the user will be require to:
 
-* choose the nuclide for which the comparison will be made;
+* choose the nuclide for which the comparison will be made in ZAID format (e.g. 3006)
 * choose neutron reaction cross-sections to be printed. The function checks if
   the MT numeber is correct, if the chosen reactions are not present in some 
-  libraries, they will not be printed for those libraries;
+  libraries, they will not be printed for those libraries. The user can input multiple 
+  MT numbers (hit Enter after each individual entry). Then type continue once the MT(s) 
+  are entered;
 * choose nuclear data libraries from which the selected nuclear reaction 
   cross-sections will be printed. The chosen libraries must be defined in
-  ``<JADE_root>\Configuration\Configuration.xlsx`` file;
+  ``<JADE_root>\Configuration\Configuration.xlsx`` file. As above multiple libraries are entered
+  until the user enters continue;
 * choose if EXFOR experimental data for those specific nuclide and reactions are 
   to e printed. This last feature requires the installation of the optional 
   package 'x4i3' in JADE environment. Further details on installation and usage

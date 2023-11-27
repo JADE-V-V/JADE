@@ -316,10 +316,10 @@ def comploop(session):
                 session.log.adjourn(exit_text)
                 sys.exit()
             ans = session.state.check_override_run(lib, session)
-            runoption = run_option(session)
             # If checks are ok perform assessment
             if ans:
                 # Logging
+                runoption = run_option(session)
                 bartext = 'Computational benchmark execution started'
                 session.log.bar_adjourn(bartext)
                 session.log.adjourn('Selected Library: '+lib,

@@ -554,7 +554,8 @@ class Test:
 
             if runoption.lower() == 'c':
                 try:
-                    unix.configure(env_variables)
+                    if not sys.platform.startswith('win'):
+                        unix.configure(env_variables)
                     print(" ".join(run_command))
                     subprocess.run(" ".join(run_command), cwd=directory, shell=True, timeout=43200)          
             

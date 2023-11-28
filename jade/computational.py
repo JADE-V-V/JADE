@@ -60,6 +60,15 @@ def executeBenchmarksRoutines(session, lib: str, runoption, exp=False) -> None:
 
     for testname, row in config.iterrows():
         # Check for active test first
+        if sys.platform.startswith('win'):
+            if (
+                bool(row["Serpent"])
+                or bool(row["OpenMC"])
+            ):    
+                print('not supported')
+                row["Serpent"] = False
+                row["OpenMC"] = False   
+
         if (
             bool(row["OnlyInput"])
             or bool(row["MCNP"])

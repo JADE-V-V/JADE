@@ -65,7 +65,9 @@ def executeBenchmarksRoutines(session, lib: str, runoption, exp=False) -> None:
                 bool(row["Serpent"])
                 or bool(row["OpenMC"])
             ):    
-                print('not supported')
+                print("""
+                Running OpenMC and Serpent on Windows is currently not supported.
+                """)
                 row["Serpent"] = False
                 row["OpenMC"] = False   
 

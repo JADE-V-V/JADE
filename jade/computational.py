@@ -127,11 +127,11 @@ def executeBenchmarksRoutines(session, lib: str, runoption, exp=False) -> None:
             safemkdir(outpath)
             fname = row["Folder Name"]
             inppath = os.path.join(session.path_inputs, fname)
-            VRTpath = os.path.join(session.path_inputs, "ITER_Cyl_SDDR", "d1S")
+#            VRTpath = os.path.join(session.path_inputs, "ITER_Cyl_SDDR", "d1S")
             confpath = os.path.join(session.path_cnf, fname.split(".")[0])
 
             # Generate test
-            args = (inppath, var, row, log, VRTpath, confpath, runoption)
+            args = (inppath, var, row, log, confpath, runoption)
             # Handle special cases
             if testname == "Sphere Leakage Test":
                 test = testrun.SphereTest(*args)

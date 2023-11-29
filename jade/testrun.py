@@ -43,7 +43,7 @@ CEND = "\033[0m"
 
 
 class Test:
-    def __init__(self, inp, lib, config, log, VRTpath, confpath, runoption):
+    def __init__(self, inp, lib, config, log, confpath, runoption):
         """
         Class representing a general test. This class will have to be extended
         for specific tests.
@@ -89,7 +89,7 @@ class Test:
         self.log = log
 
         # VRT path
-        self.path_VRT = VRTpath
+        self.path_VRT = inp
 
         # Get the configuration files path
         self.test_conf_path = confpath
@@ -153,6 +153,7 @@ class Test:
             self.d1s_inp = ipt.D1S5_InputFile.from_text(d1s_ipt)
             # It also have additional files then that must be in the
             # VRT folder (irradiation and reaction files)
+            # To change with revised folder structure - removed VRT. 
             irrfile = os.path.join(VRTpath, self.d1s_inp.name, self.inp.name + "_irrad")
             reacfile = os.path.join(
                 VRTpath, self.d1s_inp.name, self.d1s_inp.name + "_react"
@@ -322,17 +323,17 @@ class Test:
             if self.react is not None:
                 self.react.write(motherdir, "d1s")
             # Get VRT files if available
-            wwinp = os.path.join(self.path_VRT, testname, "wwinp")
+            wwinp = os.path.join(self.original_inp, "d1s", "wwinp")
             if os.path.exists(wwinp):
-                outfile = os.path.join(motherdir, "mcnp", "wwinp")
+                outfile = os.path.join(motherdir, "d1s", "wwinp")
                 shutil.copyfile(wwinp, outfile)
 
         if self.mcnp:
             os.mkdir(os.path.join(motherdir, "mcnp"))
             outinpfile = os.path.join(motherdir, "mcnp", testname)
             self.mcnp_inp.write(outinpfile)
-            # Get VRT files if available
-            wwinp = os.path.join(self.path_VRT, "wwinp")
+            # Get WW files if available
+            wwinp = os.path.join(self.original_inp, "mcnp", "wwinp")
             if os.path.exists(wwinp):
                 outfile = os.path.join(motherdir, "mcnp", "wwinp")
                 shutil.copyfile(wwinp, outfile)
@@ -950,11 +951,6 @@ class SphereTest(Test):
         if lib is None:
             lib = self.lib
 
-        # Get VRT files
-        directoryVRT = os.path.join(self.path_VRT, zaid)
-        edits_file = os.path.join(directoryVRT, "inp_edits.txt")
-        ww_file = os.path.join(directoryVRT, "wwinp")
-
         # Adjourn the material cards for the zaid
         zaid = mat.Zaid(1, zaid[:-3], zaid[-3:], lib)
         name, formula = libmanager.get_zaidname(zaid)
@@ -964,6 +960,12 @@ class SphereTest(Test):
             pass
 
         if self.mcnp:
+            # Retrieve wwinp & other misc files if they exist
+            print(zaid.isotope)
+            print(zaid.element)
+            directoryVRT = os.path.join(self.path_VRT, "mcnp", zaid.element + zaid.isotope)
+            edits_file = os.path.join(directoryVRT, "inp_edits.txt")
+            ww_file = os.path.join(directoryVRT, "wwinp")            
             # Create MCNP material card
             submat = mat.SubMaterial("M1", [zaid], header="C " + name + " " + formula)
             material = mat.Material([zaid], None, "M1", submaterials=[submat])
@@ -980,8 +982,8 @@ class SphereTest(Test):
             if parentlist is not None:
                 newinp.add_PIKMT_card(parentlist)
 
-            if os.path.exists(directoryVRT):
-                newinp.add_edits(edits_file)  # Add variance reduction
+#            if os.path.exists(directoryVRT):
+#                newinp.add_edits(edits_file)  # Add variance reduction
 
             # Write new input file
             outfile, outdir = self._get_zaidtestname(
@@ -1094,16 +1096,16 @@ class SphereTest(Test):
         if lib is None:
             lib = self.lib
         truename = material.name
-        # Get VRT file
-        directoryVRT = os.path.join(self.path_VRT, truename)
-        edits_file = os.path.join(directoryVRT, "inp_edits.txt")
-        ww_file = os.path.join(directoryVRT, "wwinp")
 
         if self.d1s:
             # Add d1s function here
             pass
 
-        if self.mcnp:
+        if self.mcnp:    
+            # Retrieve wwinp & other misc files if they exist   
+            directoryVRT = os.path.join(self.path_VRT, "mcnp", truename)
+            edits_file = os.path.join(directoryVRT, "inp_edits.txt")
+            ww_file = os.path.join(directoryVRT, "wwinp")            
             newmat = deepcopy(material)
             # Translate and assign the material
             newmat.translate(lib, libmanager, "mcnp")
@@ -1122,8 +1124,8 @@ class SphereTest(Test):
             if parentlist is not None:
                 newinp.add_PIKMT_card(parentlist)
 
-            if os.path.exists(directoryVRT):
-                newinp.add_edits(edits_file)  # Add variance reduction
+#            if os.path.exists(directoryVRT):
+#                newinp.add_edits(edits_file)  # Add variance reduction
 
             # Write new input file
             outfile = testname + "_" + truename + "_"
@@ -1494,7 +1496,7 @@ class FNGTest(Test):
 
 
 class MultipleTest:
-    def __init__(self, inpsfolder, lib, config, log, VRTpath, confpath, runoption, TestOb=Test):
+    def __init__(self, inpsfolder, lib, config, log, confpath, runoption, TestOb=Test):
         """
         A collection of Tests
 
@@ -1523,7 +1525,7 @@ class MultipleTest:
         tests = []
         for folder in os.listdir(inpsfolder):
             inp = os.path.join(inpsfolder, folder)
-            test = TestOb(inp, lib, config, log, VRTpath, confpath, runoption)
+            test = TestOb(inp, lib, config, log, confpath, runoption)
             tests.append(test)
         self.tests = tests
         self.name = os.path.basename(inpsfolder)

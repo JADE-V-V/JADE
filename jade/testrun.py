@@ -58,8 +58,6 @@ class Test:
             configuration options for the test.
         log : Log
             Jade log file access.
-        VRTpath : path like object
-           path to the variance reduction folder.
         confpath : path like object
             path to the test configuration folder.
 
@@ -1510,8 +1508,6 @@ class MultipleTest:
             configuration options for the test.
         log : Log
             Jade log file access.
-        VRTpath : path like object
-           path to the variance reduction folder.
         confpath : path like object
             path to the test configuration folder.
         TestOb : testrun.Test, optional

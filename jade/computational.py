@@ -65,9 +65,9 @@ def executeBenchmarksRoutines(session, lib: str, runoption, exp=False) -> None:
                 bool(row["Serpent"])
                 or bool(row["OpenMC"])
             ):    
-                print("""
-                Running OpenMC and Serpent on Windows is currently not supported.
-                """)
+                print(f"\n"
+                f"'{testname}' selected. OpenMC and Serpent are not currently supported on Windows."
+                f"\n")
                 row["Serpent"] = False
                 row["OpenMC"] = False   
 
@@ -87,7 +87,7 @@ def executeBenchmarksRoutines(session, lib: str, runoption, exp=False) -> None:
                     bool(row["d1S"]),
                 ])
             ):
-                print("Transport code was not specified, defaulting to MCNP")
+                print("Transport code was not specified or is not available for input generation, defaulting to MCNP")
                 print("")
                 row["MCNP"]=True
 

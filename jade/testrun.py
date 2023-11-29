@@ -1550,25 +1550,20 @@ class MultipleTest:
             mcnp_dir = os.path.join(self.MCNPdir, test.name)
             test.generate_test(lib_directory, libmanager, run_dir=mcnp_dir)
 
-    def run(self, cpu=1, timeout=None):
-        """
-        Run all the tests
+    def run(self, config, libmanager, runoption: str) -> None:
+        """Run all tests
 
         Parameters
         ----------
-        cpu : int, optional
-            number of CPU to be used. The default is 1.
-        timeout : int, optional
-            number of seconds after each simulation is killed. The default is
-            None.
-
-        Returns
-        -------
-        None.
-
+        config : 
+            Configuration settings
+        libmanager : 
+            libmanager
+        runoption : str
+            command line or as a job
         """
         for test in tqdm(self.tests):
-            test.run(cpu=cpu, timeout=timeout)
+            test.run(config, libmanager, runoption)       
 
 
 def safe_mkdir(directory):

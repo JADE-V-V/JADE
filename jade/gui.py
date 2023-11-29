@@ -105,15 +105,7 @@ def run_option(session, exp=False) -> str:
     else:
         runoption = 'c'  # Default value
         for testname, row in config.iterrows():
-            if (
-                bool(row["OnlyInput"])
-                and not any([
-                    bool(row["MCNP"]),
-                    bool(row["Serpent"]),
-                    bool(row["OpenMC"]),
-                    bool(row["d1S"]),
-                ])
-            ):
+            if (bool(row["OnlyInput"])):
                 runoption = 'c'
                 break
         else:
@@ -438,10 +430,10 @@ def exploop(session):
                 libtocheck = lib
             ans = session.state.check_override_run(libtocheck,
                                                    session, exp=True)
-            runoption = run_option(session)
             # If checks are ok perform assessment
             if ans:
                 # Logging
+                runoption = run_option(session, exp=True)
                 bartext = 'Experimental benchmark execution started'
                 session.log.bar_adjourn(bartext)
                 session.log.adjourn('Selected Library: '+lib,

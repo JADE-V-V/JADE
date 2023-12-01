@@ -72,7 +72,6 @@ class Xsdir(object):
         self.directory = os.path.dirname(filename)
         self.awr = {}
         self.tables = []
-
         self.read()
 
         # It is useful to have a list of the available tables names to be
@@ -98,6 +97,8 @@ class Xsdir(object):
             if words[0].lower().startswith('datapath'):
                 index = line.index('=')
                 self.datapath = line[index+1:].strip()
+                self.f.readline()
+
 
         # Read second section
         line = self.f.readline()

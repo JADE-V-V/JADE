@@ -768,7 +768,7 @@ class BenchmarkOutput(AbstractOutput):
 
             # memorize data for atlas
             self.outputs = outputs
-            print(outputs)
+            #print(outputs)
             # Dump them for comparisons
             outpath = os.path.join(self.raw_path, self.lib + ".pickle")
             with open(outpath, "wb") as outfile:

@@ -959,8 +959,6 @@ class SphereTest(Test):
 
         if self.mcnp:
             # Retrieve wwinp & other misc files if they exist
-            print(zaid.isotope)
-            print(zaid.element)
             directoryVRT = os.path.join(self.path_VRT, "mcnp", zaid.element + zaid.isotope)
             edits_file = os.path.join(directoryVRT, "inp_edits.txt")
             ww_file = os.path.join(directoryVRT, "wwinp")            

@@ -3,65 +3,75 @@
 ############
 Installation
 ############
-The preferred way to install JADE is through a conda virtual environment, meaning that an
-Anaconda or Miniconda installation is required. Please visit the
-`Anaconda website <https://www.anaconda.com/products/individual>`_ for more detailed
-information about the Anaconda products and virtual environments.
 
-Once Anaconda is set up, proceed with the following steps to complete JADE installation:
+JADE can be installed both on Windows and Linux operating systems. The recommended method
+for installation is to use virtual environments (see `the python website <https://docs.python.org/3/library/venv.html>`_ for more information). Currently, only MCNP can be run on the Windows installation. To use OpenMC
+and Serpent in JADE, the user should install on Linux. 
 
-#. Visit `JADE GitHub repository <https://github.com/dodu94/JADE>`_ and download the latest JADE release as a .zip folder; 
-#. Extract the .zip into a folder of choice (from now on ``<JADE_root>``);
-#. Rename the folder containing the different Python modules as 'Code' (``<JADE_root>\Code``);
-   Your folders structure at this point should look like this:
-   ::
+Installation on Linux
+---------------------
+
+Firstly, create a virtual environment and activate it:
+
+  | ``python -m venv jade``
+  | ``source jade/bin/activate``
+
+Visit the `JADE repository <https://github.com/JADE-V-V/jade>`_ and if you have `git <https://git-scm.com/>`_
+you can clone the repository:
+
+  | ``git clone https://github.com/JADE-V-V/JADE.git``
+  | ``mv JADE Code``
+  | ``cd Code``
+
+The user can then checkout the relevant branch of the code. It is now recommended that you upgrade pip before performing
+the installation:
+
+  | ``pip install --upgrade pip``
+  | ``pip install .``
+
+If you are developing JADE, you can use the '-e' option when installing. JADE has now been installed as 
+a command line tool and should now be initialised in the root directory as follows: 
+
+  | ``cd ../``
+  | ``jade``
+
+The folder strucure should now look like the following:
+::
       <JADE_root>
-        |
-        |--------- Code
-        |            |----- default_settings
-        |            |----- docs
-        |            |----- install_files
-        |            |----- templates
-        |            |----- tests
+        | --------- Benchmark_Inputs
+        | --------- Code
+        | --------- Configuration
+        | --------- Experimental_Results
+        | --------- jade
+        | --------- Quality
+        | --------- Tests
+        | --------- Utilities
 
-#. Ensure that your conda version is up to date using:
-   
-  ``conda update conda``
+The detailed folder structure should look like that illustrated in :ref:`folders`.
 
-#. Open an anaconda prompt shell and change directory to ``<JADE_root>\Code``.
-   Here, create the JADE virtual environment typing:
-
-   ``conda env create --name jade --file=environment.yml``
-   
-   This ensures that all JADE dependencies are satisfied. The environment can be activated using:
-
-   ``conda activate jade``
-   
-   And deactivated simply using:
-
-   ``conda deactivate``
-
-#. With the environment active, type in the Anaconda prompt shell:
-   
-   ``python main.py``
-
-   this will initialize the remaining part of JADE folders structure that now 
-   should look like the one described in :ref:`folders`.
-#. Open the global configuration file: ``<JADE_root>\Code\Configuration\Config.xlsx``;
-   here you need to properly set the environment variables specified in the
-   'MAIN Config.' sheet (i.e. xsdir Path, and multithread options);
-
-The installation is now complete. JADE can now be started with the following
-steps:
-
-#. Open an Anaconda prompt shell;
-#. activate the jade environment;
-#. move to the ``<JADE_root>\Code`` folder;
-#. type:
-
-   ``python main.py``
+Once initialised, the user should configure JADE for their system. This can be done by editing 
+``<jade_root>/Configuration/Config.xlsx.``
 
 .. seealso::
-   check also :ref:`mainconfig` for additional information on the minimum environment variables
-   to be set.
+   check also :ref:`mainconfig` for additional information on configuring JADE prior to running.
+
+Following configuration, the user can run 'jade' within ``<JADE_root>`` to start JADE and the user
+interface will appear. Each time a new window is launched, the user should remember to activate the
+virtual environment. 
+
+Installation on Windows
+-----------------------
+
+The steps for installation on windows are essentially the same as that described for Linux. 
+Again, use of virtual envrionments is recommended. Note that if you are using PowerShell, you may need
+to run PowerShell as an adminstrator and change the `Set-ExecutionPolicy <https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7.4>`_ 
+cmdlet in order to be able to activate the virtual environment. 
+
+  | ``python -m venv jade_venv``
+  | ``.\jade_venv\Scripts\activate``
+
+Once activated, the steps described above for Linux can be followed.
+
+Currently, only the running of MCNP is supported on Windows and JADE should be configured accordingly.
+This is further detailed in :ref:`mainconfig`. 
 

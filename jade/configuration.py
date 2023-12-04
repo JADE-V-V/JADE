@@ -23,6 +23,7 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import datetime
 import os
+import sys
 
 import pandas as pd
 
@@ -118,6 +119,50 @@ class Configuration:
 
         # self.default_lib = lib[lib['Default'] == 'yes']['Suffix'].values[0]
 
+    def run_option(self, exp=False) -> str:
+        """Allow user to specify whether to run in parallel or command line
+
+        Parameters
+        ----------
+        self : self
+            self
+
+        Returns
+        -------
+        str
+            command line or submitted as a job.
+        """
+        if exp:
+            config = self.exp_default.set_index("Description")
+        else:
+            config = self.comp_default.set_index("Description")
+
+        runoption = 'c'
+        
+        if not sys.platform.startswith('win'):
+            for testname, row in config.iterrows():
+                if (bool(row["OnlyInput"])):
+                    runoption = 'c'
+                    break
+            else:
+                while True:
+                    runoption = input(' Would you like to run in the command line, c, or submit as a job, s? ')
+                    if runoption == 'c':
+                        break
+                    elif runoption == 's':
+                        if pd.isnull(self.batch_system):
+                            print(' Cannot submit as a batch job, as no batch system has been define in the config file.')
+                        else:
+                            break
+                    elif runoption == 'back':
+                        break
+                    elif runoption == 'exit':
+                        break
+                    else:
+                        print(' Please enter a valid option')
+
+        return runoption
+    
     def get_lib_name(self, suffix: str) -> str:
         """
         Get the name of the library from its suffix. If a name was not

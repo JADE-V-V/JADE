@@ -82,48 +82,6 @@ principal_menu = header+"""
 """.format(POWERED_BY)
 
 
-def run_option(session, exp=False) -> str:
-    """Allow user to specify whether to run in parallel or command line
-
-    Parameters
-    ----------
-    session : session
-        session
-
-    Returns
-    -------
-    str
-        command line or submitted as a job.
-    """
-    if exp:
-        config = session.conf.exp_default.set_index("Description")
-    else:
-        config = session.conf.comp_default.set_index("Description")
-
-    if sys.platform.startswith('win'):
-        runoption = 'c'
-    else:
-        runoption = 'c'  # Default value
-        for testname, row in config.iterrows():
-            if (bool(row["OnlyInput"])):
-                runoption = 'c'
-                break
-        else:
-            while True:
-                runoption = input('Would you like to run in the command line, c, or submit as a job, s? ')
-                if runoption == 'c' or runoption == 's':
-                    break
-                elif runoption == 'back':
-                    mainloop(session)
-                elif runoption == 'exit':
-                    session.log.adjourn(exit_text)
-                    sys.exit()
-                else:
-                    print('Please enter a valid option')
-
-    return runoption
-
-
 def mainloop(session):
     """
     This handle the actions related to the main menu
@@ -307,11 +265,16 @@ def comploop(session):
             if lib == "exit":
                 session.log.adjourn(exit_text)
                 sys.exit()
+            runoption = session.conf.run_option()
+            if runoption == "back":
+                comploop(session)
+            if runoption == "exit":
+                session.log.adjourn(exit_text)
+                sys.exit()            
             ans = session.state.check_override_run(lib, session)
             # If checks are ok perform assessment
             if ans:
-                # Logging
-                runoption = run_option(session)
+                # Logging                
                 bartext = 'Computational benchmark execution started'
                 session.log.bar_adjourn(bartext)
                 session.log.adjourn('Selected Library: '+lib,
@@ -418,8 +381,14 @@ def exploop(session):
             # Select and check library
             lib = session.lib_manager.select_lib()
             if lib == "back":
-                exploop(session)
+                comploop(session)
             if lib == "exit":
+                session.log.adjourn(exit_text)
+                sys.exit()
+            runoption = session.conf.run_option()
+            if runoption == "back":
+                comploop(session)
+            if runoption == "exit":
                 session.log.adjourn(exit_text)
                 sys.exit()
             # it may happen that lib are two but only the first is the assessed
@@ -433,7 +402,7 @@ def exploop(session):
             # If checks are ok perform assessment
             if ans:
                 # Logging
-                runoption = run_option(session, exp=True)
+                runoption = session.conf.run_option(exp=True)
                 bartext = 'Experimental benchmark execution started'
                 session.log.bar_adjourn(bartext)
                 session.log.adjourn('Selected Library: '+lib,

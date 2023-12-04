@@ -27,6 +27,7 @@ import sys
 
 import pandas as pd
 
+from jade.exceptions import fatal_exception
 
 class Configuration:
     def __init__(self, conf_file):
@@ -63,6 +64,9 @@ class Configuration:
         if pd.isnull(file_path) is not True:
             if os.path.isabs(file_path) is not True:
                 file_path = os.path.join(os.path.dirname(self.conf_file), file_path)
+            if not os.path.exists(file_path):
+                fatal_exception(file_path + ' does not exist')
+
         return file_path
 
     def read_settings(self) -> None:
@@ -82,13 +86,13 @@ class Configuration:
         )
         main.columns = ["Variable", "Value"]
         main.set_index("Variable", inplace=True)
-        self.mcnp_exec = main["Value"].loc["MCNP executable"]
+        self.mcnp_exec = self._process_path(main["Value"].loc["MCNP executable"])
         self.mcnp_config = self._process_path(main["Value"].loc["MCNP config"])
-        self.serpent_exec = main["Value"].loc["Serpent executable"]
+        self.serpent_exec = self._process_path(main["Value"].loc["Serpent executable"])
         self.serpent_config = self._process_path(main["Value"].loc["Serpent config"])
-        self.openmc_exec = main["Value"].loc["OpenMC executable"]
+        self.openmc_exec = self._process_path(main["Value"].loc["OpenMC executable"])
         self.openmc_config = self._process_path(main["Value"].loc["OpenMC config"])
-        self.d1s_exec = main["Value"].loc["d1S executable"]
+        self.d1s_exec = self._process_path(main["Value"].loc["d1S executable"])
         self.d1s_config = self._process_path(main["Value"].loc["d1S config"])
         self.openmp_threads = main["Value"].loc["OpenMP threads"]
         self.mpi_tasks = main["Value"].loc["MPI tasks"]

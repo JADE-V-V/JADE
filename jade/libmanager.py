@@ -33,6 +33,7 @@ import jade.acepyne as ace
 import jade.xsdirpyne as xs
 import pandas as pd
 from jade.xsdirpyne import OpenMCXsdir, SerpentXsdir, Xsdir
+from jade.exceptions import fatal_exception
 
 # colors
 CRED = '\033[91m'
@@ -117,6 +118,9 @@ class LibManager:
             self.data[code] = {}
             for library, row in lib_df.iterrows():
                 path = row[code]
+                if path != '':
+                    if not os.path.exists(path):
+                        fatal_exception(path + ' does not exist')
 
                 if len(path) != 0 :
 

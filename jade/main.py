@@ -24,17 +24,13 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import jade.gui as gui
 import jade.configuration as cnf
 import jade.libmanager as libmanager
+from jade.exceptions import fatal_exception
 import os
 import jade.status as status
 import warnings
 import time
 import shutil
 import sys
-
-# colors
-CRED = '\033[91m'
-CORANGE = '\033[93m'
-CEND = '\033[0m'
 
 # Long messages
 FIRST_INITIALIZATION = """
@@ -218,28 +214,6 @@ class Session:
         shutil.copytree(files, os.path.dirname(self.path_cnf))
         print(DEFAULT_SETTINGS_RESTORATION)
         sys.exit()  # exit to allow for settings of key ambient variables
-
-
-def fatal_exception(message=None):
-    """
-    Use this function to exit with a code error from a handled exception
-
-    Parameters
-    ----------
-    message : str, optional
-        Message to display. The default is None.
-
-    Returns
-    -------
-    None.
-
-    """
-    if message is None:
-        message = 'A Fatal exception have occured'
-
-    message = message+', the application will now exit'
-    print(CRED+' FATAL EXCEPTION: \n'+message+CEND)
-    sys.exit()
 
 
 def main():

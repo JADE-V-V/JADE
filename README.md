@@ -4,74 +4,30 @@
 <img src="https://user-images.githubusercontent.com/25747626/118662537-5f124900-b7f0-11eb-8d69-282305f795c4.png" width="300" />
 
 # JADE
-A new tool for nuclear libraries V&V.
-Brought to you by NIER, University of Bologna (UNIBO), Fusion For Energy (F4E) and United Kingdom Atomic Energy Authority (UKAEA).
+The JADE tool provides an automated framework to perform validation and verification of nuclear data libraries and particle transport codes. 
+JADE is brought to you by NIER, University of Bologna (UNIBO), Fusion For Energy (F4E) and the United Kingdom Atomic Energy Authority (UKAEA).
 
-Check [JADE official documentation](https://jade-a-nuclear-data-libraries-vv-tool.readthedocs.io/en/latest/)
-for more detailed information on how to use the tool. Linux installtion to be added. 
+Detailed documentation on the usage of JADE can be found on the Read the Docs for the [latest](https://jade-a-nuclear-data-libraries-vv-tool.readthedocs.io/en/latest/) version.
 
 For additional information contact: davide.laghi01@gmail.com
 
 ## Requirements
-- Linux operative system (Windows or MacOS compatibility has not been tested);
+- Linux or Windows operative system;
 - Python 3 installation;
 
-## LICENSE
+## Installation
+See [installation instructions](https://jade-a-nuclear-data-libraries-vv-tool.readthedocs.io/en/stable/usage/installation.html) in the user guide. 
+
+## Issues and Troubleshooting
+Users are encouraged to raise [issues](https://github.com/JADE-V-V/JADE/issues) in the JADE git repository. This can include ideas for new features. For general troubleshooting, the user should consult the [troubleshooting](https://jade-a-nuclear-data-libraries-vv-tool.readthedocs.io/en/latest/usage/troubleshooting.html) section of the documentation or if still unable to resolve the problem contact the above email. 
+
+## Citing
+When using JADE for scientific publications you are kindly encouraged to cite the following papers:
+
+D. Laghi et al, 2020, “JADE, a new software tool for nuclear fusion data libraries verification & validation”, Fusion Engineering and Design, 161 112075, doi: (https://doi.org/10.1016/j.fusengdes.2020.112075).
+
+D.Laghi, M. Fabbri, S. La Rovere, L. Isolan, R. Pampin, A. Portone and M. Sumini, 2022, “Status of JADE, an open-source software for nuclear data libraries V&V”, Fusion Engineering and Design, 187 113380, doi: https://doi.org/10.1016/j.fusengdes.2022.113380
+
+## License
 JADE is an open-source software licensed under the [GNU GPLv3](./LICENSE) license.
-
-## LINUX INSTALLATION
-
-Firstly, create a new JADE directory:
-
-``` 
-mkdir JADE
-cd JADE
-```
-
-Then create a pip virtual environment and activate it:
-
-```
-python -m venv jade
-source jade/bin/activate
-```
-Note that once the venv is created, only the source command is required in future use.
- 
-Next clone the repository, and rename it to Code, and cd into it. SSH recommended for developers.
-
-```
-git clone https://github.com/sbradnam/JADE.git
-mv JADE Code
-cd Code
-git checkout linux
-```
-
-Now upgrade pip, and install the pip requirements. Use the '-e' option if performing development. 
-
-```
-pip install --upgrade pip
-pip install . 
-```
-
-JADE has now been installed as a command line tool. JADE should now be initialised in the top level JADE folder. To do this, cd up one level and run jade:
-
-```
-cd ../
-jade
-```
-
-Alternatively, JADE can be configured in any location on your system. Lets now refer to this as `<jade_root>`:
-
-```
-cd path/to/alternative/jade/location
-jade
-```
-
-Once initialised, the user should configure jade for their system. This can be fone by editing `<jade_root>/Configuration/Config.xlsx`.
-
-Following configuration, the user can run `jade` within `<jade_root>` to enter the JADE gui.
-
-
-
-
-
 

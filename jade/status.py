@@ -24,22 +24,13 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import re
 
-MULTI_TEST = [
-    "Sphere",
-    "Oktavian",
-    "SphereSDDR",
-    "FNG",
-    "Tiara-BC",
-    "Tiara-BS",
-    "Tiara-FC",
-    "FNS",
-    "FNG-BKT",
-    "FNG-W",
-]
-EXP_TAG = "Exp"
+MULTI_TEST = ['Sphere', 'Oktavian', 'SphereSDDR', 'FNG', 'Tiara-BC',
+              'Tiara-BS', 'Tiara-FC', 'FNS-TOF', 'FNG-BKT', 'FNG-W', 'ASPIS-Fe88',
+              'TUD-Fe', 'TUD-W']
+EXP_TAG = 'Exp'
 
 
-class Status:
+class Status():
     def __init__(self, session):
         """
         Stores the state of the JADE runs and post-processing.

@@ -68,7 +68,7 @@ class Atlas():
         # Open The Atlas template
         doc = docx.Document(template)
         doc.add_heading('JADE ATLAS: '+name, level=0)
-        self.outname = 'atlas_'+name  # Name for the outfile
+        self.outname = 'atlas_' + name  # Name for the outfile
         self.doc = doc  # Word Document
 
     def insert_img(self, img, width=Inches(7.5)):

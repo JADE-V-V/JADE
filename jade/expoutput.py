@@ -37,6 +37,16 @@ from abc import abstractmethod
 from jade.inputfile import D1S_Input
 import re
 
+MCNP_UNITS = {'Energy': 'MeV',
+              'Time': 'shakes'}
+
+TALLY_NORMALIZATION = {'Tiara-BC': 'lethargy',
+                       'FNS-TOF': 'lethargy',
+                       'Oktavian': 'lethargy',
+                       'TUD-Fe': 'energy bins',
+                       'TUD-W': 'energy bins',
+                       'TUD-FNG': 'energy bins'}
+
 
 class ExperimentalOutput(BenchmarkOutput):
     def __init__(self, *args, **kwargs):
@@ -144,7 +154,7 @@ class ExperimentalOutput(BenchmarkOutput):
         for lib in self.lib:
             globalname = globalname + lib + '_Vs_'
         globalname = globalname[:-4]
-
+        globalname = self.testname + '_' + globalname
         # Initialize the atlas
         template = os.path.join(self.code_path, 'templates',
                                 'AtlasTemplate.docx')
@@ -168,6 +178,7 @@ class ExperimentalOutput(BenchmarkOutput):
         """
         outputs = {}
         results = {}
+        inputs = []
         # Iterate on the different libraries results except 'Exp'
         for lib, test_path in self.test_path.items():
             if lib != EXP_TAG:
@@ -175,27 +186,37 @@ class ExperimentalOutput(BenchmarkOutput):
                     # Results are organized by folder and lib
                     for folder in os.listdir(test_path):
                         results_path = os.path.join(test_path, folder)
+                        pieces = folder.split('_')
+                        # Get zaid
+                        input = pieces[-1]
+
                         mfile, ofile = self._get_output_files(results_path)
                         # Parse output
                         output = MCNPoutput(mfile, ofile)
-                        outputs[folder, lib] = output
+                        outputs[input, lib] = output
                         # Adjourn raw Data
-                        self.raw_data[folder, lib] = output.tallydata
+                        self.raw_data[input, lib] = output.tallydata
                         # Get the meaningful results
-                        results[folder, lib] = self._processMCNPdata(output)
+                        results[input, lib] = self._processMCNPdata(output)
+                        if input not in inputs:
+                            inputs.append(input)
                 # Results are organized just by lib
                 else:
                     mfile, ofile = self._get_output_files(test_path)
                     # Parse output
                     output = MCNPoutput(mfile, ofile)
-                    outputs[lib] = output
+                    outputs[self.testname, lib] = output
                     # Adjourn raw Data
-                    self.raw_data[lib] = output.tallydata
+                    self.raw_data[self.testname, lib] = output.tallydata
                     # Get the meaningful results
-                    results[lib] = self._processMCNPdata(output)
+                    results[self.testname, lib] = self._processMCNPdata(output)
 
         self.outputs = outputs
         self.results = results
+        if inputs:
+            self.inputs = inputs
+        else:
+            self.inputs = [self.testname]
 
     def _read_exp_results(self):
         """
@@ -222,15 +243,20 @@ class ExperimentalOutput(BenchmarkOutput):
                     filename = file.split('.')[0]
                     filepath = os.path.join(cp, file)
                     df = self._read_exp_file(filepath)
+                    c = df.columns.tolist()[1]
+                    df = df[df[c] > 2e-38]
                     exp_results[folder][filename] = df
         else:
             # Iterate on each each file, read it and
             # build the result dic
+            exp_results[self.testname] = {}
             for file in os.listdir(self.path_exp_res):
                 filename = file.split('.')[0]
                 filepath = os.path.join(self.path_exp_res, file)
                 df = self._read_exp_file(filepath)
-                exp_results[filename] = df
+                c = df.columns.tolist()[1]
+                df = df[df[c] > 2e-38]
+                exp_results[self.testname][filename] = df
 
         self.exp_results = exp_results
 
@@ -256,31 +282,20 @@ class ExperimentalOutput(BenchmarkOutput):
         -------
         None.
         """
-        # Multiple tests in the benchmark scope
-        if self.multiplerun:
-            for (folder, lib), item in self.raw_data.items():
-                # Create the lib directory if it is not there
-                cd_lib = os.path.join(self.raw_path, lib)
-                if not os.path.exists(cd_lib):
-                    os.mkdir(cd_lib)
-                # Dump everything
-                for key, data in item.items():
+
+        for (folder, lib), item in self.raw_data.items():
+            # Create the lib directory if it is not there
+            cd_lib = os.path.join(self.raw_path, lib)
+            if not os.path.exists(cd_lib):
+                os.mkdir(cd_lib)
+            # Dump everything
+            for key, data in item.items():
+                if folder == self.testname:
+                    file = os.path.join(cd_lib, str(key)+'.csv')
+                else:
                     file = os.path.join(cd_lib,
                                         folder+' '+str(key)+'.csv')
-                    data.to_csv(file, header=True, index=False)
-
-        # Single test in the benchmark scope
-        else:
-            for lib, item in self.raw_data.items():
-                # Create the lib directory if it is not there
-                cd_lib = os.path.join(self.raw_path, lib)
-                if not os.path.exists(cd_lib):
-                    os.mkdir(cd_lib)
-
-                # Dump everything
-                for key, data in item.items():
-                    file = os.path.join(cd_lib, str(key)+'.csv')
-                    data.to_csv(file, header=True, index=False)
+                data.to_csv(file, header=True, index=False)
 
     @abstractmethod
     def _processMCNPdata(self, output):
@@ -589,57 +604,40 @@ class FNGOutput(ExperimentalOutput):
         return pd.read_csv(filepath, sep=';')
 
 
-class OktavianOutput(ExperimentalOutput):
+class SpectrumOutput(ExperimentalOutput):
 
     def _build_atlas(self, tmp_path, atlas):
         """
         See ExperimentalOutput documentation
+
         """
-        maintitle = ' Oktavian Experiment: '
-        xlabel = 'Energy [MeV]'
+        self.tables = []
+        self.bench_conf = pd.read_excel(self.cnf_path)
+        self.bench_conf = self.bench_conf.set_index(['Tally'])
+        # Loop over benchmark cases
+        for input in tqdm(self.inputs, desc=' Inputs: '):
+            # Loop over tallies
+            for tally in self.outputs[(input, self.lib[1])].mctal.tallies:
+                # Get tally number and info
+                tallynum, particle, xlabel = self._get_tally_info(tally)
+                # Collect data
+                quantity_CE = self.bench_conf.loc[tallynum, 'Y Label']
+                e_int = self.bench_conf.loc[tallynum, 
+                                            'C/E X Quantity intervals']
+                e_int = e_int.split('-')
 
-        self.tables = []  # All C/E tables will be stored here and then concatenated
-        e_intervals = [0.1, 1, 5, 10, 20]
-        # Tally numbers should be fixed
-        for tallynum in ['21', '41']:
-            if tallynum == '21':
-                particle = 'Neutron'
-                tit_tag = 'Neutron Leakage Current per Unit Lethargy'
-                quantity = 'Neutron Leakage Current'
-                msg = ' Printing the '+particle+' Letharghy flux...'
-                unit = r'$ 1/u\cdot n_s$'
-            else:
-                particle = 'Photon'
-                tit_tag = 'Photon Leakage Current per unit energy'
-                quantity = 'Photon Leakage Current'
-                msg = ' Printing the '+particle+' spectrum...'
-                unit = r'$ 1/MeV\cdot n_s$'
-
-            print(msg)
-
-            atlas.doc.add_heading(quantity, level=1)
-
-            for material in tqdm(self.materials, desc='Materials: '):
-
-                atlas.doc.add_heading('Material: '+material, level=2)
-
-                title = material+maintitle+tit_tag
-
-                # Get the experimental data
-                file = 'oktavian_'+material+'_tal'+tallynum+'.exp'
-                filepath = os.path.join(self.path_exp_res, material, file)
-                columns = {'21': ['Nominal Energy [MeV]', 'Upper Energy [MeV]',
-                                  'Lower Energy [MeV]', 'C', 'Error'],
-                           '41': ['Nominal Energy [MeV]', 'Lower Energy [MeV]',
-                                  'Upper Energy [MeV]', 'C', 'Error']}
-                # Skip the tally if no experimental data is available
-                if os.path.isfile(filepath) == 0:
+                # Convert the list of number strings into a list of integers
+                e_intervals = [float(num) for num in e_int]
+                data, xlabel = self._data_collect(input, str(tallynum),
+                                                  quantity_CE, e_intervals)
+                if not data:
                     continue
-                else:
-                    data = self._data_collect(material, filepath, tallynum,
-                                              particle, material, e_intervals,
-                                              columns)
 
+                # Use re.findall to extract all substrings between '[' and ']'
+                unit = self.bench_conf.loc[tallynum, 'Y Unit']
+                quantity = self.bench_conf.loc[tallynum, 'Quantity']
+                title = self._define_title(input, quantity_CE)
+                atlas.doc.add_heading(title, level=1)
                 # Once the data is collected it is passed to the plotter
                 outname = 'tmp'
                 plot = Plotter(data, title, tmp_path, outname, quantity, unit,
@@ -648,148 +646,155 @@ class OktavianOutput(ExperimentalOutput):
                 # Insert the image in the atlas
                 atlas.insert_img(img_path)
 
-        self.mat_off_list = self.materials
-        # Dump the global C/E table
+        # Dump C/E table
         self._dump_ce_table()
 
         return atlas
 
+    def _get_tally_info(self, tally):
+        tallynum = tally.tallyNumber
+        particle = tally.particleList[np.where(tally.tallyParticles == 1)[0
+                                                                          ][0]]
+        quant = self.bench_conf.loc[tallynum, 'X Quantity']
+        unit = self.bench_conf.loc[tallynum, 'X Unit']
+        return tallynum, particle, quant + ' [' + unit + ']'
+
+    def _define_title(self, input, quantity_CE):
+
+        if not self.multiplerun:
+            title = self.testname + ', ' + quantity_CE
+        else:
+            title = self.testname + ' ' + input + ', ' + quantity_CE
+        return title
+
     def _dump_ce_table(self):
 
         print(' Dump the C/E table in Excel...')
+
         final_table = pd.concat(self.tables)
-        todump = final_table.set_index(['Material', 'Particle', 'Library'])
-        ex_outpath = os.path.join(self.excel_path, 'C over E table.xlsx')
+        skipcol_global = 0
+        binning_list = ['Energy', 'Time']
+        for x_ax in binning_list:   # to update if other binning will be used
 
-        # Create a Pandas Excel writer using XlsxWriter as the engine.
-        writer = pd.ExcelWriter(ex_outpath, engine='xlsxwriter')
-        # dump global table
-        todump = todump[['Min E', 'Max E', 'C/E', 'Standard Deviation (σ)', ]]
+            x_lab = x_ax[0]
+            col_check = 'Max ' + x_lab
+            ft = final_table.set_index(['Input'])
 
-        todump.to_excel(writer, sheet_name='Global')
+            if col_check not in final_table.columns.tolist():
+                continue
+            else:
+                todump = final_table.set_index(['Input', 'Quantity',
+                                                'Library'])
+            for binning in binning_list:
+                if binning == x_ax:
+                    continue
+                else:
+                    # if tallies only have one type of binning KeyError could arise
+                    try:
+                        todump = todump.drop(columns=['Min ' + binning[0],
+                                                      'Max ' + binning[0]])
+                        ft = ft.drop(columns=['Min ' + binning[0],
+                                              'Max ' + binning[0]])
+                    except KeyError:
+                        continue
 
-        # Elaborate table for better output format
-        ft = final_table.set_index(['Material'])
-        # ft['Energy Range [MeV]'] = (ft['Min E'].astype(str) + ' - ' +
-        #                            ft['Max E'].astype(str))
-        ft['E-min [MeV]'] = ft['Min E']
-        ft['E-max [MeV]'] = ft['Max E']
+            todump = todump.dropna(subset=['Max ' + x_lab])
+            ft = ft.dropna(subset=['Max ' + x_lab])
+            ex_outpath = os.path.join(self.excel_path,
+                                      'C over E table ' + x_ax + '.xlsx')
 
-        ft['C/E (mean +/- σ)'] = (ft['C/E'].round(2).astype(str) + ' +/- ' +
-                                  ft['Standard Deviation (σ)'].round(2).astype(str))
-        # Delete all confusing columns
-        for column in ['Min E', 'Max E', 'C/E', 'Standard Deviation (σ)', ]:
-            del ft[column]
+            # Create a Pandas Excel writer using XlsxWriter as the engine.
+            writer = pd.ExcelWriter(ex_outpath, engine='xlsxwriter')
+            # dump global table
+            todump = todump[['Min ' + x_lab, 'Max ' + x_lab, 'C/E',
+                             'Standard Deviation (σ)', ]]
 
-        # Dump also table material by material
-        for material in self.mat_off_list:
-            # dump material table
-            todump = ft.loc[material]
-            todump = todump.pivot(index=['Particle', 'E-min [MeV]', 
-                'E-max [MeV]'], columns='Library', values='C/E (mean +/- σ)')
+            todump.to_excel(writer, sheet_name='Global')
+            col_min = x_lab + '-min ' + '[' + MCNP_UNITS[x_ax] + ']'
+            col_max = x_lab + '-max ' + '[' + MCNP_UNITS[x_ax] + ']'
+            # Elaborate table for better output format
 
-            todump.sort_values(by=['E-min [MeV]'])
+            ft[col_min] = ft['Min ' + x_lab]
+            ft[col_max] = ft['Max ' + x_lab]
 
-            todump.to_excel(writer, sheet_name=material, startrow=2)
-            ws = writer.sheets[material]
-            ws.write_string(0, 0, '"C/E (mean +/- σ)"')
+            ft['C/E (mean +/- σ)'] = (ft['C/E'].round(2).astype(str) + ' +/- ' +
+                                      ft['Standard Deviation (σ)'
+                                         ].round(2).astype(str))
+            # Delete all confusing columns
+            for column in ['Min ' + x_lab, 'Max ' + x_lab, 'C/E',
+                           'Standard Deviation (σ)', ]:
+                del ft[column]
 
-            # adjust columns' width
-            writer.sheets[material].set_column(0, 4, 18)
+            # Dump also table material by material
+            for input in self.inputs:
+                # dump material table
+                todump = ft.loc[input]
+
+                todump = todump.pivot(index=['Quantity', col_min, col_max],
+                                      columns='Library',
+                                      values='C/E (mean +/- σ)')
+
+                todump.sort_values(by=[col_min])
+
+                todump.to_excel(writer, sheet_name=input, startrow=2)
+                ws = writer.sheets[input]
+                if skipcol_global == 0:
+                    ws.write_string(0, 0, '"C/E (mean +/- σ)"')
+
+                # adjust columns' width
+                writer.sheets[input].set_column(0, 4, 18)
 
         # Close the Pandas Excel writer and output the Excel file.
-        writer.save()
+            writer.save()
         return
 
-    def _data_collect(self, material, filepath, tallynum, particle,
-                      mat_read_file, e_intervals, columns, ylab=True):
+    def _data_collect(self, input, tallynum, quantity_CE, e_intervals):
 
-        x, y, err = self._read_Oktavian_expresult(filepath, tallynum, columns)
-
-        # lib will be passed to the plotter
-        if ylab is True:
-            lib = {'x': x, 'y': y, 'err': err,
-                   'ylabel': material + ' (Experiment)'}
+        if self.multiplerun:
+            filename = self.testname + '_' + input + '_' + str(tallynum)
         else:
-            lib = {'x': x, 'y': y, 'err': err,
-                   'ylabel': 'Experiment'}
+            filename = self.testname + '_' + str(tallynum)
+        # check if correspondent experimental data exists
+        try:
+            col_idx = self.exp_results[input][filename].columns.tolist()
+        except KeyError:
+            return None, None
+
+        x_lab = col_idx[0]
+        y_lab = col_idx[1]
+        x = self.exp_results[input][filename][col_idx[0]].values
+        y = self.exp_results[input][filename][col_idx[1]].values
+        err = self.exp_results[input][filename][col_idx[2]].values
+        # lib will be passed to the plotter
+        lib = {'x': x, 'y': y, 'err': err,
+               'ylabel': 'Experiment'}
         # Get also the interpolator
         interpolator = interp1d(x, y, fill_value=0, bounds_error=False)
-
         # Collect the data to be plotted
         data = [lib]  # The first one should be the exp one
         for lib_tag in self.lib[1:]:  # Avoid exp
             lib_name = self.session.conf.get_lib_name(lib_tag)
             try:  # The tally may not be defined
                 # Data for the plotter
-                values = self.results[mat_read_file, lib_tag][tallynum]
-                if ylab is True:
-                    lib = {'x': values['Energy [MeV]'],
-                           'y': values['C'], 'err': values['Error'],
-                           'ylabel': material + ' ('+lib_name+')'}
-                else:
-                    lib = {'x': values['Energy [MeV]'],
-                           'y': values['C'], 'err': values['Error'],
-                           'ylabel': lib_name}
+                values = self.results[input, lib_tag][tallynum]
+                lib = {'x': values[x_lab], 'y': values['C'],
+                       'err': values['Error'], 'ylabel': lib_name}
                 data.append(lib)
                 # data for the table
-                table = _get_tablevalues(
-                    values, interpolator, e_intervals=e_intervals)
-                table['Particle'] = particle
-                table['Material'] = material
+                table = _get_tablevalues(values, interpolator, x=x_lab,
+                                         e_intervals=e_intervals)
+                table['Quantity'] = quantity_CE
+                table['Input'] = input
                 table['Library'] = lib_name
                 self.tables.append(table)
             except KeyError:
                 # The tally is not defined
                 pass
-        return data
-
-    def _extract_outputs(self):
-        # Get results
-        # results = []
-        # errors = []
-        # stat_checks = []
-        outputs = {}
-        results = {}
-        materials = []
-        # Iterate on the different libraries results except 'Exp'
-        for lib, test_path in self.test_path.items():
-            if lib != EXP_TAG:
-                for folder in os.listdir(test_path):
-                    results_path = os.path.join(test_path, folder)
-                    pieces = folder.split('_')
-                    # Get zaid
-                    material = pieces[-1]
-
-                    mfile, ofile = self._get_output_files(results_path)
-                    # Parse output
-                    output = MCNPoutput(mfile, ofile)
-                    outputs[material, lib] = output
-                    # Adjourn raw Data
-                    self.raw_data[material, lib] = output.tallydata
-                    # Get the meaningful results
-                    results[material, lib] = self._processMCNPdata(output)
-                    if material not in materials:
-                        materials.append(material)
-
-        self.outputs = outputs
-        self.results = results
-        self.materials = materials
+        return data, x_lab
 
     def _pp_excel_comparison(self):
         # Excel is actually printed by the build atlas in this case
         pass
-
-    def _print_raw(self):
-        # Generate a folder for each library
-        for lib_name in self.lib[1:]:  # Avoid Exp
-            cd_lib = os.path.join(self.raw_path, lib_name)
-            os.mkdir(cd_lib)
-            # result for each material
-            for material in self.materials:
-                for key, data in self.raw_data[material, lib_name].items():
-                    file = os.path.join(cd_lib, material+' '+str(key)+'.csv')
-                    data.to_csv(file, header=True, index=False)
 
     def _processMCNPdata(self, output):
         """
@@ -812,14 +817,28 @@ class OktavianOutput(ExperimentalOutput):
         for tallynum, data in output.tallydata.items():
             tallynum = str(tallynum)
             res2 = res[tallynum] = {}
+            x_axis = data.columns.tolist()[0]
 
             # Delete the total value
-            data = data.set_index('Energy').drop('total').reset_index()
+            data = data.set_index(x_axis).drop('total').reset_index()
+            flux, energies, errors = self._parse_data_df(data, output, x_axis,
+                                                         tallynum)
 
-            flux = data['Value'].values
-            energies = data['Energy'].values
-            errors = data['Error'].values
+            res2[x_axis + ' [' + MCNP_UNITS[x_axis] + ']'] = energies
+            res2['C'] = flux
+            res2['Error'] = errors
 
+            res[tallynum] = res2
+
+        return res
+
+    def _parse_data_df(self, data, output, x_axis, tallynum):
+        # Generate a folder for each library
+        flux = data['Value'].values
+        energies = data[x_axis].values
+        errors = data['Error'].values
+
+        if TALLY_NORMALIZATION[self.testname] == 'lethargy':
             # Energies for lethargy computation
             ergs = [1e-10]  # Additional "zero" energy for lethargy computation
             ergs.extend(energies.tolist())
@@ -835,153 +854,17 @@ class OktavianOutput(ExperimentalOutput):
             elif particle == 'Photon':
                 flux = flux/(ergs[1:]-ergs[:-1])
 
-            res2['Energy [MeV]'] = energies
-            res2['C'] = flux
-            res2['Error'] = errors
+        elif TALLY_NORMALIZATION[self.testname] == 'energy bins':
+            # Energies for lethargy computation
+            data['bin'] = None
 
-            res[tallynum] = res2
+            prev_e = 0
 
-        return res
-
-    def _read_Oktavian_expresult(self, file, tallynum, columns):
-        """
-        Given a file containing the Oktavian experimental results read it and
-        return the values to plot.
-
-        The values equal to 1e-38 are eliminated since it appears that they
-        are the zero values of the instrument used.
-
-        Parameters
-        ----------
-        file : os.Path or str
-            path to the file to be read.
-        tallynum : str
-            either '21' or '41'. the data is different for neutrons and
-            photons
-
-        Returns
-        -------
-        x : np.array
-            energy values.
-        y : np.array
-            lethargy flux values.
-
-        """
-        # First of all understand how many comment lines there are
-        with open(file, 'r') as infile:
-            counter = 0
-            for line in infile:
-                if line[0] == '#':
-                    counter += 1
-                else:
-                    break
-        # then read the file accordingly
-        df = pd.read_csv(file, skiprows=counter, skipfooter=1, engine='python',
-                         header=None, sep=r'\s+')
-        df.columns = columns[tallynum]
-        df = df[df['C'] > 2e-38]
-
-        x = df['Nominal Energy [MeV]'].values
-        y = df['C'].values
-
-        err = df['Error'].values
-
-        return x, y, err
-
-    def _read_exp_results(self):
-        """
-        This is an older implementation and the reading was done somewhere
-        else
-
-        """
-        pass
-
-
-class TiaraBCOutput(OktavianOutput):
-
-    def _build_atlas(self, tmp_path, atlas):
-        """
-        See ExperimentalOutput documentation
-
-        """
-
-        # Set plot axes details
-        maintitle = ' Tiara Experiment'
-        xlabel = 'Energy [MeV]'
-        particle = 'Neutron'
-        quantity = 'Neutron Yield per Unit lethargy'
-        msg = ' Printing the '+particle+' Letharghy flux...'
-        unit = r'$ 1/u$'
-
-        self.tables = []
-        # All C/E tables will be stored here and then concatenated
-        mat_off_list = []
-        print(msg)
-
-        # Loop over benchmark cases
-        for material in tqdm(self.materials, desc='Materials: '):
-            # Loop over tallies
-            for tally in self.outputs[(material, self.lib[1])].mctal.tallies:
-                # Get tally number and info
-                tallynum = tally.tallyNumber
-                comment = str(tally.tallyComment)
-                # Assign on/off axis value
-                if 'on-axis' in comment:
-                    offaxis_str = '00'
-                    string_off_axis = 'on-axis'
-                elif '20' in comment:
-                    offaxis_str = '20'
-                    string_off_axis = '20 cm off-axis'
-                elif '40' in comment:
-                    offaxis_str = '40'
-                    string_off_axis = '40 cm off-axis'
-
-                # Assign shielding material
-                if material.split('-')[0] == 'cc':
-                    material_name = 'Concrete'
-                elif material.split('-')[0] == 'fe':
-                    material_name = 'Iron'
-
-                # Set title and header
-                head = material_name + ', ' + material.split('-')[2] + \
-                    ' cm, ' + material.split('-')[1] + ' MeV, ' + \
-                    'Additional collimator: ' + material.split('-')[3] + \
-                    ' cm, ' + string_off_axis
-                atlas.doc.add_heading(head, level=2)
-                title = '\n' + 'Tiara:' + head
-
-                # Open the correspondent experimental data file
-                mat_off_list.append(material + '-' + offaxis_str)
-                file = 'Tiara-BC_' + material + '-' + offaxis_str + '.exp'
-                filepath = os.path.join(self.path_exp_res,
-                                        material + '-' + offaxis_str, file)
-                columns = {'14': ['Nominal Energy [MeV]', 'C', 'Error'],
-                           '24': ['Nominal Energy [MeV]', 'C', 'Error'],
-                           '34': ['Nominal Energy [MeV]', 'C', 'Error']}
-                # Skip the tally if no experimental data is available
-                if os.path.isfile(filepath) == 0:
-                    continue
-                else:
-                    # Collect data
-                    e_int = [3.5, 10, 20, 30, 40, 50, 60, 70]
-                    data = self._data_collect(material + '-' + offaxis_str,
-                                              filepath, str(tallynum),
-                                              particle, material,
-                                              e_intervals=e_int,
-                                              columns=columns, ylab=False)
-                # Once the data is collected it is passed to the plotter
-                outname = 'tmp'
-                plot = Plotter(data, title, tmp_path, outname, quantity, unit,
-                               xlabel, self.testname)
-                img_path = plot.plot('Experimental points')
-                # Insert the image in the atlas
-                atlas.insert_img(img_path)
-
-        self.mat_off_list = mat_off_list
-        # Dump C/E table
-        self._dump_ce_table()
-
-        return atlas
+            for e in data[x_axis].unique().tolist():
+                data.loc[data[x_axis] == e, 'bin'] = e - prev_e
+                prev_e = e
+            flux = flux / data['bin'].values
+        return flux, energies, errors
 
 
 def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='C',
@@ -1025,7 +908,7 @@ def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='C',
         mean = red['C/E'].mean()
         std = red['C/E'].std()
         row = {'C/E': mean, 'Standard Deviation (σ)': std,
-               'Max E': e_max, 'Min E': e_min}
+               'Max ' + x[0]: e_max, 'Min ' + x[0]: e_min}
         rows.append(row)
         # adjourn min energy
         e_min = e_max
@@ -1033,7 +916,7 @@ def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='C',
     return pd.DataFrame(rows)
 
 
-class TiaraOutput(OktavianOutput):
+class TiaraOutput(ExperimentalOutput):
 
     def _processMCNPdata(self, output):
 
@@ -1056,7 +939,7 @@ class TiaraOutput(OktavianOutput):
         for lib in self.lib[1:]:
             # Declare empty dataframes
             case_tree = pd.DataFrame()
-            for cont, case in enumerate(self.materials):
+            for cont, case in enumerate(self.inputs):
                 # Get data from benchmark's cases' names
                 mat_name_list = case.split('-')
                 if mat_name_list[0] == 'cc':
@@ -1076,7 +959,8 @@ class TiaraOutput(OktavianOutput):
                     case_tree.loc[cont,
                                   str(tally.tallyComment[0])+' Error'] = err
             # Sort data in dataframe and assign to variable
-            indexes = ['Library', 'Shield Material', 'Energy', 'Shield Thickness']
+            indexes = ['Library', 'Shield Material', 'Energy',
+                       'Shield Thickness']
             case_tree.sort_values(indexes, inplace=True)
             case_tree = case_tree.set_index(indexes)
             case_tree.index.names = indexes
@@ -1238,7 +1122,7 @@ class TiaraFCOutput(TiaraOutput):
 
     def _read_exp_results(self):
         """
-        Reads and manipulatesconderc Excel file
+        Reads and manipulates conderc Excel file
         """
 
         # Read experimental data from CONDERC Excel file
@@ -1266,7 +1150,8 @@ class TiaraFCOutput(TiaraOutput):
                                                      nrows=8)}
         # Build experimental dataframe
         exp_data = pd.DataFrame()
-        index = ['Shield Material', 'Energy', 'Shield Thickness', 'Axis offset']
+        index = ['Shield Material', 'Energy', 'Shield Thickness',
+                 'Axis offset']
         for idx, element in FC_data.items():
             # Build a first useful structure from CONDERC data
             element['Shield Material'] = idx[0]
@@ -1589,7 +1474,7 @@ class TiaraBSOutput(TiaraOutput):
         return atlas
 
 
-class FNGBKTOutput(OktavianOutput):
+class ShieldingOutput(ExperimentalOutput):
 
     def _processMCNPdata(self, output):
 
@@ -1612,7 +1497,7 @@ class FNGBKTOutput(OktavianOutput):
         column_index = pd.MultiIndex.from_tuples(column_names, names=names)
         filepath = self.excel_path + '\\' + self.testname + '_CE_tables.xlsx'
         writer = pd.ExcelWriter(filepath, engine='xlsxwriter')
-        for mat in self.materials:
+        for mat in self.inputs:
             exp_folder = os.path.join(self.path_exp_res, mat)
             exp_filename = self.testname + '_' + mat + '.csv'
             exp_filepath = os.path.join(exp_folder, exp_filename)
@@ -1633,17 +1518,29 @@ class FNGBKTOutput(OktavianOutput):
                 else:
                     t = (mat, lib_names_dict[idx_col[0]])
                     if idx_col[1] == 'Value':
-                        vals = self.raw_data[t][4]['Value'].values[:len(x)]
+                        if mat != 'TLD':
+                            vals = self.raw_data[t][4]['Value'].values[:len(x)]
+                        else:
+                            vals = self.raw_data[t][6]['Value'].values[:len(x)]
                         df_tab[idx_col] = vals
                     elif idx_col[1] == 'C/E Error':
-                        errs = self.raw_data[t][4]['Error'].values[:len(x)]
+                        if mat != 'TLD':
+                            errs = self.raw_data[t][4]['Error'].values[:len(x)]
+                        else:
+                            errs = self.raw_data[t][6]['Error'].values[:len(x)]
                         vals1 = np.square(errs)
-                        vals2 = np.square(exp_data_df.loc[:, 'Error'].to_numpy() / 100)
+                        vals2 = np.square(exp_data_df.loc[:, 'Error'
+                                                          ].to_numpy() / 100)
                         ce_err = np.sqrt(vals1 + vals2)
                         ce_err = ce_err.tolist()
                         df_tab[idx_col] = ce_err
                     else:
-                        vals1 = self.raw_data[t][4]['Value'].values[:len(x)]
+                        if mat != 'TLD':
+                            vals1 = self.raw_data[t][4]['Value'
+                                                        ].values[:len(x)]
+                        else:
+                            vals1 = self.raw_data[t][6]['Value'
+                                                        ].values[:len(x)]
                         vals2 = exp_data_df.loc[:, 'Reaction Rate'].to_numpy()
                         ratio = vals1 / vals2
                         ratio = ratio.tolist()
@@ -1667,7 +1564,7 @@ class FNGBKTOutput(OktavianOutput):
         quantity = ['C/E']
         xlabel = 'Shielding thickness [cm]'
         data = []
-        for material in tqdm(self.materials, desc='Foil: '):
+        for material in tqdm(self.inputs, desc='Foil: '):
             data = []
             exp_folder = os.path.join(self.path_exp_res, material)
             exp_filename = self.testname + '_' + material + '.csv'
@@ -1684,16 +1581,30 @@ class FNGBKTOutput(OktavianOutput):
             data_exp = {'x': x, 'y': y, 'err': err, 'ylabel': ylabel}
             data.append(data_exp)
 
+            if material != 'TLD':
+                title = self.testname + ' experiment, Foil: ' + material
+            else:
+                title = self.testname + \
+                    ' experiment, Gamma absorbed dose in TLD-300 detectors'
             # Loop over selected libraries
             for lib in self.lib[1:]:
                 # Get library name, assign title to the plot
                 ylabel = self.session.conf.get_lib_name(lib)
-                title = self.testname + ' experiment, Foil: ' + material
                 y = []
                 err = []
-                v = self.raw_data[(material, lib)][4]['Value'].values[:len(x)]
+                if material != 'TLD':
+                    v = self.raw_data[(material, lib)
+                                      ][4]['Value'].values[:len(x)]
+                else:
+                    v = self.raw_data[(material, lib)
+                                      ][6]['Value'].values[:len(x)]
                 y.append(v)
-                v = self.raw_data[(material, lib)][4]['Error'].values[:len(x)]
+                if material != 'TLD':
+                    v = self.raw_data[(material, lib)
+                                      ][4]['Error'].values[:len(x)]
+                else:
+                    v = self.raw_data[(material, lib)
+                                      ][6]['Error'].values[:len(x)]
                 err.append(v)
                 # Append computational data to data list(to be sent to plotter)
                 data_comp = {'x': x, 'y': y, 'err': err, 'ylabel': ylabel}
@@ -1711,9 +1622,108 @@ class FNGBKTOutput(OktavianOutput):
     def _get_conv_df(self, mat, size):
         conv_df = pd.DataFrame()
         for lib in self.lib[1:]:
-            max = self.raw_data[(mat, lib)][4]['Error'].values[:size].max()
-            avg = self.raw_data[(mat, lib)][4]['Error'].values[:size].mean()
+            if mat != 'TLD':
+                max = self.raw_data[(mat, lib)][4]['Error'].values[:size].max()
+                avg = self.raw_data[(mat, lib)][4]['Error'
+                                                   ].values[:size].mean()
+            else:
+                max = self.raw_data[(mat, lib)][6]['Error'].values[:size].max()
+                avg = self.raw_data[(mat, lib)][6]['Error'
+                                                   ].values[:size].mean()
             library = self.session.conf.get_lib_name(lib)
             conv_df.loc['Max Error', library] = max
             conv_df.loc['Average Error', library] = avg
         return conv_df
+
+
+class MultipleSpectrumOutput(SpectrumOutput):
+
+    def _build_atlas(self, tmp_path, atlas):
+        """
+        See ExperimentalOutput documentation
+
+        """
+        self.tables = []
+        self.groups = pd.read_excel(self.cnf_path)
+        self.groups = self.groups.set_index(['Group', 'Tally', 'Input'])
+        self.group_list = self.groups.index.get_level_values('Group').unique().tolist()
+        for group in self.group_list:
+            self._plot_tally_group(group, tmp_path, atlas)
+
+        # Dump C/E table
+        self._dump_ce_table()
+
+        return atlas
+
+    def _plot_tally_group(self, group, tmp_path, atlas):
+
+        # Extract 'Tally' and 'Input' values for the current 'Group'
+        group_data = self.groups.xs(group, level='Group',
+                                    drop_level=False)
+        data_group = {}
+        group_lab = []
+        mult_factors = group_data['Multiplying factor'].values.tolist()
+        for m, idx in enumerate(group_data.index.tolist()):
+            tallynum = idx[1]
+            input = idx[2]
+            if str(tallynum) not in self.results[input, self.lib[1]].keys():
+                continue
+
+            quantity = group_data.loc[(group, tallynum, input), 'Quantity']
+            particle = group_data.loc[(group, tallynum, input),
+                                      'Particle']
+            add_info = group_data.loc[(group, tallynum, input), 'Y Label']
+            quant_string = particle + ' ' + quantity + ' ' + add_info
+            e_int = group_data.loc[(group, tallynum, input),
+                                   'C/E X Quantity intervals']
+            e_int = e_int.split('-')
+
+            # Convert the list of number strings into a list of integers
+            e_intervals = [float(num) for num in e_int]
+            data_temp, xlabel = self._data_collect(input, str(tallynum),
+                                                   quant_string, e_intervals)
+            if data_temp is None:
+                continue
+            data_group[m] = data_temp
+            unit = group_data.loc[(group, tallynum, input), 'Y Unit']
+
+            group_lab.append(add_info)
+            # Once the data is collected it is passed to the plotter
+        title = self._define_title(input, particle, quantity)
+        outname = 'tmp'
+        plot = Plotter(data_group, title, tmp_path, outname, quantity,
+                       unit, xlabel, self.testname, group_num=group,
+                       add_labels=group_lab, mult_factors=mult_factors)
+        img_path = plot.plot('Experimental points group')
+        atlas.doc.add_heading(title, level=1)
+        atlas.insert_img(img_path)
+        img_path = plot.plot('Experimental points group CE')
+        atlas.doc.add_heading(title + ' C/E', level=1)
+        atlas.insert_img(img_path)
+        return atlas
+
+    def _define_title(self, input, particle, quantity):
+
+        if not self.multiplerun:
+            title = self.testname + ', ' + particle + ' ' + quantity
+        elif self.testname == 'Tiara-BC':
+            mat = input.split('-')[0]
+            if mat == 'cc':
+                material = 'Concrete'
+            else:
+                material = 'Iron'
+            energy = input.split('-')[1]
+            sh_th = input.split('-')[2]
+            add_coll = input.split('-')[3]
+            title = self.testname + ', Shielding: ' + material + \
+                ', ' + sh_th + 'cm; Source energy: ' + energy + \
+                ' MeV; Additional collimator: ' + add_coll + \
+                ' cm'
+        elif self.testname == 'FNS-TOF':
+            mat = input.split('-')[0]
+            sl_th = input.split('-')[1]
+            title = self.testname + ', ' + sl_th + 'cm ' + mat + ' slab'
+        else:
+            title = self.testname + ', ' + particle + ' ' + \
+                quantity
+        return title

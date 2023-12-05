@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Folder Structure &mdash; JADE v2.1.1 documentation</title>
+  <title>Folder Structure &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
+        <script src="../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -27,7 +27,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> JADE
-            <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -61,8 +60,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
@@ -73,7 +73,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
@@ -93,8 +92,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Folder Structure</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Folder Structure</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/usage/folders.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -104,72 +103,95 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="folder-structure">
-<span id="folders"></span><h1>Folder Structure<a class="headerlink" href="#folder-structure" title="Permalink to this headline"></a></h1>
+  <section id="folder-structure">
+<span id="folders"></span><h1>Folder Structure<a class="headerlink" href="#folder-structure" title="Link to this heading"></a></h1>
 <p>The following is a scheme of the JADE folder structure:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">JADE_root</span><span class="o">&gt;</span>
-    <span class="o">|---------</span> <span class="n">Benchmark</span> <span class="n">inputs</span>
-    <span class="o">|</span>            <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">inputfile</span><span class="o">&gt;.</span><span class="n">i</span>
-    <span class="o">|</span>            <span class="o">|-----</span> <span class="o">...</span>
-    <span class="o">|</span>            <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">Inputfolder</span><span class="o">&gt;</span>
-    <span class="o">|</span>            <span class="o">|-----</span> <span class="o">...</span>
-    <span class="o">|</span>            <span class="o">|-----</span> <span class="n">VRT</span>
+    <span class="o">|-----</span> <span class="n">Benchmark</span> <span class="n">inputs</span>
+    <span class="o">|</span>        <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">Inputfolder</span><span class="o">&gt;</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="n">mcnp</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">inputfile</span><span class="o">&gt;.</span><span class="n">i</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="n">openmc</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">inputgeometry</span><span class="o">&gt;.</span><span class="n">i</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">inputmaterials</span><span class="o">&gt;.</span><span class="n">i</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">inputtallies</span><span class="o">&gt;.</span><span class="n">i</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="n">serpent</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">inputfile</span><span class="o">&gt;.</span><span class="n">i</span>
+    <span class="o">|</span>        <span class="o">|-----</span> <span class="o">...</span>
+    <span class="o">|</span>        <span class="o">|-----</span> <span class="n">TypicalMaterials</span>
     <span class="o">|</span>
-    <span class="o">|---------</span> <span class="n">Code</span>
-    <span class="o">|</span>            <span class="o">|-----</span> <span class="n">default_settings</span>
-    <span class="o">|</span>            <span class="o">|-----</span> <span class="n">docs</span>
-    <span class="o">|</span>            <span class="o">|-----</span> <span class="n">install_files</span>
-    <span class="o">|</span>            <span class="o">|-----</span> <span class="n">templates</span>
-    <span class="o">|</span>            <span class="o">|-----</span> <span class="n">tests</span>
+    <span class="o">|-----</span> <span class="n">Code</span>
+    <span class="o">|</span>        <span class="o">|-----</span> <span class="n">docs</span>
+    <span class="o">|</span>        <span class="o">|-----</span> <span class="n">jade</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="n">default_settings</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="n">install_files</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="n">resources</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="n">templates</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">JADE_modules</span><span class="o">&gt;.</span><span class="n">py</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="o">...</span>
+    <span class="o">|</span>        <span class="o">|-----</span> <span class="n">tests</span>
     <span class="o">|</span>
-    <span class="o">|---------</span> <span class="n">Configuration</span>
-    <span class="o">|</span>                <span class="o">|-----------</span> <span class="n">Benchmarks</span> <span class="n">Configuration</span>
-    <span class="o">|</span>                <span class="o">|-----------</span> <span class="n">Config</span><span class="o">.</span><span class="n">xlsx</span>
+    <span class="o">|-----</span> <span class="n">Configuration</span>
+    <span class="o">|</span>        <span class="o">|-----</span> <span class="n">Benchmarks</span> <span class="n">Configuration</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">Benchmark</span> <span class="mi">1</span> <span class="n">config</span><span class="o">&gt;.</span><span class="n">xlsx</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+    <span class="o">|</span>        <span class="o">|</span>
+    <span class="o">|</span>        <span class="o">|-----</span> <span class="n">Job_Script_Templates</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">Job</span> <span class="n">submission</span> <span class="n">system</span> <span class="mi">1</span> <span class="n">template</span><span class="o">&gt;.</span><span class="n">cmd</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+    <span class="o">|</span>        <span class="o">|</span>
+    <span class="o">|</span>        <span class="o">|-----</span> <span class="n">Config</span><span class="o">.</span><span class="n">xlsx</span>
+    <span class="o">|</span>        <span class="o">|-----</span> <span class="n">mcnp_config</span><span class="o">.</span><span class="n">sh</span>
+    <span class="o">|</span>        <span class="o">|-----</span> <span class="n">openmc_config</span><span class="o">.</span><span class="n">sh</span>
+    <span class="o">|</span>        <span class="o">|-----</span> <span class="n">serpent_config</span><span class="o">.</span><span class="n">sh</span>
     <span class="o">|</span>
-    <span class="o">|---------</span> <span class="n">Experimental</span> <span class="n">results</span>
-    <span class="o">|</span>                    <span class="o">|------------</span> <span class="o">&lt;</span><span class="n">Benchmark</span> <span class="n">name</span> <span class="mi">1</span><span class="o">&gt;</span>
-    <span class="o">|</span>                    <span class="o">|------------</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+    <span class="o">|-----</span> <span class="n">Experimental</span> <span class="n">results</span>
+    <span class="o">|</span>        <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">Benchmark</span> <span class="n">name</span> <span class="mi">1</span><span class="o">&gt;</span>
+    <span class="o">|</span>        <span class="o">|-----</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
     <span class="o">|</span>
-    <span class="o">|---------</span> <span class="p">[</span><span class="n">Quality</span><span class="p">]</span>
+    <span class="o">|-----</span><span class="p">[</span><span class="n">Quality</span><span class="p">]</span>
     <span class="o">|</span>
-    <span class="o">|---------</span> <span class="n">Tests</span>
-    <span class="o">|</span>            <span class="o">|---------</span> <span class="n">MCNP</span> <span class="n">simulations</span>
-    <span class="o">|</span>            <span class="o">|</span>                 <span class="o">|-----------</span> <span class="o">&lt;</span><span class="n">Lib</span> <span class="n">suffix</span> <span class="mi">1</span><span class="o">&gt;</span>
-    <span class="o">|</span>            <span class="o">|</span>                 <span class="o">|</span>                  <span class="o">|----------</span> <span class="o">&lt;</span><span class="n">Benchmark</span> <span class="n">name</span> <span class="mi">1</span><span class="o">&gt;</span>
-    <span class="o">|</span>            <span class="o">|</span>                 <span class="o">|</span>                  <span class="o">|----------</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
-    <span class="o">|</span>            <span class="o">|</span>                 <span class="o">|-----------</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
-    <span class="o">|</span>            <span class="o">|</span>
-    <span class="o">|</span>            <span class="o">|---------</span> <span class="n">Post</span><span class="o">-</span><span class="n">Processing</span>
-    <span class="o">|</span>                             <span class="o">|------------</span> <span class="n">Comparisons</span>
-    <span class="o">|</span>                             <span class="o">|</span>                  <span class="o">|--------</span> <span class="o">&lt;</span><span class="n">lib</span> <span class="mi">1</span><span class="o">&gt;</span><span class="n">_Vs_</span><span class="o">&lt;</span><span class="n">lib</span> <span class="mi">2</span><span class="o">&gt;</span><span class="n">_Vs</span><span class="o">....</span>
-    <span class="o">|</span>                             <span class="o">|</span>                  <span class="o">|</span>                  <span class="o">|------------------</span> <span class="o">&lt;</span><span class="n">Benchmark</span> <span class="n">name</span> <span class="mi">1</span><span class="o">&gt;</span>
-    <span class="o">|</span>                             <span class="o">|</span>                  <span class="o">|</span>                  <span class="o">|</span>                            <span class="o">|-----------</span> <span class="n">Atlas</span>
-    <span class="o">|</span>                             <span class="o">|</span>                  <span class="o">|</span>                  <span class="o">|</span>                            <span class="o">|-----------</span> <span class="n">Excel</span>
-    <span class="o">|</span>                             <span class="o">|</span>                  <span class="o">|</span>                  <span class="o">|</span>
-    <span class="o">|</span>                             <span class="o">|</span>                  <span class="o">|</span>                  <span class="o">|------------------</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
-    <span class="o">|</span>                             <span class="o">|</span>                  <span class="o">|</span>
-    <span class="o">|</span>                             <span class="o">|</span>                  <span class="o">|-------</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
-    <span class="o">|</span>                             <span class="o">|</span>
-    <span class="o">|</span>                             <span class="o">|------------</span> <span class="n">Single</span> <span class="n">Libraries</span>
-    <span class="o">|</span>                                                 <span class="o">|-----------</span> <span class="o">&lt;</span><span class="n">Lib</span> <span class="n">suffix</span> <span class="mi">1</span><span class="o">&gt;</span>
-    <span class="o">|</span>                                                 <span class="o">|</span>                  <span class="o">|----------</span> <span class="o">&lt;</span><span class="n">Benchmark</span> <span class="n">name</span> <span class="mi">1</span><span class="o">&gt;</span>
-    <span class="o">|</span>                                                 <span class="o">|</span>                  <span class="o">|</span>                   <span class="o">|-----------</span> <span class="n">Atlas</span>
-    <span class="o">|</span>                                                 <span class="o">|</span>                  <span class="o">|</span>                   <span class="o">|-----------</span> <span class="n">Excel</span>
-    <span class="o">|</span>                                                 <span class="o">|</span>                  <span class="o">|</span>                   <span class="o">|-----------</span> <span class="n">Raw</span> <span class="n">Data</span>
-    <span class="o">|</span>                                                 <span class="o">|</span>                  <span class="o">|</span>
-    <span class="o">|</span>                                                 <span class="o">|</span>                  <span class="o">|----------</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
-    <span class="o">|</span>                                                 <span class="o">|</span>
-    <span class="o">|</span>                                                 <span class="o">|-----------</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+    <span class="o">|-----</span> <span class="n">Tests</span>
+    <span class="o">|</span>        <span class="o">|-----</span> <span class="n">Simulations</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">Lib</span> <span class="n">suffix</span> <span class="mi">1</span><span class="o">&gt;</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">Benchmark</span> <span class="n">name</span> <span class="mi">1</span><span class="o">&gt;</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">Code</span> <span class="mi">1</span><span class="o">&gt;</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">output</span><span class="o">&gt;</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+    <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+    <span class="o">|</span>        <span class="o">|</span>
+    <span class="o">|</span>        <span class="o">|-----</span> <span class="n">Post</span><span class="o">-</span><span class="n">Processing</span>
+    <span class="o">|</span>                 <span class="o">|-----</span> <span class="n">Comparisons</span>
+    <span class="o">|</span>                 <span class="o">|</span>        <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">lib</span> <span class="mi">1</span><span class="o">&gt;</span><span class="n">_Vs_</span><span class="o">&lt;</span><span class="n">lib</span> <span class="mi">2</span><span class="o">&gt;</span><span class="n">_Vs</span><span class="o">....</span>
+    <span class="o">|</span>                 <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">Benchmark</span> <span class="n">name</span> <span class="mi">1</span><span class="o">&gt;</span>
+    <span class="o">|</span>                 <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="n">Atlas</span>
+    <span class="o">|</span>                 <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="n">Excel</span>
+    <span class="o">|</span>                 <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>
+    <span class="o">|</span>                 <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+    <span class="o">|</span>                 <span class="o">|</span>        <span class="o">|</span>
+    <span class="o">|</span>                 <span class="o">|</span>        <span class="o">|-----</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+    <span class="o">|</span>                 <span class="o">|</span>
+    <span class="o">|</span>                 <span class="o">|-----</span> <span class="n">Single</span> <span class="n">Libraries</span>
+    <span class="o">|</span>                          <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">Lib</span> <span class="n">suffix</span> <span class="mi">1</span><span class="o">&gt;</span>
+    <span class="o">|</span>                          <span class="o">|</span>        <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">Benchmark</span> <span class="n">name</span> <span class="mi">1</span><span class="o">&gt;</span>
+    <span class="o">|</span>                          <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="o">&lt;</span><span class="n">Code</span> <span class="mi">1</span><span class="o">&gt;</span>
+    <span class="o">|</span>                          <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="n">Atlas</span>
+    <span class="o">|</span>                          <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="n">Excel</span>
+    <span class="o">|</span>                          <span class="o">|</span>        <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="n">Raw</span> <span class="n">Data</span>
+    <span class="o">|</span>                          <span class="o">|</span>        <span class="o">|</span>        <span class="o">|-----</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+    <span class="o">|</span>                          <span class="o">|</span>        <span class="o">|-----</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+    <span class="o">|</span>                          <span class="o">|-----</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
     <span class="o">|</span>
-    <span class="o">|--------</span> <span class="n">Utilities</span>
+    <span class="o">|-----</span> <span class="n">Utilities</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;</span></code> is the root folder chosen by the user. As described in <a class="reference internal" href="installation.html#install"><span class="std std-ref">Installation</span></a> section,
 the JADE GitHub repo should be renamed and placed inside the root directory as <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code</span></code>.</p>
 <p>All folders parallel to the <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code</span></code> will be created after the first JADE run.</p>
 <p>Hereafter, a general overview of the different JADE tree branches is presented.</p>
-<div class="section" id="benchmark-inputs">
-<h2>Benchmark inputs<a class="headerlink" href="#benchmark-inputs" title="Permalink to this headline"></a></h2>
+<section id="benchmark-inputs">
+<h2>Benchmark inputs<a class="headerlink" href="#benchmark-inputs" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Benchmark</span> <span class="pre">inputs</span></code> contains all the inputs of the default benchmarks avaialble in the JADE suite.
 This is the folder where eventual user defined benchmark inputs should be positioned.
 In case of benchmarks that are composed by more than one run, all the inputs are reunited in a sub-folder
@@ -177,64 +199,71 @@ In case of benchmarks that are composed by more than one run, all the inputs are
 <p><code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Benchmark</span> <span class="pre">inputs\VRT</span></code> folder is especially important. Here, in specific subfolders, can be found
 all additional files required by the benchmark inputs (e.g. weight window files, irradiation files, reactions file,
 etc.)</p>
-</div>
-<div class="section" id="code">
-<h2>Code<a class="headerlink" href="#code" title="Permalink to this headline"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code</span></code> contains the JADE GitHub repo itself. All the source code is contained here toghether with the
+</section>
+<section id="code">
+<h2>Code<a class="headerlink" href="#code" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code</span></code> contains the JADE GitHub repo itself. Various git files and license information is contained here together with the
 following subfolders:</p>
-<dl class="simple">
+<dl>
+<dt>docs</dt><dd><p>Contains all files related to this documentation. Here, local version of the documentations can be found.</p>
+</dd>
+<dt>jade</dt><dd><p>Contains all source code, as well as the following folders:</p>
+<blockquote>
+<div><dl class="simple">
 <dt>default_settings</dt><dd><p>Contains all JADE default settings. On the first JADE instance these are copied to the <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration</span></code>
 folder. They can be restored by a dedicated utility function available from the main menu.</p>
 </dd>
-<dt>docs</dt><dd><p>Contains all files related to this documentation. Here, local version of the documentations can be found.</p>
+<dt>install_files</dt><dd><p>Contains files to be used during the first JADE run. They do have not any appeal to the general user.</p>
 </dd>
-<dt>install_files</dt><dd><p>Contains files to be used during the first JADE run. They have not any appeal to the general user.</p>
-</dd>
-<dt>templates</dt><dd><p>Contains all the Microsoft Office and Word templates to be used during post-processing. In case of user-defined
-benchmarks that are based on specific templates, these need to be added here.</p>
-</dd>
-<dt>tests</dt><dd><p>Contains all the .py files to be run with pytest and folders containing files useful for the testing activity</p>
+<dt>resources</dt><dd><p>Miscelaneous resources, currently information on natural isotope abundances and atomic masses.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="configuration">
-<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline"></a></h2>
+</div></blockquote>
+</dd>
+<dt>tests</dt><dd><p>Contains all the .py files to be run with pytest and folders containing files useful for the testing activity.</p>
+</dd>
+</dl>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration</span></code> stores the main JADE configuration file <code class="docutils literal notranslate"><span class="pre">Config.xlsx</span></code> and all benchmark-specific configuration
-files that are stored in <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code\Benchmarks</span> <span class="pre">Configuration</span></code>.</p>
+files that are stored in <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code\Benchmarks</span> <span class="pre">Configuration</span></code>. For users running on UNIX systems, this folder also
+contains templates for several common job submission systems (Slurm, LoadLeveler), and config shell scripts for configuring
+modules and environment variables at runtime.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="configuration.html#config"><span class="std std-ref">Configuration</span></a> for additional description of the configuration files.</p>
 </div>
-</div>
-<div class="section" id="experimental-results">
-<h2>Experimental results<a class="headerlink" href="#experimental-results" title="Permalink to this headline"></a></h2>
+</section>
+<section id="experimental-results">
+<h2>Experimental results<a class="headerlink" href="#experimental-results" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Experimental</span> <span class="pre">results</span></code> stores all the experimental results needed for the post-processing of
 experimental benchmarks. In case of benchmarks that are composed by more than one run, all the inputs are reunited in a sub-folder
 (e.g. <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Experimental</span> <span class="pre">results\Oktavian</span></code>.</p>
-</div>
-<div class="section" id="quality">
-<h2>Quality<a class="headerlink" href="#quality" title="Permalink to this headline"></a></h2>
+</section>
+<section id="quality">
+<h2>Quality<a class="headerlink" href="#quality" title="Link to this heading"></a></h2>
 <p>This space has been reserved but Quality branch is <strong>not being implemented</strong>
 for the time being.</p>
-</div>
-<div class="section" id="tests">
-<h2>Tests<a class="headerlink" href="#tests" title="Permalink to this headline"></a></h2>
+</section>
+<section id="tests">
+<h2>Tests<a class="headerlink" href="#tests" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Tests</span></code> reunites all the outputs of the benchmarks assessments.</p>
 <dl class="simple">
-<dt>MCNP simulations</dt><dd><p>contains the results of the transport simulations.</p>
+<dt>Simulations</dt><dd><p>contains the results of the transport simulations.</p>
 </dd>
 <dt>Post-Processing</dt><dd><p>contains all the results coming from the post-processing of results. These are divided between
 <em>Comparisons</em> and <em>Single Libraries</em>.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="utilities">
-<h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline"></a></h2>
+</section>
+<section id="utilities">
+<h2>Utilities<a class="headerlink" href="#utilities" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Tests</span></code> is where all outputs coming from the <a class="reference internal" href="utilities.html#uty"><span class="std std-ref">Utilities</span></a> are reunited. Each utility generates
 a dedicated sub-folder when is used for the first time. Upon installation, the only sub-folder is
 <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Tests\Log</span> <span class="pre">Files</span></code> that contains all log files produced by each JADE session.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -247,7 +276,7 @@ a dedicated sub-folder when is used for the first time. Upon installation, the o
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

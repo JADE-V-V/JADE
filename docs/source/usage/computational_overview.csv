@@ -1,5 +1,5 @@
 Benchmark, MCNP Status, OpenMC Status, Serpent Status
-Sphere Leakage, I, D, D
+Sphere Leakage, I,I, D
 ITER 1-D, I, W, W
 Test Blanket Module, I, W, W
 C-Model, I, W, W

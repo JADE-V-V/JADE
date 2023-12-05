@@ -44,16 +44,8 @@ an extremely super-critical geometrical configuration and the high number of sec
 caused the simulations to fail due to memory limitations. For this reason, the density of these isotopes 
 was imposed equal to 1 g/cc as if an aerosol was considered.
 
-Finally, the STOP card parameters were optimized. MCNP allows to stop a simulation based either on:
-* the precision reached in a specified tally;
-* the number of histories (NPS);
-* the total elapsed computer time (i.e. the sum of computer time used by all CPUs).
-
-The optimization of such parameters for each element was done through trial and error with the aim of
-finding a good balance between computational cost and enough precise results.
-These parameters are provided by default in JADE, but the user may modify them if necessary through
-benchmark-specific configuration files. Density values can be modified too. The files are located in
-``<JADE_root>\Configuration\Benchmarks Configuration\Sphere``.
+STOP cards based on computation time and precision are not available in OpenMC and Serpent, and have
+been removed as a capability. The only stopping condition currently utilised is the NPS cut-off. 
 
 Even after all these optimizations, it is clear to the developers that a "fair" 
 test for all isotopes has not been reached yet. For example, in materials with cross sections
@@ -96,6 +88,12 @@ Tally n. 24
     Tritium (T) ppm production in the filled sphere.
 Tally n. 34
     Displacement Per Atom (DPA) production in the filled sphere.
+
+.. warning:: **Limitations of additional codes
+    Please note that in order to aid comparisons between the 3 codes currently 
+    being implemented, a reduced tally set containing only the F4 and F14 tallies
+    is currently being used. This is due to a lack of surface tallies in OpenMC, 
+    and will be remedied when this capability is introduced.
 
 .. seealso:: **Related papers and contributions:**
 

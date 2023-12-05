@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sphere Leakage &mdash; JADE v2.1.1 documentation</title>
+  <title>Sphere Leakage &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -25,7 +25,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../../index.html" class="icon icon-home"> JADE
-            <img src="../../_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -50,8 +49,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
@@ -62,7 +62,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributors.html">Contributors</a></li>
@@ -82,8 +81,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Sphere Leakage</li>
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Sphere Leakage</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/usage/benchdesc/sphere.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -93,12 +92,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="sphere-leakage">
-<span id="spheredesc"></span><h1>Sphere Leakage<a class="headerlink" href="#sphere-leakage" title="Permalink to this headline"></a></h1>
-<div class="figure align-center" id="id1">
+  <section id="sphere-leakage">
+<span id="spheredesc"></span><h1>Sphere Leakage<a class="headerlink" href="#sphere-leakage" title="Link to this heading"></a></h1>
+<figure class="align-center" id="id3">
 <img alt="../../_images/sphere.png" src="../../_images/sphere.png" />
-<p class="caption"><span class="caption-text">Sphere Leakage geometrical model</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Sphere Leakage geometrical model</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>The Sphere Leakage benchmark is arguably the most important
 benchmark included in the JADE suite. Indeed, it allows to test
 individually each single isotope of the nuclear data library under assessment
@@ -111,8 +112,8 @@ plus some typically used material in the ITER project namely:</p>
 <li><p>Natural Silicon;</p></li>
 <li><p>Polyethylene (non-borated).</p></li>
 </ul>
-<div class="section" id="geometry-and-run-parameters">
-<h2>Geometry and run parameters<a class="headerlink" href="#geometry-and-run-parameters" title="Permalink to this headline"></a></h2>
+<section id="geometry-and-run-parameters">
+<h2>Geometry and run parameters<a class="headerlink" href="#geometry-and-run-parameters" title="Link to this heading"></a></h2>
 <p>The Sphere Lekage geometry consists of actually three
 concentric spheres. The inner one is void and has a radius of 5 cm. Here
 is located the uniform probability 0-14 MeV neutron point source. The second sphere
@@ -134,15 +135,8 @@ fissile isotopes like U235. A 1 m diameter sphere containing a pure fissile isot
 an extremely super-critical geometrical configuration and the high number of secondary particles (i.e. other neutrons) produced
 caused the simulations to fail due to memory limitations. For this reason, the density of these isotopes
 was imposed equal to 1 g/cc as if an aerosol was considered.</p>
-<p>Finally, the STOP card parameters were optimized. MCNP allows to stop a simulation based either on:
-* the precision reached in a specified tally;
-* the number of histories (NPS);
-* the total elapsed computer time (i.e. the sum of computer time used by all CPUs).</p>
-<p>The optimization of such parameters for each element was done through trial and error with the aim of
-finding a good balance between computational cost and enough precise results.
-These parameters are provided by default in JADE, but the user may modify them if necessary through
-benchmark-specific configuration files. Density values can be modified too. The files are located in
-<code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Benchmarks</span> <span class="pre">Configuration\Sphere</span></code>.</p>
+<p>STOP cards based on computation time and precision are not available in OpenMC and Serpent, and have
+been removed as a capability. The only stopping condition currently utilised is the NPS cut-off.</p>
 <p>Even after all these optimizations, it is clear to the developers that a “fair”
 test for all isotopes has not been reached yet. For example, in materials with cross sections
 having 1/V dependencies, the output of the simulations could be dominated by the cross
@@ -154,9 +148,9 @@ be tested “better” than others. The solution to this issue is not trivial an
 certainly receive further attention in future developments. It should be noticed
 that users can easily modify both density and source parameters at anytime if they
 do not agree with the default settings that are provided.</p>
-</div>
-<div class="section" id="tallies">
-<h2>Tallies<a class="headerlink" href="#tallies" title="Permalink to this headline"></a></h2>
+</section>
+<section id="tallies">
+<h2>Tallies<a class="headerlink" href="#tallies" title="Link to this heading"></a></h2>
 <p>Both the transport of neutrons and of secondary photons are active and photons cut-off energy  is
 left to the default value of 1 KeV.
 The following MCNP tallies are defined in the Sphere Leakage benchmark:</p>
@@ -184,6 +178,14 @@ The following MCNP tallies are defined in the Sphere Leakage benchmark:</p>
 <dt>Tally n. 34</dt><dd><p>Displacement Per Atom (DPA) production in the filled sphere.</p>
 </dd>
 </dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><a href="#id1"><span class="problematic" id="id2">**</span></a>Limitations of additional codes
+Please note that in order to aid comparisons between the 3 codes currently
+being implemented, a reduced tally set containing only the F4 and F14 tallies
+is currently being used. This is due to a lack of surface tallies in OpenMC,
+and will be remedied when this capability is introduced.</p>
+</div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><strong>Related papers and contributions:</strong></p>
@@ -194,8 +196,8 @@ A. Trkov, 2020,
 validation”, <em>Fusion Engineering and Design</em>, <strong>161</strong> 112075</p></li>
 </ul>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -205,7 +207,7 @@ validation”, <em>Fusion Engineering and Design</em>, <strong>161</strong> 1120
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

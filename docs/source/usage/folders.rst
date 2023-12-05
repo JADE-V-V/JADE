@@ -9,60 +9,83 @@ The following is a scheme of the JADE folder structure:
 ::
 
     <JADE_root>
-        |--------- Benchmark inputs
-        |            |----- <inputfile>.i
-        |            |----- ...
-        |            |----- <Inputfolder>
-        |            |----- ...
-        |            |----- VRT
+        |----- Benchmark inputs
+        |        |----- <Inputfolder>
+        |        |        |----- mcnp
+        |        |        |        |----- <inputfile>.i
+        |        |        |----- openmc
+        |        |        |        |----- <inputgeometry>.i
+        |        |        |        |----- <inputmaterials>.i
+        |        |        |        |----- <inputtallies>.i
+        |        |        |----- serpent
+        |        |        |        |----- <inputfile>.i
+        |        |----- ...
+        |        |----- TypicalMaterials
         |
-        |--------- Code
-        |            |----- default_settings
-        |            |----- docs
-        |            |----- install_files
-        |            |----- templates
-        |            |----- tests
+        |----- Code
+        |        |----- docs
+        |        |----- jade
+        |        |        |----- default_settings
+        |        |        |----- install_files
+        |        |        |----- resources
+        |        |        |----- templates
+        |        |        |----- <JADE_modules>.py
+        |        |        |----- ...
+        |        |----- tests
         |
-        |--------- Configuration
-        |                |----------- Benchmarks Configuration
-        |                |----------- Config.xlsx
+        |----- Configuration
+        |        |----- Benchmarks Configuration
+        |        |        |----- <Benchmark 1 config>.xlsx
+        |        |        |----- [...]    
+        |        |        
+        |        |----- Job_Script_Templates
+        |        |        |----- <Job submission system 1 template>.cmd
+        |        |        |----- [...]      
+        |        |
+        |        |----- Config.xlsx
+        |        |----- mcnp_config.sh
+        |        |----- openmc_config.sh
+        |        |----- serpent_config.sh
         |
-        |--------- Experimental results
-        |                    |------------ <Benchmark name 1>
-        |                    |------------ [...]
+        |----- Experimental results
+        |        |----- <Benchmark name 1>
+        |        |----- [...]
         |
-        |--------- [Quality]
+        |-----[Quality]
         |
-        |--------- Tests
-        |            |--------- MCNP simulations
-        |            |                 |----------- <Lib suffix 1>
-        |            |                 |                  |---------- <Benchmark name 1>
-        |            |                 |                  |---------- [...]
-        |            |                 |----------- [...]
-        |            |
-        |            |--------- Post-Processing
-        |                             |------------ Comparisons
-        |                             |                  |-------- <lib 1>_Vs_<lib 2>_Vs....
-        |                             |                  |                  |------------------ <Benchmark name 1>
-        |                             |                  |                  |                            |----------- Atlas
-        |                             |                  |                  |                            |----------- Excel
-        |                             |                  |                  |
-        |                             |                  |                  |------------------ [...]
-        |                             |                  |
-        |                             |                  |------- [...]
-        |                             |             
-        |                             |------------ Single Libraries
-        |                                                 |----------- <Lib suffix 1>
-        |                                                 |                  |---------- <Benchmark name 1>
-        |                                                 |                  |                   |----------- Atlas
-        |                                                 |                  |                   |----------- Excel
-        |                                                 |                  |                   |----------- Raw Data
-        |                                                 |                  |            
-        |                                                 |                  |---------- [...]
-        |                                                 |
-        |                                                 |----------- [...]
-        |            
-        |-------- Utilities
+        |----- Tests
+        |        |----- Simulations
+        |        |        |----- <Lib suffix 1>
+        |        |        |        |----- <Benchmark name 1>
+        |        |        |        |        |----- <Code 1>
+        |        |        |        |        |        |----- <output>
+        |        |        |        |        |----- [...]
+        |        |        |        |----- [...]
+        |        |        |----- [...]
+        |        |
+        |        |----- Post-Processing
+        |                 |----- Comparisons
+        |                 |        |----- <lib 1>_Vs_<lib 2>_Vs....
+        |                 |        |        |----- <Benchmark name 1>
+        |                 |        |        |        |----- Atlas
+        |                 |        |        |        |----- Excel
+        |                 |        |        |
+        |                 |        |        |----- [...]
+        |                 |        |
+        |                 |        |----- [...]
+        |                 |             
+        |                 |----- Single Libraries
+        |                          |----- <Lib suffix 1>
+        |                          |        |----- <Benchmark name 1>
+        |                          |        |        |----- <Code 1>                                            
+        |                          |        |        |        |----- Atlas
+        |                          |        |        |        |----- Excel
+        |                          |        |        |        |----- Raw Data
+        |                          |        |        |----- [...] 
+        |                          |        |----- [...]
+        |                          |----- [...]
+        |    
+        |----- Utilities
 
     
 ``<JADE_root>`` is the root folder chosen by the user. As described in :ref:`install` section,
@@ -85,30 +108,37 @@ etc.)
 
 Code
 ====
-``<JADE_root>\Code`` contains the JADE GitHub repo itself. All the source code is contained here toghether with the
+``<JADE_root>\Code`` contains the JADE GitHub repo itself. Various git files and license information is contained here together with the
 following subfolders:
 
-default_settings
-   Contains all JADE default settings. On the first JADE instance these are copied to the ``<JADE_root>\Configuration``
-   folder. They can be restored by a dedicated utility function available from the main menu.
+
 
 docs
    Contains all files related to this documentation. Here, local version of the documentations can be found.
 
-install_files
-    Contains files to be used during the first JADE run. They have not any appeal to the general user.
+jade
+   Contains all source code, as well as the following folders:
 
-templates
-    Contains all the Microsoft Office and Word templates to be used during post-processing. In case of user-defined
-    benchmarks that are based on specific templates, these need to be added here.
+    default_settings
+        Contains all JADE default settings. On the first JADE instance these are copied to the ``<JADE_root>\Configuration``
+        folder. They can be restored by a dedicated utility function available from the main menu.
+
+    install_files
+        Contains files to be used during the first JADE run. They do have not any appeal to the general user.
+
+    resources
+        Miscelaneous resources, currently information on natural isotope abundances and atomic masses.
+        
 
 tests
-    Contains all the .py files to be run with pytest and folders containing files useful for the testing activity
+    Contains all the .py files to be run with pytest and folders containing files useful for the testing activity.
 
 Configuration
 =============
 ``<JADE_root>\Configuration`` stores the main JADE configuration file ``Config.xlsx`` and all benchmark-specific configuration
-files that are stored in ``<JADE_root>\Code\Benchmarks Configuration``.
+files that are stored in ``<JADE_root>\Code\Benchmarks Configuration``. For users running on UNIX systems, this folder also 
+contains templates for several common job submission systems (Slurm, LoadLeveler), and config shell scripts for configuring 
+modules and environment variables at runtime.
 
 .. seealso::
     :ref:`config` for additional description of the configuration files.
@@ -128,7 +158,7 @@ Tests
 =====
 ``<JADE_root>\Tests`` reunites all the outputs of the benchmarks assessments. 
 
-MCNP simulations
+Simulations
     contains the results of the transport simulations.
 
 Post-Processing

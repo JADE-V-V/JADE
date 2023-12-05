@@ -31,6 +31,28 @@ computational and experimental benchmarks.
       activation libraries results are done in a coherent way. That is, the
       same transport library should be always used.
 
+
+Overview
+========
+The following tables summarize the computational and experimental benchmarks
+that are included in JADE (I), the ones that are currently under developing (D), and 
+whishlisted ones (W). A more detailed description of the implemented benchmarks can
+be found in the following sections.
+
+**COMPUTATIONAL BENCHMARKS:**
+
+.. csv-table::
+    :file: computational_overview.csv
+    :widths: 70 10 10 10
+    :header-rows: 1
+
+**EXPERIMENTAL BENCHMARKS:**
+
+.. csv-table::
+    :file: exp_overview.csv
+    :widths: 70 10 10 10
+    :header-rows: 1
+
 Computational Benchmarks
 ========================
 
@@ -55,6 +77,16 @@ Experimental Benchmarks
 
 .. include:: benchdesc/tiara.rst
 
+.. include:: benchdesc/fns-tof.rst
+
+.. include:: benchdesc/aspis-fe88.rst
+
 .. include:: benchdesc/fng-blk.rst
 
 .. include:: benchdesc/fng-w.rst
+
+.. include:: benchdesc/tud-fe.rst
+
+.. include:: benchdesc/tud-fng.rst
+
+.. include:: benchdesc/tud-w.rst

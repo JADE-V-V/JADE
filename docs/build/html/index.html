@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to JADE’s documentation! &mdash; JADE v2.1.1 documentation</title>
+  <title>Welcome to JADE’s documentation! &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
+        <script src="_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -26,7 +26,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="#" class="icon icon-home"> JADE
-            <img src="_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -51,9 +50,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="dev/codemodify.html">Modify JADE code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
@@ -64,7 +63,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
@@ -84,8 +82,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
-      <li>Welcome to JADE’s documentation!</li>
+      <li><a href="#" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Welcome to JADE’s documentation!</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -95,9 +93,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="welcome-to-jade-s-documentation">
-<h1>Welcome to JADE’s documentation!<a class="headerlink" href="#welcome-to-jade-s-documentation" title="Permalink to this headline"></a></h1>
-<p>Version: v2.1.1</p>
+  <section id="welcome-to-jade-s-documentation">
+<h1>Welcome to JADE’s documentation!<a class="headerlink" href="#welcome-to-jade-s-documentation" title="Link to this heading"></a></h1>
+<p>Version: 3.0.0</p>
 <p>JADE is a new tool for nuclear libraries V&amp;V.
 Brought to you by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E).</p>
 <p>JADE is an open-source software licensed under the <a class="reference internal" href="LICENSE.html#gnulicense"><span class="std std-ref">GNU GPLv3 License</span></a>.
@@ -109,9 +107,9 @@ Fusion Engineering and Design, <strong>161</strong> 112075, doi: <a class="refer
 “Application Of JADE V&amp;V Capabilities To The New FENDL v3.2 Beta Release”,
 <em>Nuclear Fusion</em>, <strong>61</strong> 116073. doi: <a class="reference external" href="https://doi.org/10.1088/1741-4326/ac121a">https://doi.org/10.1088/1741-4326/ac121a</a></p></li>
 </ul>
-<p>For additional information contact: <a class="reference external" href="mailto:d&#46;laghi&#37;&#52;&#48;nier&#46;it">d<span>&#46;</span>laghi<span>&#64;</span>nier<span>&#46;</span>it</a></p>
-<p>For additional information on future developments please check the issues list on the
-GitHub repository [link].</p>
+<p>For additional information contact: <a class="reference external" href="mailto:davide&#46;laghi01&#37;&#52;&#48;gmail&#46;com">davide<span>&#46;</span>laghi01<span>&#64;</span>gmail<span>&#46;</span>com</a></p>
+<p>For additional information on future developments please check the <a class="reference external" href="https://github.com/JADE-V-V/JADE/issues">issues list on the
+GitHub repository</a>.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">JADE User Guide:</span></p>
 <ul>
@@ -131,7 +129,8 @@ GitHub repository [link].</p>
 <li class="toctree-l2"><a class="reference internal" href="usage/configuration.html#main-configuration">Main Configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/configuration.html#activation-file">Activation File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/configuration.html#benchmark-run-configuration">Benchmark run configuration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/configuration.html#benchmark-post-processing-configuration">Benchmark post-processing configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/configuration.html#computational-benchmark-post-processing-configuration">Computational benchmark post-processing configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/configuration.html#experimental-benchmark-post-processing-configuration">Experimental benchmark post-processing configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="usage/menu.html">Usage</a><ul>
@@ -142,6 +141,7 @@ GitHub repository [link].</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="usage/benchmarks.html">Default Benchmarks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage/benchmarks.html#overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/benchmarks.html#computational-benchmarks">Computational Benchmarks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/benchmarks.html#experimental-benchmarks">Experimental Benchmarks</a></li>
 </ul>
@@ -161,6 +161,7 @@ GitHub repository [link].</p>
 <li class="toctree-l2"><a class="reference internal" href="usage/utilities.html#change-ace-libraries-suffix">Change .ace libraries suffix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/utilities.html#produce-d1s-uned-reaction-files">Produce D1S-UNED reaction files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/utilities.html#remove-runtpe-files">Remove runtpe files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/utilities.html#interactive-acefile-and-exfor-data-plotter">Interactive acefile and EXFOR data plotter</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="usage/tipstricks.html">Tips &amp; Tricks</a><ul>
@@ -180,13 +181,22 @@ GitHub repository [link].</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="dev/codemodify.html">Modify JADE code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/workflow.html">Contributing to JADE</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/workflow.html#terminology">Terminology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/workflow.html#development-workflow">Development Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/workflow.html#modify-documentation-using-sphinx">Modify documentation using Sphinx</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="dev/insertbenchmarks.html">Insert Custom Benchmarks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dev/insertbenchmarks.html#insert-custom-computational-benchmark">Insert Custom Computational Benchmark</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dev/insertbenchmarks.html#insert-custom-experimental-benchmark">Insert Custom Experimental Benchmark</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/testing.html">JADE CI and automatic testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/testing.html#brief-introduction">Brief introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/testing.html#testing-in-jade">Testing in JADE</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
@@ -223,15 +233,11 @@ GitHub repository [link].</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="testing/testing.html">JADE CI and automatic testing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="testing/testing.html#brief-introduction">Brief introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="testing/testing.html#testing-in-jade">Testing in JADE</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="futuredev.html">Future developments</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="futuredev.html#eliminate-dependency-from-microsoft-office-suite">Eliminate dependency from Microsoft Office suite</a></li>
 <li class="toctree-l2"><a class="reference internal" href="futuredev.html#migration-to-linux-system">Migration to Linux system</a></li>
 <li class="toctree-l2"><a class="reference internal" href="futuredev.html#implementation-of-open-source-monte-carlo-codes">Implementation of open-source Monte Carlo codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="futuredev.html#addition-of-benchmarks">Addition of benchmarks</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="LICENSE.html">License</a><ul>
@@ -248,15 +254,15 @@ GitHub repository [link].</p>
 </li>
 </ul>
 </div>
-</div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline"></a></h1>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-</div>
+</section>
 
 
            </div>
@@ -268,7 +274,7 @@ GitHub repository [link].</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -6,8 +6,9 @@ JADE in a nutshell
     :width: 600
 
 JADE is a new tool for nuclear libraries V&V.
-Brought to you by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E).
-JADE is an open source, Python 3 based software able to:
+Brought to you by NIER, University of Bologna (UNIBO), Fusion For Energy (F4E),
+and UK Atomic Energy Authority (UKAEA).
+JADE is an open source, system agnostic, Python 3 based software able to:
 
 * automatically build a series of MCNP input file using different nuclear
   data libraries;
@@ -25,6 +26,7 @@ and experimental benchmarks. The post-processing output includes:
 
 Additional JADE features are:
 
+* run JADE with the transport codes OpenMC and Serpent. 
 * the possibility to implement user-defined benchmarks;
 * operate on the material card of an MCNP input (e.g. create material mixtures, 
   translate it to a different nuclear data library or switch between atom and

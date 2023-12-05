@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Configuration &mdash; JADE v2.1.1 documentation</title>
+  <title>Configuration &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
+        <script src="../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -27,7 +27,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> JADE
-            <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -52,9 +51,14 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#activation-file">Activation File</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#benchmark-run-configuration">Benchmark run configuration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#benchmark-post-processing-configuration">Benchmark post-processing configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#computational-benchmark-post-processing-configuration">Computational benchmark post-processing configuration</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#excel">Excel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#atlas">Atlas</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#experimental-benchmark-post-processing-configuration">Experimental benchmark post-processing configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#spectrumoutput-class-benchmarks-configuration-files">SpectrumOutput class benchmarks configuration files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multiplespectrumoutput-class-benchmarks-configuration-files">MultipleSpectrumOutput class benchmarks configuration files</a></li>
 </ul>
 </li>
 </ul>
@@ -68,8 +72,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
@@ -80,7 +85,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
@@ -100,8 +104,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Configuration</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Configuration</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/usage/configuration.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -111,14 +115,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="configuration">
-<span id="config"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline"></a></h1>
+  <section id="configuration">
+<span id="config"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h1>
 <p>All configuration files are included in the <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration</span></code> directory.
 In principle, <strong>the general user should only operate on the</strong> <a class="reference internal" href="#mainconfig"><span class="std std-ref">Main Configuration</span></a> <strong>file</strong>, while
 all other configuration files simply guarantee an additional level of personalization for the user.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>In case of user-defined benchmarks suitable <a class="reference internal" href="#runconf"><span class="std std-ref">Benchmark run configuration</span></a> and <a class="reference internal" href="#ppconf"><span class="std std-ref">Benchmark post-processing configuration</span></a> files need
+<p>In case of user-defined benchmarks suitable <a class="reference internal" href="#runconf"><span class="std std-ref">Benchmark run configuration</span></a> and <a class="reference internal" href="#ppconf"><span class="std std-ref">Computational benchmark post-processing configuration</span></a> files need
 to be produced.</p>
 </div>
 <div class="admonition note">
@@ -126,42 +130,68 @@ to be produced.</p>
 <p>Every time a new D1S library is added to the user xsdir, in order to use it in JADE a specific
 sheet must be added in the <a class="reference internal" href="#activationfile"><span class="std std-ref">Activation File</span></a>.</p>
 </div>
-<div class="section" id="main-configuration">
-<span id="mainconfig"></span><h2>Main Configuration<a class="headerlink" href="#main-configuration" title="Permalink to this headline"></a></h2>
+<section id="main-configuration">
+<span id="mainconfig"></span><h2>Main Configuration<a class="headerlink" href="#main-configuration" title="Link to this heading"></a></h2>
 <p>The most important configuration file is <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Config.xlsx</span></code>.
 This is <strong>the only configuration file that the user must modify</strong> before operating with JADE.
 Herafter, a description of the different sheets included in the file is given.</p>
-<div class="section" id="main-config">
-<h3>MAIN Config.<a class="headerlink" href="#main-config" title="Permalink to this headline"></a></h3>
+<section id="main-config">
+<h3>MAIN Config.<a class="headerlink" href="#main-config" title="Link to this heading"></a></h3>
 <a class="reference internal image-reference" href="../_images/main.png"><img alt="../_images/main.png" src="../_images/main.png" style="width: 600px;" /></a>
 <p>This sheet contains the JADE <em>ambient variables</em>:</p>
 <dl class="simple">
-<dt>xsdir Path</dt><dd><p>Absolute path to the xsdir file that has been set to be used during MCNP simulations.
-If different codes are used that use different xsdir file (e.g. mcnp5 and mcnp6) the
-user should make sure that all libraries of interest are included in the xsdir file
-indicated in this variable.</p>
+<dt>MCNP executable</dt><dd><p>Path to the MCNP executable.</p>
 </dd>
-<dt>multithread</dt><dd><p>Under Windows operative system, MCNP allows to run on multithread using the <code class="docutils literal notranslate"><span class="pre">tasks</span></code>
-keyword. Setting this variable to <code class="docutils literal notranslate"><span class="pre">True</span></code> enables this capability.</p>
+<dt>MCNP config</dt><dd><p>Name of the config shell script containing environment variables required for running MCNP on UNIX.
+By default this file should exist already in the same folder as the Config.xlsx named mcnp_config.sh.
+The main purpose of this file is to allow for switching modules and environment variables at runtime
+when performing multi-code runs, as it may be the case a different compiler is required for a specific
+code. If running either single or multiple codes with a correctly configured enviroment, or if running
+on windows, this file can be left empty.</p>
 </dd>
-<dt>CPU</dt><dd><p>When <strong>multithread</strong> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, <strong>CPU</strong> sets the argument that will be passed
-to <code class="docutils literal notranslate"><span class="pre">tasks</span></code> during MCNP runs.</p>
+<dt>Serpent executable</dt><dd><p>Path to Serpent executable.</p>
+</dd>
+<dt>Serpent config</dt><dd><p>Name of the config shell script containing environment variables required for running Serpent on UNIX.
+see MCNP_config above for more information.</p>
+</dd>
+<dt>OpenMC executable</dt><dd><p>Path to OpenmC executable.</p>
+</dd>
+<dt>OpenMC config</dt><dd><p>Name of the config shell script containing environment variables required for running OpenMC on UNIX.
+see MCNP_config above for more information.</p>
+</dd>
+<dt>D1S executable</dt><dd><p>Path to D1S executable (not yet implemented).</p>
+</dd>
+<dt>D1S config</dt><dd><p>Name of the config shell script containing environment variables required for running D1S on UNIX.
+see MCNP_config above for more information (not yet implemented).</p>
+</dd>
+<dt>OpenMP threads</dt><dd><p>Specifies the number of threads to use when running OpenMP executables</p>
+</dd>
+<dt>MPI tasks</dt><dd><p>Specifies how many cores to use when executing an MPI tasks</p>
+</dd>
+<dt>Batch system</dt><dd><p>The command used to run a batch job on the current system, for example LLsubmit for LoadLeveler or sbatch
+for SLURM. This command is required to run any calculation as a job, the code will default to a command
+line run if left blank.</p>
+</dd>
+<dt>Batch file</dt><dd><p>Template of the job submission script to be utilised on the users chosen system. This should match the
+command provided for the Batch system variable. Several default job submission scripts are provided in
+the Job_Script_Template folder in the Configuration folder. Examples of the layout of these templates
+are detailed below.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="computational-benchmarks">
-<span id="compsheet"></span><h3>Computational benchmarks<a class="headerlink" href="#computational-benchmarks" title="Permalink to this headline"></a></h3>
-<a class="reference internal image-reference" href="../_images/comp.jpg"><img alt="../_images/comp.jpg" src="../_images/comp.jpg" style="width: 600px;" /></a>
+</section>
+<section id="computational-benchmarks">
+<span id="compsheet"></span><h3>Computational benchmarks<a class="headerlink" href="#computational-benchmarks" title="Link to this heading"></a></h3>
+<a class="reference internal image-reference" href="../_images/comp.png"><img alt="../_images/comp.png" src="../_images/comp.png" style="width: 600px;" /></a>
 <p>This table collects allows to personalize which <em>computational benchmarks</em> should be included
 in the JADE assessment. Each row controls a different benchmark, where the following options
 (columns) are available:</p>
 <dl>
-<dt>Description</dt><dd><p>this is the extended name of the benchmark, this name will appear in specific outputs of the
+<dt>Description</dt><dd><p>This is the extended name of the benchmark, this name will appear in specific outputs of the
 post-processing.</p>
 </dd>
-<dt>File Name</dt><dd><p>name of the reference MCNP input file. These need to be placed in <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Benchmarks</span> <span class="pre">inputs</span></code>.</p>
+<dt>Folder Name</dt><dd><p>Name of the folder containing input files for all codes. These need to be placed in <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Benchmarks</span> <span class="pre">inputs</span></code>.</p>
 </dd>
-<dt>OnlyInput</dt><dd><p>when this field is set to <code class="docutils literal notranslate"><span class="pre">True</span></code> the benchmark input is only generated but not run. This can be
+<dt>OnlyInput</dt><dd><p>When this field is set to <code class="docutils literal notranslate"><span class="pre">True</span></code> the benchmark input is only generated but not run. This can be
 useful when the user wants to run the benchmark on a different hardware with respect to the
 one where JADE is being used.</p>
 <div class="admonition seealso">
@@ -174,26 +204,22 @@ one where JADE is being used.</p>
 set to True, the inputs will be only generated and not run.</p>
 </div>
 </dd>
-<dt>Run</dt><dd><p>the benchmark will be run during an assessment only if this field is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+<dt>MCNP</dt><dd><p>Runs the benchmark input for MCNP if set to <code class="docutils literal notranslate"><span class="pre">True</span></code>.
 This allows to customize the selection of benchmarks to be run during an assessment or avoid
 to re-run benchmarks that were already simulated in the past.</p>
 </dd>
-<dt>Post-Processing</dt><dd><p>this field works exactly as the <code class="docutils literal notranslate"><span class="pre">Run</span></code> one but for the post-processing operations.</p>
+<dt>Serpent</dt><dd><p>As above, runs the benchmark input for Serpent if set to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </dd>
-</dl>
-<p>The last three options available for each benchmark control the MCNP STOP card parameters
-that help regulating the simulation lenght:</p>
-<dl>
+<dt>OpenMC</dt><dd><p>As above, runs the benchmark input for OpenMC if set to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+<dt>D1S</dt><dd><p>As above, runs the benchmark input for D1S if set to <code class="docutils literal notranslate"><span class="pre">True</span></code> (NOT YET IMPLEMENTED).</p>
+</dd>
+<dt>Post-Processing</dt><dd><p>this field works exactly as the <code class="docutils literal notranslate"><span class="pre">Run</span></code> one but for the post-processing operations.
+Post processing is performed for any code marked as <code class="docutils literal notranslate"><span class="pre">True</span></code> in the corresponding
+row.</p>
+</dd>
 <dt>NPS cut-off</dt><dd><p>this is equivalent to the <code class="docutils literal notranslate"><span class="pre">NPS</span></code> entry in the MCNP STOP card. It sets a maximum amount
 of histories to be simulated. Only integers are allowed.</p>
-</dd>
-<dt>CTME cut-off</dt><dd><p>this is equivalent to the <code class="docutils literal notranslate"><span class="pre">CTME</span></code> entry in the MCNP STOP card. It sets a maximum computer
-time after which the simulation will be interrupted. Only integers are allowed.</p>
-</dd>
-<dt>Relative Error cut-off</dt><dd><p>this is equivalent to the <code class="docutils literal notranslate"><span class="pre">F</span></code> entry in the MCNP STOP card. The sintax of this entry is:</p>
-<p>F&lt;<em>k</em>&gt;-&lt;<em>e</em>&gt;  (example: F16-0.0005)</p>
-<p>This stops the calculation when the tally fluctuation chart of tally <em>k</em> has reached a
-relative error lower than <em>e</em>.</p>
 </dd>
 <dt>Custom input</dt><dd><div class="versionadded">
 <p><span class="versionmodified added">New in version v1.3.0: </span>This columns allows to provide custom inputs to the different benchmarks. For the
@@ -202,52 +228,35 @@ if a number <em>n</em> is specified, this will limit the test to the first <em>n
 material simulations (useful for testing).</p>
 </div>
 </dd>
-<dt>Code</dt><dd><div class="versionadded">
-<p><span class="versionmodified added">New in version v1.3.0: </span>This column is needed to specify which kind of code needs to be used for each benchmark.
-The available codes are defined at the very beginning of the <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Code\testrun.py</span></code>
-by a dictionary linking tags to be used in the config. file and actual names of the executables
-to be used.</p>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CODE_TAGS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mcnp6&#39;</span><span class="p">:</span> <span class="s1">&#39;mcnp6&#39;</span><span class="p">,</span> <span class="s1">&#39;D1S5&#39;</span><span class="p">:</span> <span class="s1">&#39;d1suned3.1.2&#39;</span><span class="p">}</span>
-</pre></div>
-</div>
-</dd>
 </dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>All three STOP parameters can be simultaneously defined during a simulation. The first
-cut-off criteria reached will be the one triggering the end of the calculation.</p>
-</div>
-</div>
-<div class="section" id="experimental-benchmarks">
-<h3>Experimental benchmarks<a class="headerlink" href="#experimental-benchmarks" title="Permalink to this headline"></a></h3>
+</section>
+<section id="experimental-benchmarks">
+<h3>Experimental benchmarks<a class="headerlink" href="#experimental-benchmarks" title="Link to this heading"></a></h3>
 <a class="reference internal image-reference" href="../_images/exp.jpg"><img alt="../_images/exp.jpg" src="../_images/exp.jpg" style="width: 600px;" /></a>
 <p>The structure of the sheet is exactly the same as the <a class="reference internal" href="#compsheet"><span class="std std-ref">Computational benchmarks</span></a> one. Nevertheless,
 in this table are indicated the settings for the experimental benchmarks.</p>
-</div>
-<div class="section" id="libraries">
-<h3>Libraries<a class="headerlink" href="#libraries" title="Permalink to this headline"></a></h3>
+</section>
+<section id="libraries">
+<h3>Libraries<a class="headerlink" href="#libraries" title="Link to this heading"></a></h3>
 <a class="reference internal image-reference" href="../_images/lib.png"><img alt="../_images/lib.png" src="../_images/lib.png" style="width: 400px;" /></a>
-<p>This table simply consists of a glossary where the user can associate more explicit
-names to the nuclear data libraries suffixes available in the xsdir file. This
-allows for a clearer post-processing output.</p>
+<p>This sheet contains the paths of nuclear data library index files for the various codes.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Do not use invalid filename characters (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;\&quot;</span></code>) in the names assigned to the
 libraries!</p>
 </div>
-</div>
-</div>
-<div class="section" id="activation-file">
-<span id="activationfile"></span><h2>Activation File<a class="headerlink" href="#activation-file" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+<section id="activation-file">
+<span id="activationfile"></span><h2>Activation File<a class="headerlink" href="#activation-file" title="Link to this heading"></a></h2>
 <a class="reference internal image-reference" href="../_images/activation.jpg"><img alt="../_images/activation.jpg" src="../_images/activation.jpg" style="width: 600px;" /></a>
 <p>The <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Activation.xlsx</span></code> file stores all the reactions available in the different versions of the D1S-UNED
 activation libraries. For each library a sheet needs to be added having as name the
 suffix used in the xsdir file for the library. Only three columns in the table are mandatory
 and these are the <strong>Parent</strong>, <strong>MT</strong> and <strong>Daughter</strong> ones.</p>
-</div>
-<div class="section" id="benchmark-run-configuration">
-<span id="runconf"></span><h2>Benchmark run configuration<a class="headerlink" href="#benchmark-run-configuration" title="Permalink to this headline"></a></h2>
+</section>
+<section id="benchmark-run-configuration">
+<span id="runconf"></span><h2>Benchmark run configuration<a class="headerlink" href="#benchmark-run-configuration" title="Link to this heading"></a></h2>
 <p>for the <em>Sphere Leakage</em> and for the <em>Sphere SDDR</em> benchmarks ad-hoc run
 configuration file are defined and can be found in the
 <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Sphere</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\SphereSDDR</span></code>
@@ -277,9 +286,9 @@ for the STOP card are considered to have priority on the specific ones.
 If False, the specific parameters are not ovveridden by the general ones.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="benchmark-post-processing-configuration">
-<span id="ppconf"></span><h2>Benchmark post-processing configuration<a class="headerlink" href="#benchmark-post-processing-configuration" title="Permalink to this headline"></a></h2>
+</section>
+<section id="computational-benchmark-post-processing-configuration">
+<span id="ppconf"></span><h2>Computational benchmark post-processing configuration<a class="headerlink" href="#computational-benchmark-post-processing-configuration" title="Link to this heading"></a></h2>
 <p>It is possible to control (to some extent) the post-processing of each benchmark via its
 specific configuration file. These files are located in the <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Benchmarks</span> <span class="pre">Configuration</span></code>
 folder and their name must be identical to the one used in the <code class="docutils literal notranslate"><span class="pre">File</span> <span class="pre">Name</span></code> field in the main configuration file
@@ -288,8 +297,8 @@ since the high degree of customization needed for an experimental benchmark make
 standardize them. While computational benchmarks can be added to the JADE suite without the need for additional
 coding, this is not true also for experimental one.</p>
 <p>The files contain two main sheets, that respectively regulate the Excel and the Word/PDF (i.e., Atlas) post-processing output.</p>
-<div class="section" id="excel">
-<h3>Excel<a class="headerlink" href="#excel" title="Permalink to this headline"></a></h3>
+<section id="excel">
+<h3>Excel<a class="headerlink" href="#excel" title="Link to this heading"></a></h3>
 <a class="reference internal image-reference" href="../_images/excelbench.png"><img alt="../_images/excelbench.png" src="../_images/excelbench.png" style="width: 600px;" /></a>
 <p>This sheet regulates the Excel output derived from the benchmark. It consists of a table where each row regulates
 the output of a single tally present in the MCNP input.</p>
@@ -300,10 +309,10 @@ the output of a single tally present in the MCNP input.</p>
 <dt>x, y</dt><dd><p>select the binnings to be used for the presentation of the excel results of the specific tally. Clearly,
 the binning should have been coherently defined in the MCNP input too. MCNP allows different types of tally binning,
 they can be accessed using the tags reported in the table below.</p>
-<table class="colwidths-given docutils align-default" id="id1">
-<caption><span class="caption-text">Allowed binnings</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Allowed binnings</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
 <colgroup>
-<col style="width: 100%" />
+<col style="width: 100.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Admissible <strong>x</strong> and <strong>y</strong></p></th>
@@ -366,9 +375,9 @@ solve this issue. This will cause the tally results not to be printed as a uniqu
 each with a number of columns equal to <strong>cut Y</strong>.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="atlas">
-<h3>Atlas<a class="headerlink" href="#atlas" title="Permalink to this headline"></a></h3>
+</section>
+<section id="atlas">
+<h3>Atlas<a class="headerlink" href="#atlas" title="Link to this heading"></a></h3>
 <a class="reference internal image-reference" href="../_images/atlasbench.png"><img alt="../_images/atlasbench.png" src="../_images/atlasbench.png" style="width: 600px;" /></a>
 <p>This sheet regulates the Atlas output (Word/PDF) derived from the benchmark. It consists of a table where each row regulates
 the output of a single tally present in the MCNP input.
@@ -398,9 +407,83 @@ should be generated (<code class="docutils literal notranslate"><span class="pre
 </div>
 </dd>
 </dl>
-</div>
-</div>
-</div>
+</section>
+</section>
+<section id="experimental-benchmark-post-processing-configuration">
+<span id="spectrumconfig"></span><h2>Experimental benchmark post-processing configuration<a class="headerlink" href="#experimental-benchmark-post-processing-configuration" title="Link to this heading"></a></h2>
+<section id="spectrumoutput-class-benchmarks-configuration-files">
+<h3>SpectrumOutput class benchmarks configuration files<a class="headerlink" href="#spectrumoutput-class-benchmarks-configuration-files" title="Link to this heading"></a></h3>
+<p>When a binned-values data benchmark is inserted (see <a class="reference internal" href="../dev/insertbenchmarks.html#insbin"><span class="std std-ref">Insert binned-value plot experimental benchmarks</span></a>), a Configuration file
+has to be defined based on the desired final plot result. The filepath is expected to be:
+<code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Benchmarks</span> <span class="pre">Configuration\&lt;BenchmarkName&gt;.xlsx</span></code>. The Excel file
+must have the following structure:</p>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/Example_config_oktavian.PNG"><img alt="../_images/Example_config_oktavian.PNG" src="../_images/Example_config_oktavian.PNG" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Example of Oktavian configuration file structure</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>The Atlas will contain one plot for each tally of the MCNP input, for each MCNP input if
+multiple runs are foreseen. each column corresponds to some details in the resulting plot,
+for instance:</p>
+<figure class="align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/plot_example.PNG"><img alt="../_images/plot_example.PNG" src="../_images/plot_example.PNG" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Example of Oktavian plot with all the corresponding configurations</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Again, in case of multiple runs each tally number must represent the same quantity in all MCNP inputs for
+consistency of the parameters in the configuration file. If a tally in the configuration file is not present
+in a MCNP input file (e.g. a spectrum is collected in all MCNP inputs except one), it will be skipped.
+If a tally is present in a MCNP input but experimental data is not available for that tally, it will be skipped.
+Obviously, the quantity and the units in the configuration file and in the experimental data file
+must be consistent.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">C/E</span> <span class="pre">X</span> <span class="pre">quantity</span> <span class="pre">intervals</span></code> column must be defined as a series of numbers separated
+by a <code class="docutils literal notranslate"><span class="pre">-</span></code>, which will be the upper values of the energy bins used for the interpolation and
+the printing of C/E tables:</p>
+<figure class="align-center" id="id4">
+<a class="reference internal image-reference" href="../_images/CE_example.PNG"><img alt="../_images/CE_example.PNG" src="../_images/CE_example.PNG" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Example of C/E tables for SpectrumOutput class</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>The values in the column <code class="docutils literal notranslate"><span class="pre">Y</span> <span class="pre">label</span></code> must be different for each tally in the MCNP input
+and should identify univocally the plotted quantity</p>
+</section>
+<section id="multiplespectrumoutput-class-benchmarks-configuration-files">
+<span id="multspectrumconfig"></span><h3>MultipleSpectrumOutput class benchmarks configuration files<a class="headerlink" href="#multiplespectrumoutput-class-benchmarks-configuration-files" title="Link to this heading"></a></h3>
+<p>All the considerations made in <a class="reference internal" href="#spectrumconfig"><span class="std std-ref">Experimental benchmark post-processing configuration</span></a> still hold, but the Excel file
+must have a different structure:</p>
+<figure class="align-center" id="id5">
+<a class="reference internal image-reference" href="../_images/Example_config_fnstof.PNG"><img alt="../_images/Example_config_fnstof.PNG" src="../_images/Example_config_fnstof.PNG" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Example of FNS-TOF configuration file structure</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Every tally an its parameters from every MCNP input file must be listed as a row in the
+configuration file. A group number must be assigned to each row. Tallies belonging to the same group
+will be plotted together. The user should pay attention on the fact that only plots
+with the same quantities in both X and Y axis and with the same units are consistent.
+Groups should be numbered starting from 1 to the last group number and their number corresponds
+to their position in the <code class="docutils literal notranslate"><span class="pre">Atlas</span></code>. In the example above, for instance, all tallies in
+each MCNP input are plotted together (neutron leakage spectra at different detectors’ locations’),
+but in principle also tallies from different MCNP inputs can be plotted together.</p>
+<p>In the following, an example of a resulting plot and the meaning of the parameters
+from the configuration file are shown:</p>
+<figure class="align-center" id="id6">
+<a class="reference internal image-reference" href="../_images/plot_example_tof.PNG"><img alt="../_images/plot_example_tof.PNG" src="../_images/plot_example_tof.PNG" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Example of FNS-TOF plot and parameters</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>The title of the plot can be personalized in the code, the default is the name of the benchmark +
+the name of the quantity.
+The combination of <code class="docutils literal notranslate"><span class="pre">Particle</span></code>, <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> and <code class="docutils literal notranslate"><span class="pre">Y</span> <span class="pre">label</span></code> must univocally identify the tally
+inside the group, i.e. no tally can have the same <code class="docutils literal notranslate"><span class="pre">Particle</span></code>, <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> and <code class="docutils literal notranslate"><span class="pre">Y</span> <span class="pre">label</span></code>
+parameters at the same time.</p>
+</section>
+</section>
+</section>
 
 
            </div>
@@ -413,7 +496,7 @@ should be generated (<code class="docutils literal notranslate"><span class="pre
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

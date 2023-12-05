@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Oktavian &mdash; JADE v2.1.1 documentation</title>
+  <title>Oktavian &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script src="../../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -27,7 +26,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../../index.html" class="icon icon-home"> JADE
-            <img src="../../_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -52,8 +50,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
@@ -64,7 +63,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributors.html">Contributors</a></li>
@@ -84,8 +82,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Oktavian</li>
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Oktavian</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/usage/benchdesc/oktavian.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -95,8 +93,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="oktavian">
-<span id="id1"></span><h1>Oktavian<a class="headerlink" href="#oktavian" title="Permalink to this headline"></a></h1>
+  <section id="oktavian">
+<span id="id1"></span><h1>Oktavian<a class="headerlink" href="#oktavian" title="Link to this heading"></a></h1>
 <p>Experimental results derived from Oktavian experiments are publicly accessible at the
 <a class="reference external" href="https://www-nds.iaea.org/conderc/oktavian">CoNDERC database</a> which is mantained by the
 IAEA Nuclear Data Section and built upon the
@@ -112,12 +110,14 @@ a sphere composed only by a specific material of interest and measuring the leak
 photon spectra exiting from such sphere with the use of detectors. The photon energy
 measure is performed indirectly measuring the time of flight, which is then converted
 into a velocity.</p>
-<div class="section" id="geometry-and-run-parameters">
-<h2>Geometry and run parameters<a class="headerlink" href="#geometry-and-run-parameters" title="Permalink to this headline"></a></h2>
-<div class="figure align-center" id="id2">
+<section id="geometry-and-run-parameters">
+<h2>Geometry and run parameters<a class="headerlink" href="#geometry-and-run-parameters" title="Link to this heading"></a></h2>
+<figure class="align-center" id="id2">
 <a class="reference internal image-reference" href="../../_images/oktaviansimplified.png"><img alt="../../_images/oktaviansimplified.png" src="../../_images/oktaviansimplified.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Simplified layout of the OKTAVIAN Fe experimental setup (not in scale).</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Simplified layout of the OKTAVIAN Fe experimental setup (not in scale).</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>An accelerated deuteron beam is led through a narrow tube to the centre of a sphere
 (every time composed by a different material) where pulsed 14.1 MeV monochromatic
 neutrons were produced by the d-t fusion reaction. The source is regarded to be 14
@@ -126,9 +126,9 @@ MeV monochromatic. Neutron leakage current spectrum of neutrons was measured in
 9.5 m from the sphere centre. Because of the presence of the collimators the
 detectors could not see the entire surface of the sphere, but only the solid angle
 of 17.28° from the sphere centre.</p>
-</div>
-<div class="section" id="tallies">
-<h2>Tallies<a class="headerlink" href="#tallies" title="Permalink to this headline"></a></h2>
+</section>
+<section id="tallies">
+<h2>Tallies<a class="headerlink" href="#tallies" title="Link to this heading"></a></h2>
 <p>Only two tallies are defined for each input:</p>
 <dl class="simple">
 <dt>Tally n. 21</dt><dd><p>Neutron leakage current $[#/cm^2]$ per source particle. 134 energy bins were defined spanning from 0.1 MeV to 20.6 MeV.</p>
@@ -150,8 +150,8 @@ experimental uncertainties”, <em>Annals of Nuclear Energy</em>, <strong>37</st
 Carlsbad, New Mexico (April 3-6, 2006)</p></li>
 </ul>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -161,7 +161,7 @@ Carlsbad, New Mexico (April 3-6, 2006)</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

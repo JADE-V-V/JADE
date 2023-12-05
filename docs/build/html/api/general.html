@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>General OOP scheme &mdash; JADE v2.1.1 documentation</title>
+  <title>General OOP scheme &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
+        <script src="../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="JADE Session" href="initobjects.html" />
-    <link rel="prev" title="Modify documentation" href="../dev/docmodify.html" /> 
+    <link rel="prev" title="JADE CI and automatic testing" href="../dev/testing.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -27,7 +27,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> JADE
-            <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -52,8 +51,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul class="current">
@@ -69,7 +69,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
@@ -89,8 +88,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>General OOP scheme</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">General OOP scheme</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/api/general.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -100,12 +99,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="general-oop-scheme">
-<h1>General OOP scheme<a class="headerlink" href="#general-oop-scheme" title="Permalink to this headline"></a></h1>
-<div class="figure align-center" id="id1">
+  <section id="general-oop-scheme">
+<h1>General OOP scheme<a class="headerlink" href="#general-oop-scheme" title="Link to this heading"></a></h1>
+<figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="../_images/OOPscheme.png"><img alt="../_images/OOPscheme.png" src="../_images/OOPscheme.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">General OOP scheme for the JADE code</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">General OOP scheme for the JADE code</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>All user interactions that happen through the command console are handled
 by the <code class="docutils literal notranslate"><span class="pre">gui.py</span> <span class="pre">module</span></code>. When JADE is started, a <a class="reference internal" href="initobjects.html#sessionob"><span class="std std-ref">Session</span></a> object
 is intialized which is a container for a series of information and tools
@@ -132,17 +133,17 @@ availability of a library, or handling the translation of a single isotope.</p>
 <li><p>perform the pst-processing on one or more libraries calling the <code class="docutils literal notranslate"><span class="pre">postprocess.py</span></code>
 module.</p></li>
 </ul>
-<div class="section" id="utilities">
-<h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline"></a></h2>
+<section id="utilities">
+<h2>Utilities<a class="headerlink" href="#utilities" title="Link to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">utilitiesgui.py</span></code> simply contains a number of functions associated to the
 different utilities available in JADE.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="../usage/utilities.html#uty"><span class="std std-ref">Utilities</span></a></p>
 </div>
-</div>
-<div class="section" id="benchmarks-generation-and-run">
-<h2>Benchmarks generation and run<a class="headerlink" href="#benchmarks-generation-and-run" title="Permalink to this headline"></a></h2>
+</section>
+<section id="benchmarks-generation-and-run">
+<h2>Benchmarks generation and run<a class="headerlink" href="#benchmarks-generation-and-run" title="Link to this heading"></a></h2>
 <p>Operations for the benchmarks generation and run are handled by the <code class="docutils literal notranslate"><span class="pre">computational.py</span></code>
 module.
 In JADE the object representing a benchmark is the <a class="reference internal" href="inputgeneration.html#testob"><span class="std std-ref">Test</span></a> (or <a class="reference internal" href="inputgeneration.html#multitestob"><span class="std std-ref">MultipleTest</span></a>
@@ -152,29 +153,29 @@ is its associated <a class="reference internal" href="inputgeneration.html#input
 with d1s code, an <a class="reference internal" href="inputgeneration.html#irradfileob"><span class="std std-ref">IrradiationFile</span></a> and a <a class="reference internal" href="inputgeneration.html#reacfileob"><span class="std std-ref">ReactionFile</span></a> are also associated with the
 test. A fundamental attribute of inputs is the <a class="reference internal" href="inputgeneration.html#matcardob"><span class="std std-ref">MatCardsList</span></a> which handles all operations
 related to the materials (including library translations).</p>
-</div>
-<div class="section" id="post-processing">
-<h2>Post-processing<a class="headerlink" href="#post-processing" title="Permalink to this headline"></a></h2>
+</section>
+<section id="post-processing">
+<h2>Post-processing<a class="headerlink" href="#post-processing" title="Link to this heading"></a></h2>
 <p>Operations for the post-processing of benchmark run results are handled by the
 <code class="docutils literal notranslate"><span class="pre">postprocessing.py</span></code> module.
 All objects representing outputs of a benchmark run must be a child of the abstract class
 <a class="reference internal" href="postprocessing.html#abstractoutputob"><span class="std std-ref">AbstractOutput</span></a>. These classes always include an <a class="reference internal" href="postprocessing.html#mcnpoutputob"><span class="std std-ref">MCNPOutput</span></a> which collect
 the results coming from the parsers of the different MCNP outputs.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../dev/docmodify.html" class="btn btn-neutral float-left" title="Modify documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../dev/testing.html" class="btn btn-neutral float-left" title="JADE CI and automatic testing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="initobjects.html" class="btn btn-neutral float-right" title="JADE Session" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

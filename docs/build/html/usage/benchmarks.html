@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Default Benchmarks &mdash; JADE v2.1.1 documentation</title>
+  <title>Default Benchmarks &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script src="../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -29,7 +28,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> JADE
-            <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -47,6 +45,7 @@
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="menu.html">Usage</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Default Benchmarks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#computational-benchmarks">Computational Benchmarks</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#sphere-leakage">Sphere Leakage</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#geometry-and-run-parameters">Geometry and run parameters</a></li>
@@ -54,59 +53,84 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#iter-1d">ITER 1D</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id1">Geometry and run parameters</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id2">Tallies</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#test-blanket-module">Test Blanket Module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id3">Geometry and run parameters</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id4">Tallies</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#c-model">C-Model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#test-blanket-module">Test Blanket Module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id5">Geometry and run parameters</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id6">Tallies</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#sphere-sddr">Sphere SDDR</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#c-model">C-Model</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id7">Geometry and run parameters</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#sddr-parameters">SDDR parameters</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id8">Tallies</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#iter-cylynder-sddr">ITER CYLYNDER SDDR</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sphere-sddr">Sphere SDDR</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id9">Geometry and run parameters</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id10">SDDR parameters</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id11">Tallies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sddr-parameters">SDDR parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id10">Tallies</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#iter-cylynder-sddr">ITER CYLYNDER SDDR</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id11">Geometry and run parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id12">SDDR parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id13">Tallies</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#experimental-benchmarks">Experimental Benchmarks</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#oktavian">Oktavian</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id13">Geometry and run parameters</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id14">Tallies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id15">Geometry and run parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id16">Tallies</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#frascati-neutron-generator-sddr-experiment">Frascati Neutron Generator SDDR Experiment</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#geometry">Geometry</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id15">SDDR Parameters</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id16">Tallies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id17">SDDR Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id18">Tallies</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#tiara">Tiara</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id18">Geometry and run parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id21">Geometry and run parameters</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mcnp-modelling">MCNP modelling</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#fns-time-of-flight-experiment">FNS Time-of-Flight Experiment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id23">Geometry and run parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id24">MCNP modelling</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#aspis-iron-88-benchmark">ASPIS Iron-88 benchmark</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id26">Geometry and run parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id27">MCNP modelling</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#fng-bulk-blanket-and-shield-experiment">FNG Bulk Blanket and Shield Experiment</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id19">Geometry and run parameters</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id20">Tallies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id28">Geometry and run parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id29">Tallies</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#fng-benchmark-experiment-on-tungsten">FNG Benchmark Experiment on Tungsten</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id21">Geometry and run parameters</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id22">Tallies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id30">Geometry and run parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id31">Tallies</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#tud-iron-slab-benchmark-experiment">TUD Iron Slab Benchmark Experiment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id32">Geometry and run parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id33">MCNP modelling</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#tud-spectra-measurements-fng-bulk-shield">TUD Spectra Measurements (FNG Bulk Shield)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id34">Geometry and run parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id35">Tallies</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#fng-tud-tungsten-experiment">FNG/TUD Tungsten Experiment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id36">Geometry and run parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id37">Tallies</a></li>
 </ul>
 </li>
 </ul>
@@ -120,8 +144,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
@@ -132,7 +157,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
@@ -152,8 +176,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Default Benchmarks</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Default Benchmarks</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/usage/benchmarks.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -163,8 +187,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="default-benchmarks">
-<h1>Default Benchmarks<a class="headerlink" href="#default-benchmarks" title="Permalink to this headline"></a></h1>
+  <section id="default-benchmarks">
+<h1>Default Benchmarks<a class="headerlink" href="#default-benchmarks" title="Link to this heading"></a></h1>
 <p>This section describe more in detail all the default benchmarks
 that have been implemented in JADE dividing them between
 computational and experimental benchmarks.</p>
@@ -197,14 +221,194 @@ activation libraries results are done in a coherent way. That is, the
 same transport library should be always used.</p></li>
 </ul>
 </div>
-<div class="section" id="computational-benchmarks">
-<h2>Computational Benchmarks<a class="headerlink" href="#computational-benchmarks" title="Permalink to this headline"></a></h2>
-<div class="section" id="sphere-leakage">
-<span id="spheredesc"></span><h3>Sphere Leakage<a class="headerlink" href="#sphere-leakage" title="Permalink to this headline"></a></h3>
-<div class="figure align-center" id="id23">
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The following tables summarize the computational and experimental benchmarks
+that are included in JADE (I), the ones that are currently under developing (D), and
+whishlisted ones (W). A more detailed description of the implemented benchmarks can
+be found in the following sections.</p>
+<p><strong>COMPUTATIONAL BENCHMARKS:</strong></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 70.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Benchmark</p></th>
+<th class="head"><p>MCNP Status</p></th>
+<th class="head"><p>OpenMC Status</p></th>
+<th class="head"><p>Serpent Status</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Sphere Leakage</p></td>
+<td><p>I</p></td>
+<td><p>I</p></td>
+<td><p>D</p></td>
+</tr>
+<tr class="row-odd"><td><p>ITER 1-D</p></td>
+<td><p>I</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-even"><td><p>Test Blanket Module</p></td>
+<td><p>I</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-odd"><td><p>C-Model</p></td>
+<td><p>I</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-even"><td><p>Sphere SDDR</p></td>
+<td><p>I</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-odd"><td><p>ITER Cylinder SDDR</p></td>
+<td><p>I</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-even"><td><p>FNSF 3-D</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-odd"><td><p>FNSF 1-D</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-even"><td><p>EU DEMO-3D divertor</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>EXPERIMENTAL BENCHMARKS:</strong></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 70.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+<col style="width: 10.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Benchmark</p></th>
+<th class="head"><p>MCNP Status</p></th>
+<th class="head"><p>OpenMC Status</p></th>
+<th class="head"><p>Serpent Status</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Oktavian (Al; Co; Cr; Cu; LiF; Mn; Mo; Pb; Si; Ti; W; Zr)</p></td>
+<td><p>I</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-odd"><td><p>FNG SSDR</p></td>
+<td><p>I</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-even"><td><p>Tiara Shielding (BC; BS; FC)</p></td>
+<td><p>I</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-odd"><td><p>FNG Bulk Blanket and Shield</p></td>
+<td><p>I</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-even"><td><p>FNG W</p></td>
+<td><p>I</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-odd"><td><p>FNS (Be; C; Fe; N; O; Pb; V)</p></td>
+<td><p>D</p></td>
+<td><p>D</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-even"><td><p>ASPIS Fe-88</p></td>
+<td><p>I</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-odd"><td><p>Iron Slab (TUD)</p></td>
+<td><p>D</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-even"><td><p>TUD/FNG Bulk Shield</p></td>
+<td><p>D</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-odd"><td><p>FNG/TUD W</p></td>
+<td><p>D</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-even"><td><p>FNG/TUD SiC</p></td>
+<td><p>D</p></td>
+<td><p>D</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-odd"><td><p>LLNL Pulsed Sphere</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-even"><td><p>JET activation foils</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-odd"><td><p>PCA REPLICA</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-even"><td><p>FNG Si</p></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>FNG HCPB</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-even"><td><p>CIAE Fe</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+<td><p>W</p></td>
+</tr>
+<tr class="row-odd"><td><p>IPPE V</p></td>
+<td><p>D</p></td>
+<td><p>D</p></td>
+<td><p>W</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="computational-benchmarks">
+<h2>Computational Benchmarks<a class="headerlink" href="#computational-benchmarks" title="Link to this heading"></a></h2>
+<section id="sphere-leakage">
+<span id="spheredesc"></span><h3>Sphere Leakage<a class="headerlink" href="#sphere-leakage" title="Link to this heading"></a></h3>
+<figure class="align-center" id="id38">
 <img alt="../_images/sphere.png" src="../_images/sphere.png" />
-<p class="caption"><span class="caption-text">Sphere Leakage geometrical model</span><a class="headerlink" href="#id23" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Sphere Leakage geometrical model</span><a class="headerlink" href="#id38" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>The Sphere Leakage benchmark is arguably the most important
 benchmark included in the JADE suite. Indeed, it allows to test
 individually each single isotope of the nuclear data library under assessment
@@ -217,8 +421,8 @@ plus some typically used material in the ITER project namely:</p>
 <li><p>Natural Silicon;</p></li>
 <li><p>Polyethylene (non-borated).</p></li>
 </ul>
-<div class="section" id="geometry-and-run-parameters">
-<h4>Geometry and run parameters<a class="headerlink" href="#geometry-and-run-parameters" title="Permalink to this headline"></a></h4>
+<section id="geometry-and-run-parameters">
+<h4>Geometry and run parameters<a class="headerlink" href="#geometry-and-run-parameters" title="Link to this heading"></a></h4>
 <p>The Sphere Lekage geometry consists of actually three
 concentric spheres. The inner one is void and has a radius of 5 cm. Here
 is located the uniform probability 0-14 MeV neutron point source. The second sphere
@@ -240,15 +444,8 @@ fissile isotopes like U235. A 1 m diameter sphere containing a pure fissile isot
 an extremely super-critical geometrical configuration and the high number of secondary particles (i.e. other neutrons) produced
 caused the simulations to fail due to memory limitations. For this reason, the density of these isotopes
 was imposed equal to 1 g/cc as if an aerosol was considered.</p>
-<p>Finally, the STOP card parameters were optimized. MCNP allows to stop a simulation based either on:
-* the precision reached in a specified tally;
-* the number of histories (NPS);
-* the total elapsed computer time (i.e. the sum of computer time used by all CPUs).</p>
-<p>The optimization of such parameters for each element was done through trial and error with the aim of
-finding a good balance between computational cost and enough precise results.
-These parameters are provided by default in JADE, but the user may modify them if necessary through
-benchmark-specific configuration files. Density values can be modified too. The files are located in
-<code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Benchmarks</span> <span class="pre">Configuration\Sphere</span></code>.</p>
+<p>STOP cards based on computation time and precision are not available in OpenMC and Serpent, and have
+been removed as a capability. The only stopping condition currently utilised is the NPS cut-off.</p>
 <p>Even after all these optimizations, it is clear to the developers that a “fair”
 test for all isotopes has not been reached yet. For example, in materials with cross sections
 having 1/V dependencies, the output of the simulations could be dominated by the cross
@@ -260,9 +457,9 @@ be tested “better” than others. The solution to this issue is not trivial an
 certainly receive further attention in future developments. It should be noticed
 that users can easily modify both density and source parameters at anytime if they
 do not agree with the default settings that are provided.</p>
-</div>
-<div class="section" id="tallies">
-<h4>Tallies<a class="headerlink" href="#tallies" title="Permalink to this headline"></a></h4>
+</section>
+<section id="tallies">
+<h4>Tallies<a class="headerlink" href="#tallies" title="Link to this heading"></a></h4>
 <p>Both the transport of neutrons and of secondary photons are active and photons cut-off energy  is
 left to the default value of 1 KeV.
 The following MCNP tallies are defined in the Sphere Leakage benchmark:</p>
@@ -290,6 +487,14 @@ The following MCNP tallies are defined in the Sphere Leakage benchmark:</p>
 <dt>Tally n. 34</dt><dd><p>Displacement Per Atom (DPA) production in the filled sphere.</p>
 </dd>
 </dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><a href="#id1"><span class="problematic" id="id2">**</span></a>Limitations of additional codes
+Please note that in order to aid comparisons between the 3 codes currently
+being implemented, a reduced tally set containing only the F4 and F14 tallies
+is currently being used. This is due to a lack of surface tallies in OpenMC,
+and will be remedied when this capability is introduced.</p>
+</div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><strong>Related papers and contributions:</strong></p>
@@ -300,33 +505,37 @@ A. Trkov, 2020,
 validation”, <em>Fusion Engineering and Design</em>, <strong>161</strong> 112075</p></li>
 </ul>
 </div>
-</div>
-</div>
-<div class="section" id="iter-1d">
-<span id="iter1ddesc"></span><h3>ITER 1D<a class="headerlink" href="#iter-1d" title="Permalink to this headline"></a></h3>
-<div class="figure align-center" id="id24">
+</section>
+</section>
+<section id="iter-1d">
+<span id="iter1ddesc"></span><h3>ITER 1D<a class="headerlink" href="#iter-1d" title="Link to this heading"></a></h3>
+<figure class="align-center" id="id39">
 <a class="reference internal image-reference" href="../_images/iter1D.png"><img alt="../_images/iter1D.png" src="../_images/iter1D.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">ITER 1D MCNP geometry (quarter)</span><a class="headerlink" href="#id24" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">ITER 1D MCNP geometry (quarter)</span><a class="headerlink" href="#id39" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>The ITER 1D benchmark developed by Prof. Sawan M. is a popular 1-Dimensional neutronic model
 used for nuclear data benchmarking in the fusion community. This consists of a
 simple but realistic model of the ITER TOKAMAK where the inboard and outboard
 portion of the machine and the plasma region are modelled by means of simple
 concentric cylindrical surfaces.</p>
-<div class="section" id="id1">
-<h4>Geometry and run parameters<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h4>
+<section id="id3">
+<h4>Geometry and run parameters<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
 <p>As visible in the figure, the benchmarks geometry is uniquely composed by concentric
 cylindrical surfaces. A detailed description of the different layers is reported
 hereafter:</p>
-<div class="figure align-center" id="id25">
+<figure class="align-center" id="id40">
 <a class="reference internal image-reference" href="../_images/materialsITER1D.png"><img alt="../_images/materialsITER1D.png" src="../_images/materialsITER1D.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Description of the layers composing the ITER 1D benchmark</span><a class="headerlink" href="#id25" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Description of the layers composing the ITER 1D benchmark</span><a class="headerlink" href="#id40" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>The plasma region includes a 14.1 MeV isotropic neutron source
 (characteristic of Deuterium-Tritium fusion reaction).</p>
-</div>
-<div class="section" id="id2">
-<h4>Tallies<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h4>
+</section>
+<section id="id4">
+<h4>Tallies<a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
 <p>Many quantities are tallied in the ITER 1D benchmark, the following is a thorough
 description of them.</p>
 <dl class="simple">
@@ -383,10 +592,10 @@ description of them.</p>
 (Vienna: INDC(NDS)-316)</p></li>
 </ul>
 </div>
-</div>
-</div>
-<div class="section" id="test-blanket-module">
-<h3>Test Blanket Module<a class="headerlink" href="#test-blanket-module" title="Permalink to this headline"></a></h3>
+</section>
+</section>
+<section id="test-blanket-module">
+<h3>Test Blanket Module<a class="headerlink" href="#test-blanket-module" title="Link to this heading"></a></h3>
 <p>Tritium and Deuterium are the two main ingredients of the fusion reaction that is
 foreseen to be tested in ITER and that should guarantee sustainable energy production
 in DEMO. Deuterium is abundant in normal sea water and can be extracted relatively
@@ -408,35 +617,45 @@ outboard region. On the contrary, in the new benchmarks, the outboard region was
 substituted with 1D models of the two proposed European concepts for the TBM: the
 Helium Cooled Pebbled bed (HCPB) and the Water Cooled Lithium Lead (WCLL).
 This substitution is the only modification applied to the <a class="reference internal" href="#iter1ddesc"><span class="std std-ref">ITER 1D</span></a>.</p>
-<div class="figure align-center" id="id26">
+<figure class="align-center" id="id41">
 <a class="reference internal image-reference" href="../_images/tbmCAD.png"><img alt="../_images/tbmCAD.png" src="../_images/tbmCAD.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">CAD model of the TBM component</span><a class="headerlink" href="#id26" title="Permalink to this image"></a></p>
-</div>
-<div class="section" id="id3">
-<h4>Geometry and run parameters<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h4>
+<figcaption>
+<p><span class="caption-text">CAD model of the TBM component</span><a class="headerlink" href="#id41" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<section id="id5">
+<h4>Geometry and run parameters<a class="headerlink" href="#id5" title="Link to this heading"></a></h4>
 <p>The benchmarks are focused on the TBM set (i.e. the actual blanket module) and on
 the shielding section that can be found behind it. While the shield section does
 not really
 change between the two different TBM concepts, the TBM sets do.</p>
-<div class="figure align-center" id="id27">
+<figure class="align-center" id="id42">
 <a class="reference internal image-reference" href="../_images/HCPBcad.png"><img alt="../_images/HCPBcad.png" src="../_images/HCPBcad.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Section of the CAD model of the HCPB TBM set</span><a class="headerlink" href="#id27" title="Permalink to this image"></a></p>
-</div>
-<div class="figure align-center" id="id28">
+<figcaption>
+<p><span class="caption-text">Section of the CAD model of the HCPB TBM set</span><a class="headerlink" href="#id42" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id43">
 <a class="reference internal image-reference" href="../_images/HCPBmcnp.png"><img alt="../_images/HCPBmcnp.png" src="../_images/HCPBmcnp.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Visualization of the TBM and and shielding section in the 1D MCNP geometry</span><a class="headerlink" href="#id28" title="Permalink to this image"></a></p>
-</div>
-<div class="figure align-center" id="id29">
+<figcaption>
+<p><span class="caption-text">Visualization of the TBM and and shielding section in the 1D MCNP geometry</span><a class="headerlink" href="#id43" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id44">
 <a class="reference internal image-reference" href="../_images/WCLLcad.png"><img alt="../_images/WCLLcad.png" src="../_images/WCLLcad.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Section of the CAD model of the WCLL TBM set</span><a class="headerlink" href="#id29" title="Permalink to this image"></a></p>
-</div>
-<div class="figure align-center" id="id30">
+<figcaption>
+<p><span class="caption-text">Section of the CAD model of the WCLL TBM set</span><a class="headerlink" href="#id44" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id45">
 <a class="reference internal image-reference" href="../_images/WCLLmcnp.png"><img alt="../_images/WCLLmcnp.png" src="../_images/WCLLmcnp.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Visualization of the TBM and shielding section in the 1D MCNP geometry</span><a class="headerlink" href="#id30" title="Permalink to this image"></a></p>
-</div>
-</div>
-<div class="section" id="id4">
-<h4>Tallies<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h4>
+<figcaption>
+<p><span class="caption-text">Visualization of the TBM and shielding section in the 1D MCNP geometry</span><a class="headerlink" href="#id45" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="id6">
+<h4>Tallies<a class="headerlink" href="#id6" title="Link to this heading"></a></h4>
 <p>All Tritium production tallies that were defined for the ITER 1D benchmark
 were retained also in the TBMs ones.
 Additionally, a 1-dimensional FMESH was placed on the outboard region
@@ -459,15 +678,16 @@ were tallied on such grid:</p>
 <p><em>Generation of 1D TBM WCLL and HCPB MCNP computational models</em>,
 F4E IDM [F4E_D_2JMRZR v1.0]</p>
 </div>
-</div>
-</div>
-<div class="section" id="c-model">
-<h3>C-Model<a class="headerlink" href="#c-model" title="Permalink to this headline"></a></h3>
+</section>
+</section>
+<section id="c-model">
+<h3>C-Model<a class="headerlink" href="#c-model" title="Link to this heading"></a></h3>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>This benchmark input cannot be distributed directly with JADE. The user must request to obtain it
-from ITER organization and insert it in the <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Benchmarks</span> <span class="pre">inputs</span></code> directory renaming it
-‘C_Model.i’.</p>
+from ITER organization and insert it in the <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Benchmarks</span> <span class="pre">inputs\C_Model\mcnp</span></code> directory which
+must be created by the user and the input renamed to ‘C_Model.i’. If the user has OpenMC and Serpent inputs
+they should be added to openmc and serpent directories respectively.</p>
 <p>The NPS card needs to be removed from the input. It is recommended to also delete total bins
 from standard tallies for a clearer post-processing results.</p>
 </div>
@@ -479,18 +699,20 @@ the most complete neutronic model available for the ITER machine until 2021, whe
 which is a full 360° model of ITER that was conceived to overcome some limitation encountered using
 the C-Model for specific application. Nevertheless, since E-lite is an extremely heavy model, C-model
 is still considered a valid model to compute the possible impact on the nuclear responses over the ITER machine.</p>
-<div class="section" id="id5">
-<h4>Geometry and run parameters<a class="headerlink" href="#id5" title="Permalink to this headline"></a></h4>
-<div class="figure align-center" id="id31">
+<section id="id7">
+<h4>Geometry and run parameters<a class="headerlink" href="#id7" title="Link to this heading"></a></h4>
+<figure class="align-center" id="id46">
 <a class="reference internal image-reference" href="../_images/cmodel.png"><img alt="../_images/cmodel.png" src="../_images/cmodel.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">C-model R181031. Origin (1050,200,0). Basis (0.982339, 0.187112, 0.000000)
-(0,0,1). Extent (1000,1000)</span><a class="headerlink" href="#id31" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">C-model R181031. Origin (1050,200,0). Basis (0.982339, 0.187112, 0.000000)
+(0,0,1). Extent (1000,1000)</span><a class="headerlink" href="#id46" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>Due to its complexity, a thorough description of the C-Model benchmark geometry is considered out of
 the scope of this work and can be found, instead, in a dedicated F4E report.</p>
-</div>
-<div class="section" id="id6">
-<h4>Tallies<a class="headerlink" href="#id6" title="Permalink to this headline"></a></h4>
+</section>
+<section id="id8">
+<h4>Tallies<a class="headerlink" href="#id8" title="Link to this heading"></a></h4>
 <p>The C-model standard tallies have been used. They include neutron current,
 neutron current and nuclear heating at different locations.</p>
 <div class="admonition seealso">
@@ -510,10 +732,10 @@ In:Nature Energy 6 (2021), pp. 150–157</p></li>
 C-model R181031”. Technical Report [ITER IDM XETSWC v1.5]. Iter Organization, 2019.</p></li>
 </ul>
 </div>
-</div>
-</div>
-<div class="section" id="sphere-sddr">
-<h3>Sphere SDDR<a class="headerlink" href="#sphere-sddr" title="Permalink to this headline"></a></h3>
+</section>
+</section>
+<section id="sphere-sddr">
+<h3>Sphere SDDR<a class="headerlink" href="#sphere-sddr" title="Link to this heading"></a></h3>
 <p>The Sphere SDDR benchmark is a variation of the the <a class="reference internal" href="#spheredesc"><span class="std std-ref">Sphere Leakage</span></a>
 which is focused on isotopes activation and dose rate measurement.
 Once again, these kind of benchmarks allows to test all available
@@ -522,12 +744,14 @@ library) together with a few typical ITER materials. In particular, each
 single reaction channel (MT) of every isotope will be tested separately while,
 for the typical materials, all possible reactions foreseen by the library will
 be considered.</p>
-<div class="section" id="id7">
-<h4>Geometry and run parameters<a class="headerlink" href="#id7" title="Permalink to this headline"></a></h4>
-<div class="figure align-center" id="id32">
+<section id="id9">
+<h4>Geometry and run parameters<a class="headerlink" href="#id9" title="Link to this heading"></a></h4>
+<figure class="align-center" id="id47">
 <a class="reference internal image-reference" href="../_images/sphereSDDRgeom.png"><img alt="../_images/sphereSDDRgeom.png" src="../_images/sphereSDDRgeom.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Schematic view of the Sphere SDDR model</span><a class="headerlink" href="#id32" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Schematic view of the Sphere SDDR model</span><a class="headerlink" href="#id47" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>The geometry of the Sphere SDDR benchmarks, is practically the same as the one
 of the Sphere Leakage benchmark. The only difference is that externally to the filled
 sphere, a void spherical shell has been defined having a 10 cm radial thickness.
@@ -536,9 +760,9 @@ This is the cell used to tally the contact shut down dose rate.</p>
 the densities to be applied for each element and material (default is set to NTP
 conditions with few exceptions) and control on the STOP parameters to be used.
 The same 0-14 MeV uniform neutron point source is also defined.</p>
-</div>
-<div class="section" id="sddr-parameters">
-<h4>SDDR parameters<a class="headerlink" href="#sddr-parameters" title="Permalink to this headline"></a></h4>
+</section>
+<section id="sddr-parameters">
+<h4>SDDR parameters<a class="headerlink" href="#sddr-parameters" title="Link to this heading"></a></h4>
 <p>The cool-down times that have been considered are 0 s, 2.7 h, 24 h, 11.6 d, 30 d
 and 10 y. For the isotopes simulations, since only one reaction is considered, relative
 comparisons at different cool-down times will not lead to different results, hence,
@@ -546,13 +770,8 @@ during post-processing operations only the results at 0 s are elaborated. This d
 not apply to materials simulations, where many different reactions are included.</p>
 <p>The irradiation schedule considered for the Sphere SDDR benchmark is reported hereafter
 and represents an actual equivalent irradiation scenario foreseen for ITER blanket (SA2):</p>
-<table class="docutils align-default" id="id33">
-<caption><span class="caption-text">Irradiation schedule (ITER SA2 irradiation scenario)</span><a class="headerlink" href="#id33" title="Permalink to this table"></a></caption>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
+<table class="docutils align-default" id="id48">
+<caption><span class="caption-text">Irradiation schedule (ITER SA2 irradiation scenario)</span><a class="headerlink" href="#id48" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Source Intensity [n/s]</p></th>
 <th class="head"><p>Δt irr.</p></th>
@@ -600,9 +819,9 @@ conducted on a single isotope or on a typical ITER material. In the first case, 
 reaction is considered and the irradiation file will only contain the daughter of such irradiation.
 In the second case, all possible reactions that are available in the library and that can be
 originated in the material will be included. The irradiation file will be then generated accordingly.</p>
-</div>
-<div class="section" id="id8">
-<h4>Tallies<a class="headerlink" href="#id8" title="Permalink to this headline"></a></h4>
+</section>
+<section id="id10">
+<h4>Tallies<a class="headerlink" href="#id10" title="Link to this heading"></a></h4>
 <p>All neutron and photon related tallies defined in Sphere Leakage benchmark have also been imported
 in the Sphere SDDR benchmark. For photons, the time binning necessary to cover all the cool-down
 times of interest have been added. Tally n. 104 have been also defined to tally the shut
@@ -615,19 +834,21 @@ and ITER irradiation scenarios in general the reader is
 referred to Loughlin M. and Taylor N., 2009, “Recommendation on Plasma scenarios”,
 [ITER IDM 2V3V8G v1.2].</p>
 </div>
-</div>
-</div>
-<div class="section" id="iter-cylynder-sddr">
-<h3>ITER CYLYNDER SDDR<a class="headerlink" href="#iter-cylynder-sddr" title="Permalink to this headline"></a></h3>
+</section>
+</section>
+<section id="iter-cylynder-sddr">
+<h3>ITER CYLYNDER SDDR<a class="headerlink" href="#iter-cylynder-sddr" title="Link to this heading"></a></h3>
 <p>The ITER Cylinder SDDR is a very popular computational benchmark for
 SDDR computation in ITER since it features dimensions, materials and
 streaming characteristics of a typical ITER equatorial port.</p>
-<div class="section" id="id9">
-<h4>Geometry and run parameters<a class="headerlink" href="#id9" title="Permalink to this headline"></a></h4>
-<div class="figure align-center" id="id34">
+<section id="id11">
+<h4>Geometry and run parameters<a class="headerlink" href="#id11" title="Link to this heading"></a></h4>
+<figure class="align-center" id="id49">
 <a class="reference internal image-reference" href="../_images/cylSDDR.png"><img alt="../_images/cylSDDR.png" src="../_images/cylSDDR.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">ITER Cylinder SDDR benchmark geometry visualization</span><a class="headerlink" href="#id34" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">ITER Cylinder SDDR benchmark geometry visualization</span><a class="headerlink" href="#id49" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>The ITER Cylinder SDDR is a simple yet effective benchmark. The model
 is composed by a 550 cm long, hollowed steel cylinder with internal and
 external radius respectively equal to 50 cm and 100 cm. The rear part of
@@ -690,18 +911,13 @@ following radii:</p>
 </ol>
 </li>
 </ul>
-</div>
-<div class="section" id="id10">
-<h4>SDDR parameters<a class="headerlink" href="#id10" title="Permalink to this headline"></a></h4>
+</section>
+<section id="id12">
+<h4>SDDR parameters<a class="headerlink" href="#id12" title="Link to this heading"></a></h4>
 <p>The irradiation schedule considered for ITER Cylinder SDDR benchmark is
 reported hereafter:</p>
-<table class="docutils align-default" id="id35">
-<caption><span class="caption-text">Irradiation schedule (ITER SA2 irradiation scenario)</span><a class="headerlink" href="#id35" title="Permalink to this table"></a></caption>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
+<table class="docutils align-default" id="id50">
+<caption><span class="caption-text">Irradiation schedule (ITER SA2 irradiation scenario)</span><a class="headerlink" href="#id50" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Source Intensity [n/s]</p></th>
 <th class="head"><p>Δt irr.</p></th>
@@ -747,12 +963,8 @@ reported hereafter:</p>
 That is, these are the time interval waited after the irradiation phase has finished before tallying
 the SDDR and the photon flux.</p>
 <p>The possible reactions considered during the simulation are listed in the following table:</p>
-<table class="docutils align-default" id="id36">
-<caption><span class="caption-text">List of parent-daughter couples generated by the considered reactions for the ITER Cylinder SDDR benchmark</span><a class="headerlink" href="#id36" title="Permalink to this table"></a></caption>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
+<table class="docutils align-default" id="id51">
+<caption><span class="caption-text">List of parent-daughter couples generated by the considered reactions for the ITER Cylinder SDDR benchmark</span><a class="headerlink" href="#id51" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Parent</p></th>
 <th class="head"><p>Daughter</p></th>
@@ -824,9 +1036,9 @@ the SDDR and the photon flux.</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="id11">
-<h4>Tallies<a class="headerlink" href="#id11" title="Permalink to this headline"></a></h4>
+</section>
+<section id="id13">
+<h4>Tallies<a class="headerlink" href="#id13" title="Link to this heading"></a></h4>
 <p>Neutron flux, (decay) gamma flux and SDDR are the only tallied quantities. The following
 is a description of the tallies defined in the benchmark:</p>
 <dl class="simple">
@@ -860,13 +1072,13 @@ R. Villari, and P.P.H. Wilson. “Developments and needs in nuclearanalysis of
 fusion technology”. In: Fusion Engineering and Design 88 (2013), pp. 454–460.</p></li>
 </ul>
 </div>
-</div>
-</div>
-</div>
-<div class="section" id="experimental-benchmarks">
-<h2>Experimental Benchmarks<a class="headerlink" href="#experimental-benchmarks" title="Permalink to this headline"></a></h2>
-<div class="section" id="oktavian">
-<span id="id12"></span><h3>Oktavian<a class="headerlink" href="#oktavian" title="Permalink to this headline"></a></h3>
+</section>
+</section>
+</section>
+<section id="experimental-benchmarks">
+<h2>Experimental Benchmarks<a class="headerlink" href="#experimental-benchmarks" title="Link to this heading"></a></h2>
+<section id="oktavian">
+<span id="id14"></span><h3>Oktavian<a class="headerlink" href="#oktavian" title="Link to this heading"></a></h3>
 <p>Experimental results derived from Oktavian experiments are publicly accessible at the
 <a class="reference external" href="https://www-nds.iaea.org/conderc/oktavian">CoNDERC database</a> which is mantained by the
 IAEA Nuclear Data Section and built upon the
@@ -882,12 +1094,14 @@ a sphere composed only by a specific material of interest and measuring the leak
 photon spectra exiting from such sphere with the use of detectors. The photon energy
 measure is performed indirectly measuring the time of flight, which is then converted
 into a velocity.</p>
-<div class="section" id="id13">
-<h4>Geometry and run parameters<a class="headerlink" href="#id13" title="Permalink to this headline"></a></h4>
-<div class="figure align-center" id="id37">
+<section id="id15">
+<h4>Geometry and run parameters<a class="headerlink" href="#id15" title="Link to this heading"></a></h4>
+<figure class="align-center" id="id52">
 <a class="reference internal image-reference" href="../_images/oktaviansimplified.png"><img alt="../_images/oktaviansimplified.png" src="../_images/oktaviansimplified.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Simplified layout of the OKTAVIAN Fe experimental setup (not in scale).</span><a class="headerlink" href="#id37" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Simplified layout of the OKTAVIAN Fe experimental setup (not in scale).</span><a class="headerlink" href="#id52" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>An accelerated deuteron beam is led through a narrow tube to the centre of a sphere
 (every time composed by a different material) where pulsed 14.1 MeV monochromatic
 neutrons were produced by the d-t fusion reaction. The source is regarded to be 14
@@ -896,9 +1110,9 @@ MeV monochromatic. Neutron leakage current spectrum of neutrons was measured in
 9.5 m from the sphere centre. Because of the presence of the collimators the
 detectors could not see the entire surface of the sphere, but only the solid angle
 of 17.28° from the sphere centre.</p>
-</div>
-<div class="section" id="id14">
-<h4>Tallies<a class="headerlink" href="#id14" title="Permalink to this headline"></a></h4>
+</section>
+<section id="id16">
+<h4>Tallies<a class="headerlink" href="#id16" title="Link to this heading"></a></h4>
 <p>Only two tallies are defined for each input:</p>
 <dl class="simple">
 <dt>Tally n. 21</dt><dd><p>Neutron leakage current $[#/cm^2]$ per source particle. 134 energy bins were defined spanning from 0.1 MeV to 20.6 MeV.</p>
@@ -920,10 +1134,10 @@ experimental uncertainties”, <em>Annals of Nuclear Energy</em>, <strong>37</st
 Carlsbad, New Mexico (April 3-6, 2006)</p></li>
 </ul>
 </div>
-</div>
-</div>
-<div class="section" id="frascati-neutron-generator-sddr-experiment">
-<span id="fngsddr"></span><h3>Frascati Neutron Generator SDDR Experiment<a class="headerlink" href="#frascati-neutron-generator-sddr-experiment" title="Permalink to this headline"></a></h3>
+</section>
+</section>
+<section id="frascati-neutron-generator-sddr-experiment">
+<span id="fngsddr"></span><h3>Frascati Neutron Generator SDDR Experiment<a class="headerlink" href="#frascati-neutron-generator-sddr-experiment" title="Link to this heading"></a></h3>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>This benchmark input cannot be distributed directly with JADE. The user must have a valid SINBAD
@@ -942,12 +1156,14 @@ distinct irradiation campaigns were conducted in May and August 2000 and, among 
 things, the SDDR values after different cooling time intervals were measured.
 Many benchmarks activities have been performed using the experiment in the past, and the
 benchmark is also included in the SINBAD database (listed as fng_dose).</p>
-<div class="section" id="geometry">
-<h4>Geometry<a class="headerlink" href="#geometry" title="Permalink to this headline"></a></h4>
-<div class="figure align-center" id="id38">
+<section id="geometry">
+<h4>Geometry<a class="headerlink" href="#geometry" title="Link to this heading"></a></h4>
+<figure class="align-center" id="id53">
 <a class="reference internal image-reference" href="../_images/fng.jpg"><img alt="../_images/fng.jpg" src="../_images/fng.jpg" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">FNG SDDR experiment layout</span><a class="headerlink" href="#id38" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">FNG SDDR experiment layout</span><a class="headerlink" href="#id53" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>At the FNG, a deuterium beam is accelerated up to 300 KeV by means of a linear electro-static
 tube towards a target rich in tritium generating a 14 MeV neutron source. These are the
 neutrons that were used to irradiate the experimental assembly which consisted of a block of
@@ -962,18 +1178,13 @@ local neutron flux, the decay gamma-ray spectra and the dose rates for different
 and, for this reason, it cannot be freely distributed together with the JADE source code.
 Cell and surface card were left untouched as well as the material composition. D1S-UNED specific
 cards were also added.</p>
-</div>
-<div class="section" id="id15">
-<h4>SDDR Parameters<a class="headerlink" href="#id15" title="Permalink to this headline"></a></h4>
+</section>
+<section id="id17">
+<h4>SDDR Parameters<a class="headerlink" href="#id17" title="Link to this heading"></a></h4>
 <p>The next two tables describe the equivalent schedules considered for respectively the 1st and 2nd
 irradiation campaign conducted at the FNG.</p>
-<table class="docutils align-default" id="id39">
-<caption><span class="caption-text">Equivalent schedule of the 1st FNG irradiation campaign</span><a class="headerlink" href="#id39" title="Permalink to this table"></a></caption>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
+<table class="docutils align-default" id="id54">
+<caption><span class="caption-text">Equivalent schedule of the 1st FNG irradiation campaign</span><a class="headerlink" href="#id54" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Δt [s]</p></th>
 <th class="head"><p>Δt [min]</p></th>
@@ -1011,13 +1222,8 @@ irradiation campaign conducted at the FNG.</p>
 </tr>
 </tbody>
 </table>
-<table class="docutils align-default" id="id40">
-<caption><span class="caption-text">Equivalent schedule of the 2nd FNG irradiation campaign</span><a class="headerlink" href="#id40" title="Permalink to this table"></a></caption>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
+<table class="docutils align-default" id="id55">
+<caption><span class="caption-text">Equivalent schedule of the 2nd FNG irradiation campaign</span><a class="headerlink" href="#id55" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Δt [s]</p></th>
 <th class="head"><p>Δt [min]</p></th>
@@ -1061,14 +1267,8 @@ irradiation campaign conducted at the FNG.</p>
 </table>
 <p>The experimentally measured SDDR values at different cooling times are reported in
 the next tables for the 1st and 2nd irradiation campaigns.</p>
-<table class="docutils align-default" id="id41">
-<caption><span class="caption-text">Experimental measure of the SDDR during 1st FNG irradiation campaign</span><a class="headerlink" href="#id41" title="Permalink to this table"></a></caption>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
+<table class="docutils align-default" id="id56">
+<caption><span class="caption-text">Experimental measure of the SDDR during 1st FNG irradiation campaign</span><a class="headerlink" href="#id56" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Cooldown Time [d]</p></th>
 <th class="head"><p>Cooldown Time [s]</p></th>
@@ -1104,15 +1304,8 @@ the next tables for the 1st and 2nd irradiation campaigns.</p>
 </tr>
 </tbody>
 </table>
-<table class="docutils align-default" id="id42">
-<caption><span class="caption-text">Experimental measure of the SDDR during 2nd FNG irradiation campaign</span><a class="headerlink" href="#id42" title="Permalink to this table"></a></caption>
-<colgroup>
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-</colgroup>
+<table class="docutils align-default" id="id57">
+<caption><span class="caption-text">Experimental measure of the SDDR during 2nd FNG irradiation campaign</span><a class="headerlink" href="#id57" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Cooldown Time [s]</p></th>
 <th class="head"><p>Cooldown Time [h]</p></th>
@@ -1246,10 +1439,12 @@ activation codes like FISPACT or ACAB. These studies have been already conducted
 both during the D1S libraries initial V&amp;V procedure and when the experimental results were tested for
 the first time. The next plot lists the isotopes
 contributing cumulatively to more than 95% of the dose rate during the first irradiation campaign.</p>
-<div class="figure align-center" id="id43">
+<figure class="align-center" id="id58">
 <a class="reference internal image-reference" href="../_images/daughtersFNG.png"><img alt="../_images/daughtersFNG.png" src="../_images/daughtersFNG.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Isotope contribution to the the dose during the first FNG irradiation campaign</span><a class="headerlink" href="#id43" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Isotope contribution to the the dose during the first FNG irradiation campaign</span><a class="headerlink" href="#id58" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>At this point, the D1S reaction file can be generated: it will include all reactions that can
 originate in the material (i.e. that are also available in the activation library) which result
 in the creation of one of the daughters of interest. The D1S irradiation file will simply
@@ -1260,33 +1455,33 @@ Nevertheless, this is in line with the philosophy of JADE. If the Sphere benchma
 primary tools that should be used to identify specific inconsistencies at the single cross section
 level among libraries, all other benchmarks have a slightly different scope which is to show how
 big is the impact of these inconsistencies on more realistic applications.</p>
-</div>
-<div class="section" id="id16">
-<h4>Tallies<a class="headerlink" href="#id16" title="Permalink to this headline"></a></h4>
+</section>
+<section id="id18">
+<h4>Tallies<a class="headerlink" href="#id18" title="Link to this heading"></a></h4>
 <p>The only tallied result for the FNG benchmark is the dose rate at the dosimeter location inside the cavity (tally n.4).</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><strong>Related papers:</strong></p>
 <ul class="simple">
-<li><p>M. Martone, M. Angelone, and M. Pillon. “The 14 MeV Frascati neutrongenerator”.
-In:Journal of Nuclear Materials 212-215 (1994). Fusion ReactorMaterials, pp. 1661–1664</p></li>
-<li><p>P. Batistoni, M. Angelone, L. Petrizzi, and M. Pillon. “Benchmark Experimentfor the
-Validation of Shut Down Activation and Dose Rate in a Fusion Device”.In: Journal of Nuclear
+<li><p>M. Martone, M. Angelone, and M. Pillon. “The 14 MeV Frascati neutron generator”.
+In: Journal of Nuclear Materials 212-215 (1994). Fusion Reactor Materials, pp. 1661–1664</p></li>
+<li><p>P. Batistoni, M. Angelone, L. Petrizzi, and M. Pillon. “Benchmark Experiment for the
+Validation of Shut Down Activation and Dose Rate in a Fusion Device”. In: Journal of Nuclear
 Science and Technology 39.sup2 (2002), pp. 974–977.</p></li>
 <li><p>K. Seidel, Y. Chen, U. Fischer, H. Freiesleben, D. Richter, and S. Unholzer.“Measurement
-and analysis of dose rates and gamma-ray fluxes in an ITERshut-down dose rate experiment”.
+and analysis of dose rates and gamma-ray fluxes in an ITER shut-down dose rate experiment”.
 In:Fusion Engineering and Design 63-64 (2002), pp. 211–215.</p></li>
 <li><p>R. Pampin, A. Davis, R.A. Forrest, D.A. Barnett, I. Davis, and M.Z. Youssef.“Status of novel
-tools for estimation of activation dose”. In:Fusion Engineeringand Design 85.10 (2010).
+tools for estimation of activation dose”. In: Fusion Engineering and Design 85.10 (2010).
 Proceedings of the Ninth International Symposiumon Fusion Nuclear Technology, pp. 2080–2085.</p></li>
 <li><p>J. Sanz, O. Cabellos, and N. Garcia-Herranz. Inventory Code for Nuclear Applications:
 User’s Manual V. 2008. RSICC. 2008.</p></li>
 </ul>
 </div>
-</div>
-</div>
-<div class="section" id="tiara">
-<h3>Tiara<a class="headerlink" href="#tiara" title="Permalink to this headline"></a></h3>
+</section>
+</section>
+<section id="tiara">
+<span id="id19"></span><h3>Tiara<a class="headerlink" href="#tiara" title="Link to this heading"></a></h3>
 <p>The TIARA (Takasaki Ion Accelerator for Advanced Radiation Application)
 shielding experiment is one among the several high quality experiments included in the
 SINBAD database.
@@ -1299,12 +1494,14 @@ sources resulted from the bombardment, with peak energies at 43 MeV and 68 MeV.
 Three different detectors were used to collect data: the BC 501A liquid
 scintillation detector, a series of Bonner sphere detectors and finally U-238
 and Th-232 fission cells to measure the reaction rates.</p>
-<div class="section" id="id18">
-<h4>Geometry and run parameters<a class="headerlink" href="#id18" title="Permalink to this headline"></a></h4>
-<div class="figure align-center" id="id44">
+<section id="id21">
+<h4>Geometry and run parameters<a class="headerlink" href="#id21" title="Link to this heading"></a></h4>
+<figure class="align-center" id="id59">
 <a class="reference internal image-reference" href="../_images/Tiara.jpg"><img alt="../_images/Tiara.jpg" src="../_images/Tiara.jpg" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">CAD model of Tiara Experiment. Dimensions in cm.</span><a class="headerlink" href="#id44" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">CAD model of Tiara Experiment. Dimensions in cm.</span><a class="headerlink" href="#id59" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>The neutron source for the benchmark experiment is produced by 43 MeV and
 68 MeV protons incident on a 99.9 % enriched Li-7 target. The neutrons generated
 in the target pass through a 225 cm long iron collimator, placed in a
@@ -1322,9 +1519,9 @@ Additionally to spectra measurements with the BC 501A scintillator,
 measurements with a series of Bonner sphere counters are performed. On and
 off axis measurements of reaction rates are also performed with U-238 fission
 cell and Th-232 fission cell.</p>
-</div>
-<div class="section" id="mcnp-modelling">
-<h4>MCNP modelling<a class="headerlink" href="#mcnp-modelling" title="Permalink to this headline"></a></h4>
+</section>
+<section id="mcnp-modelling">
+<h4>MCNP modelling<a class="headerlink" href="#mcnp-modelling" title="Link to this heading"></a></h4>
 <p>Because three different types of detectors are used, with different type of
 output data, TIARA benchmark is divided into three separated benchmarks.
 For each detector benchmark, measurements with different neutron source energies,
@@ -1384,10 +1581,436 @@ scintillators.</p>
 SINBAD shielding benchmark”, September 2018</p></li>
 </ul>
 </div>
+</section>
+</section>
+<section id="fns-time-of-flight-experiment">
+<span id="fnstof"></span><h3>FNS Time-of-Flight Experiment<a class="headerlink" href="#fns-time-of-flight-experiment" title="Link to this heading"></a></h3>
+<p>Two types of integral experiments for nuclear data benchmark tests with DT
+neutrons have been performed for more than 30 years at JAEA/FNS for the purpose
+of validation of nuclear data for fusion reactors materials: an in-situ
+experiment and a Time-of-flight (TOF) experiment.</p>
+<p>Deuteron beams were accelerated to 350 keV by the
+electrostatic accelerator of the FNS (Fusion Neutronics Source) facility at JAERI
+on a tritium-metal targert and 14 MeV neutrons were produced by DT fusion reaction.
+In the TOF experiment, an assembly was placed 200 mm from the DT neutron source and
+leakage angular neutron spectra from the assembly above 100 keV were measured at
+angles of 0, 12.2, 24.9, 41.8 and 66.8 degrees with the TOF method.</p>
+<figure class="align-center" id="id60">
+<a class="reference internal image-reference" href="../_images/FNS-TOF_1.PNG"><img alt="../_images/FNS-TOF_1.PNG" src="../_images/FNS-TOF_1.PNG" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Experimental configuration of the TOF experiment</span><a class="headerlink" href="#id60" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Experimental assemblies with different size and materials were used:</p>
+<table class="docutils align-default" id="id61">
+<caption><span class="caption-text">FNS TOF experiment experimental assemblies details</span><a class="headerlink" href="#id61" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Material</p></th>
+<th class="head"><p>Shape</p></th>
+<th class="head"><p>Size</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Be</p></td>
+<td><p>Quasi-cylinder</p></td>
+<td><p>630 mm in effective diameter;
+51, 152 mm in thickness</p></td>
+</tr>
+<tr class="row-odd"><td><p>C</p></td>
+<td><p>Quasi-cylinder</p></td>
+<td><p>630 mm in effective diameter;
+51, 203, 406 mm in thickness</p></td>
+</tr>
+<tr class="row-even"><td><p>Liquid <span class="math notranslate nohighlight">\(N_2\)</span></p></td>
+<td><p>Cylinder tank</p></td>
+<td><p>600 mm in diameter;
+200 mm in thickness</p></td>
+</tr>
+<tr class="row-odd"><td><p>Liquid <span class="math notranslate nohighlight">\(O_2\)</span></p></td>
+<td><p>Cylinder tank</p></td>
+<td><p>600 mm in diameter;
+200 mm in thickness</p></td>
+</tr>
+<tr class="row-even"><td><p>Fe</p></td>
+<td><p>Cylinder</p></td>
+<td><p>1000 mm in diameter;
+50, 200, 400, 600 mm in thickness</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pb</p></td>
+<td><p>Quasi-cylinder</p></td>
+<td><p>630 mm in effective diameter;
+51, 203, 406 mm in thickness</p></td>
+</tr>
+</tbody>
+</table>
+<p>Experimental results derived from FNS TOF experiment are publicly accessible at
+the <a class="reference external" href="https://nds.iaea.org/conderc/shield-fns">CoNDERC database</a>.</p>
+<section id="id23">
+<h4>Geometry and run parameters<a class="headerlink" href="#id23" title="Link to this heading"></a></h4>
+<p>Deuteron beams were accelerated to 350 keV and driven towards the target. The 14
+MeV DT neutrons were generated at a 3.7x <span class="math notranslate nohighlight">\(10^2\)</span> GBq (10 Ci) tritium-metal target.
+The neutron yield at the target was monitored by detecting the
+associated alpha-particles with a silicon surface-barrier detector (SSD) emplaced
+in the beam line.</p>
+<p>The detector-collimator system determined the area on the rear surface of slab
+and the solid angle by which the angular neutron flux was defined. The area was
+designed to be about 50 mm in diameter by choosing the sizes of the detector and
+the collimator opening. The detector-collimator system was placed on the dual
+rotating deck. The system consisted of an upper and a lower deck to perform the
+experiments on different thick slabs with combination of their rotation.
+The lower deck moves centering around the target (neutron source), and then the
+upper deck rotates slightly relative to the lower deck to adjust the axis to the
+measured direction, i.e., the center of rear-face of the slab.
+The detector-collimator axis can be adjusted to any point around the neutron
+source by these two motions.</p>
+<figure class="align-center" id="id62">
+<a class="reference internal image-reference" href="../_images/FNS-TOF_3.PNG"><img alt="../_images/FNS-TOF_3.PNG" src="../_images/FNS-TOF_3.PNG" style="width: 700px;" /></a>
+<figcaption>
+<p><span class="caption-text">Experimental configuration of the TOF experiment and definition of useful parameters</span><a class="headerlink" href="#id62" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>The angular flux measurement is performed in foreground-background mode.
+The background is measured by blocking the collimator hole with a plug of type
+304 stainless steel of 0.6 min length and polyethylene of 0.4 min length.
+Background data are subtracted from the foreground data.
+Measured time spectra are then transformed to energy spectra.</p>
+<p>The measured data are reduced to the angular flux by the following equation:</p>
+<div class="math notranslate nohighlight">
+\[\Phi(\Omega, E_n) = C(E_n)/(\epsilon(E_n)·A_s·\Delta\Omega·S_n·T(E_n))\]</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\Phi(\Omega, E_n)\)</span>: neutrons with energy <span class="math notranslate nohighlight">\(E_n\)</span> per unit lethargy
+and emitting solid angle <span class="math notranslate nohighlight">\(\Delta\Omega\)</span> per unit source neutron at the
+rear surface center of the assembly</p></li>
+<li><p><span class="math notranslate nohighlight">\(C(E_n)\)</span>: counts per unit lethargy for neutrons of energy <span class="math notranslate nohighlight">\(E_n\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\epsilon(E_n)\)</span>:      efficiency of neutron detector at energy <span class="math notranslate nohighlight">\(E_n\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\Delta\Omega\)</span>: solid angle subtended by the detector to the target,
+i.e., <span class="math notranslate nohighlight">\(\Delta\Omega=A_d/L^2\)</span>, where:
+<span class="math notranslate nohighlight">\(A_d\)</span>: counting area of the detector;
+L:  distance from the target to the detector,</p></li>
+<li><p><span class="math notranslate nohighlight">\(A_s\)</span>:        effective measured area defined by the detector collimator system
+on the plane perpendicular to the axis at the assembly surface. It is
+determined from an experimental detector-collimator response function and
+it is given by the equation: <span class="math notranslate nohighlight">\(A_s = 0.2304·L - 84.16\)</span>,
+where L is the flight path length in cm</p></li>
+<li><p><span class="math notranslate nohighlight">\(S_n\)</span> total source neutrons obtained by the associated alpha particle monitor,</p></li>
+<li><p><span class="math notranslate nohighlight">\(T(E_n)\)</span>: attenuation due to air in neutron flight path:
+<span class="math notranslate nohighlight">\(e^{-\Sigma_{air}(E_n)·L}\)</span>, <span class="math notranslate nohighlight">\(\Sigma_{air}(E_n)\)</span> : macroscopic total cross section of air.</p></li>
+</ul>
+</dd>
+</dl>
+<p>The dependence of flight path length on mesuring angle is given in the following
+table:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/Table.PNG"><img alt="../_images/Table.PNG" src="../_images/Table.PNG" style="width: 700px;" /></a>
+</figure>
+</section>
+<section id="id24">
+<h4>MCNP modelling<a class="headerlink" href="#id24" title="Link to this heading"></a></h4>
+<p>A point Monte Carlo method is adopted for a nuclear data test, for each tested slab. The point detector
+estimator is used and five detector locations are taken into account
+corresponding to the measured angles. The example of calculational model is
+shown in the figure below</p>
+<figure class="align-center" id="id63">
+<a class="reference internal image-reference" href="../_images/MCNP_FNS_TOF.PNG"><img alt="../_images/MCNP_FNS_TOF.PNG" src="../_images/MCNP_FNS_TOF.PNG" style="width: 700px;" /></a>
+<figcaption>
+<p><span class="caption-text">Representation of 3D model for MCNP calculations of FNS-TOF experiment</span><a class="headerlink" href="#id63" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>In this model, the collimator is simulated by cylindrical hole with the radius
+of effective measured area <span class="math notranslate nohighlight">\(A_s\)</span>. This cylindrical hole is surrounded by
+no-importance regions in which neutron histories are immediately terminated.</p>
+<p>One point detector tally has been used for each detector position:</p>
+<dl class="simple">
+<dt>Tally n. 5</dt><dd><p>This detector-flux tally has been used to collect the energy-binned neutron
+leakage flux at 0 degrees</p>
+</dd>
+<dt>Tally n. 15</dt><dd><p>This detector-flux tally has been used to collect the energy-binned neutron
+leakage flux at 12.2 degrees</p>
+</dd>
+<dt>Tally n. 25</dt><dd><p>This detector-flux tally has been used to collect the energy-binned neutron
+leakage flux at 24.9 degrees</p>
+</dd>
+<dt>Tally n. 35</dt><dd><p>This detector-flux tally has been used to collect the energy-binned neutron
+leakage flux at 41.8 degrees</p>
+</dd>
+<dt>Tally n. 45</dt><dd><p>This detector-flux tally has been used to collect the energy-binned neutron
+leakage flux at 66.8 degrees</p>
+</dd>
+</dl>
+<p>No FM card was used as the experimental results were given per unit source neutron.
+During the post-processing the value in each energy bin is divided by the lethargy bin width.
+The calculated leakage lethargy flux are reduced to the measured quantity by multiplying by
+<span class="math notranslate nohighlight">\(L^2/A_s\)</span> for each detector position.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><strong>Related papers and contributions:</strong></p>
+<ul class="simple">
+<li><p>Oyama, Y., Yamaguchi, S., Maekawa, H., Experimental results of angular neutron flux spectra leaking
+from slabs of fusion reactor candidate materials, I, JAERI-M 90-092, 124p. (1990).</p></li>
+<li><p>Sub Working Group of Fusion Reactor Physics Subcommittee (Ed.), “Collection of Experimental Data
+for Fusion Neutronics Benchmark”, JAERI-M 94-014 (1994) 302p.</p></li>
+</ul>
 </div>
+</section>
+</section>
+<section id="aspis-iron-88-benchmark">
+<h3>ASPIS Iron-88 benchmark<a class="headerlink" href="#aspis-iron-88-benchmark" title="Link to this heading"></a></h3>
+<p>The ASPIS experiment was designed for providing information of benchmark quality
+for testing of data and calculation methods for deep-penetration profile by
+natural iron shielding material.</p>
+<p>The ASPIS shielding facility is installed on the NESTOR reactor at Winfrith.
+NESTOR is a light water cooled, graphite and light water moderated reactor
+which operates at powers of up to 30 kW and is used as a source of neutrons
+for a wide range of applications. The core of the reactor, is contained within an
+annulus formed by two concentric aluminium vessels through which water
+circulates. The inner vessel is filled with graphite to form an inner
+reflector. The outer tank is surrounded by an external graphite reflector
+in the form of a block having dimensions 182 cm x 182 cm x 122 cm which
+contains the control plate slots adjacent to the vessel wall. Leading off
+each of the four faces of the external reflector is an experiment cave
+which can be isolated from the reactor by shutters composed of boral or
+combinations of neutron/gamma-ray shield materials.</p>
+<p>ASPIS is located in the NESTOR cave C. Shield components, which are in the
+main slabs or tanks, are mounted vertically in a mobile tank which has an
+internal cross-sectional area of 1.8 m x 1.9 m and a length of 3.7 m. A
+fission plate is located within the experimental shield array. The loaded
+tank is moved into the cave where thermal neutrons leaking from the outer
+graphite reflector of NESTOR are used to drive the fission plate to provide
+a well defined neutron source for penetration measurements.</p>
+<p>The neutron flux levels within an ASPIS shield contain contributions from
+sources in the fission plate and from the NESTOR core and it is essential
+that the NESTOR contribution is subtracted from all measured responses to
+arrive at the response resulting from the fission plate sources.</p>
+<p>Experimental results derived from ASPIS-Fe88 experiment are publicly accessible at
+the <a class="reference external" href="https://nds.iaea.org/conderc/shield-fns">CoNDERC database</a>.</p>
+<section id="id26">
+<h4>Geometry and run parameters<a class="headerlink" href="#id26" title="Link to this heading"></a></h4>
+<p>The Iron 88 Benchmark experimental array irradiated in the ASPIS shielding
+facility is shown schematically in side elevation in the figure below.</p>
+<figure class="align-center" id="id64">
+<a class="reference internal image-reference" href="../_images/ASPIS_3.PNG"><img alt="../_images/ASPIS_3.PNG" src="../_images/ASPIS_3.PNG" style="width: 700px;" /></a>
+<figcaption>
+<p><span class="caption-text">Schematic side elevation of the shield in the iron 88 single material
+benchmark experiment</span><a class="headerlink" href="#id64" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>The array
+comprises three regions: the source region containing moderator and the
+fission plate, the shield made from 13 mild steel plates, each of
+approximately 5.1 cm thickness, and a deep backing shield manufactured from
+mild and stainless steel. To allow detector access within the shield 6 mm
+spacers are placed between each slab component. In practice the depth of
+the air gaps varies owing to positional uncertainties of the plates and
+their flatness. The 6 mm gap is therefore nominal and an average gap of
+7.4 mm was measured for the experiment.</p>
+<p>The outer boundaries of the
+experimental region are formed by the walls and floor of the ASPIS trolley
+and by the roof of the ASPIS cave. The floor and walls of the trolley are
+manufactured from 1.91 cm thick mild steel plate. The trolley base has a
+25 cm high steel chassis in-filled with concrete. The structure of NESTOR
+surrounding the trolley comprises concrete bulk shielding blocks except on
+the NESTOR core side of the trolley front face where it is graphite. This
+graphite extends away from the trolley to the external graphite reflector
+of the reactor.</p>
+<p>A schematic diagram of the fission plate is shown in the figure below.</p>
+<figure class="align-center" id="id65">
+<a class="reference internal image-reference" href="../_images/ASPIS_1.PNG"><img alt="../_images/ASPIS_1.PNG" src="../_images/ASPIS_1.PNG" style="width: 700px;" /></a>
+<figcaption>
+<p><span class="caption-text">Schematic diagram of fission plate</span><a class="headerlink" href="#id65" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>It comprises an aluminium frame which fills the height and width of the ASPIS trolley.
+Located within the frame there are 13 separate fuel elements.
+Each element has two 12 mm thick aluminium cover plates which attach on either
+side of the top and bottom locating end pieces leaving a 5 mm separation in which
+U/Al alloy fuel strips are located.
+The fuel strips are 80% by weight aluminium and
+20% by weight of uranium enriched to 93% having a density of 3.256 g/cm3.
+Each strip is nominally 30.5 mm wide and 1 mm thick and is fixed to the
+rear cover plate by M5 screws.</p>
+<p>Three columns of fuel strips laid side by side fill the width of the
+element. There is depth for 4 fuel strips within each element leaving a
+1 mm clearance gap next to the front cover plate. In the current
+configuration only the central two strips in each column contain U/Al
+alloy, the outer two are both blanks manufactured from aluminium.</p>
+<figure class="align-center" id="id66">
+<a class="reference internal image-reference" href="../_images/ASPIS_2.PNG"><img alt="../_images/ASPIS_2.PNG" src="../_images/ASPIS_2.PNG" style="width: 700px;" /></a>
+<figcaption>
+<p><span class="caption-text">Schematic diagram of fuel element</span><a class="headerlink" href="#id66" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>The centre of the
+fuel is at a height of 889 mm from the floor of the trolley and at 889 mm
+from the right hand wall of the trolley when looking towards the NESTOR
+core. The measurements were made on this axis.</p>
+<p>The absolute power in the fission plate, expressed as plate Watts per
+NESTOR Watt, has been determined by combining measurements of the absolute
+fission-rate at spot values, gained by fission product decay line counting,
+with the fission-rate profile data. The analysis is rather
+involved and the result was an absolute plate power of 5.68E-4 Watts per
+NESTOR Watt.</p>
+<p>The detectors used for the measurements were:</p>
+<table class="docutils align-default" id="id67">
+<caption><span class="caption-text">FNS TOF experiment experimental assemblies details</span><a class="headerlink" href="#id67" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Detector</p></th>
+<th class="head"><p>Diameter (mm)</p></th>
+<th class="head"><p>Thickness (mm)</p></th>
+<th class="head"><p>Typical
+Mass (g)</p></th>
+<th class="head"><p>Cadmium
+Cover (in)</p></th>
+<th class="head"><p>Counting
+system</p></th>
+<th class="head"><p>System
+absolute
+calibration
+(uncertainty)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Au-197(n,g)</p></td>
+<td><p>12.7</p></td>
+<td><p>0.05</p></td>
+<td><p>0.12-0.13</p></td>
+<td><p>50/1000</p></td>
+<td><p>NaI</p></td>
+<td><p>0.9%</p></td>
+</tr>
+<tr class="row-odd"><td><p>Rh-103(n,n’)</p></td>
+<td><p>12.7</p></td>
+<td><p>0.015</p></td>
+<td><p>0.2</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>NaI</p></td>
+<td><p>3.0%</p></td>
+</tr>
+<tr class="row-even"><td><p>In-115(n,n’)</p></td>
+<td><p>38</p></td>
+<td><p>1.63</p></td>
+<td><p>12.79</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>GeLi detector</p></td>
+<td><p>1.9%</p></td>
+</tr>
+<tr class="row-odd"><td><p>S-32(n,p)
+Pressed pellet</p></td>
+<td><p>38.1</p></td>
+<td><p>2.41</p></td>
+<td><p>5</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Plastic scintillator</p></td>
+<td><p>5.0%</p></td>
+</tr>
+<tr class="row-even"><td><p>S-32(n,p)
+Cast pellet</p></td>
+<td><p>51</p></td>
+<td><p>5.6</p></td>
+<td><p>22</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Plastic scintillator</p></td>
+<td><p>5.0%</p></td>
+</tr>
+<tr class="row-odd"><td><p>Al-27(n,alpha)</p></td>
+<td><p>50</p></td>
+<td><p>3.1</p></td>
+<td><p>16.72</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Ge detector</p></td>
+<td><p>2.2%</p></td>
+</tr>
+</tbody>
+</table>
+<p>Detector activation measurements were carried out along the fission
+plate axis at the following shield thicknesses: 0, 5.1, 10.22, 15.34,
+20.44, 25.64, 30.79, 35.99, 41.19, 46.44, 51.62, 56.69, 61.81, 66.99 cm.
+Al-27 reaction rates were measured only up to 25.64 cm.</p>
+<p>The results were corrected for the background responses due to the NESTOR
+core. Using the hydrogen filled proportional counters the correction was
+found to be around 2% throughout the shield for the four threshold
+detectors. For gold measurements the measurement was repeated with the
+fissile content of the fission plate removed in order to determine the
+background correction.</p>
+</section>
+<section id="id27">
+<h4>MCNP modelling<a class="headerlink" href="#id27" title="Link to this heading"></a></h4>
+<p>5 MCNP inputs, corresponding to the experimental setup with the 5 different foils
+were used.
+A F4 reaction rate tally is defined for each input:</p>
+<dl class="simple">
+<dt>Tally n. 4</dt><dd><p>A track length flux tally has been used to collect results in the cells
+corresponding to the activation foils in MCNP geometry. The tally has been
+multiplied in each input (with FM card) by the appropriate microscopic
+reaction cross section, to obtain results in terms of number of reactions
+per unit neutron from the source. No energy bins were used. Nuclear data for
+tally collection was taken from IRDFF dosimetry libraries. In the following,
+a list of the reactions considered for each activation foil material is
+reported:</p>
+<ul class="simple">
+<li><p>Rh-103(n,n’)Rh-103</p></li>
+<li><p>Al-27(n,a)Na-24</p></li>
+<li><p>In-115(n,n’)In-115m</p></li>
+<li><p>S-32(n,p)P-32</p></li>
+<li><p>Au-197(n,g)Au-198</p></li>
+</ul>
+</dd>
+</dl>
+<p>A FM multiplier card with the normalization factor has been used to obtain the results in
+units of reactions per second per atom at 30 kW NESTOR power.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><strong>Related papers and contributions:</strong></p>
+<ul class="simple">
+<li><p>G.A. Wright, M. J. Grimstone,
+Benchmark Testing of JEF-2.2 Data for Shielding Applications: Analysis
+of the Winfrith Iron 88 Benchmark Experiment, Report No. AEA-RS-1231,
+EFF-Doc-229 and JEF-Doc-421 (1993).</p></li>
+<li><p>I. J. Curl,
+CRISP - A Computer Code to Define Fission Plate Source Profiles,
+RPD/IJC/934.</p></li>
+<li><p>M. J. Armishaw, J. Butler, M. D. Carter, I. J. Curl, A. K. McCracken,
+A Transportable Neutron Spectrometer (TNS) for Radiological Applications,
+AEEW-M2365 (1986).</p></li>
+<li><p>G. A. Wright, A. Avery, M. J. Grimstone, H. F. Locke, S. Newbon,
+Benchmarking of the JEFF2.2 Data Library for Shielding Applications,
+Proceedings, 8th International Conference on Radiation Shielding,
+April 24-28, 1994, Arlington, Texas, U.S.A., vol.2, p.816.</p></li>
+<li><p>M. PESCARINI and R. ORSI, Validation of the BUGJEFF311.BOLIB, BUGENDF70.BOLIB,
+BUGLE-B7 and BUGLE-96 Cross Section Libraries on the Iron-88 Neutron Shielding
+Benchmark Experiment, ADPFISS-LP1-106, ENEA-Bologna Technical Report (2018).</p></li>
+<li><p>A. Milocco, Quality Assessment of SINBAD Evaluated Experiments ASPIS Iron
+(NEA-1517/34), ASPIS Iron-88 (NEA-1517/35), ASPIS Graphite (NEA-1517/36),
+ASPIS Water (NEA-1517/37), ASPIS N/G Water/Steel (NEA-1517/49), ASPIS PCA
+Replica (NEA-1517/75), Dec. 2015.</p></li>
+<li><p>A. Milocco, B. Zefran, I. Kodeli. Validation of nuclear data based on the ASPIS
+experimeents from the SINBAD database. V: Proc. RPSD-2018, 20th Topical meeting
+of the radiation protection and shielding division, 26-31 August 2018, Santa Fe.,
+American Nuclear Society. 2018.</p></li>
+<li><p>I. Kodeli, Transport and S/U analysis of the ASPIS-IRON88 Benchmark using
+recent and older iron cross-section evaluations. Proc. PHYSOR 2018, Reactor physics
+paving the way towards more efficient systems, 22 - 26 April 2018, Cancun. ANS. 2018.</p></li>
+</ul>
 </div>
-<div class="section" id="fng-bulk-blanket-and-shield-experiment">
-<span id="fngblk"></span><h3>FNG Bulk Blanket and Shield Experiment<a class="headerlink" href="#fng-bulk-blanket-and-shield-experiment" title="Permalink to this headline"></a></h3>
+</section>
+</section>
+<section id="fng-bulk-blanket-and-shield-experiment">
+<span id="fngblk"></span><h3>FNG Bulk Blanket and Shield Experiment<a class="headerlink" href="#fng-bulk-blanket-and-shield-experiment" title="Link to this heading"></a></h3>
 <p>The aim of the experiment is to carry out a series of neutronics measurements,
 using 14 MeV neutrons, on a mockup of ITER inboard shielding system, with
 the purpose of validating the ITER shielding blanket design.
@@ -1395,12 +2018,14 @@ To achieve the objective, mockup assembly configuration and material composition
 were chosen so that to replicate those of the ITER shielding system at the
 inboard side. The experiment was carried out at FNG facility, described in
 <a class="reference internal" href="#fngsddr"><span class="std std-ref">Frascati Neutron Generator SDDR Experiment</span></a>, in the years 1995-97.</p>
-<div class="section" id="id19">
-<h4>Geometry and run parameters<a class="headerlink" href="#id19" title="Permalink to this headline"></a></h4>
-<div class="figure align-center" id="id45">
+<section id="id28">
+<h4>Geometry and run parameters<a class="headerlink" href="#id28" title="Link to this heading"></a></h4>
+<figure class="align-center" id="id68">
 <a class="reference internal image-reference" href="../_images/FNGBLKT3.jpg"><img alt="../_images/FNGBLKT3.jpg" src="../_images/FNGBLKT3.jpg" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Photo of ITER Bulk Blanket mockup assembly.</span><a class="headerlink" href="#id45" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Photo of ITER Bulk Blanket mockup assembly.</span><a class="headerlink" href="#id68" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>The shield mockup is shown in the figure above. It consists of:</p>
 <ol class="arabic simple">
 <li><p>A 1 cm thick layer of copper simulating the first wall (FW),</p></li>
@@ -1424,9 +2049,9 @@ the block central (horizontal) axis, at different penetration depths.
 Only foils of the same material were irradiated during every single irradiation.
 Soon after each irradiation, the foils activities were recorded by a set of
 calibrated HPGe detectors.</p>
-</div>
-<div class="section" id="id20">
-<h4>Tallies<a class="headerlink" href="#id20" title="Permalink to this headline"></a></h4>
+</section>
+<section id="id29">
+<h4>Tallies<a class="headerlink" href="#id29" title="Link to this heading"></a></h4>
 <p>The source angle/energy distribution was calculated with MCNP, taking into
 account the reaction kinematics and the slowing down of beam deuterons in the
 tritium/titanium target. Only one tally is defined for each input:</p>
@@ -1461,20 +2086,22 @@ reported:</p>
 </li>
 </ul>
 </div>
-</div>
-</div>
-<div class="section" id="fng-benchmark-experiment-on-tungsten">
-<h3>FNG Benchmark Experiment on Tungsten<a class="headerlink" href="#fng-benchmark-experiment-on-tungsten" title="Permalink to this headline"></a></h3>
+</section>
+</section>
+<section id="fng-benchmark-experiment-on-tungsten">
+<span id="fngw"></span><h3>FNG Benchmark Experiment on Tungsten<a class="headerlink" href="#fng-benchmark-experiment-on-tungsten" title="Link to this heading"></a></h3>
 <p>The experiment was carried out in 2001 at FNG facility. The purpose is to validate tungsten cross sections as it is a candidate material for high
 flux components in ITER and its development is pursued in the
 European Fusion Technology Program. The experiment was carried out with the 14 MeV neutrons source
 used at FNG described in <a class="reference internal" href="#fngsddr"><span class="std std-ref">Frascati Neutron Generator SDDR Experiment</span></a> and <a class="reference internal" href="#fngblk"><span class="std std-ref">FNG Bulk Blanket and Shield Experiment</span></a>.</p>
-<div class="section" id="id21">
-<h4>Geometry and run parameters<a class="headerlink" href="#id21" title="Permalink to this headline"></a></h4>
-<div class="figure align-center" id="id46">
+<section id="id30">
+<h4>Geometry and run parameters<a class="headerlink" href="#id30" title="Link to this heading"></a></h4>
+<figure class="align-center" id="id69">
 <a class="reference internal image-reference" href="../_images/fng-w.png"><img alt="../_images/fng-w.png" src="../_images/fng-w.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Layout of Benchmark Experiment on Tungsten.</span><a class="headerlink" href="#id46" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Layout of Benchmark Experiment on Tungsten.</span><a class="headerlink" href="#id69" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>The geometry of the mock-up consisted of a block of a tungsten alloy, DENSIMET, produced by PLANSEE,
 in pieces of various shapes. The mock-up is assembled to obtain a size of about
 42-47 cm (L) x 46.85 cm (H) and 49 cm in thickness. It was located in front
@@ -1495,9 +2122,9 @@ to locate activation foils in position, using a thin Al holder. The foils
 were irradiated in three irradiations: in the first one Zr, Al and Mn foils
 were irradiated; in the second one Nb, Ni and Au foils were irradiated and in the last one
 Fe and In foils were irradiated.</p>
-</div>
-<div class="section" id="id22">
-<h4>Tallies<a class="headerlink" href="#id22" title="Permalink to this headline"></a></h4>
+</section>
+<section id="id31">
+<h4>Tallies<a class="headerlink" href="#id31" title="Link to this heading"></a></h4>
 <p>The source angle/energy distribution was calculated with MCNP, taking into
 account the reaction kinematics and the slowing down of beam deuterons in the
 tritium/titanium target. Only one tally is defined for each input:</p>
@@ -1532,10 +2159,351 @@ and Analysis of Neutron Reaction Rates and of Gamma Heating in
 Tungsten, MA-NE-R-003, ENEA, Dec. 2002</p></li>
 </ul>
 </div>
+</section>
+</section>
+<section id="tud-iron-slab-benchmark-experiment">
+<h3>TUD Iron Slab Benchmark Experiment<a class="headerlink" href="#tud-iron-slab-benchmark-experiment" title="Link to this heading"></a></h3>
+<p>TUD Iron Slab Benchmark Experiment consists in the determination of spectral
+neutron flux, spectral photon flux and neutron time-of-arrival (TOA) flux
+penetrating and leaking iron slab assemblies (thickness: 30 cm; solid and
+with gap) irradiated with 14 MeV neutrons</p>
+<p>Experimental results derived from TUD Iron Slab Benchmark Experiment are available
+in SINBAD database.</p>
+<section id="id32">
+<h4>Geometry and run parameters<a class="headerlink" href="#id32" title="Link to this heading"></a></h4>
+<p>The neutron source was a 14 MeV d-T neutron generator operated in pulsed
+mode. The time distribution of the source neutrons was proportional to
+<span class="math notranslate nohighlight">\(exp[-(t/1.4 ns)^2]\)</span>.
+The Fe slabs had a front area of 100 cm x 100 cm and a thickness of 30 cm
+and were built up by bricks with dimensions of 20 cm x 10 cm x 5 cm.
+Three assemblies were built up:
+A0 - no gap,
+A1 - vertical gap, distance: 10 cm from the centre, gap width: 5 cm, and
+A2 - vertical gap, distance: 20 cm from the centre, gap width: 5 cm.
+The three configurations are shown in the figure below:</p>
+<figure class="align-center" id="id70">
+<a class="reference internal image-reference" href="../_images/TUD-Fe_1.PNG"><img alt="../_images/TUD-Fe_1.PNG" src="../_images/TUD-Fe_1.PNG" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Geometries A0, A1, A2</span><a class="headerlink" href="#id70" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>The distance between neutron source and Fe slab was 19 cm. The distance
+between Fe slab and detector was 300 cm. The distance between neutron
+source and detector was 349 cm.
+The angle between the d-beam of the neutron generator and an axis
+crossing neutron source and centre of the slab was 74 degrees.
+The detectors were positioned in a collimator shaped in such a way that
+all neutrons and photons leaking from the slab in direction of the
+detector could be observed.</p>
+<p>A NE213 scintillator was employed for simultaneously measuring the
+spectral neutron flux, the spectral photon flux, and the neutron time-
+of-arrival spectrum for neutron energies of E&gt;1 MeV and photon energies
+of E&gt;0.2 MeV. For each registered event the pulse-height, the
+time-of-arrival, and a pulse-shape parameter were recorded to distinguish
+between neutrons and photons.
+Pulse-height distributions from three different hydrogen-filled
+proportional detectors and a stilbene scintillator were used for
+determining the neutron flux spectra for energies ranging from 30 keV
+up to about 2.3 MeV, overlapping with the NE213 spectra.</p>
+</section>
+<section id="id33">
+<h4>MCNP modelling<a class="headerlink" href="#id33" title="Link to this heading"></a></h4>
+<p>3 MCNP models corresponding to A0, A1 and A2 geometries were employed.
+Point-flux-detectors for neutrons and photons were
+used as detector tallies in the locations corresponding to the detectors in the experiment:</p>
+<dl class="simple">
+<dt>Tally n. 5</dt><dd><p>Neutron fluence (binned in energy groups)</p>
+</dd>
+<dt>Tally n. 15</dt><dd><p>Neutron fluence (binned in time groups)
+For comparison with the experimental time-of-arrival spectrum, the
+calculated neutron fluence PHI(t,E) was folded with the neutron detection
+efficiency EPS(E) (DE/DF MCNP cards) of the NE213 detector in accordance with the
+measurement.</p>
+</dd>
+</dl>
+<p>No FM card was used as the experimental results were given per unit source neutron.
+During the post-processing the value of the fluence in each energy bin is divided by the bin width
+so that to obtain the spectral fluence [#/cm^2/MeV/n] and spectral time-of-arrival fluence
+[#/cm^2/shakes/n] to be compared with experimental data from
+the detectors.</p>
+<figure class="align-center" id="id71">
+<a class="reference internal image-reference" href="../_images/TUD-Fe_2.PNG"><img alt="../_images/TUD-Fe_2.PNG" src="../_images/TUD-Fe_2.PNG" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Neutron detection efficiency of NE213 detector</span><a class="headerlink" href="#id71" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<dl class="simple">
+<dt>Tally n. 25</dt><dd><p>Photon spectral fluence [#/cm^2/MeV/n] (binned in energy groups)</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><strong>Related papers and contributions:</strong></p>
+<ul class="simple">
+<li><ol class="upperalpha simple" start="8">
+<li><p>Freiesleben, W. Hansen, H. Klein, T. Novotny, D. Richter, R.
+Schwierz, K. Seidel, M. Tichy, S. Unholzer, Experimental results of
+an iron slab benchmark, Report Technische Universitaet Dresden,
+TUD-PHY-94/2, February 1995</p></li>
+</ol>
+</li>
+<li><ol class="upperalpha simple" start="8">
+<li><p>Freiesleben, W. Hansen, D. Richter, K. Seidel, S. Unholzer,
+Experimental investigation of neutron and photon penetration and
+streaming through iron assemblies, Fusion Engineering and Design 28
+(1995) 545-550</p></li>
+</ol>
+</li>
+<li><ol class="upperalpha simple" start="8">
+<li><p>Freiesleben, W. Hansen, D. Richter, K. Seidel, S. Unholzer,
+Shield Penetration Experiments, Report Technische Universitaet
+Dresden, Institut fuer Kern- und Teilchenphysik, TUD-IKTP-95/01,
+January 1995</p></li>
+</ol>
+</li>
+<li><ol class="upperalpha simple" start="8">
+<li><p>Freiesleben, W. Hansen, D. Richter, K. Seidel, S. Unholzer,
+TUD experimental benchmarks of Fe nuclear data, Fusion Engineering
+and Design 37 (1997) 31-37</p></li>
+</ol>
+</li>
+<li><ol class="upperalpha simple" start="21">
+<li><p>Fischer, H. Freiesleben, H. Klein, W. Mannhardt, D. Richter,
+D. Schmidt, K. Seidel, S. Tagesen, H. Tsige-Tamirat, S. Unholzer,
+H. Vonach, Y. Wu, Application of improved neutron cross-section data
+for Fe-56 to an integral fusion neutronics experiment, Int. Conf. on
+Nuclear Data for Science and Technology, Trieste (Italy), May 19-24,
+1997</p></li>
+</ol>
+</li>
+<li><ol class="upperalpha simple" start="13">
+<li><p>Tichy, The DIFBAS Program - Description and User’s Guide, Report
+PTB-7.2- 193-1, Braunschweig 1993</p></li>
+</ol>
+</li>
+<li><ol class="upperalpha simple" start="19">
+<li><p>Guldbakke, H. Klein, A. Meister, J. Pulpan, U. Scheler, M. Tichy,
+S. Unholzer, Response Matrices of NE213 Scintillation Detectors for
+Neutrons, Reactor Dosimetry ASTM STP 1228, Ed. H. Farrar et al.,
+American Society for Testing Materials, Philadelphia, 1995, p. 310-322</p></li>
+</ol>
+</li>
+<li><ol class="upperalpha simple" start="12">
+<li><p>Buermann, S. Ding, S. Guldbakke, S. Klein, H. Novotny, M. Tichy,
+Response of NE213 Liquid Scintillation Detectors to High-Energy
+Photons, Nucl. Instr. Methods A 332(1993)483</p></li>
+</ol>
+</li>
+<li><ol class="upperalpha simple" start="10">
+<li><p>F. Briesmeister (Ed.), MCNP - A general Monte Carlo n-particle
+transport code, version 4A, Report, Los Alamos National Laboratory,
+LA-12625-M, November 1993</p></li>
+</ol>
+</li>
+<li><ol class="upperalpha simple" start="19">
+<li><p>Ganesan and P. K. McLaughlin, FENDL/E - evaluated nuclear data
+library of neutron interaction cross-sections and photon production
+cross-sections and photon-atom interaction cross-sections for fusion
+applications, version 1.0, Report IAEA-NDS-128, Vienna, May 1994</p></li>
+</ol>
+</li>
+<li><ol class="upperalpha simple" start="10">
+<li><p>Kopecky, H. Gruppelaar, H.A.J. Vanderkamp and D. Nierop,
+European Fusion File, Version-2, EFF-2, Final report on basic data
+files, Report, ECN-C-92-036, Petten, June 1992.</p></li>
+</ol>
+</li>
+<li><ol class="upperalpha simple" start="25">
+<li><p>Wu, Report FZKA-5953, Karlsruhe, 1997</p></li>
+</ol>
+</li>
+<li><ol class="upperalpha simple">
+<li><p>Milocco, The Quality Assessment of the FNG/TUD Benchmark Experiments,
+IJS-DP-10216, April 2009</p></li>
+</ol>
+</li>
+</ul>
 </div>
+</section>
+</section>
+<section id="tud-spectra-measurements-fng-bulk-shield">
+<h3>TUD Spectra Measurements (FNG Bulk Shield)<a class="headerlink" href="#tud-spectra-measurements-fng-bulk-shield" title="Link to this heading"></a></h3>
+<p>The purpose of the experiment is the determination of neutron and photon spectra
+in a neutronic mock-up of the ITER shielding system, irradiated with 14-MeV neutrons.</p>
+<p>The same experimental setup used in <a class="reference internal" href="#fngblk"><span class="std std-ref">FNG Bulk Blanket and Shield Experiment</span></a> was used</p>
+<section id="id34">
+<h4>Geometry and run parameters<a class="headerlink" href="#id34" title="Link to this heading"></a></h4>
+<p>Neutron and photon spectra were determined in the mock-up on the central
+axis of the assembly at two positions:</p>
+<dl class="simple">
+<dt>Position A: Measurement behind the 6 cm thick Perspex layer inside a SS316</dt><dd><p>slab, at a total penetration depth 41.5 cm from the front of
+the assembly (Cu 1 cm, SS316 26.08 cm, and Perspex 14.42 cm).</p>
+</dd>
+<dt>Position B: Measurement in a SS316 layer at the total penetration depth</dt><dd><p>87.6 cm from the front of the assembly (Cu 1 cm, SS316 59.82 cm,
+and Perspex 26.78 cm).</p>
+</dd>
+</dl>
+<p>The detectors were placed on the axis of the d-beam of the neutron generator.
+A NE213 scintillator was employed for simultaneously measuring the neutron
+spectra for energies E&gt;1 MeV and the photon spectra for energies E&gt;0.2 MeV.
+For each registered event both the pulse-height and a pulse-shape parameter
+were recorded to distinguish between neutrons and photons.
+Pulse-height distributions from three different hydrogen-filled
+proportional detectors, one methane-filled proportional detector and a
+stilbene scintillator were used for determining the neutron flux spectra
+for energies ranging from 20 keV up to about 3.6 MeV, overlapping
+with the NE213 spectra.</p>
+<figure class="align-center" id="id72">
+<a class="reference internal image-reference" href="../_images/TUD-FNG_2.PNG"><img alt="../_images/TUD-FNG_2.PNG" src="../_images/TUD-FNG_2.PNG" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Photo of ITER Bulk Blanket mockup assembly with detectors’ positions.</span><a class="headerlink" href="#id72" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="id35">
+<h4>Tallies<a class="headerlink" href="#id35" title="Link to this heading"></a></h4>
+<p>A MCNP model of the experimental assembly with the two detectors has been used,
+with track length flux type 4 tally for both neutron and photons:</p>
+<dl class="simple">
+<dt>Tally n. 504</dt><dd><p>This track length flux tally has been used to collect the energy-binned neutron
+fluence at detector position A</p>
+</dd>
+<dt>Tally n. 514</dt><dd><p>This track length flux tally has been used to collect the energy-binned photon
+fluence at detector position A</p>
+</dd>
+<dt>Tally n. 524</dt><dd><p>This track length flux tally has been used to collect the energy-binned neutron
+fluence at detector position B</p>
+</dd>
+<dt>Tally n. 534</dt><dd><p>This track length flux tally has been used to collect the energy-binned photon
+fluence at detector position B</p>
+</dd>
+</dl>
+<p>No FM card was used as the experimental results were given per unit source neutron.
+During the post-processing the value in each energy bin is divided by the bin width
+so that to obtain the spectral fluence to be compared with experimental data from
+the detectors.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><strong>Related papers and contributions:</strong></p>
+<ul class="simple">
+<li><p>M. Martone, M. Angelone, M. Pillon, The 14 MeV Frascati Neutron
+Generator, Journal of Nuclear Materials 212-215 (1994) 1661-1664;</p></li>
+<li><p>M. Pillon, M. Angelone, A. V. Krasilnikov, 14 MeV Neutron Spectra
+Measurements with 4% Energy Resolution using Type IIa Diamond Detector,
+Nucl. Instr. Meth. in Phys. Res. B101 (1995) 473-485.</p></li>
+<li><p>H. Freiesleben, W. Hansen, D. Richter, K. Seidel, S. Unholzer, P.
+Batistoni, M. Pillon, M. Angelone, Investigation of Neutron and
+Gamma-ray Spectra in a Blanket Mock-up of the International
+Thermonuclear Experimental Reactor (ITER), Proc. of the 9th Intern.
+Symp. on Reactor Dosimetry, Prague, Czech Republic, 2-6 September
+1996, Editors: H. Ait Abderrahim, P. D’hondt and B. Osmera,
+World Scientific, Singapore, 1998, p. 391-396.</p></li>
+<li><p>H. Freiesleben, W. Hansen, D. Richter, K. Seidel, S. Unholzer, U.
+Fischer, Y. Wu, M. Angelone, P. Batistoni, M. Pillon,
+Measurement and Analysis of Spectral Neutron and Photon Fluxes in an
+ITER Shield Mock-Up, Fusion Technology 1996, Proc. of the 19th. Symp.
+on Fusion Technology, Lisbon, Portugal, 16-20 September 1996,
+C. Varandas and F. Serra (editors), Elsevier Science B.V., Amsterdam,
+1997, p. 1571-1574.</p></li>
+<li><p>H. Freiesleben, W. Hansen, D. Richter, K. Seidel, S. Unholzer, U.
+Fischer, Y. Wu, M. Angelone, P. Batistoni, M. Pillon, Measurement
+of Neutron and Gamma Spectral Fluxes in the Shielding Assembly,
+Report TU Dresden, Institut fuer Kern- und Teilchenphysik,
+TUD-IKTP/96-04, November 1996.</p></li>
+<li><p>H. Freiesleben, W. Hansen, D. Richter, K. Seidel, S. Unholzer, U.
+Fischer, Y. Wu, M. Angelone, P. Batistoni, M. Pillon, Neutron and
+Photon Flux Spectra in a Mock-up of the ITER Shielding System,
+Fusion Engineering and Design 42 (1998), Proc. of the Fourth Intern.
+Symp. on Fusion Nuclear Technology, Tokyo, April 6-11, 1997,
+M.A. Abdou (Ed.), Elsevier Science B.V., Part C, p. 247-253.</p></li>
+<li><p>U. Fischer, H. Freiesleben, W. Hansen, D. Richter, K. Seidel, S.
+Unholzer, Y. Wu, Test of evaluated data from libraries for fusion
+applications in an ITER shield mock-up experiment, International
+Conference on Nuclear Data for Science and Technology, Trieste,
+May 19-24, 1997, Conference Proceedings Vol. 59, p. 1215-1217,
+G. Reffo, A. Ventura and C. Grandi (Eds.), SIF, Bologna, 1997.</p></li>
+<li><p>M. Tichy, The DIFBAS Program - Description and User’s Guide, Report
+PTB-7.2- 193-1, Braunschweig 1993.</p></li>
+<li><p>U. Fischer, Y. Wu, W. Hansen, D. Richter, K. Seidel, S. Unholzer,
+Benchmark Analyses for the ITER Bulk Shield Experiment with EFF-3.0,
+-3.1 and FENDL-1, -2 Nuclear Cross-Section Data, IAEA FENDL-2
+Consultants’ Meeting, October 12-14, 1998, Vienna.</p></li>
+<li><p>I. Kodeli, Report on 1999 Activity on ND-1.2.1 (extracts),
+EFF/DOC-698, EFF Meeting, Issy-les-Moulineaux NEA-DB (Nov. 1999)</p></li>
+<li><p>P. Batistoni, M. Angelone, U. Fischer, H. Freiesleben, W. Hansen,
+M. Pillon, L. Petrizzi, D. Richter, K. Seidel, S. Unterholzer:
+Neutronics Experiment on a Mock-up of the ITER Shielding Blanket at the
+Frascati Neutron Generator, Fusion Engineering Design 47 (1999) 25-60</p></li>
+<li><p>A. Milocco, The Quality Assessment of the FNG/TUD Benchmark Experiments,
+IJS-DP-10216, April 2009</p></li>
+</ul>
 </div>
+</section>
+</section>
+<section id="fng-tud-tungsten-experiment">
+<h3>FNG/TUD Tungsten Experiment<a class="headerlink" href="#fng-tud-tungsten-experiment" title="Link to this heading"></a></h3>
+<p>The purpose of the experiment is transport data benchmark by determination of spectral neutron flux and
+spectral photon flux at four positions in a thick block of W irradiated
+with 14 MeV neutrons.</p>
+<p>The same experimental setup used in <a class="reference internal" href="#fngw"><span class="std std-ref">FNG Benchmark Experiment on Tungsten</span></a> was used</p>
+<section id="id36">
+<h4>Geometry and run parameters<a class="headerlink" href="#id36" title="Link to this heading"></a></h4>
+<p>Neutron and photon flux spectra were measured on the central axis of
+the assembly in four positions (P1,…,P4) at z = 5, 15, 25 and 35 cm:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/TUD-W_2.PNG"><img alt="../_images/TUD-W_2.PNG" src="../_images/TUD-W_2.PNG" style="width: 600px;" /></a>
+</figure>
+<p>Neutron and photon pulse-height spectra were measured simultaneously
+using an NE 213 scintillation spectrometer. The dimensions of the
+cylindrical active volume of the detector were 3.8 cm in both height
+and diameter. Its material had a mass density of 0.874 g/cm3 and an
+elemental composition of 54.8 at-% H and 45.2 at-% C.
+The scintillator was coupled to a photomultiplier by means of a 50 cm
+long light guide. When the detector was located at one of the
+positions, the other ones were filled with rods of W
+alloy.</p>
+</section>
+<section id="id37">
+<h4>Tallies<a class="headerlink" href="#id37" title="Link to this heading"></a></h4>
+<p>The calculations were performed taking into account the precise geometry of
+the mock-up as well as the complete surroundings, to model correctly each
+measurement 4 MCNP inputs were used, with two tallies each at detector position
+for neutron and photon flux (energy-binned):</p>
+<dl class="simple">
+<dt>Tally n. 4</dt><dd><p>This track length flux tally has been used to collect the energy-binned neutron
+fluence</p>
+</dd>
+<dt>Tally n. 14</dt><dd><p>This track length flux tally has been used to collect the energy-binned photon
+fluence</p>
+</dd>
+</dl>
+<p>No FM card was used as the experimental results were given per unit source neutron.
+During the post-processing the value in each energy bin is divided by the bin width
+so that to obtain the spectral fluence to be compared with experimental data from
+the detectors.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><strong>Related papers and contributions:</strong></p>
+<ul class="simple">
+<li><p>M. Angelone, M. Pillon, P. Batistoni, M. Martini, M. Martone, V.
+Rado, “Absolute experimental and numerical calibration of the 14
+MeV neutron source at the Frascati Neutron Generator”, Rev. Sci.
+Instr. 67(1996)2189.</p></li>
+<li><p>H. Freiesleben, C. Negoita, K. Seidel, S. Unholzer, U. Fischer, D.
+Leichtle, M. Angelone, P. Batistoni, M. Pillon, “Measurement and
+analysis of neutron and gamma-ray flux spectra in Tungsten”,
+Report TUD-IKTP/01-03, Dresden, EFFDOC-857 (2003)</p></li>
+<li><p>U. Fischer et al., Monte Carlo Transport and Sensitivity Analyses
+for the TUD Neutron Transport Benchmark Experiment on Tungsten,
+EFFDOC-860 (2002)</p></li>
+<li><p>A. Milocco, The Quality Assessment of the FNG/TUD Benchmark Experiments,
+IJS-DP-10216, April 2009</p></li>
+</ul>
 </div>
-</div>
+</section>
+</section>
+</section>
+</section>
 
 
            </div>
@@ -1548,7 +2516,7 @@ Tungsten, MA-NE-R-003, ENEA, Dec. 2002</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

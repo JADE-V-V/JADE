@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Utilities &mdash; JADE v2.1.1 documentation</title>
+  <title>Utilities &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script src="../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -29,7 +28,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> JADE
-            <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -58,6 +56,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#change-ace-libraries-suffix">Change .ace libraries suffix</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#produce-d1s-uned-reaction-files">Produce D1S-UNED reaction files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#remove-runtpe-files">Remove runtpe files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#interactive-acefile-and-exfor-data-plotter">Interactive acefile and EXFOR data plotter</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tipstricks.html">Tips &amp; Tricks</a></li>
@@ -65,8 +64,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
@@ -77,7 +77,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
@@ -97,8 +96,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Utilities</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Utilities</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/usage/utilities.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -108,8 +107,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="utilities">
-<span id="uty"></span><h1>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline"></a></h1>
+  <section id="utilities">
+<span id="uty"></span><h1>Utilities<a class="headerlink" href="#utilities" title="Link to this heading"></a></h1>
 <p>During the development of JADE, many useful classes and methods were developed
 which could be used for small stand-alone tools, mostly
 operating on MCNP inputs.</p>
@@ -117,18 +116,20 @@ operating on MCNP inputs.</p>
 is here provided.</p>
 <p>The outputs (if generated) of these utilities can be found in specific subfolders
 of the <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Utilities</span></code> directory.</p>
-<div class="section" id="print-available-libraries">
-<h2>Print available libraries<a class="headerlink" href="#print-available-libraries" title="Permalink to this headline"></a></h2>
+<section id="print-available-libraries">
+<h2>Print available libraries<a class="headerlink" href="#print-available-libraries" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">printlib</span></code></p>
 <p>This function allows to print to video all libraries (suffixes) that are
 available in xsdir file indicated in the main configuration file.</p>
-<div class="figure align-center" id="id1">
+<figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="../_images/printlib.png"><img alt="../_images/printlib.png" src="../_images/printlib.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Screenshot of the execution of the <code class="docutils literal notranslate"><span class="pre">printlib</span></code> command</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
-</div>
-</div>
-<div class="section" id="restore-default-configurations">
-<h2>Restore default configurations<a class="headerlink" href="#restore-default-configurations" title="Permalink to this headline"></a></h2>
+<figcaption>
+<p><span class="caption-text">Screenshot of the execution of the <code class="docutils literal notranslate"><span class="pre">printlib</span></code> command</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="restore-default-configurations">
+<h2>Restore default configurations<a class="headerlink" href="#restore-default-configurations" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">restore</span></code></p>
 <p>This function allows to restore the JADE configuration default settings.
 In other words, the content of the <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Configuration</span></code> directory
@@ -144,9 +145,9 @@ before running another JADE instance.</p>
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="configuration.html#mainconfig"><span class="std std-ref">Main Configuration</span></a></p>
 </div>
-</div>
-<div class="section" id="translate-an-mcnp-input">
-<h2>Translate an MCNP input<a class="headerlink" href="#translate-an-mcnp-input" title="Permalink to this headline"></a></h2>
+</section>
+<section id="translate-an-mcnp-input">
+<h2>Translate an MCNP input<a class="headerlink" href="#translate-an-mcnp-input" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">trans</span></code></p>
 <p>This function allows to translate a material section of an MCNP input to
 a whatever nuclear data library available in the xsdir file.</p>
@@ -197,10 +198,12 @@ is basically the natural abundance in mass of the zaid.</p>
 <p>The new input will be dumped in the
 <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Utilities\Translation</span></code> folder.
 The following scheme summarizes the JADE translation logic.</p>
-<div class="figure align-center" id="id2">
+<figure class="align-center" id="id2">
 <a class="reference internal image-reference" href="../_images/Translation_logic.jpg"><img alt="../_images/Translation_logic.jpg" src="../_images/Translation_logic.jpg" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Zaid translation logic</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Zaid translation logic</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>There are few format that can be used to request a translation:</p>
 <dl class="simple">
 <dt>Default (e.g. <code class="docutils literal notranslate"><span class="pre">31c</span></code>)</dt><dd><p>Only one library is provided and the above described translation
@@ -217,9 +220,9 @@ user can provide a dictionary which specifies for each original library
 (e.g. 31c and 21c).</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="print-materials-info">
-<h2>Print materials info<a class="headerlink" href="#print-materials-info" title="Permalink to this headline"></a></h2>
+</section>
+<section id="print-materials-info">
+<h2>Print materials info<a class="headerlink" href="#print-materials-info" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">printmat</span></code></p>
 <p>This function is used to print a summary of an MCNP input material section.
 The information is contained in two sheets of an Excel file dumped into the
@@ -229,10 +232,12 @@ Here both the atom and mass fraction for each zaid is reported divided by
 material and submaterial. It may happen that the original fraction appearing
 in the MCNP input is not normalized. JADE prints this fraction as it is and
 only the alternative fraction is normalized during its calculation.</p>
-<div class="figure align-center" id="id3">
+<figure class="align-center" id="id3">
 <a class="reference internal image-reference" href="../_images/printmat1.jpg"><img alt="../_images/printmat1.jpg" src="../_images/printmat1.jpg" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Extract of the isotope sheet.</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Extract of the isotope sheet.</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>The second sheet summarizes information at the element level.
 Three fractions are here listed for each element:</p>
 <ul class="simple">
@@ -242,13 +247,15 @@ Three fractions are here listed for each element:</p>
 </ul>
 <p>Depending on which kind of fraction it was used in the orginal MCNP input,
 these three fraction need to be interpreted as either <em>mass</em> or <em>atom</em> fraction.</p>
-<div class="figure align-center" id="id4">
+<figure class="align-center" id="id4">
 <a class="reference internal image-reference" href="../_images/printmat2.jpg"><img alt="../_images/printmat2.jpg" src="../_images/printmat2.jpg" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Extract of the element sheet.</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
-</div>
-</div>
-<div class="section" id="generate-material-mixture">
-<h2>Generate material mixture<a class="headerlink" href="#generate-material-mixture" title="Permalink to this headline"></a></h2>
+<figcaption>
+<p><span class="caption-text">Extract of the element sheet.</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="generate-material-mixture">
+<h2>Generate material mixture<a class="headerlink" href="#generate-material-mixture" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">generate</span></code></p>
 <p>This function is used to generate a material mixture starting from two or
 more materials contained in a single MCNP input. The user will be asked for:</p>
@@ -260,22 +267,22 @@ more materials contained in a single MCNP input. The user will be asked for:</p>
 <li><p>nuclear data library to use for the new material mixture.</p></li>
 </ul>
 <p>The following is an example of how all these inputs are provided via console.</p>
-<div class="figure align-center">
+<figure class="align-center">
 <a class="reference internal image-reference" href="../_images/generate.png"><img alt="../_images/generate.png" src="../_images/generate.png" style="width: 600px;" /></a>
-</div>
+</figure>
 <p>Each material will be transformed in a submaterial of the newly generated mixture
 retaining its header if present. The new material will be dumped in the
 <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Utilities\Generated</span> <span class="pre">Materials</span></code> folder.</p>
-</div>
-<div class="section" id="switch-material-fractions">
-<h2>Switch material fractions<a class="headerlink" href="#switch-material-fractions" title="Permalink to this headline"></a></h2>
+</section>
+<section id="switch-material-fractions">
+<h2>Switch material fractions<a class="headerlink" href="#switch-material-fractions" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">switch</span></code></p>
 <p>This function can be used to switch an MCNP input from having atom fractions
 to mass fractions and viceversa. The new input will be dumped in the
 <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Utilities\Fraction</span> <span class="pre">switch</span></code> folder.</p>
-</div>
-<div class="section" id="change-ace-libraries-suffix">
-<h2>Change .ace libraries suffix<a class="headerlink" href="#change-ace-libraries-suffix" title="Permalink to this headline"></a></h2>
+</section>
+<section id="change-ace-libraries-suffix">
+<h2>Change .ace libraries suffix<a class="headerlink" href="#change-ace-libraries-suffix" title="Link to this heading"></a></h2>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version v1.3.0: </span><code class="docutils literal notranslate"><span class="pre">acelib</span></code></p>
 </div>
@@ -285,9 +292,9 @@ suffix changed to the new one. This function operates in a non-destructive way,
 that is, the switch is not implemented on the original file but on copies of
 them instead. The copies will be saved in a folder created at the same level of
 the original one. <strong>This function does not modify the XSDIR file.</strong></p>
-</div>
-<div class="section" id="produce-d1s-uned-reaction-files">
-<h2>Produce D1S-UNED reaction files<a class="headerlink" href="#produce-d1s-uned-reaction-files" title="Permalink to this headline"></a></h2>
+</section>
+<section id="produce-d1s-uned-reaction-files">
+<h2>Produce D1S-UNED reaction files<a class="headerlink" href="#produce-d1s-uned-reaction-files" title="Link to this heading"></a></h2>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version v1.3.0: </span><code class="docutils literal notranslate"><span class="pre">react</span></code></p>
 </div>
@@ -297,9 +304,9 @@ listed. The complete list of available reactions for each D1S activation
 library is provided (and may be modified) in the <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Activation.xlsx</span></code>
 file.</p>
 <p>The generated reaction files are dumped in the <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Utilities\Reactions</span></code> folder</p>
-</div>
-<div class="section" id="remove-runtpe-files">
-<h2>Remove runtpe files<a class="headerlink" href="#remove-runtpe-files" title="Permalink to this headline"></a></h2>
+</section>
+<section id="remove-runtpe-files">
+<h2>Remove runtpe files<a class="headerlink" href="#remove-runtpe-files" title="Link to this heading"></a></h2>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version v2.0.2: </span><code class="docutils literal notranslate"><span class="pre">rmvruntpe</span></code></p>
 </div>
@@ -307,8 +314,43 @@ file.</p>
 library assessment. These files, once the simulations are terminated correctly,
 are kind of useless for the post-processing and they consume a large amount
 of storage memory (up to 95% for MCNP produced outputs).</p>
-</div>
-</div>
+</section>
+<section id="interactive-acefile-and-exfor-data-plotter">
+<h2>Interactive acefile and EXFOR data plotter<a class="headerlink" href="#interactive-acefile-and-exfor-data-plotter" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">comparelib</span></code></p>
+<p>This function is used to generate comparison plots of microscopic neutron
+cross-sections from ACE file data from different data libraries. It also provides
+the possibility of including EXFOR experimental data in the comparison plots.
+Once the utility is launched, the user will be require to:</p>
+<ul class="simple">
+<li><p>choose the nuclide for which the comparison will be made in ZAID format (e.g. 3006)</p></li>
+<li><p>choose neutron reaction cross-sections to be printed. The function checks if
+the MT numeber is correct, if the chosen reactions are not present in some
+libraries, they will not be printed for those libraries. The user can input multiple
+MT numbers (hit Enter after each individual entry). Then type continue once the MT(s)
+are entered;</p></li>
+<li><p>choose nuclear data libraries from which the selected nuclear reaction
+cross-sections will be printed. The chosen libraries must be defined in
+<code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Configuration.xlsx</span></code> file. As above multiple libraries are entered
+until the user enters continue;</p></li>
+<li><p>choose if EXFOR experimental data for those specific nuclide and reactions are
+to e printed. This last feature requires the installation of the optional
+package ‘x4i3’ in JADE environment. Further details on installation and usage
+of this package can be found here: <a class="reference external" href="https://github.com/afedynitch/x4i3">https://github.com/afedynitch/x4i3</a></p></li>
+</ul>
+<p>JADE will provide matplotlib plots of each cross-section as a function of
+energy, in a direct comparison of the chosen nuclear data libraries. If
+required, correspondent EXFOR experimental data will be printed. The plotter can
+print cross-sections from up to 4 nuclear data libraries at the same time and
+up to 15 sets of EXFOR experimental data in the same plot (mainly for
+visualization purposes, experimental data will be chosen starting from the
+largest datasets). In the following, an example of a picture produced by the
+plotter:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../_images/Fe-56_MT102.png"><img alt="../_images/Fe-56_MT102.png" src="../_images/Fe-56_MT102.png" style="width: 600px;" /></a>
+</figure>
+</section>
+</section>
 
 
            </div>
@@ -321,7 +363,7 @@ of storage memory (up to 95% for MCNP produced outputs).</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

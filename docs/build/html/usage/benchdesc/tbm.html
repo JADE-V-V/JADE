@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Test Blanket Module &mdash; JADE v2.1.1 documentation</title>
+  <title>Test Blanket Module &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -25,7 +25,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../../index.html" class="icon icon-home"> JADE
-            <img src="../../_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -50,8 +49,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
@@ -62,7 +62,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributors.html">Contributors</a></li>
@@ -82,8 +81,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Test Blanket Module</li>
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Test Blanket Module</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/usage/benchdesc/tbm.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -93,8 +92,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="test-blanket-module">
-<h1>Test Blanket Module<a class="headerlink" href="#test-blanket-module" title="Permalink to this headline"></a></h1>
+  <section id="test-blanket-module">
+<h1>Test Blanket Module<a class="headerlink" href="#test-blanket-module" title="Link to this heading"></a></h1>
 <p>Tritium and Deuterium are the two main ingredients of the fusion reaction that is
 foreseen to be tested in ITER and that should guarantee sustainable energy production
 in DEMO. Deuterium is abundant in normal sea water and can be extracted relatively
@@ -116,35 +115,45 @@ outboard region. On the contrary, in the new benchmarks, the outboard region was
 substituted with 1D models of the two proposed European concepts for the TBM: the
 Helium Cooled Pebbled bed (HCPB) and the Water Cooled Lithium Lead (WCLL).
 This substitution is the only modification applied to the <a class="reference internal" href="../benchmarks.html#iter1ddesc"><span class="std std-ref">ITER 1D</span></a>.</p>
-<div class="figure align-center" id="id1">
+<figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="../../_images/tbmCAD.png"><img alt="../../_images/tbmCAD.png" src="../../_images/tbmCAD.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">CAD model of the TBM component</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
-</div>
-<div class="section" id="geometry-and-run-parameters">
-<h2>Geometry and run parameters<a class="headerlink" href="#geometry-and-run-parameters" title="Permalink to this headline"></a></h2>
+<figcaption>
+<p><span class="caption-text">CAD model of the TBM component</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<section id="geometry-and-run-parameters">
+<h2>Geometry and run parameters<a class="headerlink" href="#geometry-and-run-parameters" title="Link to this heading"></a></h2>
 <p>The benchmarks are focused on the TBM set (i.e. the actual blanket module) and on
 the shielding section that can be found behind it. While the shield section does
 not really
 change between the two different TBM concepts, the TBM sets do.</p>
-<div class="figure align-center" id="id2">
+<figure class="align-center" id="id2">
 <a class="reference internal image-reference" href="../../_images/HCPBcad.png"><img alt="../../_images/HCPBcad.png" src="../../_images/HCPBcad.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Section of the CAD model of the HCPB TBM set</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
-</div>
-<div class="figure align-center" id="id3">
+<figcaption>
+<p><span class="caption-text">Section of the CAD model of the HCPB TBM set</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id3">
 <a class="reference internal image-reference" href="../../_images/HCPBmcnp.png"><img alt="../../_images/HCPBmcnp.png" src="../../_images/HCPBmcnp.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Visualization of the TBM and and shielding section in the 1D MCNP geometry</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
-</div>
-<div class="figure align-center" id="id4">
+<figcaption>
+<p><span class="caption-text">Visualization of the TBM and and shielding section in the 1D MCNP geometry</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id4">
 <a class="reference internal image-reference" href="../../_images/WCLLcad.png"><img alt="../../_images/WCLLcad.png" src="../../_images/WCLLcad.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Section of the CAD model of the WCLL TBM set</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
-</div>
-<div class="figure align-center" id="id5">
+<figcaption>
+<p><span class="caption-text">Section of the CAD model of the WCLL TBM set</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id5">
 <a class="reference internal image-reference" href="../../_images/WCLLmcnp.png"><img alt="../../_images/WCLLmcnp.png" src="../../_images/WCLLmcnp.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Visualization of the TBM and shielding section in the 1D MCNP geometry</span><a class="headerlink" href="#id5" title="Permalink to this image"></a></p>
-</div>
-</div>
-<div class="section" id="tallies">
-<h2>Tallies<a class="headerlink" href="#tallies" title="Permalink to this headline"></a></h2>
+<figcaption>
+<p><span class="caption-text">Visualization of the TBM and shielding section in the 1D MCNP geometry</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="tallies">
+<h2>Tallies<a class="headerlink" href="#tallies" title="Link to this heading"></a></h2>
 <p>All Tritium production tallies that were defined for the ITER 1D benchmark
 were retained also in the TBMs ones.
 Additionally, a 1-dimensional FMESH was placed on the outboard region
@@ -167,8 +176,8 @@ were tallied on such grid:</p>
 <p><em>Generation of 1D TBM WCLL and HCPB MCNP computational models</em>,
 F4E IDM [F4E_D_2JMRZR v1.0]</p>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -178,7 +187,7 @@ F4E IDM [F4E_D_2JMRZR v1.0]</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

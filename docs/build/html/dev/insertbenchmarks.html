@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Insert Custom Benchmarks &mdash; JADE v2.1.1 documentation</title>
+  <title>Insert Custom Benchmarks &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
+        <script src="../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Modify documentation" href="docmodify.html" />
-    <link rel="prev" title="Troubleshooting" href="../usage/troubleshooting.html" /> 
+    <link rel="next" title="JADE CI and automatic testing" href="testing.html" />
+    <link rel="prev" title="Contributing to JADE" href="workflow.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -27,7 +27,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> JADE
-            <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -52,16 +51,19 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Insert Custom Benchmarks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#insert-custom-computational-benchmark">Insert Custom Computational Benchmark</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#insert-custom-experimental-benchmark">Insert Custom Experimental Benchmark</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#call-the-right-output-class">Call the right Output class</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#additional-actions-for-multi-run-benchmarks">Additional actions for multi-run benchmarks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#insert-binned-value-plot-experimental-benchmarks">Insert binned-value plot experimental benchmarks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#insert-multiple-tallies-in-plot">Insert multiple tallies in plot</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
@@ -72,7 +74,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
@@ -92,8 +93,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Insert Custom Benchmarks</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Insert Custom Benchmarks</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/dev/insertbenchmarks.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -103,13 +104,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="insert-custom-benchmarks">
-<h1>Insert Custom Benchmarks<a class="headerlink" href="#insert-custom-benchmarks" title="Permalink to this headline"></a></h1>
+  <section id="insert-custom-benchmarks">
+<h1>Insert Custom Benchmarks<a class="headerlink" href="#insert-custom-benchmarks" title="Link to this heading"></a></h1>
+<p>The easiest way to contribute to JADE is to widen its benchmarks suite.</p>
 <p>This section of the guide describes how to add custom benchmarks to the JADE suite. The procedures
 necessary to implement new computational and experimental benchmarks are different and are
 described respectively in <a class="reference internal" href="#customcompbench"><span class="std std-ref">Insert Custom Computational Benchmark</span></a> and <a class="reference internal" href="#customexpbench"><span class="std std-ref">Insert Custom Experimental Benchmark</span></a>.</p>
-<div class="section" id="insert-custom-computational-benchmark">
-<span id="customcompbench"></span><h2>Insert Custom Computational Benchmark<a class="headerlink" href="#insert-custom-computational-benchmark" title="Permalink to this headline"></a></h2>
+<section id="insert-custom-computational-benchmark">
+<span id="customcompbench"></span><h2>Insert Custom Computational Benchmark<a class="headerlink" href="#insert-custom-computational-benchmark" title="Link to this heading"></a></h2>
 <p>Implementing a new computational benchmark is relatively easy and, theoretically, no additional
 code is required. The procedure is composed by the following steps:</p>
 <ol class="arabic simple">
@@ -118,7 +120,7 @@ code is required. The procedure is composed by the following steps:</p>
 for additional information on this.</p></li>
 <li><p>[OPTIONAL] if external weight windows (WW) are used, the WW file must be named <em>wwinp</em> and inserted in
 <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Benchmark</span> <span class="pre">inputs\VRT\&lt;name&gt;\</span></code>.</p></li>
-<li><p>Create a custom post-processing configuration file as described in <a class="reference internal" href="../usage/configuration.html#ppconf"><span class="std std-ref">Benchmark post-processing configuration</span></a> and save it in
+<li><p>Create a custom post-processing configuration file as described in <a class="reference internal" href="../usage/configuration.html#ppconf"><span class="std std-ref">Computational benchmark post-processing configuration</span></a> and save it in
 <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Benchmarks</span> <span class="pre">Configuration\&lt;name&gt;.xlsx</span></code></p></li>
 </ol>
 <div class="admonition note">
@@ -135,9 +137,9 @@ extended tally names and are used during post-processing.</p>
 <p class="admonition-title">Warning</p>
 <p>benchmark input file name cannot end with ‘o’ or ‘m’.</p>
 </div>
-</div>
-<div class="section" id="insert-custom-experimental-benchmark">
-<span id="customexpbench"></span><h2>Insert Custom Experimental Benchmark<a class="headerlink" href="#insert-custom-experimental-benchmark" title="Permalink to this headline"></a></h2>
+</section>
+<section id="insert-custom-experimental-benchmark">
+<span id="customexpbench"></span><h2>Insert Custom Experimental Benchmark<a class="headerlink" href="#insert-custom-experimental-benchmark" title="Link to this heading"></a></h2>
 <p>Inserting a custom experimental benchmark is slightly more complex, but a significant higher order
 of customization is guaranteed.
 Steps 1) and 2) of the computational benchmarks procedure still need to be followed but then some
@@ -146,8 +148,8 @@ class needs to be defined inside <code class="docutils literal notranslate"><spa
 In order to do that, at least the three abstract methods <code class="docutils literal notranslate"><span class="pre">_processMCNPdata()</span></code>, <code class="docutils literal notranslate"><span class="pre">_pp_excel_comparison()</span></code>
 and <code class="docutils literal notranslate"><span class="pre">_build_atlas()</span></code> need to be implemented in the new class.
 Once this has been done, a few other adjustments need to be done to the code.</p>
-<div class="section" id="call-the-right-output-class">
-<h3>Call the right Output class<a class="headerlink" href="#call-the-right-output-class" title="Permalink to this headline"></a></h3>
+<section id="call-the-right-output-class">
+<span id="calloutput"></span><h3>Call the right Output class<a class="headerlink" href="#call-the-right-output-class" title="Link to this heading"></a></h3>
 <p>In <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Code\postprocess.py</span></code>, the function <code class="docutils literal notranslate"><span class="pre">_get_output()</span></code> controls the creation of the
 benchmark object during post-processing depending on the benchmark. Here an <em>elif</em> statement needs
 to be added to ensure that the newly created custom class is called when generating the output for
@@ -167,9 +169,9 @@ the custom added experimental benchmark. Here is an example of how the FNG bench
 <p>The user should just substitute <code class="docutils literal notranslate"><span class="pre">FNG</span></code> with the name of the benchmark input and <code class="docutils literal notranslate"><span class="pre">FNGOutput</span></code> with
 the newly created class. Attention should be paid also to the <code class="docutils literal notranslate"><span class="pre">multiplerun</span></code> keyword, set True if
 the benchmark is actually composed by more than one input (i.e. multiple MCNP/D1S runs).</p>
-</div>
-<div class="section" id="additional-actions-for-multi-run-benchmarks">
-<h3>Additional actions for multi-run benchmarks<a class="headerlink" href="#additional-actions-for-multi-run-benchmarks" title="Permalink to this headline"></a></h3>
+</section>
+<section id="additional-actions-for-multi-run-benchmarks">
+<h3>Additional actions for multi-run benchmarks<a class="headerlink" href="#additional-actions-for-multi-run-benchmarks" title="Link to this heading"></a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>these next actions need to be performed <strong>only</strong> if the benchmark is composed by more than one input.</p>
@@ -207,26 +209,100 @@ Here is the code snippet of interest:</p>
 specifically for the new experimental benchmark, an option would need to be added here.
 If the benchmark is a multirun one, an additional <em>elif</em> statement needs to be added similarly
 to what has been done for the FNG benchmark.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>see also <a class="reference internal" href="../api/inputgeneration.html#testrunmodule"><span class="std std-ref">testrun module</span></a> for a better description of the Test object and his children</p>
-</div>
-</div>
-</div>
-</div>
+</section>
+<section id="insert-binned-value-plot-experimental-benchmarks">
+<span id="insbin"></span><h3>Insert binned-value plot experimental benchmarks<a class="headerlink" href="#insert-binned-value-plot-experimental-benchmarks" title="Link to this heading"></a></h3>
+<p>Experimental results often come as quantities like spectra, leakage fluxes, etc.
+binned in energy or time. For this reason, a standard way of post-processing this kind
+of data has been introduced in JADE, to speed-up the insertion process and to remove the need
+of adding code. The idea is to organize the benchmark by means of an Excel configuration file,
+which is way more user-friendly than writing new code. The main steps to follow to
+introduce a binned-value data benchmark are the following:</p>
+<ul class="simple">
+<li><p>All steps mentioned above for the insertion of a generic benchmark are still valid
+and should be followed also in this case. Also the folder structure is the usual one.</p></li>
+<li><p>As a general rule, to each tally of each in put file it corresponds a .csv file in Experimental Results
+data folder.</p></li>
+<li><p>Benchmark input filepath should be <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Benchmarks</span> <span class="pre">inputs\&lt;BenchmarkName&gt;</span></code>.</p></li>
+<li><p>For multiple run benchmarks, the filepath should be <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Benchmarks</span> <span class="pre">inputs\&lt;BenchmarkName&gt;\&lt;BenchmarkName&gt;_&lt;InputName&gt;.i</span></code>.</p></li>
+<li><p>The name of the experimental data file corresponding to a given tally in a given benchmark
+is supposed to be: BenchmarkName_TallyNumber.csv, and it must be put in
+<code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Experimental</span> <span class="pre">Results\&lt;BenchmarkName&gt;</span></code>.</p></li>
+<li><p>If the benchmark foresees multiple runs, the filename must be set as: BenchmarkName_InputName_TallyNumber.csv
+and must be put in <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Experimental</span> <span class="pre">Results\&lt;BenchmarkName&gt;\&lt;InputName&gt;</span></code></p></li>
+<li><p>Tallies in MCNP input should be binned only on one variable, e.g. only energy or
+only time (JADE doesn’t foresee dependency on more than one independent variable)
+and should not include total bins (they are eventually ignored by JADE).</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">expoutput.py</span></code> there is the global variable (dictionary) <code class="docutils literal notranslate"><span class="pre">TALLY_NORMALIZATION</span></code> which
+is used to select the normalization type of the MCNP results (e.g. in terms of
+lethargy or energy bins width).</p></li>
+<li><dl class="simple">
+<dt>Data in .csv experimental data files should follow some standard rules:</dt><dd><ol class="arabic simple">
+<li><p>The name of the first column should be equal to: <code class="docutils literal notranslate"><span class="pre">X</span> <span class="pre">Quantity</span> <span class="pre">[unit]</span></code>, where
+<code class="docutils literal notranslate"><span class="pre">X</span> <span class="pre">Quantity</span></code> can be both <code class="docutils literal notranslate"><span class="pre">Energy</span></code> or <code class="docutils literal notranslate"><span class="pre">Time</span></code>. The code could be easily
+updated to include also other binnings, e.g. Cosine bins. <code class="docutils literal notranslate"><span class="pre">unit</span></code> should correspond
+to the MCNP standard unit of the binned quantity.</p></li>
+<li><p>Data in first column should correspond to the upper values of the bins of the quantity
+and should be in ascending order.</p></li>
+<li><p>The second column name should be <code class="docutils literal notranslate"><span class="pre">Y</span> <span class="pre">Quantity</span> <span class="pre">[unit]</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">Fluence</span></code>, <code class="docutils literal notranslate"><span class="pre">Leakage</span> <span class="pre">flux</span></code>, etc.</p></li>
+<li><p>Data in the second column should be the final data which is to be printed
+in the plot. No further processing and normalizations are foreseen by the code.</p></li>
+<li><p>The last column should be named <code class="docutils literal notranslate"><span class="pre">Relative</span> <span class="pre">error</span> <span class="pre">[-]</span></code> and should contain
+the values of the total relative experimental error of that bin, not in percentage.</p></li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><p>Do the things explained in <a class="reference internal" href="#calloutput"><span class="std std-ref">Call the right Output class</span></a> by using the <code class="docutils literal notranslate"><span class="pre">SpectrumOutput</span></code> class.</p></li>
+<li><p>Setup the benchmark configuration file in <code class="docutils literal notranslate"><span class="pre">&lt;JADE_root&gt;\Configuration\Benchmarks</span> <span class="pre">Configuration</span></code> folder
+as explained in <a class="reference internal" href="../usage/configuration.html#spectrumconfig"><span class="std std-ref">Experimental benchmark post-processing configuration</span></a>.</p></li>
+<li><p>In case of multiple runs, the same tally number should be used for the same quantity in all
+MCNP input files, e.g. tally number 14 in <a class="reference internal" href="../usage/benchmarks.html#tiara"><span class="std std-ref">Tiara</span></a> benchmark should correspond
+for the sake of simplicity to the on-axis neutron flux in all MCNP inputs.</p></li>
+</ul>
+<p>Here an example of a .csv experimental data file structure is reported:</p>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/Example_exp_data.PNG"><img alt="../_images/Example_exp_data.PNG" src="../_images/Example_exp_data.PNG" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Example of .csv experimental file for SpectrumOutput class</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="insert-multiple-tallies-in-plot">
+<span id="insbinmul"></span><h3>Insert multiple tallies in plot<a class="headerlink" href="#insert-multiple-tallies-in-plot" title="Link to this heading"></a></h3>
+<p>In order to visualize data in a more compact way and to have a direct comparison of
+the differences between different cases, it is often useful to show more than one
+plot in the same figure. For instance, the following picture is taken from <a class="reference internal" href="../usage/benchmarks.html#fnstof"><span class="std std-ref">FNS Time-of-Flight Experiment</span></a> <code class="docutils literal notranslate"><span class="pre">Atlas</span></code>
+and shows how the spectra acquired in the 5 different detectors’ locations are grouped
+in the same plot:</p>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/FNS-TOF_atlas.jpg"><img alt="../_images/FNS-TOF_atlas.jpg" src="../_images/FNS-TOF_atlas.jpg" style="width: 600px;" /></a>
+<figcaption>
+<p><span class="caption-text">Leakage lethargy fluxes from 5 different detetors’ locations in FNS-TOF experiment</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>To avoid the overlapping of the plots, both the tally results and experimental data
+can also be multiplied by a factor. C/E comparisons are then printed for each tally
+in the following page of the <code class="docutils literal notranslate"><span class="pre">Atlas</span></code>.</p>
+<p>To get this kind of plots is enough to follow the same steps mentioned in <a class="reference internal" href="#insbin"><span class="std std-ref">Insert binned-value plot experimental benchmarks</span></a>,
+but the class <code class="docutils literal notranslate"><span class="pre">MultipleSpectrumOutput</span></code> must be used. All the other parameters are set in
+the related configuration file (see <a class="reference internal" href="../usage/configuration.html#multspectrumconfig"><span class="std std-ref">MultipleSpectrumOutput class benchmarks configuration files</span></a>)</p>
+</section>
+</section>
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../usage/troubleshooting.html" class="btn btn-neutral float-left" title="Troubleshooting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="docmodify.html" class="btn btn-neutral float-right" title="Modify documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="workflow.html" class="btn btn-neutral float-left" title="Contributing to JADE" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="testing.html" class="btn btn-neutral float-right" title="JADE CI and automatic testing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

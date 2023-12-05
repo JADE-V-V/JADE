@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contributors &mdash; JADE v2.1.1 documentation</title>
+  <title>Contributors &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
+        <script src="_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -27,7 +27,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> JADE
-            <img src="_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -52,8 +51,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
@@ -64,7 +64,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LICENSE.html">License</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Contributors</a></li>
@@ -84,8 +83,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Contributors</li>
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Contributors</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/contributors.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -95,58 +94,94 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="contributors">
-<h1>Contributors<a class="headerlink" href="#contributors" title="Permalink to this headline"></a></h1>
-<p>JADE is the results of a joint effort between <a class="reference external" href="https://www.niering.it/">NIER ingegneria</a>,
+  <section id="contributors">
+<span id="contributor-list"></span><h1>Contributors<a class="headerlink" href="#contributors" title="Link to this heading"></a></h1>
+<p>JADE project was originally started as a joint effort between between <a class="reference external" href="https://www.niering.it/">NIER ingegneria</a>,
 <a class="reference external" href="https://ingegneriaindustriale.unibo.it/it">Università di Bologna (UNIBO)</a>
 and <a class="reference external" href="https://fusionforenergy.europa.eu/">Fusion For Energy (F4E)</a>.</p>
-<a class="reference internal image-reference" href="_images/nier.png"><img alt="_images/nier.png" src="_images/nier.png" style="width: 400px;" /></a>
-<a class="reference internal image-reference" href="_images/unibo.jpg"><img alt="_images/unibo.jpg" src="_images/unibo.jpg" style="width: 400px;" /></a>
-<a class="reference internal image-reference" href="_images/f4e.jpg"><img alt="_images/f4e.jpg" src="_images/f4e.jpg" style="width: 400px;" /></a>
-<p><strong>Key People:</strong></p>
-<table class="colwidths-given docutils align-default">
+<p>Nowadays new development is mostly carried on by F4E and the United Kingdom Atomic Energy Authority (UKAEA), more
+specifically by the <a class="reference external" href="https://ccfe.ukaea.uk/">Culham Centre for Fusion Energy (CCFE)</a>.</p>
+<p>F4E is currently acting as the project coordinator.</p>
+<p>This activity was partially funded by Fusion For Energy under XXX-XXX-XXX contract.</p>
+<a class="reference internal image-reference" href="_images/nier.png"><img alt="_images/nier.png" src="_images/nier.png" style="width: 300px;" /></a>
+<a class="reference internal image-reference" href="_images/unibo.jpg"><img alt="_images/unibo.jpg" src="_images/unibo.jpg" style="width: 300px;" /></a>
+<a class="reference internal image-reference" href="_images/f4e.jpg"><img alt="_images/f4e.jpg" src="_images/f4e.jpg" style="width: 300px;" /></a>
+<a class="reference internal image-reference" href="_images/UKAEA.png"><img alt="_images/UKAEA.png" src="_images/UKAEA.png" style="width: 150px;" /></a>
+<p><strong>JADE contributors:</strong></p>
+<table class="docutils align-default">
 <colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
+<tr class="row-odd"><th class="head"><p>Surname</p></th>
+<th class="head"><p>Name</p></th>
 <th class="head"><p>Contribution</p></th>
 <th class="head"><p>Institution/Company</p></th>
 <th class="head"><p>Contacts</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>Davide Laghi</p></td>
-<td><p>Founding developer</p></td>
-<td><p>ATG at F4E (prev. NIER/UNIBO)</p></td>
-<td><p><a class="reference external" href="mailto:davide&#46;laghi&#37;&#52;&#48;ext&#46;f4e&#46;europa&#46;eu">davide<span>&#46;</span>laghi<span>&#64;</span>ext<span>&#46;</span>f4e<span>&#46;</span>europa<span>&#46;</span>eu</a></p></td>
+<tr class="row-even"><td><p>Bittesnich</p></td>
+<td><p>Alberto</p></td>
+<td><p>Committer</p></td>
+<td><p>F4E</p></td>
+<td><p><a class="reference external" href="mailto:alberto&#46;bittesnich&#37;&#52;&#48;ext&#46;f4e&#46;europa&#46;eu">alberto<span>&#46;</span>bittesnich<span>&#64;</span>ext<span>&#46;</span>f4e<span>&#46;</span>europa<span>&#46;</span>eu</a></p></td>
 </tr>
-<tr class="row-odd"><td><p>Marco Fabbri</p></td>
-<td><p>Project manager and expert</p></td>
+<tr class="row-odd"><td><p>Bradnam</p></td>
+<td><p>Steve</p></td>
+<td><p>Committer</p></td>
+<td><p>UKAEA</p></td>
+<td><p><a class="reference external" href="mailto:steve&#46;bradnam&#37;&#52;&#48;ukaea&#46;uk">steve<span>&#46;</span>bradnam<span>&#64;</span>ukaea<span>&#46;</span>uk</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Fabbri</p></td>
+<td><p>Marco</p></td>
+<td><p>Project Coordinator</p></td>
 <td><p>F4E</p></td>
 <td><p><a class="reference external" href="mailto:marco&#46;fabbri&#37;&#52;&#48;f4e&#46;europa&#46;eu">marco<span>&#46;</span>fabbri<span>&#64;</span>f4e<span>&#46;</span>europa<span>&#46;</span>eu</a></p></td>
 </tr>
-<tr class="row-even"><td><p>Lorenzo Isolan</p></td>
+<tr class="row-odd"><td><p>Isolan</p></td>
+<td><p>Lorenzo</p></td>
 <td><p>Tester</p></td>
 <td><p>UNIBO</p></td>
 <td><p><a class="reference external" href="mailto:lorenzo&#46;isolan2&#37;&#52;&#48;unibo&#46;it">lorenzo<span>&#46;</span>isolan2<span>&#64;</span>unibo<span>&#46;</span>it</a></p></td>
 </tr>
-<tr class="row-odd"><td><p>Marco Sumini</p></td>
+<tr class="row-even"><td><p>Kodeli</p></td>
+<td><p>Ivan</p></td>
+<td><p>Expert</p></td>
+<td><p>UKAEA</p></td>
+<td><p><a class="reference external" href="mailto:ivan&#46;kodeli&#37;&#52;&#48;ukaea&#46;uk">ivan<span>&#46;</span>kodeli<span>&#64;</span>ukaea<span>&#46;</span>uk</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Laghi</p></td>
+<td><p>Davide</p></td>
+<td><p>Technical Leader &amp; Approver</p></td>
+<td><p>ATG at F4E (prev. NIER/UNIBO)</p></td>
+<td><p><a class="reference external" href="mailto:davide&#46;laghi&#37;&#52;&#48;ext&#46;f4e&#46;europa&#46;eu">davide<span>&#46;</span>laghi<span>&#64;</span>ext<span>&#46;</span>f4e<span>&#46;</span>europa<span>&#46;</span>eu</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Sumini</p></td>
+<td><p>Marco</p></td>
 <td><p>Expert</p></td>
 <td><p>UNIBO</p></td>
 <td><p><a class="reference external" href="mailto:marco&#46;sumini&#37;&#52;&#48;unibo&#46;it">marco<span>&#46;</span>sumini<span>&#64;</span>unibo<span>&#46;</span>it</a></p></td>
 </tr>
-<tr class="row-even"><td><p>Alberto Bittesnich</p></td>
-<td><p>Developer</p></td>
-<td><p>F4E</p></td>
-<td><p><a class="reference external" href="mailto:alberto&#46;bittesnich&#37;&#52;&#48;ext&#46;f4e&#46;europa&#46;eu">alberto<span>&#46;</span>bittesnich<span>&#64;</span>ext<span>&#46;</span>f4e<span>&#46;</span>europa<span>&#46;</span>eu</a></p></td>
+<tr class="row-odd"><td><p>Valentine</p></td>
+<td><p>Alex</p></td>
+<td><p>Committer</p></td>
+<td><p>UKAEA</p></td>
+<td><p><a class="reference external" href="mailto:alex&#46;valentine&#37;&#52;&#48;ukaea&#46;uk">alex<span>&#46;</span>valentine<span>&#64;</span>ukaea<span>&#46;</span>uk</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Wheeler</p></td>
+<td><p>Dylan</p></td>
+<td><p>Committer</p></td>
+<td><p>UKAEA</p></td>
+<td><p><a class="reference external" href="mailto:dylan&#46;wheeler&#37;&#52;&#48;ukaea&#46;uk">dylan<span>&#46;</span>wheeler<span>&#64;</span>ukaea<span>&#46;</span>uk</a></p></td>
 </tr>
 </tbody>
 </table>
-</div>
+</section>
 
 
            </div>
@@ -159,7 +194,7 @@ and <a class="reference external" href="https://fusionforenergy.europa.eu/">Fusi
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

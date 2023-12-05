@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tips &amp; Tricks &mdash; JADE v2.1.1 documentation</title>
+  <title>Tips &amp; Tricks &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
+        <script src="../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -27,7 +27,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> JADE
-            <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -58,8 +57,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
@@ -70,7 +70,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
@@ -90,8 +89,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Tips &amp; Tricks</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Tips &amp; Tricks</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/usage/tipstricks.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -101,12 +100,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="tips-tricks">
-<h1>Tips &amp; Tricks<a class="headerlink" href="#tips-tricks" title="Permalink to this headline"></a></h1>
+  <section id="tips-tricks">
+<h1>Tips &amp; Tricks<a class="headerlink" href="#tips-tricks" title="Link to this heading"></a></h1>
 <p>This section reunites a series of tips and tricks that can be used to <em>unlock</em>
 JADE additional capabilities.</p>
-<div class="section" id="external-run-of-a-benchmark">
-<span id="externalrun"></span><h2>External Run of a benchmark<a class="headerlink" href="#external-run-of-a-benchmark" title="Permalink to this headline"></a></h2>
+<section id="external-run-of-a-benchmark">
+<span id="externalrun"></span><h2>External Run of a benchmark<a class="headerlink" href="#external-run-of-a-benchmark" title="Link to this heading"></a></h2>
 <p>It may be useful for particularly computational-intensive benchmark to be
 run on a separate hardware (e.g. a server) with respect to the one used for JADE.
 This can be achieved quite easily with the following steps:</p>
@@ -126,9 +125,9 @@ for instance:</p>
 <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Tests\MCNP</span> <span class="pre">simulation\&lt;lib</span> <span class="pre">suffix&gt;\&lt;Benchmark</span> <span class="pre">name&gt;</span></code> folder;</p></li>
 <li><p>normally run the post-processing.</p></li>
 </ol>
-</div>
-<div class="section" id="change-the-plots-parameters">
-<h2>Change the plots parameters<a class="headerlink" href="#change-the-plots-parameters" title="Permalink to this headline"></a></h2>
+</section>
+<section id="change-the-plots-parameters">
+<h2>Change the plots parameters<a class="headerlink" href="#change-the-plots-parameters" title="Link to this heading"></a></h2>
 <p>Font size in plots is hardcoded in JADE. Nevertheless to change these value globally
 for all plots it is quite easy since they are all defined at the beginning of the
 <code class="docutils literal notranslate"><span class="pre">&lt;JADE</span> <span class="pre">root&gt;\Code\plotter.py</span></code> file trough the matplotlib.pyplot.rc attribute:</p>
@@ -154,9 +153,9 @@ for all plots it is quite easy since they are all defined at the beginning of th
 </div>
 <p>Also the default extension of the plots can be changed in this way (it needs
 to be supported by <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> though).</p>
-</div>
-<div class="section" id="add-a-new-material-to-the-spherical-benchmarks">
-<h2>Add a new material to the spherical benchmarks<a class="headerlink" href="#add-a-new-material-to-the-spherical-benchmarks" title="Permalink to this headline"></a></h2>
+</section>
+<section id="add-a-new-material-to-the-spherical-benchmarks">
+<h2>Add a new material to the spherical benchmarks<a class="headerlink" href="#add-a-new-material-to-the-spherical-benchmarks" title="Link to this heading"></a></h2>
 <p>To add a new material to both the Sphere Leakage and Sphere SDDR is fairly simple.
 The steps to follow are the following:</p>
 <ul class="simple">
@@ -168,9 +167,9 @@ and the <code class="docutils literal notranslate"><span class="pre">&lt;JADE_ro
 to specify the run parameters for the new materials. See <a class="reference internal" href="configuration.html#runconf"><span class="std std-ref">Benchmark run configuration</span></a> for
 additional details on such files.</p></li>
 </ul>
-</div>
-<div class="section" id="compare-design-solutions-instead-of-libraries">
-<h2>Compare design solutions instead of libraries<a class="headerlink" href="#compare-design-solutions-instead-of-libraries" title="Permalink to this headline"></a></h2>
+</section>
+<section id="compare-design-solutions-instead-of-libraries">
+<h2>Compare design solutions instead of libraries<a class="headerlink" href="#compare-design-solutions-instead-of-libraries" title="Link to this heading"></a></h2>
 <p>It is possible to “inappropriately” use JADE to compare different
 design solution or in general different version of a same MCNP input instead
 of libraries and still exploit JADE automatic post-processing. For instance
@@ -191,8 +190,8 @@ at different impurities:</p>
 <p>Note that the benchmarks could also be run separately and only the simulation
 results be brought in JADE. Clearly, all benchmarks should be run using the same
 nuclear data library.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -205,7 +204,7 @@ nuclear data library.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

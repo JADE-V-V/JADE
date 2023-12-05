@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Future developments &mdash; JADE v2.1.1 documentation</title>
+  <title>Future developments &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
+        <script src="_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="License" href="LICENSE.html" />
-    <link rel="prev" title="JADE CI and automatic testing" href="testing/testing.html" /> 
+    <link rel="prev" title="Post-Processing" href="api/postprocessing.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -27,7 +27,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> JADE
-            <img src="_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -52,8 +51,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
@@ -64,11 +64,11 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Future developments</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#eliminate-dependency-from-microsoft-office-suite">Eliminate dependency from Microsoft Office suite</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#migration-to-linux-system">Migration to Linux system</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#implementation-of-open-source-monte-carlo-codes">Implementation of open-source Monte Carlo codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#addition-of-benchmarks">Addition of benchmarks</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="LICENSE.html">License</a></li>
@@ -89,8 +89,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Future developments</li>
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Future developments</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/futuredev.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -100,29 +100,30 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="future-developments">
-<h1>Future developments<a class="headerlink" href="#future-developments" title="Permalink to this headline"></a></h1>
+  <section id="future-developments">
+<h1>Future developments<a class="headerlink" href="#future-developments" title="Link to this heading"></a></h1>
 <p>Many interesting developments may be added to JADE to expand its potential and
 usage. Some of them are listed hereafter:</p>
-<div class="section" id="eliminate-dependency-from-microsoft-office-suite">
-<h2>Eliminate dependency from Microsoft Office suite<a class="headerlink" href="#eliminate-dependency-from-microsoft-office-suite" title="Permalink to this headline"></a></h2>
+<section id="eliminate-dependency-from-microsoft-office-suite">
+<h2>Eliminate dependency from Microsoft Office suite<a class="headerlink" href="#eliminate-dependency-from-microsoft-office-suite" title="Link to this heading"></a></h2>
 <p>The need for Excel and Word may be a limiting factor for the use of JADE.
 If substituing the excel configuration files with .csv ones or a GUI is
 definitely feasible, much harder would be to substitute the Excel use that is
 at the core of JADE post-processing. Either those parts of code are rewritten
 in order to use open-source equivalents (e.g. OpenOffice) or a simplified
 version of the post-processing must be developed.</p>
-</div>
-<div class="section" id="migration-to-linux-system">
-<h2>Migration to Linux system<a class="headerlink" href="#migration-to-linux-system" title="Permalink to this headline"></a></h2>
+</section>
+<section id="migration-to-linux-system">
+<h2>Migration to Linux system<a class="headerlink" href="#migration-to-linux-system" title="Link to this heading"></a></h2>
 <p>A great portion of science is nowadays run on Linux operative systems.
 JADE is entirely written in Python, which should be easily portable to any
 major OS system. Nevertheless,
 key modules like <code class="docutils literal notranslate"><span class="pre">xlwings</span></code> or <code class="docutils literal notranslate"><span class="pre">python-docx</span></code> which are used respectively
 to interact with Excel and Word do not fully support Linux operative systems.</p>
-</div>
-<div class="section" id="implementation-of-open-source-monte-carlo-codes">
-<h2>Implementation of open-source Monte Carlo codes<a class="headerlink" href="#implementation-of-open-source-monte-carlo-codes" title="Permalink to this headline"></a></h2>
+<p>This is currently under development on the <a class="reference external" href="https://github.com/JADE-V-V/JADE/tree/linux">Linux branch</a>.</p>
+</section>
+<section id="implementation-of-open-source-monte-carlo-codes">
+<h2>Implementation of open-source Monte Carlo codes<a class="headerlink" href="#implementation-of-open-source-monte-carlo-codes" title="Link to this heading"></a></h2>
 <p>The science world is more and more going in the direction of open-source
 software. Currently, in order to use JADE, a valid license of MCNP is
 necessary, and this may be a huge limiting factor for its usage. Implementing
@@ -134,21 +135,38 @@ the JADE project in many ways like:</p>
 compare different MC code results using the same library;</p></li>
 <li><p>allow JADE to be used more effectively in libraries continuous integration.</p></li>
 </ul>
-</div>
-</div>
+<p>This is currently under development on the <a class="reference external" href="https://github.com/JADE-V-V/JADE/tree/linux">Linux branch</a>.</p>
+</section>
+<section id="addition-of-benchmarks">
+<h2>Addition of benchmarks<a class="headerlink" href="#addition-of-benchmarks" title="Link to this heading"></a></h2>
+<p>The number of computational and experimental benchmarks in the JADE suite is
+increasingly growing. This adds to the completeness of the JADE as a validation
+and verification tool. In particular, the addition high energy benchmarks. Guidance
+for adding benchmarks to JADE is given in <a class="reference internal" href="dev/insertbenchmarks.html#customcompbench"><span class="std std-ref">Insert Custom Computational Benchmark</span></a> and <a class="reference internal" href="dev/insertbenchmarks.html#customexpbench"><span class="std std-ref">Insert Custom Experimental Benchmark</span></a>.</p>
+<p><strong>Further ideas for future development</strong></p>
+<ul class="simple">
+<li><p>Development of an interactive web interface for plotting JADE post-processed data.</p></li>
+<li><p>Complete addition of OpenMC and Serpent for all benchmarks within JADE.</p></li>
+<li><p>Integrating ACE file quality checks within JADE. Further JADE as a complete tool for both verification and validation.</p></li>
+<li><p>Production of weight windows required to run some of the benchmarks in JADE. This includes in MCNP, OpenMC and Serpent format.</p></li>
+<li><p>General usage of JADE to ensure robustness of the code and conduct quality review of implemented benchmarks.</p></li>
+<li><p>Complete run of JADE V&amp;V for JEFF 4T4 or JEFF 4.0 once released.</p></li>
+</ul>
+</section>
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="testing/testing.html" class="btn btn-neutral float-left" title="JADE CI and automatic testing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api/postprocessing.html" class="btn btn-neutral float-left" title="Post-Processing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="LICENSE.html" class="btn btn-neutral float-right" title="License" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

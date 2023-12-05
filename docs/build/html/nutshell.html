@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JADE in a nutshell &mdash; JADE v2.1.1 documentation</title>
+  <title>JADE in a nutshell &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
+        <script src="_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -27,7 +27,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> JADE
-            <img src="_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -52,8 +51,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
@@ -64,7 +64,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
@@ -84,8 +83,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>JADE in a nutshell</li>
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">JADE in a nutshell</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/nutshell.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -95,12 +94,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="jade-in-a-nutshell">
-<h1>JADE in a nutshell<a class="headerlink" href="#jade-in-a-nutshell" title="Permalink to this headline"></a></h1>
+  <section id="jade-in-a-nutshell">
+<h1>JADE in a nutshell<a class="headerlink" href="#jade-in-a-nutshell" title="Link to this heading"></a></h1>
 <a class="reference internal image-reference" href="_images/scheme.png"><img alt="_images/scheme.png" src="_images/scheme.png" style="width: 600px;" /></a>
 <p>JADE is a new tool for nuclear libraries V&amp;V.
-Brought to you by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E).
-JADE is an open source, Python 3 based software able to:</p>
+Brought to you by NIER, University of Bologna (UNIBO), Fusion For Energy (F4E),
+and UK Atomic Energy Authority (UKAEA).
+JADE is an open source, system agnostic, Python 3 based software able to:</p>
 <ul class="simple">
 <li><p>automatically build a series of MCNP input file using different nuclear
 data libraries;</p></li>
@@ -118,6 +118,7 @@ simulations;</p></li>
 </ul>
 <p>Additional JADE features are:</p>
 <ul class="simple">
+<li><p>run JADE with the transport codes OpenMC and Serpent.</p></li>
 <li><p>the possibility to implement user-defined benchmarks;</p></li>
 <li><p>operate on the material card of an MCNP input (e.g. create material mixtures,
 translate it to a different nuclear data library or switch between atom and
@@ -145,7 +146,7 @@ mass fraction);</p></li>
 <em>Fusion Eng. Des.</em>, <strong>151</strong> 111399.</p></li>
 </ul>
 </div>
-</div>
+</section>
 
 
            </div>
@@ -158,7 +159,7 @@ mass fraction);</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

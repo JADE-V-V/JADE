@@ -8,7 +8,7 @@ JADE in a nutshell
 JADE is a new tool for nuclear libraries V&V.
 Brought to you by NIER, University of Bologna (UNIBO), Fusion For Energy (F4E),
 and UK Atomic Energy Authority (UKAEA).
-JADE is an open source, Python 3 based software able to:
+JADE is an open source, system agnostic, Python 3 based software able to:
 
 * automatically build a series of MCNP input file using different nuclear
   data libraries;

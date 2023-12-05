@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ITER 1D &mdash; JADE v2.1.1 documentation</title>
+  <title>ITER 1D &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -25,7 +25,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../../index.html" class="icon icon-home"> JADE
-            <img src="../../_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -50,8 +49,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
@@ -62,7 +62,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributors.html">Contributors</a></li>
@@ -82,8 +81,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>ITER 1D</li>
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">ITER 1D</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/usage/benchdesc/iter1d.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -93,31 +92,35 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="iter-1d">
-<span id="iter1ddesc"></span><h1>ITER 1D<a class="headerlink" href="#iter-1d" title="Permalink to this headline"></a></h1>
-<div class="figure align-center" id="id1">
+  <section id="iter-1d">
+<span id="iter1ddesc"></span><h1>ITER 1D<a class="headerlink" href="#iter-1d" title="Link to this heading"></a></h1>
+<figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="../../_images/iter1D.png"><img alt="../../_images/iter1D.png" src="../../_images/iter1D.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">ITER 1D MCNP geometry (quarter)</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">ITER 1D MCNP geometry (quarter)</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>The ITER 1D benchmark developed by Prof. Sawan M. is a popular 1-Dimensional neutronic model
 used for nuclear data benchmarking in the fusion community. This consists of a
 simple but realistic model of the ITER TOKAMAK where the inboard and outboard
 portion of the machine and the plasma region are modelled by means of simple
 concentric cylindrical surfaces.</p>
-<div class="section" id="geometry-and-run-parameters">
-<h2>Geometry and run parameters<a class="headerlink" href="#geometry-and-run-parameters" title="Permalink to this headline"></a></h2>
+<section id="geometry-and-run-parameters">
+<h2>Geometry and run parameters<a class="headerlink" href="#geometry-and-run-parameters" title="Link to this heading"></a></h2>
 <p>As visible in the figure, the benchmarks geometry is uniquely composed by concentric
 cylindrical surfaces. A detailed description of the different layers is reported
 hereafter:</p>
-<div class="figure align-center" id="id2">
+<figure class="align-center" id="id2">
 <a class="reference internal image-reference" href="../../_images/materialsITER1D.png"><img alt="../../_images/materialsITER1D.png" src="../../_images/materialsITER1D.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Description of the layers composing the ITER 1D benchmark</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Description of the layers composing the ITER 1D benchmark</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>The plasma region includes a 14.1 MeV isotropic neutron source
 (characteristic of Deuterium-Tritium fusion reaction).</p>
-</div>
-<div class="section" id="tallies">
-<h2>Tallies<a class="headerlink" href="#tallies" title="Permalink to this headline"></a></h2>
+</section>
+<section id="tallies">
+<h2>Tallies<a class="headerlink" href="#tallies" title="Link to this heading"></a></h2>
 <p>Many quantities are tallied in the ITER 1D benchmark, the following is a thorough
 description of them.</p>
 <dl class="simple">
@@ -174,8 +177,8 @@ description of them.</p>
 (Vienna: INDC(NDS)-316)</p></li>
 </ul>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -185,7 +188,7 @@ description of them.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

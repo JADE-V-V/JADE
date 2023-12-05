@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Post-Processing Gallery &mdash; JADE v2.1.1 documentation</title>
+  <title>Post-Processing Gallery &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
+        <script src="../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -27,7 +27,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> JADE
-            <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -72,8 +71,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
@@ -84,7 +84,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
@@ -104,8 +103,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Post-Processing Gallery</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Post-Processing Gallery</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/usage/postprocessing.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -115,88 +114,106 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="post-processing-gallery">
-<h1>Post-Processing Gallery<a class="headerlink" href="#post-processing-gallery" title="Permalink to this headline"></a></h1>
-<div class="section" id="excel-output">
-<h2>Excel output<a class="headerlink" href="#excel-output" title="Permalink to this headline"></a></h2>
-<div class="section" id="benchmark-specific">
-<h3>Benchmark specific<a class="headerlink" href="#benchmark-specific" title="Permalink to this headline"></a></h3>
-<div class="section" id="sphere-leakage">
-<h4>Sphere Leakage<a class="headerlink" href="#sphere-leakage" title="Permalink to this headline"></a></h4>
-<div class="figure align-center" id="id1">
+  <section id="post-processing-gallery">
+<h1>Post-Processing Gallery<a class="headerlink" href="#post-processing-gallery" title="Link to this heading"></a></h1>
+<section id="excel-output">
+<h2>Excel output<a class="headerlink" href="#excel-output" title="Link to this heading"></a></h2>
+<section id="benchmark-specific">
+<h3>Benchmark specific<a class="headerlink" href="#benchmark-specific" title="Link to this heading"></a></h3>
+<section id="sphere-leakage">
+<h4>Sphere Leakage<a class="headerlink" href="#sphere-leakage" title="Link to this heading"></a></h4>
+<figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="../_images/statchecks_sphere.png"><img alt="../_images/statchecks_sphere.png" src="../_images/statchecks_sphere.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">10 MCNP statistical checks for each zaid and tally</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
-</div>
-<div class="figure align-center" id="id2">
+<figcaption>
+<p><span class="caption-text">10 MCNP statistical checks for each zaid and tally</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id2">
 <a class="reference internal image-reference" href="../_images/errors_sphere.png"><img alt="../_images/errors_sphere.png" src="../_images/errors_sphere.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Statistical error associated with each tally for each zaid</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
-</div>
-<div class="figure align-center" id="id3">
+<figcaption>
+<p><span class="caption-text">Statistical error associated with each tally for each zaid</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id3">
 <a class="reference internal image-reference" href="../_images/consistencysphere.png"><img alt="../_images/consistencysphere.png" src="../_images/consistencysphere.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Consistency checks on zaid tally results</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
-</div>
-<div class="figure align-center" id="id4">
+<figcaption>
+<p><span class="caption-text">Consistency checks on zaid tally results</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id4">
 <a class="reference internal image-reference" href="../_images/comparisonsphere.png"><img alt="../_images/comparisonsphere.png" src="../_images/comparisonsphere.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Comparison of tally results for each zaid</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
-</div>
-</div>
-<div class="section" id="oktavian">
-<h4>Oktavian<a class="headerlink" href="#oktavian" title="Permalink to this headline"></a></h4>
-<div class="figure align-center" id="id5">
+<figcaption>
+<p><span class="caption-text">Comparison of tally results for each zaid</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="oktavian">
+<h4>Oktavian<a class="headerlink" href="#oktavian" title="Link to this heading"></a></h4>
+<figure class="align-center" id="id5">
 <a class="reference internal image-reference" href="../_images/oktavexcel.png"><img alt="../_images/oktavexcel.png" src="../_images/oktavexcel.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">C/E table summarized per energy range</span><a class="headerlink" href="#id5" title="Permalink to this image"></a></p>
-</div>
-</div>
-</div>
-<div class="section" id="general-output">
-<h3>General output<a class="headerlink" href="#general-output" title="Permalink to this headline"></a></h3>
-<div class="figure align-center" id="id6">
+<figcaption>
+<p><span class="caption-text">C/E table summarized per energy range</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="general-output">
+<h3>General output<a class="headerlink" href="#general-output" title="Link to this heading"></a></h3>
+<figure class="align-center" id="id6">
 <a class="reference internal image-reference" href="../_images/statchecksgeneral.png"><img alt="../_images/statchecksgeneral.png" src="../_images/statchecksgeneral.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">10 MCNP statistical checks recap</span><a class="headerlink" href="#id6" title="Permalink to this image"></a></p>
-</div>
-<div class="figure align-center" id="id7">
+<figcaption>
+<p><span class="caption-text">10 MCNP statistical checks recap</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id7">
 <a class="reference internal image-reference" href="../_images/errors.png"><img alt="../_images/errors.png" src="../_images/errors.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Statistical errors associated with the tally results</span><a class="headerlink" href="#id7" title="Permalink to this image"></a></p>
-</div>
-<div class="figure align-center" id="id8">
+<figcaption>
+<p><span class="caption-text">Statistical errors associated with the tally results</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id8">
 <a class="reference internal image-reference" href="../_images/column.png"><img alt="../_images/column.png" src="../_images/column.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Print of a single binned tally</span><a class="headerlink" href="#id8" title="Permalink to this image"></a></p>
-</div>
-<div class="figure align-center" id="id9">
+<figcaption>
+<p><span class="caption-text">Print of a single binned tally</span><a class="headerlink" href="#id8" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id9">
 <a class="reference internal image-reference" href="../_images/matrix.png"><img alt="../_images/matrix.png" src="../_images/matrix.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Print of a double binned tally</span><a class="headerlink" href="#id9" title="Permalink to this image"></a></p>
-</div>
-</div>
-</div>
-<div class="section" id="plots-atlas">
-<span id="plotstyles"></span><h2>Plots Atlas<a class="headerlink" href="#plots-atlas" title="Permalink to this headline"></a></h2>
-<div class="section" id="binned-graph">
-<h3>Binned graph<a class="headerlink" href="#binned-graph" title="Permalink to this headline"></a></h3>
+<figcaption>
+<p><span class="caption-text">Print of a double binned tally</span><a class="headerlink" href="#id9" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="plots-atlas">
+<span id="plotstyles"></span><h2>Plots Atlas<a class="headerlink" href="#plots-atlas" title="Link to this heading"></a></h2>
+<section id="binned-graph">
+<h3>Binned graph<a class="headerlink" href="#binned-graph" title="Link to this heading"></a></h3>
 <a class="reference internal image-reference" href="../_images/binned.png"><img alt="../_images/binned.png" src="../_images/binned.png" style="width: 600px;" /></a>
-</div>
-<div class="section" id="ratio-graph">
-<h3>Ratio Graph<a class="headerlink" href="#ratio-graph" title="Permalink to this headline"></a></h3>
+</section>
+<section id="ratio-graph">
+<h3>Ratio Graph<a class="headerlink" href="#ratio-graph" title="Link to this heading"></a></h3>
 <a class="reference internal image-reference" href="../_images/ratio.png"><img alt="../_images/ratio.png" src="../_images/ratio.png" style="width: 600px;" /></a>
 <a class="reference internal image-reference" href="../_images/ratio2.png"><img alt="../_images/ratio2.png" src="../_images/ratio2.png" style="width: 600px;" /></a>
-</div>
-<div class="section" id="experimental-points">
-<h3>Experimental points<a class="headerlink" href="#experimental-points" title="Permalink to this headline"></a></h3>
+</section>
+<section id="experimental-points">
+<h3>Experimental points<a class="headerlink" href="#experimental-points" title="Link to this heading"></a></h3>
 <a class="reference internal image-reference" href="../_images/exp.png"><img alt="../_images/exp.png" src="../_images/exp.png" style="width: 600px;" /></a>
-</div>
-<div class="section" id="discreet-experimental-points">
-<h3>Discreet Experimental points<a class="headerlink" href="#discreet-experimental-points" title="Permalink to this headline"></a></h3>
+</section>
+<section id="discreet-experimental-points">
+<h3>Discreet Experimental points<a class="headerlink" href="#discreet-experimental-points" title="Link to this heading"></a></h3>
 <a class="reference internal image-reference" href="../_images/descreet.png"><img alt="../_images/descreet.png" src="../_images/descreet.png" style="width: 600px;" /></a>
-</div>
-<div class="section" id="grouped-bars">
-<h3>Grouped bars<a class="headerlink" href="#grouped-bars" title="Permalink to this headline"></a></h3>
+</section>
+<section id="grouped-bars">
+<h3>Grouped bars<a class="headerlink" href="#grouped-bars" title="Link to this heading"></a></h3>
 <a class="reference internal image-reference" href="../_images/grouped.png"><img alt="../_images/grouped.png" src="../_images/grouped.png" style="width: 600px;" /></a>
-</div>
-<div class="section" id="waves">
-<h3>Waves<a class="headerlink" href="#waves" title="Permalink to this headline"></a></h3>
+</section>
+<section id="waves">
+<h3>Waves<a class="headerlink" href="#waves" title="Link to this heading"></a></h3>
 <a class="reference internal image-reference" href="../_images/waves.png"><img alt="../_images/waves.png" src="../_images/waves.png" style="width: 600px;" /></a>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>
@@ -209,7 +226,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

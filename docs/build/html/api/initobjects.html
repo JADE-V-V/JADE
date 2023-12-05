@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JADE Session &mdash; JADE v2.1.1 documentation</title>
+  <title>JADE Session &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
+        <script src="../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -27,7 +27,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> JADE
-            <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -52,27 +51,40 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="general.html">General OOP scheme</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">JADE Session</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#main-module">main module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#session">Session</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#session">Session</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#main.Session"><code class="docutils literal notranslate"><span class="pre">Session</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#libmanager-module">libmanager module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#libmanager">LibManager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#libmanager">LibManager</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#libmanager.LibManager"><code class="docutils literal notranslate"><span class="pre">LibManager</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#state-module">state module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#status">Status</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#status">Status</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#status.Status"><code class="docutils literal notranslate"><span class="pre">Status</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#configuration-module">configuration module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#configuration.Configuration"><code class="docutils literal notranslate"><span class="pre">Configuration</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -82,7 +94,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
@@ -102,8 +113,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>JADE Session</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">JADE Session</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/api/initobjects.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -113,43 +124,40 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="jade-session">
-<h1>JADE Session<a class="headerlink" href="#jade-session" title="Permalink to this headline"></a></h1>
-<div class="section" id="main-module">
-<h2>main module<a class="headerlink" href="#main-module" title="Permalink to this headline"></a></h2>
-<div class="section" id="session">
-<span id="sessionob"></span><h3>Session<a class="headerlink" href="#session" title="Permalink to this headline"></a></h3>
+  <section id="jade-session">
+<h1>JADE Session<a class="headerlink" href="#jade-session" title="Link to this heading"></a></h1>
+<section id="main-module">
+<h2>main module<a class="headerlink" href="#main-module" title="Link to this heading"></a></h2>
+<section id="session">
+<span id="sessionob"></span><h3>Session<a class="headerlink" href="#session" title="Link to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="main.Session">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">Session</span></span><a class="headerlink" href="#main.Session" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">Session</span></span><a class="headerlink" href="#main.Session" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This object represent a JADE session. All “environment” variables are
 initialized</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="main.Session.check_active_tests">
-<span class="sig-name descname"><span class="pre">check_active_tests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.Session.check_active_tests" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">check_active_tests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.Session.check_active_tests" title="Link to this definition"></a></dt>
 <dd><p>Check the configuration file for active benchmarks to perform or
 post-process</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>session</strong> (<a class="reference internal" href="#main.Session" title="main.Session"><em>Session</em></a>) – JADE session</p></li>
 <li><p><strong>action</strong> (<em>str</em>) – either ‘Post-Processing’ or ‘Run’ (as in Configuration file)</p></li>
 <li><p><strong>exp</strong> (<em>boolean</em>) – if True checks the experimental benchmarks. Default is False</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>to_perform</strong> – list of active test names</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
 </dd>
 </dl>
@@ -157,7 +165,7 @@ post-process</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="main.Session.initialize">
-<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.Session.initialize" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.Session.initialize" title="Link to this definition"></a></dt>
 <dd><dl class="simple">
 <dt>Initialize JADE session:</dt><dd><ul class="simple">
 <li><p>folders structure is created if absent</p></li>
@@ -168,74 +176,68 @@ post-process</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="main.Session.restore_default_settings">
-<span class="sig-name descname"><span class="pre">restore_default_settings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.Session.restore_default_settings" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">restore_default_settings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.Session.restore_default_settings" title="Link to this definition"></a></dt>
 <dd><p>Reset the configuration files to installation default. The session
 is re-initialized.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
 </dd>
 </dl>
 </dd></dl>
 
 </dd></dl>
 
-</div>
-</div>
-<div class="section" id="libmanager-module">
-<h2>libmanager module<a class="headerlink" href="#libmanager-module" title="Permalink to this headline"></a></h2>
-<div class="section" id="libmanager">
-<span id="libmanagerob"></span><h3>LibManager<a class="headerlink" href="#libmanager" title="Permalink to this headline"></a></h3>
+</section>
+</section>
+<section id="libmanager-module">
+<h2>libmanager module<a class="headerlink" href="#libmanager-module" title="Link to this heading"></a></h2>
+<section id="libmanager">
+<span id="libmanagerob"></span><h3>LibManager<a class="headerlink" href="#libmanager" title="Link to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="libmanager.LibManager">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libmanager.</span></span><span class="sig-name descname"><span class="pre">LibManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xsdir_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">defaultlib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'81c'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activationfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isotopes_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libmanager.LibManager" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">libmanager.</span></span><span class="sig-name descname"><span class="pre">LibManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">defaultlib</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activationfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isotopes_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libmanager.LibManager" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Object dealing with all complex operations that involves nuclear data</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>xsdir_file</strong> (<em>str</em><em> or </em><em>path</em>) – path to the MCNP xsdir reference file.</p></li>
+<li><p><strong>lib_df</strong> (<em>pd.DataFrame</em>) – table related to libraries variables.</p></li>
 <li><p><strong>defaultlib</strong> (<em>str</em><em>, </em><em>optional</em>) – lib suffix to be used as default in translation operations.
-The default is ‘81c’.</p></li>
+If None, it reads from lib_df</p></li>
 <li><p><strong>activationfile</strong> (<em>str</em><em> or </em><em>path</em><em>, </em><em>optional</em>) – path to the config file containing the reactions data for
 activation libraries. The default is None.</p></li>
 <li><p><strong>isotopes_file</strong> (<em>str</em><em> or </em><em>path</em><em>, </em><em>optional</em>) – path to the isotopes files. If None (default) the file is searched
 in the current directory.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>None.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="libmanager.LibManager.check4zaid">
-<span class="sig-name descname"><span class="pre">check4zaid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zaid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libmanager.LibManager.check4zaid" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">check4zaid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zaid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mcnp'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libmanager.LibManager.check4zaid" title="Link to this definition"></a></dt>
 <dd><p>Check which libraries are available for the selected zaid and return it</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>zaid</strong> (<em>str</em>) – zaid string (e.g. 1001).</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>zaid</strong> (<em>str</em>) – zaid string (e.g. 1001).</p></li>
+<li><p><strong>code</strong> (<em>str</em><em>, </em><em>optional</em>) – code to be looked up. default is ‘mcnp’</p></li>
+</ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>libraries</strong> – list of libraries available for the zaid.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
 </dd>
 </dl>
@@ -243,7 +245,7 @@ in the current directory.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="libmanager.LibManager.convertZaid">
-<span class="sig-name descname"><span class="pre">convertZaid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zaid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lib</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libmanager.LibManager.convertZaid" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">convertZaid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zaid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mcnp'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libmanager.LibManager.convertZaid" title="Link to this definition"></a></dt>
 <dd><p>This methods will convert a zaid into the requested library</p>
 <dl class="simple">
 <dt>modes:</dt><dd><ul class="simple">
@@ -255,20 +257,21 @@ will be used or the natural one if available.</p></li>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>zaid</strong> (<em>str</em>) – zaid name (ex. 1001).</p></li>
 <li><p><strong>lib</strong> (<em>str</em>) – library suffix (ex. 21c).</p></li>
+<li><p><strong>code</strong> (<em>str</em><em>, </em><em>optional</em>) – code for which the translation is performed. default is MCNP</p></li>
 </ul>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – if the library is not available in the xsdir file or if there is
     no valid translation for the zaid.</p>
 </dd>
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>translation</strong> – {zaidname:(lib,nat_abundance,Atomic mass)}.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>dic</p>
 </dd>
 </dl>
@@ -276,16 +279,19 @@ will be used or the natural one if available.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="libmanager.LibManager.get_libzaids">
-<span class="sig-name descname"><span class="pre">get_libzaids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libmanager.LibManager.get_libzaids" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_libzaids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mcnp'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libmanager.LibManager.get_libzaids" title="Link to this definition"></a></dt>
 <dd><p>Given a library, returns all zaids available</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>lib</strong> (<em>str</em>) – suffix of the library.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lib</strong> (<em>str</em>) – suffix of the library.</p></li>
+<li><p><strong>code</strong> (<em>str</em><em>, </em><em>optional</em>) – code for which the zaids are recovered. default is MCNP</p></li>
+</ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>zaids</strong> – list of zaid names available in the library.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
 </dd>
 </dl>
@@ -293,19 +299,19 @@ will be used or the natural one if available.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="libmanager.LibManager.get_reactions">
-<span class="sig-name descname"><span class="pre">get_reactions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libmanager.LibManager.get_reactions" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_reactions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libmanager.LibManager.get_reactions" title="Link to this definition"></a></dt>
 <dd><p>get the reactions available for a specific zaid and parent nuclide</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>lib</strong> (<em>str</em>) – library suffix as in sheet name of the activation file.</p></li>
 <li><p><strong>parent</strong> (<em>str</em>) – zaid number of the parent (e.g. 1001).</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>reactions</strong> – contains tuple of (MT, daughter).</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
 </dd>
 </dl>
@@ -313,16 +319,16 @@ will be used or the natural one if available.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="libmanager.LibManager.get_zaid_mass">
-<span class="sig-name descname"><span class="pre">get_zaid_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zaid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libmanager.LibManager.get_zaid_mass" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_zaid_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zaid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libmanager.LibManager.get_zaid_mass" title="Link to this definition"></a></dt>
 <dd><p>Get the atomic mass of one zaid</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>zaid</strong> (<a class="reference internal" href="inputgeneration.html#matreader.Zaid" title="matreader.Zaid"><em>matreader.Zaid</em></a>) – Zaid to examinate.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>m</strong> – atomic mass.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
@@ -330,14 +336,14 @@ will be used or the natural one if available.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="libmanager.LibManager.get_zaidname">
-<span class="sig-name descname"><span class="pre">get_zaidname</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zaid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libmanager.LibManager.get_zaidname" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_zaidname</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zaid</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libmanager.LibManager.get_zaidname" title="Link to this definition"></a></dt>
 <dd><p>Given a zaid, its element name and formula are returned. E.g.,
 hydrogen, H1</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>zaid</strong> (<em>str</em>) – zaid number (e.g. 1001 for H1).</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – element name (e.g. hydrogen).</p></li>
 <li><p><strong>formula</strong> (<em>str</em>) – isotope name (e.g. H1).</p></li>
@@ -349,16 +355,16 @@ hydrogen, H1</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="libmanager.LibManager.get_zaidnum">
-<span class="sig-name descname"><span class="pre">get_zaidnum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zaidformula</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libmanager.LibManager.get_zaidnum" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_zaidnum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zaidformula</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#libmanager.LibManager.get_zaidnum" title="Link to this definition"></a></dt>
 <dd><p>Given a zaid formula return the correct number</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>zaidformula</strong> (<em>str</em>) – name of the zaid, e.g., H1.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>zaidnum</strong> – number of the zaid ZZZAA</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -366,13 +372,13 @@ hydrogen, H1</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="libmanager.LibManager.select_lib">
-<span class="sig-name descname"><span class="pre">select_lib</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libmanager.LibManager.select_lib" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">select_lib</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#libmanager.LibManager.select_lib" title="Link to this definition"></a></dt>
 <dd><p>Prompt an library input selection with Xsdir availabilty check</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>lib</strong> – Library to assess.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>str</p>
 </dd>
 </dl>
@@ -380,36 +386,33 @@ hydrogen, H1</p>
 
 </dd></dl>
 
-</div>
-</div>
-<div class="section" id="state-module">
-<h2>state module<a class="headerlink" href="#state-module" title="Permalink to this headline"></a></h2>
-<div class="section" id="status">
-<span id="statusob"></span><h3>Status<a class="headerlink" href="#status" title="Permalink to this headline"></a></h3>
+</section>
+</section>
+<section id="state-module">
+<h2>state module<a class="headerlink" href="#state-module" title="Link to this heading"></a></h2>
+<section id="status">
+<span id="statusob"></span><h3>Status<a class="headerlink" href="#status" title="Link to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="status.Status">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">status.</span></span><span class="sig-name descname"><span class="pre">Status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">status.</span></span><span class="sig-name descname"><span class="pre">Status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Stores the state of the JADE runs and post-processing.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>session</strong> (<a class="reference internal" href="#main.Session" title="main.Session"><em>main.Session</em></a>) – JADE session.</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>None.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="status.Status.check_lib_run">
-<span class="sig-name descname"><span class="pre">check_lib_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_option</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Run'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.check_lib_run" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">check_lib_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_option</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Run'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#status.Status.check_lib_run" title="Link to this definition"></a></dt>
 <dd><p>Check if a library has been run. To be considered run a meshtally or
-meshtal have to be produced. Only active benchmarks (specified in
+meshtal have to be produced (for MCNP). Only active benchmarks (specified in
 the configuration file) are checked.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>lib</strong> (<em>str</em>) – Library to check.</p></li>
 <li><p><strong>session</strong> (<a class="reference internal" href="#main.Session" title="main.Session"><em>Session</em></a>) – Jade Session.</p></li>
@@ -418,10 +421,10 @@ the configuration file) are checked.</p>
 <li><p><strong>exp</strong> (<em>boolean</em>) – if True checks the experimental benchmarks. Default is False</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>test_runned</strong> – True if all benchmark have been run for the library.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Bool</p>
 </dd>
 </dl>
@@ -429,20 +432,20 @@ the configuration file) are checked.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="status.Status.check_override_pp">
-<span class="sig-name descname"><span class="pre">check_override_pp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.check_override_pp" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">check_override_pp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.check_override_pp" title="Link to this definition"></a></dt>
 <dd><p>Asks for the library/ies to post-process and checks which tests have
 already been performed and would be overidden according to the
 configuration file.
 This can be used also to check if in a post processing of multiple
 libraries wich single library post processing is missing.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>session</strong> (<a class="reference internal" href="#main.Session" title="main.Session"><em>Session</em></a>) – JADE session</p></li>
 <li><p><strong>exp</strong> (<em>boolean</em>) – if True checks the experimental benchmarks. Default is False</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><strong>ans</strong> (<em>Boolean</em>) – True if the PP can begin (Possible override has been accepted).</p></li>
 <li><p><strong>to_single_pp</strong> (<em>list</em>) – list of libraries that need to be single post-processed</p></li>
@@ -455,21 +458,21 @@ libraries wich single library post processing is missing.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="status.Status.check_override_run">
-<span class="sig-name descname"><span class="pre">check_override_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.check_override_run" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">check_override_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.check_override_run" title="Link to this definition"></a></dt>
 <dd><p>Check status of the requested run. If overridden is required permission
 is requested to the user</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>lib</strong> (<em>str</em>) – Library to run.</p></li>
 <li><p><strong>session</strong> (<a class="reference internal" href="#main.Session" title="main.Session"><em>Session</em></a>) – Jade Session.</p></li>
 <li><p><strong>exp</strong> (<em>False</em>) – if True checks the experimental benchmarks. Default is False</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ans</strong> – if True proceed with the run, if False, abort.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Boolean</p>
 </dd>
 </dl>
@@ -477,12 +480,12 @@ is requested to the user</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="status.Status.check_pp_single">
-<span class="sig-name descname"><span class="pre">check_pp_single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'single'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.check_pp_single" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">check_pp_single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'single'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.check_pp_single" title="Link to this definition"></a></dt>
 <dd><p>Check if the post processing of a single library or a comparison has
 been already done. To consider it done, all benchmarks must have been
 post-processed</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>lib</strong> (<em>string</em>) – library/ies to check.</p></li>
 <li><p><strong>session</strong> (<a class="reference internal" href="#main.Session" title="main.Session"><em>Session</em></a>) – JADE session.</p></li>
@@ -491,10 +494,10 @@ to check into the comparison one. The default is ‘single’.</p></li>
 <li><p><strong>exp</strong> (<em>boolean</em>) – if True checks the experimental benchmarks. Default is False</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if PP has been done.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Boolean</p>
 </dd>
 </dl>
@@ -502,39 +505,42 @@ to check into the comparison one. The default is ‘single’.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="status.Status.check_test_run">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_test_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.check_test_run" title="Permalink to this definition"></a></dt>
-<dd><p>Check if a test has been run</p>
+<span class="sig-name descname"><span class="pre">check_test_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#status.Status.check_test_run" title="Link to this definition"></a></dt>
+<dd><p>Check if a test was run successfully for the specified code.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>files</strong> (<em>list</em>) – file names inside test folder.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>files</strong> (<em>list</em>) – filenames inside the test folder</p></li>
+<li><p><strong>code</strong> (<em>str</em>) – Transport code</p></li>
+</ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>flag_test_run</strong> – True if test has been run.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if test was ran successfully, False otherwise</p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Bool</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="status.Status.get_path">
-<span class="sig-name descname"><span class="pre">get_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">itinerary</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.get_path" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">itinerary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#status.Status.get_path" title="Link to this definition"></a></dt>
 <dd><p>Get the resulting path of an itinery on one tree</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tree</strong> (<em>str</em>) – Either ‘comparison’, ‘single’, or ‘run’.</p></li>
 <li><p><strong>itinerary</strong> (<em>list</em>) – list of strings representing the step to take inside the tree.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>KeyError</strong> – if var tree is not among possible strings.</p>
 </dd>
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>cp</strong> – path to final step.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>str/path</p>
 </dd>
 </dl>
@@ -542,16 +548,16 @@ to check into the comparison one. The default is ‘single’.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="status.Status.get_unfinished_zaids">
-<span class="sig-name descname"><span class="pre">get_unfinished_zaids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.get_unfinished_zaids" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_unfinished_zaids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lib</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#status.Status.get_unfinished_zaids" title="Link to this definition"></a></dt>
 <dd><p>Identify zaids to run for rerun or continuation purposes</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>lib</strong> (<em>str</em>) – library to check.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>unfinished</strong> – zaids/typical materials not run.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
 </dd>
 </dl>
@@ -559,11 +565,11 @@ to check into the comparison one. The default is ‘single’.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="status.Status.update_pp_status">
-<span class="sig-name descname"><span class="pre">update_pp_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.update_pp_status" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">update_pp_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#status.Status.update_pp_status" title="Link to this definition"></a></dt>
 <dd><p>Read/Update the post processing tree status. All files produced by
 post processing registered</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><ul class="simple">
 <li><p><strong>comparison_tree</strong> (<em>dic</em>) – Dictionary registering all test post processed for each
 comparison of libraries.</p></li>
@@ -577,14 +583,14 @@ single libraries.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="status.Status.update_run_status">
-<span class="sig-name descname"><span class="pre">update_run_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.update_run_status" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">update_run_status</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#status.Status.update_run_status" title="Link to this definition"></a></dt>
 <dd><p>Read/Update the run tree status. All files produced by runs are
 registered</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>libraries</strong> – dictionary of dictionaries representing the run tree</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>dic</p>
 </dd>
 </dl>
@@ -592,41 +598,38 @@ registered</p>
 
 </dd></dl>
 
-</div>
-</div>
-<div class="section" id="configuration-module">
-<h2>configuration module<a class="headerlink" href="#configuration-module" title="Permalink to this headline"></a></h2>
-<div class="section" id="configuration">
-<span id="confob"></span><h3>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline"></a></h3>
+</section>
+</section>
+<section id="configuration-module">
+<h2>configuration module<a class="headerlink" href="#configuration-module" title="Link to this heading"></a></h2>
+<section id="configuration">
+<span id="confob"></span><h3>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="configuration.Configuration">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">Configuration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.Configuration" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">configuration.</span></span><span class="sig-name descname"><span class="pre">Configuration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.Configuration" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Parser of the main configuration file</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>conf_file</strong> (<em>path like object</em>) – path to configuration file.</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>None.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="configuration.Configuration.get_lib_name">
-<span class="sig-name descname"><span class="pre">get_lib_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">suffix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#configuration.Configuration.get_lib_name" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_lib_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#configuration.Configuration.get_lib_name" title="Link to this definition"></a></dt>
 <dd><p>Get the name of the library from its suffix. If a name was not
 specified in the configuration file the same suffix is returned</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>suffix</strong> (<em>str</em>) – e.g. 21c .</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Name of the library.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -634,23 +637,20 @@ specified in the configuration file the same suffix is returned</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="configuration.Configuration.read_settings">
-<span class="sig-name descname"><span class="pre">read_settings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#configuration.Configuration.read_settings" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">read_settings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#configuration.Configuration.read_settings" title="Link to this definition"></a></dt>
 <dd><p>Parse the configuration file</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>None.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
 </dd>
 </dl>
 </dd></dl>
 
 </dd></dl>
 
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>
@@ -663,7 +663,7 @@ specified in the configuration file the same suffix is returned</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

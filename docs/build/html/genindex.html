@@ -3,17 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; JADE v2.1.1 documentation</title>
+  <title>Index &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
+        <script src="_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -25,7 +24,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> JADE
-            <img src="_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -50,9 +48,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="dev/codemodify.html">Modify JADE code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
@@ -63,7 +61,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
@@ -83,8 +80,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Index</li>
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Index</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -106,6 +103,7 @@
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#I"><strong>I</strong></a>
+ | <a href="#J"><strong>J</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#O"><strong>O</strong></a>
@@ -205,7 +203,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/initobjects.html#status.Status.check_test_run">check_test_run() (status.Status static method)</a>
+      <li><a href="api/initobjects.html#status.Status.check_test_run">check_test_run() (status.Status method)</a>
 </li>
       <li><a href="api/inputgeneration.html#matreader.SubMaterial.collapse_zaids">collapse_zaids() (matreader.SubMaterial method)</a>
 </li>
@@ -352,6 +350,14 @@
   </ul></td>
 </tr></table>
 
+<h2 id="J">J</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/inputgeneration.html#testrun.Test.job_submission">job_submission() (testrun.Test method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -409,16 +415,22 @@
 </li>
       <li><a href="api/initobjects.html#configuration.Configuration.read_settings">read_settings() (configuration.Configuration method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/initobjects.html#main.Session.restore_default_settings">restore_default_settings() (main.Session method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/inputgeneration.html#testrun.MultipleTest.run">run() (testrun.MultipleTest method)</a>
 
       <ul>
         <li><a href="api/inputgeneration.html#testrun.Test.run">(testrun.Test method)</a>
 </li>
       </ul></li>
+      <li><a href="api/inputgeneration.html#testrun.Test.run_mcnp">run_mcnp() (testrun.Test method)</a>
+</li>
+      <li><a href="api/inputgeneration.html#testrun.Test.run_openmc">run_openmc() (testrun.Test method)</a>
+</li>
+      <li><a href="api/inputgeneration.html#testrun.Test.run_serpent">run_serpent() (testrun.Test method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -465,6 +477,16 @@
         <li><a href="api/inputgeneration.html#matreader.SubMaterial.to_text">(matreader.SubMaterial method)</a>
 </li>
         <li><a href="api/inputgeneration.html#matreader.Zaid.to_text">(matreader.Zaid method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/inputgeneration.html#matreader.MatCardsList.to_xml">to_xml() (matreader.MatCardsList method)</a>
+
+      <ul>
+        <li><a href="api/inputgeneration.html#matreader.Material.to_xml">(matreader.Material method)</a>
+</li>
+        <li><a href="api/inputgeneration.html#matreader.SubMaterial.to_xml">(matreader.SubMaterial method)</a>
+</li>
+        <li><a href="api/inputgeneration.html#matreader.Zaid.to_xml">(matreader.Zaid method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -543,7 +565,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

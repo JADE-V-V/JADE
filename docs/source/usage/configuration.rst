@@ -31,26 +31,62 @@ MAIN Config.
 
 This sheet contains the JADE *ambient variables*:
 
-xsdir Path
-    Absolute path to the xsdir file that has been set to be used during MCNP simulations.
-    If different codes are used that use different xsdir file (e.g. mcnp5 and mcnp6) the
-    user should make sure that all libraries of interest are included in the xsdir file
-    indicated in this variable.
+MCNP executable 
+   Path to the MCNP executable.
 
-multithread
-    Under Windows operative system, MCNP allows to run on multithread using the ``tasks``
-    keyword. Setting this variable to ``True`` enables this capability.
+MCNP config
+   Name of the config shell script containing environment variables required for running MCNP on UNIX. 
+   By default this file should exist already in the same folder as the Config.xlsx named mcnp_config.sh.
+   The main purpose of this file is to allow for switching modules and environment variables at runtime
+   when performing multi-code runs, as it may be the case a different compiler is required for a specific
+   code. If running either single or multiple codes with a correctly configured enviroment, or if running
+   on windows, this file can be left empty.
 
-CPU
-    When **multithread** is set to ``True``, **CPU** sets the argument that will be passed
-    to ``tasks`` during MCNP runs.
+Serpent executable
+   Path to Serpent executable.
+
+Serpent config
+   Name of the config shell script containing environment variables required for running Serpent on UNIX.
+   see MCNP_config above for more information.
+
+OpenMC executable
+   Path to OpenmC executable.
+
+OpenMC config
+   Name of the config shell script containing environment variables required for running OpenMC on UNIX.
+   see MCNP_config above for more information.
+
+D1S executable
+   Path to D1S executable (not yet implemented).
+
+D1S config
+   Name of the config shell script containing environment variables required for running D1S on UNIX.
+   see MCNP_config above for more information (not yet implemented).
+
+OpenMP threads
+    Specifies the number of threads to use when running OpenMP executables
+
+MPI tasks
+    Specifies how many cores to use when executing an MPI tasks
+
+Batch system
+    The command used to run a batch job on the current system, for example LLsubmit for LoadLeveler or sbatch
+    for SLURM. This command is required to run any calculation as a job, the code will default to a command
+    line run if left blank.
+
+Batch file
+    Template of the job submission script to be utilised on the users chosen system. This should match the 
+    command provided for the Batch system variable. Several default job submission scripts are provided in
+    the Job_Script_Template folder in the Configuration folder. Examples of the layout of these templates
+    are detailed below.
+
 
 .. _compsheet:
 
 Computational benchmarks
 ------------------------
 
-.. image:: ../img/conf/comp.jpg
+.. image:: ../img/conf/comp.png
     :width: 600
 
 This table collects allows to personalize which *computational benchmarks* should be included
@@ -58,14 +94,14 @@ in the JADE assessment. Each row controls a different benchmark, where the follo
 (columns) are available:
 
 Description
-    this is the extended name of the benchmark, this name will appear in specific outputs of the
+    This is the extended name of the benchmark, this name will appear in specific outputs of the
     post-processing.
 
-File Name
-    name of the reference MCNP input file. These need to be placed in ``<JADE root>\Benchmarks inputs``.
+Folder Name
+    Name of the folder containing input files for all codes. These need to be placed in ``<JADE root>\Benchmarks inputs``.
 
 OnlyInput
-    when this field is set to ``True`` the benchmark input is only generated but not run. This can be
+    When this field is set to ``True`` the benchmark input is only generated but not run. This can be
     useful when the user wants to run the benchmark on a different hardware with respect to the
     one where JADE is being used.
 
@@ -76,32 +112,28 @@ OnlyInput
         This input has priority with respect to the 'Run' one, i.e., if both are
         set to True, the inputs will be only generated and not run.
 
-Run
-    the benchmark will be run during an assessment only if this field is set to ``True``.
+MCNP
+    Runs the benchmark input for MCNP if set to ``True``.
     This allows to customize the selection of benchmarks to be run during an assessment or avoid
     to re-run benchmarks that were already simulated in the past.
 
-Post-Processing
-    this field works exactly as the ``Run`` one but for the post-processing operations.
+Serpent
+    As above, runs the benchmark input for Serpent if set to ``True``.
 
-The last three options available for each benchmark control the MCNP STOP card parameters
-that help regulating the simulation lenght:
+OpenMC
+    As above, runs the benchmark input for OpenMC if set to ``True``.
+
+D1S
+    As above, runs the benchmark input for D1S if set to ``True`` (NOT YET IMPLEMENTED).
+
+Post-Processing
+    this field works exactly as the ``Run`` one but for the post-processing operations. 
+    Post processing is performed for any code marked as ``True`` in the corresponding
+    row.
 
 NPS cut-off
     this is equivalent to the ``NPS`` entry in the MCNP STOP card. It sets a maximum amount
     of histories to be simulated. Only integers are allowed.
-
-CTME cut-off
-    this is equivalent to the ``CTME`` entry in the MCNP STOP card. It sets a maximum computer
-    time after which the simulation will be interrupted. Only integers are allowed.
-
-Relative Error cut-off
-    this is equivalent to the ``F`` entry in the MCNP STOP card. The sintax of this entry is:
-    
-    F<*k*>-<*e*>  (example: F16-0.0005)
-    
-    This stops the calculation when the tally fluctuation chart of tally *k* has reached a
-    relative error lower than *e*.
 
 Custom input
     .. versionadded:: v1.3.0
@@ -109,23 +141,6 @@ Custom input
         moment, this is used only in the *Sphere Leakage* and *Sphere SDDR* benchmarks where,
         if a number *n* is specified, this will limit the test to the first *n* isotope and 
         material simulations (useful for testing).
-
-Code
-    .. versionadded:: v1.3.0
-        This column is needed to specify which kind of code needs to be used for each benchmark.
-        The available codes are defined at the very beginning of the ``<JADE root>\Code\testrun.py``
-        by a dictionary linking tags to be used in the config. file and actual names of the executables
-        to be used.
-
-    .. code-block:: python
-
-        CODE_TAGS = {'mcnp6': 'mcnp6', 'D1S5': 'd1suned3.1.2'}
-
-
-
-.. note::
-    All three STOP parameters can be simultaneously defined during a simulation. The first
-    cut-off criteria reached will be the one triggering the end of the calculation.
 
 Experimental benchmarks
 -----------------------
@@ -142,9 +157,8 @@ Libraries
 .. image:: ../img/conf/lib.png
     :width: 400
 
-This table simply consists of a glossary where the user can associate more explicit
-names to the nuclear data libraries suffixes available in the xsdir file. This
-allows for a clearer post-processing output.
+This sheet contains the paths of nuclear data library index files for the various codes.
+
 
 .. warning::
     Do not use invalid filename characters (e.g. ``"\"``) in the names assigned to the

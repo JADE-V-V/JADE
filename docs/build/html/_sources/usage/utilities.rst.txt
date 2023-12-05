@@ -226,3 +226,40 @@ This function allows to remove all MCNP runtpe files produced during the
 library assessment. These files, once the simulations are terminated correctly,
 are kind of useless for the post-processing and they consume a large amount
 of storage memory (up to 95% for MCNP produced outputs).
+
+Interactive acefile and EXFOR data plotter
+==========================================
+``comparelib``
+
+This function is used to generate comparison plots of microscopic neutron 
+cross-sections from ACE file data from different data libraries. It also provides
+the possibility of including EXFOR experimental data in the comparison plots.
+Once the utility is launched, the user will be require to:
+
+* choose the nuclide for which the comparison will be made in ZAID format (e.g. 3006)
+* choose neutron reaction cross-sections to be printed. The function checks if
+  the MT numeber is correct, if the chosen reactions are not present in some 
+  libraries, they will not be printed for those libraries. The user can input multiple 
+  MT numbers (hit Enter after each individual entry). Then type continue once the MT(s) 
+  are entered;
+* choose nuclear data libraries from which the selected nuclear reaction 
+  cross-sections will be printed. The chosen libraries must be defined in
+  ``<JADE_root>\Configuration\Configuration.xlsx`` file. As above multiple libraries are entered
+  until the user enters continue;
+* choose if EXFOR experimental data for those specific nuclide and reactions are 
+  to e printed. This last feature requires the installation of the optional 
+  package 'x4i3' in JADE environment. Further details on installation and usage
+  of this package can be found here: https://github.com/afedynitch/x4i3
+
+JADE will provide matplotlib plots of each cross-section as a function of
+energy, in a direct comparison of the chosen nuclear data libraries. If 
+required, correspondent EXFOR experimental data will be printed. The plotter can
+print cross-sections from up to 4 nuclear data libraries at the same time and
+up to 15 sets of EXFOR experimental data in the same plot (mainly for 
+visualization purposes, experimental data will be chosen starting from the 
+largest datasets). In the following, an example of a picture produced by the 
+plotter:
+
+.. figure:: ../img/uty/Fe-56_MT102.png
+    :width: 600
+    :align: center

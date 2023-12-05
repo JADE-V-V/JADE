@@ -48,7 +48,7 @@ The following options are available in the computational benchmark menu:
 * ``assess`` start the assessment of a selected library on the computational benchmarks. The library is
   specified directly from the console when the selection is prompted to
   video. The library must be contained in the xsdir file (available libraries
-  can be explored using ``printlib``);
+  can be explored using ``printlib``).
 * ``continue`` **currently, this option is implemented only for the Sphere Leakage
   benchmark.** Continue a previously interrupted assessment for a selected
   library. The codes scans for all isotopes and materials in the sphere benchmarks
@@ -143,7 +143,7 @@ includes libraries that were not singularly post-processed, an automatic ``pp`` 
   #. some configuration settings are changed and the assessment is re-run;
   #. a comparison is requested.
   
-  In this case, JADE cannot know that the first single post-processing was done on a different benchmark run wiith respect
+  In this case, JADE cannot know that the first single post-processing was done on a different benchmark run with respect
   to the requested comparison. As a result, the outputs coming from different assessments will be mixed up. 
 
 .. note::

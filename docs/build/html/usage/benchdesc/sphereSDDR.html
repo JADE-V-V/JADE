@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sphere SDDR &mdash; JADE v2.1.1 documentation</title>
+  <title>Sphere SDDR &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -25,7 +25,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../../index.html" class="icon icon-home"> JADE
-            <img src="../../_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -50,8 +49,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
@@ -62,7 +62,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributors.html">Contributors</a></li>
@@ -82,8 +81,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Sphere SDDR</li>
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Sphere SDDR</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/usage/benchdesc/sphereSDDR.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -93,8 +92,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="sphere-sddr">
-<h1>Sphere SDDR<a class="headerlink" href="#sphere-sddr" title="Permalink to this headline"></a></h1>
+  <section id="sphere-sddr">
+<h1>Sphere SDDR<a class="headerlink" href="#sphere-sddr" title="Link to this heading"></a></h1>
 <p>The Sphere SDDR benchmark is a variation of the the <a class="reference internal" href="../benchmarks.html#spheredesc"><span class="std std-ref">Sphere Leakage</span></a>
 which is focused on isotopes activation and dose rate measurement.
 Once again, these kind of benchmarks allows to test all available
@@ -103,12 +102,14 @@ library) together with a few typical ITER materials. In particular, each
 single reaction channel (MT) of every isotope will be tested separately while,
 for the typical materials, all possible reactions foreseen by the library will
 be considered.</p>
-<div class="section" id="geometry-and-run-parameters">
-<h2>Geometry and run parameters<a class="headerlink" href="#geometry-and-run-parameters" title="Permalink to this headline"></a></h2>
-<div class="figure align-center" id="id1">
+<section id="geometry-and-run-parameters">
+<h2>Geometry and run parameters<a class="headerlink" href="#geometry-and-run-parameters" title="Link to this heading"></a></h2>
+<figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="../../_images/sphereSDDRgeom.png"><img alt="../../_images/sphereSDDRgeom.png" src="../../_images/sphereSDDRgeom.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">Schematic view of the Sphere SDDR model</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Schematic view of the Sphere SDDR model</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>The geometry of the Sphere SDDR benchmarks, is practically the same as the one
 of the Sphere Leakage benchmark. The only difference is that externally to the filled
 sphere, a void spherical shell has been defined having a 10 cm radial thickness.
@@ -117,9 +118,9 @@ This is the cell used to tally the contact shut down dose rate.</p>
 the densities to be applied for each element and material (default is set to NTP
 conditions with few exceptions) and control on the STOP parameters to be used.
 The same 0-14 MeV uniform neutron point source is also defined.</p>
-</div>
-<div class="section" id="sddr-parameters">
-<h2>SDDR parameters<a class="headerlink" href="#sddr-parameters" title="Permalink to this headline"></a></h2>
+</section>
+<section id="sddr-parameters">
+<h2>SDDR parameters<a class="headerlink" href="#sddr-parameters" title="Link to this heading"></a></h2>
 <p>The cool-down times that have been considered are 0 s, 2.7 h, 24 h, 11.6 d, 30 d
 and 10 y. For the isotopes simulations, since only one reaction is considered, relative
 comparisons at different cool-down times will not lead to different results, hence,
@@ -128,12 +129,7 @@ not apply to materials simulations, where many different reactions are included.
 <p>The irradiation schedule considered for the Sphere SDDR benchmark is reported hereafter
 and represents an actual equivalent irradiation scenario foreseen for ITER blanket (SA2):</p>
 <table class="docutils align-default" id="id2">
-<caption><span class="caption-text">Irradiation schedule (ITER SA2 irradiation scenario)</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
+<caption><span class="caption-text">Irradiation schedule (ITER SA2 irradiation scenario)</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Source Intensity [n/s]</p></th>
 <th class="head"><p>Δt irr.</p></th>
@@ -181,9 +177,9 @@ conducted on a single isotope or on a typical ITER material. In the first case, 
 reaction is considered and the irradiation file will only contain the daughter of such irradiation.
 In the second case, all possible reactions that are available in the library and that can be
 originated in the material will be included. The irradiation file will be then generated accordingly.</p>
-</div>
-<div class="section" id="tallies">
-<h2>Tallies<a class="headerlink" href="#tallies" title="Permalink to this headline"></a></h2>
+</section>
+<section id="tallies">
+<h2>Tallies<a class="headerlink" href="#tallies" title="Link to this heading"></a></h2>
 <p>All neutron and photon related tallies defined in Sphere Leakage benchmark have also been imported
 in the Sphere SDDR benchmark. For photons, the time binning necessary to cover all the cool-down
 times of interest have been added. Tally n. 104 have been also defined to tally the shut
@@ -196,8 +192,8 @@ and ITER irradiation scenarios in general the reader is
 referred to Loughlin M. and Taylor N., 2009, “Recommendation on Plasma scenarios”,
 [ITER IDM 2V3V8G v1.2].</p>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -207,7 +203,7 @@ referred to Loughlin M. and Taylor N., 2009, “Recommendation on Plasma scenari
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

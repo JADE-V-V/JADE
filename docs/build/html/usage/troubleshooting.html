@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Troubleshooting &mdash; JADE v2.1.1 documentation</title>
+  <title>Troubleshooting &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
+        <script src="../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Insert Custom Benchmarks" href="../dev/insertbenchmarks.html" />
+    <link rel="next" title="Contributing to JADE" href="../dev/workflow.html" />
     <link rel="prev" title="Tips &amp; Tricks" href="tipstricks.html" /> 
 </head>
 
@@ -27,7 +27,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../index.html" class="icon icon-home"> JADE
-            <img src="../_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -56,8 +55,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
@@ -68,7 +68,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
@@ -88,8 +87,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Troubleshooting</li>
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Troubleshooting</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/usage/troubleshooting.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -99,10 +98,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="troubleshooting">
-<h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline"></a></h1>
-<div class="section" id="unable-to-post-process-a-libray">
-<h2>Unable to post-process a libray<a class="headerlink" href="#unable-to-post-process-a-libray" title="Permalink to this headline"></a></h2>
+  <section id="troubleshooting">
+<h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h1>
+<section id="unable-to-post-process-a-libray">
+<h2>Unable to post-process a libray<a class="headerlink" href="#unable-to-post-process-a-libray" title="Link to this heading"></a></h2>
 <p>It may happen that the request to post-process a library fails, prompting to
 video that the library in question has not been run.</p>
 <img alt="../_images/notrun.png" src="../_images/notrun.png" />
@@ -115,9 +114,9 @@ as active for the post-processing have been actually run;</p></li>
 simulations. JADE considers a benchmark to have been “run” only if a mctal or
 fmesh file has been produced for each of the MCNP run foreseen by the benchmark.</p></li>
 </ul>
-</div>
-<div class="section" id="jade-fails-on-first-library-assessment">
-<h2>JADE fails on first library assessment<a class="headerlink" href="#jade-fails-on-first-library-assessment" title="Permalink to this headline"></a></h2>
+</section>
+<section id="jade-fails-on-first-library-assessment">
+<h2>JADE fails on first library assessment<a class="headerlink" href="#jade-fails-on-first-library-assessment" title="Link to this heading"></a></h2>
 <p>A <code class="docutils literal notranslate"><span class="pre">FileNotFound</span></code> error may be encountered the first time an assessment is
 requested using JADE. Most likely, this would be caused by the impossibility
 to call the MCNP executable directly from a cmd prompt.
@@ -135,21 +134,21 @@ variables. The path will be similar to
 <code class="docutils literal notranslate"><span class="pre">&lt;Custom</span> <span class="pre">path</span> <span class="pre">to</span> <span class="pre">MCNP</span> <span class="pre">folder&gt;\MCNP_CODE\bin</span></code>.</p>
 </dd>
 </dl>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="tipstricks.html" class="btn btn-neutral float-left" title="Tips &amp; Tricks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../dev/insertbenchmarks.html" class="btn btn-neutral float-right" title="Insert Custom Benchmarks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../dev/workflow.html" class="btn btn-neutral float-right" title="Contributing to JADE" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

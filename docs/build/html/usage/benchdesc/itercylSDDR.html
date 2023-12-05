@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ITER CYLYNDER SDDR &mdash; JADE v2.1.1 documentation</title>
+  <title>ITER CYLYNDER SDDR &mdash; JADE 3.0.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/documentation_options.js?v=acc74ff5"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -25,7 +25,6 @@
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
             <a href="../../index.html" class="icon icon-home"> JADE
-            <img src="../../_static/Jade_white.jpg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -50,8 +49,9 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE Developer Guide:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/workflow.html">Contributing to JADE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../dev/insertbenchmarks.html">Insert Custom Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../dev/docmodify.html">Modify documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/testing.html">JADE CI and automatic testing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">JADE API</span></p>
 <ul>
@@ -62,7 +62,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More on JADE:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../testing/testing.html">JADE CI and automatic testing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../futuredev.html">Future developments</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../LICENSE.html">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributors.html">Contributors</a></li>
@@ -82,8 +81,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>ITER CYLYNDER SDDR</li>
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">ITER CYLYNDER SDDR</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/usage/benchdesc/itercylSDDR.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -93,17 +92,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="iter-cylynder-sddr">
-<h1>ITER CYLYNDER SDDR<a class="headerlink" href="#iter-cylynder-sddr" title="Permalink to this headline"></a></h1>
+  <section id="iter-cylynder-sddr">
+<h1>ITER CYLYNDER SDDR<a class="headerlink" href="#iter-cylynder-sddr" title="Link to this heading"></a></h1>
 <p>The ITER Cylinder SDDR is a very popular computational benchmark for
 SDDR computation in ITER since it features dimensions, materials and
 streaming characteristics of a typical ITER equatorial port.</p>
-<div class="section" id="geometry-and-run-parameters">
-<h2>Geometry and run parameters<a class="headerlink" href="#geometry-and-run-parameters" title="Permalink to this headline"></a></h2>
-<div class="figure align-center" id="id1">
+<section id="geometry-and-run-parameters">
+<h2>Geometry and run parameters<a class="headerlink" href="#geometry-and-run-parameters" title="Link to this heading"></a></h2>
+<figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="../../_images/cylSDDR.png"><img alt="../../_images/cylSDDR.png" src="../../_images/cylSDDR.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">ITER Cylinder SDDR benchmark geometry visualization</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">ITER Cylinder SDDR benchmark geometry visualization</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 <p>The ITER Cylinder SDDR is a simple yet effective benchmark. The model
 is composed by a 550 cm long, hollowed steel cylinder with internal and
 external radius respectively equal to 50 cm and 100 cm. The rear part of
@@ -166,18 +167,13 @@ following radii:</p>
 </ol>
 </li>
 </ul>
-</div>
-<div class="section" id="sddr-parameters">
-<h2>SDDR parameters<a class="headerlink" href="#sddr-parameters" title="Permalink to this headline"></a></h2>
+</section>
+<section id="sddr-parameters">
+<h2>SDDR parameters<a class="headerlink" href="#sddr-parameters" title="Link to this heading"></a></h2>
 <p>The irradiation schedule considered for ITER Cylinder SDDR benchmark is
 reported hereafter:</p>
 <table class="docutils align-default" id="id2">
-<caption><span class="caption-text">Irradiation schedule (ITER SA2 irradiation scenario)</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
+<caption><span class="caption-text">Irradiation schedule (ITER SA2 irradiation scenario)</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Source Intensity [n/s]</p></th>
 <th class="head"><p>Δt irr.</p></th>
@@ -224,11 +220,7 @@ That is, these are the time interval waited after the irradiation phase has fini
 the SDDR and the photon flux.</p>
 <p>The possible reactions considered during the simulation are listed in the following table:</p>
 <table class="docutils align-default" id="id3">
-<caption><span class="caption-text">List of parent-daughter couples generated by the considered reactions for the ITER Cylinder SDDR benchmark</span><a class="headerlink" href="#id3" title="Permalink to this table"></a></caption>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
+<caption><span class="caption-text">List of parent-daughter couples generated by the considered reactions for the ITER Cylinder SDDR benchmark</span><a class="headerlink" href="#id3" title="Link to this table"></a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Parent</p></th>
 <th class="head"><p>Daughter</p></th>
@@ -300,9 +292,9 @@ the SDDR and the photon flux.</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="tallies">
-<h2>Tallies<a class="headerlink" href="#tallies" title="Permalink to this headline"></a></h2>
+</section>
+<section id="tallies">
+<h2>Tallies<a class="headerlink" href="#tallies" title="Link to this heading"></a></h2>
 <p>Neutron flux, (decay) gamma flux and SDDR are the only tallied quantities. The following
 is a description of the tallies defined in the benchmark:</p>
 <dl class="simple">
@@ -336,8 +328,8 @@ R. Villari, and P.P.H. Wilson. “Developments and needs in nuclearanalysis of
 fusion technology”. In: Fusion Engineering and Design 88 (2013), pp. 454–460.</p></li>
 </ul>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -347,7 +339,7 @@ fusion technology”. In: Fusion Engineering and Design 88 (2013), pp. 454–460
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2021, Davide Laghi.</p>
+    <p>&#169; Copyright 2023, JADE team.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

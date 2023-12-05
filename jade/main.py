@@ -79,10 +79,9 @@ class Session:
         """
 
         code_root = os.path.join(os.path.dirname(os.path.abspath(__file__)))
-        #jade_root = os.path.dirname(code_root)
         jade_root = os.getcwd()
 
-        if os.path.dirname(code_root) == jade_root:
+        if os.path.dirname(code_root) in jade_root:
             fatal_exception('Cannot initialise JADE in Code directory')
         
         self.path_default_settings = os.path.join(code_root, 'default_settings')

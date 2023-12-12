@@ -75,8 +75,7 @@ class ExperimentalOutput(BenchmarkOutput):
             multiplerun = False
         # Recover session and testname
         session = args[2]
-        testname = args[1]
-
+        testname = str(args[1]["Folder Name"])
         super().__init__(*args, **kwargs)
         # The experimental data needs to be loaded
         self.path_exp_res = os.path.join(session.path_exp_res, testname)
@@ -84,7 +83,7 @@ class ExperimentalOutput(BenchmarkOutput):
         # Add the raw path data (not created because it is a comparison)
         out = os.path.dirname(self.atlas_path)
         raw_path = os.path.join(out, 'Raw Data')
-        os.mkdir(raw_path)
+        #os.mkdir(raw_path)
         self.raw_path = raw_path
         self.multiplerun = multiplerun
 
@@ -156,7 +155,7 @@ class ExperimentalOutput(BenchmarkOutput):
         globalname = globalname[:-4]
         globalname = self.testname + '_' + globalname
         # Initialize the atlas
-        template = os.path.join(self.code_path, 'templates',
+        template = os.path.join(self.code_path, 'Code', 'templates',
                                 'AtlasTemplate.docx')
         atlas = at.Atlas(template, globalname)
 
@@ -184,8 +183,10 @@ class ExperimentalOutput(BenchmarkOutput):
             if lib != EXP_TAG:
                 if self.multiplerun:
                     # Results are organized by folder and lib
+                    code_raw_data = {}
                     for folder in os.listdir(test_path):
-                        results_path = os.path.join(test_path, folder)
+                        # FIX MCNP HARD CODED PATH HERE
+                        results_path = os.path.join(test_path, folder, "mcnp")
                         pieces = folder.split('_')
                         # Get zaid
                         input = pieces[-1]
@@ -194,12 +195,13 @@ class ExperimentalOutput(BenchmarkOutput):
                         # Parse output
                         output = MCNPoutput(mfile, ofile)
                         outputs[input, lib] = output
-                        # Adjourn raw Data
-                        self.raw_data[input, lib] = output.tallydata
+                        code_raw_data [input, lib] = output.tallydata
+                        #self.raw_data[input, lib] = output.tallydata
                         # Get the meaningful results
                         results[input, lib] = self._processMCNPdata(output)
                         if input not in inputs:
                             inputs.append(input)
+                    self.raw_data["mcnp"] = code_raw_data
                 # Results are organized just by lib
                 else:
                     mfile, ofile = self._get_output_files(test_path)
@@ -282,8 +284,7 @@ class ExperimentalOutput(BenchmarkOutput):
         -------
         None.
         """
-
-        for (folder, lib), item in self.raw_data.items():
+        for (folder, lib), item in self.raw_data['mcnp'].items():
             # Create the lib directory if it is not there
             cd_lib = os.path.join(self.raw_path, lib)
             if not os.path.exists(cd_lib):
@@ -415,7 +416,6 @@ class FNGOutput(ExperimentalOutput):
         folderpath = os.path.dirname(path)
         folder = os.path.basename(folderpath)
         lib = os.path.basename(os.path.dirname(os.path.dirname(folderpath)))
-
         self.raw_data[folder, lib] = res
 
         return res

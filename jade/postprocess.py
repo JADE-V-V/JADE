@@ -28,7 +28,7 @@ import jade.output as bencho
 import jade.sphereoutput as spho
 
 
-def compareBenchmark(session, lib_input: str, testname: str) -> None:
+def compareBenchmark(session, lib_input: str, testname: str, exp = False) -> None:
     """Compare benchmark results and perform post-processing.
 
     Parameters
@@ -52,7 +52,10 @@ def compareBenchmark(session, lib_input: str, testname: str) -> None:
                         '    ' + str(datetime.datetime.now()))"""
 
     # Get the settings for the tests
-    config = session.conf.comp_default.set_index("Description")
+    if exp == True:
+        config = session.conf.exp_default.set_index("Description")
+    else:        
+        config = session.conf.comp_default.set_index("Description")
     # Get the log
     log = session.log
 
@@ -140,7 +143,7 @@ def _get_output(action, config, lib, session):
     #TODO change testname to config
     elif testname in ['Oktavian']:
         if action == 'compare':
-            out = expo.SpectrumOutput(lib, testname, session, multiplerun=True)
+            out = expo.SpectrumOutput(lib, config, session, multiplerun=True)
         elif action == 'pp':
             print(exp_pp_message)
             return False

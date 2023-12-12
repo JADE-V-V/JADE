@@ -596,7 +596,7 @@ Additional Post-Processing of library:"""+lib+' completed\n', spacing=False)
                 lib_input = EXP_TAG+'-'+lib_input  # Insert the exp tag
                 for testname in to_perform:
                     try:
-                        pp.compareBenchmark(session, lib_input, testname)
+                        pp.compareBenchmark(session, lib_input, testname, exp = True)
                     except PermissionError as e:
                         clear_screen()
                         print(pp_menu)

@@ -158,7 +158,10 @@ Libraries
     :width: 400
 
 This sheet contains the paths of nuclear data library index files for the various codes.
-
+It is the users responsibility to ensure these are configured correctly, and that in 
+the case of comparisons between codes that the xsdir files are equivalent. For a more 
+detailed description of these files, refer to the appropriate documentation for each
+code
 
 .. warning::
     Do not use invalid filename characters (e.g. ``"\"``) in the names assigned to the
@@ -176,48 +179,6 @@ The ``<JADE_root>\Configuration\Activation.xlsx`` file stores all the reactions 
 activation libraries. For each library a sheet needs to be added having as name the 
 suffix used in the xsdir file for the library. Only three columns in the table are mandatory
 and these are the **Parent**, **MT** and **Daughter** ones.
-
-.. _runconf:
-
-Benchmark run configuration
-===========================
-
-for the *Sphere Leakage* and for the *Sphere SDDR* benchmarks ad-hoc run
-configuration file are defined and can be found in the
-``<JADE_root>\Configuration\Sphere`` and ``<JADE_root>\Configuration\SphereSDDR``
-folders. These are .csv files that control for each element or typical material
-the following run parameters:
-
-NPS cut-off
-    specifies the number of particle histories to be set in the MCNP
-    STOP card.
-
-CTME cut-off
-    specifies the total computer time to be set in the MCNP STOP card.
-
-Relative Error cut-off
-    specifies a precision limit for a tally to be set in the MCNP STOP card.
-
-Density [g/cc]
-    specifies the density to be considered in the sphere for the
-    isotope/typical material.
-
-Name
-    name to be used during post-processing (e.g. Hydrogen or SS316L(N)-IG)
-
-Symbol
-    element symbol (e.g. H) or material number (e.g. M400). In case of material
-    number the id must be consistent with the ones indicated in the
-    ``<JADE_root>\Benchmarks inputs\TypicalMaterials`` file.
-
-Z
-    **[Only for elements]** element number (e.g. 1 for H).
-
-Let Override
-    If True, the general settings specified in the :ref:`mainconfig` file
-    for the STOP card are considered to have priority on the specific ones.
-    If False, the specific parameters are not ovveridden by the general ones.
-
 
 .. _ppconf:
 

@@ -439,24 +439,36 @@ class Status():
                 if testname in to_perform[code]:
                     # Check if benchmark folder exists
                     try:
-                        test = self.run_tree[lib][testname][code]
-                        if testname in MULTI_TEST:
-                            flag_test_run = False
-                            for zaid, files in test.items():
-                                flag_run_zaid = self.check_test_run(files, code)
-                                if flag_run_zaid:
-                                    flag_test_run = True
-                            if flag_test_run:
-                                if code not in test_runned:
-                                    test_runned[code] = []
-                                test_runned[code].append(testname)
+                        if exp == True:
+                            exps = self.run_tree[lib][testname]
+                            for experiment, codes in exps.items():
+                                for code, files in codes.items():
+                                    flag_run_zaid = self.check_test_run(files, code)
+                                    if flag_run_zaid:
+                                        flag_test_run = True
+                                if flag_test_run:
+                                    if code not in test_runned:
+                                        test_runned[code] = []
+                                    test_runned[code].append(testname)
                         else:
-                            # Check if output is present
-                            flag_test_run = self.check_test_run(test, code)
-                            if flag_test_run:
-                                if code not in test_runned:
-                                    test_runned[code] = []
-                                test_runned[code].append(testname)
+                            test = self.run_tree[lib][testname][code]
+                            if testname in MULTI_TEST:
+                                flag_test_run = False
+                                for zaid, files in test.items():
+                                    flag_run_zaid = self.check_test_run(files, code)
+                                    if flag_run_zaid:
+                                        flag_test_run = True
+                                if flag_test_run:
+                                    if code not in test_runned:
+                                        test_runned[code] = []
+                                    test_runned[code].append(testname)
+                            else:
+                                # Check if output is present
+                                flag_test_run = self.check_test_run(test, code)
+                                if flag_test_run:
+                                    if code not in test_runned:
+                                        test_runned[code] = []
+                                    test_runned[code].append(testname)
                     except KeyError:  # Folder does not exist
                         pass
 

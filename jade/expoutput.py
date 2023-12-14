@@ -82,8 +82,9 @@ class ExperimentalOutput(BenchmarkOutput):
 
         # Add the raw path data (not created because it is a comparison)
         out = os.path.dirname(self.atlas_path)
-        raw_path = os.path.join(out, 'Raw Data')
-        #os.mkdir(raw_path)
+        raw_path = os.path.join(out, 'Raw_Data')
+        if not os.path.exists(raw_path):
+            os.mkdir(raw_path)
         self.raw_path = raw_path
         self.multiplerun = multiplerun
 
@@ -186,22 +187,37 @@ class ExperimentalOutput(BenchmarkOutput):
                     code_raw_data = {}
                     for folder in os.listdir(test_path):
                         # FIX MCNP HARD CODED PATH HERE
-                        results_path = os.path.join(test_path, folder, "mcnp")
-                        pieces = folder.split('_')
-                        # Get zaid
-                        input = pieces[-1]
+                        if self.mcnp:
+                            results_path = os.path.join(test_path,
+                                                        folder, "mcnp")
+                            pieces = folder.split('_')
+                            # Get zaid
+                            input = pieces[-1]
+                            mfile, ofile = self._get_output_files(results_path)
+                            # Parse output
+                            output = MCNPoutput(mfile, ofile)
+                            outputs[input, lib] = output
+                            code_raw_data[input, lib] = output.tallydata
+                            # self.raw_data[input, lib] = output.tallydata
 
-                        mfile, ofile = self._get_output_files(results_path)
-                        # Parse output
-                        output = MCNPoutput(mfile, ofile)
-                        outputs[input, lib] = output
-                        code_raw_data [input, lib] = output.tallydata
-                        #self.raw_data[input, lib] = output.tallydata
-                        # Get the meaningful results
-                        results[input, lib] = self._processMCNPdata(output)
-                        if input not in inputs:
-                            inputs.append(input)
-                    self.raw_data["mcnp"] = code_raw_data
+                            # Get the meaningful results
+                            results[input, lib] = self._processMCNPdata(output)
+                            if input not in inputs:
+                                inputs.append(input)
+                        if self.openmc:
+                            print("Experimental comparison not impletmented \
+                                for OpenMC")
+                            break
+                        if self.serpent:
+                            print("Experimental comparison not impletmented \
+                                for Serpent")
+                            break
+                        if self.d1s:
+                            print("Experimental comparison not impletmented \
+                                for D1S")
+                            break
+                    if self.mcnp:
+                        self.raw_data["mcnp"] = code_raw_data
                 # Results are organized just by lib
                 else:
                     mfile, ofile = self._get_output_files(test_path)
@@ -284,7 +300,15 @@ class ExperimentalOutput(BenchmarkOutput):
         -------
         None.
         """
-        for (folder, lib), item in self.raw_data['mcnp'].items():
+        if self.mcnp:
+            raw_to_print = self.raw_data['mcnp'].items()
+        if self.openmc:
+            pass
+        if self.serpent:
+            pass
+        if self.d1s:
+            pass
+        for (folder, lib), item in raw_to_print:
             # Create the lib directory if it is not there
             cd_lib = os.path.join(self.raw_path, lib)
             if not os.path.exists(cd_lib):
@@ -292,10 +316,10 @@ class ExperimentalOutput(BenchmarkOutput):
             # Dump everything
             for key, data in item.items():
                 if folder == self.testname:
-                    file = os.path.join(cd_lib, str(key)+'.csv')
+                    file = os.path.join(cd_lib, str(key) + '.csv')
                 else:
                     file = os.path.join(cd_lib,
-                                        folder+' '+str(key)+'.csv')
+                                        folder + ' ' + str(key) + '.csv')
                 data.to_csv(file, header=True, index=False)
 
     @abstractmethod
@@ -383,7 +407,7 @@ class FNGOutput(ExperimentalOutput):
                     err = tally.getValue(0, 0, 0, 0, 0, 0, 0, i, 0, 0, 0, 1)
 
                     # Store
-                    time_res = [i+1, val, err]
+                    time_res = [i + 1, val, err]
                     tallyres.append(time_res)
 
                 # Build and store the taly df
@@ -395,11 +419,12 @@ class FNGOutput(ExperimentalOutput):
             if tnum in [14, 24]:
                 for i in range(tally.nTim):
                     for j in range(tally.nUsr):
-                        val = tally.getValue(0, 0, j, 0, 0, 0, 0, i, 0, 0, 0, 0)
-                        err = tally.getValue(0, 0, j, 0, 0, 0, 0, i, 0, 0, 0, 1)
-
+                        val = tally.getValue(0, 0, j, 0, 0, 0,
+                                             0, i, 0, 0, 0, 0)
+                        err = tally.getValue(0, 0, j, 0, 0, 0,
+                                             0, i, 0, 0, 0, 1)
                         # Store
-                        time_res = [i+1, j, val, err]
+                        time_res = [i + 1, j, val, err]
                         tallyres.append(time_res)
 
                 # Build and store the taly df
@@ -441,15 +466,16 @@ class FNGOutput(ExperimentalOutput):
                 for lib in self.lib[1:]:
                     libname = self.session.conf.get_lib_name(lib)
                     # get computational data
-                    com_err = alldata[lib+'err']
-                    com_sddr = alldata[lib+'sddr']
+                    com_err = alldata[lib + 'err']
+                    com_sddr = alldata[lib + 'sddr']
 
                     # compute global error (SRSS)
-                    gl_err = ((com_err**2+exp_err**2)**(1/2)).round(2).astype(str)
+                    gl_err = ((com_err**2 + exp_err**2)**(1 / 2))
+                    .round(2).astype(str)
                     # compute C/E
-                    gl_val = (com_sddr/exp_sddr).round(2).astype(str)
+                    gl_val = (com_sddr / exp_sddr).round(2).astype(str)
 
-                    df[libname] = gl_val+' +/- '+gl_err
+                    df[libname] = gl_val + ' +/- ' + gl_err
 
                 # Dump the df
                 df.to_excel(writer, sheet_name=folder, startrow=2)
@@ -479,10 +505,11 @@ class FNGOutput(ExperimentalOutput):
 
         # Avoid exp tag
         for lib in self.lib[1:]:
-            libdf = self.results[folder, lib]['4'].set_index('time').sort_index()
+            libdf = self.results[folder, lib]['4']
+            .set_index('time').sort_index()
             # add the SDDR and relative column of each library
-            df[lib+'sddr'] = libdf['sddr'].values
-            df[lib+'err'] = libdf['err'].values
+            df[lib + 'sddr'] = libdf['sddr'].values
+            df[lib + 'err'] = libdf['err'].values
 
         return df
 
@@ -517,12 +544,13 @@ class FNGOutput(ExperimentalOutput):
                 if lib == 'Exp':
                     df = self.exp_results[folder]['SDDR']
                     y = df['Experimental SDDR [Sv/h]'].values
-                    err = (df['Relative Error']*y).values
+                    err = (df['Relative Error'] * y).values
                     ylabel = 'Experiment'
                 else:
-                    df = self.results[folder, lib]['4'].set_index('time').sort_index()
+                    df = self.results[folder,
+                                      lib]['4'].set_index('time').sort_index()
                     y = df.sddr.values
-                    err = df.err.values*y
+                    err = df.err.values * y
                     ylabel = self.session.conf.get_lib_name(lib)
 
                 data.append({'x': x, 'y': y, 'err': err, 'ylabel': ylabel})
@@ -544,24 +572,25 @@ class FNGOutput(ExperimentalOutput):
                 file = os.path.join(self.test_path[lib], folder, folder)
                 inp = D1S_Input.from_text(file)
                 for tallynum in ['24', '14']:
-                    card = inp.get_card_byID('settings', 'FU'+tallynum)
+                    card = inp.get_card_byID('settings', 'FU' + tallynum)
                     strings = []
                     for line in card.lines:
                         zaids = patzaid.findall(line)
                         for zaid in zaids:
                             if zaid != '0':
-                                _, formula = self.session.lib_manager.get_zaidname(zaid)
+                                _, formula = self.session.lib_manager.get_zaidname(
+                                    zaid)
                                 strings.append(formula)
 
                     zaid_tracked[tallynum] = strings
 
             x = self.times[folder]
-            titles = {'parent': title+', parent isotopes contribution ',
-                      'daughter': title+', daughter isotopes contribution '}
+            titles = {'parent': title + ', parent isotopes contribution ',
+                      'daughter': title + ', daughter isotopes contribution '}
             tallynums = {'parent': '24', 'daughter': '14'}
 
             for tracked in ['parent', 'daughter']:
-                atlas.doc.add_heading(tracked+' tracking', level=3)
+                atlas.doc.add_heading(tracked + ' tracking', level=3)
                 for lib in self.lib[1:]:
                     libname = self.session.conf.get_lib_name(lib)
 
@@ -576,13 +605,13 @@ class FNGOutput(ExperimentalOutput):
                         subset = df.loc[zaid]
                         assert len(subset.time.values) == len(x)
                         formula = zaid_tracked[tallynum][i]
-                        y = subset.sddr.values/tot_dose*100
+                        y = subset.sddr.values / tot_dose * 100
                         libdata = {'x': x, 'y': y, 'err': [],
                                    'ylabel': formula}
                         data.append(libdata)
 
                     outname = 'tmp'
-                    newtitle = titles[tracked]+libname
+                    newtitle = titles[tracked] + libname
                     quantity = 'SDDR contribution'
                     unit = '%'
                     xlabel = 'Cooldown time'
@@ -622,7 +651,7 @@ class SpectrumOutput(ExperimentalOutput):
                 tallynum, particle, xlabel = self._get_tally_info(tally)
                 # Collect data
                 quantity_CE = self.bench_conf.loc[tallynum, 'Y Label']
-                e_int = self.bench_conf.loc[tallynum, 
+                e_int = self.bench_conf.loc[tallynum,
                                             'C/E X Quantity intervals']
                 e_int = e_int.split('-')
 
@@ -689,7 +718,8 @@ class SpectrumOutput(ExperimentalOutput):
                 if binning == x_ax:
                     continue
                 else:
-                    # if tallies only have one type of binning KeyError could arise
+                    # if tallies only have one type of binning KeyError could
+                    # arise
                     try:
                         todump = todump.drop(columns=['Min ' + binning[0],
                                                       'Max ' + binning[0]])
@@ -850,9 +880,9 @@ class SpectrumOutput(ExperimentalOutput):
                     particle = tally.particleList[np.where(
                         tally.tallyParticles == 1)[0][0]]
             if particle == 'Neutron':
-                flux = flux/np.log((ergs[1:]/ergs[:-1]))
+                flux = flux / np.log((ergs[1:] / ergs[:-1]))
             elif particle == 'Photon':
-                flux = flux/(ergs[1:]-ergs[:-1])
+                flux = flux / (ergs[1:] - ergs[:-1])
 
         elif TALLY_NORMALIZATION[self.testname] == 'energy bins':
             # Energies for lethargy computation
@@ -895,7 +925,7 @@ def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='C',
     rows = []
     df = pd.DataFrame(df)
     df['Exp'] = interpolator(df[x])
-    df['C/E'] = df[y]/df['Exp']
+    df['C/E'] = df[y] / df['Exp']
     # it is better here to drop inf values because it means that the
     # interpolated experiment was zero, i.e., no value available
     df.replace([np.inf, -np.inf], np.nan, inplace=True)  # replace inf with NaN
@@ -957,7 +987,7 @@ class TiaraOutput(ExperimentalOutput):
                     err = temp[tally.tallyNumber].iloc[-1]['Error']
                     case_tree.loc[cont, tally.tallyComment] = val
                     case_tree.loc[cont,
-                                  str(tally.tallyComment[0])+' Error'] = err
+                                  str(tally.tallyComment[0]) + ' Error'] = err
             # Sort data in dataframe and assign to variable
             indexes = ['Library', 'Shield Material', 'Energy',
                        'Shield Thickness']
@@ -985,7 +1015,8 @@ class TiaraOutput(ExperimentalOutput):
         # Delete experimental data
         com_index = self.case_tree_df.index.intersection(self.exp_data.index)
         self.exp_data = self.exp_data[self.exp_data.index.isin(com_index)]
-        self.case_tree_df = self.case_tree_df[self.case_tree_df.index.isin(com_index)]
+        self.case_tree_df = self.case_tree_df[self.case_tree_df.index.isin(
+            com_index)]
         self.case_tree_df = self.case_tree_df.reset_index()
         self.case_tree_df = self.case_tree_df.set_index(indexes)
         return
@@ -1107,7 +1138,8 @@ class TiaraFCOutput(TiaraOutput):
                                 val = temp_df.loc[row_tuple, idx_col[1]]
                                 val2 = self.exp_data.loc[row_tuple[1:],
                                                          idx_col[1]]
-                                new_dataframe.loc[idx_row, idx_col] = val/val2
+                                new_dataframe.loc[idx_row,
+                                                  idx_col] = val / val2
                 # Assign worksheet title and put into Excel
                 conv_df = self._get_conv_df(temp_df)
                 sheet_name = 'Tiara FC {}, {} MeV'.format(shield_material,
@@ -1241,8 +1273,8 @@ class TiaraFCOutput(TiaraOutput):
                     mcnp_data = self.case_tree_df.loc(axis=0)[ylabel,
                                                               shield_material,
                                                               energy]
-                    thick_list = mcnp_data.index.unique(level='Shield Thickness'
-                                                        ).tolist()
+                    thick_list = mcnp_data.index.unique(
+                        level='Shield Thickness').tolist()
                     off_list = mcnp_data.index.unique(level='Axis offset'
                                                       ).tolist()
                     for thick in thick_list:
@@ -1282,7 +1314,8 @@ class TiaraFCOutput(TiaraOutput):
 
                 for cont, data in enumerate([data_U_p, data_Th_p]):
                     # Set title and send to plotter
-                    title = 'Tiara Experiment: {} Fission Cell detector,\nEnergy: {} MeV, Shield material: {}'.format(fission_cell[cont], str(energy), shield_material)
+                    title = 'Tiara Experiment: {} Fission Cell detector,\nEnergy: {} MeV, Shield material: {}'.format(
+                        fission_cell[cont], str(energy), shield_material)
                     outname = 'tmp'
                     plot = Plotter(data, title, tmp_path, outname, quantity,
                                    unit, xlabel, self.testname)
@@ -1334,8 +1367,8 @@ class TiaraBSOutput(TiaraOutput):
                     column_names.append(('Exp', shield_thickness, 'Value'))
                 lib_list = comp_data.index.unique(level='Library').tolist()
                 for lib in lib_list:
-                    thick_list = comp_data.index.unique(level='Shield Thickness'
-                                                        ).tolist()
+                    thick_list = comp_data.index.unique(
+                        level='Shield Thickness').tolist()
                     for shield_thickness in thick_list:
                         column_names.append((lib, shield_thickness, 'Value'))
                         column_names.append((lib, shield_thickness, 'Error'))
@@ -1365,7 +1398,8 @@ class TiaraBSOutput(TiaraOutput):
                             else:
                                 val = comp_data.loc[row_tuple, idx_row]
                                 val2 = exp_data.loc[idx_col[1], idx_row]
-                                new_dataframe.loc[idx_row, idx_col] = val/val2
+                                new_dataframe.loc[idx_row,
+                                                  idx_col] = val / val2
 
                 # Print the dataframe in a worksheet in Excel file
                 conv_df = self._get_conv_df(comp_data)
@@ -1646,7 +1680,8 @@ class MultipleSpectrumOutput(SpectrumOutput):
         self.tables = []
         self.groups = pd.read_excel(self.cnf_path)
         self.groups = self.groups.set_index(['Group', 'Tally', 'Input'])
-        self.group_list = self.groups.index.get_level_values('Group').unique().tolist()
+        self.group_list = self.groups.index.get_level_values(
+            'Group').unique().tolist()
         for group in self.group_list:
             self._plot_tally_group(group, tmp_path, atlas)
 

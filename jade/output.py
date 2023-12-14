@@ -170,7 +170,7 @@ class BenchmarkOutput(AbstractOutput):
             self.d1s = False
 
         # COMPARISON
-        if type(lib) == list and len(lib) > 1:
+        if isinstance(lib, list) and len(lib) > 1:
             self.single = False  # Indicator for single or comparison
             self.lib = lib
             couples = []
@@ -202,7 +202,7 @@ class BenchmarkOutput(AbstractOutput):
 
             excel_path = os.path.join(out, "Excel")
             atlas_path = os.path.join(out, "Atlas")
-            raw_path = os.path.join(out, "Raw Data")
+            raw_path = os.path.join(out, "Raw_Data")
             os.mkdir(excel_path)
             os.mkdir(atlas_path)
             os.mkdir(raw_path)
@@ -243,7 +243,7 @@ class BenchmarkOutput(AbstractOutput):
         # SINGLE-LIBRARY
         else:
             self.single = True  # Indicator for single or comparison
-            if type(lib) is list and len(lib) == 1:
+            if isinstance(lib, list) and len(lib) == 1:
                 self.lib = lib[0]  # In case of 1-item list
             else:
                 self.lib = lib
@@ -260,7 +260,7 @@ class BenchmarkOutput(AbstractOutput):
             os.mkdir(out)
             excel_path = os.path.join(out, "Excel")
             atlas_path = os.path.join(out, "Atlas")
-            raw_path = os.path.join(out, "Raw Data")
+            raw_path = os.path.join(out, "Raw_Data")
             os.mkdir(excel_path)
             os.mkdir(atlas_path)
             os.mkdir(raw_path)
@@ -376,7 +376,10 @@ class BenchmarkOutput(AbstractOutput):
         atl_cnf.set_index("Tally", inplace=True)
 
         # Printing Atlas
-        template = os.path.join(self.code_path, "templates", "AtlasTemplate.docx")
+        template = os.path.join(
+            self.code_path,
+            "templates",
+            "AtlasTemplate.docx")
         atlas = at.Atlas(template, self.testname + "_" + self.lib)
 
         # Iterate over each type of plot (first one is quantity
@@ -438,7 +441,11 @@ class BenchmarkOutput(AbstractOutput):
                         error = err_df["Error"]
 
                     lib_name = self.session.conf.get_lib_name(self.lib)
-                    lib = {"x": x, "y": values, "err": error, "ylabel": lib_name}
+                    lib = {
+                        "x": x,
+                        "y": values,
+                        "err": error,
+                        "ylabel": lib_name}
                     data = [lib]
 
                     outname = "tmp"
@@ -481,7 +488,10 @@ class BenchmarkOutput(AbstractOutput):
         atl_cnf.set_index("Tally", inplace=True)
 
         # Printing Atlas
-        template = os.path.join(self.code_path, "templates", "AtlasTemplate.docx")
+        template = os.path.join(
+            self.code_path,
+            "templates",
+            "AtlasTemplate.docx")
 
         atlas = at.Atlas(template, self.testname + "_" + self.name)
 
@@ -493,7 +503,7 @@ class BenchmarkOutput(AbstractOutput):
                 self.session.path_single,
                 lib,
                 self.testname,
-                "Raw Data",
+                "Raw_Data",
                 lib + ".pickle",
             )
             with open(out_path, "rb") as handle:
@@ -657,7 +667,10 @@ class BenchmarkOutput(AbstractOutput):
                 try:
                     tally_settings = ex_cnf.loc[num]
                 except KeyError:
-                    print(" Warning!: tally n." + str(num) + " is not in configuration")
+                    print(
+                        " Warning!: tally n." +
+                        str(num) +
+                        " is not in configuration")
                     continue
 
                 # Re-Elaborate tdata Dataframe
@@ -697,7 +710,8 @@ class BenchmarkOutput(AbstractOutput):
                         rows.append(row)
 
                     try:
-                        main_value_df = pd.DataFrame(rows, columns=y_set, index=x_set)
+                        main_value_df = pd.DataFrame(
+                            rows, columns=y_set, index=x_set)
                         main_value_df.index.name = x_name
                     except ValueError:
                         print(
@@ -768,7 +782,7 @@ class BenchmarkOutput(AbstractOutput):
 
             # memorize data for atlas
             self.outputs = outputs
-            #print(outputs)
+            # print(outputs)
             # Dump them for comparisons
             outpath = os.path.join(self.raw_path, self.lib + ".pickle")
             with open(outpath, "wb") as outfile:
@@ -819,8 +833,11 @@ class BenchmarkOutput(AbstractOutput):
         for reflib, tarlib, name in self.couples:
             iteration = iteration + 1
             outpath = os.path.join(
-                self.excel_path, self.testname + "_Comparison_" + name + ".xlsx"
-            )
+                self.excel_path,
+                self.testname +
+                "_Comparison_" +
+                name +
+                ".xlsx")
             ex = ExcelOutputSheet(template, outpath)
             # Get results
             if iteration == 1:
@@ -841,7 +858,8 @@ class BenchmarkOutput(AbstractOutput):
                     elif file[-4:] == "msht":
                         meshtalfile = os.path.join(results_path, file)
                 # Parse output
-                mcnp_output = MCNPoutput(mfile, ofile, meshtal_file=meshtalfile)
+                mcnp_output = MCNPoutput(
+                    mfile, ofile, meshtal_file=meshtalfile)
                 mcnp_outputs[lib] = mcnp_output
 
             # Build the comparison
@@ -855,7 +873,10 @@ class BenchmarkOutput(AbstractOutput):
                 try:
                     tally_settings = ex_cnf.loc[num]
                 except KeyError:
-                    print(" Warning!: tally n." + str(num) + " is not in configuration")
+                    print(
+                        " Warning!: tally n." +
+                        str(num) +
+                        " is not in configuration")
                     continue
 
                 # Re-Elaborate tdata Dataframe
@@ -898,7 +919,8 @@ class BenchmarkOutput(AbstractOutput):
 
                         rows.append(row)
 
-                    main_value_df = pd.DataFrame(rows, columns=y_set, index=x_set)
+                    main_value_df = pd.DataFrame(
+                        rows, columns=y_set, index=x_set)
                     main_value_df.index.name = x_name
                     # reorder index and quick index reset
                     main_value_df.reset_index(inplace=True)
@@ -949,7 +971,8 @@ class BenchmarkOutput(AbstractOutput):
 
             # Add single pp sheets
             for lib in [reflib, tarlib]:
-                cp = self.state.get_path("single", [lib, self.testname, "Excel"])
+                cp = self.state.get_path(
+                    "single", [lib, self.testname, "Excel"])
                 file = os.listdir(cp)[0]
                 cp = os.path.join(cp, file)
                 ex.copy_sheets(cp)
@@ -1068,8 +1091,10 @@ class MCNPoutput:
                             for m in range(nMul):  # (unused)
                                 for c, cn in enumerate(binnings["cosine"]):
                                     for e, en in enumerate(binnings["energy"]):
-                                        for nt, ntn in enumerate(binnings["time"]):
-                                            for k, kn in enumerate(binnings["cor C"]):
+                                        for nt, ntn in enumerate(
+                                                binnings["time"]):
+                                            for k, kn in enumerate(
+                                                    binnings["cor C"]):
                                                 for j, jn in enumerate(
                                                     binnings["cor B"]
                                                 ):
@@ -1126,33 +1151,28 @@ class MCNPoutput:
                 val = t.getValue(f, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0)
                 err = t.getValue(f, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1)
                 if t.timTC is not None:
-                    rows.append(
-                        [fn, d, un, sn, m, cn, en, "total", ina, jn, kn, val, err]
-                    )
+                    rows.append([fn, d, un, sn, m, cn, en,
+                                 "total", ina, jn, kn, val, err])
                     total = "Time"
 
                 elif t.ergTC is not None:
-                    rows.append(
-                        [fn, d, un, sn, m, cn, "total", ntn, ina, jn, kn, val, err]
-                    )
+                    rows.append([fn, d, un, sn, m, cn, "total",
+                                 ntn, ina, jn, kn, val, err])
                     total = "Energy"
 
                 elif t.segTC is not None:
-                    rows.append(
-                        [fn, d, un, "total", m, cn, en, ntn, ina, jn, kn, val, err]
-                    )
+                    rows.append([fn, d, un, "total", m, cn, en,
+                                 ntn, ina, jn, kn, val, err])
                     total = "Segments"
 
                 elif t.cosTC is not None:
-                    rows.append(
-                        [fn, d, un, sn, m, "total", en, ntn, ina, jn, kn, val, err]
-                    )
+                    rows.append([fn, d, un, sn, m, "total", en,
+                                 ntn, ina, jn, kn, val, err])
                     total = "Cosine"
 
                 elif t.usrTC is not None:
-                    rows.append(
-                        [fn, d, "total", sn, m, cn, en, ntn, ina, jn, kn, val, err]
-                    )
+                    rows.append([fn, d, "total", sn, m, cn, en,
+                                 ntn, ina, jn, kn, val, err])
                     total = "User"
 
             # --- Build the tally DataFrame ---
@@ -1199,7 +1219,8 @@ class MCNPoutput:
             # the additional segmentation can be quite useful and this can be
             # collapsed de facto in a single geometrical binning
 
-            if "Cells" in df.columns and "Segments" in df.columns and len(df) > 1:
+            if "Cells" in df.columns and "Segments" in df.columns and len(
+                    df) > 1:
                 # Then we can collapse this in a single geometrical binning
                 values = []
                 for cell, segment in zip(df.Cells, df.Segments):
@@ -1281,8 +1302,7 @@ class OpenMCOutput:
             if "tally" in line.lower():
                 if len(rows) > 0:
                     tallydata[tallynum], totalbin[tallynum] = self._create_dataframe(
-                        rows
-                    )
+                        rows)
                     rows = []
                 parts = line.split()
                 tallynum = int(parts[2].replace(":", ""))
@@ -1318,7 +1338,8 @@ class OpenMCOutput:
                         error,
                     ]
                 )
-            tallydata[tallynum], totalbin[tallynum] = self._create_dataframe(rows)
+            tallydata[tallynum], totalbin[tallynum] = self._create_dataframe(
+                rows)
         return tallydata, totalbin
 
 
@@ -1436,7 +1457,7 @@ class ExcelOutputSheet:
             self.free_row = self.free_row + len(df) + add_space
 
         # Start column can be provided as a letter or number (up to Z)
-        if type(startcolumn) is str:
+        if isinstance(startcolumn, str):
             startcolumn = ord(startcolumn.lower()) - 96
 
         anchor = (startrow, startcolumn)
@@ -1445,7 +1466,8 @@ class ExcelOutputSheet:
 
         try:
             ws.range(anchor).options(index=print_index, header=True).value = df
-            rng = ((startrow + 1, startcolumn), (startrow + 1 + len(df), startcolumn))
+            rng = ((startrow + 1, startcolumn),
+                   (startrow + 1 + len(df), startcolumn))
             # Format values if requested
             if values_format is not None:
                 rng_values = (
@@ -1457,7 +1479,8 @@ class ExcelOutputSheet:
             # Formatting
             ws.range(*rng).number_format = idx_format  # idx formatting
             # Columns headers
-            anchor_columns = (anchor, (startrow, startcolumn + len(df.columns)))
+            anchor_columns = (
+                anchor, (startrow, startcolumn + len(df.columns)))
             ws.range(*anchor_columns).api.Font.Size = cols_head_size
             ws.range(*anchor_columns).api.Font.Bold = True
             ws.range(*anchor_columns).color = (236, 236, 236)
@@ -1533,10 +1556,10 @@ class ExcelOutputSheet:
         ylim = int(ylim)
         # ws = self.wb.sheets[ws]
         # Decode columns for index and columns names
-        if type(startcolumn) is int:
+        if isinstance(startcolumn, int):
             index_col = string.ascii_uppercase[startcolumn]
             columns_col = string.ascii_uppercase[startcolumn + 1]
-        elif type(startcolumn) is str:
+        elif isinstance(startcolumn, str):
             index_col = startcolumn
             columns_col = chr(ord(startcolumn) + 1)
 

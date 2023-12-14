@@ -24,9 +24,20 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import re
 
-MULTI_TEST = ['Sphere', 'Oktavian', 'SphereSDDR', 'FNG', 'Tiara-BC',
-              'Tiara-BS', 'Tiara-FC', 'FNS-TOF', 'FNG-BKT', 'FNG-W', 'ASPIS-Fe88',
-              'TUD-Fe', 'TUD-W']
+MULTI_TEST = [
+    'Sphere',
+    'Oktavian',
+    'SphereSDDR',
+    'FNG',
+    'Tiara-BC',
+    'Tiara-BS',
+    'Tiara-FC',
+    'FNS-TOF',
+    'FNG-BKT',
+    'FNG-W',
+    'ASPIS-Fe88',
+    'TUD-Fe',
+    'TUD-W']
 EXP_TAG = 'Exp'
 
 
@@ -71,7 +82,8 @@ class Status():
 
         """
 
-        # Create nested dictionaries to store info on libraries, tests, codes and files.
+        # Create nested dictionaries to store info on libraries, tests, codes
+        # and files.
         libraries = {}
         for lib in os.listdir(self.run_path):
             libraries[lib] = {}
@@ -338,7 +350,7 @@ class Status():
         """
 
         test_runned = self.check_lib_run(lib, session, exp=exp)
-                  
+
         # Ask for override
         if len(test_runned) > 0:
             while True:
@@ -383,7 +395,12 @@ class Status():
 
         return ans
 
-    def check_lib_run(self, lib, session, config_option="Run", exp=False) -> dict:
+    def check_lib_run(
+            self,
+            lib,
+            session,
+            config_option="Run",
+            exp=False) -> dict:
         """
         Check if a library has been run. To be considered run a meshtally or
         meshtal have to be produced (for MCNP). Only active benchmarks (specified in
@@ -435,15 +452,16 @@ class Status():
         for idx, row in config.iterrows():
             filename = str(row["Folder Name"])
             testname = filename.split(".")[0]
-            for code in to_perform:    
+            for code in to_perform:
                 if testname in to_perform[code]:
                     # Check if benchmark folder exists
                     try:
-                        if exp == True:
+                        if exp:
                             exps = self.run_tree[lib][testname]
                             for experiment, codes in exps.items():
                                 for code, files in codes.items():
-                                    flag_run_zaid = self.check_test_run(files, code)
+                                    flag_run_zaid = self.check_test_run(
+                                        files, code)
                                     if flag_run_zaid:
                                         flag_test_run = True
                                 if flag_test_run:
@@ -455,7 +473,8 @@ class Status():
                             if testname in MULTI_TEST:
                                 flag_test_run = False
                                 for zaid, files in test.items():
-                                    flag_run_zaid = self.check_test_run(files, code)
+                                    flag_run_zaid = self.check_test_run(
+                                        files, code)
                                     if flag_run_zaid:
                                         flag_test_run = True
                                 if flag_test_run:
@@ -499,7 +518,9 @@ class Status():
 
         """
         self.update_pp_status()
-        trees = {"single": self.single_tree, "comparison": self.comparison_tree}
+        trees = {
+            "single": self.single_tree,
+            "comparison": self.comparison_tree}
         try:
             library_tests = trees[tree][lib]
             to_pp = session.check_active_tests("Post-Processing", exp=exp)
@@ -544,7 +565,7 @@ class Status():
         # Individuate libraries to pp
 
         libs = lib_input.split("-")
-        
+
         if lib_input == "back":
             return None, None, lib_input
 
@@ -561,7 +582,8 @@ class Status():
         # Check if libraries have been run
         flag_not_run = False
         for lib in libs:
-            test_run = self.check_lib_run(lib, session, "Post-Processing", exp=exp)
+            test_run = self.check_lib_run(
+                lib, session, "Post-Processing", exp=exp)
             if len(test_run) == 0:  # TODO not checking for each benchmark
                 flag_not_run = True
                 lib_not_run = lib
@@ -591,7 +613,8 @@ class Status():
  You can manage the selection of benchmarks in the Config.xlsx file.
 """
                         )
-                        i = input(" Would you like to override the results?(y/n) ")
+                        i = input(
+                            " Would you like to override the results?(y/n) ")
                         if i == "y":
                             ans = True
                             logtext = (
@@ -633,7 +656,8 @@ class Status():
  A comparison for these libraries was already performed.
 """
                         )
-                        i = input(" Would you like to override the results?(y/n) ")
+                        i = input(
+                            " Would you like to override the results?(y/n) ")
                         if i == "y":
                             ans = True
                             logtext = (

@@ -81,7 +81,7 @@ class ExperimentalOutput(BenchmarkOutput):
         self.path_exp_res = os.path.join(session.path_exp_res, testname)
 
         # Add the raw path data (not created because it is a comparison)
-        out = os.path.dirname(self.atlas_path)
+        out = os.path.dirname(self.atlas_path_mcnp)
         raw_path = os.path.join(out, 'Raw_Data')
         if not os.path.exists(raw_path):
             os.mkdir(raw_path)
@@ -147,7 +147,7 @@ class ExperimentalOutput(BenchmarkOutput):
         None.
         """
         # Build a temporary folder for images
-        tmp_path = os.path.join(self.atlas_path, 'tmp')
+        tmp_path = os.path.join(self.atlas_path_mcnp, 'tmp')
         os.mkdir(tmp_path)
 
         globalname = ''
@@ -156,7 +156,7 @@ class ExperimentalOutput(BenchmarkOutput):
         globalname = globalname[:-4]
         globalname = self.testname + '_' + globalname
         # Initialize the atlas
-        template = os.path.join(self.code_path, 'Code', 'templates',
+        template = os.path.join(self.code_path, 'Code', 'jade', 'templates',
                                 'AtlasTemplate.docx')
         atlas = at.Atlas(template, globalname)
 
@@ -165,7 +165,7 @@ class ExperimentalOutput(BenchmarkOutput):
 
         # Save Atlas
         print(' Producing the PDF...')
-        atlas.save(self.atlas_path)
+        atlas.save(self.atlas_path_mcnp)
         # Remove tmp images
         shutil.rmtree(tmp_path)
 
@@ -470,8 +470,8 @@ class FNGOutput(ExperimentalOutput):
                     com_sddr = alldata[lib + 'sddr']
 
                     # compute global error (SRSS)
-                    gl_err = ((com_err**2 + exp_err**2)**(1 / 2))
-                    .round(2).astype(str)
+                    gl_err = ((com_err**2 + exp_err**2) **
+                              (1 / 2)).round(2).astype(str)
                     # compute C/E
                     gl_val = (com_sddr / exp_sddr).round(2).astype(str)
 
@@ -505,8 +505,7 @@ class FNGOutput(ExperimentalOutput):
 
         # Avoid exp tag
         for lib in self.lib[1:]:
-            libdf = self.results[folder, lib]['4']
-            .set_index('time').sort_index()
+            libdf = self.results[folder, lib]['4'].set_index('time').sort_index()
             # add the SDDR and relative column of each library
             df[lib + 'sddr'] = libdf['sddr'].values
             df[lib + 'err'] = libdf['err'].values
@@ -730,7 +729,7 @@ class SpectrumOutput(ExperimentalOutput):
 
             todump = todump.dropna(subset=['Max ' + x_lab])
             ft = ft.dropna(subset=['Max ' + x_lab])
-            ex_outpath = os.path.join(self.excel_path,
+            ex_outpath = os.path.join(self.excel_path_mcnp,
                                       'C over E table ' + x_ax + '.xlsx')
 
             # Create a Pandas Excel writer using XlsxWriter as the engine.

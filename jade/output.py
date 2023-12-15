@@ -199,18 +199,49 @@ class BenchmarkOutput(AbstractOutput):
             if os.path.exists(out):
                 shutil.rmtree(out)
             os.mkdir(out)
-
-            excel_path = os.path.join(out, "Excel")
-            atlas_path = os.path.join(out, "Atlas")
-            raw_path = os.path.join(out, "Raw_Data")
-            os.mkdir(excel_path)
-            os.mkdir(atlas_path)
-            os.mkdir(raw_path)
-            self.excel_path = excel_path
-            self.raw_path = raw_path
-            self.atlas_path = atlas_path
+            if self.mcnp:
+                excel_path_mcnp = os.path.join(out, "mcnp" ,"Excel")
+                atlas_path_mcnp = os.path.join(out, "mcnp" ,"Atlas")
+                raw_path_mcnp = os.path.join(out, "mcnp" ,"Raw_Data")
+                os.makedirs(excel_path_mcnp)
+                os.makedirs(atlas_path_mcnp)
+                os.makedirs(raw_path_mcnp)
+                self.excel_path_mcnp = excel_path_mcnp
+                self.raw_path_mcnp = raw_path_mcnp
+                self.atlas_path_mcnp = atlas_path_mcnp
+            if self.openmc:
+                excel_path_openmc = os.path.join(out, "openmc" ,"Excel")
+                atlas_path_openmc = os.path.join(out, "openmc" ,"Atlas")
+                raw_path_openmc = os.path.join(out, "openmc" ,"Raw_Data")
+                os.makedirs(excel_path_openmc)
+                os.makedirs(atlas_path_openmc)
+                os.makedirs(raw_path_openmc)
+                self.excel_path_openmc = excel_path_openmc
+                self.raw_path_openmc = raw_path_openmc
+                self.atlas_path_openmc = atlas_path_openmc
+            if self.serpent:
+                excel_path_serpent = os.path.join(out, "serpent" ,"Excel")
+                atlas_path_serpent = os.path.join(out, "serpent" ,"Atlas")
+                raw_path_serpent = os.path.join(out, "serpent" ,"Raw_Data")
+                os.makedirs(excel_path_serpent)
+                os.makedirs(atlas_path_serpent)
+                os.makedirs(raw_path_serpent)
+                self.excel_path_serpent = excel_path_serpent
+                self.raw_path_serpent = raw_path_serpent
+                self.atlas_path_serpent = atlas_path_serpent
+            if self.d1s:
+                excel_path_d1s = os.path.join(out, "d1s" ,"Excel")
+                atlas_path_d1s = os.path.join(out, "d1s" ,"Atlas")
+                raw_path_d1s = os.path.join(out, "d1s" ,"Raw_Data")
+                os.makedirs(excel_path_d1s)
+                os.makedirs(atlas_path_d1s)
+                os.makedirs(raw_path_d1s)
+                self.excel_path_d1s = excel_path_d1s
+                self.raw_path_d1s = raw_path_d1s
+                self.atlas_path_d1s = atlas_path_d1s
 
             self.couples = couples  # Couples of libraries to post process
+            """
             if self.mcnp:
                 atlas_path_mcnp = os.path.join(self.atlas_path, "mcnp")
                 os.mkdir(atlas_path_mcnp)
@@ -239,7 +270,7 @@ class BenchmarkOutput(AbstractOutput):
                 raw_path_d1s = os.path.join(self.raw_path, "d1s")
                 os.mkdir(raw_path_d1s)
                 self.raw_path_d1s = raw_path_d1s
-
+            """
         # SINGLE-LIBRARY
         else:
             self.single = True  # Indicator for single or comparison
@@ -258,18 +289,50 @@ class BenchmarkOutput(AbstractOutput):
             if os.path.exists(out):
                 shutil.rmtree(out)
             os.mkdir(out)
-            excel_path = os.path.join(out, "Excel")
-            atlas_path = os.path.join(out, "Atlas")
-            raw_path = os.path.join(out, "Raw_Data")
-            os.mkdir(excel_path)
-            os.mkdir(atlas_path)
-            os.mkdir(raw_path)
-            self.excel_path = excel_path
-            self.raw_path = raw_path
-            self.atlas_path = atlas_path
+            if self.mcnp:
+                excel_path_mcnp = os.path.join(out, "mcnp" ,"Excel")
+                atlas_path_mcnp = os.path.join(out, "mcnp" ,"Atlas")
+                raw_path_mcnp = os.path.join(out, "mcnp" ,"Raw_Data")
+                os.makedirs(excel_path_mcnp)
+                os.makedirs(atlas_path_mcnp)
+                os.makedirs(raw_path_mcnp)
+                self.excel_path_mcnp = excel_path_mcnp
+                self.raw_path_mcnp = raw_path_mcnp
+                self.atlas_path_mcnp = atlas_path_mcnp
+            if self.openmc:
+                excel_path_openmc = os.path.join(out, "openmc" ,"Excel")
+                atlas_path_openmc = os.path.join(out, "openmc" ,"Atlas")
+                raw_path_openmc = os.path.join(out, "openmc" ,"Raw_Data")
+                os.makedirs(excel_path_openmc)
+                os.makedirs(atlas_path_openmc)
+                os.makedirs(raw_path_openmc)
+                self.excel_path_openmc = excel_path_openmc
+                self.raw_path_openmc = raw_path_openmc
+                self.atlas_path_openmc = atlas_path_openmc
+            if self.serpent:
+                excel_path_serpent = os.path.join(out, "serpent" ,"Excel")
+                atlas_path_serpent = os.path.join(out, "serpent" ,"Atlas")
+                raw_path_serpent = os.path.join(out, "serpent" ,"Raw_Data")
+                os.makedirs(excel_path_serpent)
+                os.makedirs(atlas_path_serpent)
+                os.makedirs(raw_path_serpent)
+                self.excel_path_serpent = excel_path_serpent
+                self.raw_path_serpent = raw_path_serpent
+                self.atlas_path_serpent = atlas_path_serpent
+            if self.d1s:
+                excel_path_d1s = os.path.join(out, "d1s" ,"Excel")
+                atlas_path_d1s = os.path.join(out, "d1s" ,"Atlas")
+                raw_path_d1s = os.path.join(out, "d1s" ,"Raw_Data")
+                os.makedirs(excel_path_d1s)
+                os.makedirs(atlas_path_d1s)
+                os.makedirs(raw_path_d1s)
+                self.excel_path_d1s = excel_path_d1s
+                self.raw_path_d1s = raw_path_d1s
+                self.atlas_path_d1s = atlas_path_d1s
+
 
             # Generate folders for each code
-            if self.mcnp:
+            """if self.mcnp:
                 atlas_path_mcnp = os.path.join(self.atlas_path, "mcnp")
                 os.mkdir(atlas_path_mcnp)
                 self.atlas_path_mcnp = atlas_path_mcnp
@@ -296,7 +359,7 @@ class BenchmarkOutput(AbstractOutput):
                 self.atlas_path_d1s = atlas_path_d1s
                 raw_path_d1s = os.path.join(self.raw_path, "d1s")
                 os.mkdir(raw_path_d1s)
-                self.raw_path_d1s = raw_path_d1s
+                self.raw_path_d1s = raw_path_d1s"""
             """
             # Attempt to fix folder structure - unfinished
             if self.mcnp:

@@ -172,7 +172,7 @@ def _get_output(action, config, lib, session):
 
     elif testname == 'Tiara-BS':
         if action == 'compare':
-            out = expo.TiaraBSOutput(lib, testname, session, multiplerun=True)
+            out = expo.TiaraBSOutput(lib, config, session, multiplerun=True)
         elif action == 'pp':
             print(exp_pp_message)
             return False

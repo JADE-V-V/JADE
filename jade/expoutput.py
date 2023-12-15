@@ -451,7 +451,7 @@ class FNGOutput(ExperimentalOutput):
         '''
         # Dump the global C/E table
         print(' Dump the C/E table in Excel...')
-        ex_outpath = os.path.join(self.excel_path, 'C over E table.xlsx')
+        ex_outpath = os.path.join(self.excel_path_mcnp, 'C over E table.xlsx')
         # Create a Pandas Excel writer using XlsxWriter as the engine.
         with pd.ExcelWriter(ex_outpath, engine='xlsxwriter') as writer:
             # --- build and dump the C/E table ---
@@ -981,7 +981,7 @@ class TiaraOutput(ExperimentalOutput):
                               'Library'] = self.session.conf.get_lib_name(lib)
                 # Put tally values in dataframe
                 for tally in self.outputs[(case, lib)].mctal.tallies:
-                    temp = self.raw_data[(case, lib)]
+                    temp = (self.raw_data["mcnp"])[(case, lib)]
                     val = temp[tally.tallyNumber].iloc[-1]['Value']
                     err = temp[tally.tallyNumber].iloc[-1]['Error']
                     case_tree.loc[cont, tally.tallyComment] = val
@@ -1073,7 +1073,7 @@ class TiaraFCOutput(TiaraOutput):
         self._exp_comp_case_check(indexes=indexes)
         self.case_tree_df.sort_values(indexes, axis=0, inplace=True)
         # Build ExcelWriter object
-        filepath = self.excel_path + '\\Tiara_Fission_Cells_CE_tables.xlsx'
+        filepath = self.excel_path_mcnp + '\\Tiara_Fission_Cells_CE_tables.xlsx'
         writer = pd.ExcelWriter(filepath, engine='xlsxwriter')
 
         # Create 1 worksheet for each energy/material combination
@@ -1347,7 +1347,8 @@ class TiaraBSOutput(TiaraOutput):
         indexes = ['Library', 'Shield Material', 'Energy', 'Shield Thickness']
         self._exp_comp_case_check(indexes=indexes)
         # Create ExcelWriter object
-        filepath = self.excel_path + '\\Tiara_Bonner_Spheres_CE_tables.xlsx'
+        filepath = os.path.join(self.excel_path_mcnp ,\
+                                'Tiara_Bonner_Spheres_CE_tables.xlsx')
         writer = pd.ExcelWriter(filepath, engine='xlsxwriter')
         # Loop over shield material/energy combinations
         mat_list = self.case_tree_df.index.unique(level='Shield Material'
@@ -1416,8 +1417,8 @@ class TiaraBSOutput(TiaraOutput):
 
         """
         # Get experimental data filepath
-        filepath = self.path_exp_res + \
-            '\\FC_BS_Experimental-results-CONDERC.xlsx'
+        filepath = os.path.join(self.path_exp_res ,\
+             'FC_BS_Experimental-results-CONDERC.xlsx')
         # Read exp data from CONDERC excel file
         s_name = 'Bonner sphere'
         BS_data = {('Iron', '43'): pd.read_excel(filepath,
@@ -1499,6 +1500,7 @@ class TiaraBSOutput(TiaraOutput):
 
             # Send data to plotter
             outname = 'tmp'
+            print(data)
             plot = Plotter(data, title, tmp_path, outname, quantity, unit,
                            xlabel, self.testname)
             img_path = plot.plot('Waves')
@@ -1528,7 +1530,7 @@ class ShieldingOutput(ExperimentalOutput):
 
         names = ['Library', '']
         column_index = pd.MultiIndex.from_tuples(column_names, names=names)
-        filepath = self.excel_path + '\\' + self.testname + '_CE_tables.xlsx'
+        filepath = self.excel_path_mcnp + '\\' + self.testname + '_CE_tables.xlsx'
         writer = pd.ExcelWriter(filepath, engine='xlsxwriter')
         for mat in self.inputs:
             exp_folder = os.path.join(self.path_exp_res, mat)

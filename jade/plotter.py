@@ -321,7 +321,7 @@ class Plotter:
         for i, ax in enumerate(axes):
             # Plot
             refy = np.array(self.data[0]["y"][i])
-            for j, libdata in enumerate(self.data[1:]):
+            for j, libdata in enumerate(self.data):
                 tary = np.array(libdata["y"][i])
                 y = tary / refy
 

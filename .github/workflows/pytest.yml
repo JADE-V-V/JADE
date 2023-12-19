@@ -1,0 +1,71 @@
+name: pytest
+
+# Controls when the workflow will run
+on: [push, pull_request, workflow_dispatch]
+  # Triggers the workflow on push or pull request events but only for the master branch
+  # workflow_dispatch allows you to run this workflow manually from the Actions tab
+
+jobs:
+  test:
+    # The type of runner and python versions that the job will run on
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-20.04, ubuntu-latest]
+        #os: [ubuntu-latest, ubuntu-20.04]
+        python-version: ["3.8", "3.9", "3.10"]
+        #python-version: ["3.10"]
+        include:
+          - os: ubuntu-20.04
+            python-version: "3.6"
+          - os: ubuntu-20.04
+            python-version: "3.7"
+    runs-on: ${{ matrix.os }}
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+
+      # Install python
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Install module
+      - name: Install module
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt update && sudo apt install -y build-essential tcl-dev less
+          curl -LJO https://github.com/cea-hpc/modules/releases/download/v5.3.1/modules-5.3.1.tar.gz
+          tar xfz modules-5.3.1.tar.gz
+          cd modules-5.3.1
+          ./configure
+          make
+          sudo make install
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          pip install -e .
+          pip install pytest pytest-cov
+      
+      # Activate environment and run pytest
+      - name: Testing - Linux
+        if: runner.os == 'Linux'
+        run: |
+          source /usr/local/Modules/init/sh
+          pytest --cov | tee pytest_output.log
+
+      # Activate environment and run pytest
+      - name: Testing - Windows
+        if: runner.os == 'Windows'
+        run: |
+          pytest --cov | tee pytest_output.log
+
+      - name: Archive results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: pytest_output_${{matrix.os}}_${{matrix.python-version}}.log
+          path: pytest_output.log

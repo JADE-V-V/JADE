@@ -1,43 +1,46 @@
 ##################
 Default Benchmarks
 ##################
-This section describe more in detail all the default benchmarks
-that have been implemented in JADE dividing them between
-computational and experimental benchmarks.
+This section describes more in detail all the default benchmarks
+that have been implemented in JADE, dividing them between
+computational and experimental benchmarks. It is strongly recommended
+that the user reads this documentation carefully before using a specific 
+benchmark in JADE. 
 
 .. important::
     * Not all benchmark inputs and related files can be distributed
-      toghether with JADE due to licensing reasons. In case the user
-      provide evidence of licensing rights on specific benchmarks, the
+      toghether with JADE due to licensing reasons. In this case, if the user
+      provides evidence of licensing rights on specific benchmarks, the
       JADE team will provide the missing input which, once copied 
-      in the ``<JADE_root>\Benchmark inputs`` folder, allow to correctly run them.
+      in the ``<JADE_root>\Benchmark inputs`` folder, can be run in JADE. The user
+      should follow the example of distributed benchmarks for folder and naming 
+      convention.
     * For some of the benchmarks, weight windows (WW) have been produced and
-      necessary for the benchmark run. Unfortunately, these WW are often too
-      heavy for them to be distributed with Git. These files must be downloaded
-      separately and inserted in a suitable folder in ``<JADE_root>\Benchmark inputs\VRT``.  
+      necessary for the benchmark run. Unfortunately, these WW files are often too
+      heavy for them to be distributed with Git. These files must be requested 
+      and inserted in to the same folder as the corresponding input file.  
     * The benchmarks included in JADE can be also divided between
-      **transport** benchmarks (usually associated with classical
-      MCNP) and **activation** benchmarks (usually associated with
+      **transport** benchmarks and **activation** benchmarks (currently perfromed using
       D1S-UNED). It is recommended to run these two benchmarks
       categories separately, mostly because they require a different
-      input in terms of library to be assessed. If transport Benchmarks
-      expect a single library (e.g. ``31c``), activation one require
+      input in terms of the library to be assessed. If transport benchmarks
+      expect a single library (e.g. ``31c``), activation ones require
       two: an activation library and a transport one for all zaids that
       cannot be activated (e.g. ``99c-31c``).
     * In activation benchmarks, the library that is considered the assessed one
       is always the activation library (i.e. the first provided). No track
       is kept during the post-processing of which was the transport library used
-      and it is responsability of the user to make sure that comparisons between
-      activation libraries results are done in a coherent way. That is, the
-      same transport library should be always used.
+      and it is responsibility of the user to make sure that comparisons between
+      activation libraries results are done in a coherent way. That is, **the
+      same transport library should be always used**.
 
 
 Overview
 ========
-The following tables summarize the computational and experimental benchmarks
-that are included in JADE (I), the ones that are currently under developing (D), and 
-whishlisted ones (W). A more detailed description of the implemented benchmarks can
-be found in the following sections.
+The following tables summarise the computational and experimental benchmarks
+that are included in JADE **(I)**, the ones that are currently under development
+ **(D)**, and a future wishlist **(W)**. A more detailed description of the implemented 
+benchmarks can be found in the following sections.
 
 **COMPUTATIONAL BENCHMARKS:**
 

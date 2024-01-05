@@ -39,7 +39,7 @@ Overview
 ========
 The following tables summarise the computational and experimental benchmarks
 that are included in JADE **(I)**, the ones that are currently under development
- **(D)**, and a future wishlist **(W)**. A more detailed description of the implemented 
+**(D)**, and a future wishlist **(W)**. A more detailed description of the implemented 
 benchmarks can be found in the following sections.
 
 **COMPUTATIONAL BENCHMARKS:**
@@ -87,6 +87,8 @@ Experimental Benchmarks
 .. include:: benchdesc/fng-blk.rst
 
 .. include:: benchdesc/fng-w.rst
+
+.. include:: benchdesc/fng-sic.rst
 
 .. include:: benchdesc/tud-fe.rst
 

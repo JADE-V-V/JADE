@@ -44,7 +44,7 @@ MCNP model
 ^^^^^^^^^^
 
 There are two independent MCNP models in order to caputire the geoemetry of the TLD detectors. In 
-both cass the the most recently developed SDEF source from ENEA has been used and weight windows 
+both cases the the most recently developed SDEF source from ENEA has been used and weight windows 
 are included in each input file. 
 
 Further modifications necessary to the distributed input file are captured in the patch file.

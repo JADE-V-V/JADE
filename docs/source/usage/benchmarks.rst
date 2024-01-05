@@ -9,7 +9,7 @@ benchmark in JADE.
 
 .. important::
     * Not all benchmark inputs and related files can be distributed
-      toghether with JADE due to licensing reasons. In this case, if the user
+      together with JADE due to licensing reasons. In this case, if the user
       provides evidence of licensing rights on specific benchmarks, the
       JADE team will provide the missing input which, once copied 
       in the ``<JADE_root>\Benchmark inputs`` folder, can be run in JADE. The user
@@ -89,6 +89,8 @@ Experimental Benchmarks
 .. include:: benchdesc/fng-w.rst
 
 .. include:: benchdesc/fng-sic.rst
+
+.. include:: benchdesc/fng-hcpb.rst
 
 .. include:: benchdesc/tud-fe.rst
 

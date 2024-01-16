@@ -1,3 +1,5 @@
+.. _aspisfe88:
+
 ASPIS Iron-88 benchmark
 -----------------------------
 

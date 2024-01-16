@@ -19,14 +19,14 @@ Geometry
 
 The geoemtry of the mockup has external dimensions of 31.0 cm x 29.0 cm x 30.9 cm. The bulk of the 
 geometry consists of beryllium with two layers symmetric across the central plane consisting of 
-Li2CO3 containing natural Li. Stacks of 12 pellets of Li2C03 encased in Al were assemebled for measuring
+Li:sub:`2` CO:sub:`3` containing natural Li. Stacks of 12 pellets of Li:sub:`2` C0:sub:`3`` encased in Al were assemebled for measuring
 the tritium production rate. At the rear is a steel box filled with Li2CO3. 
 
-.. figure:: /img/benchmarks/fng-hcpb.jpg
+.. figure:: /img/benchmarks/fng_hcpb_assembly.jpg
     :width: 500
     :align: center
 
-    Layout of the FNG-HCPB experiment.
+    Layout of the FNG-HCPB experiment. [:ref:`Reference 3 <referencesfnghcpb>`]
 
 Measured data
 ^^^^^^^^^^^^^
@@ -44,9 +44,8 @@ depths a the locations of each of the pellet stacks above and below the central 
 MCNP model
 ^^^^^^^^^^
 
-A single MCNP geometry is used for calculating the reaction rates and tritium activity. The 
-most recently developed SDEF source from ENEA has been used and a weight window
-is included in the input file. 
+The most recently developed SDEF source from ENEA has been used and a weight window is included in 
+the input file. 
 
 All modifications necessary to the distributed input file are captured in a patch file.
 
@@ -58,8 +57,8 @@ the experimental data set which are presented per source neutron. Tally n.4 is u
 The reaction MT numbers are by default assigned using the `convention for IRDFF-II <https://www-nds.iaea.org/IRDFF/IRDFF-II_ACE-LST.pdf>`_. 
 The raw output from MCNP can be compared directly the reported measured data.
 
-The tritium production is tallied for 6Li and 7Li using the reaction MT number 205 for total 
-triton production. No energy binning is required. The specific activitiy is then calculated as:
+The tritium production is tallied using the reaction MT number 205 for total 
+triton production in each of the pellets. No energy binning is required. The specific activitiy is then calculated as:
 
 .. math::
     Specific \; activity (Bq/g) = (MCNP\_result (RR) \times \lambda (s^{-1}) \times n_{tot})/ mass (g)
@@ -71,7 +70,9 @@ Patch file
 ^^^^^^^^^^
 Coming soon... 
 
+.. _referencesfnghcpb:
 .. seealso:: **Related papers and contributions:**
 
-    * Batistoni, P., Villari, R., TBM - HCPB Neutronics Experiments: Comparisonand Check Consistency among Results Obtained by the Different Teams Implications for ITER TBM Nuclear Design and Final Assessment, FUS-TEC–MA–NE-R-019, ENEA, Dec. 2006.
-    * Batistoni, P., Carconi, P., Villari, R., Angelone, M., Pillon, M., Zappa, G., Measurements and Analysis of Tritium Production Rate (TPR) in Ceramic Breeder and of Neutron Flux by Activation Rates in Beryllium in TBM Mock-up, FUS-TEC-MA-NE-R-014, Dec. 2005
+    #. Batistoni, P., Villari, R., TBM - HCPB Neutronics Experiments: Comparisonand Check Consistency among Results Obtained by the Different Teams Implications for ITER TBM Nuclear Design and Final Assessment, FUS-TEC–MA–NE-R-019, ENEA, Dec. 2006.
+    #. Batistoni, P., Carconi, P., Villari, R., Angelone, M., Pillon, M., Zappa, G., Measurements and Analysis of Tritium Production Rate (TPR) in Ceramic Breeder and of Neutron Flux by Activation Rates in Beryllium in TBM Mock-up, FUS-TEC-MA-NE-R-014, Dec. 2005.
+    #. Kodeli, I, SINBAD database - ongoing activities, ANS, Volume 120, 2019.

@@ -116,7 +116,6 @@ class SphereOutput(BenchmarkOutput):
                 (4, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
                 (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
             ]:               
-                print(outputs.items())
                 out_type = str(type(list(outputs.values())[0]).__name__)
                 if out_type == "SphereMCNPoutput":
                     outpath = os.path.join(self.atlas_path_mcnp, 'tmp')
@@ -224,7 +223,6 @@ class SphereOutput(BenchmarkOutput):
                 (14, "Leakage Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
             ]:
                 out_type = str(type(list(list(code_outputs.values())[0].values())[0]).__name__)
-                print(out_type)
                 if out_type == "SphereMCNPoutput":
                     outpath = os.path.join(self.atlas_path_mcnp, 'tmp')
                 if out_type == "SphereSerpentOutput":

@@ -29,7 +29,7 @@ import pandas as pd
 import os
 import shutil
 import jade.plotter as plotter
-import jade.excel_support as exsupp
+import jade.excelsupport as exsupp
 from tqdm import tqdm
 import jade.atlas as at
 import numpy as np
@@ -692,8 +692,6 @@ class BenchmarkOutput(AbstractOutput):
         self.results = {}
         self.errors = {}
         self.stat_checks = {}
-        
-        print(self.cnf_path)
         ex_cnf = pd.read_excel(self.cnf_path, sheet_name="Excel")
         ex_cnf.set_index("Tally", inplace=True)
 
@@ -824,8 +822,8 @@ class BenchmarkOutput(AbstractOutput):
                             print(
                                 CRED
                                 + """
- {} is n    ot available in tally {}. PLease check the configuration file.
- The app    lication will now exit """.format(
+ {} is not available in tally {}. Please check the configuration file.
+ The application will now exit """.format(
                                     x_name, str(num)
                                 )
                                 + CEND
@@ -884,7 +882,7 @@ class BenchmarkOutput(AbstractOutput):
             #ws.range("A9").options(index=False, header=False).value = df
 
             #ex.save()
-            exsupp.single_excel_writer(self, outpath, self.lib, outputs, stats)
+            exsupp.single_excel_writer(self, outpath, self.lib, self.testname, outputs, stats)
 
     def _print_raw(self):
         if self.mcnp:    

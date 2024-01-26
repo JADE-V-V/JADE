@@ -30,7 +30,7 @@ Measured data
 Four experimental locations were used through the centre of the mock used to measure reaction
 rates and nuclear heating at different depths:
 
-* **Reaction rates**: 197Au(n,g), 58Ni(n,g), 27Al(n,a), 93Nb(n,2n) at depths of 10.41 cm, 25.65 cm
+* **Reaction rates**: 197Au(n,g), 58Ni(n,p), 27Al(n,a), 93Nb(n,2n) at depths of 10.41 cm, 25.65 cm
   40.89 cm and 56.13 cm from the block surface. 
 * **Nuclear heating**: Measured using TLDs at depths of 14.99 cm, 30.23 cm, 40.47 cm and 60.71 cm.
 
@@ -43,7 +43,7 @@ rates and nuclear heating at different depths:
 MCNP model
 ^^^^^^^^^^
 
-There are two independent MCNP models in order to caputire the geoemetry of the TLD detectors. In 
+There are two independent MCNP models in order to capture the geometry of the TLD detectors. In 
 both cases the the most recently developed SDEF source from ENEA has been used and weight windows 
 are included in each input file. 
 

@@ -94,6 +94,8 @@ Experimental Benchmarks
 
 .. include:: benchdesc/fng-hcpb.rst
 
+.. include:: benchdesc/fng-ss.rst
+
 .. include:: benchdesc/tud-fe.rst
 
 .. include:: benchdesc/tud-fng.rst

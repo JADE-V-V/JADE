@@ -19,11 +19,11 @@ Geometry
 
 The geoemtry of the mockup has external dimensions of 31.0 cm x 29.0 cm x 30.9 cm. The bulk of the 
 geometry consists of beryllium with two layers symmetric across the central plane consisting of 
-Li:sub:`2` CO:sub:`3` containing natural Li. Stacks of 12 pellets of Li:sub:`2` C0:sub:`3`` encased in Al were assemebled for measuring
-the tritium production rate. At the rear is a steel box filled with Li2CO3. 
+Li\ :sub:`2`\ CO\ :sub:`3` containing natural Li. Stacks of 12 pellets of Li\ :sub:`2`\ CO\ :sub:`3` encased in Al were assemebled for measuring
+the tritium production rate. At the rear is a steel box filled with Li\ :sub:`2`\ CO\ :sub:`3`\. 
 
 .. figure:: /img/benchmarks/fng_hcpb_assembly.jpg
-    :width: 500
+    :width: 550
     :align: center
 
     Layout of the FNG-HCPB experiment. [:ref:`Reference 3 <referencesfnghcpb>`]
@@ -35,7 +35,7 @@ Activation foils were placed at increasing distance from the source through the 
 geometry to measure reaction rates. The tritium production rate was measured at four different 
 depths a the locations of each of the pellet stacks above and below the central axis. 
 
-* **Reaction rates**: 197Au(n,g), 58Ni(n,g), 27Al(n,a), 93Nb(n,2n) at depths of 4.055 cm, 10.355 cm, 
+* **Reaction rates**: 197Au(n,g), 58Ni(n,p), 27Al(n,a), 93Nb(n,2n) at depths of 4.055 cm, 10.355 cm, 
   16.655 cm and 22.955 cm from the block surface. There is an additional measurement at depth 0 cm 
   for 93Nb(n,2n). 
 * **Tritium Activity**: Measured for each of the stacks of 12 pellets as shown in the above Figure. The 

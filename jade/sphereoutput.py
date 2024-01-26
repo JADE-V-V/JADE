@@ -25,7 +25,7 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 import xlsxwriter
 from xlsxwriter.utility import xl_rowcol_to_cell
-import jade.excel_support as exsupp
+import jade.excelsupport as exsupp
 import pandas as pd
 import os
 import shutil

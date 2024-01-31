@@ -132,7 +132,6 @@ def postprocessBenchmark(session, lib: str) -> None:
 def _get_output(action, config, lib, session):
     exp_pp_message = "\n No single pp is foreseen for experimental benchmarks"
     testname = config["Folder Name"]
-    print(testname)
 
     if testname == "Sphere":
         out = spho.SphereOutput(lib, config, session)
@@ -150,7 +149,7 @@ def _get_output(action, config, lib, session):
 
     elif testname in ['Tiara-BC', 'FNS-TOF', 'TUD-Fe', 'TUD-W']:
         if action == 'compare':
-            out = expo.MultipleSpectrumOutput(lib, testname,
+            out = expo.MultipleSpectrumOutput(lib, config,
                                               session, multiplerun=True)
         elif action == 'pp':
             print(exp_pp_message)
@@ -158,14 +157,14 @@ def _get_output(action, config, lib, session):
 
     elif testname in ['TUD-FNG']:
         if action == 'compare':
-            out = expo.MultipleSpectrumOutput(lib, testname, session)
+            out = expo.MultipleSpectrumOutput(lib, config, session)
         elif action == 'pp':
             print(exp_pp_message)
             return False
 
     elif testname == 'Tiara-FC':
         if action == 'compare':
-            out = expo.TiaraFCOutput(lib, testname, session, multiplerun=True)
+            out = expo.TiaraFCOutput(lib, config, session, multiplerun=True)
         elif action == 'pp':
             print(exp_pp_message)
             return False
@@ -179,7 +178,7 @@ def _get_output(action, config, lib, session):
 
     elif testname in ['FNG-BKT', 'FNG-W', 'ASPIS-Fe88']:
         if action == 'compare':
-            out = expo.ShieldingOutput(lib, testname, session,
+            out = expo.ShieldingOutput(lib, config, session,
                                        multiplerun=True)
         elif action == 'pp':
             print(exp_pp_message)

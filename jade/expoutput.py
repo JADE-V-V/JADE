@@ -1157,8 +1157,7 @@ class TiaraFCOutput(TiaraOutput):
         """
 
         # Read experimental data from CONDERC Excel file
-        filepath = self.path_exp_res + \
-            '\\FC_BS_Experimental-results-CONDERC.xlsx'
+        filepath = os.path.join(self.path_exp_res, 'FC_BS_Experimental-results-CONDERC.xlsx')
         FC_data = {('Iron', '43'): pd.read_excel(filepath,
                                                  sheet_name='Fission cell',
                                                  usecols="A:E",
@@ -1500,7 +1499,6 @@ class TiaraBSOutput(TiaraOutput):
 
             # Send data to plotter
             outname = 'tmp'
-            print(data)
             plot = Plotter(data, title, tmp_path, outname, quantity, unit,
                            xlabel, self.testname)
             img_path = plot.plot('Waves')

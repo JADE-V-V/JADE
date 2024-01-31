@@ -730,7 +730,7 @@ class SpectrumOutput(ExperimentalOutput):
             todump = todump.dropna(subset=['Max ' + x_lab])
             ft = ft.dropna(subset=['Max ' + x_lab])
             ex_outpath = os.path.join(self.excel_path_mcnp,
-                                      'C over E table ' + x_ax + '.xlsx')
+                                      self.testname + '_' + x_ax + '_CE_tables.xlsx')
 
             # Create a Pandas Excel writer using XlsxWriter as the engine.
             writer = pd.ExcelWriter(ex_outpath, engine='xlsxwriter')
@@ -1073,7 +1073,7 @@ class TiaraFCOutput(TiaraOutput):
         self._exp_comp_case_check(indexes=indexes)
         self.case_tree_df.sort_values(indexes, axis=0, inplace=True)
         # Build ExcelWriter object
-        filepath = self.excel_path_mcnp + '\\Tiara_Fission_Cells_CE_tables.xlsx'
+        filepath = os.path.join(self.excel_path_mcnp, 'Tiara_Fission_Cells_CE_tables.xlsx') 
         writer = pd.ExcelWriter(filepath, engine='xlsxwriter')
 
         # Create 1 worksheet for each energy/material combination

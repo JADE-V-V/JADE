@@ -1528,8 +1528,11 @@ class ShieldingOutput(ExperimentalOutput):
 
         names = ['Library', '']
         column_index = pd.MultiIndex.from_tuples(column_names, names=names)
-        filepath = self.excel_path_mcnp + '\\' + self.testname + '_CE_tables.xlsx'
+        #filepath = self.excel_path_mcnp + '\\' + self.testname + '_CE_tables.xlsx'
+        filepath = os.path.join(self.excel_path_mcnp, f"{self.testname}_CE_tables.xlsx")
         writer = pd.ExcelWriter(filepath, engine='xlsxwriter')
+        #TODO Replace when other transport codes implemented. 
+        code = 'mcnp'
         for mat in self.inputs:
             exp_folder = os.path.join(self.path_exp_res, mat)
             exp_filename = self.testname + '_' + mat + '.csv'
@@ -1552,15 +1555,15 @@ class ShieldingOutput(ExperimentalOutput):
                     t = (mat, lib_names_dict[idx_col[0]])
                     if idx_col[1] == 'Value':
                         if mat != 'TLD':
-                            vals = self.raw_data[t][4]['Value'].values[:len(x)]
+                            vals = self.raw_data[code][t][4]['Value'].values[:len(x)]
                         else:
-                            vals = self.raw_data[t][6]['Value'].values[:len(x)]
+                            vals = self.raw_data[code][t][6]['Value'].values[:len(x)]
                         df_tab[idx_col] = vals
                     elif idx_col[1] == 'C/E Error':
                         if mat != 'TLD':
-                            errs = self.raw_data[t][4]['Error'].values[:len(x)]
+                            errs = self.raw_data[code][t][4]['Error'].values[:len(x)]
                         else:
-                            errs = self.raw_data[t][6]['Error'].values[:len(x)]
+                            errs = self.raw_data[code][t][6]['Error'].values[:len(x)]
                         vals1 = np.square(errs)
                         vals2 = np.square(exp_data_df.loc[:, 'Error'
                                                           ].to_numpy() / 100)
@@ -1569,10 +1572,10 @@ class ShieldingOutput(ExperimentalOutput):
                         df_tab[idx_col] = ce_err
                     else:
                         if mat != 'TLD':
-                            vals1 = self.raw_data[t][4]['Value'
+                            vals1 = self.raw_data[code][t][4]['Value'
                                                         ].values[:len(x)]
                         else:
-                            vals1 = self.raw_data[t][6]['Value'
+                            vals1 = self.raw_data[code][t][6]['Value'
                                                         ].values[:len(x)]
                         vals2 = exp_data_df.loc[:, 'Reaction Rate'].to_numpy()
                         ratio = vals1 / vals2
@@ -1597,6 +1600,8 @@ class ShieldingOutput(ExperimentalOutput):
         quantity = ['C/E']
         xlabel = 'Shielding thickness [cm]'
         data = []
+        #TODO Replace when other transport codes implemented. 
+        code = 'mcnp'
         for material in tqdm(self.inputs, desc='Foil: '):
             data = []
             exp_folder = os.path.join(self.path_exp_res, material)
@@ -1626,17 +1631,17 @@ class ShieldingOutput(ExperimentalOutput):
                 y = []
                 err = []
                 if material != 'TLD':
-                    v = self.raw_data[(material, lib)
+                    v = self.raw_data[code][(material, lib)
                                       ][4]['Value'].values[:len(x)]
                 else:
-                    v = self.raw_data[(material, lib)
+                    v = self.raw_data[code][(material, lib)
                                       ][6]['Value'].values[:len(x)]
                 y.append(v)
                 if material != 'TLD':
-                    v = self.raw_data[(material, lib)
+                    v = self.raw_data[code][(material, lib)
                                       ][4]['Error'].values[:len(x)]
                 else:
-                    v = self.raw_data[(material, lib)
+                    v = self.raw_data[code][(material, lib)
                                       ][6]['Error'].values[:len(x)]
                 err.append(v)
                 # Append computational data to data list(to be sent to plotter)
@@ -1653,15 +1658,17 @@ class ShieldingOutput(ExperimentalOutput):
         return atlas
 
     def _get_conv_df(self, mat, size):
+        #TODO Replace when other transport codes implemented. 
+        code = 'mcnp'
         conv_df = pd.DataFrame()
         for lib in self.lib[1:]:
             if mat != 'TLD':
-                max = self.raw_data[(mat, lib)][4]['Error'].values[:size].max()
-                avg = self.raw_data[(mat, lib)][4]['Error'
+                max = self.raw_data[code][(mat, lib)][4]['Error'].values[:size].max()
+                avg = self.raw_data[code][(mat, lib)][4]['Error'
                                                    ].values[:size].mean()
             else:
-                max = self.raw_data[(mat, lib)][6]['Error'].values[:size].max()
-                avg = self.raw_data[(mat, lib)][6]['Error'
+                max = self.raw_data[code][(mat, lib)][6]['Error'].values[:size].max()
+                avg = self.raw_data[code][(mat, lib)][6]['Error'
                                                    ].values[:size].mean()
             library = self.session.conf.get_lib_name(lib)
             conv_df.loc['Max Error', library] = max

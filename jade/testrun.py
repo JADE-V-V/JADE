@@ -522,7 +522,11 @@ class Test:
         inputstring = "i=" + name
         outputstring = "n=" + name
 
-        lib = list(self.lib.values())[0]
+        if isinstance(self.lib, dict):
+            lib = list(self.lib.values())[0]
+        elif isinstance(self.lib, str):
+            lib = self.lib
+
         xsstring = "xs=" + str(lib_manager.data["mcnp"][lib].filename)
 
         if run_mpi:

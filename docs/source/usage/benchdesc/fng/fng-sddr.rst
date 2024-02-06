@@ -1,6 +1,6 @@
 .. _fngsddr:
 
-Frascati Neutron Generator SDDR Experiment
+FNG SDDR Experiment
 ------------------------------------------
 
 .. important::

@@ -74,30 +74,30 @@ Computational Benchmarks
 Experimental Benchmarks
 =======================
 
-.. include:: benchdesc/oktavian.rst
+.. include:: benchdesc/fng/fng-sddr.rst
 
-.. include:: benchdesc/fng.rst
+.. include:: benchdesc/fng/fng-blk.rst
+
+.. include:: benchdesc/fng/fng-w.rst
+
+.. include:: benchdesc/fng/fng-sic.rst
+
+.. include:: benchdesc/fng/fng-hcpb.rst
+
+.. include:: benchdesc/fng/fng-ss.rst
+
+.. include:: benchdesc/fng/tud-fng.rst
+
+.. include:: benchdesc/fng/tud-w.rst
+
+.. include:: benchdesc/aspis/aspis-fe88.rst
+
+.. include:: benchdesc/aspis/aspis-pca-replica.rst
+
+.. include:: benchdesc/oktavian.rst
 
 .. include:: benchdesc/tiara.rst
 
 .. include:: benchdesc/fns-tof.rst
 
-.. include:: benchdesc/aspis-fe88.rst
-
-.. include:: benchdesc/aspis-pca-replica.rst
-
-.. include:: benchdesc/fng-blk.rst
-
-.. include:: benchdesc/fng-w.rst
-
-.. include:: benchdesc/fng-sic.rst
-
-.. include:: benchdesc/fng-hcpb.rst
-
-.. include:: benchdesc/fng-ss.rst
-
 .. include:: benchdesc/tud-fe.rst
-
-.. include:: benchdesc/tud-fng.rst
-
-.. include:: benchdesc/tud-w.rst

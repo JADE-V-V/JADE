@@ -109,8 +109,8 @@ class Test:
 
         config = config.dropna()
 
-        #self.name = config["Folder Name"]
-        
+        # self.name = config["Folder Name"]
+
         try:
             self.nps = config["NPS cut-off"]
         except KeyError:
@@ -151,7 +151,7 @@ class Test:
             self.d1s_inp = ipt.D1S5_InputFile.from_text(d1s_ipt)
             # It also have additional files then that must be in the
             # VRT folder (irradiation and reaction files)
-            # To change with revised folder structure - removed VRT. 
+            # To change with revised folder structure - removed VRT.
             irrfile = os.path.join(VRTpath, self.d1s_inp.name, self.inp.name + "_irrad")
             reacfile = os.path.join(
                 VRTpath, self.d1s_inp.name, self.d1s_inp.name + "_react"
@@ -180,7 +180,6 @@ class Test:
         if self.openmc:
             openmc_ipt = os.path.join(inp, "openmc")
             self.openmc_inp = ipt.OpenMCInputFiles.from_path(openmc_ipt)
-
 
         # Need to add this back if user only running MCNP
         # Add the stop card according to config
@@ -408,7 +407,7 @@ class Test:
         if self.openmc:
             openmc_directory = os.path.join(directory, "openmc")
             if pd.isnull(config.openmc_exec) is not True:
-                self.run_openmc(config, libmanager, name, openmc_directory, runoption)    
+                self.run_openmc(config, libmanager, name, openmc_directory, runoption)
 
     # Edited by D.Wheeler, UKAEA
     # Job submission currently tailored for LoadLeveler, may be applicable to other submission systems with equivalent dummy variables
@@ -460,8 +459,10 @@ class Test:
             contents = fin.read()
             for cmd in essential_commands:
                 if cmd not in contents:
-                    raise Exception("Unable to find essential dummy variable {} in job "
-                                    "script template, please check and re-run".format(cmd))
+                    raise Exception(
+                        "Unable to find essential dummy variable {} in job "
+                        "script template, please check and re-run".format(cmd)
+                    )
             contents = contents.replace("COMMAND", " ".join(run_command))
             contents = contents.replace("ENV_VARIABLES", str(data_command))
             contents = contents.replace("INITIAL_DIR", directory)
@@ -485,7 +486,13 @@ class Test:
         pass
 
     def run_mcnp(
-        self, config, lib_manager, name: str, directory: Path, runoption: str, timeout=None
+        self,
+        config,
+        lib_manager,
+        name: str,
+        directory: Path,
+        runoption: str,
+        timeout=None,
     ) -> bool:
         """Run MCNP simulation either on the command line or submitted as a job.
 
@@ -557,38 +564,48 @@ class Test:
             if os.path.exists(runtpe):
                 command = command + " runtpe=" + name + ".r"
 
-            if runoption.lower() == 'c':
+            if runoption.lower() == "c":
                 try:
-                    if not sys.platform.startswith('win'):
+                    if not sys.platform.startswith("win"):
                         unix.configure(env_variables)
                     print(" ".join(run_command))
-                    subprocess.run(" ".join(run_command), cwd=directory, shell=True, timeout=43200)          
-            
+                    subprocess.run(
+                        " ".join(run_command), cwd=directory, shell=True, timeout=43200
+                    )
+
                 except subprocess.TimeoutExpired:
-                    print('Sesion timed out after 12 hours. Consider submitting as a job.')
+                    print(
+                        "Sesion timed out after 12 hours. Consider submitting as a job."
+                    )
                     flagnotrun = True
 
-            elif runoption.lower() == 's':
+            elif runoption.lower() == "s":
                 # Run MCNP as a job
                 cwd = os.getcwd()
                 os.chdir(directory)
                 self.job_submission(
-                        config,
-                        directory,
-                        run_command,
-                        mpi_tasks,
-                        omp_threads,
-                        env_variables
-                    )
+                    config,
+                    directory,
+                    run_command,
+                    mpi_tasks,
+                    omp_threads,
+                    env_variables,
+                )
                 os.chdir(cwd)
         except subprocess.TimeoutExpired:
             pass
 
         return flagnotrun
-        
+
     def run_serpent(
-            self, config, lib_manager, name: str, directory: Path, runoption: str, timeout=None
-        ) -> bool:
+        self,
+        config,
+        lib_manager,
+        name: str,
+        directory: Path,
+        runoption: str,
+        timeout=None,
+    ) -> bool:
         """Run Serpent simulation either on the command line or submitted as a job.
 
         Parameters
@@ -654,33 +671,34 @@ class Test:
 
         flagnotrun = False
 
-
-        if runoption.lower() == 'c':
+        if runoption.lower() == "c":
             try:
                 os.environ["SERPENT_DATA"] = str(libpath.parent)
                 os.environ["SERPENT_ACELIB"] = str(str(libpath))
                 unix.configure(env_variables)
                 print(" ".join(run_command))
                 # subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
-                subprocess.run(" ".join(run_command), cwd=directory, shell=True, timeout=43200)          
-        
+                subprocess.run(
+                    " ".join(run_command), cwd=directory, shell=True, timeout=43200
+                )
+
             except subprocess.TimeoutExpired:
-                print('Sesion timed out after 12 hours. Consider submitting as a job.')
+                print("Sesion timed out after 12 hours. Consider submitting as a job.")
                 flagnotrun = True
 
-        elif runoption.lower() == 's':
+        elif runoption.lower() == "s":
             # Run Serpent as a job
             cwd = os.getcwd()
             os.chdir(directory)
             self.job_submission(
-                    config,
-                    directory,
-                    run_command,
-                    mpi_tasks,
-                    omp_threads,
-                    env_variables,
-                    data_command,
-                )
+                config,
+                directory,
+                run_command,
+                mpi_tasks,
+                omp_threads,
+                env_variables,
+                data_command,
+            )
             os.chdir(cwd)
 
         return flagnotrun
@@ -748,30 +766,32 @@ class Test:
 
         flagnotrun = False
 
-        if runoption.lower() == 'c':
+        if runoption.lower() == "c":
             try:
                 os.environ["OPENMC_CROSS_SECTIONS"] = str(libpath)
                 unix.configure(env_variables)
                 print(" ".join(run_command))
-                subprocess.run(" ".join(run_command), cwd=directory, shell=True, timeout=43200)          
-        
+                subprocess.run(
+                    " ".join(run_command), cwd=directory, shell=True, timeout=43200
+                )
+
             except subprocess.TimeoutExpired:
-                print('Sesion timed out after 12 hours. Consider submitting as a job.')
+                print("Sesion timed out after 12 hours. Consider submitting as a job.")
                 flagnotrun = True
 
-        elif runoption.lower() == 's':
+        elif runoption.lower() == "s":
             # Run Serpent as a job
             cwd = os.getcwd()
             os.chdir(directory)
             self.job_submission(
-                    config,
-                    directory,
-                    run_command,
-                    mpi_tasks,
-                    omp_threads,
-                    env_variables,
-                    data_command,
-                )
+                config,
+                directory,
+                run_command,
+                mpi_tasks,
+                omp_threads,
+                env_variables,
+                data_command,
+            )
             os.chdir(cwd)
 
         return flagnotrun
@@ -812,7 +832,7 @@ class SphereTest(Test):
         zaids = libmanager.get_libzaids(lib, "mcnp")
 
         # testname = self.inp.name
-        testname = 'Sphere'
+        testname = "Sphere"
 
         motherdir = os.path.join(directory, testname)
         # If previous results are present they are canceled
@@ -965,9 +985,11 @@ class SphereTest(Test):
 
         if self.mcnp:
             # Retrieve wwinp & other misc files if they exist
-            directoryVRT = os.path.join(self.path_VRT, "mcnp", zaid.element + zaid.isotope)
+            directoryVRT = os.path.join(
+                self.path_VRT, "mcnp", zaid.element + zaid.isotope
+            )
             edits_file = os.path.join(directoryVRT, "inp_edits.txt")
-            ww_file = os.path.join(directoryVRT, "wwinp")            
+            ww_file = os.path.join(directoryVRT, "wwinp")
             # Create MCNP material card
             submat = mat.SubMaterial("M1", [zaid], header="C " + name + " " + formula)
             material = mat.Material([zaid], None, "M1", submaterials=[submat])
@@ -984,8 +1006,8 @@ class SphereTest(Test):
             if parentlist is not None:
                 newinp.add_PIKMT_card(parentlist)
 
-#            if os.path.exists(directoryVRT):
-#                newinp.add_edits(edits_file)  # Add variance reduction
+            #            if os.path.exists(directoryVRT):
+            #                newinp.add_edits(edits_file)  # Add variance reduction
 
             # Write new input file
             outfile, outdir = self._get_zaidtestname(
@@ -1103,11 +1125,11 @@ class SphereTest(Test):
             # Add d1s function here
             pass
 
-        if self.mcnp:    
-            # Retrieve wwinp & other misc files if they exist   
+        if self.mcnp:
+            # Retrieve wwinp & other misc files if they exist
             directoryVRT = os.path.join(self.path_VRT, "mcnp", truename)
             edits_file = os.path.join(directoryVRT, "inp_edits.txt")
-            ww_file = os.path.join(directoryVRT, "wwinp")            
+            ww_file = os.path.join(directoryVRT, "wwinp")
             newmat = deepcopy(material)
             # Translate and assign the material
             newmat.translate(lib, libmanager, "mcnp")
@@ -1126,8 +1148,8 @@ class SphereTest(Test):
             if parentlist is not None:
                 newinp.add_PIKMT_card(parentlist)
 
-#            if os.path.exists(directoryVRT):
-#                newinp.add_edits(edits_file)  # Add variance reduction
+            #            if os.path.exists(directoryVRT):
+            #                newinp.add_edits(edits_file)  # Add variance reduction
 
             # Write new input file
             outfile = testname + "_" + truename + "_"
@@ -1212,21 +1234,27 @@ class SphereTest(Test):
             if pd.isnull(config.mcnp_exec) is not True:
                 for folder in tqdm(os.listdir(mcnp_directory)):
                     run_directory = os.path.join(mcnp_directory, folder)
-                    self.run_mcnp(config, libmanager, folder + "_", run_directory, runoption)
+                    self.run_mcnp(
+                        config, libmanager, folder + "_", run_directory, runoption
+                    )
 
         if self.serpent:
             serpent_directory = os.path.join(directory, "serpent")
             if pd.isnull(config.serpent_exec) is not True:
                 for folder in tqdm(os.listdir(serpent_directory)):
                     run_directory = os.path.join(serpent_directory, folder)
-                    self.run_serpent(config, libmanager, folder + "_", run_directory, runoption)
+                    self.run_serpent(
+                        config, libmanager, folder + "_", run_directory, runoption
+                    )
 
         if self.openmc:
             openmc_directory = os.path.join(directory, "openmc")
             if pd.isnull(config.openmc_exec) is not True:
                 for folder in tqdm(os.listdir(openmc_directory)):
                     run_directory = os.path.join(openmc_directory, folder)
-                    self.run_openmc(config, libmanager, folder + "_", run_directory, runoption)
+                    self.run_openmc(
+                        config, libmanager, folder + "_", run_directory, runoption
+                    )
 
 
 # Fix from here
@@ -1557,15 +1585,15 @@ class MultipleTest:
 
         Parameters
         ----------
-        config : 
+        config :
             Configuration settings
-        libmanager : 
+        libmanager :
             libmanager
         runoption : str
             command line or as a job
         """
         for test in tqdm(self.tests):
-            test.run(config, libmanager, runoption)       
+            test.run(config, libmanager, runoption)
 
 
 def safe_mkdir(directory):

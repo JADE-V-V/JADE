@@ -23,7 +23,6 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import sys
 import pytest
-import tests.TestFiles.configuration as conf_res
 from jade.configuration import Configuration, Log
 
 cp = os.path.dirname(os.path.abspath(__file__))
@@ -31,12 +30,12 @@ modules_path = os.path.dirname(cp)
 sys.path.insert(1, modules_path)
 
 resources = os.path.join(cp, "TestFiles", "configuration")
+MAIN_CONFIG_FILE = os.path.join(resources, "mainconfig.xlsx")
 
 
 @pytest.fixture
 def config():
-    file = os.path.join(resources, "mainconfig.xlsx")
-    configob = Configuration(file)
+    configob = Configuration(MAIN_CONFIG_FILE)
     return configob
 
 

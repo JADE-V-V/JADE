@@ -13,7 +13,7 @@ specifically by the `Culham Centre for Fusion Energy (CCFE) <https://ccfe.ukaea.
 
 F4E is currently acting as the project coordinator.
 
-This activity was partially funded by Fusion For Energy under XXX-XXX-XXX contract.
+This activity was partially funded by Fusion For Energy under F4E-OPE-1128 contract.
 
 .. image:: img/contrib/nier.png
     :width: 300

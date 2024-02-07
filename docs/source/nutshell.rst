@@ -2,38 +2,37 @@
 JADE in a nutshell
 ##################
 
-.. image:: img/scheme.png
+.. image:: img/JADE_scheme.jpg
     :width: 600
 
 JADE is a new tool for nuclear libraries V&V.
 Brought to you by NIER, University of Bologna (UNIBO), Fusion For Energy (F4E),
-and UK Atomic Energy Authority (UKAEA).
-JADE is an open source, system agnostic, Python 3 based software able to:
+and the UK Atomic Energy Authority (UKAEA).
+JADE is an open source, Python 3 based software able to:
 
-* automatically build a series of MCNP input file using different nuclear
+* Automatically build a series of MCNP input file using different nuclear
   data libraries;
-* sequentially run simulations on such inputs;
-* automatically parse and post-process all the generated MCNP outputs
-  (e.g. mctal and fmesh).
+* Run simulations on such inputs;
+* Automatically parse and post-process all the generated transport codes outputs.
 
 The benchmarks implemented by default are divided between computational
 and experimental benchmarks. The post-processing output includes:
 
-* raw data in .csv files containing the entire tallied output from the
+* Raw data in *.csv* files containing the entire tallied output from the
   simulations;
-* formatted Excel recap files;
-* Word and PDF atlas collecting the plots generated during the post-processing.
+* Formatted Excel recap files;
+* Word and PDF atlas files collecting the plots generated during the post-processing.
 
 Additional JADE features are:
 
-* run JADE with the transport codes OpenMC and Serpent. 
-* the possibility to implement user-defined benchmarks;
-* operate on the material card of an MCNP input (e.g. create material mixtures, 
+* Run JADE with the transport codes OpenMC and Serpent.
+* The possibility to implement user-defined benchmarks;
+* Operate on the material definitions (e.g. create material mixtures, 
   translate it to a different nuclear data library or switch between atom and
   mass fraction);
-* print a recap of the material composition of an MCNP input;
-* modify the suffix of .ace library;
-* produce default reaction file for D1S-UNED MCNP patch inputs.
+* Print a recap of the material composition of an MCNP input;
+* Modify the suffix of .ace library;
+* Produce default reaction file for D1S-UNED MCNP patch inputs.
 
 When using JADE for scientific publications you are kindly encouraged to cite the following papers:
 

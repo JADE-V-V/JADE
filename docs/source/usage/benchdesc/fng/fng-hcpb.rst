@@ -42,6 +42,10 @@ depths a the locations of each of the pellet stacks above and below the central 
 * **Tritium Activity**: Measured for each of the stacks of 12 pellets as shown in the above Figure. The 
   tritium specific activity is available in units of *Bq/g*.
 
+The naming convention for each of the sets of the four stacks below the central axis is ENEA2, ENEA4, ENEA6 and 
+ENEA8 corresponding to increasing distance from the source. The pellets are numbered 1 to 12, corresponding 
+to decreasing z, with pellet 1 closest to the central axis. 
+
 MCNP model
 ^^^^^^^^^^
 
@@ -53,9 +57,9 @@ All modifications necessary to the distributed input file are captured in a patc
 MCNP tallies
 ^^^^^^^^^^^^^^
 
-The reaction rates are calculated using the F4 tally in MCNP and can be directly compared to 
-the experimental data set which are presented per source neutron. Tally n.4 is used in all cases. 
-The reaction MT numbers are by default assigned using the `convention for IRDFF-II <https://www-nds.iaea.org/IRDFF/IRDFF-II_ACE-LST.pdf>`_. 
+The reaction rates are calculated using the *F4* tally in MCNP and can be directly compared to 
+the experimental data set which are presented per source neutron. *Tally n.4* is used in all cases. 
+The reaction *MT* numbers are by default assigned using the `convention for IRDFF-II <https://www-nds.iaea.org/IRDFF/IRDFF-II_ACE-LST.pdf>`_. 
 The raw output from MCNP can be compared directly the reported measured data.
 
 The tritium production is tallied using the reaction *MT* number 205 for total 
@@ -65,7 +69,8 @@ triton production in each of the pellets. No energy binning is required. The spe
     Specific \; activity \; (Bq/g) = (MCNP\_result (RR) \times \lambda (s^{-1}) \times n_{tot})/ mass (g)
 
 where :math:`{\lambda}` is the decay constant, :math:`n_{tot}` is the total neutron production and the 
-mass is for an individual pellet. 
+mass is for an individual pellet. This normalisation is included in the MCNP input file so the raw output
+can be directly compared to the measured data. 
 
 Patch file
 ^^^^^^^^^^

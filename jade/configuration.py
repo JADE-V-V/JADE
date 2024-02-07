@@ -26,8 +26,10 @@ import os
 import sys
 
 import pandas as pd
+import logging
 
 from jade.exceptions import fatal_exception
+
 
 class Configuration:
     def __init__(self, conf_file):
@@ -65,7 +67,10 @@ class Configuration:
             if os.path.isabs(file_path) is not True:
                 file_path = os.path.join(os.path.dirname(self.conf_file), file_path)
             if not os.path.exists(file_path):
-                fatal_exception(file_path + ' does not exist')
+                # If to terminate or not the session is lef to the user
+                # other codes path may be present but not used
+                logging.warning("Path {file_path} do not exist")
+                # fatal_exception(file_path + ' does not exist')
 
         return file_path
 
@@ -141,32 +146,36 @@ class Configuration:
         else:
             config = self.comp_default.set_index("Description")
 
-        runoption = 'c'
-        
-        if not sys.platform.startswith('win'):
+        runoption = "c"
+
+        if not sys.platform.startswith("win"):
             for testname, row in config.iterrows():
-                if (bool(row["OnlyInput"])):
-                    runoption = 'c'
+                if bool(row["OnlyInput"]):
+                    runoption = "c"
                     break
             else:
                 while True:
-                    runoption = input(' Would you like to run in the command line, c, or submit as a job, s? ')
-                    if runoption == 'c':
+                    runoption = input(
+                        " Would you like to run in the command line, c, or submit as a job, s? "
+                    )
+                    if runoption == "c":
                         break
-                    elif runoption == 's':
+                    elif runoption == "s":
                         if pd.isnull(self.batch_system):
-                            print(' Cannot submit as a batch job, as no batch system has been define in the config file.')
+                            print(
+                                " Cannot submit as a batch job, as no batch system has been define in the config file."
+                            )
                         else:
                             break
-                    elif runoption == 'back':
+                    elif runoption == "back":
                         break
-                    elif runoption == 'exit':
+                    elif runoption == "exit":
                         break
                     else:
-                        print(' Please enter a valid option')
+                        print(" Please enter a valid option")
 
         return runoption
-    
+
     def get_lib_name(self, suffix: str) -> str:
         """
         Get the name of the library from its suffix. If a name was not

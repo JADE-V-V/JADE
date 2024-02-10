@@ -103,9 +103,6 @@ class Test:
 
         # Path variables
         self.run_dir = None
-        # self.serpent_dir = None
-        # self.openmc_dir = None
-        # self.d1s_dir = None
 
         config = config.dropna()
 
@@ -758,7 +755,10 @@ class SphereTest(Test):
         zaids = libmanager.get_libzaids(lib, "mcnp")
 
         # testname = self.inp.name
-        testname = "Sphere"
+        if self.d1s:
+            testname = "SphereSDDR"
+        else:  
+            testname = "Sphere"
 
         motherdir = os.path.join(directory, testname)
         # If previous results are present they are canceled
@@ -801,41 +801,11 @@ class SphereTest(Test):
                 else:
                     nps = self.nps
 
-                # if self.ctme is None:
-                #    ctme = settings.loc[Z, 'CTME cut-off']
-                #    if ctme is np.nan:
-                #        ctme = None
-                # else:
-                #    ctme = self.ctme
-                #
-                # if self.precision is None:
-                #    prec = settings.loc[Z, 'Relative Error cut-off']
-                #    if prec is np.nan:
-                #        precision = None
-                #    else:
-                #        tally = prec.split('-')[0]
-                #        error = prec.split('-')[1]
-                #        precision = (tally, error)
-                # else:
-                #    precision = self.precision
-
             # Zaid local settings are prioritized
             else:
                 nps = settings.loc[Z, "NPS cut-off"]
                 if nps is np.nan:
                     nps = None
-
-                # ctme = settings.loc[Z, 'CTME cut-off']
-                # if ctme is np.nan:
-                #    ctme = None
-                #
-                # prec = settings.loc[Z, 'Relative Error cut-off']
-                # if prec is np.nan:
-                #    precision = None
-                # else:
-                #    tally = prec.split('-')[0]
-                #    error = prec.split('-')[1]
-                #    precision = (tally, error)
 
             self.generate_zaid_test(
                 zaid, libmanager, testname, motherdir, -1 * density, nps
@@ -851,9 +821,6 @@ class SphereTest(Test):
                 material, -1 * density, libmanager, testname, motherdir
             )
 
-    #    def generate_zaid_test(self, zaid, libmanager, testname, motherdir,
-    #                           density, nps, ctme, precision, addtag=None,
-    #                           parentlist=None, lib=None):
     def generate_zaid_test(
         self,
         zaid,
@@ -883,10 +850,6 @@ class SphereTest(Test):
             Density value for the sphere.
         nps : float
             number of particles cut-off
-        ctme : float
-            computer time cut-off
-        precision : float
-            precision cut-off
         addtag : str, optional
             add tag at the end of the single zaid test name. The default is
             None
@@ -904,10 +867,42 @@ class SphereTest(Test):
         # Adjourn the material cards for the zaid
         zaid = mat.Zaid(1, zaid[:-3], zaid[-3:], lib)
         name, formula = libmanager.get_zaidname(zaid)
-
         if self.d1s:
-            # Add d1s function here
-            pass
+            # Retrieve wwinp & other misc files if they exist
+            directoryVRT = os.path.join(
+                self.path_VRT, "d1s", zaid.element + zaid.isotope
+            )
+            edits_file = os.path.join(directoryVRT, "inp_edits.txt")
+            ww_file = os.path.join(directoryVRT, "wwinp")
+            # Create MCNP material card
+            submat = mat.SubMaterial("M1", [zaid], header="C " + name + " " + formula)
+            material = mat.Material([zaid], None, "M1", submaterials=[submat])
+            matlist = mat.MatCardsList([material])
+
+            # Generate the new input
+            newinp = deepcopy(self.d1s_inp)
+            newinp.matlist = matlist  # Assign material
+            # adjourn density
+            newinp.change_density(density)
+            # assign stop card
+            newinp.add_stopCard(nps)
+            # add PIKMT if requested
+            if parentlist is not None:
+                newinp.add_PIKMT_card(parentlist)
+
+            # Write new input file
+            outfile, outdir = self._get_zaidtestname(
+                testname, zaid, formula, addtag=addtag
+            )
+            outpath = os.path.join(motherdir, "d1s", outdir)
+            os.mkdir(outpath)
+            outinpfile = os.path.join(outpath, outfile)
+            newinp.write(outinpfile)
+
+            # Copy also wwinp file
+            if os.path.exists(directoryVRT):
+                outwwfile = os.path.join(outpath, "wwinp")
+                shutil.copyfile(ww_file, outwwfile)
 
         if self.mcnp:
             # Retrieve wwinp & other misc files if they exist
@@ -927,14 +922,7 @@ class SphereTest(Test):
             # adjourn density
             newinp.change_density(density)
             # assign stop card
-            newinp.add_stopCard(nps)  # , ctme, precision)
-            # add PIKMT if requested
-            if parentlist is not None:
-                newinp.add_PIKMT_card(parentlist)
-
-            #            if os.path.exists(directoryVRT):
-            #                newinp.add_edits(edits_file)  # Add variance reduction
-
+            newinp.add_stopCard(nps)
             # Write new input file
             outfile, outdir = self._get_zaidtestname(
                 testname, zaid, formula, addtag=addtag
@@ -1048,7 +1036,40 @@ class SphereTest(Test):
         truename = material.name
 
         if self.d1s:
-            # Add d1s function here
+            # Retrieve wwinp & other misc files if they exist
+            directoryVRT = os.path.join(self.path_VRT, "d1s", truename)
+            edits_file = os.path.join(directoryVRT, "inp_edits.txt")
+            ww_file = os.path.join(directoryVRT, "wwinp")
+            newmat = deepcopy(material)
+            # Translate and assign the material
+            newmat.translate(lib, libmanager, "mcnp")
+            newmat.header = material.header + "C\nC True name:" + truename
+            newmat.name = "M1"
+            matlist = mat.MatCardsList([newmat])
+
+            # Generate the new input
+            newinp = deepcopy(self.d1s_inp)
+            newinp.matlist = matlist  # Assign material
+            # adjourn density
+            newinp.change_density(density)
+            # add stop card
+            newinp.add_stopCard(self.nps) 
+            # Add PIKMT card if required
+            if parentlist is not None:
+                newinp.add_PIKMT_card(parentlist)
+
+            # Write new input file
+            outfile = testname + "_" + truename + "_"
+            outdir = testname + "_" + truename
+            outpath = os.path.join(motherdir, "d1s", outdir)
+            os.mkdir(outpath)
+            outinpfile = os.path.join(outpath, outfile)
+            newinp.write(outinpfile)
+
+            # Copy also wwinp file
+            if os.path.exists(directoryVRT):
+                outwwfile = os.path.join(outpath, "wwinp")
+                shutil.copyfile(ww_file, outwwfile)
             pass
 
         if self.mcnp:
@@ -1069,13 +1090,10 @@ class SphereTest(Test):
             # adjourn density
             newinp.change_density(density)
             # add stop card
-            newinp.add_stopCard(self.nps)  # , self.ctme, self.precision)
+            newinp.add_stopCard(self.nps)  
             # Add PIKMT card if required
             if parentlist is not None:
                 newinp.add_PIKMT_card(parentlist)
-
-            #            if os.path.exists(directoryVRT):
-            #                newinp.add_edits(edits_file)  # Add variance reduction
 
             # Write new input file
             outfile = testname + "_" + truename + "_"
@@ -1183,7 +1201,6 @@ class SphereTest(Test):
                     )
 
 
-# Fix from here
 class SphereTestSDDR(SphereTest):
     def __init__(self, *args, **keyargs):
         super().__init__(*args, **keyargs)
@@ -1198,7 +1215,7 @@ class SphereTestSDDR(SphereTest):
         )
 
     def generate_zaid_test(
-        self, zaid, libmanager, testname, motherdir, density, nps, ctme, precision
+        self, zaid, libmanager, testname, motherdir, density, nps
     ):
         """
         Generate input for a single zaid sphere SDDR benchmark run.
@@ -1219,10 +1236,6 @@ class SphereTestSDDR(SphereTest):
             Density value for the sphere.
         nps : float
             number of particles cut-off
-        ctme : float
-            computer time cut-off
-        precision : float
-            precision cut-off
 
         Returns
         -------
@@ -1244,8 +1257,6 @@ class SphereTestSDDR(SphereTest):
                 motherdir,
                 density,
                 nps,
-                ctme,
-                precision,
                 addtag=MT,
                 parentlist=[zaid],
                 lib=self.activationlib,

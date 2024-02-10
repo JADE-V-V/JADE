@@ -27,6 +27,8 @@ benchmark in JADE.
       expect a single library (e.g. ``31c``), activation ones require
       two: an activation library and a transport one for all zaids that
       cannot be activated (e.g. ``99c-31c``).
+    * The irradiation and activation files if present for a SDDR benchmark should be 
+      placed in the same folder as the input file. 
     * In activation benchmarks, the library that is considered the assessed one
       is always the activation library (i.e. the first provided). No track
       is kept during the post-processing of which was the transport library used

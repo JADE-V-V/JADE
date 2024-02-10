@@ -695,7 +695,7 @@ def suppress_stdout():
 def check_transport_activation(lib):
     # Operate on the newlib, should arrive in the 99c-31c format
     errmsg = """
- Please define the pair activation-transport lib for the FNG benchmark
+ Please define the pair activation-transport lib for SDDR benchmarks
  (e.g. 99c-31c). See additional details on the documentation.
             """
     try:

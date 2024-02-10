@@ -233,7 +233,6 @@ class InputFile:
 
         self.matlist.update_info(lib_manager)
 
-#    def add_stopCard(self, nps, ctme, precision):
     def add_stopCard(self, nps):
         """
         Add STOP card
@@ -242,10 +241,6 @@ class InputFile:
         ----------
         nps : int
             number of particles to simulate.
-        ctme : int
-            copmuter time.
-        precision : (str, float)
-            tally number, precision.
 
         Returns
         -------
@@ -259,21 +254,9 @@ class InputFile:
                 line = line+'NPS '+str(int(nps))+' '
             except ValueError:
                 pass  # an escaped NaN
-        """
-        if ctme is not None:
-            try:
-                line = line+'CTME '+str(int(ctme))+' '
-            except ValueError:
-                pass  # an escaped NaN
-
-        if precision is not None:
-            tally = precision[0]
-            error = precision[1]
-            line = line+str(tally)+' '+str(error)
-        """
         if line == 'STOP ':
             raise ValueError("""
-Specify at least one among nps, ctme or precision""")
+Specify an nps for the simulation""")
 
         line = line+'\n'
 
@@ -676,39 +659,27 @@ class D1S_Input(InputFile):
 
 class D1S5_InputFile(D1S_Input):
 
-    def add_stopCard(self, nps, ctme, precision):
+    def add_stopCard(self, nps):
         """
         STOP card is not supported in MCNP 5. This simply is translated to a
-        nps card. Warnings are prompt to the user if ctme or precision are
-        specified.
+        nps card. 
 
         Parameters
         ----------
         nps : int
             number of particles to simulate
-        ctme = int
-            computer time
-        precision = (str, float)
-            tuple indicating the tally number and the precision requested
 
         Returns
         -------
         None.
 
         """
-        if ctme is not None or precision is not None:
-            if self.name != 'SphereSDDR':
-                warnings.warn('''
-STOP card is substituted with normal NPS card for MCNP5.
-specified ctme or precision parameters will be ignored
-''')
         if nps is None:
             raise ValueError(' NPS value is mandatory for MCNP 5 inputs')
 
         line = 'NPS '+str(int(nps))+'\n'
         card = par.Card([line], 5, -1)
         self.cards['settings'].append(card)
-
 
 @contextmanager
 def suppress_stdout():

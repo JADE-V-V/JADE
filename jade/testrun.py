@@ -136,25 +136,13 @@ class Test:
         except KeyError:
             self.d1s = False
 
-        """
-        # Chek for valid code
-        code = config['Code']
-        if code not in CODE_TAGS.keys():
-            raise ValueError(code+' is not an admissible value for code.\n' +
-                             'Please double check the configuration file.')
-        else:
-            self.code = code  # transport code to be used for the benchmark
-        """
         # Generate input file template according to transport code
         if self.d1s:
-            d1s_ipt = os.path.join(inp, "d1s", self.name + ".i")
+            d1s_ipt = os.path.join(inp, "d1s",  os.path.basename(inp) + ".i")
             self.d1s_inp = ipt.D1S5_InputFile.from_text(d1s_ipt)
-            # It also have additional files then that must be in the
-            # VRT folder (irradiation and reaction files)
-            # To change with revised folder structure - removed VRT.
-            irrfile = os.path.join(VRTpath, self.d1s_inp.name, self.inp.name + "_irrad")
+            irrfile = os.path.join(inp, "d1s", os.path.basename(inp) + "_irrad")
             reacfile = os.path.join(
-                VRTpath, self.d1s_inp.name, self.d1s_inp.name + "_react"
+                inp, "d1s", os.path.basename(inp) + "_react"
             )
             try:
                 self.irrad = IrradiationFile.from_text(irrfile)
@@ -163,54 +151,17 @@ class Test:
                 self.log.adjourn(
                     "d1S irradition and reaction files not found, skipping..."
                 )
-                # For instance in sphere test they are not provided
-                # There may be reasons why these files are not provided, it is
-                # responsability of the user to make them available or not.
-                # self.irrad = None
-                # self.react = None
+            self.name = self.d1s_inp.name
         if self.mcnp:
             mcnp_ipt = os.path.join(inp, "mcnp", os.path.basename(inp) + ".i")
             self.mcnp_inp = ipt.InputFile.from_text(mcnp_ipt)
             self.name = self.mcnp_inp.name
-            # self.irrad = None
-            # self.react = None
         if self.serpent:
             serpent_ipt = os.path.join(inp, "serpent", os.path.basename(inp) + ".i")
             self.serpent_inp = ipt.SerpentInputFile.from_text(serpent_ipt)
         if self.openmc:
             openmc_ipt = os.path.join(inp, "openmc")
             self.openmc_inp = ipt.OpenMCInputFiles.from_path(openmc_ipt)
-
-        # Need to add this back if user only running MCNP
-        # Add the stop card according to config
-        """
-        config = config.dropna()
-        try:
-            nps = config['NPS cut-off']
-        except KeyError:
-            nps = None
-        if nps is np.nan:
-            nps = None
-        try:
-            ctme = config['CTME cut-off']
-        except KeyError:
-            ctme = None
-        if ctme is np.nan:
-            ctme = None
-        try:
-            tally = config['Relative Error cut-off'].split('-')[0]
-            error = config['Relative Error cut-off'].split('-')[1]
-            precision = (tally, error)
-        except KeyError:
-            precision = None
-
-        self.nps = nps
-        self.ctme = ctme
-        self.precision = precision
-
-        # Directory where the MCNP run will be performed
-        self.MCNPdir = None
-        """
 
     def _translate_input(self, lib, libmanager):
         """
@@ -236,7 +187,6 @@ class Test:
             add = self.d1s_inp.translate(
                 lib,
                 libmanager,
-                "d1s",
                 original_irradfile=self.irrad,
                 original_reacfile=self.react,
             )
@@ -277,8 +227,6 @@ class Test:
         self._translate_input(self.lib, libmanager)
 
         # Add stop card
-        # Need to retain adding ctme and precision for MCNP
-        # self.inp.add_stopCard(self.nps, self.ctme, self.precision)
         if self.d1s:
             self.d1s_inp.add_stopCard(self.nps)
         if self.mcnp:
@@ -301,25 +249,20 @@ class Test:
             shutil.rmtree(motherdir)
         os.mkdir(motherdir)
 
-        # edits_file = os.path.join(directoryVRT, 'inp_edits.txt')
-        # ww_file = os.path.join(directoryVRT, 'wwinp')
-        # if os.path.exists(directoryVRT):
-        #     # This was tested only for sphere... be careful
-        #     self.inp.add_edits(edits_file)  # Add variance reduction
-
         # Allow space for personalization getting additional modification
         self.custom_inp_modifications()
 
         if self.d1s:
-            os.mkdir(os.path.join(motherdir, "d1s"))
-            outinpfile = os.path.join(motherdir, "d1s", testname)
+            d1s_dir = os.path.join(motherdir, "d1s")
+            os.mkdir(d1s_dir)
+            outinpfile = os.path.join(d1s_dir, testname)
             self.d1s_inp.write(outinpfile)
             # And accessory files if needed
             if self.irrad is not None:
-                self.irrad.write(motherdir, "d1s")
+                self.irrad.write(d1s_dir)
             if self.react is not None:
-                self.react.write(motherdir, "d1s")
-            # Get VRT files if available
+                self.react.write(d1s_dir)
+            # Get WW files if available
             wwinp = os.path.join(self.original_inp, "d1s", "wwinp")
             if os.path.exists(wwinp):
                 outfile = os.path.join(motherdir, "d1s", "wwinp")
@@ -336,29 +279,12 @@ class Test:
                 shutil.copyfile(wwinp, outfile)
 
         if self.serpent:
-            # Impliment serpent outputfile generation here
+            # Implement serpent outputfile generation here
             pass
 
         if self.openmc:
-            # Impliment openmc outputfile generation here
+            # Implement openmc outputfile generation here
             pass
-
-        """
-        # Write new input file
-        outinpfile = os.path.join(motherdir, testname)
-        self.inp.write(outinpfile)
-        # And accessory files if needed
-        if self.irrad is not None:
-            self.irrad.write(motherdir)
-        if self.react is not None:
-            self.react.write(motherdir)
-
-        # Get VRT files if available
-        wwinp = os.path.join(self.path_VRT, testname, 'wwinp')
-        if os.path.exists(wwinp):
-            outfile = os.path.join(motherdir, 'wwinp')
-            shutil.copyfile(wwinp, outfile)
-        """
 
     def custom_inp_modifications(self):
         """
@@ -1503,7 +1429,7 @@ class SphereTestSDDR(SphereTest):
             print(
                 CORANGE
                 + """
- Warning: irradiations schedules were not find for all specified daughters.
+ Warning: irradiation schedules were not found for all specified daughters.
  """
                 + CEND
             )
@@ -1519,10 +1445,10 @@ class FNGTest(Test):
     def custom_inp_modifications(self):
         # Add the tracking for daughters in tally 14
         zaids = self.irrad.get_daughters()
-        self.inp.add_track_contribution("F14:p", zaids, who="daughter")
+        self.d1s_inp.add_track_contribution("F14:p", zaids, who="daughter")
         # Add the tracking for daughters in tally 24
         zaids = self.react.get_parents()
-        self.inp.add_track_contribution("F24:p", zaids, who="parent")
+        self.d1s_inp.add_track_contribution("F24:p", zaids, who="parent")
 
 
 class MultipleTest:

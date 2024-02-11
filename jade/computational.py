@@ -87,9 +87,14 @@ def executeBenchmarksRoutines(session, lib: str, runoption, exp=False) -> None:
                     bool(row["d1S"]),
                 ])
             ):
-                print("Transport code was not specified or is not available for input generation, defaulting to MCNP")
-                print("")
-                row["MCNP"]=True
+                if (
+                    testname in ["SphereSDDR", "FNG", "ITER_Cyl_SDDR"]
+                ):
+                    row["d1S"] = True
+                else:
+                    print("Transport code was not specified or is not available for input generation, defaulting to MCNP")
+                    print("")
+                    row["MCNP"] = True
 
             print("        -- " + testname.upper() + " STARTED --\n")
             print(" Generating input files:" + "    " + str(datetime.datetime.now()))

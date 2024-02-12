@@ -81,7 +81,15 @@ class ExperimentalOutput(BenchmarkOutput):
         self.path_exp_res = os.path.join(session.path_exp_res, testname)
 
         # Add the raw path data (not created because it is a comparison)
-        out = os.path.dirname(self.atlas_path_mcnp)
+        if self.mcnp:
+            out = os.path.dirname(self.atlas_path_mcnp)
+        elif self.d1s:
+            out = os.path.dirname(self.atlas_path_d1s)
+        elif self.serpent:
+            out = os.path.dirname(self.atlas_path_serpent)
+        elif self.openmc:
+            out = os.path.dirname(self.atlas_path_openmc)
+
         raw_path = os.path.join(out, 'Raw_Data')
         if not os.path.exists(raw_path):
             os.mkdir(raw_path)
@@ -147,7 +155,15 @@ class ExperimentalOutput(BenchmarkOutput):
         None.
         """
         # Build a temporary folder for images
-        tmp_path = os.path.join(self.atlas_path_mcnp, 'tmp')
+        if self.mcnp:
+            tmp_path = os.path.join(self.atlas_path_mcnp, 'tmp')
+        elif self.d1s:
+            tmp_path = os.path.join(self.atlas_path_d1s, 'tmp')
+        elif self.openmc:
+            tmp_path = os.path.join(self.atlas_path_openmc, 'tmp')
+        elif self.serpent:
+            tmp_path = os.path.join(self.atlas_path_serpent, 'tmp')
+
         os.mkdir(tmp_path)
 
         globalname = ''
@@ -165,7 +181,10 @@ class ExperimentalOutput(BenchmarkOutput):
 
         # Save Atlas
         print(' Producing the PDF...')
-        atlas.save(self.atlas_path_mcnp)
+        if self.mcnp:
+            atlas.save(self.atlas_path_mcnp)
+        elif self.d1s:
+            atlas.save(self.atlas_path_d1s)
         # Remove tmp images
         shutil.rmtree(tmp_path)
 
@@ -205,19 +224,34 @@ class ExperimentalOutput(BenchmarkOutput):
                             if input not in inputs:
                                 inputs.append(input)
                         if self.openmc:
-                            print("Experimental comparison not impletmented \
+                            print("Experimental comparison not implemented \
                                 for OpenMC")
                             break
                         if self.serpent:
-                            print("Experimental comparison not impletmented \
+                            print("Experimental comparison not implemented \
                                 for Serpent")
                             break
                         if self.d1s:
-                            print("Experimental comparison not impletmented \
-                                for D1S")
-                            break
+                            results_path = os.path.join(test_path,
+                                                        folder, "d1s")
+                            pieces = folder.split('_')
+                            # Get zaid
+                            input = pieces[-1]
+                            mfile, ofile = self._get_output_files(results_path)
+                            # Parse output
+                            output = MCNPoutput(mfile, ofile)
+                            outputs[input, lib] = output
+                            code_raw_data[input, lib] = output.tallydata
+                            # self.raw_data[input, lib] = output.tallydata
+
+                            # Get the meaningful results
+                            results[input, lib] = self._processMCNPdata(output)
+                            if input not in inputs:
+                                inputs.append(input)                            
                     if self.mcnp:
                         self.raw_data["mcnp"] = code_raw_data
+                    if self.d1s:
+                        self.raw_data["d1s"] = code_raw_data
                 # Results are organized just by lib
                 else:
                     mfile, ofile = self._get_output_files(test_path)
@@ -307,7 +341,8 @@ class ExperimentalOutput(BenchmarkOutput):
         if self.serpent:
             pass
         if self.d1s:
-            pass
+            raw_to_print = self.raw_data['d1s'].items()
+
         for (folder, lib), item in raw_to_print:
             # Create the lib directory if it is not there
             cd_lib = os.path.join(self.raw_path, lib)
@@ -451,7 +486,7 @@ class FNGOutput(ExperimentalOutput):
         '''
         # Dump the global C/E table
         print(' Dump the C/E table in Excel...')
-        ex_outpath = os.path.join(self.excel_path_mcnp, 'C over E table.xlsx')
+        ex_outpath = os.path.join(self.excel_path_d1s, self.testname + '_CE_tables.xlsx')
         # Create a Pandas Excel writer using XlsxWriter as the engine.
         with pd.ExcelWriter(ex_outpath, engine='xlsxwriter') as writer:
             # --- build and dump the C/E table ---
@@ -568,7 +603,7 @@ class FNGOutput(ExperimentalOutput):
             # There is the need to recover the tracked parents and daughters
             zaid_tracked = {}
             for lib in self.lib[1:]:
-                file = os.path.join(self.test_path[lib], folder, folder)
+                file = os.path.join(self.test_path[lib], folder, "d1s", folder)
                 inp = D1S_Input.from_text(file)
                 for tallynum in ['24', '14']:
                     card = inp.get_card_byID('settings', 'FU' + tallynum)

@@ -242,36 +242,6 @@ class BenchmarkOutput(AbstractOutput):
                 self.atlas_path_d1s = atlas_path_d1s
 
             self.couples = couples  # Couples of libraries to post process
-            """
-            if self.mcnp:
-                atlas_path_mcnp = os.path.join(self.atlas_path, "mcnp")
-                os.mkdir(atlas_path_mcnp)
-                self.atlas_path_mcnp = atlas_path_mcnp
-                raw_path_mcnp = os.path.join(self.raw_path, "mcnp")
-                os.mkdir(raw_path_mcnp)
-                self.raw_path_mcnp = raw_path_mcnp
-            if self.serpent:
-                atlas_path_serpent = os.path.join(self.atlas_path, "serpent")
-                os.mkdir(atlas_path_serpent)
-                self.atlas_path_serpent = atlas_path_serpent
-                raw_path_serpent = os.path.join(self.raw_path, "serpent")
-                os.mkdir(raw_path_serpent)
-                self.raw_path_serpent = raw_path_serpent
-            if self.openmc:
-                atlas_path_openmc = os.path.join(self.atlas_path, "openmc")
-                os.mkdir(atlas_path_openmc)
-                self.atlas_path_openmc = atlas_path_openmc
-                raw_path_openmc = os.path.join(self.raw_path, "openmc")
-                os.mkdir(raw_path_openmc)
-                self.raw_path_openmc = raw_path_openmc
-            if self.d1s:
-                atlas_path_d1s = os.path.join(self.atlas_path, "d1s")
-                os.mkdir(atlas_path_d1s)
-                self.atlas_path_d1s = atlas_path_d1s
-                raw_path_d1s = os.path.join(self.raw_path, "d1s")
-                os.mkdir(raw_path_d1s)
-                self.raw_path_d1s = raw_path_d1s
-            """
         # SINGLE-LIBRARY
         else:
             self.single = True  # Indicator for single or comparison
@@ -331,92 +301,6 @@ class BenchmarkOutput(AbstractOutput):
                 self.raw_path_d1s = raw_path_d1s
                 self.atlas_path_d1s = atlas_path_d1s
 
-
-            # Generate folders for each code
-            """if self.mcnp:
-                atlas_path_mcnp = os.path.join(self.atlas_path, "mcnp")
-                os.mkdir(atlas_path_mcnp)
-                self.atlas_path_mcnp = atlas_path_mcnp
-                raw_path_mcnp = os.path.join(self.raw_path, "mcnp")
-                os.mkdir(raw_path_mcnp)
-                self.raw_path_mcnp = raw_path_mcnp
-            if self.serpent:
-                atlas_path_serpent = os.path.join(self.atlas_path, "serpent")
-                os.mkdir(atlas_path_serpent)
-                self.atlas_path_serpent = atlas_path_serpent
-                raw_path_serpent = os.path.join(self.raw_path, "serpent")
-                os.mkdir(raw_path_serpent)
-                self.raw_path_serpent = raw_path_serpent
-            if self.openmc:
-                atlas_path_openmc = os.path.join(self.atlas_path, "openmc")
-                os.mkdir(atlas_path_openmc)
-                self.atlas_path_openmc = atlas_path_openmc
-                raw_path_openmc = os.path.join(self.raw_path, "openmc")
-                os.mkdir(raw_path_openmc)
-                self.raw_path_openmc = raw_path_openmc
-            if self.d1s:
-                atlas_path_d1s = os.path.join(self.atlas_path, "d1s")
-                os.mkdir(atlas_path_d1s)
-                self.atlas_path_d1s = atlas_path_d1s
-                raw_path_d1s = os.path.join(self.raw_path, "d1s")
-                os.mkdir(raw_path_d1s)
-                self.raw_path_d1s = raw_path_d1s"""
-            """
-            # Attempt to fix folder structure - unfinished
-            if self.mcnp:
-                path_mcnp = os.path.join(out, 'mcnp')
-                os.mkdir(path_mcnp)
-                self.path_mcnp = path_mcnp
-                atlas_path_mcnp = os.path.join(path_mcnp, 'Atlas')
-                os.mkdir(atlas_path_mcnp)
-                self.atlas_path_mcnp = atlas_path_mcnp
-                excel_path_mcnp = os.path.join(path_mcnp, 'Excel')
-                os.mkdir(excel_path_mcnp)
-                self.excel_path_mcnp = excel_path_mcnp
-                raw_path_mcnp = os.path.join(path_mcnp, 'Raw')
-                os.mkdir(raw_path_mcnp)
-                self.raw_path_mcnp = raw_path_mcnp
-            if self.serpent:
-                path_serpent = os.path.join(out, 'serpent')
-                os.mkdir(path_serpent)
-                self.path_serpent = path_serpent
-                atlas_path_serpent = os.path.join(path_serpent, 'Atlas')
-                os.mkdir(atlas_path_serpent)
-                self.atlas_path_serpent = atlas_path_serpent
-                excel_path_serpent = os.path.join(path_serpent, 'Excel')
-                os.mkdir(excel_path_serpent)
-                self.excel_path_serpent = excel_path_serpent
-                raw_path_serpent = os.path.join(path_serpent, 'Raw')
-                os.mkdir(raw_path_serpent)
-                self.raw_path_serpent = raw_path_serpent
-            if self.openmc:
-                path_openmc = os.path.join(out, 'openmc')
-                os.mkdir(path_openmc)
-                self.path_openmc = path_openmc
-                atlas_path_openmc = os.path.join(path_openmc, 'Atlas')
-                os.mkdir(atlas_path_openmc)
-                self.atlas_path_openmc = atlas_path_openmc
-                excel_path_openmc = os.path.join(path_openmc, 'Excel')
-                os.mkdir(excel_path_openmc)
-                self.excel_path_openmc = excel_path_openmc
-                raw_path_openmc = os.path.join(path_openmc, 'Raw')
-                os.mkdir(raw_path_openmc)
-                self.raw_path_openmc = raw_path_openmc
-            if self.d1s:
-                path_d1s = os.path.join(out, 'd1s')
-                os.mkdir(path_d1s)
-                self.path_d1s = path_d1s
-                atlas_path_d1s = os.path.join(path_d1s, 'Atlas')
-                os.mkdir(atlas_path_d1s)
-                self.atlas_path_d1s = atlas_path_d1s
-                excel_path_d1s = os.path.join(path_d1s, 'Excel')
-                os.mkdir(excel_path_d1s)
-                self.excel_path_d1s = excel_path_d1s
-                raw_path_d1s = os.path.join(path_d1s, 'Raw')
-                os.mkdir(raw_path_d1s)
-                self.raw_path_d1s = raw_path_d1s
-    """
-
     def single_postprocess(self):
         """
         Execute the full post-processing of a single library (i.e. excel,
@@ -455,6 +339,7 @@ class BenchmarkOutput(AbstractOutput):
                 print(tally_num)
                 try:
                     if self.mcnp:
+                        print(self.outputs["mcnp"])
                         output = self.outputs["mcnp"][tally_num]
                 except KeyError:
                     fatal_exception(
@@ -544,7 +429,8 @@ class BenchmarkOutput(AbstractOutput):
         self._generate_comparison_excel_output()
 
         print(" Creating Atlas...")
-        outpath = os.path.join(self.atlas_path, "tmp")
+        if self.mcnp:
+            outpath = os.path.join(self.atlas_path_mcnp, "tmp")
         os.mkdir(outpath)
 
         # Get atlas configuration
@@ -552,10 +438,7 @@ class BenchmarkOutput(AbstractOutput):
         atl_cnf.set_index("Tally", inplace=True)
 
         # Printing Atlas
-        template = os.path.join(
-            self.code_path,
-            "templates",
-            "AtlasTemplate.docx")
+        template = os.path.join(self.path_templates, "AtlasTemplate.docx")
 
         atlas = at.Atlas(template, self.testname + "_" + self.name)
 
@@ -563,13 +446,13 @@ class BenchmarkOutput(AbstractOutput):
         outputs_dic = {}
         for lib in self.lib:
             # Recover lib output
-            out_path = os.path.join(
-                self.session.path_single,
-                lib,
-                self.testname,
-                "Raw_Data",
-                lib + ".pickle",
-            )
+            if self.mcnp:
+                out_path = os.path.join(
+                    self.session.path_single,
+                    lib, self.testname, 
+                    "mcnp", "Raw_Data", 
+                    lib + ".pickle"
+                )
             with open(out_path, "rb") as handle:
                 outputs = pickle.load(handle)
             outputs_dic[lib] = outputs
@@ -583,7 +466,15 @@ class BenchmarkOutput(AbstractOutput):
             atl_cnf_plot = atl_cnf[atl_cnf[plot_type]]
             for tally_num in tqdm(atl_cnf_plot.index, desc="Tallies"):
                 # The last 'outputs' can be easily used for common data
-                output = outputs[tally_num]
+                try:
+                    if self.mcnp:
+                        output = self.outputs["mcnp"][tally_num]
+                except KeyError:
+                    fatal_exception(
+                        "tally n. "
+                        + str(tally_num)
+                        + " is in config but not in the MCNP output"
+                    )
                 vals_df = output["Value"]
                 err_df = output["Error"]
                 quantity = str(atl_cnf_plot["Quantity"].loc[tally_num])
@@ -656,8 +547,9 @@ class BenchmarkOutput(AbstractOutput):
                     img_path = plot.plot(plot_type)
 
                     atlas.insert_img(img_path)
+        if self.mcnp:
+            atlas.save(self.atlas_path_mcnp)
 
-        atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(outpath)
 
@@ -702,6 +594,7 @@ class BenchmarkOutput(AbstractOutput):
             outpath = os.path.join(
                 self.excel_path_mcnp, self.testname + "_" + self.lib + ".xlsx"
             )
+            outputs = {}
             #ex = ExcelOutputSheet(template, outpath)
             # Get results
             # results = []
@@ -724,7 +617,7 @@ class BenchmarkOutput(AbstractOutput):
             self.raw_data = mcnp_output.tallydata
 
             # res, err = output.get_single_excel_data()
-            outputs = {}
+           
 
             for label in ["Value", "Error"]:
                 # keys = {}
@@ -852,9 +745,9 @@ class BenchmarkOutput(AbstractOutput):
                 self.outputs["mcnp"] = outputs
                 # print(outputs)
                 # Dump them for comparisons
-                #outpath = os.path.join(self.raw_path_mcnp, self.lib + ".pickle")
-                #with open(outpath, "wb") as outfile:
-                #    pickle.dump(outputs, outfile)
+                raw_outpath = os.path.join(self.raw_path_mcnp, self.lib + ".pickle")
+                with open(raw_outpath, "wb") as outfile:
+                    pickle.dump(outputs, outfile)
 
                 # Compile general infos in the sheet
                 #ws = ex.current_ws
@@ -892,163 +785,233 @@ class BenchmarkOutput(AbstractOutput):
 
     def _generate_comparison_excel_output(self):
         # Get excel configuration
+        self.outputs = {}
+        self.results = {}
+        self.errors = {}
+        self.stat_checks = {}
         ex_cnf = pd.read_excel(self.cnf_path, sheet_name="Excel")
         ex_cnf.set_index("Tally", inplace=True)
 
         # Open the excel file
-        name_tag = "Generic_comparison.xlsx"
-        template = os.path.join(os.getcwd(), "templates", name_tag)
+        #name_tag = "Generic_comparison.xlsx"
+        #template = os.path.join(os.getcwd(), "templates", name_tag)
 
-        mcnp_outputs = {}
-        iteration = 0
-        for reflib, tarlib, name in self.couples:
-            iteration = iteration + 1
-            outpath = os.path.join(
-                self.excel_path,
-                self.testname +
-                "_Comparison_" +
-                name +
-                ".xlsx")
-            ex = ExcelOutputSheet(template, outpath)
-            # Get results
-            if iteration == 1:
-                to_read = [reflib, tarlib]
-            else:
-                to_read = [tarlib]
+       
+        if self.mcnp:
+            mcnp_outputs = {}
+            comps = {}
+            abs_diffs  = {}
+            std_devs = {}
+            for reflib, tarlib, name in self.couples:
+                lib_to_comp = name
+                outfolder_path = self.excel_path_mcnp
+                outpath = os.path.join(
+                    outfolder_path, "Comparison_" + name + "_mcnp.xlsx"
+                )
 
-            for lib in to_read:
-                results_path = self.test_path[lib]
+                #ex = ExcelOutputSheet(template, outpath)
+                # Get results
 
-                # Get mfile and outfile and possibly meshtal file
-                meshtalfile = None
-                for file in os.listdir(results_path):
-                    if file[-1] == "m":
-                        mfile = os.path.join(results_path, file)
-                    elif file[-1] == "o":
-                        ofile = os.path.join(results_path, file)
-                    elif file[-4:] == "msht":
-                        meshtalfile = os.path.join(results_path, file)
-                # Parse output
-                mcnp_output = MCNPoutput(
-                    mfile, ofile, meshtal_file=meshtalfile)
-                mcnp_outputs[lib] = mcnp_output
+                #for lib in to_read:
+                #    results_path = self.test_path[lib]
+                for lib, results_path in {
+                    reflib: os.path.join(self.test_path[reflib], "mcnp"),
+                    tarlib: os.path.join(self.test_path[tarlib], "mcnp"),
+                }.items():
+                    results = []
+                    errors = []
+                    # Get mfile and outfile and possibly meshtal file
+                    meshtalfile = None
+                    for file in os.listdir(results_path):
+                        if file[-1] == "m":
+                            mfile = os.path.join(results_path, file)
+                        elif file[-1] == "o":
+                            ofile = os.path.join(results_path, file)                        
+                        elif file[-4:] == "msht":
+                            meshtalfile = os.path.join(results_path, file)
+                    # Parse output
+                    mcnp_output = MCNPoutput(
+                        mfile, ofile, meshtal_file=meshtalfile)
+                    mcnp_outputs[lib] = mcnp_output
+                # Build the comparison
+                for label in ["Value", "Error"]:
+                    for tally in mcnp_outputs[reflib].mctal.tallies:
+                        num = tally.tallyNumber
+                        key = tally.tallyComment[0]
 
-            # Build the comparison
-            for tally in mcnp_outputs[reflib].mctal.tallies:
-                num = tally.tallyNumber
-                key = tally.tallyComment[0]
-
-                # Full tally data
-                tdata_ref = mcnp_outputs[reflib].tallydata[num].copy()
-                tdata_tar = mcnp_outputs[tarlib].tallydata[num].copy()
-                try:
-                    tally_settings = ex_cnf.loc[num]
-                except KeyError:
-                    print(
-                        " Warning!: tally n." +
-                        str(num) +
-                        " is not in configuration")
-                    continue
-
-                # Re-Elaborate tdata Dataframe
-                x_name = tally_settings["x"]
-                x_tag = tally_settings["x name"]
-                y_name = tally_settings["y"]
-                y_tag = tally_settings["y name"]
-                ylim = tally_settings["cut Y"]
-                # select the index format
-                if x_name == "Energy":
-                    idx_format = "0.00E+00"
-                    # TODO all possible cases should be addressed
-                else:
-                    idx_format = "0"
-
-                if y_name != "tally":
-                    tdata_ref.set_index(x_name, inplace=True)
-                    tdata_tar.set_index(x_name, inplace=True)
-                    x_set = list(set(tdata_ref.index))
-                    y_set = list(set(tdata_ref[y_name].values))
-                    rows = []
-                    for xval in x_set:
+                        # Full tally data
+                        tdata_ref = mcnp_outputs[reflib].tallydata[num].copy()
+                        tdata_tar = mcnp_outputs[tarlib].tallydata[num].copy()
                         try:
-                            ref = tdata_ref.loc[xval, "Value"].values
-                            tar = tdata_tar.loc[xval, "Value"].values
+                            tally_settings = ex_cnf.loc[num]
+                        except KeyError:
+                            print(
+                                " Warning!: tally n." +
+                                str(num) +
+                                " is not in configuration")
+                            continue
+
+                        # Re-Elaborate tdata Dataframe
+                        x_name = tally_settings["x"]
+                        x_tag = tally_settings["x name"]
+                        y_name = tally_settings["y"]
+                        y_tag = tally_settings["y name"]
+                        ylim = tally_settings["cut Y"]
+                        # select the index format
+                        if label == "Value":
+                            for dic in [comps, abs_diffs, std_devs]:
+                                dic[num] = {"title": key, "x_label": x_tag}
+
+
+                        if x_name == "Energy":
+                            idx_format = "0.00E+00"
+                            # TODO all possible cases should be addressed
+                        else:
+                            idx_format = "0"
+
+                        if y_name != "tally":
+                            tdata_ref.set_index(x_name, inplace=True)
+                            tdata_tar.set_index(x_name, inplace=True)
+                            x_set = list(set(tdata_ref.index))
+                            y_set = list(set(tdata_ref[y_name].values))
+                            rows_fin = []
+                            rows_abs_diff = []
+                            rows_std_dev = []
+                            for xval in x_set:
+                                try:
+                                    ref = tdata_ref.loc[xval, "Value"].values
+                                    ref_err = tdata_ref.loc[xval, "Error"].values
+                                    tar = tdata_tar.loc[xval, "Value"].values
+                                    # !!! True divide warnings are suppressed !!!
+                                    with np.errstate(divide="ignore", invalid="ignore"):
+                                        row_fin = (ref - tar) / ref
+                                        row_abs_diff = (ref - tar)
+                                        row_std_dev = row_abs_diff / (ref_err*ref)
+                                    prev_len = len(ref)
+                                except AttributeError:
+                                    # This is raised when total values are
+                                    # collected only for one bin.
+                                    # the rest needs to be filled by nan
+                                    ref = tdata_ref.loc[xval, "Value"]
+                                    ref_err = tdata_ref.loc[xval, "Error"]
+                                    tar = tdata_tar.loc[xval, "Value"]
+                                    for i in range(prev_len - 1):
+                                        row_fin.append(np.nan)
+                                        row_abs_diff.append(np.nan)
+                                        row_std_dev.append(np.nan)
+                                    row_fin.append((ref - tar) / ref)
+                                    row_abs_diff.append(ref - tar)
+                                    row_std_dev.append((ref - tar)/(ref_err*ref))
+
+                                rows_fin.append(row_fin)
+                                rows_abs_diff.append(row_abs_diff)
+                                rows_std_dev.append(row_std_dev)
+                            try:
+                                final = pd.DataFrame(
+                                    rows_fin, columns=y_set, index=x_set)
+                                abs_diff = pd.DataFrame(
+                                    rows_abs_diff, columns=y_set, index=x_set)
+                                std_dev = pd.DataFrame(
+                                    rows_std_dev, columns=y_set, index=x_set)
+                                for df in [final, abs_diff, std_dev]:
+                                    df.index.name = x_name
+                                    df.replace(np.nan, "Not Available", inplace=True)
+                                    df.replace(float(0), "Identical", inplace=True)
+                                    df.replace(-np.inf, "Reference = 0", inplace=True)
+                                    df.replace(1, "Target = 0", inplace=True)
+                            except ValueError:
+                                print(
+                                    CRED
+                                    + """
+            A ValueError was triggered, a probable cause may be that more than 2 binnings
+             are defined in tally {}. This is a fatal exception,  application will now
+            close""".format(
+                                        str(num)
+                                    )
+                                    + CEND
+                                )
+                                # Safely exit from excel and from application
+                                sys.exit()
+
+                            # reorder index and quick index reset
+                            for df in [final, abs_diff, std_dev]:
+                                df.reset_index(inplace=True)
+                                df = self._reorder_df(df, x_name)
+                                df.set_index(x_name, inplace=True)
+                            comps[num][label] = final
+                            abs_diffs[num][label] = abs_diff
+                            std_devs[num][label] = std_dev
+                            # insert the df in pieces
+                            #ex.insert_cutted_df(
+                            #    "B",
+                            #    main_value_df,
+                            #    "Comparison",
+                            #    ylim,
+                            #    header=(key, "Tally n." + str(num)),
+                            #    index_name=x_tag,
+                            #    cols_name=y_tag,
+                            #    index_num_format=idx_format,
+                            #    values_format="0.00%",
+                            #)
+                        else:
+                            # reorder dfs
+                            try:
+                                tdata_ref = self._reorder_df(tdata_ref, x_name)
+                            except KeyError:
+                                print(
+                                    CRED
+                                    + """
+     {} is not available in tally {}. Please check the configuration file.
+     The application will now exit """.format(
+                                        x_name, str(num)
+                                    )
+                                    + CEND
+                                )
+                                # Safely exit from excel and from application
+                                sys.exit()
+
+                            del tdata_ref["Error"]
+                            tdata_ref.set_index(x_name, inplace=True)
+
+                            tdata_tar = self._reorder_df(tdata_tar, x_name)
+                            del tdata_tar["Error"]
+                            tdata_tar.set_index(x_name, inplace=True)
+
                             # !!! True divide warnings are suppressed !!!
                             with np.errstate(divide="ignore", invalid="ignore"):
-                                row = (ref - tar) / ref
-                            prev_len = len(ref)
-                        except AttributeError:
-                            # This is raised when total values are
-                            # collected only for one bin.
-                            # the rest needs to be filled by nan
-                            ref = tdata_ref.loc[xval, "Value"]
-                            tar = tdata_tar.loc[xval, "Value"]
-                            row = []
-                            for i in range(prev_len - 1):
-                                row.append(np.nan)
-                            row.append((ref - tar) / ref)
+                                comp_df = (tdata_ref - tdata_tar) / tdata_ref
+                                abs_diff_df = (tdata_ref - tdata_tar)
+                                std_dev_df = abs_diff_df
+                            comps[num][label] = comp_df
+                            abs_diffs[num][label] = abs_diff_df
+                            std_devs[num][label] = abs_diff_df
+                            # Insert DF
+                            #ex.insert_df(
+                            #    "B",
+                            #    df,
+                            #    "Comparison",
+                            #    print_index=True,
+                            #    header=(key, "Tally n." + str(num)),
+                            #    values_format="0.00%",
+                            #)
 
-                        rows.append(row)
+                # Compile general infos in the sheet
+                #ws = ex.current_ws
+                #title = self.testname + " RESULTS RECAP: Comparison"
+                #ws.range("A3").value = title
+                #ws.range("C1").value = tarlib + " Vs " + reflib
 
-                    main_value_df = pd.DataFrame(
-                        rows, columns=y_set, index=x_set)
-                    main_value_df.index.name = x_name
-                    # reorder index and quick index reset
-                    main_value_df.reset_index(inplace=True)
-                    main_value_df = self._reorder_df(main_value_df, x_name)
-                    main_value_df.set_index(x_name, inplace=True)
+                # Add single pp sheets
+                #for lib in [reflib, tarlib]:
+                #    cp = self.state.get_path(
+                #        "single", [lib, self.testname, "Excel"])
+                #    file = os.listdir(cp)[0]
+                #    cp = os.path.join(cp, file)
+                #    ex.copy_sheets(cp)
 
-                    # insert the df in pieces
-                    ex.insert_cutted_df(
-                        "B",
-                        main_value_df,
-                        "Comparison",
-                        ylim,
-                        header=(key, "Tally n." + str(num)),
-                        index_name=x_tag,
-                        cols_name=y_tag,
-                        index_num_format=idx_format,
-                        values_format="0.00%",
-                    )
-                else:
-                    # reorder dfs
-                    tdata_ref = self._reorder_df(tdata_ref, x_name)
-                    del tdata_ref["Error"]
-                    tdata_ref.set_index(x_name, inplace=True)
-
-                    tdata_tar = self._reorder_df(tdata_tar, x_name)
-                    del tdata_tar["Error"]
-                    tdata_tar.set_index(x_name, inplace=True)
-
-                    # !!! True divide warnings are suppressed !!!
-                    with np.errstate(divide="ignore", invalid="ignore"):
-                        df = (tdata_ref - tdata_tar) / tdata_ref
-
-                    # Insert DF
-                    ex.insert_df(
-                        "B",
-                        df,
-                        "Comparison",
-                        print_index=True,
-                        header=(key, "Tally n." + str(num)),
-                        values_format="0.00%",
-                    )
-
-            # Compile general infos in the sheet
-            ws = ex.current_ws
-            title = self.testname + " RESULTS RECAP: Comparison"
-            ws.range("A3").value = title
-            ws.range("C1").value = tarlib + " Vs " + reflib
-
-            # Add single pp sheets
-            for lib in [reflib, tarlib]:
-                cp = self.state.get_path(
-                    "single", [lib, self.testname, "Excel"])
-                file = os.listdir(cp)[0]
-                cp = os.path.join(cp, file)
-                ex.copy_sheets(cp)
-
-            ex.save()
+                #ex.save()
+                self.outputs["mcnp"] = comps
+                exsupp.comp_excel_writer(self, outpath, lib_to_comp, self.testname, comps, abs_diffs, std_devs)
 
 
 class MCNPoutput:

@@ -260,11 +260,12 @@ class Status:
             True if test was ran successfully, False otherwise
         """
 
+        flag_run_test = False
         if code == "mcnp" or code == "d1s":
             flag_run_test = self._check_test_mcnp(files)
-        if code == "serpent":
+        elif code == "serpent":
             flag_run_test = self._check_test_serpent(files)
-        if code == "openmc":
+        elif code == "openmc":
             flag_run_test = self._check_test_openmc(files)
 
         return flag_run_test
@@ -358,6 +359,7 @@ class Status:
         """
 
         test_runned = self.check_lib_run(lib, session, exp=exp)
+        ans = False
 
         # Ask for override
         if len(test_runned) > 0:
@@ -403,7 +405,7 @@ class Status:
 
         return ans
 
-    def check_lib_run(self, lib, session, config_option="Run", exp=False) -> dict:
+    def check_lib_run(self, lib, session, config_option="Run", exp=False) -> dict[str,bool]:
         """
         Check if a library has been run. To be considered run a meshtally or
         meshtal have to be produced (for MCNP). Only active benchmarks (specified in
@@ -423,16 +425,19 @@ class Status:
 
         Returns
         -------
-        test_runned : Bool
+        test_runned : dict[bool]
             True if all benchmark have been run for the library.
 
         """
         # Correctly parse the lib input. It may be a dic than only the first
         # dic value needs to be considered
         pat_libs = re.compile(r'"\d\d[a-zA-Z]"')
-        if lib[0] == "{":
-            libs = pat_libs.findall(lib)
-            lib = libs[1][1:-1]
+        if len(lib)>0:
+            if lib[0] == "{":
+                libs = pat_libs.findall(lib)
+                lib = libs[1][1:-1]
+        else:
+            print("No libraries in text")
 
         # Update Tree
         self.update_run_status()
@@ -462,6 +467,7 @@ class Status:
                         if exp:
                             exps = self.run_tree[lib][testname]
                             for experiment, codes in exps.items():
+                                flag_test_run = False
                                 for code, files in codes.items():
                                     flag_run_zaid = self.check_test_run(files, code)
                                     if flag_run_zaid:

@@ -30,7 +30,6 @@ import math
 from jade.output import BenchmarkOutput
 from jade.output import MCNPoutput
 from tqdm import tqdm
-from jade.status import EXP_TAG
 from jade.plotter import Plotter
 from scipy.interpolate import interp1d
 from abc import abstractmethod
@@ -46,6 +45,7 @@ TALLY_NORMALIZATION = {'Tiara-BC': 'lethargy',
                        'TUD-Fe': 'energy bins',
                        'TUD-W': 'energy bins',
                        'TUD-FNG': 'energy bins'}
+EXP_TAG = "Exp"
 
 
 class ExperimentalOutput(BenchmarkOutput):

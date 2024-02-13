@@ -29,13 +29,13 @@ import jade.postprocess as pp
 import jade.testrun as testrun
 import jade.utilitiesgui as uty
 from jade.__version__ import __version__
-from jade.status import EXP_TAG
 from tqdm import tqdm
-from jade.main import Session
+
 
 date = "10/05/2022"
 version = __version__
 POWERED_BY = "NIER, UNIBO, F4E, UKAEA"
+EXP_TAG = "Exp"
 
 
 def clear_screen():
@@ -277,7 +277,7 @@ computational_menu = (
 )
 
 
-def comploop(session: Session):
+def comploop(session):
     """
     This handle the actions related to the computational benchmarck menu
 

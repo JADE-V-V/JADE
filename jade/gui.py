@@ -31,28 +31,37 @@ import jade.utilitiesgui as uty
 from jade.__version__ import __version__
 from jade.status import EXP_TAG
 from tqdm import tqdm
+from jade.main import Session
 
-date = '10/05/2022'
+date = "10/05/2022"
 version = __version__
-POWERED_BY = 'NIER, UNIBO, F4E, UKAEA'
+POWERED_BY = "NIER, UNIBO, F4E, UKAEA"
 
 
 def clear_screen():
-    if os.name == 'nt':
-        os.system('cls')
+    if os.name == "nt":
+        os.system("cls")
     else:
-        os.system('clear')
+        os.system("clear")
 
 
-exit_text = '\nSession concluded normally \n'
+exit_text = "\nSession concluded normally \n"
 
-header = """
+header = (
+    """
  ***********************************************
-              Welcome to JADE """+version+"""
+              Welcome to JADE """
+    + version
+    + """
       A nuclear libraries V&V Test Suite
-          Release date: """+date+'\n'
+          Release date: """
+    + date
+    + "\n"
+)
 
-principal_menu = header+"""
+principal_menu = (
+    header
+    + """
                  MAIN MENU
 
         Powered by {}
@@ -79,7 +88,10 @@ principal_menu = header+"""
  -----------------------------------------------
 
  * Exit                                   (exit)
-""".format(POWERED_BY)
+""".format(
+        POWERED_BY
+    )
+)
 
 
 def mainloop(session):
@@ -91,144 +103,164 @@ def mainloop(session):
     clear_screen()
     print(principal_menu)
     while True:
-        option = input(' Enter action: ')
+        option = input(" Enter action: ")
 
-        if option == 'comp':
+        if option == "comp":
             comploop(session)
 
-        elif option == 'exp':
+        elif option == "exp":
             exploop(session)
 
-        elif option == 'qual':
+        elif option == "qual":
             clear_screen()
             print(principal_menu)
-            print(' Currently not developed. Please select another option')
+            print(" Currently not developed. Please select another option")
 
-        elif option == 'post':
+        elif option == "post":
             pploop(session)
 
-        elif option == 'printlib':
+        elif option == "printlib":
             uty.print_libraries(session.lib_manager)
 
-        elif option == 'restore':
+        elif option == "restore":
             uty.restore_default_config(session)
 
-        elif option == 'trans':
+        elif option == "trans":
             newlib = session.lib_manager.select_lib()
             if newlib == "back":
                 mainloop(session)
             if newlib == "exit":
                 session.log.adjourn(exit_text)
                 sys.exit()
-            inputfile = input(' MCNP input file: ')
+            inputfile = input(" MCNP input file: ")
 
             if newlib in session.lib_manager.libraries:
                 ans = uty.translate_input(session, newlib, inputfile)
                 if ans:
-                    print(' Translation successfully completed!\n')
-                    session.log.adjourn('file'+inputfile +
-                                        ' successfully translated to ' + newlib)
+                    print(" Translation successfully completed!\n")
+                    session.log.adjourn(
+                        "file" + inputfile + " successfully translated to " + newlib
+                    )
                 else:
-                    print('''
+                    print(
+                        """
     Error:
     The file does not exist or can't be opened
-                      ''')
+                      """
+                    )
 
             else:
-                print('''
+                print(
+                    """
     Error:
     The selected library is not available.
     Check your available libraries using 'printlib'
-                      ''')
+                      """
+                )
 
-        elif option == 'printmat':
-            inputfile = input(' MCNP Input file of interest: ')
+        elif option == "printmat":
+            inputfile = input(" MCNP Input file of interest: ")
             ans = uty.print_material_info(session, inputfile)
             if ans:
-                print(' Material infos printed')
+                print(" Material infos printed")
             else:
-                print('''
+                print(
+                    """
     Error:
     Either the input or output files do not exist or can't be opened
-                      ''')
+                      """
+                )
 
-        elif option == 'generate':
-            inputfile = uty.select_inputfile(' MCNP input file: ')
+        elif option == "generate":
+            inputfile = uty.select_inputfile(" MCNP input file: ")
             message = " Fraction type (either 'mass' or 'atom'): "
-            options = ['mass', 'atom']
+            options = ["mass", "atom"]
             fraction_type = uty.input_with_options(message, options)
-            materials = input(' Source materials (e.g. m1-m10): ')
-            percentages = input(' Materials percentages (e.g. 0.1-0.9): ')
+            materials = input(" Source materials (e.g. m1-m10): ")
+            percentages = input(" Materials percentages (e.g. 0.1-0.9): ")
             lib = session.lib_manager.select_lib()
             if lib == "back":
                 mainloop(session)
             if lib == "exit":
                 session.log.adjourn(exit_text)
                 sys.exit()
-            materials = materials.split('-')
-            percentages = percentages.split('-')
+            materials = materials.split("-")
+            percentages = percentages.split("-")
 
             if len(materials) == len(percentages):
-                ans = uty.generate_material(session, inputfile,
-                                            materials, percentages, lib,
-                                            fractiontype=fraction_type)
+                ans = uty.generate_material(
+                    session,
+                    inputfile,
+                    materials,
+                    percentages,
+                    lib,
+                    fractiontype=fraction_type,
+                )
                 if ans:
-                    print(' Material generated')
+                    print(" Material generated")
                 else:
-                    print('''
+                    print(
+                        """
     Error:
     Either the input or output files can't be opened
-                          ''')
+                          """
+                    )
 
             else:
-                print('''
+                print(
+                    """
     Error:
     The number of materials and percentages must be the same
-                          ''')
+                          """
+                )
 
-        elif option == 'switch':
+        elif option == "switch":
             # Select MCNP input
-            inputfile = uty.select_inputfile(' MCNP input file: ')
+            inputfile = uty.select_inputfile(" MCNP input file: ")
             # Select fraction type
-            options = ['mass', 'atom']
+            options = ["mass", "atom"]
             message = " Fraction to switch to (either 'mass' or 'atom'): "
             fraction_type = uty.input_with_options(message, options)
 
             # Switch fraction
             ans = uty.switch_fractions(session, inputfile, fraction_type)
             if ans:
-                print(' Fractions have been switched')
+                print(" Fractions have been switched")
             else:
-                print('''
+                print(
+                    """
     Error:
-    Either the input or output files can't be opened''')
+    Either the input or output files can't be opened"""
+                )
 
-        elif option == 'acelib':
+        elif option == "acelib":
             uty.change_ACElib_suffix()
-            print('\n Suffix change was completed\n')
+            print("\n Suffix change was completed\n")
 
-        elif option == 'react':
+        elif option == "react":
             uty.get_reaction_file(session)
-            print('\n Reaction file has been dumped\n')
+            print("\n Reaction file has been dumped\n")
 
-        elif option == 'rmvruntpe':
+        elif option == "rmvruntpe":
             uty.clean_runtpe(session.path_run)
-            print('\n Runtpe files have been removed\n')
+            print("\n Runtpe files have been removed\n")
 
-        elif option == 'comparelib':
+        elif option == "comparelib":
             uty.print_XS_EXFOR(session)
 
-        elif option == 'exit':
-            session.log.adjourn('\nSession concluded normally \n')
+        elif option == "exit":
+            session.log.adjourn("\nSession concluded normally \n")
             sys.exit()
 
         else:
             clear_screen()
             print(principal_menu)
-            print(' Please enter a valid option!')
+            print(" Please enter a valid option!")
 
 
-computational_menu = header+"""
+computational_menu = (
+    header
+    + """
           COMPUTATIONAL BENCHMARK MENU
 
         Powered by {}
@@ -239,10 +271,13 @@ computational_menu = header+"""
  * Continue assessment                (continue)
  * Back to main menu                      (back)
  * Exit                                   (exit)
-""".format(POWERED_BY)
+""".format(
+        POWERED_BY
+    )
+)
 
 
-def comploop(session):
+def comploop(session: Session):
     """
     This handle the actions related to the computational benchmarck menu
 
@@ -252,12 +287,12 @@ def comploop(session):
     clear_screen()
     print(computational_menu)
     while True:
-        option = input(' Enter action: ')
+        option = input(" Enter action: ")
 
-        if option == 'printlib':
+        if option == "printlib":
             uty.print_libraries(session.lib_manager)
 
-        elif option == 'assess':
+        elif option == "assess":
             # Select and check library
             lib = session.lib_manager.select_lib()
             if lib == "back":
@@ -270,26 +305,31 @@ def comploop(session):
                 comploop(session)
             if runoption == "exit":
                 session.log.adjourn(exit_text)
-                sys.exit()            
+                sys.exit()
             ans = session.state.check_override_run(lib, session)
             # If checks are ok perform assessment
             if ans:
-                # Logging                
-                bartext = 'Computational benchmark execution started'
+                # Logging
+                bartext = "Computational benchmark execution started"
                 session.log.bar_adjourn(bartext)
-                session.log.adjourn('Selected Library: '+lib,
-                                    spacing=False, time=True)
-                print(' ########################### COMPUTATIONAL BENCHMARKS EXECUTION ###########################\n')
+                session.log.adjourn(
+                    "Selected Library: " + lib, spacing=False, time=True
+                )
+                print(
+                    " ########################### COMPUTATIONAL BENCHMARKS EXECUTION ###########################\n"
+                )
                 cmp.executeBenchmarksRoutines(session, lib, runoption)  # Core function
-                print(' ####################### COMPUTATIONAL BENCHMARKS RUN ENDED ###############################\n')
-                t = 'Computational benchmark execution ended'
+                print(
+                    " ####################### COMPUTATIONAL BENCHMARKS RUN ENDED ###############################\n"
+                )
+                t = "Computational benchmark execution ended"
                 session.log.bar_adjourn(t)
             else:
                 clear_screen()
                 print(computational_menu)
-                print(' Assessment cancelled.')
+                print(" Assessment cancelled.")
 
-        elif option == 'continue':
+        elif option == "continue":
             # Select and check library
             # Warning: this is done only for sphere test at the moment
             lib = session.lib_manager.select_lib()
@@ -304,49 +344,55 @@ def comploop(session):
                 unfinished = None
 
             if unfinished is None:
-                print(' The selected library was not assessed')
+                print(" The selected library was not assessed")
             elif len(unfinished) == 0:
-                print(' The assessment is already completed')
+                print(" The assessment is already completed")
             else:
-                print(' Completing sphere assessment:')
-                session.log.adjourn('Assessment of: '+lib+' started',
-                                    spacing=False, time=True)
+                print(" Completing sphere assessment:")
+                session.log.adjourn(
+                    "Assessment of: " + lib + " started", spacing=False, time=True
+                )
                 flagOk = True
                 for directory in tqdm(unfinished):
                     path = os.path.join(motherdir, directory)
-                    name = directory+'_'
+                    name = directory + "_"
 
-                    flag = testrun.Test._runMCNP('mcnp6', name, path,
-                                                 cpu=session.conf.cpu)
+                    flag = testrun.Test._runMCNP(
+                        "mcnp6", name, path, cpu=session.conf.cpu
+                    )
                     if flag:
                         flagOk = False
-                        session.log.adjourn(name +
-                                            ' reached timeout, eliminate folder')
+                        session.log.adjourn(name + " reached timeout, eliminate folder")
 
                 if not flagOk:
-                    print("""
+                    print(
+                        """
  Some MCNP run reached timeout, they are listed in the log file.
- Please remove their folders before attempting to postprocess the library""")
+ Please remove their folders before attempting to postprocess the library"""
+                    )
 
-                print(' Assessment completed')
+                print(" Assessment completed")
 
-                session.log.adjourn('Assessment of: '+lib+' completed',
-                                    spacing=True, time=True)
+                session.log.adjourn(
+                    "Assessment of: " + lib + " completed", spacing=True, time=True
+                )
 
-        elif option == 'back':
+        elif option == "back":
             mainloop(session)
 
-        elif option == 'exit':
+        elif option == "exit":
             session.log.adjourn(exit_text)
             sys.exit()
 
         else:
             clear_screen()
             print(computational_menu)
-            print(' Please enter a valid option!')
+            print(" Please enter a valid option!")
 
 
-experimental_menu = header+"""
+experimental_menu = (
+    header
+    + """
           EXPERIMENTAL BENCHMARK MENU
 
         Powered by {}
@@ -357,7 +403,10 @@ experimental_menu = header+"""
  * Continue assessment                (continue)
  * Back to main menu                      (back)
  * Exit                                   (exit)
-""".format(POWERED_BY)
+""".format(
+        POWERED_BY
+    )
+)
 
 
 def exploop(session):
@@ -370,12 +419,12 @@ def exploop(session):
     clear_screen()
     print(experimental_menu)
     while True:
-        option = input(' Enter action: ')
+        option = input(" Enter action: ")
 
-        if option == 'printlib':
+        if option == "printlib":
             uty.print_libraries(session.lib_manager)
 
-        elif option == 'assess':
+        elif option == "assess":
             # Update the configuration file
             session.conf.read_settings()
             # Select and check library
@@ -392,53 +441,59 @@ def exploop(session):
                 session.log.adjourn(exit_text)
                 sys.exit()
             # it may happen that lib are two but only the first is the assessed
-            pieces = lib.split('-')
+            pieces = lib.split("-")
             if len(pieces) > 1:
                 libtocheck = pieces[0]
             else:
                 libtocheck = lib
-            ans = session.state.check_override_run(libtocheck,
-                                                   session, exp=True)
+            ans = session.state.check_override_run(libtocheck, session, exp=True)
             # If checks are ok perform assessment
             if ans:
                 # Logging
                 runoption = session.conf.run_option(exp=True)
-                bartext = 'Experimental benchmark execution started'
+                bartext = "Experimental benchmark execution started"
                 session.log.bar_adjourn(bartext)
-                session.log.adjourn('Selected Library: '+lib,
-                                    spacing=False, time=True)
-                print(' ########################### EXPERIMENTAL BENCHMARKS EXECUTION ###########################\n')
+                session.log.adjourn(
+                    "Selected Library: " + lib, spacing=False, time=True
+                )
+                print(
+                    " ########################### EXPERIMENTAL BENCHMARKS EXECUTION ###########################\n"
+                )
                 # Core function
                 cmp.executeBenchmarksRoutines(session, lib, runoption, exp=True)
-                print(' ####################### EXPERIMENTAL BENCHMARKS RUN ENDED ###############################\n')
-                t = 'Experimental benchmark execution ended'
+                print(
+                    " ####################### EXPERIMENTAL BENCHMARKS RUN ENDED ###############################\n"
+                )
+                t = "Experimental benchmark execution ended"
                 session.log.bar_adjourn(t)
             else:
                 clear_screen()
                 print(computational_menu)
-                print(' Assessment canceled.')
+                print(" Assessment canceled.")
 
-        elif option == 'continue':
+        elif option == "continue":
             # Update the configuration file
             session.conf.read_settings()
             clear_screen()
             print(principal_menu)
-            print(' Currently not developed. Please select another option')
+            print(" Currently not developed. Please select another option")
 
-        elif option == 'back':
+        elif option == "back":
             mainloop(session)
 
-        elif option == 'exit':
+        elif option == "exit":
             session.log.adjourn(exit_text)
             sys.exit()
 
         else:
             clear_screen()
             print(computational_menu)
-            print(' Please enter a valid option!')
+            print(" Please enter a valid option!")
 
 
-pp_menu = header+"""
+pp_menu = (
+    header
+    + """
           POST PROCESSING MENU
 
         Powered by {}
@@ -450,7 +505,10 @@ pp_menu = header+"""
  * Compare Vs Experiments              (compexp)
  * Back to main menu                      (back)
  * Exit                                   (exit)
-""".format(POWERED_BY)
+""".format(
+        POWERED_BY
+    )
+)
 
 
 def pploop(session):
@@ -463,13 +521,13 @@ def pploop(session):
     clear_screen()
     print(pp_menu)
     while True:
-        option = input(' Enter action: ')
+        option = input(" Enter action: ")
 
-        if option == 'printlib':
+        if option == "printlib":
             lib_tested = list(session.state.run_tree.keys())
             print(lib_tested)
 
-        elif option == 'pp':
+        elif option == "pp":
             # Update the configuration file
             session.conf.read_settings()
             # Select and check library
@@ -482,20 +540,22 @@ def pploop(session):
             if ans:
                 lib = to_single_pp[0]
                 # Check active tests
-                #to_perform = session.check_active_tests('Post-Processing')
+                # to_perform = session.check_active_tests('Post-Processing')
                 # For the moment no pp is foreseen for experimental benchmarks
                 # to_perf_exp = session.check_active_tests('Post-Processing',
                 #                                          exp=True)
                 # to_perform.extend(to_perf_exp)
 
                 # Logging
-                bartext = 'Post-Processing started'
+                bartext = "Post-Processing started"
                 session.log.bar_adjourn(bartext)
-                session.log.adjourn('Selected Library: '+lib, spacing=False)
-                print('\n ########################### POST-PROCESSING STARTED ###########################\n')
+                session.log.adjourn("Selected Library: " + lib, spacing=False)
+                print(
+                    "\n ########################### POST-PROCESSING STARTED ###########################\n"
+                )
                 # Core function
-                pp.postprocessBenchmark(session, lib)                
-                #for testname in to_perform:
+                pp.postprocessBenchmark(session, lib)
+                # for testname in to_perform:
                 #    try:
                 #        pp.postprocessBenchmark(session, lib, testname)
                 #    except PermissionError as e:
@@ -504,11 +564,13 @@ def pploop(session):
                 #        print(' '+str(e))
                 #        print(' Please close all excel/word files and retry')
                 #        continue
-                print('\n ######################### POST-PROCESSING ENDED ###############################\n')
-                t = 'Post-Processing completed'
+                print(
+                    "\n ######################### POST-PROCESSING ENDED ###############################\n"
+                )
+                t = "Post-Processing completed"
                 session.log.bar_adjourn(t, spacing=False)
 
-        elif option == 'compare':
+        elif option == "compare":
             # Update the configuration file
             session.conf.read_settings()
 
@@ -517,30 +579,36 @@ def pploop(session):
 
             if ans:
                 # Logging
-                bartext = 'Comparison Post-Processing started'
+                bartext = "Comparison Post-Processing started"
                 session.log.bar_adjourn(bartext)
-                session.log.adjourn('Selected Library: '+lib_input,
-                                    spacing=True)
-                print('\n ########################### COMPARISON STARTED ###########################\n')
+                session.log.adjourn("Selected Library: " + lib_input, spacing=True)
+                print(
+                    "\n ########################### COMPARISON STARTED ###########################\n"
+                )
 
                 # Check active tests
-                to_perform = session.check_active_tests('Post-Processing')
+                to_perform = session.check_active_tests("Post-Processing")
 
                 # Execute single pp
                 for lib in to_single_pp:
-                    print('to single pp', to_single_pp)
+                    print("to single pp", to_single_pp)
                     for testname in to_perform:
-                        print("to_perform",to_perform)
+                        print("to_perform", to_perform)
                         try:
-                            print(' Single PP of library '+lib+' required')
+                            print(" Single PP of library " + lib + " required")
                             pp.postprocessBenchmark(session, lib)
-                            session.log.adjourn("""
-Additional Post-Processing of library:"""+lib+' completed\n', spacing=False)
+                            session.log.adjourn(
+                                """
+Additional Post-Processing of library:"""
+                                + lib
+                                + " completed\n",
+                                spacing=False,
+                            )
                         except PermissionError as e:
                             clear_screen()
                             print(pp_menu)
-                            print(' '+str(e))
-                            print(' Please close all excel/word files and retry')
+                            print(" " + str(e))
+                            print(" Please close all excel/word files and retry")
                             continue
 
                 # Execute Comparison
@@ -550,72 +618,78 @@ Additional Post-Processing of library:"""+lib+' completed\n', spacing=False)
                     except PermissionError as e:
                         clear_screen()
                         print(pp_menu)
-                        print(' '+str(e))
-                        print(' Please close all excel/word files and retry')
+                        print(" " + str(e))
+                        print(" Please close all excel/word files and retry")
                         continue
 
-                print('\n ######################### COMPARISON ENDED ###############################\n')
-                t = 'Post-Processing completed'
+                print(
+                    "\n ######################### COMPARISON ENDED ###############################\n"
+                )
+                t = "Post-Processing completed"
                 session.log.bar_adjourn(t, spacing=False)
 
-        elif option == 'compexp':
+        elif option == "compexp":
             # Update the configuration file
             session.conf.read_settings()
 
             # Select and check library
-            ans, to_single_pp, lib_input = session.state.check_override_pp(session, exp=True)
+            ans, to_single_pp, lib_input = session.state.check_override_pp(
+                session, exp=True
+            )
 
             if ans:
                 # Logging
-                bartext = 'Comparison Post-Processing started'
+                bartext = "Comparison Post-Processing started"
                 session.log.bar_adjourn(bartext)
-                session.log.adjourn('Selected Library: '+lib_input,
-                                    spacing=True)
-                print('\n ########################### COMPARISON STARTED ###########################\n')
+                session.log.adjourn("Selected Library: " + lib_input, spacing=True)
+                print(
+                    "\n ########################### COMPARISON STARTED ###########################\n"
+                )
 
                 # Check active tests
-                to_perform = session.check_active_tests('Post-Processing',
-                                                        exp=True)
+                to_perform = session.check_active_tests("Post-Processing", exp=True)
 
-#                 # Execut single pp
-#                 for lib in to_single_pp:
-#                     for testname in to_perform:
-#                         try:
-#                             print(' Single PP of library '+lib+' required')
-#                             pp.postprocessBenchmark(session, lib, testname)
-#                             session.log.adjourn("""
-# Additional Post-Processing of library:"""+lib+' completed\n', spacing=False)
-#                         except PermissionError as e:
-#                             clear_screen()
-#                             print(pp_menu)
-#                             print(' '+str(e))
-#                             print(' Please close all excel/word files and retry')
-#                             continue
+                #                 # Execut single pp
+                #                 for lib in to_single_pp:
+                #                     for testname in to_perform:
+                #                         try:
+                #                             print(' Single PP of library '+lib+' required')
+                #                             pp.postprocessBenchmark(session, lib, testname)
+                #                             session.log.adjourn("""
+                # Additional Post-Processing of library:"""+lib+' completed\n', spacing=False)
+                #                         except PermissionError as e:
+                #                             clear_screen()
+                #                             print(pp_menu)
+                #                             print(' '+str(e))
+                #                             print(' Please close all excel/word files and retry')
+                #                             continue
 
                 # Execute Comparison
-                lib_input = EXP_TAG+'-'+lib_input  # Insert the exp tag
+                lib_input = EXP_TAG + "-" + lib_input  # Insert the exp tag
                 for testname in to_perform:
                     try:
-                        pp.compareBenchmark(session, lib_input, testname, exp = True)
+                        pp.compareBenchmark(session, lib_input, testname, exp=True)
                     except PermissionError as e:
                         clear_screen()
                         print(pp_menu)
-                        print(' '+str(e))
-                        print(' Please close all excel/word files and retry')
+                        print(" " + str(e))
+                        print(" Please close all excel/word files and retry")
                         continue
 
-                print('\n ######################### COMPARISON ENDED ###############################\n')
-                t = 'Post-Processing completed'
+                print(
+                    "\n ######################### COMPARISON ENDED ###############################\n"
+                )
+                t = "Post-Processing completed"
                 session.log.bar_adjourn(t, spacing=False)
 
-        elif option == 'back':
+        elif option == "back":
             mainloop(session)
 
-        elif option == 'exit':
+        elif option == "exit":
             session.log.adjourn(exit_text)
             sys.exit()
 
         else:
             clear_screen()
             print(pp_menu)
-            print(' Please enter a valid option!')
+            print(" Please enter a valid option!")

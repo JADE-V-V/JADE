@@ -21,6 +21,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
+from typing import TYPE_CHECKING
 import os
 import sys
 
@@ -30,13 +32,15 @@ import jade.testrun as testrun
 import jade.utilitiesgui as uty
 from jade.__version__ import __version__
 from tqdm import tqdm
+from jade.status import EXP_TAG
+
+if TYPE_CHECKING:
+    from jade.main import Session
 
 
 date = "10/05/2022"
 version = __version__
 POWERED_BY = "NIER, UNIBO, F4E, UKAEA"
-EXP_TAG = "Exp"
-
 
 def clear_screen():
     if os.name == "nt":
@@ -94,7 +98,7 @@ principal_menu = (
 )
 
 
-def mainloop(session):
+def mainloop(session: Session):
     """
     This handle the actions related to the main menu
 
@@ -277,7 +281,7 @@ computational_menu = (
 )
 
 
-def comploop(session):
+def comploop(session: Session):
     """
     This handle the actions related to the computational benchmarck menu
 
@@ -409,7 +413,7 @@ experimental_menu = (
 )
 
 
-def exploop(session):
+def exploop(session: Session):
     """
     This handle the actions related to the experimental benchmarck menu
 
@@ -511,7 +515,7 @@ pp_menu = (
 )
 
 
-def pploop(session):
+def pploop(session: Session):
     """
     This handle the actions related to the post-processing menu
 

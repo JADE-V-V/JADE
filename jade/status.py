@@ -22,10 +22,12 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
+from typing import TYPE_CHECKING
 import os
 import re
-from jade.main import Session
 
+if TYPE_CHECKING:
+    from jade.main import Session
 
 MULTI_TEST = [
     "Sphere",

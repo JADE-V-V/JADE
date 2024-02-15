@@ -160,6 +160,25 @@ class TestStatus:
         assert not ans
 
     @pytest.mark.parametrize(
+        ["code", "directory", "expected"],
+        [
+            ["mcnp", r"00c\Sphere\mcnp\Sphere_1001_H-1", True],
+            ["mcnp", r"00c\Sphere\mcnp\Sphere_1002_H-2", False],
+        ],
+    )
+    def test_check_test_run(
+        self, def_config: Configuration, code: str, directory: str, expected: bool
+    ):
+        files = []
+        status = Status(SessionMockUp(def_config))
+        path_run = os.path.join(cp, "TestFiles", "status", "Simulations", directory)
+        for file in os.listdir(path_run):
+            files.append(os.path.join(path_run, file))
+
+        ans = status.check_test_run(files, code)
+        assert ans == expected
+
+    @pytest.mark.parametrize(
         ["lib", "option", "expected"],
         [
             ["31c", False, ["Sphere", "C_Model"]],

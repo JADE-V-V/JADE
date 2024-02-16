@@ -163,7 +163,7 @@ class Configuration:
                     elif runoption == "s":
                         if pd.isnull(self.batch_system):
                             print(
-                                " Cannot submit as a batch job, as no batch system has been define in the config file."
+                                " Cannot submit as a batch job, as no batch system has been defined in the config file."
                             )
                         else:
                             break

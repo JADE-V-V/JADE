@@ -248,10 +248,12 @@ class Test:
         self.custom_inp_modifications()
 
         if self.d1s:
-            d1s_dir = os.mkdir(os.path.join(motherdir, "d1s"))
+            # Create the ouput directory
+            d1s_dir = os.path.join(motherdir, "d1s")
+            os.mkdir(d1s_dir)
             outinpfile = os.path.join(d1s_dir, testname)
             self.d1s_inp.write(outinpfile)
-            # And accessory files if needed
+            # And irradiation and reaction files if needed
             if self.irrad is not None:
                 self.irrad.write(d1s_dir)
             if self.react is not None:
@@ -312,7 +314,7 @@ class Test:
         if self.d1s:
             d1s_directory = os.path.join(directory, "d1s")
             if pd.isnull(config.d1s_exec) is not True:
-                self.run_d1s(config, libmanager, name, d1s_directory)
+                self.run_d1s(config, libmanager, name, d1s_directory, runoption)
 
         if self.mcnp:
             mcnp_directory = os.path.join(directory, "mcnp")
@@ -446,13 +448,16 @@ class Test:
         inputstring = "i=" + name
         outputstring = "n=" + name
 
-        # TODO change for D1S
+        # Handle 99c-31c format for SDDR benchmarks
         if isinstance(self.lib, dict):
             lib = list(self.lib.values())[0]
         elif isinstance(self.lib, str):
-            lib = self.lib
+            if "-" in self.lib:
+                lib = self.lib.split("-")[0]  
+            else:
+                lib = self.lib
 
-        xsstring = "xs=" + str(lib_manager.data["mcnp"][lib].filename)
+        xsstring = "xs=" + str(lib_manager.data["d1s"][lib].filename)
 
         if run_mpi:
             run_command = [
@@ -858,22 +863,21 @@ class SphereTest(Test):
         matpath = os.path.join(dirmat, "TypicalMaterials")
         inpmat = ipt.InputFile.from_text(matpath)
         matlist = inpmat.matlist
-        # Get zaids available into the selected library
-        
 
-        # testname = self.inp.name
+        # Get zaids available in the selected library
         if self.d1s:
             testname = "SphereSDDR"
         else:
             testname = "Sphere"
-            zaids = libmanager.get_libzaids(lib, "mcnp")
+        zaids = libmanager.get_libzaids(lib, "mcnp")
 
         motherdir = os.path.join(directory, testname)
-        # If previous results are present they are canceled
+        # If previous results are present they are deleted
         if os.path.exists(motherdir):
             shutil.rmtree(motherdir)
         os.mkdir(motherdir)
 
+        # This can be removed once new folder path updated for all codes.
         if self.d1s:
             pass
             # os.mkdir(os.path.join(motherdir, "d1s"))
@@ -976,6 +980,7 @@ class SphereTest(Test):
         # Adjourn the material cards for the zaid
         zaid = mat.Zaid(1, zaid[:-3], zaid[-3:], lib)
         name, formula = libmanager.get_zaidname(zaid)
+
         if self.d1s:
             # Retrieve wwinp & other misc files if they exist
             directoryVRT = os.path.join(
@@ -1004,8 +1009,8 @@ class SphereTest(Test):
                 testname, zaid, formula, addtag=addtag
             )
 
-            outpath = os.path.join(motherdir, outdir, "d1s") 
-            os.makedirs(outpath, exist_ok=True)  
+            outpath = os.path.join(motherdir, outdir, "d1s")
+            os.makedirs(outpath, exist_ok=True)
             outinpfile = os.path.join(outpath, outfile)
             newinp.write(outinpfile)
 
@@ -1151,6 +1156,7 @@ class SphereTest(Test):
             edits_file = os.path.join(directoryVRT, "inp_edits.txt")
             ww_file = os.path.join(directoryVRT, "wwinp")
             newmat = deepcopy(material)
+
             # Translate and assign the material
             newmat.translate(lib, libmanager, "d1s")
             newmat.header = material.header + "C\nC True name:" + truename
@@ -1172,8 +1178,8 @@ class SphereTest(Test):
             outfile = testname + "_" + truename + "_"
             outdir = testname + "_" + truename
 
-            outpath = os.path.join(motherdir, outdir, "d1s")  
-            os.makedirs(outpath, exist_ok=True) 
+            outpath = os.path.join(motherdir, outdir, "d1s")
+            os.makedirs(outpath, exist_ok=True)
             outinpfile = os.path.join(outpath, outfile)
             newinp.write(outinpfile)
 
@@ -1188,6 +1194,7 @@ class SphereTest(Test):
             edits_file = os.path.join(directoryVRT, "inp_edits.txt")
             ww_file = os.path.join(directoryVRT, "wwinp")
             newmat = deepcopy(material)
+
             # Translate and assign the material
             newmat.translate(lib, libmanager, "mcnp")
             newmat.header = material.header + "C\nC True name:" + truename
@@ -1201,9 +1208,6 @@ class SphereTest(Test):
             newinp.change_density(density)
             # add stop card
             newinp.add_stopCard(self.nps)
-            # Add PIKMT card if required
-            if parentlist is not None:
-                newinp.add_PIKMT_card(parentlist)
 
             # Write new input file
             outfile = testname + "_" + truename + "_"
@@ -1231,7 +1235,7 @@ class SphereTest(Test):
             newinp = deepcopy(self.serpent_inp)
             newinp.matlist = matlist  # Assign material
             # add stop card
-            newinp.add_stopCard(self.nps)  # , self.ctme, self.precision)
+            newinp.add_stopCard(self.nps)
 
             # Write new input file
             outfile = testname + "_" + truename + "_"
@@ -1243,8 +1247,6 @@ class SphereTest(Test):
 
         if self.openmc:
             newmat = deepcopy(material)
-            # Translate and assign the material (not supported yet for openmc)
-            # newmat.translate(lib, libmanager, 'openmc')
             newmat.name = "m1"
             newmat.density = density
             matlist = mat.MatCardsList([newmat])
@@ -1253,7 +1255,7 @@ class SphereTest(Test):
             newinp = deepcopy(self.openmc_inp)
             newinp.matlist = matlist  # Assign material
             # add stop card
-            newinp.add_stopCard(self.nps)  # , self.ctme, self.precision)
+            newinp.add_stopCard(self.nps)
 
             # Write new input file
             outfile = testname + "_" + truename + "_"
@@ -1272,16 +1274,23 @@ class SphereTest(Test):
         libmanager :
             libmanager
         runoption : str
+            Whether to run in the command line or submit as a job.
         """
 
         directory = self.run_dir
 
         if self.d1s:
-            d1s_directory = os.path.join(directory, "d1s")
+            d1s_directory = os.path.join(directory)
             if pd.isnull(config.d1s_exec) is not True:
                 for folder in tqdm(os.listdir(d1s_directory)):
-                    run_directory = os.path.join(d1s_directory, folder)
-                    self.run_d1s(config, libmanager, folder + "_", run_directory)
+                    run_directory = os.path.join(d1s_directory, folder, "d1s")
+                    self.run_d1s(
+                        config, libmanager, folder + "_", run_directory, runoption
+                    )
+            else:
+                print(
+                    "No D1S exectuble has been supplied. Only the inputs will be generated."
+                )
 
         if self.mcnp:
             mcnp_directory = os.path.join(directory, "mcnp")
@@ -1380,7 +1389,7 @@ class SphereTestSDDR(SphereTest):
 
             # select outpath, at the moment only d1s is supported
             if self.d1s:
-                outpath = os.path.join(motherdir, "d1s", outdir)
+                outpath = os.path.join(motherdir, outdir, "d1s")
             else:
                 raise NotImplementedError(
                     "Only d1s is supported at the moment for SDDR tests"
@@ -1476,7 +1485,7 @@ class SphereTestSDDR(SphereTest):
 
             # select outpath, at the moment only d1s is supported
             if self.d1s:
-                outpath = os.path.join(motherdir, "d1s", outdir)
+                outpath = os.path.join(motherdir, outdir, "d1s")
             else:
                 raise NotImplementedError(
                     "Only d1s is supported at the moment for SDDR tests"

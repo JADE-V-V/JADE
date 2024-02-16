@@ -45,6 +45,7 @@ MULTI_TEST = [
     "TUD-W",
 ]
 EXP_TAG = "Exp"
+CODES = ["mcnp", "serpent", "openmc", "d1s"]
 
 
 class Status:
@@ -338,7 +339,6 @@ class Status:
                 flag_run_test = True
         return flag_run_test
 
-    # TODO checking for multiple codes
     def check_override_run(self, lib: str, session: Session, exp: bool = False) -> bool:
         """
         Check status of the requested run. If overridden is required permission
@@ -360,29 +360,37 @@ class Status:
 
         """
 
-        test_runned = self.check_lib_run(lib, session, exp=exp)
-        ans = False
+        all_test_runned = self.check_lib_run(lib, session, exp=exp)
 
-        # Ask for override
-        if len(test_runned) > 0:
+        # Check if it is safe to override
+        safe = True
+        for code, test_runned in all_test_runned.items():
+            # Safe override can be done only if no test has been run for any
+            # code
+            if len(test_runned) > 0:
+                safe = False
+
+        # Ask for override permission
+        if safe:
+            return True
+        else:
             while True:
                 print(" The following benchmark(s) have already been run:")
-                for code in test_runned:
-                    for test in test_runned[code]:
+                for code, test_runned in all_test_runned.items():
+                    for test in test_runned:
                         print(" - " + code + ": " + test)
 
                 print(
                     """
-     You can manage the selection of benchmarks to run in the Config.xlsx file
+    You can manage the selection of benchmarks to run in the Config.xlsx file
     """
                 )
                 i = input(" Would you like to override the results?(y/n) ")
 
                 if i == "y":
-                    ans = True
                     logtext = "\nThe following test results have been overwritten:"
-                    for code in test_runned:
-                        for test in test_runned[code]:
+                    for code, test_runned in all_test_runned.items():
+                        for test in test_runned:
                             logtext = (
                                 logtext
                                 + "\n"
@@ -395,19 +403,17 @@ class Status:
                                 + "]"
                             )
                     session.log.adjourn(logtext)
-                    break
+                    return True
+
                 elif i == "n":
-                    ans = False
-                    break
+                    return False
+
                 else:
                     print('\n please select one between "y" or "n"')
 
-        else:
-            ans = True
-
-        return ans
-
-    def check_lib_run(self, lib, session, config_option="Run", exp=False) -> dict[str,bool]:
+    def check_lib_run(
+        self, lib: str, session: Session, config_option="Run", exp=False
+    ) -> dict[str, list]:
         """
         Check if a library has been run. To be considered run a meshtally or
         meshtal have to be produced (for MCNP). Only active benchmarks (specified in
@@ -427,14 +433,14 @@ class Status:
 
         Returns
         -------
-        test_runned : dict[bool]
-            True if all benchmark have been run for the library.
+        test_runned : dict[str, list]
+            list of all the tests that have been run for each code.
 
         """
         # Correctly parse the lib input. It may be a dic than only the first
         # dic value needs to be considered
         pat_libs = re.compile(r'"\d\d[a-zA-Z]"')
-        if len(lib)>0:
+        if len(lib) > 0:
             if lib[0] == "{":
                 libs = pat_libs.findall(lib)
                 lib = libs[1][1:-1]
@@ -443,66 +449,51 @@ class Status:
 
         # Update Tree
         self.update_run_status()
-        # Check if/what is already run
-        if exp:
-            config = self.config.exp_default
-        else:
-            config = self.config.comp_default
+        # # Check if/what is already run
+        # if exp:
+        #     config = self.config.exp_default
+        # else:
+        #     config = self.config.comp_default
 
         # Populate dictionary for each test to perform
-        to_perform = {
-            "mcnp": session.check_active_tests("MCNP", exp=exp),
-            "serpent": session.check_active_tests("Serpent", exp=exp),
-            "openmc": session.check_active_tests("OpenMC", exp=exp),
-            "d1s": session.check_active_tests("d1S", exp=exp),
-        }
+        # Check valid config option
+        if config_option not in ["Run", "Post-Processing"]:
+            raise ValueError("config_option must be either 'Run' or 'Post-Processing'")
+        to_perform = session.check_active_tests(config_option, exp=exp)
 
         test_runned = {}
 
-        for idx, row in config.iterrows():
-            filename = str(row["Folder Name"])
-            testname = filename.split(".")[0]
-            for code in to_perform:
-                if testname in to_perform[code]:
-                    # Check if benchmark folder exists
-                    try:
-                        if exp:
-                            exps = self.run_tree[lib][testname]
-                            for experiment, codes in exps.items():
+        for code, test2check in to_perform.items():
+            test_runned[code] = []
+            for testname in test2check:
+                # Check if benchmark folder exists
+                try:
+                    # There could be two types of tests, single or multitest
+                    test = self.run_tree[lib][testname][code]
+                    if testname in MULTI_TEST:
+                        # A single test not run in multitest cause for the
+                        # whole test not to be considered run
+                        flag_test_run = True
+                        for _, files in test.items():
+                            flag_run_zaid = self.check_test_run(files, code)
+                            if not flag_run_zaid:
                                 flag_test_run = False
-                                for code, files in codes.items():
-                                    flag_run_zaid = self.check_test_run(files, code)
-                                    if flag_run_zaid:
-                                        flag_test_run = True
-                                if flag_test_run:
-                                    if code not in test_runned:
-                                        test_runned[code] = []
-                                    test_runned[code].append(testname)
-                        else:
-                            test = self.run_tree[lib][testname][code]
-                            if testname in MULTI_TEST:
-                                flag_test_run = False
-                                for zaid, files in test.items():
-                                    flag_run_zaid = self.check_test_run(files, code)
-                                    if flag_run_zaid:
-                                        flag_test_run = True
-                                if flag_test_run:
-                                    if code not in test_runned:
-                                        test_runned[code] = []
-                                    test_runned[code].append(testname)
-                            else:
-                                # Check if output is present
-                                flag_test_run = self.check_test_run(test, code)
-                                if flag_test_run:
-                                    if code not in test_runned:
-                                        test_runned[code] = []
-                                    test_runned[code].append(testname)
-                    except KeyError:  # Folder does not exist
-                        pass
+                    else:
+                        # Check if output is present
+                        flag_test_run = self.check_test_run(test, code)
+
+                    # Append to the test runned if positive
+                    if flag_test_run:
+                        test_runned[code].append(testname)
+                except KeyError:
+                    # Folder does not exist, it will not be added
+                    pass
 
         return test_runned
 
-    def check_pp_single(self, lib, session, tree="single", exp=False):
+    def check_pp_single(
+        self, lib: str, session: Session, tree: str = "single", exp: bool = False
+    ):
         """
         Check if the post processing of a single library or a comparison has
         been already done. To consider it done, all benchmarks must have been
@@ -534,16 +525,18 @@ class Status:
             # to_pp_exp = session.check_active_tests('Post-Processing', exp=True)
             # to_pp.extend(to_pp_exp)
 
-            ans = True
-            for test in to_pp:
-                if test not in library_tests:
-                    ans = False
-            return ans
+            # even if only one test of the active ones have not been pp
+            # it should return False
+            for code, tests in to_pp.items():
+                for test in tests:
+                    if code not in library_tests[test]:
+                        return False
+            return True
         except KeyError:
             # print('entered in key error')
             return False
 
-    def check_override_pp(self, session, exp=False):
+    def check_override_pp(self, session: Session, exp=False):
         """
         Asks for the library/ies to post-process and checks which tests have
         already been performed and would be overidden according to the
@@ -586,13 +579,15 @@ class Status:
             else:
                 tagpp = "Comparison"
 
-        # Check if libraries have been run
+        # Check if libraries in the active benchmarks have been run
         flag_not_run = False
         for lib in libs:
             test_run = self.check_lib_run(lib, session, "Post-Processing", exp=exp)
-            if len(test_run) == 0:  # TODO not checking for each benchmark
-                flag_not_run = True
-                lib_not_run = lib
+            # check all code
+            for _, tests in test_run.items():
+                if len(tests) == 0:
+                    flag_not_run = True
+                    lib_not_run = lib
 
         to_single_pp = []
 

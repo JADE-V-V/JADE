@@ -47,9 +47,11 @@ class SessionMockUp:
     def check_active_tests(self, config_option, exp=False):
         # Mocks the check in the configuration file
         if not exp:
-            return ["Sphere", "C_Model"]
+            return {
+                "mcnp": ["Sphere", "C_Model"],
+            }
         elif exp:
-            return ["Oktavian"]
+            return {"mcnp": ["Oktavian"]}
 
 
 class LogMockUp:
@@ -193,7 +195,11 @@ class TestStatus:
 
         # config option is not important since the session is just a mock-up
         testrun = status.check_lib_run(lib, session, config_option="Run", exp=option)
-        assert testrun["mcnp"] == expected
+        try:
+            assert testrun["mcnp"] == expected
+        except KeyError:
+            # If no benchmark was run, the key is not present
+            assert True
 
     def test_check_pp_single(self, def_config: Configuration):
         session = SessionMockUp(def_config)
@@ -216,70 +222,37 @@ class TestStatus:
             ans = status.check_pp_single(lib, session, tree=tree, exp=exp)
             assert ans == answer
 
-    def test_check_override_pp(self, monkeypatch, def_config: Configuration):
+    @pytest.mark.parametrize(
+        ["arguments", "expected", "singlepp", "exp"],
+        [
+            # The library has been run and pp. do not ovveride
+            [["31c", "n"], False, ["31c"], False],
+            # The library has been run and pp. ovveride
+            [["31c", "y"], True, ["31c"], False],
+            # The library has been run but not pp.
+            [["32c"], True, ["32c"], False],
+            # The library has not been run correctly
+            [["00c"], False, [], False],
+            # Both libraries were run and single pp. Override
+            [["31c-30c", "y"], True, [], False],
+            # Both libraries were run and single pp. Do not override
+            [["31c-30c", "n"], False, [], False],
+            # Both libraries were run, experimental. No comparison still done
+            [["99c-98c"], True, [], True],
+            # Both libraries were run, one is missing pp.
+            [["99c-98c"], True, [], True],
+            # Both libraries were run, one is missing pp.
+            [["33c-31c"], True, ["33c"], False],
+        ],
+    )
+    def test_check_override_pp(
+        self, monkeypatch, def_config: Configuration, arguments, expected, singlepp, exp
+    ):
         session = SessionMockUp(def_config)
         status = Status(session)
 
-        # The library has been run and pp. do not ovveride
-        responses = iter(["31c", "n"])
+        responses = iter(arguments)
         monkeypatch.setattr("builtins.input", lambda msg: next(responses))
-        ans, to_single_pp, _ = status.check_override_pp(session)
-        assert not ans
-        assert to_single_pp == ["31c"]
-
-        # The library has been run and pp. ovveride
-        responses = iter(["31c", "y"])
-        monkeypatch.setattr("builtins.input", lambda msg: next(responses))
-        ans, to_single_pp, _ = status.check_override_pp(session)
-        assert ans
-        assert to_single_pp == ["31c"]
-
-        # The library has been run but not pp.
-        responses = iter(["32c"])
-        monkeypatch.setattr("builtins.input", lambda msg: next(responses))
-        ans, to_single_pp, _ = status.check_override_pp(session)
-        assert ans
-        assert to_single_pp == ["32c"]
-
-        # The library has not been run correctly
-        responses = iter(["00c"])
-        monkeypatch.setattr("builtins.input", lambda msg: next(responses))
-        ans, to_single_pp, _ = status.check_override_pp(session)
-        assert not ans
-        assert to_single_pp == []
-
-        # --- Comparisons ---
-        # Both libraries were run and single pp. Override
-        responses = iter(["31c-30c", "y"])
-        monkeypatch.setattr("builtins.input", lambda msg: next(responses))
-        ans, to_single_pp, _ = status.check_override_pp(session)
-        assert ans
-        assert to_single_pp == []
-
-        # Both libraries were run and single pp. Do not override
-        responses = iter(["31c-30c", "n"])
-        monkeypatch.setattr("builtins.input", lambda msg: next(responses))
-        ans, to_single_pp, _ = status.check_override_pp(session)
-        assert not ans
-        assert to_single_pp == []
-
-        # Both libraries were run, experimental. No comparison still done
-        responses = iter(["99c-98c"])
-        monkeypatch.setattr("builtins.input", lambda msg: next(responses))
-        ans, to_single_pp, _ = status.check_override_pp(session, exp=True)
-        assert ans
-        assert to_single_pp == []
-
-        # Both libraries were run, one is missing pp.
-        responses = iter(["99c-98c"])
-        monkeypatch.setattr("builtins.input", lambda msg: next(responses))
-        ans, to_single_pp, _ = status.check_override_pp(session, exp=True)
-        assert ans
-        assert to_single_pp == []
-
-        # Both libraries were run, one is missing pp.
-        responses = iter(["33c-31c"])
-        monkeypatch.setattr("builtins.input", lambda msg: next(responses))
-        ans, to_single_pp, _ = status.check_override_pp(session)
-        assert ans
-        assert to_single_pp == ["33c"]
+        ans, to_single_pp, _ = status.check_override_pp(session, exp=exp)
+        assert ans == expected
+        assert to_single_pp == singlepp

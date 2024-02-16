@@ -21,6 +21,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 import jade.gui as gui
 import jade.configuration as cnf
 import jade.libmanager as libmanager
@@ -48,6 +49,7 @@ DEFAULT_SETTINGS_RESTORATION = """
  configure at least the variables contained in the "MAIN Config." sheet of the
  Configuration/Config.xlsx file.
 """
+CODES = {"MCNP": "mcnp", "Serpent": "serpent", "d1S": "d1s", "OpenMC": "openmc"}
 
 
 class Session:
@@ -170,15 +172,13 @@ class Session:
         # --- Initialize status ---
         self.state = status.Status(self)
 
-    def check_active_tests(self, action, exp=False):
+    def check_active_tests(self, action: str, exp=False) -> dict[str, list[str]]:
         """
         Check the configuration file for active benchmarks to perform or
         post-process
 
         Parameters
         ----------
-        session : Session
-            JADE session
         action : str
             either 'Post-Processing' or 'Run' (as in Configuration file)
         exp : boolean
@@ -186,24 +186,47 @@ class Session:
 
         Returns
         -------
-        to_perform : list
-            list of active test names
+        to_perform : dict[str, list[str]]
+            list of active test names divided by code
 
         """
+        # validate action
+        if action not in ["Post-Processing", "Run"]:
+            raise ValueError("action must be either 'Post-Processing' or 'Run'")
         # Check Which benchmarks are to perform
         if exp:
             config = self.conf.exp_default
         else:
             config = self.conf.comp_default
 
-        to_perform = []
-        for idx, row in config.iterrows():
-            filename = str(row["Folder Name"])
-            testname = filename.split(".")[0]
+        to_perform = {}
 
-            pp = row[action]
-            if pp is True or pp == "True" or pp == "true":
-                to_perform.append(testname)
+        for _, row in config.iterrows():
+            filename = str(row["Folder Name"])
+            testname = filename.split(".", maxsplit=1)[0]
+
+            for code_label, codename in CODES.items():
+                codeflag = row[code_label]
+                if _eval_bool_config(codeflag):
+                    # if it is a post-processing action, it should be checked
+                    # that post-processing option is active
+                    if action == "Post-Processing":
+                        if _eval_bool_config(row[action]):
+                            if codename not in to_perform:
+                                to_perform[codename] = []
+                            to_perform[codename].append(testname)
+                    # if the action is run, it should be checked that onlyinput
+                    # option is disabled
+                    elif action == "Run":
+                        only_input = row["OnlyInput"]
+                        if not _eval_bool_config(only_input):
+                            if codename not in to_perform:
+                                to_perform[codename] = []
+                            to_perform[codename].append(testname)
+                    else:
+                        raise ValueError(
+                            "action must be either 'Post-Processing' or 'Run'"
+                        )
 
         return to_perform
 
@@ -237,6 +260,15 @@ def main():
 
     session = Session()
     gui.mainloop(session)
+
+
+def _eval_bool_config(arg):
+    if arg is True or arg == "True" or arg == "true" or arg == "TRUE":
+        return True
+    elif arg is False or arg == "False" or arg == "false" or arg == "FALSE":
+        return False
+    else:
+        raise ValueError(f"Invalid boolean value {arg}")
 
 
 if __name__ == "__main__":

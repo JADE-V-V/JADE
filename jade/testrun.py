@@ -136,7 +136,7 @@ class Test:
         # Generate input file template according to transport code
         if self.d1s:
             d1s_ipt = os.path.join(inp, "d1s", os.path.basename(inp) + ".i")
-            self.d1s_inp = ipt.D1S5_InputFile.from_text(d1s_ipt)
+            self.d1s_inp = ipt.D1S_Input.from_text(d1s_ipt)
             irrfile = os.path.join(inp, "d1s", os.path.basename(inp) + "_irrad")
             reacfile = os.path.join(inp, "d1s", os.path.basename(inp) + "_react")
             try:

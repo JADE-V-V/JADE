@@ -657,29 +657,30 @@ class D1S_Input(InputFile):
         return res
 
 
-class D1S5_InputFile(D1S_Input):
+# class D1S5_InputFile(D1S_Input):
 
-    def add_stopCard(self, nps):
-        """
-        STOP card is not supported in MCNP 5. This simply is translated to a
-        nps card. 
+    # Not different from the parent class anymore
+    # def add_stopCard(self, nps):
+    #     """
+    #     STOP card is not supported in MCNP 5. This simply is translated to a
+    #     nps card. 
 
-        Parameters
-        ----------
-        nps : int
-            number of particles to simulate
+    #     Parameters
+    #     ----------
+    #     nps : int
+    #         number of particles to simulate
 
-        Returns
-        -------
-        None.
+    #     Returns
+    #     -------
+    #     None.
 
-        """
-        if nps is None:
-            raise ValueError(' NPS value is mandatory for MCNP 5 inputs')
+    #     """
+    #     if nps is None:
+    #         raise ValueError(' NPS value is mandatory for MCNP 5 inputs')
 
-        line = 'NPS '+str(int(nps))+'\n'
-        card = par.Card([line], 5, -1)
-        self.cards['settings'].append(card)
+    #     line = 'NPS '+str(int(nps))+'\n'
+    #     card = par.Card([line], 5, -1)
+    #     self.cards['settings'].append(card)
 
 @contextmanager
 def suppress_stdout():

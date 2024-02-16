@@ -21,28 +21,34 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
+from typing import TYPE_CHECKING
 import os
 import re
 
+if TYPE_CHECKING:
+    from jade.main import Session
+
 MULTI_TEST = [
-    'Sphere',
-    'Oktavian',
-    'SphereSDDR',
-    'FNG',
-    'Tiara-BC',
-    'Tiara-BS',
-    'Tiara-FC',
-    'FNS-TOF',
-    'FNG-BKT',
-    'FNG-W',
-    'ASPIS-Fe88',
-    'TUD-Fe',
-    'TUD-W']
-EXP_TAG = 'Exp'
+    "Sphere",
+    "Oktavian",
+    "SphereSDDR",
+    "FNG",
+    "Tiara-BC",
+    "Tiara-BS",
+    "Tiara-FC",
+    "FNS-TOF",
+    "FNG-BKT",
+    "FNG-W",
+    "ASPIS-Fe88",
+    "TUD-Fe",
+    "TUD-W",
+]
+EXP_TAG = "Exp"
 
 
-class Status():
-    def __init__(self, session):
+class Status:
+    def __init__(self, session: Session) -> None:
         """
         Stores the state of the JADE runs and post-processing.
 
@@ -70,14 +76,14 @@ class Status():
         self.comparison_tree, self.single_tree = self.update_pp_status()
 
     # Updated by S. Bradnam to include new level, code, between test and zaid.
-    def update_run_status(self):
+    def update_run_status(self) -> dict:
         """
         Read/Update the run tree status. All files produced by runs are
         registered
 
         Returns
         -------
-        libraries : dic
+        libraries : dict
             dictionary of dictionaries representing the run tree
 
         """
@@ -115,17 +121,17 @@ class Status():
         return libraries
 
     # Updated by S. Bradnam, UKAEA to include new level, code.
-    def update_pp_status(self) -> tuple:
+    def update_pp_status(self) -> tuple[dict, dict]:
         """
         Read/Update the post processing tree status. All files produced by
         post processing registered
 
         Returns
         -------
-        comparison_tree : dic
+        comparison_tree : dict
             Dictionary registering all test post processed for each
             comparison of libraries.
-        single_tree : dic
+        single_tree : dict
             Dictionary registering all test post processed performed for
             single libraries.
 
@@ -160,7 +166,7 @@ class Status():
 
         return comparison_tree, single_tree
 
-    def get_path(self, tree: str, itinerary: list) -> str:
+    def get_path(self, tree: str, itinerary: list[str]) -> str | os.PathLike:
         """
         Get the resulting path of an itinery on one tree
 
@@ -168,7 +174,7 @@ class Status():
         ----------
         tree : str
             Either 'comparison', 'single', or 'run'.
-        itinerary : list
+        itinerary : list[str]
             list of strings representing the step to take inside the tree.
 
         Raises
@@ -178,7 +184,7 @@ class Status():
 
         Returns
         -------
-        cp : str/path
+        cp : str | os.PathLike
             path to final step.
         """
 
@@ -200,7 +206,9 @@ class Status():
 
         return cp
 
-    def get_unfinished_zaids(self, lib) -> tuple:
+    def get_unfinished_zaids(
+        self, lib: str
+    ) -> tuple[dict[str, list], str | os.PathLike] | None:
         """
         Identify zaids to run for rerun or continuation purposes
 
@@ -211,8 +219,10 @@ class Status():
 
         Returns
         -------
-        unfinished : list
-            zaids/typical materials not run.
+        unfinished : dict[str, list]
+            list of zaids/typical materials not run for each code.
+        motherdir : str | os.PathLike
+            root of test folder.
 
         """
 
@@ -236,12 +246,12 @@ class Status():
 
         return unfinished, motherdir
 
-    def check_test_run(self, files: list, code: str) -> bool:
+    def check_test_run(self, files: list[str], code: str) -> bool:
         """Check if a test was run successfully for the specified code.
 
         Parameters
         ----------
-        files : list
+        files : list[str]
             filenames inside the test folder
         code : str
             Transport code
@@ -252,22 +262,23 @@ class Status():
             True if test was ran successfully, False otherwise
         """
 
+        flag_run_test = False
         if code == "mcnp" or code == "d1s":
             flag_run_test = self._check_test_mcnp(files)
-        if code == "serpent":
+        elif code == "serpent":
             flag_run_test = self._check_test_serpent(files)
-        if code == "openmc":
+        elif code == "openmc":
             flag_run_test = self._check_test_openmc(files)
 
         return flag_run_test
 
-    def _check_test_mcnp(self, files: list) -> bool:
+    def _check_test_mcnp(self, files: list[str]) -> bool:
         """
         Check if a test has been run
 
         Parameters
         ----------
-        files : list
+        files : list[str]
             file names inside test folder.
 
         Returns
@@ -285,12 +296,12 @@ class Status():
 
         return flag_run_test
 
-    def _check_test_serpent(self, files: list) -> bool:
+    def _check_test_serpent(self, files: list[str]) -> bool:
         """Checks to see if Serpent simualtion has been run.
 
         Parameters
         ----------
-        files : list
+        files : list[str]
             file names inside test folder.
 
         Returns
@@ -306,12 +317,12 @@ class Status():
                 flag_run_test = True
         return flag_run_test
 
-    def _check_test_openmc(self, files: list) -> bool:
+    def _check_test_openmc(self, files: list[str]) -> bool:
         """Checks to see if OpenMC simualtion has been run.
 
         Parameters
         ----------
-        files : list
+        files : list[str]
             file names inside test folder.
 
         Returns
@@ -328,7 +339,7 @@ class Status():
         return flag_run_test
 
     # TODO checking for multiple codes
-    def check_override_run(self, lib, session, exp=False):
+    def check_override_run(self, lib: str, session: Session, exp: bool = False) -> bool:
         """
         Check status of the requested run. If overridden is required permission
         is requested to the user
@@ -350,6 +361,7 @@ class Status():
         """
 
         test_runned = self.check_lib_run(lib, session, exp=exp)
+        ans = False
 
         # Ask for override
         if len(test_runned) > 0:
@@ -395,12 +407,7 @@ class Status():
 
         return ans
 
-    def check_lib_run(
-            self,
-            lib,
-            session,
-            config_option="Run",
-            exp=False) -> dict:
+    def check_lib_run(self, lib, session, config_option="Run", exp=False) -> dict[str,bool]:
         """
         Check if a library has been run. To be considered run a meshtally or
         meshtal have to be produced (for MCNP). Only active benchmarks (specified in
@@ -420,16 +427,19 @@ class Status():
 
         Returns
         -------
-        test_runned : Bool
+        test_runned : dict[bool]
             True if all benchmark have been run for the library.
 
         """
         # Correctly parse the lib input. It may be a dic than only the first
         # dic value needs to be considered
         pat_libs = re.compile(r'"\d\d[a-zA-Z]"')
-        if lib[0] == "{":
-            libs = pat_libs.findall(lib)
-            lib = libs[1][1:-1]
+        if len(lib)>0:
+            if lib[0] == "{":
+                libs = pat_libs.findall(lib)
+                lib = libs[1][1:-1]
+        else:
+            print("No libraries in text")
 
         # Update Tree
         self.update_run_status()
@@ -459,9 +469,9 @@ class Status():
                         if exp:
                             exps = self.run_tree[lib][testname]
                             for experiment, codes in exps.items():
+                                flag_test_run = False
                                 for code, files in codes.items():
-                                    flag_run_zaid = self.check_test_run(
-                                        files, code)
+                                    flag_run_zaid = self.check_test_run(files, code)
                                     if flag_run_zaid:
                                         flag_test_run = True
                                 if flag_test_run:
@@ -473,8 +483,7 @@ class Status():
                             if testname in MULTI_TEST:
                                 flag_test_run = False
                                 for zaid, files in test.items():
-                                    flag_run_zaid = self.check_test_run(
-                                        files, code)
+                                    flag_run_zaid = self.check_test_run(files, code)
                                     if flag_run_zaid:
                                         flag_test_run = True
                                 if flag_test_run:
@@ -518,9 +527,7 @@ class Status():
 
         """
         self.update_pp_status()
-        trees = {
-            "single": self.single_tree,
-            "comparison": self.comparison_tree}
+        trees = {"single": self.single_tree, "comparison": self.comparison_tree}
         try:
             library_tests = trees[tree][lib]
             to_pp = session.check_active_tests("Post-Processing", exp=exp)
@@ -582,8 +589,7 @@ class Status():
         # Check if libraries have been run
         flag_not_run = False
         for lib in libs:
-            test_run = self.check_lib_run(
-                lib, session, "Post-Processing", exp=exp)
+            test_run = self.check_lib_run(lib, session, "Post-Processing", exp=exp)
             if len(test_run) == 0:  # TODO not checking for each benchmark
                 flag_not_run = True
                 lib_not_run = lib
@@ -613,8 +619,7 @@ class Status():
  You can manage the selection of benchmarks in the Config.xlsx file.
 """
                         )
-                        i = input(
-                            " Would you like to override the results?(y/n) ")
+                        i = input(" Would you like to override the results?(y/n) ")
                         if i == "y":
                             ans = True
                             logtext = (
@@ -656,8 +661,7 @@ class Status():
  A comparison for these libraries was already performed.
 """
                         )
-                        i = input(
-                            " Would you like to override the results?(y/n) ")
+                        i = input(" Would you like to override the results?(y/n) ")
                         if i == "y":
                             ans = True
                             logtext = (

@@ -52,7 +52,7 @@ DEFAULT_SETTINGS_RESTORATION = """
 
 class Session:
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         This object represent a JADE session. All "environment" variables are
         initialized
@@ -64,7 +64,7 @@ class Session:
         """
         self.initialize()
 
-    def initialize(self):
+    def initialize(self) -> None:
         """
         Initialize JADE session:
             - folders structure is created if absent
@@ -82,45 +82,54 @@ class Session:
         jade_root = os.getcwd()
 
         if os.path.dirname(code_root) in jade_root:
-            fatal_exception('Cannot initialise JADE in Code directory')
-        
-        self.path_default_settings = os.path.join(code_root, 'default_settings')
-        self.path_templates = os.path.join(code_root, 'templates')
+            fatal_exception("Cannot initialise JADE in Code directory")
+
+        self.path_default_settings = os.path.join(code_root, "default_settings")
+        self.path_templates = os.path.join(code_root, "templates")
 
         # --- INITIALIZATION ---
         # --- Create/memorize JADE folder structure ---
         # Future implementation
-        self.path_quality = os.path.join(jade_root, 'Quality')
+        self.path_quality = os.path.join(jade_root, "Quality")
         # Test level 1
-        self.path_test = os.path.join(jade_root, 'Tests')
+        self.path_test = os.path.join(jade_root, "Tests")
         # Test level 2
-        self.path_run = os.path.join(self.path_test, 'Simulations')
-        self.path_pp = os.path.join(self.path_test, 'Post-Processing')
+        self.path_run = os.path.join(self.path_test, "Simulations")
+        self.path_pp = os.path.join(self.path_test, "Post-Processing")
         # Test level 3
-        self.path_single = os.path.join(self.path_pp, 'Single_Libraries')
-        self.path_comparison = os.path.join(self.path_pp, 'Comparisons')
+        self.path_single = os.path.join(self.path_pp, "Single_Libraries")
+        self.path_comparison = os.path.join(self.path_pp, "Comparisons")
         # Utilities
-        self.path_uti = os.path.join(jade_root, 'Utilities')
-        self.path_logs = os.path.join(jade_root, 'Utilities', 'Log_Files')
-        self.path_test_install = os.path.join(jade_root, 'Utilities',
-                                              'Installation_Test')
+        self.path_uti = os.path.join(jade_root, "Utilities")
+        self.path_logs = os.path.join(jade_root, "Utilities", "Log_Files")
+        self.path_test_install = os.path.join(
+            jade_root, "Utilities", "Installation_Test"
+        )
 
-        keypaths = [self.path_quality, self.path_test,
-                    self.path_run, self.path_pp, self.path_uti,
-                    self.path_single, self.path_comparison, self.path_logs,
-                    self.path_test_install]
+        keypaths = [
+            self.path_quality,
+            self.path_test,
+            self.path_run,
+            self.path_pp,
+            self.path_uti,
+            self.path_single,
+            self.path_comparison,
+            self.path_logs,
+            self.path_test_install,
+        ]
         for path in keypaths:
             if not os.path.exists(path):
                 os.mkdir(path)
 
         # --This paths must exist or are created at the first initialization--
         # Configuration
-        self.path_cnf = os.path.join(jade_root, 'Configuration',
-                                     'Benchmarks_Configuration')
+        self.path_cnf = os.path.join(
+            jade_root, "Configuration", "Benchmarks_Configuration"
+        )
         # Experimental results
-        self.path_exp_res = os.path.join(jade_root, 'Experimental_Results')
+        self.path_exp_res = os.path.join(jade_root, "Experimental_Results")
         # Benchmark inputs
-        self.path_inputs = os.path.join(jade_root, 'Benchmarks_Inputs')
+        self.path_inputs = os.path.join(jade_root, "Benchmarks_Inputs")
 
         # Copy default settings if it is the first initialization
         if not os.path.exists(self.path_cnf):
@@ -129,32 +138,34 @@ class Session:
             shutil.copytree(files, os.path.dirname(self.path_cnf))
 
             # Copy files into benchmark inputs folder
-            files = os.path.join(code_root, 'install_files', 'Benchmarks_Inputs')
+            files = os.path.join(code_root, "install_files", "Benchmarks_Inputs")
             shutil.copytree(files, self.path_inputs)
 
             # Copy experimental results folder
-            files = os.path.join(code_root, 'install_files', 'Experimental_Results')
+            files = os.path.join(code_root, "install_files", "Experimental_Results")
             shutil.copytree(files, self.path_exp_res)
 
             # the application needs to be closed
             sys.exit()
 
         # Read global configuration file. All vital variables are stored here
-        self.conf = cnf.Configuration(os.path.join(jade_root, 'Configuration',
-                                                   'Config.xlsx'))
+        self.conf = cnf.Configuration(
+            os.path.join(jade_root, "Configuration", "Config.xlsx")
+        )
 
         # --- Create the session LOG ---
-        log = os.path.join(self.path_logs,
-                           'Log '+time.ctime().replace(':', '-')+'.txt')
+        log = os.path.join(
+            self.path_logs, "Log " + time.ctime().replace(":", "-") + ".txt"
+        )
         self.log = cnf.Log(log)
 
         # --- Create the library manager ---
-        #dl = self.conf.default_lib
-        activationfile = os.path.join(jade_root, 'Configuration', 'Activation.xlsx')
-        isotopes_file = os.path.join(code_root, 'resources', 'Isotopes.txt')
-        self.lib_manager = libmanager.LibManager(self.conf.lib,
-                                                 activationfile=activationfile,
-                                                 isotopes_file=isotopes_file)
+        # dl = self.conf.default_lib
+        activationfile = os.path.join(jade_root, "Configuration", "Activation.xlsx")
+        isotopes_file = os.path.join(code_root, "resources", "Isotopes.txt")
+        self.lib_manager = libmanager.LibManager(
+            self.conf.lib, activationfile=activationfile, isotopes_file=isotopes_file
+        )
 
         # --- Initialize status ---
         self.state = status.Status(self)
@@ -187,11 +198,11 @@ class Session:
 
         to_perform = []
         for idx, row in config.iterrows():
-            filename = str(row['Folder Name'])
-            testname = filename.split('.')[0]
+            filename = str(row["Folder Name"])
+            testname = filename.split(".")[0]
 
             pp = row[action]
-            if pp is True or pp == 'True' or pp == 'true':
+            if pp is True or pp == "True" or pp == "true":
                 to_perform.append(testname)
 
         return to_perform
@@ -217,13 +228,12 @@ class Session:
 
 def main():
     # Module having problem with log(0) for tick position in graphs
-    warnings.filterwarnings('ignore',
-                            r'invalid value encountered in double_scalars')
-    warnings.filterwarnings('ignore',
-                            r'overflow encountered in power')
-    warnings.filterwarnings('ignore', module=r'plotter')
-    warnings.filterwarnings('ignore',
-                            message=r'Warning: converting a masked element to nan.')
+    warnings.filterwarnings("ignore", r"invalid value encountered in double_scalars")
+    warnings.filterwarnings("ignore", r"overflow encountered in power")
+    warnings.filterwarnings("ignore", module=r"plotter")
+    warnings.filterwarnings(
+        "ignore", message=r"Warning: converting a masked element to nan."
+    )
 
     session = Session()
     gui.mainloop(session)

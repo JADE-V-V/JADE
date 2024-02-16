@@ -809,7 +809,7 @@ class SpectrumOutput(ExperimentalOutput):
                 writer.sheets[input].set_column(0, 4, 18)
 
         # Close the Pandas Excel writer and output the Excel file.
-            writer.save()
+            writer.close()
         return
 
     def _data_collect(self, input, tallynum, quantity_CE, e_intervals):

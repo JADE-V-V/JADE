@@ -139,22 +139,27 @@ class Xsdir(object):
             self.tables.append(table)
 
             # All tables have at least 7 attributes
-            table.name = words[0]
-            table.awr = float(words[1])
-            table.filename = words[2]
-            table.access = words[3]
-            table.filetype = int(words[4])
-            table.address = int(words[5])
-            table.tablelength = int(words[6])
+            try:
+                table.name = words[0]
+                table.awr = float(words[1])
+                table.filename = words[2]
+                table.access = words[3]
+                table.filetype = int(words[4])
+                table.address = int(words[5])
+                table.tablelength = int(words[6])
 
-            if len(words) > 7:
-                table.recordlength = int(words[7])
-            if len(words) > 8:
-                table.entries = int(words[8])
-            if len(words) > 9:
-                table.temperature = float(words[9])
-            if len(words) > 10:
-                table.ptable = (words[10] == 'ptable')
+                if len(words) > 7:
+                    table.recordlength = int(words[7])
+                if len(words) > 8:
+                    table.entries = int(words[8])
+                if len(words) > 9:
+                    table.temperature = float(words[9])
+                if len(words) > 10:
+                    table.ptable = (words[10] == 'ptable')
+            except ValueError:
+                problem_line = words[0]
+                print("Error reading line corresponding to {}, passing for now, please adjust XSDIR file".format(problem_line))
+                pass
 
     def find_table(self, name, mode='default'):
         """Find all tables for a given ZIAD.

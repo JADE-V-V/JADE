@@ -38,7 +38,7 @@ from matplotlib.patches import Rectangle
 # ============================================================================
 #                   Specify parameters for plots
 # ============================================================================
-np.seterr(divide="ignore")  # Suppressing divide by zero error in plots
+np.seterr(divide="ignore", invalid="ignore")  # Suppressing divide by zero error in plots
 DEFAULT_EXTENSION = ".png"
 
 SMALL_SIZE = 22

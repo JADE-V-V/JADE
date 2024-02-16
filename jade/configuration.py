@@ -69,7 +69,7 @@ class Configuration:
             if not os.path.exists(file_path):
                 # If to terminate or not the session is lef to the user
                 # other codes path may be present but not used
-                logging.warning("Path {file_path} do not exist")
+                logging.warning(f"Path {file_path} do not exist")
                 # fatal_exception(file_path + ' does not exist')
 
         return file_path

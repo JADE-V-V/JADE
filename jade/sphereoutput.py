@@ -1325,8 +1325,7 @@ class SphereOutput(BenchmarkOutput):
 
                 # Build the final excel data
                 final = (comp_dfs[0].loc[newidx] - comp_dfs[1].loc[newidx]) / comp_dfs[
-                    0
-                ].loc[newidx]
+                    0].loc[newidx]
                 absdiff = comp_dfs[0].loc[newidx] - comp_dfs[1].loc[newidx]
 
                 #self.diff_data["openmc"] = final
@@ -1839,7 +1838,7 @@ class SphereOutput(BenchmarkOutput):
             {
                 "type": "cell",
                 "criteria": "greater than",
-                "value": 0.2,
+                "value": 3,
                 "format": red_cell_format,
             },
         )
@@ -1851,8 +1850,8 @@ class SphereOutput(BenchmarkOutput):
             {
                 "type": "cell",
                 "criteria": "between",
-                "minimum": 0.1,
-                "maximum": 0.2,
+                "minimum": 3,
+                "maximum": 2,
                 "format": orange_cell_format,
             },
         )
@@ -1864,8 +1863,8 @@ class SphereOutput(BenchmarkOutput):
             {
                 "type": "cell",
                 "criteria": "between",
-                "minimum": 0.05,
-                "maximum": 0.1,
+                "minimum": 2,
+                "maximum": 1,
                 "format": yellow_cell_format,
             },
         )
@@ -1877,7 +1876,7 @@ class SphereOutput(BenchmarkOutput):
             {
                 "type": "cell",
                 "criteria": "less than",
-                "value": -0.2,
+                "value": -3,
                 "format": red_cell_format,
             },
         )
@@ -1889,8 +1888,8 @@ class SphereOutput(BenchmarkOutput):
             {
                 "type": "cell",
                 "criteria": "between",
-                "minimum": -0.5,
-                "maximum": -0.1,
+                "minimum": -3,
+                "maximum": -2,
                 "format": orange_cell_format,
             },
         )
@@ -1902,8 +1901,8 @@ class SphereOutput(BenchmarkOutput):
             {
                 "type": "cell",
                 "criteria": "between",
-                "minimum": -0.1,
-                "maximum": -0.05,
+                "minimum": -2,
+                "maximum": -1,
                 "format": yellow_cell_format,
             },
         )
@@ -1915,8 +1914,8 @@ class SphereOutput(BenchmarkOutput):
             {
                 "type": "cell",
                 "criteria": "between",
-                "minimum": -0.05,
-                "maximum": 0.05,
+                "minimum": -1,
+                "maximum": 1,
                 "format": green_cell_format,
             },
         )

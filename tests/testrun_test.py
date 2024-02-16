@@ -42,7 +42,11 @@ ISOTOPES_FILE = os.path.join(root, "jade", "resources", "Isotopes.txt")
 
 # Useful files
 FILES = os.path.join(cp, "TestFiles", "testrun")
-LOGFILE = Log("dummy.txt")
+
+
+@pytest.fixture
+def LOGFILE(tmpdir):
+    return Log(tmpdir.join("log.txt"))
 
 
 @pytest.fixture
@@ -68,7 +72,7 @@ class TestTest:
     files = os.path.join(FILES, "Test")
     dummyout = os.path.join(FILES, "dummy")
 
-    def test_build_normal(self, LM):
+    def test_build_normal(self, LM: LibManager, LOGFILE: Log):
         # Just check that nothing breaks
         lib = "81c"
         inp_name = "ITER_1D"
@@ -98,10 +102,10 @@ class TestTest:
 
         assert True
 
-    def test_build_d1s(self, LM):
+    def test_build_d1s(self, LM: LibManager, LOGFILE: Log):
         # Just check that nothing breaks
         lib = "99c-31c"
-        inp_name = "ITER_Cyl_SDDR.i"
+        inp_name = "ITER_Cyl_SDDR"
         inp = os.path.join(self.files, inp_name)
         config_data = {
             "Description": "dummy",
@@ -113,14 +117,14 @@ class TestTest:
             "CTME cut-off": None,
             "Relative Error cut-off": None,
             "Custom Input": 2,
-            "Code": "D1S5",
+            "d1S": True,
         }
         config = pd.Series(config_data)
-        VRTpath = os.path.join(self.files, "VRT")
-        conf_path = "dummy"
+        # VRTpath = os.path.join(self.files, "VRT")
+        conf_path = os.path.join(self.files, "ITER_Cyl_SDDR_cnf")
 
         # Build the test
-        test = Test(inp, lib, config, LOGFILE, VRTpath, conf_path)
+        test = Test(inp, lib, config, LOGFILE, conf_path, runoption="c")
         try:
             os.mkdir(self.dummyout)
             test.generate_test(self.dummyout, LM)
@@ -133,7 +137,7 @@ class TestSphereTest:
     files = os.path.join(FILES, "SphereTest")
     dummyout = os.path.join(FILES, "dummy")
 
-    def test_build(self, LM):
+    def test_build(self, LM: LibManager, LOGFILE: Log):
         # Just check that nothing breaks
         lib = "31c"
         inp_name = "Sphere"
@@ -164,9 +168,8 @@ class TestSphereTest:
 
 class TestSphereTestSDDR:
     files = os.path.join(FILES, "SphereTestSDDR")
-    dummyout = os.path.join(FILES, "dummy")
 
-    def test_build(self, LM):
+    def test_build(self, LM: LibManager, tmpdir, LOGFILE: Log):
         # Just check that nothing breaks
         lib = "99c-31c"
         inp_name = "SphereSDDR"
@@ -180,7 +183,7 @@ class TestSphereTestSDDR:
             # "CTME cut-off": None,
             # "Relative Error cut-off": None,
             "Custom Input": 3,
-            "Code": "d1S",
+            "d1S": True,
         }
         config = pd.Series(config_data)
         # VRTpath = "dummy"
@@ -188,19 +191,14 @@ class TestSphereTestSDDR:
 
         # Build the test
         test = SphereTestSDDR(inp, lib, config, LOGFILE, conf_path, runoption="c")
-        try:
-            os.mkdir(self.dummyout)
-            test.generate_test(self.dummyout, LM)
-        finally:
-            rmtree(self.dummyout)
-        assert True
+        test.generate_test(tmpdir, LM)
 
 
 class TestMultipleTest:
     files = os.path.join(FILES, "MultipleTest")
     dummyout = os.path.join(FILES, "dummy")
 
-    def test_build(self, LM):
+    def test_build(self, LM: LibManager, LOGFILE: Log):
         # Just check that nothing breaks
         lib = "31c"
         # inp_folder = os.path.join(self.files, "Inputs")

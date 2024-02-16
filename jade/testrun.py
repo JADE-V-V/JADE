@@ -135,12 +135,10 @@ class Test:
 
         # Generate input file template according to transport code
         if self.d1s:
-            d1s_ipt = os.path.join(inp, "d1s",  os.path.basename(inp) + ".i")
-            self.d1s_inp = ipt.D1S5_InputFile.from_text(d1s_ipt)
+            d1s_ipt = os.path.join(inp, "d1s", os.path.basename(inp) + ".i")
+            self.d1s_inp = ipt.D1S_Input.from_text(d1s_ipt)
             irrfile = os.path.join(inp, "d1s", os.path.basename(inp) + "_irrad")
-            reacfile = os.path.join(
-                inp, "d1s", os.path.basename(inp) + "_react"
-            )
+            reacfile = os.path.join(inp, "d1s", os.path.basename(inp) + "_react")
             try:
                 self.irrad = IrradiationFile.from_text(irrfile)
                 self.react = ReactionFile.from_text(reacfile)
@@ -448,7 +446,7 @@ class Test:
         inputstring = "i=" + name
         outputstring = "n=" + name
 
-        #TODO change for D1S
+        # TODO change for D1S
         if isinstance(self.lib, dict):
             lib = list(self.lib.values())[0]
         elif isinstance(self.lib, str):
@@ -866,8 +864,7 @@ class SphereTest(Test):
         # testname = self.inp.name
         if self.d1s:
             testname = "SphereSDDR"
-            zaids = libmanager.get_libzaids(lib, "d1s")
-        else:  
+        else:
             testname = "Sphere"
             zaids = libmanager.get_libzaids(lib, "mcnp")
 
@@ -1166,7 +1163,7 @@ class SphereTest(Test):
             # adjourn density
             newinp.change_density(density)
             # add stop card
-            newinp.add_stopCard(self.nps) 
+            newinp.add_stopCard(self.nps)
             # Add PIKMT card if required
             if parentlist is not None:
                 newinp.add_PIKMT_card(parentlist)
@@ -1203,7 +1200,7 @@ class SphereTest(Test):
             # adjourn density
             newinp.change_density(density)
             # add stop card
-            newinp.add_stopCard(self.nps)  
+            newinp.add_stopCard(self.nps)
             # Add PIKMT card if required
             if parentlist is not None:
                 newinp.add_PIKMT_card(parentlist)
@@ -1327,9 +1324,7 @@ class SphereTestSDDR(SphereTest):
             directory, libmanager, limit=limit, lib=self.activationlib
         )
 
-    def generate_zaid_test(
-        self, zaid, libmanager, testname, motherdir, density, nps
-    ):
+    def generate_zaid_test(self, zaid, libmanager, testname, motherdir, density, nps):
         """
         Generate input for a single zaid sphere SDDR benchmark run.
         Depending on the number of reactions, multiple inputs may be generated
@@ -1382,7 +1377,15 @@ class SphereTestSDDR(SphereTest):
             name, formula = libmanager.get_zaidname(zaid)
             zaidob = mat.Zaid(1, zaid[:-3], zaid[-3:], self.activationlib)
             _, outdir = self._get_zaidtestname(testname, zaidob, formula, addtag=MT)
-            outpath = os.path.join(motherdir, "d1s", outdir)
+
+            # select outpath, at the moment only d1s is supported
+            if self.d1s:
+                outpath = os.path.join(motherdir, "d1s", outdir)
+            else:
+                raise NotImplementedError(
+                    "Only d1s is supported at the moment for SDDR tests"
+                )
+
             reacfile.write(outpath)
 
             # --- Add the irradiation file ---
@@ -1470,7 +1473,15 @@ class SphereTestSDDR(SphereTest):
             reac_file = self._generate_reaction_file(reactions)
             # recover output directory and write file
             outdir = testname + "_" + truename
-            outpath = os.path.join(motherdir, outdir)
+
+            # select outpath, at the moment only d1s is supported
+            if self.d1s:
+                outpath = os.path.join(motherdir, "d1s", outdir)
+            else:
+                raise NotImplementedError(
+                    "Only d1s is supported at the moment for SDDR tests"
+                )
+
             reac_file.write(outpath)
 
             # --- Add the irradiation file ---

@@ -250,8 +250,7 @@ class Test:
         self.custom_inp_modifications()
 
         if self.d1s:
-            d1s_dir = os.path.join(motherdir, "d1s")
-            os.mkdir(d1s_dir)
+            d1s_dir = os.mkdir(os.path.join(motherdir, "d1s"))
             outinpfile = os.path.join(d1s_dir, testname)
             self.d1s_inp.write(outinpfile)
             # And accessory files if needed
@@ -862,13 +861,15 @@ class SphereTest(Test):
         inpmat = ipt.InputFile.from_text(matpath)
         matlist = inpmat.matlist
         # Get zaids available into the selected library
-        zaids = libmanager.get_libzaids(lib, "mcnp")
+        
 
         # testname = self.inp.name
         if self.d1s:
             testname = "SphereSDDR"
+            zaids = libmanager.get_libzaids(lib, "d1s")
         else:  
             testname = "Sphere"
+            zaids = libmanager.get_libzaids(lib, "mcnp")
 
         motherdir = os.path.join(directory, testname)
         # If previous results are present they are canceled
@@ -877,7 +878,8 @@ class SphereTest(Test):
         os.mkdir(motherdir)
 
         if self.d1s:
-            os.mkdir(os.path.join(motherdir, "d1s"))
+            pass
+            # os.mkdir(os.path.join(motherdir, "d1s"))
         if self.mcnp:
             os.mkdir(os.path.join(motherdir, "mcnp"))
         if self.serpent:
@@ -1004,8 +1006,9 @@ class SphereTest(Test):
             outfile, outdir = self._get_zaidtestname(
                 testname, zaid, formula, addtag=addtag
             )
-            outpath = os.path.join(motherdir, "d1s", outdir)
-            os.mkdir(outpath)
+
+            outpath = os.path.join(motherdir, outdir, "d1s") 
+            os.makedirs(outpath, exist_ok=True)  
             outinpfile = os.path.join(outpath, outfile)
             newinp.write(outinpfile)
 
@@ -1152,7 +1155,7 @@ class SphereTest(Test):
             ww_file = os.path.join(directoryVRT, "wwinp")
             newmat = deepcopy(material)
             # Translate and assign the material
-            newmat.translate(lib, libmanager, "mcnp")
+            newmat.translate(lib, libmanager, "d1s")
             newmat.header = material.header + "C\nC True name:" + truename
             newmat.name = "M1"
             matlist = mat.MatCardsList([newmat])
@@ -1171,8 +1174,9 @@ class SphereTest(Test):
             # Write new input file
             outfile = testname + "_" + truename + "_"
             outdir = testname + "_" + truename
-            outpath = os.path.join(motherdir, "d1s", outdir)
-            os.mkdir(outpath)
+
+            outpath = os.path.join(motherdir, outdir, "d1s")  
+            os.makedirs(outpath, exist_ok=True) 
             outinpfile = os.path.join(outpath, outfile)
             newinp.write(outinpfile)
 
@@ -1180,7 +1184,6 @@ class SphereTest(Test):
             if os.path.exists(directoryVRT):
                 outwwfile = os.path.join(outpath, "wwinp")
                 shutil.copyfile(ww_file, outwwfile)
-            pass
 
         if self.mcnp:
             # Retrieve wwinp & other misc files if they exist
@@ -1379,7 +1382,7 @@ class SphereTestSDDR(SphereTest):
             name, formula = libmanager.get_zaidname(zaid)
             zaidob = mat.Zaid(1, zaid[:-3], zaid[-3:], self.activationlib)
             _, outdir = self._get_zaidtestname(testname, zaidob, formula, addtag=MT)
-            outpath = os.path.join(motherdir, outdir)
+            outpath = os.path.join(motherdir, "d1s", outdir)
             reacfile.write(outpath)
 
             # --- Add the irradiation file ---

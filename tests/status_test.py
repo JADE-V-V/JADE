@@ -164,8 +164,8 @@ class TestStatus:
     @pytest.mark.parametrize(
         ["code", "directory", "expected"],
         [
-            ["mcnp", r"00c\Sphere\mcnp\Sphere_1001_H-1", True],
-            ["mcnp", r"00c\Sphere\mcnp\Sphere_1002_H-2", False],
+            ["mcnp", r"00c\Sphere\Sphere_1001_H-1\mcnp", True],
+            ["mcnp", r"00c\Sphere\Sphere_1002_H-2\mcnp", False],
         ],
     )
     def test_check_test_run(

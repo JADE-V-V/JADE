@@ -52,16 +52,16 @@ def LOGFILE(tmpdir):
 @pytest.fixture
 def LM():
     df_rows = [
-        ["99c", "sda", "", XSDIR_FILE],
-        ["98c", "acsdc", "", XSDIR_FILE],
-        ["21c", "adsadsa", "", XSDIR_FILE],
-        ["31c", "adsadas", "", XSDIR_FILE],
-        ["00c", "sdas", "", XSDIR_FILE],
-        ["71c", "sdasxcx", "", XSDIR_FILE],
-        ["81c", "sdasxcx", "yes", XSDIR_FILE],
+        ["99c", "sda", "", XSDIR_FILE, XSDIR_FILE],
+        ["98c", "acsdc", "", XSDIR_FILE, XSDIR_FILE],
+        ["21c", "adsadsa", "", XSDIR_FILE, None],
+        ["31c", "adsadas", "", XSDIR_FILE, None],
+        ["00c", "sdas", "", XSDIR_FILE, None],
+        ["71c", "sdasxcx", "", XSDIR_FILE, None],
+        ["81c", "sdasxcx", "yes", XSDIR_FILE, None],
     ]
     df_lib = pd.DataFrame(df_rows)
-    df_lib.columns = ["Suffix", "Name", "Default", "MCNP"]
+    df_lib.columns = ["Suffix", "Name", "Default", "MCNP", "d1S"]
 
     return LibManager(
         df_lib, activationfile=ACTIVATION_FILE, isotopes_file=ISOTOPES_FILE

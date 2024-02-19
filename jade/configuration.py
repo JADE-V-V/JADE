@@ -22,11 +22,11 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import datetime
+import logging
 import os
 import sys
 
 import pandas as pd
-import logging
 
 from jade.exceptions import fatal_exception
 

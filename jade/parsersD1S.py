@@ -20,24 +20,25 @@
 # You should have received a copy of the GNU General Public License
 # along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 
-import re
 import os
+import re
 
-PAT_BLANK = re.compile(r'[\s\tCc]*\n')
-PAT_COMMENT = re.compile('[Cc]+')
-PAT_SPACE = re.compile(r'[\s\t]+')
-REACFORMAT = '{:>13s}{:>7s}{:>9s}{:>40s}'
+PAT_BLANK = re.compile(r"[\s\tCc]*\n")
+PAT_COMMENT = re.compile("[Cc]+")
+PAT_SPACE = re.compile(r"[\s\t]+")
+REACFORMAT = "{:>13s}{:>7s}{:>9s}{:>40s}"
 
 # colors
-CRED = '\033[91m'
-CORANGE = '\033[93m'
-CEND = '\033[0m'
+CRED = "\033[91m"
+CORANGE = "\033[93m"
+CEND = "\033[0m"
 
 
 class IrradiationFile:
 
-    def __init__(self, nsc, irr_schedules, header=None,
-                 formatting=[8, 14, 13, 9], name='irrad'):
+    def __init__(
+        self, nsc, irr_schedules, header=None, formatting=[8, 14, 13, 9], name="irrad"
+    ):
         """
         Object representing an irradiation D1S file
 
@@ -70,11 +71,11 @@ class IrradiationFile:
         w3 = str(formatting[2])
         w4 = str(formatting[3])
 
-        head = '{:>'+w1+'s}{:>'+w2+'s}{:>'
+        head = "{:>" + w1 + "s}{:>" + w2 + "s}{:>"
         for i in range(nsc):
-            head += w3+'s}{:>'
+            head += w3 + "s}{:>"
 
-        head += w4+'s}'
+        head += w4 + "s}"
 
         self.irrformat = head
         self.name = name
@@ -135,12 +136,12 @@ class IrradiationFile:
         None.
 
         """
-        pat_nsc = re.compile('(?i)(nsc)')
-        pat_num = re.compile(r'\d+')
+        pat_nsc = re.compile("(?i)(nsc)")
+        pat_num = re.compile(r"\d+")
         # name = os.path.basename(filepath)
-        with open(filepath, 'r') as infile:
+        with open(filepath, "r") as infile:
             inheader = True
-            header = ''
+            header = ""
             irr_schedules = []
             for line in infile:
                 # check if we need to exit header mode
@@ -154,8 +155,10 @@ class IrradiationFile:
                 # data
                 else:
                     # Avoid comments and blank lines
-                    if (PAT_BLANK.match(line) is None and
-                            PAT_COMMENT.match(line) is None):
+                    if (
+                        PAT_BLANK.match(line) is None
+                        and PAT_COMMENT.match(line) is None
+                    ):
 
                         irr_schedules.append(Irradiation.from_text(line, nsc))
 
@@ -176,24 +179,24 @@ class IrradiationFile:
 
         """
         filepath = os.path.join(path, self.name)
-        with open(filepath, 'w') as outfile:
+        with open(filepath, "w") as outfile:
             if self.header is not None:
                 outfile.write(self.header)
             # write nsc
-            outfile.write('nsc '+str(self.nsc)+'\n')
+            outfile.write("nsc " + str(self.nsc) + "\n")
 
             # --- Write irradiation schedules ---
             # write header
-            args = ['Daught.', 'lambda(1/s)']
+            args = ["Daught.", "lambda(1/s)"]
             for i in range(self.nsc):
-                args.append('time_fact_'+str(i+1))
-            args.append('comments')
-            outfile.write('C '+self.irrformat.format(*args)+'\n')
+                args.append("time_fact_" + str(i + 1))
+            args.append("comments")
+            outfile.write("C " + self.irrformat.format(*args) + "\n")
 
             # write schedules
             for schedule in self.irr_schedules:
                 args = schedule._get_format_args()
-                outfile.write(self.irrformat.format(*args)+'\n')
+                outfile.write(self.irrformat.format(*args) + "\n")
 
 
 class Irradiation:
@@ -239,7 +242,7 @@ class Irradiation:
             else:
                 times_eq = False
 
-            condition = (daugther_eq and lamb_eq and times_eq)
+            condition = daugther_eq and lamb_eq and times_eq
 
             return condition
         else:
@@ -267,7 +270,7 @@ class Irradiation:
         """
         pieces = PAT_SPACE.split(text)
         # Check for empty start
-        if pieces[0] == '':
+        if pieces[0] == "":
             pieces.pop(0)
 
         daughter = pieces[0]
@@ -279,14 +282,14 @@ class Irradiation:
             times.append(pieces[j])
             j += 1
         # Get comment
-        comment = ''
+        comment = ""
         try:
             for piece in pieces[j:]:
-                comment += ' '+piece
+                comment += " " + piece
         except IndexError:
             comment = None
 
-        if comment == '':
+        if comment == "":
             comment = None
         else:
             comment = comment.strip()
@@ -302,7 +305,7 @@ class Irradiation:
 
 
 class ReactionFile:
-    def __init__(self, reactions, name='react'):
+    def __init__(self, reactions, name="react"):
         """
         Reaction file object
 
@@ -341,11 +344,10 @@ class ReactionFile:
         """
         # read all reactions
         reactions = []
-        with open(filepath, 'r') as infile:
+        with open(filepath, "r") as infile:
             for line in infile:
                 # Ignore if it is a blank line or a full line comment
-                if (PAT_BLANK.match(line) is None and
-                        PAT_COMMENT.match(line) is None):
+                if PAT_BLANK.match(line) is None and PAT_COMMENT.match(line) is None:
                     # parse reactions
                     reaction = Reaction.from_text(line)
                     reactions.append(reaction)
@@ -363,7 +365,7 @@ class ReactionFile:
         """
         parents = []
         for reaction in self.reactions:
-            parent = reaction.parent.split('.')[0]
+            parent = reaction.parent.split(".")[0]
             if parent not in parents:
                 parents.append(parent)
         return parents
@@ -389,7 +391,7 @@ class ReactionFile:
         # Correctly parse the lib input. It may be a dic than only the
         # first dic value needs to be cosidered
         pat_libs = re.compile(r'"\d\d[a-zA-Z]"')
-        if newlib[0] == '{':
+        if newlib[0] == "{":
             libs = pat_libs.findall(newlib)
             lib = libs[1][1:-1]
         else:
@@ -402,14 +404,20 @@ class ReactionFile:
                 reaction.change_lib(lib)
             else:
                 # get the available libraries for the parent
-                zaid = reaction.parent.split('.')[0]
+                zaid = reaction.parent.split(".")[0]
                 libs = libmanager.check4zaid(zaid)
                 if newlib in libs:
                     reaction.change_lib(lib)
                 else:
-                    print(CORANGE+"""
+                    print(
+                        CORANGE
+                        + """
  Warning: {} is not available in xsdir, it will be not translated
- """.format(zaid)+CEND)
+ """.format(
+                            zaid
+                        )
+                        + CEND
+                    )
 
     def write(self, path):
         """
@@ -426,9 +434,9 @@ class ReactionFile:
 
         """
         filepath = os.path.join(path, self.name)
-        with open(filepath, 'w') as outfile:
+        with open(filepath, "w") as outfile:
             for reaction in self.reactions:
-                outfile.write(REACFORMAT.format(*reaction.write())+'\n')
+                outfile.write(REACFORMAT.format(*reaction.write()) + "\n")
 
 
 class Reaction:
@@ -475,9 +483,9 @@ class Reaction:
         None.
 
         """
-        pieces = self.parent.split('.')
+        pieces = self.parent.split(".")
         # Override lib
-        self.parent = pieces[0]+'.'+newlib
+        self.parent = pieces[0] + "." + newlib
 
     def write(self):
         """
@@ -492,7 +500,7 @@ class Reaction:
         # compute text
         textpieces = [self.parent, self.MT, self.daughter]
         if self.comment is None:
-            comment = ''
+            comment = ""
         else:
             comment = self.comment
         textpieces.append(comment)
@@ -523,10 +531,10 @@ class Reaction:
         MT = pieces[1]
         daughter = pieces[2]
         # the rest is comments
-        comment = ''
+        comment = ""
         if len(pieces) > 3:
             for piece in pieces[3:]:
-                comment = comment+' '+piece
+                comment = comment + " " + piece
 
         comment = comment.strip()
 

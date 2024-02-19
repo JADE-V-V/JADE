@@ -34,7 +34,6 @@ from contextlib import contextmanager
 from decimal import Decimal
 
 import pandas as pd
-
 from numjuggler import parser as par
 
 # -------------------------------------
@@ -490,15 +489,15 @@ class SubMaterial:
             The XML tree where the material content will be added.
         """
 
-        #matid = id
-        #matname = str(self.name)
-        #matdensity = str(abs(density))
-        #if density < 0:
+        # matid = id
+        # matname = str(self.name)
+        # matdensity = str(abs(density))
+        # if density < 0:
         #    density_units = "g/cc"
-        #else:
+        # else:
         #    density_units = "atom/b-cm"
-        #submaterial = ET.SubElement(material_tree, "material", id=matid, name=matname)
-        #ET.SubElement(submaterial, "density", value=matdensity, units=density_units)
+        # submaterial = ET.SubElement(material_tree, "material", id=matid, name=matname)
+        # ET.SubElement(submaterial, "density", value=matdensity, units=density_units)
         if self.elements is not None:
             for elem in self.elements:
                 for zaid in elem.zaids:

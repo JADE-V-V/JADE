@@ -22,16 +22,18 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
-import jade.gui as gui
-import jade.configuration as cnf
-import jade.libmanager as libmanager
-from jade.exceptions import fatal_exception
+
 import os
-import jade.status as status
-import warnings
-import time
 import shutil
 import sys
+import time
+import warnings
+
+import jade.configuration as cnf
+import jade.gui as gui
+import jade.libmanager as libmanager
+import jade.status as status
+from jade.exceptions import fatal_exception
 
 # Long messages
 FIRST_INITIALIZATION = """

@@ -22,26 +22,24 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import sys
-import xlsxwriter
-from xlsxwriter.utility import xl_rowcol_to_cell
-import jade.excelsupport as exsupp
-import pandas as pd
-import os
-import shutil
-import jade.plotter as plotter
-
 # import pythoncom
 import math
+import os
+import shutil
+import sys
 
+import numpy as np
+import pandas as pd
+import xlsxwriter
 # import openpyxl
 # from openpyxl.utils.dataframe import dataframe_to_rows
 from tqdm import tqdm
+from xlsxwriter.utility import xl_rowcol_to_cell
+
 import jade.atlas as at
-import numpy as np
-from jade.output import BenchmarkOutput
-from jade.output import MCNPoutput
-from jade.output import OpenMCOutput
+import jade.excelsupport as exsupp
+import jade.plotter as plotter
+from jade.output import BenchmarkOutput, MCNPoutput, OpenMCOutput
 
 
 class SphereOutput(BenchmarkOutput):
@@ -91,9 +89,9 @@ class SphereOutput(BenchmarkOutput):
         """
 
         for code, outputs in self.outputs.items():
-            #outpath = os.path.join(self.atlas_path, "tmp")
-            #if not os.path.exists(outpath):
-                #os.mkdir(outpath)
+            # outpath = os.path.join(self.atlas_path, "tmp")
+            # if not os.path.exists(outpath):
+            # os.mkdir(outpath)
             """
             if self.mcnp:
                 outpath = os.path.join(self.atlas_path_mcnp, 'tmp')
@@ -115,16 +113,16 @@ class SphereOutput(BenchmarkOutput):
             for tally, title, quantity, unit in [
                 (4, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
                 (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
-            ]:               
+            ]:
                 out_type = str(type(list(outputs.values())[0]).__name__)
                 if out_type == "SphereMCNPoutput":
-                    outpath = os.path.join(self.atlas_path_mcnp, 'tmp')
+                    outpath = os.path.join(self.atlas_path_mcnp, "tmp")
                 if out_type == "SphereSerpentOutput":
-                    outpath = os.path.join(self.atlas_path_serpent, 'tmp')
+                    outpath = os.path.join(self.atlas_path_serpent, "tmp")
                 if out_type == "SphereOpenMCOutput":
-                    outpath = os.path.join(self.atlas_path_openmc, 'tmp')
+                    outpath = os.path.join(self.atlas_path_openmc, "tmp")
                 if out_type == "SphereD1Soutput":
-                    outpath = os.path.join(self.atlas_path_d1s, 'tmp')
+                    outpath = os.path.join(self.atlas_path_d1s, "tmp")
                 if not os.path.exists(outpath):
                     os.mkdir(outpath)
                 print(" Plotting tally n." + str(tally))
@@ -215,22 +213,24 @@ class SphereOutput(BenchmarkOutput):
         print(" Comparison post-processing completed")
 
     def _generate_plots(self, libraries, allzaids, outputs, globalname):
-        #for lib, outputs in self.outputs.items():
+        # for lib, outputs in self.outputs.items():
         #    print(lib, outputs)
         for code, code_outputs in self.outputs.items():
             for tally, title, quantity, unit in [
                 (4, "Leakage Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
                 (14, "Leakage Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
             ]:
-                out_type = str(type(list(list(code_outputs.values())[0].values())[0]).__name__)
+                out_type = str(
+                    type(list(list(code_outputs.values())[0].values())[0]).__name__
+                )
                 if out_type == "SphereMCNPoutput":
-                    outpath = os.path.join(self.atlas_path_mcnp, 'tmp')
+                    outpath = os.path.join(self.atlas_path_mcnp, "tmp")
                 if out_type == "SphereSerpentOutput":
-                    outpath = os.path.join(self.atlas_path_serpent, 'tmp')
+                    outpath = os.path.join(self.atlas_path_serpent, "tmp")
                 if out_type == "SphereOpenMCOutput":
-                    outpath = os.path.join(self.atlas_path_openmc, 'tmp')
+                    outpath = os.path.join(self.atlas_path_openmc, "tmp")
                 if out_type == "SphereD1Soutput":
-                    outpath = os.path.join(self.atlas_path_d1s, 'tmp')
+                    outpath = os.path.join(self.atlas_path_d1s, "tmp")
                 if not os.path.exists(outpath):
                     os.mkdir(outpath)
                 print(" Plotting tally n." + str(tally))
@@ -239,8 +239,12 @@ class SphereOutput(BenchmarkOutput):
                     data = []
                     for library, lib_outputs in code_outputs.items():
                         try:  # Zaid could not be common to the libraries
-                            tally_data = lib_outputs[zaidnum].tallydata.set_index('Tally N.').loc[tally]
-                            #print(lib_outputs[zaidnum])
+                            tally_data = (
+                                lib_outputs[zaidnum]
+                                .tallydata.set_index("Tally N.")
+                                .loc[tally]
+                            )
+                            # print(lib_outputs[zaidnum])
                             energy = tally_data["Energy"].values
                             values = tally_data["Value"].values
                             error = tally_data["Error"].values
@@ -268,7 +272,6 @@ class SphereOutput(BenchmarkOutput):
                         self.testname,
                     )
                     plot.plot("Binned graph")
-
 
             self._build_atlas(outpath)
 
@@ -428,7 +431,7 @@ class SphereOutput(BenchmarkOutput):
 
         if self.mcnp:
             outfolder_path = self.excel_path_mcnp
-            #os.makedirs(outfolder_path, exist_ok=True)
+            # os.makedirs(outfolder_path, exist_ok=True)
             # outpath = os.path.join(self.excel_path_mcnp,'Sphere_single_' + 'MCNP_' + self.lib+'.xlsx')
             outpath = os.path.join(
                 outfolder_path, "Sphere_single_" + "MCNP_" + self.lib + ".xlsx"
@@ -464,7 +467,7 @@ class SphereOutput(BenchmarkOutput):
 
         if self.openmc:
             outfolder_path = self.excel_path_openmc
-            #os.mkdir(outfolder_path)
+            # os.mkdir(outfolder_path)
             # outpath = os.path.join(self.excel_path_openmc,'Sphere_single_' + 'OpenMC_' + self.lib+'.xlsx')
             outpath = os.path.join(
                 outfolder_path, "Sphere_single_" + "OpenMC_" + self.lib + ".xlsx"
@@ -1027,18 +1030,18 @@ class SphereOutput(BenchmarkOutput):
 
     def pp_excel_comparison(self):
         """
-        Compute the data and create the excel for all libraries comparisons.
-        In the meantime, additional data is stored for future plots.
+         Compute the data and create the excel for all libraries comparisons.
+         In the meantime, additional data is stored for future plots.
 
 
-        Returns
-        ------- 
-       6b  None.
+         Returns
+         -------
+        6b  None.
 
         """
         # template = os.path.join(os.getcwd(), 'templates',
         #                        'Sphere_comparison.xlsx')
-        
+
         code_outputs = {}
 
         if self.mcnp:
@@ -1046,7 +1049,7 @@ class SphereOutput(BenchmarkOutput):
             outputs = {}
             for reflib, tarlib, name in self.couples:
                 outfolder_path = self.excel_path_mcnp
-                #os.mkdir(outfolder_path)
+                # os.mkdir(outfolder_path)
                 outpath = os.path.join(
                     outfolder_path, "Sphere_comparison_" + name + "_mcnp.xlsx"
                 )
@@ -1055,7 +1058,7 @@ class SphereOutput(BenchmarkOutput):
                 # Get results
                 comp_dfs = []
                 error_dfs = []
-                
+
                 for test_path in [
                     os.path.join(self.test_path[reflib], "mcnp"),
                     os.path.join(self.test_path[tarlib], "mcnp"),
@@ -1103,7 +1106,7 @@ class SphereOutput(BenchmarkOutput):
 
                         results.append(res)
                         errors.append(err)
-                
+
                     # Add reference library outputs
                     if iteration == 1:
                         outputs[reflib] = outputs_lib
@@ -1119,12 +1122,12 @@ class SphereOutput(BenchmarkOutput):
                     error_df.set_index(["Zaid", "Zaid Name"], inplace=True)
                     comp_dfs.append(comp_df)
                     error_dfs.append(error_df)
-                
+
                 # outputs_couple = outputs
                 code_outputs["mcnp"] = outputs
                 self.outputs = code_outputs
-                #self.results["mcnp"] = results
-                #self.errors["mcnp"] = errors
+                # self.results["mcnp"] = results
+                # self.errors["mcnp"] = errors
 
                 # Consider only common zaids
                 idx1 = comp_dfs[0].index
@@ -1137,8 +1140,8 @@ class SphereOutput(BenchmarkOutput):
                 ].loc[newidx]
                 absdiff = comp_dfs[0].loc[newidx] - comp_dfs[1].loc[newidx]
 
-                #self.diff_data["mcnp"] = final
-                #self.absdiff["mcnp"] = absdiff
+                # self.diff_data["mcnp"] = final
+                # self.absdiff["mcnp"] = absdiff
 
                 # Standard deviation
                 idx1 = absdiff.index
@@ -1147,7 +1150,7 @@ class SphereOutput(BenchmarkOutput):
 
                 std_dev = absdiff.loc[newidx] / error_dfs[0].loc[newidx]
 
-                #self.std_dev["mcnp"] = std_dev
+                # self.std_dev["mcnp"] = std_dev
                 # Correct sorting
                 for df in [final, absdiff, std_dev]:
                     df.reset_index(inplace=True)
@@ -1242,7 +1245,7 @@ class SphereOutput(BenchmarkOutput):
             outputs = {}
             for reflib, tarlib, name in self.couples:
                 outfolder_path = self.excel_path_openmc
-                #os.mkdir(outfolder_path)
+                # os.mkdir(outfolder_path)
                 outpath = os.path.join(
                     outfolder_path, "Sphere_comparison_" + name + "_openmc.xlsx"
                 )
@@ -1316,8 +1319,8 @@ class SphereOutput(BenchmarkOutput):
                     # self.results = results
                 code_outputs["openmc"] = outputs
                 self.outputs = code_outputs
-                #self.results["openmc"] = results
-                #self.errors["openmc"] = errors
+                # self.results["openmc"] = results
+                # self.errors["openmc"] = errors
                 # Consider only common zaids
                 idx1 = comp_dfs[0].index
                 idx2 = comp_dfs[1].index
@@ -1325,11 +1328,12 @@ class SphereOutput(BenchmarkOutput):
 
                 # Build the final excel data
                 final = (comp_dfs[0].loc[newidx] - comp_dfs[1].loc[newidx]) / comp_dfs[
-                    0].loc[newidx]
+                    0
+                ].loc[newidx]
                 absdiff = comp_dfs[0].loc[newidx] - comp_dfs[1].loc[newidx]
 
-                #self.diff_data["openmc"] = final
-                #self.absdiff["openmc"] = absdiff
+                # self.diff_data["openmc"] = final
+                # self.absdiff["openmc"] = absdiff
 
                 # Standard deviation
                 idx1 = absdiff.index
@@ -1338,7 +1342,7 @@ class SphereOutput(BenchmarkOutput):
 
                 std_dev = absdiff.loc[newidx] / error_dfs[0].loc[newidx]
 
-                #self.std_dev["openmc"] = std_dev
+                # self.std_dev["openmc"] = std_dev
 
                 # Correct sorting
                 for df in [final, absdiff, std_dev]:
@@ -1997,7 +2001,6 @@ class SphereOutput(BenchmarkOutput):
 
 
 class SphereTallyOutput:
-
     """SB to replace this next!"""
 
     def get_single_excel_data(self, tallies2pp):

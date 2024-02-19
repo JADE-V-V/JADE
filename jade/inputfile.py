@@ -29,10 +29,10 @@ import textwrap
 import warnings
 from contextlib import contextmanager
 
+from numjuggler import parser as par
+
 import jade.matreader as mat
 from jade.parsersD1S import Reaction, ReactionFile
-
-from numjuggler import parser as par
 
 
 class InputFile:
@@ -84,9 +84,9 @@ class InputFile:
         None.
 
         """
-        matPat = re.compile(r'[mM]\d+')
-        mxPat = re.compile(r'mx\d+', re.IGNORECASE)
-        commentPat = re.compile('[cC]')
+        matPat = re.compile(r"[mM]\d+")
+        mxPat = re.compile(r"mx\d+", re.IGNORECASE)
+        commentPat = re.compile("[cC]")
         # Using parser the data cards are extracted from the input.
         # Comment sections are interpreted as cards by the parser
         with suppress_stdout():
@@ -95,40 +95,40 @@ class InputFile:
             cardsDic = par.get_blocks(cards)
         datacards = cardsDic[5]
 
-        cards = {'cells': cardsDic[3],  # Parser cards
-                 'surf': cardsDic[4],  # Parser cards
-                 'settings': []}  # Parser cards
+        cards = {
+            "cells": cardsDic[3],  # Parser cards
+            "surf": cardsDic[4],  # Parser cards
+            "settings": [],
+        }  # Parser cards
 
         # Check for a title
         try:
-            cards['title'] = cardsDic[2][0]
+            cards["title"] = cardsDic[2][0]
         except KeyError:
-            cards['title'] = None
+            cards["title"] = None
 
-#        materials = [] # Custom material objects!
+        #        materials = [] # Custom material objects!
 
-        previous_lines = ['']
+        previous_lines = [""]
         for datacard in datacards:
             lines = datacard.lines
             # Check if it is a material card or mx card to ignore
-            if matPat.match(lines[0]) is not None \
-                    or mxPat.match(lines[0]) is not None:
+            if matPat.match(lines[0]) is not None or mxPat.match(lines[0]) is not None:
                 # Ignore
                 # Check if previous card is the header
                 if commentPat.match(previous_lines[0]):
                     # cancel the comment from settings
-                    del cards['settings'][-1]
+                    del cards["settings"][-1]
 
             # Not a material
             else:
-                cards['settings'].append(datacard)
+                cards["settings"].append(datacard)
 
             previous_lines = lines
 
         matlist = mat.MatCardsList.from_input(inputfile)
 
-        return cls(cards, matlist,
-                   name=os.path.basename(inputfile).split('.')[0])
+        return cls(cards, matlist, name=os.path.basename(inputfile).split(".")[0])
 
     def write(self, out):
         """
@@ -146,7 +146,7 @@ class InputFile:
         """
         to_print = self._to_text()
 
-        with open(out, 'w') as outfile:
+        with open(out, "w") as outfile:
             outfile.write(to_print)
 
     def _to_text(self):
@@ -160,36 +160,36 @@ class InputFile:
         """
         lines = []
 
-        if self.cards['title'] is not None:
-            lines.extend(self.cards['title'].lines)
+        if self.cards["title"] is not None:
+            lines.extend(self.cards["title"].lines)
 
         # Add cells
-        for card in self.cards['cells']:
+        for card in self.cards["cells"]:
             lines.extend(card.lines)
 
-        lines.append('\n')  # Section breaker
+        lines.append("\n")  # Section breaker
 
         # Add surfaces
-        for card in self.cards['surf']:
+        for card in self.cards["surf"]:
             lines.extend(card.lines)
 
-        lines.append('\n')  # Section breaker
+        lines.append("\n")  # Section breaker
 
         # Add materials
         lines.append(self.matlist.to_text())
-        lines.append('\n')  # Missing
+        lines.append("\n")  # Missing
 
         # Add remaining data cards
-        for card in self.cards['settings']:
+        for card in self.cards["settings"]:
             lines.extend(card.lines)
 
-        toprint = ''
+        toprint = ""
         for line in lines:
-            toprint = toprint+line
+            toprint = toprint + line
 
         return toprint
 
-    def translate(self, newlib, libmanager, code='mcnp'):
+    def translate(self, newlib, libmanager, code="mcnp"):
         """
         Translate the input to another library
 
@@ -206,7 +206,7 @@ class InputFile:
 
         """
         try:
-            if newlib[0] == '{':
+            if newlib[0] == "{":
                 # covert the dic
                 newlib = json.loads(newlib)
         except KeyError:
@@ -248,20 +248,22 @@ class InputFile:
 
         """
 
-        line = 'STOP '
+        line = "STOP "
         if nps is not None:
             try:
-                line = line+'NPS '+str(int(nps))+' '
+                line = line + "NPS " + str(int(nps)) + " "
             except ValueError:
                 pass  # an escaped NaN
-        if line == 'STOP ':
-            raise ValueError("""
-Specify an nps for the simulation""")
+        if line == "STOP ":
+            raise ValueError(
+                """
+Specify an nps for the simulation"""
+            )
 
-        line = line+'\n'
+        line = line + "\n"
 
         card = par.Card([line], 5, -1)
-        self.cards['settings'].append(card)
+        self.cards["settings"].append(card)
 
     def change_density(self, density, cellidx=1):
         """
@@ -282,9 +284,9 @@ Specify an nps for the simulation""")
 
         # Change density in sphere cell
         try:
-            card = self.cards['cells'][cellidx]
+            card = self.cards["cells"][cellidx]
         except IndexError:
-            raise ValueError('cell n. {} is not available')
+            raise ValueError("cell n. {} is not available")
         card.get_values()
         card.set_d(str(density))
         card.lines = card.card()
@@ -353,12 +355,12 @@ Specify an nps for the simulation""")
 
         """
         # pattern of card IDs
-        patCardID = re.compile(r'{}\s+'.format(str(cardID)), re.IGNORECASE)
+        patCardID = re.compile(r"{}\s+".format(str(cardID)), re.IGNORECASE)
         # Try to get the correct block of cards
         try:
             block = self.cards[blockID]
         except KeyError:
-            raise ValueError(blockID+' is not a valid block')
+            raise ValueError(blockID + " is not a valid block")
 
         # Try to find the card
         for card in block:
@@ -404,7 +406,7 @@ Specify an nps for the simulation""")
         return False
 
     @staticmethod
-    def mcnp_wrap(text, maxchars=80, whitespace='      ', offset_all=True):
+    def mcnp_wrap(text, maxchars=80, whitespace="      ", offset_all=True):
         """
         Wrap the text of a card in MCNP style
 
@@ -427,33 +429,34 @@ Specify an nps for the simulation""")
             text.
 
         """
-        text = text.strip('\n')
+        text = text.strip("\n")
         if len(text) <= maxchars:
             if offset_all:
-                text = whitespace+text+'\n'
+                text = whitespace + text + "\n"
             else:
-                text = text+'\n'
+                text = text + "\n"
             return [text]
         else:
             # init the list with the first line
-            wrapped = textwrap.wrap(text, maxchars-len(whitespace))
+            wrapped = textwrap.wrap(text, maxchars - len(whitespace))
             # first line does not need whitespace
             if offset_all:
-                fl = whitespace+wrapped[0]+'\n'
+                fl = whitespace + wrapped[0] + "\n"
             else:
-                fl = wrapped[0]+'\n'
+                fl = wrapped[0] + "\n"
             lines = [fl]
             # add the white space for each line and a newline char
             for line in wrapped[1:]:
-                lines.append(whitespace+line+'\n')
+                lines.append(whitespace + line + "\n")
 
         return lines
 
 
 class D1S_Input(InputFile):
 
-    def translate(self, newlib, libmanager, original_irradfile=None,
-                  original_reacfile=None):
+    def translate(
+        self, newlib, libmanager, original_irradfile=None, original_reacfile=None
+    ):
         """
         Translate the input to another library. This methods ovverride the
         parent one since often two different libraries must be considered in
@@ -505,7 +508,7 @@ class D1S_Input(InputFile):
         available_daughters = original_irradfile.get_daughters()
         for reaction in reacfile.reactions:
             # strip the lib from the parent
-            parent = reaction.parent.split('.')[0]
+            parent = reaction.parent.split(".")[0]
             if reaction.daughter in available_daughters:
                 # add the parent to the activation lib
                 active_zaids.append(parent)
@@ -525,9 +528,8 @@ class D1S_Input(InputFile):
         for material in self.matlist:
             for submaterial in material.submaterials:
                 for zaid in submaterial.zaidList:
-                    zaidnum = zaid.element+zaid.isotope
-                    if (zaidnum not in active_zaids and
-                            zaidnum not in transp_zaids):
+                    zaidnum = zaid.element + zaid.isotope
+                    if zaidnum not in active_zaids and zaidnum not in transp_zaids:
                         transp_zaids.append(zaidnum)
 
         newlib = {activationlib: active_zaids, transportlib: transp_zaids}
@@ -553,12 +555,12 @@ class D1S_Input(InputFile):
         None.
 
         """
-        lines = ['PIKMT\n']
+        lines = ["PIKMT\n"]
         for parent in parent_list:
-            lines.append('         {}    {}\n'.format(parent, 0))
+            lines.append("         {}    {}\n".format(parent, 0))
 
         card = par.Card(lines, 5, -1)
-        self.cards['settings'].append(card)
+        self.cards["settings"].append(card)
 
     def get_reaction_file(self, libmanager, lib):
         """
@@ -585,7 +587,7 @@ class D1S_Input(InputFile):
         for material in self.matlist:
             for submat in material.submaterials:
                 for zaid in submat.zaidList:
-                    parent = zaid.element+zaid.isotope
+                    parent = zaid.element + zaid.isotope
                     zaidreactions = libmanager.get_reactions(lib, parent)
                     # if len(zaidreactions) > 0:
                     #     # it is a parent only if reactions are available
@@ -599,18 +601,18 @@ class D1S_Input(InputFile):
         # --- Build the reactions and reaction file ---
         reaction_list = []
         for parent, MT, daughter in reactions:
-            parent = parent+'.'+lib
+            parent = parent + "." + lib
             # Build a comment
             _, parent_formula = libmanager.get_zaidname(parent)
             _, daughter_formula = libmanager.get_zaidname(daughter)
-            comment = '{} -> {}'.format(parent_formula, daughter_formula)
+            comment = "{} -> {}".format(parent_formula, daughter_formula)
 
             rx = Reaction(parent, MT, daughter, comment=comment)
             reaction_list.append(rx)
 
         return ReactionFile(reaction_list)
 
-    def add_track_contribution(self, tallyID, zaids, who='parent'):
+    def add_track_contribution(self, tallyID, zaids, who="parent"):
         """
         Given a list of zaid add the FU bin in the requested tallies in order
         to collect the contribution of them to the tally.
@@ -636,51 +638,52 @@ class D1S_Input(InputFile):
             return True if lines were added correctly
 
         """
-        patnum = re.compile(r'\d+')
+        patnum = re.compile(r"\d+")
         try:
             num = patnum.search(tallyID).group()
         except AttributeError:
             # The pattern was not found
-            raise ValueError(tallyID+' is not a valid tally ID')
+            raise ValueError(tallyID + " is not a valid tally ID")
 
-        text = 'FU'+num+' 0'
-        if who == 'parent':
+        text = "FU" + num + " 0"
+        if who == "parent":
             for zaid in zaids:
-                text = text+' -'+zaid
-        elif who == 'daughter':
+                text = text + " -" + zaid
+        elif who == "daughter":
             for zaid in zaids:
-                text = text+' '+zaid
+                text = text + " " + zaid
         else:
-            raise ValueError(who+' is not an admissible "who" parameters')
+            raise ValueError(who + ' is not an admissible "who" parameters')
 
-        res = self.addlines2card(text, 'settings', tallyID, offset_all=False)
+        res = self.addlines2card(text, "settings", tallyID, offset_all=False)
         return res
 
 
 # class D1S5_InputFile(D1S_Input):
 
-    # Not different from the parent class anymore
-    # def add_stopCard(self, nps):
-    #     """
-    #     STOP card is not supported in MCNP 5. This simply is translated to a
-    #     nps card. 
+# Not different from the parent class anymore
+# def add_stopCard(self, nps):
+#     """
+#     STOP card is not supported in MCNP 5. This simply is translated to a
+#     nps card.
 
-    #     Parameters
-    #     ----------
-    #     nps : int
-    #         number of particles to simulate
+#     Parameters
+#     ----------
+#     nps : int
+#         number of particles to simulate
 
-    #     Returns
-    #     -------
-    #     None.
+#     Returns
+#     -------
+#     None.
 
-    #     """
-    #     if nps is None:
-    #         raise ValueError(' NPS value is mandatory for MCNP 5 inputs')
+#     """
+#     if nps is None:
+#         raise ValueError(' NPS value is mandatory for MCNP 5 inputs')
 
-    #     line = 'NPS '+str(int(nps))+'\n'
-    #     card = par.Card([line], 5, -1)
-    #     self.cards['settings'].append(card)
+#     line = 'NPS '+str(int(nps))+'\n'
+#     card = par.Card([line], 5, -1)
+#     self.cards['settings'].append(card)
+
 
 @contextmanager
 def suppress_stdout():
@@ -700,15 +703,16 @@ def check_transport_activation(lib):
  (e.g. 99c-31c). See additional details on the documentation.
             """
     try:
-        activationlib = lib.split('-')[0]
-        transportlib = lib.split('-')[1]
+        activationlib = lib.split("-")[0]
+        transportlib = lib.split("-")[1]
     except IndexError:
         raise ValueError(errmsg)
     # Check that libraries have been correctly defined
-    if activationlib+'-'+transportlib != lib:
+    if activationlib + "-" + transportlib != lib:
         raise ValueError(errmsg)
 
     return activationlib, transportlib
+
 
 class SerpentInputFile:
     def __init__(self, lines, matlist, name=None):
@@ -732,7 +736,7 @@ class SerpentInputFile:
 
         # All cards from parser separated by the materials
         self.lines = lines
-        
+
         # Materials list (see matreader.py)
         self.matlist = matlist
 
@@ -742,27 +746,27 @@ class SerpentInputFile:
     @classmethod
     def from_text(cls, inputfile):
         """
-        Reads input file into list. Removes trailing empty lines. 
+        Reads input file into list. Removes trailing empty lines.
 
         Parameters
         ----------
         cls : 'SerpentInputFile'
-            The class itself. 
+            The class itself.
         inputfile : path like object
             path to the Serpent input file.
 
         Returns
         -------
-        SerpentInputFile instance with data from the input file. 
+        SerpentInputFile instance with data from the input file.
 
         """
-        with open(inputfile, 'r') as f:
+        with open(inputfile, "r") as f:
             lines = f.readlines()
 
         # Remove trailing empty lines
         idx = len(lines) - 1
         while True:
-            if lines[idx].strip() == '':
+            if lines[idx].strip() == "":
                 del lines[idx]
                 idx -= 1
             else:
@@ -770,8 +774,7 @@ class SerpentInputFile:
 
         matlist = None
 
-        return cls(lines, matlist,
-                   name=os.path.basename(inputfile).split('.')[0])
+        return cls(lines, matlist, name=os.path.basename(inputfile).split(".")[0])
 
     def add_stopCard(self, nps: int) -> None:
         """Add number of particles card
@@ -781,7 +784,7 @@ class SerpentInputFile:
         nps : int
             number of particles to simulate
         """
-        self.lines.append('\nset nps '+str(int(nps))+'\n')
+        self.lines.append("\nset nps " + str(int(nps)) + "\n")
 
     def _to_text(self) -> str:
         """
@@ -795,15 +798,14 @@ class SerpentInputFile:
 
         # Add materials
         self.lines.append(self.matlist.to_text())
-        self.lines.append('\n')  # Missing
+        self.lines.append("\n")  # Missing
 
-        toprint = ''
+        toprint = ""
         for line in self.lines:
-            toprint = toprint+line
+            toprint = toprint + line
 
         return toprint
 
-    
     def write(self, out) -> None:
         """
         Write the input to a file
@@ -820,8 +822,9 @@ class SerpentInputFile:
         """
         to_print = self._to_text()
 
-        with open(out, 'w') as outfile:
+        with open(out, "w") as outfile:
             outfile.write(to_print)
+
 
 class OpenMCInputFiles:
     def __init__(self, geometry, settings, tallies, materials, matlist, name=None):
@@ -829,27 +832,27 @@ class OpenMCInputFiles:
 
         Parameters
         ----------
-        geometry : List[str], optional 
+        geometry : List[str], optional
             OpenMC geometry
-        settings : List[str], optional 
+        settings : List[str], optional
             OpenMC settings
-        tallies : List[str], optional 
+        tallies : List[str], optional
             OpenMC tallies
-        materials : List[str], optional 
+        materials : List[str], optional
             OpenMC materials
-        matlist : List[str], optional 
+        matlist : List[str], optional
             material list in the input
         name : str, optional
             name associated with the file, by default None
         """
-        
+
         # Geometry, settings and tallies for OpenMC
         self.geometry = geometry
         self.settings = settings
         self.tallies = tallies
         # Temporary material holder until matlist supports openmc mats
         self.materials = materials
-        
+
         # Materials list (see matreader.py)
         self.matlist = matlist
 
@@ -868,17 +871,17 @@ class OpenMCInputFiles:
         Returns
         -------
         Optional[List[str]]
-            List of lines from the file or none if file not found. 
+            List of lines from the file or none if file not found.
         """
         if os.path.exists(path):
-            with open(path, 'r') as f:
+            with open(path, "r") as f:
                 lines = f.readlines()
         else:
             lines = None
-        return lines        
-    
+        return lines
+
     @classmethod
-    def from_path(cls, path: str) -> 'OpenMCInputFiles':
+    def from_path(cls, path: str) -> "OpenMCInputFiles":
         """Reads contents of geometry, settings, tallies, materials from XML files.
 
         Parameters
@@ -892,16 +895,16 @@ class OpenMCInputFiles:
             Intance of class initialised with data from XML files.
         """
 
-        geometry_file = os.path.join(path, 'geometry.xml')
+        geometry_file = os.path.join(path, "geometry.xml")
         geometry = cls._get_lines(cls, geometry_file)
 
-        settings_file = os.path.join(path, 'settings.xml')
+        settings_file = os.path.join(path, "settings.xml")
         settings = cls._get_lines(cls, settings_file)
 
-        tallies_file = os.path.join(path, 'tallies.xml')
+        tallies_file = os.path.join(path, "tallies.xml")
         tallies = cls._get_lines(cls, tallies_file)
 
-        materials_file = os.path.join(path, 'materials.xml')
+        materials_file = os.path.join(path, "materials.xml")
         materials = cls._get_lines(cls, materials_file)
 
         matlist = None
@@ -911,7 +914,7 @@ class OpenMCInputFiles:
         return cls(geometry, settings, tallies, materials, matlist, name=name)
 
     def add_stopCard(self, nps: int) -> None:
-        """Add number of particles to simulate 
+        """Add number of particles to simulate
 
         Parameters
         ----------
@@ -919,12 +922,12 @@ class OpenMCInputFiles:
             number of particles to simulate
         """
         for i, line in enumerate(self.settings):
-            if '<settings>' in line:
-                batches_line = '  <batches>100</batches>\n'
-                self.settings.insert(i+1, batches_line)
-                particles = int(nps/100)
-                particles_line = '  <particles>'+str(particles)+'</particles>\n'
-                self.settings.insert(i+1, particles_line)
+            if "<settings>" in line:
+                batches_line = "  <batches>100</batches>\n"
+                self.settings.insert(i + 1, batches_line)
+                particles = int(nps / 100)
+                particles_line = "  <particles>" + str(particles) + "</particles>\n"
+                self.settings.insert(i + 1, particles_line)
                 break
 
     def _to_xml(self, libmanager) -> tuple:
@@ -944,17 +947,17 @@ class OpenMCInputFiles:
         # Add materials
         self.materials = self.matlist.to_xml(libmanager)
 
-        geometry = ''
+        geometry = ""
         for line in self.geometry:
-            geometry = geometry+line
-        
-        settings = ''
-        for line in self.settings:
-            settings = settings+line
+            geometry = geometry + line
 
-        tallies = ''
+        settings = ""
+        for line in self.settings:
+            settings = settings + line
+
+        tallies = ""
         for line in self.tallies:
-            tallies = tallies+line
+            tallies = tallies + line
 
         materials = self.materials
 
@@ -976,18 +979,18 @@ class OpenMCInputFiles:
         """
         geometry, settings, tallies, materials = self._to_xml(libmanager)
 
-        geometry_file = os.path.join(path, 'geometry.xml')
-        with open(geometry_file, 'w') as outfile:
+        geometry_file = os.path.join(path, "geometry.xml")
+        with open(geometry_file, "w") as outfile:
             outfile.write(geometry)
 
-        settings_file = os.path.join(path, 'settings.xml')
-        with open(settings_file, 'w') as outfile:
+        settings_file = os.path.join(path, "settings.xml")
+        with open(settings_file, "w") as outfile:
             outfile.write(settings)
 
-        tallies_file = os.path.join(path, 'tallies.xml')
-        with open(tallies_file, 'w') as outfile:
+        tallies_file = os.path.join(path, "tallies.xml")
+        with open(tallies_file, "w") as outfile:
             outfile.write(tallies)
 
-        materials_file = os.path.join(path, 'materials.xml')
-        with open(materials_file, 'w') as outfile:
+        materials_file = os.path.join(path, "materials.xml")
+        with open(materials_file, "w") as outfile:
             outfile.write(materials)

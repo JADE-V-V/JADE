@@ -24,18 +24,19 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import sys
-import logging
 import warnings
+
 import numpy as np
+import pandas as pd
 
 import jade.acepyne as ace
 import jade.xsdirpyne as xs
-import pandas as pd
-from jade.xsdirpyne import OpenMCXsdir, SerpentXsdir, Xsdir
 from jade.exceptions import fatal_exception
+from jade.xsdirpyne import OpenMCXsdir, SerpentXsdir, Xsdir
 
 # colors
 CRED = "\033[91m"

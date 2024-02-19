@@ -25,7 +25,6 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 # import openpyxl
 import pandas as pd
 
-
 # def createNewWorkbook(manyWb, theOne):
 #     for wb in manyWb:
 #         for sheetName in wb.sheetnames:
@@ -68,29 +67,29 @@ def insert_df(startrow, startcolumn, df, ws, header=True):
     columns = list(df.columns)
     values = df.values
     if header:
-        for i, column in enumerate(range(startcolumn,
-                                         startcolumn+len(columns))):
+        for i, column in enumerate(range(startcolumn, startcolumn + len(columns))):
             value = columns[i]
             try:
-                ws.cell(column=column, row=startrow,value=value)
-                #ws.range((startrow, column)).value = value
+                ws.cell(column=column, row=startrow, value=value)
+                # ws.range((startrow, column)).value = value
             except (AttributeError, ValueError) as e:
                 print(e)
-                print('Warning! header not printes: column,value',
-                      column, value)
-        startrow = startrow+1
+                print("Warning! header not printes: column,value", column, value)
+        startrow = startrow + 1
 
-    for i, row in enumerate(range(startrow, startrow+len(df))):
-        for j, column in enumerate(range(startcolumn,
-                                         startcolumn+len(df.columns))):
+    for i, row in enumerate(range(startrow, startrow + len(df))):
+        for j, column in enumerate(range(startcolumn, startcolumn + len(df.columns))):
             value = values[i][j]
             try:
-                ws.cell(column=column,row=row,value=value)
-                #ws.range((row, column)).value = value
+                ws.cell(column=column, row=row, value=value)
+                # ws.range((row, column)).value = value
             except (AttributeError, ValueError) as e:
                 print(e)
-                print('Warning! value not printed: row, column, value', row,
-                      column, value)
+                print(
+                    "Warning! value not printed: row, column, value", row, column, value
+                )
+
+
 def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
     """
     Produces single library summary excel file using XLSXwriter
@@ -114,39 +113,40 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
     """
     writer = pd.ExcelWriter(outpath, engine="xlsxwriter")
 
-    #for df in (tallies, errors):
-        #df.set_index("Zaid", inplace=True)
+    # for df in (tallies, errors):
+    # df.set_index("Zaid", inplace=True)
 
     startrow = 8
     startcol = 1
     max_len = 0
     max_width = 0
     df_positions = []
-    
 
     print(tallies)
     for tally, results in tallies.items():
-        #print(results)
+        # print(results)
         tally_len, tally_width = results["Value"].shape
-        df_positions.append([startrow,startcol])
-        #print(pd.Series(results["title"]))
-        #pd.Series(results["title"]).to_excel(writer, startrow=startrow, startcol=startcol+1, sheet_name="Values", index=False, header=False)
-        results["Value"].to_excel(writer, startrow=startrow+1, startcol=startcol, sheet_name="Values")
-        results["Error"].to_excel(writer, startrow=startrow+1, startcol=startcol, sheet_name="Errors")
+        df_positions.append([startrow, startcol])
+        # print(pd.Series(results["title"]))
+        # pd.Series(results["title"]).to_excel(writer, startrow=startrow, startcol=startcol+1, sheet_name="Values", index=False, header=False)
+        results["Value"].to_excel(
+            writer, startrow=startrow + 1, startcol=startcol, sheet_name="Values"
+        )
+        results["Error"].to_excel(
+            writer, startrow=startrow + 1, startcol=startcol, sheet_name="Errors"
+        )
         startrow = startrow + tally_len + 3
         max_len = max_len + tally_len + 3
         if tally_width > max_width:
-            max_width = tally_width 
+            max_width = tally_width
 
-    wb = writer.book   
-    tal_sheet = writer.sheets["Values"]    
+    wb = writer.book
+    tal_sheet = writer.sheets["Values"]
     err_sheet = writer.sheets["Errors"]
 
     if stats is not None:
-        #stats.set_index("Zaid", inplace=True)
-        stats.to_excel(
-            writer, startrow=8, startcol=1, sheet_name="Statistical Checks"
-        )
+        # stats.set_index("Zaid", inplace=True)
+        stats.to_excel(writer, startrow=8, startcol=1, sheet_name="Statistical Checks")
         stat_sheet = writer.sheets["Statistical Checks"]
         stats_len, stats_width = stats.shape
 
@@ -161,9 +161,7 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
         }
     )
     tally_format = wb.add_format({"bg_color": "#D9D9D9"})
-    merge_format = wb.add_format(
-        {"align": "center", "valign": "center", "border": 2}
-    )
+    merge_format = wb.add_format({"align": "center", "valign": "center", "border": 2})
     title_merge_format = wb.add_format(
         {
             "font_size": "36",
@@ -200,14 +198,16 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
         "B3:L8", "{} RESULTS RECAP: TALLIES".format(testname), title_merge_format
     )
     for tal in range(len(df_positions)):
-        tal_sheet.merge_range(df_positions[tal][0], 
-                        df_positions[tal][1] + 1,
-                        df_positions[tal][0],
-                        df_positions[tal][1] + 4,
-                        list(tallies.values())[tal]["title"],
-                        subtitle_merge_format)
-    #tal_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-    #tal_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
+        tal_sheet.merge_range(
+            df_positions[tal][0],
+            df_positions[tal][1] + 1,
+            df_positions[tal][0],
+            df_positions[tal][1] + 4,
+            list(tallies.values())[tal]["title"],
+            subtitle_merge_format,
+        )
+    # tal_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
+    # tal_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
 
     # Freeze title
     tal_sheet.freeze_panes(8, 2)
@@ -226,15 +226,15 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
 
     # Row Heights
     tal_sheet.set_row(7, 31)
-    #tal_sheet.set_row(8, 73.25)
-    
+    # tal_sheet.set_row(8, 73.25)
+
     tal_sheet.conditional_format(
         10,
         1,
         8 + max_len,
         max_width + 1,
         {"type": "blanks", "format": oob_format},
-    )    
+    )
     # ERRORS
     # Title
     err_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
@@ -243,14 +243,16 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
         "B3:L8", "{} RESULTS RECAP: ERRORS".format(testname), title_merge_format
     )
     for tal in range(len(df_positions)):
-        err_sheet.merge_range(df_positions[tal][0], 
-                    df_positions[tal][1] + 1,
-                    df_positions[tal][0],
-                    df_positions[tal][1] + 4,
-                    list(tallies.values())[tal]["title"],
-                    subtitle_merge_format)
-    #err_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-    #err_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
+        err_sheet.merge_range(
+            df_positions[tal][0],
+            df_positions[tal][1] + 1,
+            df_positions[tal][0],
+            df_positions[tal][1] + 4,
+            list(tallies.values())[tal]["title"],
+            subtitle_merge_format,
+        )
+    # err_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
+    # err_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
 
     # Freeze title
     err_sheet.freeze_panes(8, 2)
@@ -263,14 +265,13 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
     for i in range(8 + max_len, max_len + 50):
         err_sheet.set_row(i, None, oob_format)
 
-
     # Column widths for errors, set up to 15th col by default to ensure title format correct
     err_sheet.set_column(1, 14, 20)
     err_sheet.set_column(1, max_width + 2, 20)
 
     # Row Heights
     err_sheet.set_row(7, 31)
-    #err_sheet.set_row(8, 73.25)
+    # err_sheet.set_row(8, 73.25)
 
     # Legend
     err_sheet.merge_range("N3:O3", "LEGEND", merge_format)
@@ -392,8 +393,8 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
             "{} RESULTS RECAP: STATISTICAL CHECKS".format(testname),
             title_merge_format,
         )
-        #stat_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-        #stat_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
+        # stat_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
+        # stat_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
 
         # Freeze title
         stat_sheet.freeze_panes(8, 0)
@@ -461,6 +462,7 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
 
     wb.close()
 
+
 def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, std_devs):
     """
     Produces single library summary excel file using XLSXwriter
@@ -494,23 +496,32 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
 
     for i in range(len(comps.keys())):
         comp_len, comp_width = list(comps.values())[i]["Value"].shape
-        df_positions.append([startrow,startcol])
-        list(comps.values())[i]["Value"].to_excel(writer, startrow=startrow+1, 
-                                         startcol=startcol, 
-                                         sheet_name="Comparisons (%)")
-        list(std_devs.values())[i]["Value"].to_excel(writer, startrow=startrow+1, 
-                                                     startcol=startcol, 
-                                                     sheet_name="Comparisons (std. dev.)")     
-        list(abs_diffs.values())[i]["Value"].to_excel(writer, startrow=startrow+1, 
-                                                      startcol=startcol, 
-                                                      sheet_name="Comparisons (abs. diff.)")
+        df_positions.append([startrow, startcol])
+        list(comps.values())[i]["Value"].to_excel(
+            writer,
+            startrow=startrow + 1,
+            startcol=startcol,
+            sheet_name="Comparisons (%)",
+        )
+        list(std_devs.values())[i]["Value"].to_excel(
+            writer,
+            startrow=startrow + 1,
+            startcol=startcol,
+            sheet_name="Comparisons (std. dev.)",
+        )
+        list(abs_diffs.values())[i]["Value"].to_excel(
+            writer,
+            startrow=startrow + 1,
+            startcol=startcol,
+            sheet_name="Comparisons (abs. diff.)",
+        )
 
         startrow = startrow + comp_len + 3
         max_len = max_len + comp_len + 3
         if comp_width > max_width:
             max_width = comp_width
 
-    wb = writer.book   
+    wb = writer.book
     comp_sheet = writer.sheets["Comparisons (%)"]
     std_dev_sheet = writer.sheets["Comparisons (std. dev.)"]
     absdiff_sheet = writer.sheets["Comparisons (abs. diff.)"]
@@ -526,9 +537,7 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
         }
     )
     tally_format = wb.add_format({"bg_color": "#D9D9D9"})
-    merge_format = wb.add_format(
-        {"align": "center", "valign": "center", "border": 2}
-    )
+    merge_format = wb.add_format({"align": "center", "valign": "center", "border": 2})
     title_merge_format = wb.add_format(
         {
             "font_size": "36",
@@ -568,14 +577,16 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
         "B3:L8", "{} RESULTS RECAP: COMPARISON (%)".format(testname), title_merge_format
     )
     for tal in range(len(df_positions)):
-        comp_sheet.merge_range(df_positions[tal][0], 
-                        df_positions[tal][1] + 1,
-                        df_positions[tal][0],
-                        df_positions[tal][1] + 4,
-                        list(comps.values())[tal]["title"],
-                        subtitle_merge_format)
-    #comp_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-    #comp_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
+        comp_sheet.merge_range(
+            df_positions[tal][0],
+            df_positions[tal][1] + 1,
+            df_positions[tal][0],
+            df_positions[tal][1] + 4,
+            list(comps.values())[tal]["title"],
+            subtitle_merge_format,
+        )
+    # comp_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
+    # comp_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
 
     # Freeze title
     comp_sheet.freeze_panes(8, 2)
@@ -594,7 +605,7 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
 
     # Row Heights
     comp_sheet.set_row(7, 31)
-    #comp_sheet.set_row(8, 73.25)
+    # comp_sheet.set_row(8, 73.25)
 
     # Legend
     comp_sheet.merge_range("N3:O3", "LEGEND", merge_format)
@@ -613,7 +624,7 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
         8 + max_len,
         max_width + 1,
         {"type": "blanks", "format": oob_format},
-    )    
+    )
     comp_sheet.conditional_format(
         10,
         2,
@@ -763,17 +774,21 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
     absdiff_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
     absdiff_sheet.merge_range("D1:D2", lib_to_comp, subtitle_merge_format)
     absdiff_sheet.merge_range(
-        "B3:L8", "{} RESULTS RECAP: COMPARISON (Absolute Difference)".format(testname), title_merge_format
+        "B3:L8",
+        "{} RESULTS RECAP: COMPARISON (Absolute Difference)".format(testname),
+        title_merge_format,
     )
     for tal in range(len(df_positions)):
-        absdiff_sheet.merge_range(df_positions[tal][0], 
-                    df_positions[tal][1] + 1,
-                    df_positions[tal][0],
-                    df_positions[tal][1] + 4,
-                    list(comps.values())[tal]["title"],
-                    subtitle_merge_format)
-    #absdiff_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-    #absdiff_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
+        absdiff_sheet.merge_range(
+            df_positions[tal][0],
+            df_positions[tal][1] + 1,
+            df_positions[tal][0],
+            df_positions[tal][1] + 4,
+            list(comps.values())[tal]["title"],
+            subtitle_merge_format,
+        )
+    # absdiff_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
+    # absdiff_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
 
     # Freeze title
     absdiff_sheet.freeze_panes(8, 2)
@@ -786,14 +801,13 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
     for i in range(8 + max_len, max_len + 50):
         absdiff_sheet.set_row(i, None, oob_format)
 
-
     # Column widths for errors, set up to 15th col by default to ensure title format correct
     absdiff_sheet.set_column(1, 14, 20)
     absdiff_sheet.set_column(1, max_width + 2, 20)
 
     # Row Heights
     absdiff_sheet.set_row(7, 31)
-    #absdiff_sheet.set_row(8, 73.25)
+    # absdiff_sheet.set_row(8, 73.25)
 
     # Legend
     absdiff_sheet.merge_range("N3:O3", "LEGEND", merge_format)
@@ -821,17 +835,23 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
     std_dev_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
     std_dev_sheet.merge_range("D1:D2", lib_to_comp, subtitle_merge_format)
     std_dev_sheet.merge_range(
-        "B3:L8", "{} RESULTS RECAP: COMPARISON (Standard deviations from reference library)".format(testname), title_merge_format
+        "B3:L8",
+        "{} RESULTS RECAP: COMPARISON (Standard deviations from reference library)".format(
+            testname
+        ),
+        title_merge_format,
     )
     for tal in range(len(df_positions)):
-        std_dev_sheet.merge_range(df_positions[tal][0], 
-                        df_positions[tal][1] + 1,
-                        df_positions[tal][0],
-                        df_positions[tal][1] + 4,
-                        list(comps.values())[tal]["title"],
-                        subtitle_merge_format)
-    #std_dev_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-    #std_dev_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
+        std_dev_sheet.merge_range(
+            df_positions[tal][0],
+            df_positions[tal][1] + 1,
+            df_positions[tal][0],
+            df_positions[tal][1] + 4,
+            list(comps.values())[tal]["title"],
+            subtitle_merge_format,
+        )
+    # std_dev_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
+    # std_dev_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
 
     # Freeze title
     std_dev_sheet.freeze_panes(8, 2)
@@ -850,7 +870,7 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
 
     # Row Heights
     std_dev_sheet.set_row(7, 31)
-    #std_dev_sheet.set_row(8, 73.25)
+    # std_dev_sheet.set_row(8, 73.25)
 
     # Legend
     std_dev_sheet.merge_range("N3:O3", "LEGEND", merge_format)
@@ -869,7 +889,7 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
         8 + max_len,
         max_width + 1,
         {"type": "blanks", "format": oob_format},
-    )    
+    )
     std_dev_sheet.conditional_format(
         10,
         2,
@@ -1013,6 +1033,6 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
             "maximum": 1,
             "format": green_cell_format,
         },
-    )    
+    )
 
     wb.close()

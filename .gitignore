@@ -17,3 +17,5 @@ docs/source/_templates/
 JADE.egg-info/
 jade.egg-info/
 build/
+
+venv/*

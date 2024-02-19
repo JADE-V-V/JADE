@@ -28,13 +28,14 @@ import sys
 from copy import deepcopy
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
+from tqdm import tqdm
+
 import jade.inputfile as ipt
 import jade.matreader as mat
 import jade.unix as unix
-import numpy as np
-import pandas as pd
 from jade.parsersD1S import IrradiationFile, Reaction, ReactionFile
-from tqdm import tqdm
 
 # colors
 CRED = "\033[91m"
@@ -453,7 +454,7 @@ class Test:
             lib = list(self.lib.values())[0]
         elif isinstance(self.lib, str):
             if "-" in self.lib:
-                lib = self.lib.split("-")[0]  
+                lib = self.lib.split("-")[0]
             else:
                 lib = self.lib
 

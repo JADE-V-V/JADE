@@ -60,16 +60,15 @@ def executeBenchmarksRoutines(session, lib: str, runoption, exp=False) -> None:
 
     for testname, row in config.iterrows():
         # Check for active test first
-        if sys.platform.startswith('win'):
-            if (
-                bool(row["Serpent"])
-                or bool(row["OpenMC"])
-            ):    
-                print(f"\n"
-                f"'{testname}' selected. OpenMC and Serpent are not currently supported on Windows."
-                f"\n")
+        if sys.platform.startswith("win"):
+            if bool(row["Serpent"]) or bool(row["OpenMC"]):
+                print(
+                    f"\n"
+                    f"'{testname}' selected. OpenMC and Serpent are not currently supported on Windows."
+                    f"\n"
+                )
                 row["Serpent"] = False
-                row["OpenMC"] = False   
+                row["OpenMC"] = False
 
         if (
             bool(row["OnlyInput"])
@@ -77,22 +76,21 @@ def executeBenchmarksRoutines(session, lib: str, runoption, exp=False) -> None:
             or bool(row["Serpent"])
             or bool(row["OpenMC"])
             or bool(row["d1S"])
-        ): 
-            if (
-                bool(row["OnlyInput"])
-                and not any([
+        ):
+            if bool(row["OnlyInput"]) and not any(
+                [
                     bool(row["MCNP"]),
                     bool(row["Serpent"]),
                     bool(row["OpenMC"]),
                     bool(row["d1S"]),
-                ])
+                ]
             ):
-                if (
-                    testname in ["SphereSDDR", "FNG", "ITER_Cyl_SDDR"]
-                ):
+                if testname in ["SphereSDDR", "FNG", "ITER_Cyl_SDDR"]:
                     row["d1S"] = True
                 else:
-                    print("Transport code was not specified or is not available for input generation, defaulting to MCNP")
+                    print(
+                        "Transport code was not specified or is not available for input generation, defaulting to MCNP"
+                    )
                     print("")
                     row["MCNP"] = True
 
@@ -119,10 +117,12 @@ def executeBenchmarksRoutines(session, lib: str, runoption, exp=False) -> None:
             else:
                 libpath = lib
 
-            if testname in ['FNG Bulk Blanket and Shielding Experiment', 
-                            'FNG Tungsten', 
-                            'ASPIS Iron-88 benchmark']:
-                var = {'00c': lib, '34y': '34y'}
+            if testname in [
+                "FNG Bulk Blanket and Shielding Experiment",
+                "FNG Tungsten",
+                "ASPIS Iron-88 benchmark",
+            ]:
+                var = {"00c": lib, "34y": "34y"}
             else:
                 var = lib
 
@@ -131,7 +131,7 @@ def executeBenchmarksRoutines(session, lib: str, runoption, exp=False) -> None:
             safemkdir(outpath)
             fname = row["Folder Name"]
             inppath = os.path.join(session.path_inputs, fname)
-#            VRTpath = os.path.join(session.path_inputs, "ITER_Cyl_SDDR", "d1S")
+            #            VRTpath = os.path.join(session.path_inputs, "ITER_Cyl_SDDR", "d1S")
             confpath = os.path.join(session.path_cnf, fname.split(".")[0])
 
             # Generate test
@@ -143,9 +143,18 @@ def executeBenchmarksRoutines(session, lib: str, runoption, exp=False) -> None:
             elif testname == "Sphere SDDR":
                 test = testrun.SphereTestSDDR(*args)
 
-            elif fname in ['Oktavian', 'Tiara-BC', 'Tiara-BS', 'Tiara-FC',
-                           'FNS-TOF', 'FNG-BKT', 'FNG-W', 'ASPIS-Fe88', 'TUD-Fe',
-                           'TUD-W']:
+            elif fname in [
+                "Oktavian",
+                "Tiara-BC",
+                "Tiara-BS",
+                "Tiara-FC",
+                "FNS-TOF",
+                "FNG-BKT",
+                "FNG-W",
+                "ASPIS-Fe88",
+                "TUD-Fe",
+                "TUD-W",
+            ]:
                 test = testrun.MultipleTest(*args)
 
             elif fname == "FNG":

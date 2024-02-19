@@ -23,19 +23,19 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
 import re
+
 import pandas as pd
 
 # PATTERNS
-PAT_NUM = re.compile(r'(?<=Mesh Tally Number)\s+\d+')  # blank spaces to be elim
-PAT_DESC = re.compile(r'(?<=FMESH\s).+')  # get the tally name
-PAT_CYLYNDER = re.compile(r'\sR\s+Z\s')  # Start of a cylyndrical tally
-PAT_PARTICLE = re.compile(r'(?=<mesh tally).+')
+PAT_NUM = re.compile(r"(?<=Mesh Tally Number)\s+\d+")  # blank spaces to be elim
+PAT_DESC = re.compile(r"(?<=FMESH\s).+")  # get the tally name
+PAT_CYLYNDER = re.compile(r"\sR\s+Z\s")  # Start of a cylyndrical tally
+PAT_PARTICLE = re.compile(r"(?=<mesh tally).+")
 
 # Meshtal to mctal conversion
 # COLUMNS = ['Cells', 'Dir', 'User', 'Segments', 'Multiplier', 'Cosine',
 #            'Energy', 'Time', 'Cor C', 'Cor B', 'Cor A', 'Value', 'Error']
-CONV = {'Result': 'Value', 'Rel': 'Error', 'R': 'Cor A', 'Z': 'Cor B',
-        'Th': 'Cor C'}
+CONV = {"Result": "Value", "Rel": "Error", "R": "Cor A", "Z": "Cor B", "Th": "Cor C"}
 
 
 class Meshtal:
@@ -78,8 +78,7 @@ class Meshtal:
                 # keepcols = [ax, fmesh._values_tag, fmesh._error_tag]
                 # print(data)
                 # data = fmesh.data[keepcols]
-                fmesh1D[key] = {'data': data, 'num': key,
-                                'desc': fmesh.description}
+                fmesh1D[key] = {"data": data, "num": key, "desc": fmesh.description}
 
         self.fmesh1D = fmesh1D
 
@@ -95,7 +94,7 @@ class Meshtal:
             DESCRIPTION.
 
         """
-        with open(self.filepath, 'r') as infile:
+        with open(self.filepath, "r") as infile:
             # Flags that regulates current operations
             flag_inheader = True
             flag_intally = False
@@ -147,13 +146,14 @@ class Meshtal:
                         flag_inheader = True
                         flag_inmesh = False
                         # Blank line, read and adjourn fmesh
-                        fmesh_data = pd.read_csv(self.filepath,
-                                                 sep=r'\s+',
-                                                 skiprows=skiprows,
-                                                 nrows=nrows-1)
+                        fmesh_data = pd.read_csv(
+                            self.filepath,
+                            sep=r"\s+",
+                            skiprows=skiprows,
+                            nrows=nrows - 1,
+                        )
                         # Generate the FMESH and update the dic
-                        fmesh = Fmesh(fmesh_data, current_num, description,
-                                      particle)
+                        fmesh = Fmesh(fmesh_data, current_num, description, particle)
                         fmeshes[current_num] = fmesh
 
                         # Reistantiate default values
@@ -167,9 +167,9 @@ class Meshtal:
             # --- At the end of file some more operation may be needed ---
             # If we were still reading tally add it
             if flag_inmesh:
-                fmesh_data = pd.read_csv(self.filepath, sep=r'\s+',
-                                         skiprows=skiprows,
-                                         nrows=nrows)
+                fmesh_data = pd.read_csv(
+                    self.filepath, sep=r"\s+", skiprows=skiprows, nrows=nrows
+                )
                 # Generate the FMESH and update the dic
                 fmesh = Fmesh(fmesh_data, current_num, description, particle)
                 fmeshes[current_num] = fmesh
@@ -203,8 +203,8 @@ class Fmesh:
         self.description = description
         self.particle = particle
 
-        self._values_tag = 'Result'
-        self._error_tag = 'Rel'
+        self._values_tag = "Result"
+        self._error_tag = "Rel"
 
     def is1D(self):
         """
@@ -269,7 +269,7 @@ class Fmesh:
                     try:
                         newcols.append(CONV[column])
                     except KeyError:
-                        print('Key: "'+column+'" is not yet convertible')
+                        print('Key: "' + column + '" is not yet convertible')
                 else:
                     # If it not to keep just drop the column
                     del data[column]
@@ -279,7 +279,7 @@ class Fmesh:
                 try:
                     newcols.append(CONV[column])
                 except KeyError:
-                    print('Key: "'+column+'" is not yet convertible')
+                    print('Key: "' + column + '" is not yet convertible')
 
         data.columns = newcols
 

@@ -21,24 +21,25 @@
 # You should have received a copy of the GNU General Public License
 # along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
 import math
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from matplotlib.ticker import LogLocator, AutoMinorLocator, MultipleLocator, AutoLocator
-from matplotlib.markers import CARETUPBASE
-from matplotlib.markers import CARETDOWNBASE
-from matplotlib.patches import Patch
 from matplotlib.lines import Line2D
+from matplotlib.markers import CARETDOWNBASE, CARETUPBASE
+from matplotlib.patches import Patch, Rectangle
+from matplotlib.ticker import (AutoLocator, AutoMinorLocator, LogLocator,
+                               MultipleLocator)
 from scipy.interpolate import interp1d
-from matplotlib.patches import Rectangle
-
 
 # ============================================================================
 #                   Specify parameters for plots
 # ============================================================================
-np.seterr(divide="ignore", invalid="ignore")  # Suppressing divide by zero error in plots
+np.seterr(
+    divide="ignore", invalid="ignore"
+)  # Suppressing divide by zero error in plots
 DEFAULT_EXTENSION = ".png"
 
 SMALL_SIZE = 22
@@ -128,7 +129,7 @@ CYL_SDDR_XTICKS = {
 
 
 # --- exp data plot ---
-EXP_DATA_LINESTYLES = ['--', '-.', ':']*50
+EXP_DATA_LINESTYLES = ["--", "-.", ":"] * 50
 
 # ============================================================================
 #                   Plotter Class
@@ -136,9 +137,21 @@ EXP_DATA_LINESTYLES = ['--', '-.', ':']*50
 
 
 class Plotter:
-    def __init__(self, data, title, outpath, outname, quantity, unit, xlabel,
-                 testname, ext=DEFAULT_EXTENSION, group_num=None,
-                 add_labels=None, mult_factors=None):
+    def __init__(
+        self,
+        data,
+        title,
+        outpath,
+        outname,
+        quantity,
+        unit,
+        xlabel,
+        testname,
+        ext=DEFAULT_EXTENSION,
+        group_num=None,
+        add_labels=None,
+        mult_factors=None,
+    ):
         """
         Object Handling plots
 
@@ -247,20 +260,22 @@ class Plotter:
                 outp = self._ratio_plot()
 
         # --- Experimental Points Plot ---
-        elif plot_type == 'Experimental points':
+        elif plot_type == "Experimental points":
             outp = self._exp_points_plot(test_name=self.testname)
 
-        elif plot_type == 'Experimental points group':
-            if self.testname == 'Tiara-BC':  # Special actions for Tiara-BC
-                outp = self._exp_points_group_plot(test_name=self.testname,
-                                                   x_scale='linear')
+        elif plot_type == "Experimental points group":
+            if self.testname == "Tiara-BC":  # Special actions for Tiara-BC
+                outp = self._exp_points_group_plot(
+                    test_name=self.testname, x_scale="linear"
+                )
             else:
                 outp = self._exp_points_group_plot(test_name=self.testname)
 
-        elif plot_type == 'Experimental points group CE':
-            if self.testname == 'Tiara-BC':  # Special actions for Tiara-BC
-                outp = self._exp_points_group_plot_CE(test_name=self.testname,
-                                                      x_scale='linear')
+        elif plot_type == "Experimental points group CE":
+            if self.testname == "Tiara-BC":  # Special actions for Tiara-BC
+                outp = self._exp_points_group_plot_CE(
+                    test_name=self.testname, x_scale="linear"
+                )
             else:
                 outp = self._exp_points_group_plot_CE(test_name=self.testname)
 
@@ -311,9 +326,10 @@ class Plotter:
 
         """
         nrows = len(self.quantity)
-        fig, axes = plt.subplots(figsize=(18, 7.5 + 2 * nrows), nrows=nrows,
-                                 sharex=True)
-        fig.suptitle(self.title, weight='bold')
+        fig, axes = plt.subplots(
+            figsize=(18, 7.5 + 2 * nrows), nrows=nrows, sharex=True
+        )
+        fig.suptitle(self.title, weight="bold")
 
         if isinstance(axes, np.ndarray) is False:
             axes = np.array([axes])
@@ -521,8 +537,7 @@ class Plotter:
 
         return self._save()
 
-    def _exp_points_plot(self, test_name, y_scale='log', markersize=10,
-                         x_scale='log'):
+    def _exp_points_plot(self, test_name, y_scale="log", markersize=10, x_scale="log"):
         """
         Plot a simple plot that compares experimental data points with
         computational calculation.
@@ -567,12 +582,23 @@ class Plotter:
         #              fillstyle='none', zorder=3, label=ref['ylabel'],
         #              markersize=markersize, markeredgewidth=2)
         # elif EXP_PLOT_TYPE[test_name] == 'bins':
-        ax1.plot(ref['x'], ref['y'], color=self.colors[0],
-                 drawstyle='steps-pre', label=ref['ylabel'],
-                 linestyle='-', linewidth=2)
-        ax1.fill_between(ref['x'], ref['y'] - (ref['err']*ref['y']),
-                         ref['y'] + (ref['err']*ref['y']), step='pre',
-                         color=self.colors[0], alpha=0.15)
+        ax1.plot(
+            ref["x"],
+            ref["y"],
+            color=self.colors[0],
+            drawstyle="steps-pre",
+            label=ref["ylabel"],
+            linestyle="-",
+            linewidth=2,
+        )
+        ax1.fill_between(
+            ref["x"],
+            ref["y"] - (ref["err"] * ref["y"]),
+            ref["y"] + (ref["err"] * ref["y"]),
+            step="pre",
+            color=self.colors[0],
+            alpha=0.15,
+        )
         # Get the linear interpolation for C/E
         interpolate = interp1d(ref["x"], ref["y"], fill_value=0, bounds_error=False)
 
@@ -580,16 +606,28 @@ class Plotter:
         try:
             for i, dic in enumerate(data[1:]):
                 # Plot the flux
-                ax1.plot(dic['x'], dic['y'], color=self.colors[i+1],
-                         drawstyle='steps-pre', label=dic['ylabel'],
-                         linestyle=EXP_DATA_LINESTYLES[i], linewidth=2,
-                         zorder=2)
+                ax1.plot(
+                    dic["x"],
+                    dic["y"],
+                    color=self.colors[i + 1],
+                    drawstyle="steps-pre",
+                    label=dic["ylabel"],
+                    linestyle=EXP_DATA_LINESTYLES[i],
+                    linewidth=2,
+                    zorder=2,
+                )
                 # plot the C/E
-                interp_ref = interpolate(dic['x'])
-                ax2.plot(dic['x'], dic['y']/interp_ref, color=self.colors[i+1],
-                         drawstyle='steps-pre', label=dic['ylabel'],
-                         linestyle=EXP_DATA_LINESTYLES[i], linewidth=2,
-                         zorder=2)
+                interp_ref = interpolate(dic["x"])
+                ax2.plot(
+                    dic["x"],
+                    dic["y"] / interp_ref,
+                    color=self.colors[i + 1],
+                    drawstyle="steps-pre",
+                    label=dic["ylabel"],
+                    linestyle=EXP_DATA_LINESTYLES[i],
+                    linewidth=2,
+                    zorder=2,
+                )
         except KeyError:
             # it is a single pp
             return self._save()
@@ -630,8 +668,9 @@ class Plotter:
 
         return self._save()
 
-    def _exp_points_group_plot(self, test_name, y_scale='log', markersize=10,
-                               x_scale='log'):
+    def _exp_points_group_plot(
+        self, test_name, y_scale="log", markersize=10, x_scale="log"
+    ):
         """
         Plot a simple plot that compares experimental data points with
         computational calculation, grouping more tallies together.
@@ -658,67 +697,108 @@ class Plotter:
         fig, ax1 = plt.subplots(figsize=figsize)
 
         for k, data_dic in enumerate(list(data.values())):
-            ylabel = self.quantity+' ['+self.unit+']'
+            ylabel = self.quantity + " [" + self.unit + "]"
             ref = data_dic[0]
             fact = self.mult_factors[k]
-            y = ref['y']*fact
+            y = ref["y"] * fact
             if fact == 1:
                 lab = self.add_labels[k]
             else:
-                lab = self.add_labels[k] + ' x' + str(fact)
+                lab = self.add_labels[k] + " x" + str(fact)
             if k == 0:
-                ax1.plot(ref['x'], y, color=self.colors[0],
-                         drawstyle='steps-pre', label=ref['ylabel'],
-                         linestyle='-', linewidth=2)
-                ax1.fill_between(ref['x'], y - (ref['err']*y),
-                                 y + (ref['err']*y), step='pre',
-                                 color=self.colors[0], alpha=0.15)
-                plt.text(ref['x'][int(len(y)/2)], y[int(len(y)/2)], lab,
-                         backgroundcolor='w')
+                ax1.plot(
+                    ref["x"],
+                    y,
+                    color=self.colors[0],
+                    drawstyle="steps-pre",
+                    label=ref["ylabel"],
+                    linestyle="-",
+                    linewidth=2,
+                )
+                ax1.fill_between(
+                    ref["x"],
+                    y - (ref["err"] * y),
+                    y + (ref["err"] * y),
+                    step="pre",
+                    color=self.colors[0],
+                    alpha=0.15,
+                )
+                plt.text(
+                    ref["x"][int(len(y) / 2)],
+                    y[int(len(y) / 2)],
+                    lab,
+                    backgroundcolor="w",
+                )
             else:
-                ax1.plot(ref['x'], y, color=self.colors[0],
-                         drawstyle='steps-pre',
-                         linestyle='-', linewidth=2)
-                ax1.fill_between(ref['x'], y - (ref['err']*y),
-                                 y + (ref['err']*y), step='pre',
-                                 color=self.colors[0], alpha=0.15)
-                plt.text(ref['x'][int(len(y)/2)], y[int(len(y)/2)], lab,
-                         backgroundcolor='w')
+                ax1.plot(
+                    ref["x"],
+                    y,
+                    color=self.colors[0],
+                    drawstyle="steps-pre",
+                    linestyle="-",
+                    linewidth=2,
+                )
+                ax1.fill_between(
+                    ref["x"],
+                    y - (ref["err"] * y),
+                    y + (ref["err"] * y),
+                    step="pre",
+                    color=self.colors[0],
+                    alpha=0.15,
+                )
+                plt.text(
+                    ref["x"][int(len(y) / 2)],
+                    y[int(len(y) / 2)],
+                    lab,
+                    backgroundcolor="w",
+                )
             for i, dic in enumerate(data_dic[1:]):
                 # Plot the flux
                 fact = self.mult_factors[k]
-                y = dic['y']*self.mult_factors[k]
+                y = dic["y"] * self.mult_factors[k]
                 if k == 0:
-                    ax1.plot(dic['x'], y, color=self.colors[i+1],
-                             drawstyle='steps-pre', label=dic['ylabel'],
-                             linestyle=EXP_DATA_LINESTYLES[i], linewidth=2,
-                             zorder=2)
+                    ax1.plot(
+                        dic["x"],
+                        y,
+                        color=self.colors[i + 1],
+                        drawstyle="steps-pre",
+                        label=dic["ylabel"],
+                        linestyle=EXP_DATA_LINESTYLES[i],
+                        linewidth=2,
+                        zorder=2,
+                    )
                 else:
-                    ax1.plot(dic['x'], y, color=self.colors[i+1],
-                             drawstyle='steps-pre',
-                             linestyle=EXP_DATA_LINESTYLES[i], linewidth=2,
-                             zorder=2)
+                    ax1.plot(
+                        dic["x"],
+                        y,
+                        color=self.colors[i + 1],
+                        drawstyle="steps-pre",
+                        linestyle=EXP_DATA_LINESTYLES[i],
+                        linewidth=2,
+                        zorder=2,
+                    )
         # --- Plot details ---
         # ax 1 details
         ax1.set_yscale(y_scale)
         ax1.set_title(self.title)
         ax1.set_ylabel(ylabel)
-        ax1.legend(loc='best')
+        ax1.legend(loc="best")
         ax1.set_xlabel(self.xlabel)
         # # Draw the exp error
         ax1.set_xscale(x_scale)
 
-        ax1.tick_params(which='major', width=1.00, length=5)
-        ax1.tick_params(which='minor', width=0.75, length=2.50)
+        ax1.tick_params(which="major", width=1.00, length=5)
+        ax1.tick_params(which="minor", width=0.75, length=2.50)
 
         # Grid
-        ax1.grid('True', which='major', linewidth=0.50)
-        ax1.grid('True', which='minor', linewidth=0.20)
+        ax1.grid("True", which="major", linewidth=0.50)
+        ax1.grid("True", which="minor", linewidth=0.20)
 
         return self._save()
 
-    def _exp_points_group_plot_CE(self, test_name, y_scale='log', 
-                                  markersize=10, x_scale='log'):
+    def _exp_points_group_plot_CE(
+        self, test_name, y_scale="log", markersize=10, x_scale="log"
+    ):
         """
         Plot a simple plot that compares experimental data points with
         computational calculation.
@@ -740,8 +820,9 @@ class Plotter:
 
         """
         nrows = len(self.data)
-        fig, axes = plt.subplots(figsize=(21, 6.5 + 2 * nrows), nrows=nrows,
-                                 sharex=True)
+        fig, axes = plt.subplots(
+            figsize=(21, 6.5 + 2 * nrows), nrows=nrows, sharex=True
+        )
         if isinstance(axes, np.ndarray) is False:
             axes = np.array([axes])
 
@@ -749,21 +830,26 @@ class Plotter:
 
             ref = val[0]
             # Adjounrn ylabel
-            ylabel = 'C/E'
+            ylabel = "C/E"
 
             # Get the linear interpolation for C/E
-            interpolate = interp1d(ref['x'], ref['y'], fill_value=0,
-                                   bounds_error=False)
+            interpolate = interp1d(ref["x"], ref["y"], fill_value=0, bounds_error=False)
 
             # Plot all data
             try:
                 for i, dic in enumerate(val[1:]):
                     # plot the C/E
-                    interp_ref = interpolate(dic['x'])
-                    axes[key].plot(dic['x'], dic['y']/interp_ref, color=self.colors[i+1],
-                            drawstyle='steps-pre', label=dic['ylabel'],
-                            linestyle=EXP_DATA_LINESTYLES[i], linewidth=2,
-                            zorder=2)
+                    interp_ref = interpolate(dic["x"])
+                    axes[key].plot(
+                        dic["x"],
+                        dic["y"] / interp_ref,
+                        color=self.colors[i + 1],
+                        drawstyle="steps-pre",
+                        label=dic["ylabel"],
+                        linestyle=EXP_DATA_LINESTYLES[i],
+                        linewidth=2,
+                        zorder=2,
+                    )
             except KeyError:
                 # it is a single pp
                 return self._save()
@@ -777,25 +863,25 @@ class Plotter:
             axes[key].set_ylim(bottom=0, top=2)
             yticks = np.arange(0, 2.5, 0.5)
             axes[key].set_yticks(yticks)
-            axes[key].axhline(y=1, linestyle='--', color='black')
+            axes[key].axhline(y=1, linestyle="--", color="black")
             # # Draw the exp error
 
             # Common for all axes
             axes[key].set_xscale(x_scale)
-            axes[key].tick_params(which='major', width=1.00, length=5)
-            axes[key].tick_params(which='minor', width=0.75, length=2.50)
+            axes[key].tick_params(which="major", width=1.00, length=5)
+            axes[key].tick_params(which="minor", width=0.75, length=2.50)
 
             # Grid
-            axes[key].grid('True', which='major', linewidth=0.50)
-            axes[key].grid('True', which='minor', linewidth=0.20)
+            axes[key].grid("True", which="major", linewidth=0.50)
+            axes[key].grid("True", which="minor", linewidth=0.20)
 
-        axes[0].legend(loc='upper center', bbox_to_anchor=(0.88, 1.5),
-                       fancybox=True, shadow=True)
+        axes[0].legend(
+            loc="upper center", bbox_to_anchor=(0.88, 1.5), fancybox=True, shadow=True
+        )
         axes[key].set_xlabel(self.xlabel)
         return self._save()
 
-    def _exp_points_discreet_plot(self, y_scale='log', lowerlimit=0.5,
-                                  upperlimit=1.5):
+    def _exp_points_discreet_plot(self, y_scale="log", lowerlimit=0.5, upperlimit=1.5):
         """
         Plot a simple plot that compares experimental data points with
         computational calculation. Differently from _exp_points_plot here
@@ -1191,8 +1277,7 @@ class Plotter:
                 tag = "T" + str(idx) + ": "
             else:
                 tag = "R: "
-            ax1.step(x, y, label=tag+dic_data['ylabel'], 
-                     color=colors[idx])
+            ax1.step(x, y, label=tag + dic_data["ylabel"], color=colors[idx])
             ax1.errorbar(
                 newX,
                 y[1:],

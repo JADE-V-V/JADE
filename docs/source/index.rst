@@ -52,6 +52,7 @@ GitHub repository <https://github.com/JADE-V-V/JADE/issues>`_.
    :caption: JADE API
 
    api/general
+.. API not generated anymore for the moment
    api/initobjects
    api/inputgeneration
    api/postprocessing

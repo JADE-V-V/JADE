@@ -99,14 +99,14 @@ class Status:
                 if test in MULTI_TEST:
                     libraries[lib][test] = {}
                     cp1 = os.path.join(cp, test)
-                    for code in os.listdir(cp1):
-                        libraries[lib][test][code] = {}
-                        cp2 = os.path.join(cp1, code)
-                        for zaid in os.listdir(cp2):
-                            libraries[lib][test][code][zaid] = []
-                            cp3 = os.path.join(cp2, zaid)
+                    for zaid in os.listdir(cp1):
+                        libraries[lib][test][zaid] = {}
+                        cp2 = os.path.join(cp1, zaid)
+                        for code in os.listdir(cp2):
+                            libraries[lib][test][zaid][code] = []
+                            cp3 = os.path.join(cp2, code)
                             for file in os.listdir(cp3):
-                                libraries[lib][test][code][zaid].append(file)
+                                libraries[lib][test][zaid][code].append(file)
                 else:
                     libraries[lib][test] = {}
                     cp1 = os.path.join(cp, test)
@@ -469,18 +469,18 @@ class Status:
                 # Check if benchmark folder exists
                 try:
                     # There could be two types of tests, single or multitest
-                    test = self.run_tree[lib][testname][code]
+                    test = self.run_tree[lib][testname]
                     if testname in MULTI_TEST:
                         # A single test not run in multitest cause for the
                         # whole test not to be considered run
                         flag_test_run = True
                         for _, files in test.items():
-                            flag_run_zaid = self.check_test_run(files, code)
+                            flag_run_zaid = self.check_test_run(files[code], code)
                             if not flag_run_zaid:
                                 flag_test_run = False
                     else:
                         # Check if output is present
-                        flag_test_run = self.check_test_run(test, code)
+                        flag_test_run = self.check_test_run(test[code], code)
 
                     # Append to the test runned if positive
                     if flag_test_run:

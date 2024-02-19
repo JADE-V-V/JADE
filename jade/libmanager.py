@@ -467,15 +467,13 @@ class LibManager:
 
         return zaidnum
 
-    def select_lib(self, code: str = "mcnp") -> str:
+    def select_lib(self, codes: list[str]) -> str:
         """
         Prompt an library input selection with Xsdir availabilty check
 
         Returns
         -------
-        lib : str
-            Library to assess.
-        code: str, optional
+        code: list[str], optional
             code for which the library is selected. default is MCNP
 
         """
@@ -492,8 +490,10 @@ class LibManager:
         while True:
             i += 1
             lib = input(" Select library (e.g. 31c or 99c-31c): ")
-            if lib in self.libraries[code]:
-                break
+            # check that library is available in all requested codes
+
+            if self._is_lib_available(lib, codes):
+                break  # if the library is available for all codes, break loop
 
             elif lib[0] == "{":
                 libs = json.loads(lib)
@@ -502,7 +502,7 @@ class LibManager:
                 tocheck.extend(list(libs.keys()))
                 flag = True
                 for val in tocheck:
-                    if val not in self.libraries[code]:
+                    if not self._is_lib_available(val, codes):
                         print(error.format(val))
                         flag = False
                 if flag:
@@ -512,7 +512,7 @@ class LibManager:
                 libs = lib.split("-")
                 flag = True
                 for val in libs:
-                    if val not in self.libraries[code]:
+                    if not self._is_lib_available(val, codes):
                         print(error.format(val))
                         flag = False
                 if flag:
@@ -530,6 +530,13 @@ class LibManager:
             if i > 10:
                 raise ValueError("Too many wrong inputs")
         return lib
+
+    def _is_lib_available(self, lib: str, codes: list[str]) -> bool:
+        flag_present = True
+        for code in codes:
+            if lib not in self.libraries[code]:
+                flag_present = False
+        return flag_present
 
     def get_zaid_mass(self, zaid):
         """

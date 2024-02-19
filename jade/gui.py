@@ -42,6 +42,7 @@ date = "10/05/2022"
 version = __version__
 POWERED_BY = "NIER, UNIBO, F4E, UKAEA"
 
+
 def clear_screen():
     if os.name == "nt":
         os.system("cls")
@@ -130,7 +131,7 @@ def mainloop(session: Session):
             uty.restore_default_config(session)
 
         elif option == "trans":
-            newlib = session.lib_manager.select_lib()
+            newlib = session.lib_manager.select_lib(codes=["mcnp"])
             if newlib == "back":
                 mainloop(session)
             if newlib == "exit":
@@ -182,7 +183,7 @@ def mainloop(session: Session):
             fraction_type = uty.input_with_options(message, options)
             materials = input(" Source materials (e.g. m1-m10): ")
             percentages = input(" Materials percentages (e.g. 0.1-0.9): ")
-            lib = session.lib_manager.select_lib()
+            lib = session.lib_manager.select_lib(codes=["mcnp"])
             if lib == "back":
                 mainloop(session)
             if lib == "exit":
@@ -298,7 +299,8 @@ def comploop(session: Session):
 
         elif option == "assess":
             # Select and check library
-            lib = session.lib_manager.select_lib()
+            codes = list(session.check_active_tests("Run").keys())
+            lib = session.lib_manager.select_lib(codes)
             if lib == "back":
                 comploop(session)
             if lib == "exit":
@@ -336,7 +338,8 @@ def comploop(session: Session):
         elif option == "continue":
             # Select and check library
             # Warning: this is done only for sphere test at the moment
-            lib = session.lib_manager.select_lib()
+            codes = list(session.check_active_tests("Run").keys())
+            lib = session.lib_manager.select_lib(codes)
             if lib == "back":
                 comploop(session)
             if lib == "exit":
@@ -432,7 +435,8 @@ def exploop(session: Session):
             # Update the configuration file
             session.conf.read_settings()
             # Select and check library
-            lib = session.lib_manager.select_lib()
+            codes = list(session.check_active_tests("Run", exp=True).keys())
+            lib = session.lib_manager.select_lib(codes)
             if lib == "back":
                 comploop(session)
             if lib == "exit":

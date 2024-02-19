@@ -192,3 +192,9 @@ in the following page of the ``Atlas``.
 To get this kind of plots is enough to follow the same steps mentioned in :ref:`insbin`,
 but the class ``MultipleSpectrumOutput`` must be used. All the other parameters are set in
 the related configuration file (see :ref:`multspectrumconfig`)
+
+In the configuration files, the user can also set the factor by which the experimental data
+and the MCNP results are multiplied. The factor is set in the ``<JADE_root>\Configuration\Benchmarks Configuration\<BenchmarkName>.xlsx``
+configuration file; the factor is set in the ``Multiplying factor`` column, for
+each individual tally. This is useful to avoid superposition of the plots from different
+tallies, and to have a direct comparison of the differences between different cases.

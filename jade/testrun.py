@@ -453,7 +453,7 @@ class Test:
             lib = list(self.lib.values())[0]
         elif isinstance(self.lib, str):
             if "-" in self.lib:
-                lib = self.lib.split("-")[0]  
+                lib = self.lib.split("-")[0]
             else:
                 lib = self.lib
 
@@ -877,17 +877,6 @@ class SphereTest(Test):
             shutil.rmtree(motherdir)
         os.mkdir(motherdir)
 
-        # This can be removed once new folder path updated for all codes.
-        if self.d1s:
-            pass
-            # os.mkdir(os.path.join(motherdir, "d1s"))
-        if self.mcnp:
-            os.mkdir(os.path.join(motherdir, "mcnp"))
-        if self.serpent:
-            os.mkdir(os.path.join(motherdir, "serpent"))
-        if self.openmc:
-            os.mkdir(os.path.join(motherdir, "openmc"))
-
         # GET SETTINGS
         # Zaids
         settings = os.path.join(self.test_conf_path, "ZaidSettings.csv")
@@ -1042,8 +1031,9 @@ class SphereTest(Test):
             outfile, outdir = self._get_zaidtestname(
                 testname, zaid, formula, addtag=addtag
             )
-            outpath = os.path.join(motherdir, "mcnp", outdir)
-            os.mkdir(outpath)
+
+            outpath = os.path.join(motherdir, outdir, "mcnp")
+            os.makedirs(outpath, exist_ok=True)
             outinpfile = os.path.join(outpath, outfile)
             newinp.write(outinpfile)
 
@@ -1073,13 +1063,13 @@ class SphereTest(Test):
             outfile, outdir = self._get_zaidtestname(
                 testname, zaid, formula, addtag=addtag
             )
-            outpath = os.path.join(motherdir, "serpent", outdir)
-            os.mkdir(outpath)
+            outpath = os.path.join(motherdir, outdir, "serpent")
+            os.makedirs(outpath, exist_ok=True)
             outinpfile = os.path.join(outpath, outfile)
             newinp.write(outinpfile)
 
         if self.openmc:
-            # Create MCNP material card
+            # Create OpenMC material card
             submat = mat.SubMaterial("m1", [zaid])
             material = mat.Material(
                 [zaid], None, "m1", submaterials=[submat], density=density
@@ -1097,8 +1087,8 @@ class SphereTest(Test):
             outfile, outdir = self._get_zaidtestname(
                 testname, zaid, formula, addtag=addtag
             )
-            outpath = os.path.join(motherdir, "openmc", outdir)
-            os.mkdir(outpath)
+            outpath = os.path.join(motherdir, outdir, "openmc")
+            os.makedirs(outpath, exist_ok=True)
             newinp.write(outpath, libmanager)
 
     @staticmethod
@@ -1212,8 +1202,9 @@ class SphereTest(Test):
             # Write new input file
             outfile = testname + "_" + truename + "_"
             outdir = testname + "_" + truename
-            outpath = os.path.join(motherdir, "mcnp", outdir)
-            os.mkdir(outpath)
+
+            outpath = os.path.join(motherdir, outdir, "mcnp")
+            os.makedirs(outpath, exist_ok=True)
             outinpfile = os.path.join(outpath, outfile)
             newinp.write(outinpfile)
 
@@ -1240,8 +1231,9 @@ class SphereTest(Test):
             # Write new input file
             outfile = testname + "_" + truename + "_"
             outdir = testname + "_" + truename
-            outpath = os.path.join(motherdir, "serpent", outdir)
-            os.mkdir(outpath)
+
+            outpath = os.path.join(motherdir, outdir, "serpent")
+            os.makedirs(outpath, exist_ok=True)
             outinpfile = os.path.join(outpath, outfile)
             newinp.write(outinpfile)
 
@@ -1260,8 +1252,9 @@ class SphereTest(Test):
             # Write new input file
             outfile = testname + "_" + truename + "_"
             outdir = testname + "_" + truename
-            outpath = os.path.join(motherdir, "openmc", outdir)
-            os.mkdir(outpath)
+
+            outpath = os.path.join(motherdir, outdir, "openmc")
+            os.makedirs(outpath, exist_ok=True)
             newinp.write(outpath, libmanager)
 
     def run(self, config, libmanager, runoption: str) -> None:
@@ -1293,28 +1286,28 @@ class SphereTest(Test):
                 )
 
         if self.mcnp:
-            mcnp_directory = os.path.join(directory, "mcnp")
+            mcnp_directory = os.path.join(directory)
             if pd.isnull(config.mcnp_exec) is not True:
                 for folder in tqdm(os.listdir(mcnp_directory)):
-                    run_directory = os.path.join(mcnp_directory, folder)
+                    run_directory = os.path.join(mcnp_directory, folder, "mcnp")
                     self.run_mcnp(
                         config, libmanager, folder + "_", run_directory, runoption
                     )
 
         if self.serpent:
-            serpent_directory = os.path.join(directory, "serpent")
+            serpent_directory = os.path.join(directory)
             if pd.isnull(config.serpent_exec) is not True:
                 for folder in tqdm(os.listdir(serpent_directory)):
-                    run_directory = os.path.join(serpent_directory, folder)
+                    run_directory = os.path.join(serpent_directory, folder, "serpent")
                     self.run_serpent(
                         config, libmanager, folder + "_", run_directory, runoption
                     )
 
         if self.openmc:
-            openmc_directory = os.path.join(directory, "openmc")
+            openmc_directory = os.path.join(directory)
             if pd.isnull(config.openmc_exec) is not True:
                 for folder in tqdm(os.listdir(openmc_directory)):
-                    run_directory = os.path.join(openmc_directory, folder)
+                    run_directory = os.path.join(openmc_directory, folder, "openmc")
                     self.run_openmc(
                         config, libmanager, folder + "_", run_directory, runoption
                     )
@@ -1323,7 +1316,7 @@ class SphereTest(Test):
 class SphereTestSDDR(SphereTest):
     def __init__(self, *args, **keyargs):
         super().__init__(*args, **keyargs)
-        # Lib needs to be provided in the {activation lib}-{transportlib}
+        # Lib needs to be provided in the {activation lib}-{transportlib} format
         activationlib, transportlib = check_transport_activation(self.lib)
         self.activationlib = activationlib
         self.transportlib = transportlib

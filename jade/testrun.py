@@ -453,122 +453,6 @@ class Test:
             config.batch_system + " " + job_script, cwd=directory, shell=True
         )
 
-    def run_d1s(
-        lib,
-        config,
-        lib_manager,
-        name: str,
-        directory: Path,
-        runoption: str,
-        timeout=None,
-    ) -> bool:
-        """Run D1S simulation either on the command line or submitted as a job.
-
-        Parameters
-        ----------
-        config :
-            Configuration settings
-        lib_manager :
-            libmanager
-        name : str
-            Name of the simulation
-        directory : str, path
-            Directory where the simulation will be executed
-        runoption: str
-            Whether JADE run in parallel or command line
-        timeout : float, optional
-            Maximum time to wait for simulation of complete, by default None
-
-        Returns
-        -------
-        bool
-            Flag if simulation not run
-        """
-
-        # Calculate MPI tasks and OpenMP threads
-        mpi_tasks = int(config.openmp_threads) * int(config.mpi_tasks)
-        omp_threads = 1
-        run_mpi = False
-        if mpi_tasks > 1:
-            run_mpi = True
-
-        executable = config.d1s_exec
-        env_variables = config.d1s_config
-        inputstring = "i=" + name
-        outputstring = "n=" + name
-
-        # Handle 99c-31c format for SDDR benchmarks
-        if isinstance(self.lib, dict):
-            lib = list(self.lib.values())[0]
-        elif isinstance(self.lib, str):
-            if "-" in self.lib:
-                lib = self.lib.split("-")[0]
-            else:
-                lib = self.lib
-
-        xsstring = "xs=" + str(lib_manager.data["d1s"][lib].filename)
-
-        if run_mpi:
-            run_command = [
-                "mpirun",
-                "-n",
-                str(mpi_tasks),
-                executable,
-                inputstring,
-                outputstring,
-                xsstring,
-            ]
-        else:
-            run_command = [executable, inputstring, outputstring, xsstring]
-
-        flagnotrun = False
-
-        try:
-            cwd = os.getcwd()
-            os.chdir(directory)
-            # cancel eventual previous output file
-            outputfile = name + ".o"
-            if os.path.exists(outputfile):
-                os.remove(outputfile)
-
-            # check if runtpe exists
-            runtpe = name + ".r"
-            if os.path.exists(runtpe):
-                command = command + " runtpe=" + name + ".r"
-
-            if runoption.lower() == "c":
-                try:
-                    if not sys.platform.startswith("win"):
-                        unix.configure(env_variables)
-                    print(" ".join(run_command))
-                    subprocess.run(
-                        " ".join(run_command), cwd=directory, shell=True, timeout=43200
-                    )
-
-                except subprocess.TimeoutExpired:
-                    print(
-                        "Sesion timed out after 12 hours. Consider submitting as a job."
-                    )
-                    flagnotrun = True
-
-            elif runoption.lower() == "s":
-                # Run MCNP as a job
-                cwd = os.getcwd()
-                os.chdir(directory)
-                self.job_submission(
-                    config,
-                    directory,
-                    run_command,
-                    mpi_tasks,
-                    omp_threads,
-                    env_variables,
-                )
-                os.chdir(cwd)
-        except subprocess.TimeoutExpired:
-            pass
-
-        return flagnotrun
-
     @staticmethod
     def run_mcnp(
         lib: str,
@@ -611,13 +495,14 @@ class Test:
         mpi_tasks = int(config.openmp_threads) * int(config.mpi_tasks)
         omp_threads = 1
         run_mpi = False
-        if mpi_tasks > 1:
+        if int(config.mpi_tasks) > 1:
             run_mpi = True
 
         executable = config.mcnp_exec
         env_variables = config.mcnp_config
         inputstring = "i=" + name
         outputstring = "n=" + name
+        tasks = "tasks " + config.openmp_threads
 
         if d1s == True:
             xsstring = "xs=" + str(lib_manager.data["d1s"][lib].filename)

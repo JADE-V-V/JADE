@@ -17,35 +17,52 @@ CONFIG_FILE_EXP = os.path.join(resources, "mainconfig.xlsx")
 
 # I don't want to deal with testing the Session object itself for the moment
 class MockUpSession(Session):
-    def __init__(self):
+    def __init__(self, tmpdir):
         self.conf = Configuration(CONFIG_FILE_EXP)
+        self.path_comparison = os.path.join(tmpdir, "Post-Processing", "Comparison")
+        self.path_single = os.path.join(tmpdir, "Post-Processing", "Single_Libraries")
+        self.path_exp_res = os.path.join(resources, "Experimental_Results")
+        self.path_pp = os.path.join(tmpdir, "Post-Processing")
+        self.path_run = os.path.join(resources, "Simulations")
+        self.path_test = resources
+        self.state = None
+        self.path_templates = os.path.join(resources, "templates")
+        self.path_cnf = os.path.join(resources, "Benchmarks_Configuration")
+        self.path_quality = None
+        self.path_uti = None
+        self.path_comparison = os.path.join(tmpdir, "Post-Processing", "Comparisons")
 
 
 class TestExpOutput:
-    @pytest.fixture(autouse=True)
-    def setup(self):
-        session = MockUpSession()
-        config = session.conf.comp_default.set_index("Description")
-        conf = config.iloc[0]
-        session.path_comparison = os.path.join(
-            resources, "Post-Processing", "Comparison"
-        )
-        session.path_single = os.path.join(
-            resources, "Post-Processing", "Single_Libraries"
-        )
-        session.path_exp_res = os.path.join(resources, "Experimental_Results")
-        session.path_pp = os.path.join(resources, "Post-Processing")
-        session.path_run = os.path.join(resources, "Simulations")
-        session.path_test = resources
-        session.state = None
-        session.path_templates = None
-        session.path_cnf = os.path.join(resources, "Benchmarks_Configuration")
-        session.path_quality = None
-        session.path_uti = None
-        session.path_comparison = os.path.join(
-            resources, "Post-Processing", "Comparisons"
-        )
-        self.exp_output = outp.BenchmarkOutput(["32c", "31c"], conf, session)
+    @pytest.fixture()
+    def session_mock(self, tmpdir):
+        session = MockUpSession(tmpdir)
+        return session
 
-    def test_get_exp_results(self):
+    def test_benchmarkoutput(self, session_mock: MockUpSession):
+
+        config = session_mock.conf.comp_default.set_index("Description")
+        conf = config.iloc[1]
+        os.makedirs(session_mock.path_comparison)
+        os.makedirs(session_mock.path_single)
+        self.benchoutput_32c = outp.BenchmarkOutput("32c", conf, session_mock)
+        self.benchoutput_32c.single_postprocess()
+        self.benchoutput_31c = outp.BenchmarkOutput("31c", conf, session_mock)
+        self.benchoutput_31c.single_postprocess()
+        self.benchoutput_comp = outp.BenchmarkOutput(["32c", "31c"], conf, session_mock)
+        self.benchoutput_comp.compare()
+        assert True
+
+    def test_spectrumoutput(self, session_mock: MockUpSession):
+
+        config = session_mock.conf.comp_default.set_index("Description")
+        conf = config.iloc[1]
+        os.makedirs(session_mock.path_comparison)
+        os.makedirs(session_mock.path_single)
+        self.benchoutput_32c = outp.BenchmarkOutput("32c", conf, session_mock)
+        self.benchoutput_32c.single_postprocess()
+        self.benchoutput_31c = outp.BenchmarkOutput("31c", conf, session_mock)
+        self.benchoutput_31c.single_postprocess()
+        self.benchoutput_comp = outp.BenchmarkOutput(["32c", "31c"], conf, session_mock)
+        self.benchoutput_comp.compare()
         assert True

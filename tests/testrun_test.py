@@ -74,7 +74,7 @@ class TestTest:
     files = os.path.join(FILES, "Test")
     dummyout = os.path.join(FILES, "dummy")
 
-    def test_build_normal(self, LM: LibManager, LOGFILE: Log):
+    def test_build_normal(self, LM: LibManager, tmpdir, LOGFILE: Log):
         # Just check that nothing breaks
         lib = "81c"
         inp_name = "ITER_1D"
@@ -89,18 +89,16 @@ class TestTest:
             # "Relative Error cut-off": "F1-0.1",
             "Custom Input": 2,
             "MCNP": True,
+            "OpenMC": True,
+            "Serpent": True,
         }
         config = pd.Series(config_data)
         VRTpath = "dummy"
         conf_path = "dummy"
 
         # Build the test
-        test = Test(inp, lib, config, LOGFILE, VRTpath, conf_path)
-        try:
-            os.mkdir(self.dummyout)
-            test.generate_test(self.dummyout, LM)
-        finally:
-            rmtree(self.dummyout)
+        test = Test(inp, lib, config, LOGFILE, conf_path, runoption='c')
+        test.generate_test(tmpdir, LM)
 
         assert True
 
@@ -199,7 +197,7 @@ class TestMultipleTest:
     files = os.path.join(FILES, "MultipleTest")
     dummyout = os.path.join(FILES, "dummy")
 
-    def test_build(self, LM: LibManager, LOGFILE: Log):
+    def test_build(self, LM: LibManager, tmpdir, LOGFILE: Log):
         # Just check that nothing breaks
         lib = "31c"
         # inp_folder = os.path.join(self.files, "Inputs")
@@ -215,6 +213,8 @@ class TestMultipleTest:
             # "Relative Error cut-off": None,
             "Custom Input": 3,
             "MCNP": True,
+            "OpenMC": True,
+            "Serpent": True,
         }
         config = pd.Series(config_data)
         # VRTpath = "dummy"
@@ -222,9 +222,6 @@ class TestMultipleTest:
 
         # Build the test
         test = MultipleTest(inp, lib, config, LOGFILE, conf_path, runoption="c")
-        try:
-            os.mkdir(self.dummyout)
-            test.generate_test(self.dummyout, LM)
-        finally:
-            rmtree(self.dummyout)
+        test.generate_test(tmpdir, LM)
+
         assert True

@@ -21,12 +21,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 # import pythoncom
 import math
 import os
 import shutil
 import sys
+
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -42,7 +45,9 @@ import jade.excelsupport as exsupp
 import jade.plotter as plotter
 from jade.output import BenchmarkOutput, MCNPoutput, OpenMCOutput
 from jade.configuration import Configuration
-from jade.main import Session
+
+if TYPE_CHECKING:
+    from jade.main import Session
 
 
 class SphereOutput(BenchmarkOutput):

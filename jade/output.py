@@ -21,7 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 
-
+from __future__ import annotations
 import abc
 import os
 import pickle
@@ -29,6 +29,7 @@ import shutil
 import string
 import sys
 
+from typing import TYPE_CHECKING
 import numpy as np
 
 # import xlwings as xw
@@ -41,8 +42,10 @@ import jade.MCTAL_READER2 as mtal
 import jade.plotter as plotter
 from jade.meshtal import Meshtal
 from jade.outputFile import OutputFile
-from jade.main import Session
 from jade.configuration import Configuration
+
+if TYPE_CHECKING:
+    from jade.main import Session
 
 # RED color
 CRED = "\033[91m"

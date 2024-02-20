@@ -13,9 +13,19 @@ Additional dependencies intoduced.
 Please select what type of change this is.
 
 - [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] New benchmark
+    - [ ] Non-breaking change which entirely uses exisiting classes, structure etc
+    - [ ] Breaking change which has implemented new/modified classes etc
+- [ ] New feature 
+    - [ ] Non-breaking change which adds functionality
+    - [ ] Breaking change fix or feature that would cause existing functionality to not work as expected
+
+## Other changes
+
 - [ ] This change requires a documentation update
+- [ ] (If Benchmark) This requires additional data that can be obtained from:
+    - Benchmark data 1
+    - Benchamrk data 2
 
 # Testing
 

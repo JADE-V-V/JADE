@@ -4,10 +4,10 @@
 Usage
 #######################
 Once JADE is correctly configured
-(for additional details see :ref:`config`), the application can be started
-from the 'Code' folder with:
+(for additional details see :ref:`config`), JADE can be launched in the root directory
+(above the Code folder) by typing:
 
-``python main.py``
+``jade``
 
 The main menu is loaded at this point:
 
@@ -28,6 +28,11 @@ Additionaly to these main options, a series of "utilities" can be also accessed
 from the main menu. These are a collection of side-tools initially developed
 for JADE that nevertheless can be useful also as stand-alone tools.
 A detailed description of these functionalities can be found in :ref:`uty`.
+
+If the user is running simulations in JADE, the option to run in the command line
+or submit as a job will be presented. The user should have set appropriate values
+for the number of OMP threads and MPI tasks, and correclty set up their appropriate 
+job submission template (see :ref:`config`).
 
 Quality check menu
 ==================

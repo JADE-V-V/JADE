@@ -41,6 +41,8 @@ import jade.MCTAL_READER2 as mtal
 import jade.plotter as plotter
 from jade.meshtal import Meshtal
 from jade.outputFile import OutputFile
+from jade.main import Session
+from jade.configuration import Configuration
 
 # RED color
 CRED = "\033[91m"
@@ -110,7 +112,7 @@ class AbstractOutput(abc.ABC):
 
 
 class BenchmarkOutput(AbstractOutput):
-    def __init__(self, lib, config, session):
+    def __init__(self, lib, config: Configuration, session: Session):
         """
         General class for a Benchmark output
 

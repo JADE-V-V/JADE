@@ -22,7 +22,10 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import pandas as pd
+import openpyxl
+from copy import copy
 from xlsxwriter.utility import xl_rowcol_to_cell
+from openpyxl.worksheet.worksheet import Worksheet
 
 # def insert_df(startrow, startcolumn, df, ws, header=True):
 #     """
@@ -426,9 +429,10 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
 
     wb.close()
 
+
 def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, std_devs):
     """
-    Produces library comparison excel file for general computation output 
+    Produces library comparison excel file for general computation output
     using XLSXwriter
 
     Parameters
@@ -445,9 +449,9 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
        Difference between reference and target library in terms of
        standard deviations from the mean of the reference library
     summary: Dataframe
-       Contains total number of percentage difference in the column 
+       Contains total number of percentage difference in the column
        within certain bounds
-       
+
     Returns
     -------
     None
@@ -1002,7 +1006,8 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
         },
     )
 
-    wb.close() 
+    wb.close()
+
 
 def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
     """
@@ -1042,9 +1047,7 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
 
     if stats is not None:
         stats.set_index("Zaid", inplace=True)
-        stats.to_excel(
-            writer, startrow=8, startcol=1, sheet_name="Statistical Checks"
-        )
+        stats.to_excel(writer, startrow=8, startcol=1, sheet_name="Statistical Checks")
         stat_sheet = writer.sheets["Statistical Checks"]
         stats_len, stats_width = stats.shape
 
@@ -1059,9 +1062,7 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
         }
     )
     tally_format = wb.add_format({"bg_color": "#D9D9D9"})
-    merge_format = wb.add_format(
-        {"align": "center", "valign": "center", "border": 2}
-    )
+    merge_format = wb.add_format({"align": "center", "valign": "center", "border": 2})
     title_merge_format = wb.add_format(
         {
             "font_size": "36",
@@ -1474,6 +1475,7 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
 
     wb.close()
 
+
 def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summary):
     """
     Produces library comparison excel file for Sphere leakage using XLSXwriter
@@ -1492,9 +1494,9 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
        Difference between reference and target library in terms of
        standard deviations from the mean of the reference library
     summary: Dataframe
-       Contains total number of percentage difference in the column 
+       Contains total number of percentage difference in the column
        within certain bounds
-       
+
     Returns
     -------
     None
@@ -1518,9 +1520,7 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
     std_dev.to_excel(
         writer, startrow=9, startcol=1, sheet_name="Comparison (std. dev.)"
     )
-    absdiff.to_excel(
-        writer, startrow=9, startcol=1, sheet_name="Comparison (abs diff)"
-    )
+    absdiff.to_excel(writer, startrow=9, startcol=1, sheet_name="Comparison (abs diff)")
 
     wb = writer.book
     comp_sheet = writer.sheets["Comparison (%)"]
@@ -1538,9 +1538,7 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
         }
     )
     tally_format = wb.add_format({"bg_color": "#D9D9D9"})
-    merge_format = wb.add_format(
-        {"align": "center", "valign": "center", "border": 2}
-    )
+    merge_format = wb.add_format({"align": "center", "valign": "center", "border": 2})
     title_merge_format = wb.add_format(
         {
             "font_size": "36",
@@ -1794,9 +1792,7 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
         comp_sheet.write_formula(
             row,
             summ_width + 3,
-            "=SUM({start}:{stop})/{len}".format(
-                start=start, stop=stop, len=summ_width
-            ),
+            "=SUM({start}:{stop})/{len}".format(start=start, stop=stop, len=summ_width),
         )
 
     """STANDARD DEVIATIONS FROM MEAN"""
@@ -2069,6 +2065,7 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
 
     wb.close()
 
+
 def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     """
     Produces single library summary excel file for Sphere SDDR using XLSXwriter
@@ -2092,23 +2089,26 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     """
     writer = pd.ExcelWriter(outpath, engine="xlsxwriter")
 
-    #for df in (tallies, errors):
-        #df.set_index("Zaid", inplace=True)
+    # for df in (tallies, errors):
+    # df.set_index("Zaid", inplace=True)
 
     startrow = 10
     startcol = 1
-    
+
     max_len, max_width = results.shape
     results.to_excel(writer, startrow=startrow, startcol=startcol, sheet_name="Values")
     errors.to_excel(writer, startrow=startrow, startcol=startcol, sheet_name="Errors")
-    wb = writer.book   
-    tal_sheet = writer.sheets["Values"]    
+    wb = writer.book
+    tal_sheet = writer.sheets["Values"]
     err_sheet = writer.sheets["Errors"]
-    
+
     if stat_checks is not None:
-        #stats.set_index("Zaid", inplace=True)
+        # stats.set_index("Zaid", inplace=True)
         stat_checks.to_excel(
-            writer, startrow=startrow-1, startcol=startcol-1, sheet_name="Statistical Checks"
+            writer,
+            startrow=startrow - 1,
+            startcol=startcol - 1,
+            sheet_name="Statistical Checks",
         )
         stat_sheet = writer.sheets["Statistical Checks"]
         stats_len, stats_width = stat_checks.shape
@@ -2124,9 +2124,7 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
         }
     )
     tally_format = wb.add_format({"bg_color": "#D9D9D9"})
-    merge_format = wb.add_format(
-        {"align": "center", "valign": "center", "border": 2}
-    )
+    merge_format = wb.add_format({"align": "center", "valign": "center", "border": 2})
     title_merge_format = wb.add_format(
         {
             "font_size": "36",
@@ -2162,14 +2160,18 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     tal_sheet.merge_range(
         "B3:AA7", "SPHERE SDDR TEST RESULTS RECAP: Values", title_merge_format
     )
-    tal_sheet.merge_range(
-        "E8:AA8", "TALLY", subtitle_merge_format
-    )
+    tal_sheet.merge_range("E8:AA8", "TALLY", subtitle_merge_format)
     tal_sheet.merge_range("B8:D9", "ZAID", subtitle_merge_format)
-    tal_sheet.merge_range("E9:J9", "Photon Flux at the External surface [p/cm^2/#s]", subtitle_merge_format)
+    tal_sheet.merge_range(
+        "E9:J9",
+        "Photon Flux at the External surface [p/cm^2/#s]",
+        subtitle_merge_format,
+    )
     tal_sheet.merge_range("K9:P9", "Shut Down Dose Rate [Sv/h]", subtitle_merge_format)
     tal_sheet.merge_range("Q9:V9", "Photon Heating [MeV/#s]", subtitle_merge_format)
-    tal_sheet.merge_range("W9:AA9", "Neutron Flux at the External surface", subtitle_merge_format)
+    tal_sheet.merge_range(
+        "W9:AA9", "Neutron Flux at the External surface", subtitle_merge_format
+    )
     # Freeze title
     tal_sheet.freeze_panes(9, 3)
 
@@ -2188,14 +2190,14 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     # Row Heights
     tal_sheet.set_row(7, 31)
     tal_sheet.set_row(9, 44)
-    
+
     tal_sheet.conditional_format(
         10,
         1,
         8 + max_len,
         max_width + 1,
         {"type": "blanks", "format": oob_format},
-    )    
+    )
     # ERRORS
     # Title
     err_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
@@ -2203,14 +2205,18 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     err_sheet.merge_range(
         "B3:X7", "SPHERE SDDR TEST RESULTS RECAP: Errors", title_merge_format
     )
-    err_sheet.merge_range(
-        "E8:AA8", "TALLY", subtitle_merge_format
-    )
+    err_sheet.merge_range("E8:AA8", "TALLY", subtitle_merge_format)
     err_sheet.merge_range("B8:D9", "ZAID", subtitle_merge_format)
-    err_sheet.merge_range("E9:J9", "Photon Flux at the External surface [p/cm^2/#s]", subtitle_merge_format)
+    err_sheet.merge_range(
+        "E9:J9",
+        "Photon Flux at the External surface [p/cm^2/#s]",
+        subtitle_merge_format,
+    )
     err_sheet.merge_range("K9:P9", "Shut Down Dose Rate [Sv/h]", subtitle_merge_format)
     err_sheet.merge_range("Q9:V9", "Photon Heating [MeV/#s]", subtitle_merge_format)
-    err_sheet.merge_range("W9:AA9", "Neutron Flux at the External surface", subtitle_merge_format)
+    err_sheet.merge_range(
+        "W9:AA9", "Neutron Flux at the External surface", subtitle_merge_format
+    )
     # Freeze title
     err_sheet.freeze_panes(9, 3)
 
@@ -2222,14 +2228,13 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     for i in range(8 + max_len, max_len + 50):
         err_sheet.set_row(i, None, oob_format)
 
-
     # Column widths for errors, set up to 15th col by default to ensure title format correct
     err_sheet.set_column(4, 26, 8)
     err_sheet.set_column(1, max_width + 2, 8)
 
     # Row Heights
     err_sheet.set_row(7, 31)
-    #err_sheet.set_row(8, 73.25)
+    # err_sheet.set_row(8, 73.25)
 
     # Legend
     err_sheet.merge_range("Y3:AA3", "LEGEND", merge_format)
@@ -2245,15 +2250,15 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
 
     # Conditional Formatting
     err_sheet.conditional_format(
-        startrow+1,
-        startcol+3,
+        startrow + 1,
+        startcol + 3,
         startrow + max_len,
         max_width + startcol,
         {"type": "blanks", "format": oob_format},
     )
     err_sheet.conditional_format(
-        startrow+1,
-        startcol+3,
+        startrow + 1,
+        startcol + 3,
         startrow + max_len,
         max_width + startcol,
         {
@@ -2264,8 +2269,8 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
         },
     )
     err_sheet.conditional_format(
-        startrow+1,
-        startcol+3,
+        startrow + 1,
+        startcol + 3,
         startrow + max_len,
         max_width + startcol,
         {
@@ -2277,8 +2282,8 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
         },
     )
     err_sheet.conditional_format(
-        startrow+1,
-        startcol+3,
+        startrow + 1,
+        startcol + 3,
         startrow + max_len,
         max_width + startcol,
         {
@@ -2290,8 +2295,8 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
         },
     )
     err_sheet.conditional_format(
-        startrow+1,
-        startcol+3,
+        startrow + 1,
+        startcol + 3,
         startrow + max_len,
         max_width + startcol,
         {
@@ -2302,8 +2307,8 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
         },
     )
     err_sheet.conditional_format(
-        startrow+1,
-        startcol+3,
+        startrow + 1,
+        startcol + 3,
         startrow + max_len,
         max_width + startcol,
         {
@@ -2315,8 +2320,8 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
         },
     )
     err_sheet.conditional_format(
-        startrow+1,
-        startcol+3,
+        startrow + 1,
+        startcol + 3,
         startrow + max_len,
         max_width + startcol,
         {
@@ -2328,8 +2333,8 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
         },
     )
     err_sheet.conditional_format(
-        startrow+1,
-        startcol+3,
+        startrow + 1,
+        startcol + 3,
         startrow + max_len,
         max_width + startcol,
         {
@@ -2351,8 +2356,8 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
             "SPHERE SDDR TEST RESULTS RECAP: 10 MCNP statistical checks",
             title_merge_format,
         )
-        #stat_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-        #stat_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
+        # stat_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
+        # stat_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
 
         # Freeze title
         stat_sheet.freeze_panes(9, 3)
@@ -2375,16 +2380,16 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
 
         # Formatting
         stat_sheet.conditional_format(
-            startrow-1,
+            startrow - 1,
             startcol,
-            startrow-1 + stats_len,
+            startrow - 1 + stats_len,
             stats_width + startcol,
             {"type": "blanks", "format": plain_format},
         )
         stat_sheet.conditional_format(
-            startrow-1,
+            startrow - 1,
             startcol,
-            startrow-1 + stats_len,
+            startrow - 1 + stats_len,
             stats_width + startcol,
             {
                 "type": "text",
@@ -2394,9 +2399,9 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
             },
         )
         stat_sheet.conditional_format(
-            startrow-1,
+            startrow - 1,
             startcol,
-            startrow-1 + stats_len,
+            startrow - 1 + stats_len,
             stats_width + startcol,
             {
                 "type": "text",
@@ -2406,9 +2411,9 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
             },
         )
         stat_sheet.conditional_format(
-            startrow-1,
+            startrow - 1,
             startcol,
-            startrow-1 + stats_len,
+            startrow - 1 + stats_len,
             stats_width + startcol,
             {
                 "type": "text",
@@ -2419,7 +2424,8 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
         )
 
     wb.close()
- 
+
+
 def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     """
     Produces library comparison excel file for Sphere SDDR using XLSXwriter
@@ -2438,7 +2444,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
        Difference between reference and target library in terms of
        standard deviations from the mean of the reference library
 
-       
+
     Returns
     -------
     None
@@ -2456,9 +2462,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     std_dev.to_excel(
         writer, startrow=9, startcol=1, sheet_name="Comparison (std. dev.)"
     )
-    absdiff.to_excel(
-        writer, startrow=9, startcol=1, sheet_name="Comparison (abs diff)"
-    )
+    absdiff.to_excel(writer, startrow=9, startcol=1, sheet_name="Comparison (abs diff)")
     wb = writer.book
     comp_sheet = writer.sheets["Comparison (%)"]
     std_dev_sheet = writer.sheets["Comparison (std. dev.)"]
@@ -2474,9 +2478,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         }
     )
     tally_format = wb.add_format({"bg_color": "#D9D9D9"})
-    merge_format = wb.add_format(
-        {"align": "center", "valign": "center", "border": 2}
-    )
+    merge_format = wb.add_format({"align": "center", "valign": "center", "border": 2})
     title_merge_format = wb.add_format(
         {
             "font_size": "36",
@@ -2511,14 +2513,18 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     comp_sheet.merge_range(
         "B3:AA7", "SPHERE SDDR TEST COMPARISON: (PERCENTAGE %)", title_merge_format
     )
-    comp_sheet.merge_range(
-        "E8:AA8", "TALLY", subtitle_merge_format
-    )
+    comp_sheet.merge_range("E8:AA8", "TALLY", subtitle_merge_format)
     comp_sheet.merge_range("B8:D9", "ZAID", subtitle_merge_format)
-    comp_sheet.merge_range("E9:J9", "Photon Flux at the External surface [p/cm^2/#s]", subtitle_merge_format)
+    comp_sheet.merge_range(
+        "E9:J9",
+        "Photon Flux at the External surface [p/cm^2/#s]",
+        subtitle_merge_format,
+    )
     comp_sheet.merge_range("K9:P9", "Shut Down Dose Rate [Sv/h]", subtitle_merge_format)
     comp_sheet.merge_range("Q9:V9", "Photon Heating [MeV/#s]", subtitle_merge_format)
-    comp_sheet.merge_range("W9:AA9", "Neutron Flux at the External surface", subtitle_merge_format)
+    comp_sheet.merge_range(
+        "W9:AA9", "Neutron Flux at the External surface", subtitle_merge_format
+    )
     # Freeze title
     comp_sheet.freeze_panes(9, 3)
     # out of bounds
@@ -2700,14 +2706,20 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     std_dev_sheet.merge_range(
         "B3:AA7", "SPHERE SDDR TEST COMPARISON: (PERCENTAGE %)", title_merge_format
     )
-    std_dev_sheet.merge_range(
-        "E8:AA8", "TALLY", subtitle_merge_format
-    )
+    std_dev_sheet.merge_range("E8:AA8", "TALLY", subtitle_merge_format)
     std_dev_sheet.merge_range("B8:D9", "ZAID", subtitle_merge_format)
-    std_dev_sheet.merge_range("E9:J9", "Photon Flux at the External surface [p/cm^2/#s]", subtitle_merge_format)
-    std_dev_sheet.merge_range("K9:P9", "Shut Down Dose Rate [Sv/h]", subtitle_merge_format)
+    std_dev_sheet.merge_range(
+        "E9:J9",
+        "Photon Flux at the External surface [p/cm^2/#s]",
+        subtitle_merge_format,
+    )
+    std_dev_sheet.merge_range(
+        "K9:P9", "Shut Down Dose Rate [Sv/h]", subtitle_merge_format
+    )
     std_dev_sheet.merge_range("Q9:V9", "Photon Heating [MeV/#s]", subtitle_merge_format)
-    std_dev_sheet.merge_range("W9:AA9", "Neutron Flux at the External surface", subtitle_merge_format)
+    std_dev_sheet.merge_range(
+        "W9:AA9", "Neutron Flux at the External surface", subtitle_merge_format
+    )
     # Freeze title
     std_dev_sheet.freeze_panes(9, 3)
     # out of bounds
@@ -2887,16 +2899,24 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     absdiff_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
     absdiff_sheet.merge_range("D1:D2", name, subtitle_merge_format)
     absdiff_sheet.merge_range(
-        "B3:AA7", "SPHERE SDDR TEST COMPARISON: (ABSOLUTE DIFFERENCE)", title_merge_format
+        "B3:AA7",
+        "SPHERE SDDR TEST COMPARISON: (ABSOLUTE DIFFERENCE)",
+        title_merge_format,
+    )
+    absdiff_sheet.merge_range("E8:AA8", "TALLY", subtitle_merge_format)
+    absdiff_sheet.merge_range("B8:D9", "ZAID", subtitle_merge_format)
+    absdiff_sheet.merge_range(
+        "E9:J9",
+        "Photon Flux at the External surface [p/cm^2/#s]",
+        subtitle_merge_format,
     )
     absdiff_sheet.merge_range(
-        "E8:AA8", "TALLY", subtitle_merge_format
+        "K9:P9", "Shut Down Dose Rate [Sv/h]", subtitle_merge_format
     )
-    absdiff_sheet.merge_range("B8:D9", "ZAID", subtitle_merge_format)
-    absdiff_sheet.merge_range("E9:J9", "Photon Flux at the External surface [p/cm^2/#s]", subtitle_merge_format)
-    absdiff_sheet.merge_range("K9:P9", "Shut Down Dose Rate [Sv/h]", subtitle_merge_format)
     absdiff_sheet.merge_range("Q9:V9", "Photon Heating [MeV/#s]", subtitle_merge_format)
-    absdiff_sheet.merge_range("W9:AA9", "Neutron Flux at the External surface", subtitle_merge_format)
+    absdiff_sheet.merge_range(
+        "W9:AA9", "Neutron Flux at the External surface", subtitle_merge_format
+    )
     # Freeze title
     absdiff_sheet.freeze_panes(9, 3)
     # out of bounds
@@ -2929,3 +2949,76 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         },
     )
     wb.close()
+
+
+def copy_sheet(source_sheet: Worksheet, target_sheet: Worksheet) -> None:
+    """Copy a sheet with style, format, layout, ect. from one Excel file
+    to another Excel file.
+
+    Parameters
+    ----------
+    source_sheet : Worksheet
+        sheet to be copied
+    target_sheet : Worksheet
+        destination sheet
+    """
+    _copy_cells(source_sheet, target_sheet)  # copy all the cel values and styles
+    _copy_sheet_attributes(source_sheet, target_sheet)
+
+
+def _copy_sheet_attributes(source_sheet, target_sheet):
+    target_sheet.sheet_format = copy(source_sheet.sheet_format)
+    target_sheet.sheet_properties = copy(source_sheet.sheet_properties)
+    target_sheet.merged_cells = copy(source_sheet.merged_cells)
+    target_sheet.page_margins = copy(source_sheet.page_margins)
+    target_sheet.freeze_panes = copy(source_sheet.freeze_panes)
+
+    # set row dimensions
+    # So you cannot copy the row_dimensions attribute. Does not work (because of meta data in the attribute I think). So we copy every row's row_dimensions. That seems to work.
+    for rn in range(len(source_sheet.row_dimensions)):
+        target_sheet.row_dimensions[rn] = copy(source_sheet.row_dimensions[rn])
+
+    if source_sheet.sheet_format.defaultColWidth is None:
+        print("Unable to copy default column wide")
+    else:
+        target_sheet.sheet_format.defaultColWidth = copy(
+            source_sheet.sheet_format.defaultColWidth
+        )
+
+    # set specific column width and hidden property
+    # we cannot copy the entire column_dimensions attribute so we copy selected attributes
+    for key, value in source_sheet.column_dimensions.items():
+        target_sheet.column_dimensions[key].min = copy(
+            source_sheet.column_dimensions[key].min
+        )  # Excel actually groups multiple columns under 1 key. Use the min max attribute to also group the columns in the targetSheet
+        target_sheet.column_dimensions[key].max = copy(
+            source_sheet.column_dimensions[key].max
+        )  # https://stackoverflow.com/questions/36417278/openpyxl-can-not-read-consecutive-hidden-columns discussed the issue. Note that this is also the case for the width, not onl;y the hidden property
+        target_sheet.column_dimensions[key].width = copy(
+            source_sheet.column_dimensions[key].width
+        )  # set width for every column
+        target_sheet.column_dimensions[key].hidden = copy(
+            source_sheet.column_dimensions[key].hidden
+        )
+
+
+def _copy_cells(source_sheet, target_sheet):
+    for (row, col), source_cell in source_sheet._cells.items():
+        target_cell = target_sheet.cell(column=col, row=row)
+
+        target_cell._value = source_cell._value
+        target_cell.data_type = source_cell.data_type
+
+        if source_cell.has_style:
+            target_cell.font = copy(source_cell.font)
+            target_cell.border = copy(source_cell.border)
+            target_cell.fill = copy(source_cell.fill)
+            target_cell.number_format = copy(source_cell.number_format)
+            target_cell.protection = copy(source_cell.protection)
+            target_cell.alignment = copy(source_cell.alignment)
+
+        if source_cell.hyperlink:
+            target_cell._hyperlink = copy(source_cell.hyperlink)
+
+        if source_cell.comment:
+            target_cell.comment = copy(source_cell.comment)

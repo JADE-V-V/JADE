@@ -39,6 +39,8 @@ import pytest
 ACTIVATION_FILE = os.path.join(cp, "TestFiles", "libmanager", "Activation libs.xlsx")
 XSDIR_FILE = os.path.join(cp, "TestFiles", "libmanager", "xsdir")
 ISOTOPES_FILE = os.path.join(root, "jade", "resources", "Isotopes.txt")
+XSDIR31c_OPENMC = os.path.join(cp, "TestFiles", "libmanager", "31c.xml")
+XSDIR31c_SERPENT = os.path.join(cp, "TestFiles", "libmanager", "xsdir.serp")
 
 # Useful files
 FILES = os.path.join(cp, "TestFiles", "testrun")
@@ -52,16 +54,16 @@ def LOGFILE(tmpdir):
 @pytest.fixture
 def LM():
     df_rows = [
-        ["99c", "sda", "", XSDIR_FILE, XSDIR_FILE],
-        ["98c", "acsdc", "", XSDIR_FILE, XSDIR_FILE],
-        ["21c", "adsadsa", "", XSDIR_FILE, None],
-        ["31c", "adsadas", "", XSDIR_FILE, None],
-        ["00c", "sdas", "", XSDIR_FILE, None],
-        ["71c", "sdasxcx", "", XSDIR_FILE, None],
-        ["81c", "sdasxcx", "yes", XSDIR_FILE, None],
+        ["99c", "sda", "", XSDIR_FILE, XSDIR_FILE, None, None],
+        ["98c", "acsdc", "", XSDIR_FILE, XSDIR_FILE, None, None],
+        ["21c", "adsadsa", "", XSDIR_FILE, None, None, None],
+        ["31c", "adsadas", "", XSDIR_FILE, None, XSDIR31c_OPENMC, XSDIR31c_SERPENT],
+        ["00c", "sdas", "", XSDIR_FILE, None, None, None],
+        ["71c", "sdasxcx", "", XSDIR_FILE, None, None, None],
+        ["81c", "sdasxcx", "yes", XSDIR_FILE, None, None, None],
     ]
     df_lib = pd.DataFrame(df_rows)
-    df_lib.columns = ["Suffix", "Name", "Default", "MCNP", "d1S"]
+    df_lib.columns = ["Suffix", "Name", "Default", "MCNP", "d1S", "OpenMC", "Serpent"]
 
     return LibManager(
         df_lib, activationfile=ACTIVATION_FILE, isotopes_file=ISOTOPES_FILE
@@ -137,7 +139,7 @@ class TestSphereTest:
     files = os.path.join(FILES, "SphereTest")
     dummyout = os.path.join(FILES, "dummy")
 
-    def test_build(self, LM: LibManager, LOGFILE: Log):
+    def test_build(self, LM: LibManager, LOGFILE: Log, tmpdir):
         # Just check that nothing breaks
         lib = "31c"
         inp_name = "Sphere"
@@ -152,17 +154,16 @@ class TestSphereTest:
             "Relative Error cut-off": None,
             "Custom Input": 3,
             "MCNP": True,
+            "OpenMC": True,
+            "Serpent": True,
         }
         config = pd.Series(config_data)
         conf_path = os.path.join(self.files, "Spherecnf")
 
         # Build the test
         test = SphereTest(inp, lib, config, LOGFILE, conf_path, runoption="c")
-        try:
-            os.mkdir(self.dummyout)
-            test.generate_test(self.dummyout, LM)
-        finally:
-            rmtree(self.dummyout)
+        test.generate_test(tmpdir, LM)
+
         assert True
 
 

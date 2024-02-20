@@ -540,7 +540,7 @@ class Status:
             # print('entered in key error')
             return False
 
-    def check_override_pp(self, session: Session, exp=False):
+    def check_override_pp(self, session: Session, exp: bool = False, force_one_lib: bool = False):
         """
         Asks for the library/ies to post-process and checks which tests have
         already been performed and would be overidden according to the
@@ -554,6 +554,9 @@ class Status:
             JADE session
         exp: boolean
             if True checks the experimental benchmarks. Default is False
+        force_one_lib: boolean
+            if True raise exit the loop if the user tries to check more than
+            one library. Default is False.
 
         Returns
         -------
@@ -580,6 +583,9 @@ class Status:
         else:
             if len(libs) == 1:
                 tagpp = "Single Libraries"
+            elif len(libs) > 1 and force_one_lib:
+                print("Please select only one library")
+                return False, None, None
             else:
                 tagpp = "Comparison"
 

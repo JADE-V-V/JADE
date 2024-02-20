@@ -570,7 +570,9 @@ def pploop(session: Session):
             # Update the configuration file
             session.conf.read_settings()
             # Select and check library
-            ans, to_single_pp, lib_input = session.state.check_override_pp(session)
+            ans, to_single_pp, lib_input = session.state.check_override_pp(
+                session, force_one_lib=True
+            )
             if lib_input == "back":
                 pploop(session)
             if lib_input == "exit":

@@ -25,6 +25,7 @@ import math
 import os
 
 import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 import numpy as np
 import pandas as pd
 from matplotlib.lines import Line2D

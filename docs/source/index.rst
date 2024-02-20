@@ -7,8 +7,10 @@ Welcome to JADE's documentation!
 ================================
 Version: |release|
 
-JADE is a new tool for nuclear libraries V&V.
-Brought to you by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E).
+JADE is a tool for nuclear libraries V&V.
+Development was initially started by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E),
+and it is today carried out mainly by F4E and the United Kingdom Atomic Energy Authority (UKAEA).
+You can find an up to date and detailed list of contributors in the :ref:`contributor_list` section.
 
 JADE is an open-source software licensed under the :ref:`gnulicense`.
 When using JADE for scientific publications you are kindly encouraged to cite the following papers:

@@ -8,10 +8,8 @@ JADE project was originally started as a joint effort between between `NIER inge
 `Università di Bologna (UNIBO) <https://ingegneriaindustriale.unibo.it/it>`_
 and `Fusion For Energy (F4E) <https://fusionforenergy.europa.eu/>`_.
 
-Nowadays new development is mostly carried on by F4E and the United Kingdom Atomic Energy Authority (UKAEA), more
-specifically by the `Culham Centre for Fusion Energy (CCFE) <https://ccfe.ukaea.uk/>`_.
-
-F4E is currently acting as the project coordinator.
+Nowadays new development is mostly carried on by F4E and the
+`United Kingdom Atomic Energy Authority (UKAEA) <https://ccfe.ukaea.uk/>`_.
 
 This activity was partially funded by Fusion For Energy under F4E-OPE-1128 contract.
 
@@ -62,8 +60,8 @@ This activity was partially funded by Fusion For Energy under F4E-OPE-1128 contr
       - ivan.kodeli@ukaea.uk
     * - Laghi
       - Davide
-      - Technical Leader & Approver
-      - ATG at F4E (prev. NIER/UNIBO)
+      - Approver
+      - F4E (prev. NIER/UNIBO)
       - davide.laghi@ext.f4e.europa.eu
     * - Sumini
       - Marco
@@ -72,12 +70,22 @@ This activity was partially funded by Fusion For Energy under F4E-OPE-1128 contr
       - marco.sumini@unibo.it
     * - Valentine
       - Alex 
-      - Committer
+      - Approver
       - UKAEA
       - alex.valentine@ukaea.uk
     * - Wheeler
-      - Dylan 
+      - Trinity
       - Committer
       - UKAEA
-      - dylan.wheeler@ukaea.uk
+      - trinity.wheeler@ukaea.uk
+    * - Adam
+      - Parsons 
+      - Committer
+      - UKAEA
+      - adam.parsons@ukaea.uk
+    * - Jez
+      - Swann 
+      - Committer
+      - UKAEA
+      - jez.swann@ukaea.uk
 

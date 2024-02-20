@@ -1401,17 +1401,17 @@ class SphereSDDRoutput(SphereOutput):
         self.results = {}
         self.errors = {}
         self.stat_checks = {}
-        if self.mcnp:
+        if self.d1s:
             #template = os.path.join(os.getcwd(), "templates", "SphereSDDR_single.xlsx")
             outpath = os.path.join(
-                self.excel_path_mcnp, "SphereSDDR_single_" + self.lib + ".xlsx"
+                self.excel_path_d1s, "SphereSDDR_single_" + self.lib + ".xlsx"
             )
             # compute the results
-            results, errors, stat_checks = self._compute_single_results()
-            self.outputs["mcnp"] = outputs
-            self.results["mcnp"] = results
-            self.errors["mcnp"] = errors
-            self.stat_checks["mcnp"] = stat_checks
+            outputs, results, errors, stat_checks = self._compute_single_results()
+            self.outputs["d1s"] = outputs
+            self.results["d1s"] = results
+            self.errors["d1s"] = errors
+            self.stat_checks["d1s"] = stat_checks
             # Write excel
             #ex = SphereExcelOutputSheet(template, outpath)
             # Results
@@ -1435,10 +1435,10 @@ class SphereSDDRoutput(SphereOutput):
 
         """
         #template = os.path.join(os.getcwd(), "templates", "SphereSDDR_comparison.xlsx")
-        if self.mcnp:
+        if self.d1s:
             for reflib, tarlib, name in self.couples:
                 outpath = os.path.join(
-                    self.excel_path_mcnp, "Sphere_SDDR_comparison_" + name + ".xlsx"
+                    self.excel_path_d1s, "Sphere_SDDR_comparison_" + name + ".xlsx"
                 )
                 final, absdiff, std_dev = self._compute_compare_result(reflib, tarlib)
 
@@ -1597,8 +1597,8 @@ class SphereSDDRoutput(SphereOutput):
             # 1) collect zaid-mt couples in libraries and keep only the ones
             #    that appears on the reference + at least one lib
             # Build a df will all possible zaid, mt, lib combination
-            if self.mcnp:
-                allkeys = list(self.outputs["mcnp"].keys())
+            if self.d1s:
+                allkeys = list(self.outputs["d1s"].keys())
             df = pd.DataFrame(allkeys)
             df.columns = ["zaid", "mt", "lib"]
             df["zaid-mt"] = df["zaid"].astype(str) + "-" + df["mt"].astype(str)
@@ -1721,14 +1721,14 @@ class SphereSDDRoutput(SphereOutput):
 
         ########
         print(" Building...")
-        if self.mcnp:
-            atlas.save(self.atlas_path_mcnp)
+        if self.d1s:
+            atlas.save(self.atlas_path_d1s)
         # Remove tmp images
         shutil.rmtree(outpath)
 
     def _extract_data4plots(self, zaid, mt, lib, time):
-        if self.mcnp:  
-            tallies = self.outputs["mcnp"][zaid, mt, lib].tallydata
+        if self.d1s:  
+            tallies = self.outputs["d1s"][zaid, mt, lib].tallydata
         # Extract values
         nflux = tallies[12].set_index("Energy").drop("total")
         nflux = nflux.sum().loc["Value"]
@@ -1756,15 +1756,15 @@ class SphereSDDRoutput(SphereOutput):
 
         """
         # Get results
-        results = []
-        errors = []
-        stat_checks = []
+        #results = []
+        #errors = []
+        #stat_checks = []
         desc = " Parsing Outputs: "
-        for folder in tqdm(os.listdir(self.test_path), desc=desc):
-            res, err, st_ck = self._parserunmcnp(self.test_path, folder, self.lib)
-            results.append(res)
-            errors.append(err)
-            stat_checks.append(st_ck)
+        if self.d1s:
+            #for folder in tqdm(os.listdir(self.test_path), desc=desc):
+            outputs, results, errors, stat_checks = self._parserunmcnp(self.test_path, self.lib)
+
+            self.outputs["d1s"] = outputs
 
         # Generate DataFrames
         results = pd.concat(results, axis=1).T
@@ -1778,11 +1778,8 @@ class SphereSDDRoutput(SphereOutput):
             df.set_index("Parent")
 
         # self.outputs = outputs
-        self.results["mcnp"] = results
-        self.errors["mcnp"] = errors
-        self.stat_checks["mcnp"] = stat_checks
 
-        return results, errors, stat_checks
+        return outputs, results, errors, stat_checks
 
     def _compute_compare_result(self, reflib, tarlib):
         """
@@ -1802,22 +1799,24 @@ class SphereSDDRoutput(SphereOutput):
             relative comparison table.
         absdiff : pd.DataFrame
             absolute comparison table.
+        std_dev: 
+            comparison in std. dev. from mean table
 
         """
         # Get results both of the reflib and tarlib
         comp_dfs = []
         error_dfs = []
+        outputs = {}
         test_paths = [self.test_path[reflib], self.test_path[tarlib]]
         libs = [reflib, tarlib]
         for test_path, lib in zip(test_paths, libs):
             results = []
             errors = []
             # Extract all the series from the different reactions
-            for folder in os.listdir(test_path):
-                # Collect the data
-                res, err, _ = self._parserunmcnp( test_path, folder, lib)
-                results.append(res)
-                errors.append(err)    
+            # Collect the data
+            outputs, res, err, _ = self._parserunmcnp(test_path, lib)
+            results.append(res)
+            errors.append(err)    
             # Build the df and sort
             comp_df = pd.concat(results, axis=1).T
             error_df = pd.concat(errors, axis=1).T
@@ -1880,7 +1879,7 @@ class SphereSDDRoutput(SphereOutput):
 
         return (flag, zaid, mt)
 
-    def _parserunmcnp(self, test_path, folder, lib):
+    def _parserunmcnp(self, test_path, lib):
         """
         given a MCNP run folder the parsing of the different outputs is
         performed
@@ -1902,49 +1901,60 @@ class SphereSDDRoutput(SphereOutput):
             DESCRIPTION.
         st_ck : TYPE
             DESCRIPTION.
+        output : MCNPoutput
+            MCNP output object
 
         """
-        results_path = os.path.join(test_path, folder, "mcnp")
-        pieces = folder.split("_")
-        # Get zaid
-        zaidnum = pieces[1]
-        # Check for material exception
-        try:
-            zaidname = self.mat_settings.loc[zaidnum, "Name"]
-            mt = "All"
-        except KeyError:
-            # it is a simple zaid
-            zaidname = pieces[2]
-            mt = pieces[3] 
-        # Get mfile
-        for file in os.listdir(results_path):
-            if file[-1] == "m":                    
-                mfile = file
-            elif file[-1] == "o":
-                ofile = file
-            # Parse output
-        output = SphereSDDRMCNPoutput(
-            os.path.join(results_path, mfile), os.path.join(results_path, ofile)
-        )
-        self.outputs["mcnp"][zaidnum, mt, lib] = output
-        # Adjourn raw Data
-        self.raw_data["mcnp"][zaidnum, mt, lib] = output.tallydata
-        # Recover statistical checks
-        st_ck = output.stat_checks
-        # Recover results and precisions
-        res, err = output.get_single_excel_data()
-        for series in [res, err, st_ck]:
-            series["Parent"] = zaidnum
-            series["Parent Name"] = zaidname
-            series["MT"] = mt
+        results = []
+        errors = []
+        stat_checks = []
+        outputs = {}
+        for folder in os.listdir(test_path):
+            results_path = os.path.join(test_path, folder, "d1s")
+            pieces = folder.split("_")
+            # Get zaid
+            zaidnum = pieces[1]
+            # Check for material exception
+            try:
+                zaidname = self.mat_settings.loc[zaidnum, "Name"]
+                mt = "All"
+            except KeyError:
+                # it is a simple zaid
+                zaidname = pieces[2]
+                mt = pieces[3] 
+            # Get mfile
+            for file in os.listdir(results_path):
+                if file[-1] == "m":                    
+                    mfile = file
+                elif file[-1] == "o":
+                    ofile = file
+                # Parse output
+            output = SphereSDDRMCNPoutput(
+                os.path.join(results_path, mfile), os.path.join(results_path, ofile)
+            )
 
-        return res, err, st_ck
+            outputs[zaidnum, mt, lib] = output
+            # Adjourn raw Data
+            #self.raw_data["mcnp"][zaidnum, mt, lib] = output.tallydata
+            # Recover statistical checks
+            st_ck = output.stat_checks
+            # Recover results and precisions
+            res, err = output.get_single_excel_data()
+            for series in [res, err, st_ck]:
+                series["Parent"] = zaidnum
+                series["Parent Name"] = zaidname
+                series["MT"] = mt
+            results.append(res)
+            errors.append(err)
+            stat_checks.append(st_ck)
+        
+        return outputs, results, errors, stat_checks
 
     def print_raw(self):
         for key, data in self.raw_data.items():
             # build a folder containing each tally of the reaction
             foldername = "{}_{}".format(key[0], key[1])
-            folder = os.path.join(self.raw_path_mcnp, foldername)
+            folder = os.path.join(self.raw_path_d1s, foldername)
             os.mkdir(folder)
             # Dump all tallies
             for tallynum, df in data.items():

@@ -206,20 +206,20 @@ class TestLibManger:
         zaidnum = lm.get_zaidnum(zaid)
         assert zaidnum == "92235"
 
-    def test_select_lib(self, monkeypatch, lm):
+    def test_select_lib(self, monkeypatch, lm: LibManager):
         # monkeypatch the "input" function
 
         # Good trials
         for lib in ["31c", '{"21c": "31c", "00c": "71c"}', "21c-31c"]:
             monkeypatch.setattr("builtins.input", lambda _: lib)
-            selectedlib = lm.select_lib()
+            selectedlib = lm.select_lib(codes=["mcnp"])
             assert selectedlib == lib
 
         # Not found
         for lib in ["44c", '{"21c": "44c", "44c": "71c"}', "21c-44c"]:
             monkeypatch.setattr("builtins.input", lambda _: lib)
             try:
-                selectedlib = lm.select_lib()
+                selectedlib = lm.select_lib(codes=["mcnp"])
                 print(lib)
                 assert False
             except ValueError:

@@ -402,7 +402,7 @@ def get_reaction_file(session, outpath=None):
     message = " Please select a D1S input file: "
     filepath = select_inputfile(message)
     # Select the library
-    lib = session.lib_manager.select_lib()
+    lib = session.lib_manager.select_lib(codes=["d1s"])
 
     # Generate a D1S input
     inputfile = D1S_Input.from_text(filepath)

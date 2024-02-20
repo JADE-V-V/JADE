@@ -585,13 +585,14 @@ class Test:
         mpi_tasks = int(config.openmp_threads) * int(config.mpi_tasks)
         omp_threads = 1
         run_mpi = False
-        if mpi_tasks > 1:
+        if int(config.mpi_tasks) > 1:
             run_mpi = True
 
         executable = config.mcnp_exec
         env_variables = config.mcnp_config
         inputstring = "i=" + name
         outputstring = "n=" + name
+        tasks = "tasks " + config.openmp_threads
 
         xsstring = "xs=" + str(lib_manager.data["mcnp"][lib].filename)
 
@@ -606,7 +607,7 @@ class Test:
                 xsstring,
             ]
         else:
-            run_command = [executable, inputstring, outputstring, xsstring]
+            run_command = [executable, inputstring, outputstring, tasks, xsstring]
 
         flagnotrun = False
 

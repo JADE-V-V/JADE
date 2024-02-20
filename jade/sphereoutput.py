@@ -69,12 +69,20 @@ class SphereOutput(BenchmarkOutput):
         print(" Dumping Raw Data...")
         self.print_raw()
         print(" Generating plots...")
-        # outpath = os.path.join(self.atlas_path, 'tmp')
-        # os.mkdir(outpath)
-        self._generate_single_plots()
+        if self.mcnp:
+            outpath = os.path.join(self.atlas_path_mcnp, 'tmp')
+        if self.serpent:
+            outpath = os.path.join(self.atlas_path_serpent, 'tmp')
+        if self.openmc:
+            outpath = os.path.join(self.atlas_path_openmc, 'tmp')
+        if self.d1s:
+            outpath = os.path.join(self.atlas_path_d1s, 'tmp')
+        if not os.path.exists(outpath):
+            os.mkdir(outpath)
+        self._generate_single_plots(outpath)
         print(" Single library post-processing completed")
 
-    def _generate_single_plots(self):
+    def _generate_single_plots(self, outpath):
         """
         Generate all the requested plots in a temporary folder
 
@@ -90,42 +98,10 @@ class SphereOutput(BenchmarkOutput):
         """
 
         for code, outputs in self.outputs.items():
-            # outpath = os.path.join(self.atlas_path, "tmp")
-            # if not os.path.exists(outpath):
-            # os.mkdir(outpath)
-            """
-            if self.mcnp:
-                outpath = os.path.join(self.atlas_path_mcnp, 'tmp')
-                if not os.path.exists(outpath):
-                    os.mkdir(outpath)
-            if self.serpent:
-                outpath = os.path.join(self.atlas_path_serpent, 'tmp')
-                #if not os.path.exists(serpent_outpath):
-                    #os.mkdir(serpent_outpath)
-            if self.openmc:
-                outpath = os.path.join(self.atlas_path_openmc, 'tmp')
-                if not os.path.exists(outpath):
-                    os.mkdir(outpath)
-            if self.d1s:
-                d1s_outpath = os.path.join(self.atlas_path_d1s, 'tmp')
-                #if not os.path.exists(d1s_outpath):
-                    #os.mkdir(d1s_outpath)
-            """
             for tally, title, quantity, unit in [
-                (4, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
-            ]:
-                out_type = str(type(list(outputs.values())[0]).__name__)
-                if out_type == "SphereMCNPoutput":
-                    outpath = os.path.join(self.atlas_path_mcnp, "tmp")
-                if out_type == "SphereSerpentOutput":
-                    outpath = os.path.join(self.atlas_path_serpent, "tmp")
-                if out_type == "SphereOpenMCOutput":
-                    outpath = os.path.join(self.atlas_path_openmc, "tmp")
-                if out_type == "SphereD1Soutput":
-                    outpath = os.path.join(self.atlas_path_d1s, "tmp")
-                if not os.path.exists(outpath):
-                    os.mkdir(outpath)
+                (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
+                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
+            ]:               
                 print(" Plotting tally n." + str(tally))
                 for zaidnum, output in tqdm(outputs.items()):
                     title = title
@@ -210,30 +186,25 @@ class SphereOutput(BenchmarkOutput):
 
         # Plot everything
         print(" Generating Plots Atlas...")
-        self._generate_plots(libraries, allzaids, outputs, globalname)
+        if self.mcnp:
+            outpath = os.path.join(self.atlas_path_mcnp, 'tmp')
+        if self.serpent:
+            outpath = os.path.join(self.atlas_path_serpent, 'tmp')
+        if self.openmc:
+            outpath = os.path.join(self.atlas_path_openmc, 'tmp')
+        if self.d1s:
+            outpath = os.path.join(self.atlas_path_d1s, 'tmp')
+        if not os.path.exists(outpath):
+            os.mkdir(outpath)
+        self._generate_plots(libraries, allzaids, outputs, globalname, outpath)
         print(" Comparison post-processing completed")
 
-    def _generate_plots(self, libraries, allzaids, outputs, globalname):
-        # for lib, outputs in self.outputs.items():
-        #    print(lib, outputs)
+    def _generate_plots(self, libraries, allzaids, outputs, globalname, outpath):
         for code, code_outputs in self.outputs.items():
             for tally, title, quantity, unit in [
-                (4, "Leakage Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (14, "Leakage Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
+                (2, "Leakage Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
+                (32, "Leakage Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
             ]:
-                out_type = str(
-                    type(list(list(code_outputs.values())[0].values())[0]).__name__
-                )
-                if out_type == "SphereMCNPoutput":
-                    outpath = os.path.join(self.atlas_path_mcnp, "tmp")
-                if out_type == "SphereSerpentOutput":
-                    outpath = os.path.join(self.atlas_path_serpent, "tmp")
-                if out_type == "SphereOpenMCOutput":
-                    outpath = os.path.join(self.atlas_path_openmc, "tmp")
-                if out_type == "SphereD1Soutput":
-                    outpath = os.path.join(self.atlas_path_d1s, "tmp")
-                if not os.path.exists(outpath):
-                    os.mkdir(outpath)
                 print(" Plotting tally n." + str(tally))
                 for zaidnum in tqdm(allzaids):
                     # title = title
@@ -299,9 +270,9 @@ class SphereOutput(BenchmarkOutput):
         errors = []
         stat_checks = []
         outputs = {}
-        test_path_mcnp = os.path.join(self.test_path, "mcnp")
-        for folder in os.listdir(test_path_mcnp):
-            results_path = os.path.join(test_path_mcnp, folder)
+        #test_path_mcnp = os.path.join(self.test_path, "mcnp")
+        for folder in os.listdir(self.test_path):
+            results_path = os.path.join(self.test_path, folder, "mcnp")
             pieces = folder.split("_")
             # Get zaid
             zaidnum = pieces[-2]
@@ -459,8 +430,8 @@ class SphereOutput(BenchmarkOutput):
 
             #    df.set_index(['Zaid', 'Zaid Name'], inplace=True)
             #    df.reset_index(inplace=True)
-            self.sphere_single_excel_writer(
-                outpath, self.lib, results, errors, stat_checks
+            exsupp.sphere_single_excel_writer(
+                self, outpath, self.lib, results, errors, stat_checks
             )
 
         if self.serpent:
@@ -559,475 +530,7 @@ class SphereOutput(BenchmarkOutput):
         # ex.wb.sheets[0].range('D1').value = lib_name
         # ex.save()
 
-    def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
-        """
-        Produces single library summary excel file using XLSXwriter
-
-        Parameters
-        ----------
-        outpath : path or str
-            path to the output in Tests/Postprocessing.
-        lib : str
-            Shorthand representation of data library (i.e 00c, 31c).
-        values : Dataframe
-            Summary of tally values
-        errors: Dataframe
-            Errors on tally values
-        stats: Dataframe
-            Results of statistical checks
-
-        Returns
-        -------
-        None
-        """
-        writer = pd.ExcelWriter(outpath, engine="xlsxwriter")
-
-        for df in (values, errors):
-            df.set_index("Zaid", inplace=True)
-
-        values.to_excel(writer, startrow=8, startcol=1, sheet_name="Values")
-        errors.to_excel(writer, startrow=8, startcol=1, sheet_name="Errors")
-
-        wb = writer.book
-        val_sheet = writer.sheets["Values"]
-        err_sheet = writer.sheets["Errors"]
-
-        values_len, values_width = values.shape
-        errors_len, errors_width = errors.shape
-
-        if stats is not None:
-            stats.set_index("Zaid", inplace=True)
-            stats.to_excel(
-                writer, startrow=8, startcol=1, sheet_name="Statistical Checks"
-            )
-            stat_sheet = writer.sheets["Statistical Checks"]
-            stats_len, stats_width = stats.shape
-
-        # Formatting styles
-        plain_format = wb.add_format({"bg_color": "#FFFFFF"})
-        oob_format = wb.add_format(
-            {
-                "align": "center",
-                "valign": "center",
-                "bg_color": "#D9D9D9",
-                "text_wrap": True,
-            }
-        )
-        tally_format = wb.add_format({"bg_color": "#D9D9D9"})
-        merge_format = wb.add_format(
-            {"align": "center", "valign": "center", "border": 2}
-        )
-        title_merge_format = wb.add_format(
-            {
-                "font_size": "36",
-                "align": "center",
-                "valign": "center",
-                "bold": True,
-                "border": 2,
-            }
-        )
-        subtitle_merge_format = wb.add_format(
-            {
-                "font_size": "16",
-                "align": "center",
-                "valign": "center",
-                "bold": True,
-                "border": 2,
-            }
-        )
-        legend_text_format = wb.add_format({"align": "center", "bg_color": "white"})
-        red_cell_format = wb.add_format({"bg_color": "red"})
-        orange_cell_format = wb.add_format({"bg_color": "orange"})
-        yellow_cell_format = wb.add_format({"bg_color": "yellow"})
-        green_cell_format = wb.add_format({"bg_color": "#A6D86E"})
-        value_allzero_format = wb.add_format({"bg_color": "#EDEDED"})
-        value_belowzero_format = wb.add_format({"bg_color": "#FFC7CE"})
-        value_abovezero_format = wb.add_format({"bg_color": "#C6EFCE"})
-
-        # VALUES
-
-        # Title Format
-        val_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
-        val_sheet.merge_range("D1:D2", lib, subtitle_merge_format)
-        val_sheet.merge_range(
-            "B3:L7", "SPHERE LEAKAGE TEST RESULTS RECAP: VALUES", title_merge_format
-        )
-        val_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-        val_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
-
-        # Freeze title
-        val_sheet.freeze_panes(9, 0)
-
-        # out of bounds
-        val_sheet.set_column(0, 0, 4, oob_format)
-        val_sheet.set_column(values_width + 2, 1000, 18, oob_format)
-        for i in range(9):
-            val_sheet.set_row(i, None, oob_format)
-        for i in range(9 + values_len, 1000):
-            val_sheet.set_row(i, None, oob_format)
-
-        # Column widths for values, set up to 15th col to ensure title format correct
-        val_sheet.set_column(1, 14, 20)
-        val_sheet.set_column(1, values_width + 2, 20)
-
-        # Row Heights
-        val_sheet.set_row(7, 31)
-        val_sheet.set_row(8, 73.25)
-
-        # Legend
-        val_sheet.merge_range("N3:O3", "LEGEND", merge_format)
-        val_sheet.merge_range("N8:O8", "According to MCNP manual", oob_format)
-        val_sheet.write("N4", "", red_cell_format)
-        val_sheet.write("O4", ">|5|%", legend_text_format)
-        val_sheet.write("N5", "", orange_cell_format)
-        val_sheet.write("O5", "|1|%≤|5|%", legend_text_format)
-        val_sheet.write("N6", "", yellow_cell_format)
-        val_sheet.write("O6", "|0.5|%≤|1|%", legend_text_format)
-        val_sheet.write("N7", "", green_cell_format)
-        val_sheet.write("O7", "<|0.5|%", legend_text_format)
-
-        # Conditional Formatting
-        val_sheet.conditional_format(
-            9,
-            3,
-            8 + values_len,
-            values_width + 1,
-            {"type": "blanks", "format": plain_format},
-        )
-        val_sheet.conditional_format(
-            9,
-            3,
-            8 + values_len,
-            values_width + 1,
-            {
-                "type": "text",
-                "criteria": "containing",
-                "value": "Value = 0",
-                "format": value_allzero_format,
-            },
-        )
-        val_sheet.conditional_format(
-            9,
-            3,
-            8 + values_len,
-            values_width + 1,
-            {
-                "type": "text",
-                "criteria": "containing",
-                "value": "Value < 0",
-                "format": value_belowzero_format,
-            },
-        )
-        val_sheet.conditional_format(
-            9,
-            3,
-            8 + values_len,
-            values_width + 1,
-            {
-                "type": "text",
-                "criteria": "containing",
-                "value": "Value > 0",
-                "format": value_abovezero_format,
-            },
-        )
-        val_sheet.conditional_format(
-            9,
-            3,
-            8 + values_len,
-            values_width + 1,
-            {
-                "type": "cell",
-                "criteria": "greater than",
-                "value": 0.05,
-                "format": red_cell_format,
-            },
-        )
-        val_sheet.conditional_format(
-            9,
-            3,
-            8 + values_len,
-            values_width + 1,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": 0.01,
-                "maximum": 0.05,
-                "format": orange_cell_format,
-            },
-        )
-        val_sheet.conditional_format(
-            9,
-            3,
-            8 + values_len,
-            values_width + 1,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": 0.005,
-                "maximum": 0.01,
-                "format": yellow_cell_format,
-            },
-        )
-        val_sheet.conditional_format(
-            9,
-            3,
-            8 + values_len,
-            values_width + 1,
-            {
-                "type": "cell",
-                "criteria": "less than",
-                "value": -0.05,
-                "format": red_cell_format,
-            },
-        )
-        val_sheet.conditional_format(
-            9,
-            3,
-            8 + values_len,
-            values_width + 1,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": -0.05,
-                "maximum": -0.01,
-                "format": orange_cell_format,
-            },
-        )
-        val_sheet.conditional_format(
-            9,
-            3,
-            8 + values_len,
-            values_width + 1,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": -0.01,
-                "maximum": -0.005,
-                "format": yellow_cell_format,
-            },
-        )
-        val_sheet.conditional_format(
-            9,
-            3,
-            8 + values_len,
-            values_width + 1,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": -0.005,
-                "maximum": 0.005,
-                "format": green_cell_format,
-            },
-        )
-
-        # ERRORS
-
-        # Title
-        err_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
-        err_sheet.merge_range("D1:D2", lib, subtitle_merge_format)
-        err_sheet.merge_range(
-            "B3:L7", "SPHERE LEAKAGE TEST RESULTS RECAP: ERRORS", title_merge_format
-        )
-        err_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-        err_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
-
-        # Freeze title
-        err_sheet.freeze_panes(9, 0)
-
-        # out of bounds
-        err_sheet.set_column(0, 0, 4, oob_format)
-        err_sheet.set_column(errors_width + 2, 1000, 18, oob_format)
-        for i in range(9):
-            err_sheet.set_row(i, None, oob_format)
-        for i in range(9 + errors_len, 1000):
-            err_sheet.set_row(i, None, oob_format)
-
-        # Column widths for errors, set up to 15th col by default to ensure title format correct
-        err_sheet.set_column(1, 14, 20)
-        err_sheet.set_column(1, errors_width + 2, 20)
-
-        # Row Heights
-        err_sheet.set_row(7, 31)
-        err_sheet.set_row(8, 73.25)
-
-        # Legend
-        err_sheet.merge_range("N3:O3", "LEGEND", merge_format)
-        err_sheet.merge_range("N8:O8", "According to MCNP manual", oob_format)
-        err_sheet.write("N4", "", red_cell_format)
-        err_sheet.write("O4", "> 50%", legend_text_format)
-        err_sheet.write("N5", "", orange_cell_format)
-        err_sheet.write("O5", "20% ≤ 50%", legend_text_format)
-        err_sheet.write("N6", "", yellow_cell_format)
-        err_sheet.write("O6", "10% ≤ 20%", legend_text_format)
-        err_sheet.write("N7", "", green_cell_format)
-        err_sheet.write("O7", "< 10%", legend_text_format)
-
-        # Conditional Formatting
-        err_sheet.conditional_format(
-            9,
-            3,
-            8 + errors_len,
-            errors_width + 1,
-            {"type": "blanks", "format": plain_format},
-        )
-        err_sheet.conditional_format(
-            9,
-            3,
-            8 + errors_len,
-            errors_width + 1,
-            {"type": "cell", "criteria": ">", "value": 0.5, "format": red_cell_format},
-        )
-        err_sheet.conditional_format(
-            9,
-            3,
-            8 + errors_len,
-            errors_width + 1,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": 0.2,
-                "maximum": 0.5,
-                "format": orange_cell_format,
-            },
-        )
-        err_sheet.conditional_format(
-            9,
-            3,
-            8 + errors_len,
-            errors_width + 1,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": 0.1,
-                "maximum": 0.2,
-                "format": yellow_cell_format,
-            },
-        )
-        err_sheet.conditional_format(
-            9,
-            3,
-            8 + errors_len,
-            errors_width + 1,
-            {"type": "cell", "criteria": "<", "value": -0.5, "format": red_cell_format},
-        )
-        err_sheet.conditional_format(
-            9,
-            3,
-            8 + errors_len,
-            errors_width + 1,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": -0.5,
-                "maximum": -0.2,
-                "format": orange_cell_format,
-            },
-        )
-        err_sheet.conditional_format(
-            9,
-            3,
-            8 + errors_len,
-            errors_width + 1,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": -0.2,
-                "maximum": -0.1,
-                "format": yellow_cell_format,
-            },
-        )
-        err_sheet.conditional_format(
-            9,
-            3,
-            8 + errors_len,
-            errors_width + 1,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": -0.1,
-                "maximum": 0.1,
-                "format": green_cell_format,
-            },
-        )
-
-        # STAT CHECKS
-        if stats is not None:
-            # Title
-            stat_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
-            stat_sheet.merge_range("D1:D2", lib, subtitle_merge_format)
-            stat_sheet.merge_range(
-                "B3:L7",
-                "SPHERE LEAKAGE TEST RESULTS RECAP: STATISTICAL CHECKS",
-                title_merge_format,
-            )
-            stat_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-            stat_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
-
-            # Freeze title
-            stat_sheet.freeze_panes(9, 0)
-
-            # out of bounds
-            stat_sheet.set_column(0, 0, 4, oob_format)
-            stat_sheet.set_column(stats_width + 2, 1000, 18, oob_format)
-            for i in range(9):
-                stat_sheet.set_row(i, None, oob_format)
-            for i in range(9 + stats_len, 1000):
-                stat_sheet.set_row(i, None, oob_format)
-
-            # Column widths for errors, set up to 15th col by default to ensure title format correct
-            stat_sheet.set_column(1, 14, 20)
-            stat_sheet.set_column(1, stats_width + 2, 20)
-
-            # Row Heights
-            stat_sheet.set_row(7, 31)
-            stat_sheet.set_row(8, 73.25)
-
-            # Formatting
-            stat_sheet.conditional_format(
-                9,
-                3,
-                8 + stats_len,
-                stats_width + 1,
-                {"type": "blanks", "format": plain_format},
-            )
-            stat_sheet.conditional_format(
-                9,
-                3,
-                8 + stats_len,
-                stats_width + 1,
-                {
-                    "type": "text",
-                    "criteria": "containing",
-                    "value": "Passed",
-                    "format": value_abovezero_format,
-                },
-            )
-            stat_sheet.conditional_format(
-                9,
-                3,
-                8 + stats_len,
-                stats_width + 1,
-                {
-                    "type": "text",
-                    "criteria": "containing",
-                    "value": "All zeros",
-                    "format": value_allzero_format,
-                },
-            )
-            stat_sheet.conditional_format(
-                9,
-                3,
-                8 + stats_len,
-                stats_width + 1,
-                {
-                    "type": "text",
-                    "criteria": "containing",
-                    "value": "Missed",
-                    "format": value_belowzero_format,
-                },
-            )
-
-        wb.close()
+    
 
     def pp_excel_comparison(self):
         """
@@ -1059,17 +562,17 @@ class SphereOutput(BenchmarkOutput):
                 # Get results
                 comp_dfs = []
                 error_dfs = []
-
+                
                 for test_path in [
-                    os.path.join(self.test_path[reflib], "mcnp"),
-                    os.path.join(self.test_path[tarlib], "mcnp"),
+                    self.test_path[reflib],
+                    self.test_path[tarlib],
                 ]:
                     results = []
                     errors = []
                     iteration = iteration + 1
                     outputs_lib = {}
                     for folder in os.listdir(test_path):
-                        results_path = os.path.join(test_path, folder)
+                        results_path = os.path.join(test_path, folder, "mcnp")
                         pieces = folder.split("_")
                         # Get zaid
                         zaidnum = pieces[-2]
@@ -1093,7 +596,7 @@ class SphereOutput(BenchmarkOutput):
                         output = SphereMCNPoutput(mfile, outfile)
                         outputs_lib[zaidnum] = output
                         res, err, columns = output.get_comparison_data(
-                            ["4", "14"], "mcnp"
+                            ["12", "32", "6", "46", "14", "24", "34"], "mcnp"
                         )
                         try:
                             zn = int(zaidnum)
@@ -1112,9 +615,9 @@ class SphereOutput(BenchmarkOutput):
                     if iteration == 1:
                         outputs[reflib] = outputs_lib
 
-                    if test_path == os.path.join(self.test_path[tarlib], "mcnp"):
+                    if iteration == 2:
                         outputs[tarlib] = outputs_lib
-
+                
                     # Generate DataFrames
                     columns.extend(["Zaid", "Zaid Name"])
                     comp_df = pd.DataFrame(results, columns=columns)
@@ -1124,7 +627,6 @@ class SphereOutput(BenchmarkOutput):
                     comp_dfs.append(comp_df)
                     error_dfs.append(error_df)
 
-                # outputs_couple = outputs
                 code_outputs["mcnp"] = outputs
                 self.outputs = code_outputs
                 # self.results["mcnp"] = results
@@ -1159,6 +661,7 @@ class SphereOutput(BenchmarkOutput):
                     df.sort_values("index", inplace=True)
                     del df["index"]
                     df.set_index(["Zaid", "Zaid Name"], inplace=True)
+                final.to_csv("final_df_test.csv")
                 # Create and concat the summary
                 old_l = 0
                 old_lim = 0
@@ -1208,8 +711,8 @@ class SphereOutput(BenchmarkOutput):
 
                 # --- Write excel ---
                 # Generate the excel
-                self.sphere_comp_excel_writer(
-                    outpath, name, final, absdiff, std_dev, summary
+                exsupp.sphere_comp_excel_writer(
+                    self, outpath, name, final, absdiff, std_dev, summary
                 )
                 # """
                 # # ex = SphereExcelOutputSheet(template, outpath)
@@ -1401,582 +904,13 @@ class SphereOutput(BenchmarkOutput):
 
                 # --- Write excel ---
                 # Generate the excel
-                self.sphere_comp_excel_writer(
-                    outpath, name, final, absdiff, std_dev, summary
+                exsupp.sphere_comp_excel_writer(
+                    self, outpath, name, final, absdiff, std_dev, summary
                 )
         if self.serpent:
             pass
 
-    def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summary):
-        writer = pd.ExcelWriter(
-            outpath,
-            engine="xlsxwriter",
-            engine_kwargs={"options": {"strings_to_numbers": True}},
-        )
-
-        comp_len, comp_width = final.shape
-        absdiff_len, absdiff_width = absdiff.shape
-        std_dev_len, std_dev_width = std_dev.shape
-        summ_len, summ_width = summary.shape
-
-        # Insert DataFrame
-        final.to_excel(writer, startrow=9, startcol=1, sheet_name="Comparison (%)")
-        summary.to_excel(
-            writer, startrow=comp_len + 12, startcol=2, sheet_name="Comparison (%)"
-        )
-        std_dev.to_excel(
-            writer, startrow=9, startcol=1, sheet_name="Comparison (std. dev.)"
-        )
-        absdiff.to_excel(
-            writer, startrow=9, startcol=1, sheet_name="Comparison (abs diff)"
-        )
-
-        wb = writer.book
-        comp_sheet = writer.sheets["Comparison (%)"]
-        std_dev_sheet = writer.sheets["Comparison (std. dev.)"]
-        absdiff_sheet = writer.sheets["Comparison (abs diff)"]
-
-        # Formatting styles
-        plain_format = wb.add_format({"bg_color": "#FFFFFF"})
-        oob_format = wb.add_format(
-            {
-                "align": "center",
-                "valign": "center",
-                "bg_color": "#D9D9D9",
-                "text_wrap": True,
-            }
-        )
-        tally_format = wb.add_format({"bg_color": "#D9D9D9"})
-        merge_format = wb.add_format(
-            {"align": "center", "valign": "center", "border": 2}
-        )
-        title_merge_format = wb.add_format(
-            {
-                "font_size": "36",
-                "align": "center",
-                "valign": "center",
-                "bold": True,
-                "border": 2,
-            }
-        )
-        subtitle_merge_format = wb.add_format(
-            {
-                "font_size": "16",
-                "align": "center",
-                "valign": "center",
-                "bold": True,
-                "border": 2,
-                "text_wrap": True,
-            }
-        )
-        legend_text_format = wb.add_format({"align": "center", "bg_color": "white"})
-        red_cell_format = wb.add_format({"bg_color": "FF6961"})
-        orange_cell_format = wb.add_format({"bg_color": "FFB54C"})
-        yellow_cell_format = wb.add_format({"bg_color": "F8D66D"})
-        green_cell_format = wb.add_format({"bg_color": "#8CD47E"})
-        not_avail_format = wb.add_format({"bg_color": "#B8B8B8"})
-        target_ref_format = wb.add_format({"bg_color": "#8465C5"})
-        identical_format = wb.add_format({"bg_color": "#7ABD7E"})
-
-        """VALUES"""
-        # Merged Cells
-        comp_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
-        comp_sheet.merge_range("D1:E2", name, subtitle_merge_format)
-        comp_sheet.merge_range(
-            "B3:L7", "SPHERE LEAKAGE % COMPARISON RECAP", title_merge_format
-        )
-        comp_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-        comp_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
-        comp_sheet.merge_range(
-            "F1:L2",
-            "Target library Vs Reference library\n(Reference-Target)/Reference",
-            subtitle_merge_format,
-        )
-        comp_sheet.merge_range(
-            11 + comp_len,
-            3,
-            11 + comp_len,
-            11,
-            "GLOBAL QUICK RESULT: % of cells per range of comparison differences",
-            subtitle_merge_format,
-        )
-        # Freeze title
-        comp_sheet.freeze_panes(10, 3)
-
-        # out of bounds
-        comp_sheet.set_column(0, 0, 4, oob_format)
-        comp_sheet.set_column(comp_width + 3, 1000, 4, oob_format)
-        for i in range(9):
-            comp_sheet.set_row(i, None, oob_format)
-        for i in range(9 + comp_len, 1000):
-            comp_sheet.set_row(i, None, oob_format)
-
-        # Column widths for values, set up to 15th col to ensure title format correct
-
-        comp_sheet.set_column(1, 14, 18)
-        comp_sheet.set_column(1, comp_width + 5, 18)
-
-        # Summary background formatting workaround using conditional formatting
-        comp_sheet.conditional_format(
-            12 + comp_len,
-            3,
-            comp_len + summ_len + 12,
-            summ_width + 3,
-            {"type": "cell", "criteria": ">=", "value": 0, "format": plain_format},
-        )
-        comp_sheet.conditional_format(
-            12 + comp_len,
-            3,
-            comp_len + summ_len + 22,
-            summ_width + 3,
-            {"type": "cell", "criteria": "<", "value": 0, "format": plain_format},
-        )
-
-        # Row Heights
-        comp_sheet.set_row(0, 25, oob_format)
-        comp_sheet.set_row(1, 25, oob_format)
-        comp_sheet.set_row(7, 31, oob_format)
-        comp_sheet.set_row(8, 40, oob_format)
-        comp_sheet.set_row(9, 40, oob_format)
-
-        # Legend
-        comp_sheet.merge_range("N3:O3", "LEGEND", merge_format)
-        comp_sheet.write("N4", "", red_cell_format)
-        comp_sheet.write("O4", ">|20|%", legend_text_format)
-        comp_sheet.write("N5", "", orange_cell_format)
-        comp_sheet.write("O5", "|20|%≤|10|%", legend_text_format)
-        comp_sheet.write("N6", "", yellow_cell_format)
-        comp_sheet.write("O6", "|10|%≤|5|%", legend_text_format)
-        comp_sheet.write("N7", "", green_cell_format)
-        comp_sheet.write("O7", "<|5|%", legend_text_format)
-
-        # Conditional Formatting
-        comp_sheet.conditional_format(
-            10,
-            3,
-            9 + comp_len,
-            comp_width + 2,
-            {"type": "blanks", "format": plain_format},
-        )
-        comp_sheet.conditional_format(
-            10,
-            3,
-            9 + comp_len,
-            comp_width + 2,
-            {
-                "type": "text",
-                "criteria": "containing",
-                "value": "Not Available",
-                "format": not_avail_format,
-            },
-        )
-        comp_sheet.conditional_format(
-            10,
-            3,
-            9 + comp_len,
-            comp_width + 2,
-            {
-                "type": "text",
-                "criteria": "containing",
-                "value": "Target = 0",
-                "format": target_ref_format,
-            },
-        )
-        comp_sheet.conditional_format(
-            10,
-            3,
-            9 + comp_len,
-            comp_width + 2,
-            {
-                "type": "text",
-                "criteria": "containing",
-                "value": "Reference = 0",
-                "format": target_ref_format,
-            },
-        )
-        comp_sheet.conditional_format(
-            10,
-            3,
-            9 + comp_len,
-            comp_width + 2,
-            {
-                "type": "text",
-                "criteria": "containing",
-                "value": "Identical",
-                "format": identical_format,
-            },
-        )
-        comp_sheet.conditional_format(
-            10,
-            3,
-            9 + comp_len,
-            comp_width + 2,
-            {
-                "type": "cell",
-                "criteria": "greater than",
-                "value": 0.2,
-                "format": red_cell_format,
-            },
-        )
-        comp_sheet.conditional_format(
-            10,
-            3,
-            9 + comp_len,
-            comp_width + 2,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": 0.1,
-                "maximum": 0.2,
-                "format": orange_cell_format,
-            },
-        )
-        comp_sheet.conditional_format(
-            10,
-            3,
-            9 + comp_len,
-            comp_width + 2,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": 0.05,
-                "maximum": 0.1,
-                "format": yellow_cell_format,
-            },
-        )
-        comp_sheet.conditional_format(
-            10,
-            3,
-            9 + comp_len,
-            comp_width + 2,
-            {
-                "type": "cell",
-                "criteria": "less than",
-                "value": -0.2,
-                "format": red_cell_format,
-            },
-        )
-        comp_sheet.conditional_format(
-            10,
-            3,
-            9 + comp_len,
-            comp_width + 1,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": -0.5,
-                "maximum": -0.1,
-                "format": orange_cell_format,
-            },
-        )
-        comp_sheet.conditional_format(
-            10,
-            3,
-            9 + comp_len,
-            comp_width + 2,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": -0.1,
-                "maximum": -0.05,
-                "format": yellow_cell_format,
-            },
-        )
-        comp_sheet.conditional_format(
-            10,
-            3,
-            9 + comp_len,
-            comp_width + 2,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": -0.05,
-                "maximum": 0.05,
-                "format": green_cell_format,
-            },
-        )
-
-        # Summary totals
-        for row in range(13 + comp_len, comp_len + summ_len + 13):
-            start = xl_rowcol_to_cell(row, 3)
-            stop = xl_rowcol_to_cell(row, summ_width + 2)
-            comp_sheet.write_formula(
-                row,
-                summ_width + 3,
-                "=SUM({start}:{stop})/{len}".format(
-                    start=start, stop=stop, len=summ_width
-                ),
-            )
-
-        """STANDARD DEVIATIONS FROM MEAN"""
-        std_dev_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
-        std_dev_sheet.merge_range("D1:E2", name, subtitle_merge_format)
-        std_dev_sheet.merge_range(
-            "B3:L7", "SPHERE LEAKAGE % COMPARISON RECAP", title_merge_format
-        )
-        std_dev_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-        std_dev_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
-        std_dev_sheet.merge_range(
-            "F1:L2",
-            "Target library Vs Reference library\n(Reference-Target)/Reference",
-            subtitle_merge_format,
-        )
-        std_dev_sheet.merge_range(
-            11 + std_dev_len,
-            3,
-            11 + std_dev_len,
-            11,
-            "GLOBAL QUICK RESULT: % of cells per range of comparison differences",
-            subtitle_merge_format,
-        )
-        # Freeze title
-        std_dev_sheet.freeze_panes(10, 3)
-
-        # out of bounds
-        std_dev_sheet.set_column(0, 0, 4, oob_format)
-        std_dev_sheet.set_column(std_dev_width + 3, 1000, 4, oob_format)
-        for i in range(9):
-            std_dev_sheet.set_row(i, None, oob_format)
-        for i in range(9 + std_dev_len, 1000):
-            std_dev_sheet.set_row(i, None, oob_format)
-
-        # Column widths for values, set up to 15th col to ensure title format correct
-
-        std_dev_sheet.set_column(1, 14, 18)
-        std_dev_sheet.set_column(1, std_dev_width + 5, 18)
-
-        # Summary background formatting workaround using conditional formatting
-        std_dev_sheet.conditional_format(
-            12 + std_dev_len,
-            3,
-            std_dev_len + summ_len + 12,
-            summ_width + 3,
-            {"type": "cell", "criteria": ">=", "value": 0, "format": plain_format},
-        )
-        std_dev_sheet.conditional_format(
-            12 + std_dev_len,
-            3,
-            std_dev_len + summ_len + 22,
-            summ_width + 3,
-            {"type": "cell", "criteria": "<", "value": 0, "format": plain_format},
-        )
-
-        # Row Heights
-        std_dev_sheet.set_row(0, 25, oob_format)
-        std_dev_sheet.set_row(1, 25, oob_format)
-        std_dev_sheet.set_row(7, 31, oob_format)
-        std_dev_sheet.set_row(8, 40, oob_format)
-        std_dev_sheet.set_row(9, 40, oob_format)
-
-        # Legend
-        std_dev_sheet.merge_range("N3:O3", "LEGEND", merge_format)
-        std_dev_sheet.write("N4", "", red_cell_format)
-        std_dev_sheet.write("O4", ">|20|%", legend_text_format)
-        std_dev_sheet.write("N5", "", orange_cell_format)
-        std_dev_sheet.write("O5", "|20|%≤|10|%", legend_text_format)
-        std_dev_sheet.write("N6", "", yellow_cell_format)
-        std_dev_sheet.write("O6", "|10|%≤|5|%", legend_text_format)
-        std_dev_sheet.write("N7", "", green_cell_format)
-        std_dev_sheet.write("O7", "<|5|%", legend_text_format)
-
-        # Conditional Formatting
-        std_dev_sheet.conditional_format(
-            10,
-            3,
-            9 + std_dev_len,
-            std_dev_width + 2,
-            {"type": "blanks", "format": plain_format},
-        )
-        std_dev_sheet.conditional_format(
-            10,
-            3,
-            9 + std_dev_len,
-            std_dev_width + 2,
-            {
-                "type": "text",
-                "criteria": "containing",
-                "value": "Not Available",
-                "format": not_avail_format,
-            },
-        )
-        std_dev_sheet.conditional_format(
-            10,
-            3,
-            9 + std_dev_len,
-            std_dev_width + 2,
-            {
-                "type": "text",
-                "criteria": "containing",
-                "value": "Target = 0",
-                "format": target_ref_format,
-            },
-        )
-        std_dev_sheet.conditional_format(
-            10,
-            3,
-            9 + std_dev_len,
-            std_dev_width + 2,
-            {
-                "type": "text",
-                "criteria": "containing",
-                "value": "Reference = 0",
-                "format": target_ref_format,
-            },
-        )
-        std_dev_sheet.conditional_format(
-            10,
-            3,
-            9 + std_dev_len,
-            std_dev_width + 2,
-            {
-                "type": "text",
-                "criteria": "containing",
-                "value": "Identical",
-                "format": identical_format,
-            },
-        )
-        std_dev_sheet.conditional_format(
-            10,
-            3,
-            9 + std_dev_len,
-            std_dev_width + 2,
-            {
-                "type": "cell",
-                "criteria": "greater than",
-                "value": 3,
-                "format": red_cell_format,
-            },
-        )
-        std_dev_sheet.conditional_format(
-            10,
-            3,
-            9 + std_dev_len,
-            std_dev_width + 2,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": 3,
-                "maximum": 2,
-                "format": orange_cell_format,
-            },
-        )
-        std_dev_sheet.conditional_format(
-            10,
-            3,
-            9 + std_dev_len,
-            std_dev_width + 2,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": 2,
-                "maximum": 1,
-                "format": yellow_cell_format,
-            },
-        )
-        std_dev_sheet.conditional_format(
-            10,
-            3,
-            9 + std_dev_len,
-            std_dev_width + 2,
-            {
-                "type": "cell",
-                "criteria": "less than",
-                "value": -3,
-                "format": red_cell_format,
-            },
-        )
-        std_dev_sheet.conditional_format(
-            10,
-            3,
-            9 + std_dev_len,
-            std_dev_width + 1,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": -3,
-                "maximum": -2,
-                "format": orange_cell_format,
-            },
-        )
-        std_dev_sheet.conditional_format(
-            10,
-            3,
-            9 + std_dev_len,
-            std_dev_width + 2,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": -2,
-                "maximum": -1,
-                "format": yellow_cell_format,
-            },
-        )
-        std_dev_sheet.conditional_format(
-            10,
-            3,
-            9 + std_dev_len,
-            std_dev_width + 2,
-            {
-                "type": "cell",
-                "criteria": "between",
-                "minimum": -1,
-                "maximum": 1,
-                "format": green_cell_format,
-            },
-        )
-        # """ABS DIFF"""
-        # Merged Cells
-        absdiff_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
-        absdiff_sheet.merge_range("D1:E2", name, subtitle_merge_format)
-        absdiff_sheet.merge_range(
-            "B3:L7", "SPHERE LEAKAGE % COMPARISON RECAP", title_merge_format
-        )
-        absdiff_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-        absdiff_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
-        absdiff_sheet.merge_range(
-            "F1:L2",
-            "Target library Vs Reference library\n(Reference-Target)",
-            subtitle_merge_format,
-        )
-
-        # Freeze title
-        absdiff_sheet.freeze_panes(10, 3)
-
-        # out of bounds
-        absdiff_sheet.set_column(0, 0, 4, oob_format)
-        absdiff_sheet.set_column(absdiff_width + 3, 1000, 4, oob_format)
-        for i in range(9):
-            absdiff_sheet.set_row(i, None, oob_format)
-        for i in range(10 + absdiff_len, 1000):
-            absdiff_sheet.set_row(i, None, oob_format)
-
-        # Column widths for values, set up to 15th col to ensure title format correct
-        absdiff_sheet.set_column(1, 14, 18)
-        absdiff_sheet.set_column(1, absdiff_width + 2, 18)
-
-        # Row Heights
-        absdiff_sheet.set_row(0, 25, oob_format)
-        absdiff_sheet.set_row(1, 25, oob_format)
-        absdiff_sheet.set_row(7, 31, oob_format)
-        absdiff_sheet.set_row(8, 40, oob_format)
-        absdiff_sheet.set_row(9, 40, oob_format)
-
-        # Conditional Formatting
-
-        absdiff_sheet.conditional_format(
-            10,
-            3,
-            9 + absdiff_len,
-            absdiff_width + 2,
-            {
-                "type": "text",
-                "criteria": "containing",
-                "value": "Identical",
-                "format": identical_format,
-            },
-        )
-
-        wb.close()
+    
 
     def print_raw(self):
         # for code in self.raw_data:
@@ -2132,41 +1066,14 @@ class SphereTallyOutput:
         tally_list = [d for _, d in data.groupby(["Tally N."])]
 
         for tally in tally_list:
-            tally = str(tally["Tally N."].iloc[0])
-            if tally in tallies2pp:
+            tally_str = str(tally["Tally N."].iloc[0])
+            if tally_str in tallies2pp:
                 tallies.append(tally)
-
-        # """if code == "mcnp":
-        #     for tally in tallies:
-        #         tally_num = str(tally.tallyNumber)
-        #         # Isolate tally
-        #         masked = data.loc[tally.tallyComment[0]]
-
-        #         if tally_num in ['12', '22', '4', '14']:  # Coarse Flux bins
-        #             masked_tot = totalbins.loc[tally.tallyComment[0]]
-        #             # Get energy bins
-        #             bins = list(masked.reset_index()['Energy'].values)
-        #             for ebin in bins:
-        #                 # colname = '(T.ly '+str(num)+') '+str(ebin)
-        #                 colname = str(ebin)+' [MeV]'+' [t'+tally_num+']'
-        #                 columns.append(colname)
-        #                 results.append(masked['Value'].loc[ebin])
-        #                 errors.append(masked['Error'].loc[ebin])
-        #             # Add the total bin
-        #             colname = 'Total'+' [t'+tally_num+']'
-        #             columns.append(colname)
-        #             results.append(masked_tot['Value'])
-        #             errors.append(masked_tot['Error'])
-        #         else:
-        #             columns.append(tally.tallyComment[0])
-        #             results.append(masked['Value'].values[0])
-        #             errors.append(masked['Error'].values[0])
-
-        # if code == "openmc":"""
-        for tally in tally_list:
+                
+        for tally in tallies:
             tally_num = str(tally["Tally N."].iloc[0])
             tally_description = tally["Tally Description"].iloc[0]
-            if tally_num in ["12", "22", "4", "14"]:  # Coarse Flux bins
+            if tally_num in ["2", "12", "22", "32"]:  # Coarse Flux bins
                 # Get energy bins
                 bins = tally.index.tolist()
                 for ebin in bins:
@@ -2182,9 +1089,8 @@ class SphereTallyOutput:
                 errors.append(totalbins["Error"].loc[tally_description])
             else:
                 columns.append(tally_description)
-                results.append(tally["Value"])
-                errors.append(tally["Error"])
-        # print(results,errors,columns)
+                results.append(float(tally["Value"]))
+                errors.append(float(tally["Error"]))
         return results, errors, columns
 
 
@@ -2491,22 +1397,33 @@ class SphereSDDRoutput(SphereOutput):
         None.
 
         """
-        template = os.path.join(os.getcwd(), "templates", "SphereSDDR_single.xlsx")
-        outpath = os.path.join(
-            self.excel_path, "SphereSDDR_single_" + self.lib + ".xlsx"
-        )
-        # compute the results
-        results, errors, stat_checks = self._compute_single_results()
-
-        # Write excel
-        ex = SphereExcelOutputSheet(template, outpath)
-        # Results
-        ex.insert_df(11, 2, results, 0, header=False)
-        ex.insert_df(11, 2, errors, 1, header=False)
-        ex.insert_df(9, 2, stat_checks, 2, header=True)
-        lib_name = self.session.conf.get_lib_name(self.lib)
-        ex.wb.sheets[0].range("E1").value = lib_name
-        ex.save()
+        self.outputs = {}
+        self.results = {}
+        self.errors = {}
+        self.stat_checks = {}
+        if self.d1s:
+            #template = os.path.join(os.getcwd(), "templates", "SphereSDDR_single.xlsx")
+            outpath = os.path.join(
+                self.excel_path_d1s, "SphereSDDR_single_" + self.lib + ".xlsx"
+            )
+            # compute the results
+            outputs, results, errors, stat_checks = self._compute_single_results()
+            self.outputs["d1s"] = outputs
+            self.results["d1s"] = results
+            self.errors["d1s"] = errors
+            self.stat_checks["d1s"] = stat_checks
+            # Write excel
+            #ex = SphereExcelOutputSheet(template, outpath)
+            # Results
+            #ex.insert_df(11, 2, results, 0, header=False)
+            #ex.insert_df(11, 2, errors, 1, header=False)
+            #ex.insert_df(9, 2, stat_checks, 2, header=True)
+            #lib_name = self.session.conf.get_lib_name(self.lib)
+            #ex.wb.sheets[0].range("E1").value = lib_name
+            #ex.save()
+            exsupp.sphere_sddr_single_excel_writer(
+                outpath, self.lib, results, errors, stat_checks
+            )
 
     def pp_excel_comparison(self):
         """
@@ -2517,47 +1434,48 @@ class SphereSDDRoutput(SphereOutput):
         None.
 
         """
-        template = os.path.join(os.getcwd(), "templates", "SphereSDDR_comparison.xlsx")
+        #template = os.path.join(os.getcwd(), "templates", "SphereSDDR_comparison.xlsx")
+        if self.d1s:
+            for reflib, tarlib, name in self.couples:
+                outpath = os.path.join(
+                    self.excel_path_d1s, "Sphere_SDDR_comparison_" + name + ".xlsx"
+                )
+                final, absdiff, std_dev = self._compute_compare_result(reflib, tarlib)
 
-        for reflib, tarlib, name in self.couples:
-            outpath = os.path.join(
-                self.excel_path, "Sphere_comparison_" + name + ".xlsx"
-            )
-            final, absdiff = self._compute_compare_result(reflib, tarlib)
+                # --- Write excel ---
+                # Generate the excel
+                #ex = SphereExcelOutputSheet(template, outpath)
+                # Prepare the copy of the comparison sheet
+                #ws_comp = ex.wb.sheets["Comparison"]
+                #ws_diff = ex.wb.sheets["Comparison (Abs diff)"]
 
-            # --- Write excel ---
-            # Generate the excel
-            ex = SphereExcelOutputSheet(template, outpath)
-            # Prepare the copy of the comparison sheet
-            ws_comp = ex.wb.sheets["Comparison"]
-            ws_diff = ex.wb.sheets["Comparison (Abs diff)"]
+                # WRITE RESULTS
+                # Percentage comparison
+                #rangeex = ws_comp.range("B11")
+                #rangeex.options(index=True, header=False).value = final
+                #ws_comp.range("E1").value = name
 
-            # WRITE RESULTS
-            # Percentage comparison
-            rangeex = ws_comp.range("B11")
-            rangeex.options(index=True, header=False).value = final
-            ws_comp.range("E1").value = name
+                # Absolute difference comparison
+                #rangeex = ws_diff.range("B11")
+                #rangeex.options(index=True, header=False).value = absdiff
 
-            # Absolute difference comparison
-            rangeex = ws_diff.range("B11")
-            rangeex.options(index=True, header=False).value = absdiff
+                # Add single pp sheets
+                #for lib in [reflib, tarlib]:
+                    #cp = self.session.state.get_path("single", [lib, "SphereSDDR", "Excel"])
+                    #file = os.listdir(cp)[0]
+                    #cp = os.path.join(cp, file)
+                    #ex.copy_sheets(cp)
 
-            # Add single pp sheets
-            for lib in [reflib, tarlib]:
-                cp = self.session.state.get_path("single", [lib, "SphereSDDR", "Excel"])
-                file = os.listdir(cp)[0]
-                cp = os.path.join(cp, file)
-                ex.copy_sheets(cp)
-
-            ex.save()
+                exsupp.sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev)
 
     def _get_organized_output(self):
         """
         Simply recover a list of the zaids and libraries involved
         """
         zaids = []
-        for (zaidnum, mt, lib), _ in self.outputs.items():
-            zaids.append((zaidnum, mt))
+        for code, library_outputs in self.outputs.items():
+            for (zaidnum, mt, lib), outputslib in library_outputs.items():
+                zaids.append((zaidnum, mt))
 
         zaids = list(set(zaids))
         libs = []  # Not used
@@ -2600,7 +1518,7 @@ class SphereSDDRoutput(SphereOutput):
             libraries = self.lib
 
         # Initialize atlas
-        template = os.path.join(self.code_path, "templates", "AtlasTemplate.docx")
+        template = os.path.join(self.path_templates, "AtlasTemplate.docx")
         atlas = at.Atlas(template, "Sphere SDDR " + globalname)
         libmanager = self.session.lib_manager
 
@@ -2679,7 +1597,8 @@ class SphereSDDRoutput(SphereOutput):
             # 1) collect zaid-mt couples in libraries and keep only the ones
             #    that appears on the reference + at least one lib
             # Build a df will all possible zaid, mt, lib combination
-            allkeys = list(self.outputs.keys())
+            if self.d1s:
+                allkeys = list(self.outputs["d1s"].keys())
             df = pd.DataFrame(allkeys)
             df.columns = ["zaid", "mt", "lib"]
             df["zaid-mt"] = df["zaid"].astype(str) + "-" + df["mt"].astype(str)
@@ -2802,12 +1721,14 @@ class SphereSDDRoutput(SphereOutput):
 
         ########
         print(" Building...")
-        atlas.save(self.atlas_path)
+        if self.d1s:
+            atlas.save(self.atlas_path_d1s)
         # Remove tmp images
         shutil.rmtree(outpath)
 
     def _extract_data4plots(self, zaid, mt, lib, time):
-        tallies = self.outputs[zaid, mt, lib].tallydata
+        if self.d1s:  
+            tallies = self.outputs["d1s"][zaid, mt, lib].tallydata
         # Extract values
         nflux = tallies[12].set_index("Energy").drop("total")
         nflux = nflux.sum().loc["Value"]
@@ -2835,15 +1756,15 @@ class SphereSDDRoutput(SphereOutput):
 
         """
         # Get results
-        results = []
-        errors = []
-        stat_checks = []
+        #results = []
+        #errors = []
+        #stat_checks = []
         desc = " Parsing Outputs: "
-        for folder in tqdm(os.listdir(self.test_path), desc=desc):
-            res, err, st_ck = self._parserun(self.test_path, folder, self.lib)
-            results.append(res)
-            errors.append(err)
-            stat_checks.append(st_ck)
+        if self.d1s:
+            #for folder in tqdm(os.listdir(self.test_path), desc=desc):
+            outputs, results, errors, stat_checks = self._parserunmcnp(self.test_path, self.lib)
+
+            self.outputs["d1s"] = outputs
 
         # Generate DataFrames
         results = pd.concat(results, axis=1).T
@@ -2854,17 +1775,15 @@ class SphereSDDRoutput(SphereOutput):
         # results
         for df in [results, errors, stat_checks]:
             self._sort_df(df)  # it is sorted in place
+            df.set_index("Parent")
 
         # self.outputs = outputs
-        self.results = results
-        self.errors = errors
-        self.stat_checks = stat_checks
 
-        return results, errors, stat_checks
+        return outputs, results, errors, stat_checks
 
     def _compute_compare_result(self, reflib, tarlib):
         """
-        Given a refere4nce lib and a target lib, both absolute and relative
+        Given a reference lib and a target lib, both absolute and relative
         comparison are computed
 
         Parameters
@@ -2880,47 +1799,58 @@ class SphereSDDRoutput(SphereOutput):
             relative comparison table.
         absdiff : pd.DataFrame
             absolute comparison table.
+        std_dev: 
+            comparison in std. dev. from mean table
 
         """
         # Get results both of the reflib and tarlib
-        dfs = []
+        comp_dfs = []
+        error_dfs = []
+        outputs = {}
         test_paths = [self.test_path[reflib], self.test_path[tarlib]]
         libs = [reflib, tarlib]
         for test_path, lib in zip(test_paths, libs):
             results = []
+            errors = []
             # Extract all the series from the different reactions
-            for folder in os.listdir(test_path):
-                # Collect the data
-                res, _, _ = self._parserun(test_path, folder, lib)
-                results.append(res)
-
+            # Collect the data
+            outputs, res, err, _ = self._parserunmcnp(test_path, lib)
+            results.append(res)
+            errors.append(err)    
             # Build the df and sort
-            df = pd.concat(results, axis=1).T
-            self._sort_df(df)
-            # They need to be indexed
-            df.set_index(["Parent", "Parent Name", "MT"], inplace=True)
-            # Add the df to the list
-            dfs.append(df)
+            comp_df = pd.concat(results, axis=1).T
+            error_df = pd.concat(errors, axis=1).T
+            for df in [comp_df, error_df]:
+                self._sort_df(df)
+                # They need to be indexed
+                df.set_index(["Parent", "Parent Name", "MT"], inplace=True)
+                # Add the df to the list
+            comp_dfs.append(comp_df)
+            error_dfs.append(error_df)
 
         # Consider only common zaids
-        idx1 = dfs[0].index
-        idx2 = dfs[1].index
+        idx1 = comp_dfs[0].index
+        idx2 = comp_dfs[1].index
         newidx = idx1.intersection(idx2)
         # For some reason they arrive here as objects triggering
         # a ZeroDivisionError
-        ref = dfs[0].loc[newidx].astype(float)
-        tar = dfs[1].loc[newidx].astype(float)
+        ref = comp_dfs[0].loc[newidx].astype(float)
+        tar = comp_dfs[1].loc[newidx].astype(float)
+        ref_err = error_dfs[1].loc[newidx].astype(float)
 
         # Build the final excel data
         absdiff = ref - tar
         final = absdiff / ref
+        std_dev = absdiff / ref_err
 
         # If it is zero the CS are equal! (NaN if both zeros)
-        for df in [final, absdiff]:
-            df[df == np.nan] = "Not Available"
-            df[df == 0] = "Identical"
+        for df in [final, absdiff, std_dev]:
+            df.replace(np.nan, "Not Available", inplace=True)
+            df.replace(float(0), "Identical", inplace=True)
+            df.replace(-np.inf, "Reference = 0", inplace=True)
+            df.replace(1, "Target = 0", inplace=True)
 
-        return final, absdiff
+        return final, absdiff, std_dev
 
     @staticmethod
     def _sort_df(df):
@@ -2949,7 +1879,7 @@ class SphereSDDRoutput(SphereOutput):
 
         return (flag, zaid, mt)
 
-    def _parserun(self, test_path, folder, lib):
+    def _parserunmcnp(self, test_path, lib):
         """
         given a MCNP run folder the parsing of the different outputs is
         performed
@@ -2971,49 +1901,60 @@ class SphereSDDRoutput(SphereOutput):
             DESCRIPTION.
         st_ck : TYPE
             DESCRIPTION.
+        output : MCNPoutput
+            MCNP output object
 
         """
-        results_path = os.path.join(test_path, folder)
-        pieces = folder.split("_")
-        # Get zaid
-        zaidnum = pieces[1]
-        # Check for material exception
-        try:
-            zaidname = self.mat_settings.loc[zaidnum, "Name"]
-            mt = "All"
-        except KeyError:
-            # it is a simple zaid
-            zaidname = pieces[2]
-            mt = pieces[3]
-        # Get mfile
-        for file in os.listdir(results_path):
-            if file[-1] == "m":
-                mfile = file
-            elif file[-1] == "o":
-                ofile = file
-        # Parse output
-        output = SphereSDDRMCNPoutput(
-            os.path.join(results_path, mfile), os.path.join(results_path, ofile)
-        )
-        self.outputs[zaidnum, mt, lib] = output
-        # Adjourn raw Data
-        self.raw_data[zaidnum, mt, lib] = output.tallydata
-        # Recover statistical checks
-        st_ck = output.stat_checks
-        # Recover results and precisions
-        res, err = output.get_single_excel_data()
-        for series in [res, err, st_ck]:
-            series["Parent"] = zaidnum
-            series["Parent Name"] = zaidname
-            series["MT"] = mt
+        results = []
+        errors = []
+        stat_checks = []
+        outputs = {}
+        for folder in os.listdir(test_path):
+            results_path = os.path.join(test_path, folder, "d1s")
+            pieces = folder.split("_")
+            # Get zaid
+            zaidnum = pieces[1]
+            # Check for material exception
+            try:
+                zaidname = self.mat_settings.loc[zaidnum, "Name"]
+                mt = "All"
+            except KeyError:
+                # it is a simple zaid
+                zaidname = pieces[2]
+                mt = pieces[3] 
+            # Get mfile
+            for file in os.listdir(results_path):
+                if file[-1] == "m":                    
+                    mfile = file
+                elif file[-1] == "o":
+                    ofile = file
+                # Parse output
+            output = SphereSDDRMCNPoutput(
+                os.path.join(results_path, mfile), os.path.join(results_path, ofile)
+            )
 
-        return res, err, st_ck
+            outputs[zaidnum, mt, lib] = output
+            # Adjourn raw Data
+            #self.raw_data["mcnp"][zaidnum, mt, lib] = output.tallydata
+            # Recover statistical checks
+            st_ck = output.stat_checks
+            # Recover results and precisions
+            res, err = output.get_single_excel_data()
+            for series in [res, err, st_ck]:
+                series["Parent"] = zaidnum
+                series["Parent Name"] = zaidname
+                series["MT"] = mt
+            results.append(res)
+            errors.append(err)
+            stat_checks.append(st_ck)
+        
+        return outputs, results, errors, stat_checks
 
     def print_raw(self):
         for key, data in self.raw_data.items():
             # build a folder containing each tally of the reaction
             foldername = "{}_{}".format(key[0], key[1])
-            folder = os.path.join(self.raw_path, foldername)
+            folder = os.path.join(self.raw_path_d1s, foldername)
             os.mkdir(folder)
             # Dump all tallies
             for tallynum, df in data.items():

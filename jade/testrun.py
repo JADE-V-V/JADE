@@ -180,6 +180,30 @@ class Test:
         elif isinstance(lib, str):
             lib = lib
         return lib
+    
+    def _get_lib_d1s(lib: str | dict) -> str:
+        """Get the library name.
+
+        Parameters
+        ----------
+        lib : str | dict
+            Library name.
+
+        Returns
+        -------
+        str
+            Library name.
+        """
+
+        # Handle 99c-31c format for SDDR benchmarks
+        if isinstance(lib, dict):
+            lib = list(lib.values())[0]
+        elif isinstance(lib, str):
+            if "-" in lib:
+                lib = lib.split("-")[0]
+            else:
+                lib = lib
+        return lib
 
     def _translate_input(self, lib, libmanager):
         """
@@ -333,29 +357,28 @@ class Test:
 
         directory = self.run_dir
         name = self.name
-        lib = self._get_lib(self.lib)
+        if self.d1s:
+            lib = self._get_lib_d1s(self.lib)
+        else:
+            lib = self._get_lib(self.lib)
 
         if self.d1s:
             d1s_directory = os.path.join(directory, "d1s")
-            if pd.isnull(config.d1s_exec) is not True:
-                self.run_d1s(config, libmanager, name, d1s_directory, runoption)
+            self.run_mcnp(lib, config, libmanager, name, d1s_directory, runoption, d1s=True)
 
         if self.mcnp:
             mcnp_directory = os.path.join(directory, "mcnp")
-            if pd.isnull(config.mcnp_exec) is not True:
-                self.run_mcnp(lib, config, libmanager, name, mcnp_directory, runoption)
+            self.run_mcnp(lib, config, libmanager, name, mcnp_directory, runoption)
 
         if self.serpent:
             serpent_directory = os.path.join(directory, "serpent")
-            if pd.isnull(config.serpent_exec) is not True:
-                self.run_serpent(
-                    lib, config, libmanager, name, serpent_directory, runoption
-                )
+            self.run_serpent(
+                lib, config, libmanager, name, serpent_directory, runoption
+            )
 
         if self.openmc:
             openmc_directory = os.path.join(directory, "openmc")
-            if pd.isnull(config.openmc_exec) is not True:
-                self.run_openmc(lib, config, libmanager, openmc_directory, runoption)
+            self.run_openmc(lib, config, libmanager, openmc_directory, runoption)
 
     # Edited by D.Wheeler, UKAEA
     # Job submission currently tailored for LoadLeveler, may be applicable to other submission systems with equivalent dummy variables
@@ -430,122 +453,6 @@ class Test:
             config.batch_system + " " + job_script, cwd=directory, shell=True
         )
 
-    def run_d1s(
-        self,
-        config,
-        lib_manager,
-        name: str,
-        directory: Path,
-        runoption: str,
-        timeout=None,
-    ) -> bool:
-        """Run D1S simulation either on the command line or submitted as a job.
-
-        Parameters
-        ----------
-        config :
-            Configuration settings
-        lib_manager :
-            libmanager
-        name : str
-            Name of the simulation
-        directory : str, path
-            Directory where the simulation will be executed
-        runoption: str
-            Whether JADE run in parallel or command line
-        timeout : float, optional
-            Maximum time to wait for simulation of complete, by default None
-
-        Returns
-        -------
-        bool
-            Flag if simulation not run
-        """
-
-        # Calculate MPI tasks and OpenMP threads
-        mpi_tasks = int(config.openmp_threads) * int(config.mpi_tasks)
-        omp_threads = 1
-        run_mpi = False
-        if mpi_tasks > 1:
-            run_mpi = True
-
-        executable = config.d1s_exec
-        env_variables = config.d1s_config
-        inputstring = "i=" + name
-        outputstring = "n=" + name
-
-        # Handle 99c-31c format for SDDR benchmarks
-        if isinstance(self.lib, dict):
-            lib = list(self.lib.values())[0]
-        elif isinstance(self.lib, str):
-            if "-" in self.lib:
-                lib = self.lib.split("-")[0]
-            else:
-                lib = self.lib
-
-        xsstring = "xs=" + str(lib_manager.data["d1s"][lib].filename)
-
-        if run_mpi:
-            run_command = [
-                "mpirun",
-                "-n",
-                str(mpi_tasks),
-                executable,
-                inputstring,
-                outputstring,
-                xsstring,
-            ]
-        else:
-            run_command = [executable, inputstring, outputstring, xsstring]
-
-        flagnotrun = False
-
-        try:
-            cwd = os.getcwd()
-            os.chdir(directory)
-            # cancel eventual previous output file
-            outputfile = name + ".o"
-            if os.path.exists(outputfile):
-                os.remove(outputfile)
-
-            # check if runtpe exists
-            runtpe = name + ".r"
-            if os.path.exists(runtpe):
-                command = command + " runtpe=" + name + ".r"
-
-            if runoption.lower() == "c":
-                try:
-                    if not sys.platform.startswith("win"):
-                        unix.configure(env_variables)
-                    print(" ".join(run_command))
-                    subprocess.run(
-                        " ".join(run_command), cwd=directory, shell=True, timeout=43200
-                    )
-
-                except subprocess.TimeoutExpired:
-                    print(
-                        "Sesion timed out after 12 hours. Consider submitting as a job."
-                    )
-                    flagnotrun = True
-
-            elif runoption.lower() == "s":
-                # Run MCNP as a job
-                cwd = os.getcwd()
-                os.chdir(directory)
-                self.job_submission(
-                    config,
-                    directory,
-                    run_command,
-                    mpi_tasks,
-                    omp_threads,
-                    env_variables,
-                )
-                os.chdir(cwd)
-        except subprocess.TimeoutExpired:
-            pass
-
-        return flagnotrun
-
     @staticmethod
     def run_mcnp(
         lib: str,
@@ -555,6 +462,7 @@ class Test:
         directory: Path,
         runoption: str,
         timeout=None,
+        d1s=False,
     ) -> bool:
         """Run MCNP simulation either on the command line or submitted as a job.
 
@@ -574,6 +482,8 @@ class Test:
             Whether JADE run in parallel or command line
         timeout : float, optional
             Maximum time to wait for simulation of complete, by default None
+        d1s : bool, optional 
+            Flag to run d1s, by default False
 
         Returns
         -------
@@ -594,66 +504,74 @@ class Test:
         outputstring = "n=" + name
         tasks = "tasks " + config.openmp_threads
 
-        xsstring = "xs=" + str(lib_manager.data["mcnp"][lib].filename)
-
-        if run_mpi:
-            run_command = [
-                "mpirun",
-                "-n",
-                str(mpi_tasks),
-                executable,
-                inputstring,
-                outputstring,
-                xsstring,
-            ]
+        if d1s == True:
+            xsstring = "xs=" + str(lib_manager.data["d1s"][lib].filename)
+            executable = config.d1s_exec
+            env_variables = config.d1s_config
         else:
-            run_command = [executable, inputstring, outputstring, tasks, xsstring]
+            xsstring = "xs=" + str(lib_manager.data["mcnp"][lib].filename)
+            executable = config.mcnp_exec
+            env_variables = config.mcnp_config
 
         flagnotrun = False
+        
+        if pd.isnull(executable) is not True:
+            if run_mpi:
+                run_command = [
+                    "mpirun",
+                    "-n",
+                    str(mpi_tasks),
+                    executable,
+                    inputstring,
+                    outputstring,
+                    xsstring,
+                ]
+            else:
+                run_command = [executable, inputstring, outputstring, xsstring]
 
-        try:
-            cwd = os.getcwd()
-            os.chdir(directory)
-            # cancel eventual previous output file
-            outputfile = name + ".o"
-            if os.path.exists(outputfile):
-                os.remove(outputfile)
-
-            # check if runtpe exists
-            runtpe = name + ".r"
-            if os.path.exists(runtpe):
-                command = command + " runtpe=" + name + ".r"
-
-            if runoption.lower() == "c":
-                try:
-                    if not sys.platform.startswith("win"):
-                        unix.configure(env_variables)
-                    print(" ".join(run_command))
-                    subprocess.run(
-                        " ".join(run_command), cwd=directory, shell=True, timeout=43200
-                    )
-
-                except subprocess.TimeoutExpired:
-                    print(
-                        "Sesion timed out after 12 hours. Consider submitting as a job."
-                    )
-                    flagnotrun = True
-
-            elif runoption.lower() == "s":
-                # Run MCNP as a job
+            try:
                 cwd = os.getcwd()
                 os.chdir(directory)
-                Test.job_submission(
-                    config,
-                    directory,
-                    run_command,
-                    mpi_tasks,
-                    omp_threads,
-                    env_variables,
-                )
-                os.chdir(cwd)
-        except subprocess.TimeoutExpired:
-            pass
+                # cancel eventual previous output file
+                outputfile = name + ".o"
+                if os.path.exists(outputfile):
+                    os.remove(outputfile)
+
+                # check if runtpe exists
+                runtpe = name + ".r"
+                if os.path.exists(runtpe):
+                    command = command + " runtpe=" + name + ".r"
+
+                if runoption.lower() == "c":
+                    try:
+                        if not sys.platform.startswith("win"):
+                            unix.configure(env_variables)
+                        print(" ".join(run_command))
+                        subprocess.run(
+                            " ".join(run_command), cwd=directory, shell=True, timeout=43200
+                        )
+
+                    except subprocess.TimeoutExpired:
+                        print(
+                            "Sesion timed out after 12 hours. Consider submitting as a job."
+                        )
+                        flagnotrun = True
+
+                elif runoption.lower() == "s":
+                    # Run MCNP as a job
+                    cwd = os.getcwd()
+                    os.chdir(directory)
+                    Test.job_submission(
+                        config,
+                        directory,
+                        run_command,
+                        mpi_tasks,
+                        omp_threads,
+                        env_variables,
+                    )
+                    os.chdir(cwd)
+            except subprocess.TimeoutExpired:
+                pass
 
         return flagnotrun
 
@@ -711,57 +629,59 @@ class Test:
             + " \nexport SERPENT_ACELIB="
             + str(libpath)
         )
-        # Construct the run commands based on user OMP and MPI inputs.
-        if run_omp:
-            if run_mpi:
-                run_command = [
-                    "mpirun",
-                    "-np",
-                    str(mpi_tasks),
-                    executable,
-                    "-omp",
-                    str(omp_threads),
-                    inputstring,
-                ]
-            else:
-                run_command = [executable, "-omp", str(omp_threads), inputstring]
-        else:
-            if run_mpi:
-                run_command = ["mpirun", "-np", str(mpi_tasks), executable, inputstring]
-            else:
-                run_command = [executable, inputstring]
 
         flagnotrun = False
+        
+        if pd.isnull(executable) is not True:
+            # Construct the run commands based on user OMP and MPI inputs.
+            if run_omp:
+                if run_mpi:
+                    run_command = [
+                        "mpirun",
+                        "-np",
+                        str(mpi_tasks),
+                        executable,
+                        "-omp",
+                        str(omp_threads),
+                        inputstring,
+                    ]
+                else:
+                    run_command = [executable, "-omp", str(omp_threads), inputstring]
+            else:
+                if run_mpi:
+                    run_command = ["mpirun", "-np", str(mpi_tasks), executable, inputstring]
+                else:
+                    run_command = [executable, inputstring]
 
-        if runoption.lower() == "c":
-            try:
-                os.environ["SERPENT_DATA"] = str(libpath.parent)
-                os.environ["SERPENT_ACELIB"] = str(str(libpath))
-                unix.configure(env_variables)
-                print(" ".join(run_command))
-                # subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
-                subprocess.run(
-                    " ".join(run_command), cwd=directory, shell=True, timeout=43200
+            if runoption.lower() == "c":
+                try:
+                    os.environ["SERPENT_DATA"] = str(libpath.parent)
+                    os.environ["SERPENT_ACELIB"] = str(str(libpath))
+                    unix.configure(env_variables)
+                    print(" ".join(run_command))
+                    # subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
+                    subprocess.run(
+                        " ".join(run_command), cwd=directory, shell=True, timeout=43200
+                    )
+
+                except subprocess.TimeoutExpired:
+                    print("Sesion timed out after 12 hours. Consider submitting as a job.")
+                    flagnotrun = True
+
+            elif runoption.lower() == "s":
+                # Run Serpent as a job
+                cwd = os.getcwd()
+                os.chdir(directory)
+                Test.job_submission(
+                    config,
+                    directory,
+                    run_command,
+                    mpi_tasks,
+                    omp_threads,
+                    env_variables,
+                    data_command,
                 )
-
-            except subprocess.TimeoutExpired:
-                print("Sesion timed out after 12 hours. Consider submitting as a job.")
-                flagnotrun = True
-
-        elif runoption.lower() == "s":
-            # Run Serpent as a job
-            cwd = os.getcwd()
-            os.chdir(directory)
-            Test.job_submission(
-                config,
-                directory,
-                run_command,
-                mpi_tasks,
-                omp_threads,
-                env_variables,
-                data_command,
-            )
-            os.chdir(cwd)
+                os.chdir(cwd)
 
         return flagnotrun
 
@@ -810,54 +730,55 @@ class Test:
         libpath = Path(str(lib_manager.data["openmc"][lib].filename))
         data_command = "export OPENMC_CROSS_SECTIONS=" + str(libpath)
 
-        # Run OpenMC from command line either OMP, MPI or hybrid MPI-OMP
-        if run_omp:
-            if run_mpi:
-                run_command = [
-                    "mpirun",
-                    "-np",
-                    str(mpi_tasks),
-                    executable,
-                    "--threads",
-                    str(omp_threads),
-                ]
-            else:
-                run_command = [executable, "--threads", str(omp_threads)]
-        else:
-            if run_mpi:
-                run_command = ["mpirun", "-np", str(mpi_tasks), executable]
-            else:
-                run_command = [executable]
-
         flagnotrun = False
+        
+        if pd.isnull(executable) is not True:
+            # Run OpenMC from command line either OMP, MPI or hybrid MPI-OMP
+            if run_omp:
+                if run_mpi:
+                    run_command = [
+                        "mpirun",
+                        "-np",
+                        str(mpi_tasks),
+                        executable,
+                        "--threads",
+                        str(omp_threads),
+                    ]
+                else:
+                    run_command = [executable, "--threads", str(omp_threads)]
+            else:
+                if run_mpi:
+                    run_command = ["mpirun", "-np", str(mpi_tasks), executable]
+                else:
+                    run_command = [executable]
 
-        if runoption.lower() == "c":
-            try:
-                os.environ["OPENMC_CROSS_SECTIONS"] = str(libpath)
-                unix.configure(env_variables)
-                print(" ".join(run_command))
-                subprocess.run(
-                    " ".join(run_command), cwd=directory, shell=True, timeout=43200
+            if runoption.lower() == "c":
+                try:
+                    os.environ["OPENMC_CROSS_SECTIONS"] = str(libpath)
+                    unix.configure(env_variables)
+                    print(" ".join(run_command))
+                    subprocess.run(
+                        " ".join(run_command), cwd=directory, shell=True, timeout=43200
+                    )
+
+                except subprocess.TimeoutExpired:
+                    print("Sesion timed out after 12 hours. Consider submitting as a job.")
+                    flagnotrun = True
+
+            elif runoption.lower() == "s":
+                # Run Serpent as a job
+                cwd = os.getcwd()
+                os.chdir(directory)
+                Test.job_submission(
+                    config,
+                    directory,
+                    run_command,
+                    mpi_tasks,
+                    omp_threads,
+                    env_variables,
+                    data_command,
                 )
-
-            except subprocess.TimeoutExpired:
-                print("Sesion timed out after 12 hours. Consider submitting as a job.")
-                flagnotrun = True
-
-        elif runoption.lower() == "s":
-            # Run Serpent as a job
-            cwd = os.getcwd()
-            os.chdir(directory)
-            Test.job_submission(
-                config,
-                directory,
-                run_command,
-                mpi_tasks,
-                omp_threads,
-                env_variables,
-                data_command,
-            )
-            os.chdir(cwd)
+                os.chdir(cwd)
 
         return flagnotrun
 
@@ -1301,45 +1222,40 @@ class SphereTest(Test):
         """
 
         directory = self.run_dir
-        lib = self._get_lib(self.lib)
+        if self.d1s:
+            lib = self._get_lib_d1s(self.lib)
+        else:
+            lib = self._get_lib(self.lib)
 
         if self.d1s:
             d1s_directory = os.path.join(directory)
-            if pd.isnull(config.d1s_exec) is not True:
-                for folder in tqdm(os.listdir(d1s_directory)):
-                    run_directory = os.path.join(d1s_directory, folder, "d1s")
-                    self.run_d1s(
-                        config, libmanager, folder + "_", run_directory, runoption
-                    )
-            else:
-                print(
-                    "No D1S exectuble has been supplied. Only the inputs will be generated."
+            for folder in tqdm(os.listdir(d1s_directory)):
+                run_directory = os.path.join(d1s_directory, folder, "d1s")
+                self.run_mcnp(
+                    lib, config, libmanager, folder + "_", run_directory, runoption, d1s=True
                 )
 
         if self.mcnp:
             mcnp_directory = os.path.join(directory)
-            if pd.isnull(config.mcnp_exec) is not True:
-                for folder in tqdm(os.listdir(mcnp_directory)):
-                    run_directory = os.path.join(mcnp_directory, folder, "mcnp")
-                    self.run_mcnp(
-                        lib, config, libmanager, folder + "_", run_directory, runoption
-                    )
+            for folder in tqdm(os.listdir(mcnp_directory)):
+                run_directory = os.path.join(mcnp_directory, folder, "mcnp")
+                self.run_mcnp(
+                    lib, config, libmanager, folder + "_", run_directory, runoption
+                )
 
         if self.serpent:
             serpent_directory = os.path.join(directory)
-            if pd.isnull(config.serpent_exec) is not True:
-                for folder in tqdm(os.listdir(serpent_directory)):
-                    run_directory = os.path.join(serpent_directory, folder, "serpent")
-                    self.run_serpent(
-                        lib, config, libmanager, folder + "_", run_directory, runoption
-                    )
+            for folder in tqdm(os.listdir(serpent_directory)):
+                run_directory = os.path.join(serpent_directory, folder, "serpent")
+                self.run_serpent(
+                    lib, config, libmanager, folder + "_", run_directory, runoption
+                )
 
         if self.openmc:
             openmc_directory = os.path.join(directory)
-            if pd.isnull(config.openmc_exec) is not True:
-                for folder in tqdm(os.listdir(openmc_directory)):
-                    run_directory = os.path.join(openmc_directory, folder, "openmc")
-                    self.run_openmc(lib, config, libmanager, run_directory, runoption)
+            for folder in tqdm(os.listdir(openmc_directory)):
+                run_directory = os.path.join(openmc_directory, folder, "openmc")
+                self.run_openmc(lib, config, libmanager, run_directory, runoption)
 
 
 class SphereTestSDDR(SphereTest):

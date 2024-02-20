@@ -60,3 +60,19 @@ class TestExcelSupport:
 
         # Assert that the file exists
         assert os.path.exists(outpath)
+
+    def test_comp_excel_writer(self, tmpdir):
+        # Test case: Write data to excel
+        outpath = tmpdir.join("test.xlsx")
+        comp_excel_writer(
+            self,
+            outpath,
+            "32c_Vs_31c",
+            self.testname,
+            self.tallies,
+            self.tallies,
+            self.tallies,
+        )
+
+        # Assert that the file exists
+        assert os.path.exists(outpath)

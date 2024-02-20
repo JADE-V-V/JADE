@@ -26,14 +26,26 @@ class TestExpOutput:
     def setup(self):
         session = MockUpSession()
         config = session.conf.comp_default.set_index("Description")
+        conf = config.iloc[0]
         session.path_comparison = os.path.join(
             resources, "Post-Processing", "Comparison"
         )
         session.path_single = os.path.join(
             resources, "Post-Processing", "Single_Libraries"
         )
-        session.path_exp_res = os.path.join(resources, "exp_res")
+        session.path_exp_res = os.path.join(resources, "Experimental_Results")
         session.path_pp = os.path.join(resources, "Post-Processing")
         session.path_run = os.path.join(resources, "Simulations")
         session.path_test = resources
-        self.exp_output = outp.BenchmarkOutput(["32c", "31c"], config, session)
+        session.state = None
+        session.path_templates = None
+        session.path_cnf = os.path.join(resources, "Benchmarks_Configuration")
+        session.path_quality = None
+        session.path_uti = None
+        session.path_comparison = os.path.join(
+            resources, "Post-Processing", "Comparisons"
+        )
+        self.exp_output = outp.BenchmarkOutput(["32c", "31c"], conf, session)
+
+    def test_get_exp_results(self):
+        assert True

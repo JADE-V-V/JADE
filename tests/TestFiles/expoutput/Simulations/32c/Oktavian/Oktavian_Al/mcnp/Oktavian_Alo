@@ -1,0 +1,929 @@
+ 
+  comment.  Physics models disabled.
+         1-       Leakage from Al (40cm dia) sphere 3-d surface tally
+         2-       c
+         3-       1  0               (  -3 -8):(8   -1 -6)  imp:n=1
+         4-       2  2       -7.824  (3 -4 -8):(8 1 -2 -6)  imp:n=1
+         5-       3  1       -1.223  (4 -5 -8):(8 2    -5)  imp:n=1
+         6-       4  2       -7.824  (5 -6 -8):(8 2  5 -6)  imp:n=1
+         7-       5  0                6 -7                  imp:n=1
+         8-       6  0                7                     imp:n=0
+         9-       
+        10-       1  cx    5.55
+        11-       2  cx    5.75
+        12-       3  so   10.0
+        13-       4  so   10.2
+        14-       5  so   19.75
+        15-       6  so   19.95
+        16-       7  so  100.0
+        17-       8  px    8.32
+        18-       
+        19-       c
+        20-       c   Fraction Mass
+        21-       c   Expand
+        22-       c   Output   MCNP
+        23-       c   Temp     293.16
+        24-       c   Density  5.75992
+        25-       c   #
+        26-       c   Composition 1
+        27-       c      Al 0.997 Si 0.0015 Fe 0.0020 Cu 0.0001
+        28-       c
+        29-       M1
+        30-             13027.32c        9.975488E-1     $ Al-27  AB(%) 100.0
+        31-             14028.32c        1.329808E-3     $ Si-28  AB(%) 92.23
+        32-             14029.32c        6.752131E-5     $ Si-29  AB(%) 4.683
+        33-             14030.32c        4.450956E-5     $ Si-30  AB(%) 3.087
+        34-             26054.32c        5.651123E-5     $ Fe-54  AB(%) 5.845
+        35-             26056.32c        8.871055E-4     $ Fe-56  AB(%) 91.754
+        36-             26057.32c        2.048713E-5     $ Fe-57  AB(%) 2.119
+        37-             26058.32c        2.726461E-6     $ Fe-58  AB(%) 0.282
+        38-             29063.32c        2.938581E-5     $ Cu-63  AB(%) 69.17
+        39-             29065.32c        1.309765E-5     $ Cu-65  AB(%) 30.83
+        40-       c
+        41-       M2
+        42-             24050.32c       -8.038250E-3     $ Cr-50  AB(%) 4.345
+        43-             24052.32c       -1.550100E-1     $ Cr-52  AB(%) 83.789
+        44-             24053.32c       -1.757680E-2     $ Cr-53  AB(%) 9.501
+        45-             24054.32c       -4.375250E-3     $ Cr-54  AB(%) 2.365
+        46-             26054.32c       -4.114880E-2     $ Fe-54  AB(%) 5.845
+        47-             26056.32c       -6.459480E-1     $ Fe-56  AB(%) 91.754
+        48-             26057.32c       -1.491780E-2     $ Fe-57  AB(%) 2.119
+        49-             26058.32c       -1.985280E-3     $ Fe-58  AB(%) 0.282
+        50-             28058.32c       -7.556550E-2     $ Ni-58  AB(%) 68.077
+        51-             28060.32c       -2.910750E-2     $ Ni-60  AB(%) 26.223
+        52-             28061.32c       -1.265400E-3     $ Ni-61  AB(%) 1.14
+        53-             28062.32c       -4.033740E-3     $ Ni-62  AB(%) 3.634
+        54-             28064.32c       -1.027860E-3     $ Ni-64  AB(%) 0.926
+        55-       mode   n p
+  comment.  photonuclear physics may be needed (phys:p).
+        56-       sdef   pos=0 0 0  cel=1  erg=d1
+        57-       c  nps    1e5
+        58-       prdmp  2J  -1 $ Flag to print the mctal
+        59-       cut:n  j  1e-3  0.01   $ Energy and weight cut-off
+  warning.  neutron energy cutoff >0 in this neutron-photon problem.
+        60-       c
+        61-       f21:n   6
+        62-       f41:p   6
+        63-       e21       0.10109   0.10521   0.10950   0.11397   0.11862   0.12347
+        64-                 0.12850   0.13375   0.13921   0.14489   0.15080   0.15696
+        65-                 0.16336   0.17003   0.17697   0.18419   0.19171   0.19953
+        66-                 0.20767   0.21615   0.22497   0.23415   0.24371   0.25365
+        67-                 0.26400   0.27478   0.28599   0.29766   0.30981   0.32245
+        68-                 0.33561   0.34931   0.36357   0.37840   0.39385   0.40992
+        69-                 0.42665   0.44406   0.46218   0.48105   0.50068   0.52111
+        70-                 0.54238   0.56451   0.58755   0.61153   0.63648   0.66246
+        71-                 0.68950   0.71763   0.74692   0.77740   0.80913   0.84215
+        72-                 0.87652   0.91229   0.94952   0.98827   1.02860   1.07060
+        73-                 1.11430   1.15980   1.20710   1.25630   1.30760   1.36100
+        74-                 1.41650   1.47430   1.53450   1.59710   1.66230   1.73010
+        75-                 1.80080   1.87420   1.95070   2.03030   2.11320   2.19940
+        76-                 2.28920   2.38260   2.47990   2.58110   2.68640   2.79600
+        77-                 2.91010   3.02890   3.15250   3.28120   3.41510   3.55450
+        78-                 3.69950   3.85050   4.00760   4.17120   4.34140   4.51860
+        79-                 4.70300   4.89490   5.09470   5.30260   5.51900   5.74430
+        80-                 5.97870   6.22270   6.47660   6.74100   7.01610   7.30240
+        81-                 7.60040   7.91060   8.23340   8.56940   8.91920   9.28320
+        82-                 9.66200  10.05600  10.46700  10.89400  11.33900  11.80100
+        83-                12.28300  12.78400  13.30600  13.84900  14.41400  15.00200
+        84-                15.61500  16.25200  16.91500  17.60500  18.32400  19.07200
+        85-                19.85000  20.66000
+        86-       e41       0.50000   0.60000   0.70000   0.80000   0.90000   1.00000
+        87-                 1.10000   1.20000   1.30000   1.40000   1.50000   1.60000
+        88-                 1.70000   1.80000   1.90000   2.00000   2.10000   2.20000
+        89-                 2.30000   2.40000   2.50000   2.60000   2.70000   2.80000
+        90-                 2.90000   3.00000   3.10000   3.20000   3.30000   3.40000
+        91-                 3.50000   3.60000   3.70000   3.80000   3.90000   4.00000
+        92-                 4.10000   4.20000   4.30000   4.40000   4.50000   4.60000
+        93-                 4.70000   4.80000   4.90000   5.00000   5.50000   6.00000
+        94-                 6.50000   7.00000   7.50000   8.00000   8.50000   9.00000
+        95-                 9.50000  10.00000  10.50000
+        96-       c
+        97-       #           si1             sp1
+        98-                0.10000  0.0
+        99-                0.13644  3.00903e-05
+       100-                0.15079  9.65131e-05
+       101-                0.16665  2.80822e-05
+       102-                0.18418  0.000306354
+       103-                0.20355  0.000210096
+       104-                0.22496  0.000205622
+       105-                0.24862  0.000381712
+       106-                0.27476  0.000300617
+       107-                0.30366  0.00037554
+       108-                0.33560  0.000512358
+       109-                0.37089  0.000520925
+       110-                0.40990  0.000630849
+       111-                0.45301  0.000570806
+       112-                0.50065  0.000734549
+       113-                0.55331  0.000957807
+       114-                0.61150  0.000969666
+       115-                0.67581  0.00114997
+       116-                0.74689  0.00129308
+       117-                0.82544  0.00152998
+       118-                0.91225  0.00162696
+       119-                1.00820  0.00182414
+       120-                1.11420  0.00178747
+       121-                1.23140  0.0019783
+       122-                1.36090  0.00194289
+       123-                1.50400  0.00194365
+       124-                1.66220  0.00201828
+       125-                1.83700  0.00202883
+       126-                2.03020  0.00211401
+       127-                2.24380  0.00208776
+       128-                2.47970  0.00213729
+       129-                2.74050  0.00279908
+       130-                3.02880  0.00349091
+       131-                3.34730  0.00176878
+       132-                3.69930  0.00182381
+       133-                4.08840  0.00178018
+       134-                4.51840  0.00164407
+       135-                4.99360  0.00154299
+       136-                5.51880  0.00140505
+       137-                6.09920  0.00130596
+       138-                6.74060  0.00137888
+       139-                7.44960  0.00125414
+       140-                8.23300  0.00135987
+       141-                9.09890  0.00149605
+       142-               10.05600  0.0019113
+       143-               11.11300  0.00254563
+       144-               12.28200  0.00464189
+       145-               13.57400  0.0207244
+       146-               15.00200  0.62147
+       147-               16.57900  0.295462
+       148-               18.32300  0.000602722
+       149-               20.25000  1.92596e-05
+       150-       c
+       151-       STOP NPS 100
+
+ ***************************************************
+ * Random Number Generator  =                    1 *
+ * Random Number Seed       =       19073486328125 *
+ * Random Number Multiplier =       19073486328125 *
+ * Random Number Adder      =                    0 *
+ * Random Number Bits Used  =                   48 *
+ * Random Number Stride     =               152917 *
+ ***************************************************
+
+ 
+  comment.  total nubar used if fissionable isotopes are present.
+ 
+  comment.  photon   importances have been set equal to 1.
+1cells                                                                                                  print table 60
+
+                               atom        gram                                            neutron    photon     photon wt             
+              cell      mat   density     density     volume       mass            pieces importance importance generation             
+
+        1        1        0  0.00000E+00 0.00000E+00 5.19266E+03 0.00000E+00           1  1.0000E+00 1.0000E+00 -1.000E+00             
+        2        2        2  8.50818E-02 7.82400E+00 3.10563E+02 2.42985E+03           1  1.0000E+00 1.0000E+00 -1.000E+00             
+        3        3        1  2.72649E-02 1.22300E+00 2.67873E+04 3.27609E+04           1  1.0000E+00 1.0000E+00 -1.000E+00             
+        4        4        2  8.50818E-02 7.82400E+00 9.69066E+02 7.58197E+03           1  1.0000E+00 1.0000E+00 -1.000E+00             
+        5        5        0  0.00000E+00 0.00000E+00 4.15553E+06 0.00000E+00           1  1.0000E+00 1.0000E+00 -1.000E+00             
+        6        6        0  0.00000E+00 0.00000E+00 0.00000E+00 0.00000E+00           0  0.0000E+00 0.0000E+00 -1.000E+00             
+
+ total                                               4.18879E+06 4.27727E+04
+
+    minimum source weight = 1.0000E+00    maximum source weight = 1.0000E+00
+
+          1 warning message so far.
+1cross-section tables                                                                                   print table 100
+
+     table    length
+
+                        tables from file /FENDL3.2/13Al027                                               
+
+  13027.32c  188008  13-Al-27 for FENDL-3.2 from JEFF-3.1.1 with NJOY2016.60+ on Feb2021          mat1325      02/09/21
+                     Energy range:   9.37500E-04  to  1.50000E+02 MeV.
+                     particle-production data for protons   being expunged from  13027.32c          
+                     particle-production data for deuterons being expunged from  13027.32c          
+                     particle-production data for tritons   being expunged from  13027.32c          
+                     particle-production data for alphas    being expunged from  13027.32c          
+
+                        tables from file /FENDL3.2/14Si028                                               
+
+  14028.32c  231168  14-Si-28 for FENDL-3.2 from ENDF/B-VII with NJOY2016.60+ on Feb2021          mat1425      02/09/21
+                     Energy range:   9.37500E-04  to  1.50000E+02 MeV.
+                     particle-production data for protons   being expunged from  14028.32c          
+                     particle-production data for deuterons being expunged from  14028.32c          
+                     particle-production data for tritons   being expunged from  14028.32c          
+                     particle-production data for alphas    being expunged from  14028.32c          
+
+                        tables from file /FENDL3.2/14Si029                                               
+
+  14029.32c  200300  14-Si-29 for FENDL-3.2 from ENDF/B-VII with NJOY2016.60+ on Feb2021          mat1428      02/09/21
+                     Energy range:   9.37500E-04  to  1.50000E+02 MeV.
+                     particle-production data for protons   being expunged from  14029.32c          
+                     particle-production data for deuterons being expunged from  14029.32c          
+                     particle-production data for tritons   being expunged from  14029.32c          
+                     particle-production data for alphas    being expunged from  14029.32c          
+
+                        tables from file /FENDL3.2/14Si030                                               
+
+  14030.32c  171724  14-Si-30 for FENDL-3.2 from ENDF/B-VII with NJOY2016.60+ on Feb2021          mat1431      02/09/21
+                     Energy range:   9.37500E-04  to  1.50000E+02 MeV.
+                     particle-production data for protons   being expunged from  14030.32c          
+                     particle-production data for deuterons being expunged from  14030.32c          
+                     particle-production data for tritons   being expunged from  14030.32c          
+                     particle-production data for alphas    being expunged from  14030.32c          
+
+                        tables from file /FENDL3.2/24Cr050                                               
+
+  24050.32c 1502965  24-Cr-50 for FENDL-3.2 from KIT-2010 with NJOY2016.60+ on Feb2021            mat2425      02/09/21
+                     Energy range:   9.37500E-04  to  6.50000E+01 MeV.
+                     particle-production data for protons   being expunged from  24050.32c          
+                     particle-production data for deuterons being expunged from  24050.32c          
+                     particle-production data for tritons   being expunged from  24050.32c          
+                     particle-production data for helions   being expunged from  24050.32c          
+                     particle-production data for alphas    being expunged from  24050.32c          
+
+                        tables from file /FENDL3.2/24Cr052                                               
+
+  24052.32c 1299738  24-Cr-52 for FENDL-3.2 from ENDF/A-1 with NJOY2016.60+ on Feb2021            mat2431      02/09/21
+                     Energy range:   9.14515E-04  to  6.50000E+01 MeV.
+                     particle-production data for protons   being expunged from  24052.32c          
+                     particle-production data for deuterons being expunged from  24052.32c          
+                     particle-production data for tritons   being expunged from  24052.32c          
+                     particle-production data for helions   being expunged from  24052.32c          
+                     particle-production data for alphas    being expunged from  24052.32c          
+
+                        tables from file /FENDL3.2/24Cr053                                               
+
+  24053.32c 1142854  24-Cr-53 for FENDL-3.2 from KIT-2010 with NJOY2016.60+ on Feb2021            mat2434      02/09/21
+                     Energy range:   9.37500E-04  to  6.50000E+01 MeV.
+                     particle-production data for protons   being expunged from  24053.32c          
+                     particle-production data for deuterons being expunged from  24053.32c          
+                     particle-production data for tritons   being expunged from  24053.32c          
+                     particle-production data for helions   being expunged from  24053.32c          
+                     particle-production data for alphas    being expunged from  24053.32c          
+
+                        tables from file /FENDL3.2/24Cr054                                               
+
+  24054.32c 1285290  24-Cr-54 for FENDL-3.2 from KIT-2010 with NJOY2016.60+ on Feb2021            mat2437      02/09/21
+                     Energy range:   9.37500E-04  to  6.50000E+01 MeV.
+                     particle-production data for protons   being expunged from  24054.32c          
+                     particle-production data for deuterons being expunged from  24054.32c          
+                     particle-production data for tritons   being expunged from  24054.32c          
+                     particle-production data for helions   being expunged from  24054.32c          
+                     particle-production data for alphas    being expunged from  24054.32c          
+
+                        tables from file /FENDL3.2/26Fe054                                               
+
+  26054.32c 2069861  26-Fe-54 for FENDL-3.2 from ENDF/B-VII with NJOY2016.60+ on Feb2021          mat2625      02/09/21
+                     Energy range:   9.37500E-04  to  1.50000E+02 MeV.
+                     particle-production data for protons   being expunged from  26054.32c          
+                     particle-production data for deuterons being expunged from  26054.32c          
+                     particle-production data for tritons   being expunged from  26054.32c          
+                     particle-production data for helions   being expunged from  26054.32c          
+                     particle-production data for alphas    being expunged from  26054.32c          
+
+                        tables from file /FENDL3.2/26Fe056                                               
+
+  26056.32c 3183100  26-Fe-56 for FENDL-3.2 from JEFF-3.1.1 with NJOY2016.60+ on Feb2021          mat2631      02/10/21
+                     Energy range:   9.78209E-04  to  1.50000E+02 MeV.
+                     particle-production data for protons   being expunged from  26056.32c          
+                     particle-production data for deuterons being expunged from  26056.32c          
+                     particle-production data for tritons   being expunged from  26056.32c          
+                     particle-production data for helions   being expunged from  26056.32c          
+                     particle-production data for alphas    being expunged from  26056.32c          
+
+                        tables from file /FENDL3.2/26Fe057                                               
+
+  26057.32c 1638452  26-Fe-57 for FENDL-3.2 from ENDF/B-VII with NJOY2016.60+ on Feb2021          mat2634      02/09/21
+                     Energy range:   9.37500E-04  to  1.50000E+02 MeV.
+                     particle-production data for protons   being expunged from  26057.32c          
+                     particle-production data for deuterons being expunged from  26057.32c          
+                     particle-production data for tritons   being expunged from  26057.32c          
+                     particle-production data for helions   being expunged from  26057.32c          
+                     particle-production data for alphas    being expunged from  26057.32c          
+
+                        tables from file /FENDL3.2/26Fe058                                               
+
+  26058.32c  413890  26-Fe-58 for FENDL-3.2 from JEFF-3.1.1 with NJOY2016.60+ on Feb2021          mat2637      02/09/21
+                     Energy range:   9.37500E-04  to  2.00000E+02 MeV.
+                     particle-production data for protons   being expunged from  26058.32c          
+                     particle-production data for deuterons being expunged from  26058.32c          
+                     particle-production data for tritons   being expunged from  26058.32c          
+                     particle-production data for helions   being expunged from  26058.32c          
+                     particle-production data for alphas    being expunged from  26058.32c          
+                     probability tables used from 3.5000E-01 to 3.0000E+00 mev.
+
+                        tables from file /FENDL3.2/28Ni058                                               
+
+  28058.32c  627297  28-Ni-58 for FENDL-3.2 from ENDF/B-VII with NJOY2016.60+ on Feb2021          mat2825      02/09/21
+                     Energy range:   9.99999E-04  to  1.50000E+02 MeV.
+                     particle-production data for protons   being expunged from  28058.32c          
+                     particle-production data for deuterons being expunged from  28058.32c          
+                     particle-production data for tritons   being expunged from  28058.32c          
+                     particle-production data for alphas    being expunged from  28058.32c          
+
+                        tables from file /FENDL3.2/28Ni060                                               
+
+  28060.32c  582201  28-Ni-60 for FENDL-3.2 from ENDF/B-VII with NJOY2016.60+ on Feb2021          mat2831      02/09/21
+                     Energy range:   9.99999E-04  to  1.50000E+02 MeV.
+                     particle-production data for protons   being expunged from  28060.32c          
+                     particle-production data for deuterons being expunged from  28060.32c          
+                     particle-production data for tritons   being expunged from  28060.32c          
+                     particle-production data for alphas    being expunged from  28060.32c          
+
+                        tables from file /FENDL3.2/28Ni061                                               
+
+  28061.32c  219380  28-Ni-61 for FENDL-3.2 from ENDF/B-VII with NJOY2016.60+ on Feb2021          mat2834      02/09/21
+                     Energy range:   9.99999E-04  to  1.50000E+02 MeV.
+                     particle-production data for protons   being expunged from  28061.32c          
+                     particle-production data for deuterons being expunged from  28061.32c          
+                     particle-production data for tritons   being expunged from  28061.32c          
+                     particle-production data for alphas    being expunged from  28061.32c          
+
+                        tables from file /FENDL3.2/28Ni062                                               
+
+  28062.32c  209622  28-Ni-62 for FENDL-3.2 from ENDF/B-VII with NJOY2016.60+ on Feb2021          mat2837      02/09/21
+                     Energy range:   9.37500E-04  to  1.50000E+02 MeV.
+                     particle-production data for protons   being expunged from  28062.32c          
+                     particle-production data for deuterons being expunged from  28062.32c          
+                     particle-production data for tritons   being expunged from  28062.32c          
+                     particle-production data for alphas    being expunged from  28062.32c          
+                     probability tables used from 6.0000E-01 to 1.0000E+00 mev.
+
+                        tables from file /FENDL3.2/28Ni064                                               
+
+  28064.32c  183864  28-Ni-64 for FENDL-3.2 from ENDF/B-VII with NJOY2016.60+ on Feb2021          mat2843      02/09/21
+                     Energy range:   9.99999E-04  to  1.50000E+02 MeV.
+                     particle-production data for protons   being expunged from  28064.32c          
+                     particle-production data for deuterons being expunged from  28064.32c          
+                     particle-production data for tritons   being expunged from  28064.32c          
+                     particle-production data for alphas    being expunged from  28064.32c          
+
+                        tables from file /FENDL3.2/29Cu063                                               
+
+  29063.32c  322573  29-Cu-63 for FENDL-3.2 from ENDF/B-VII with NJOY2016.60+ on Feb2021          mat2925      02/09/21
+                     Energy range:   9.99999E-04  to  1.50000E+02 MeV.
+                     particle-production data for protons   being expunged from  29063.32c          
+                     particle-production data for deuterons being expunged from  29063.32c          
+                     particle-production data for tritons   being expunged from  29063.32c          
+                     particle-production data for alphas    being expunged from  29063.32c          
+
+                        tables from file /FENDL3.2/29Cu065                                               
+
+  29065.32c  283774  29-Cu-65 for FENDL-3.2 from ENDF/B-VII with NJOY2016.60+ on Feb2021          mat2931      02/09/21
+                     Energy range:   9.99999E-04  to  1.50000E+02 MeV.
+                     particle-production data for protons   being expunged from  29065.32c          
+                     particle-production data for deuterons being expunged from  29065.32c          
+                     particle-production data for tritons   being expunged from  29065.32c          
+                     particle-production data for alphas    being expunged from  29065.32c          
+
+                        tables from file mcplib84                                                        
+
+  13000.84p    4922  Update of MCPLIB04 Photon Compton Broadening Data For MCNP5 see LA-UR-    12-00018        01/03/12
+                     Energy range:   1.00000E-03  to  1.00000E+05 MeV.
+  14000.84p    4868  Update of MCPLIB04 Photon Compton Broadening Data For MCNP5 see LA-UR-    12-00018        01/03/12
+                     Energy range:   1.00000E-03  to  1.00000E+05 MeV.
+  24000.84p    5758  Update of MCPLIB04 Photon Compton Broadening Data For MCNP5 see LA-UR-    12-00018        01/03/12
+                     Energy range:   1.00000E-03  to  1.00000E+05 MeV.
+  26000.84p    5794  Update of MCPLIB04 Photon Compton Broadening Data For MCNP5 see LA-UR-    12-00018        01/03/12
+                     Energy range:   1.00000E-03  to  1.00000E+05 MeV.
+  28000.84p    5902  Update of MCPLIB04 Photon Compton Broadening Data For MCNP5 see LA-UR-    12-00018        01/03/12
+                     Energy range:   1.00000E-03  to  1.00000E+05 MeV.
+  29000.84p    5830  Update of MCPLIB04 Photon Compton Broadening Data For MCNP5 see LA-UR-    12-00018        01/03/12
+                     Energy range:   1.00000E-03  to  1.00000E+05 MeV.
+
+  total    15789135
+
+ neutron cross sections outside the range from 1.0000E-03 to 1.0000E+36 mev are expunged.
+
+ maximum photon energy set to    100.0 mev (maximum electron energy)
+
+                        tables from file el03                                                            
+
+  13000.03e    2337                                                                                          6/6/98    
+                     Energy range:   1.00000E-03  to  1.00000E+03 MeV.
+  14000.03e    2339                                                                                          6/6/98    
+                     Energy range:   1.00000E-03  to  1.00000E+03 MeV.
+  24000.03e    2345                                                                                          6/6/98    
+                     Energy range:   1.00000E-03  to  1.00000E+03 MeV.
+  26000.03e    2345                                                                                          6/6/98    
+                     Energy range:   1.00000E-03  to  1.00000E+03 MeV.
+  28000.03e    2347                                                                                          6/6/98    
+                     Energy range:   1.00000E-03  to  1.00000E+03 MeV.
+  29000.03e    2347                                                                                          6/6/98    
+                     Energy range:   1.00000E-03  to  1.00000E+03 MeV.
+
+1particles and energy limits                                                                            print table 101
+
+                         particle      maximum       smallest      largest       always        always
+                         cutoff        particle      table         table         use table     use model
+   particle type         energy        energy        maximum       maximum       below         above
+
+    1  n    neutron     1.0000E-03    1.0000E+36    6.5000E+01    2.0000E+02    1.0000E+36    1.0000E+36
+    2  p    photon      1.0000E-03    1.0000E+02    1.0000E+05    1.0000E+05    1.0000E+36    1.0000E+36
+    3  e    electron    1.0000E-03    1.0000E+02    1.0000E+02    1.0000E+02    1.0000E+36    1.0000E+36
+ 
+ 
+  warning.  material        1 has been set to a conductor.
+ 
+  warning.  material        2 has been set to a conductor.
+
+         3 warning messages so far.
+1problem summary                                                                                                           
+
+      run terminated when         100  particle histories were done.
+
+ neutron creation    tracks      weight        energy            neutron loss        tracks      weight        energy
+                                 (per source particle)                                           (per source particle)
+
+ source                 100    1.0000E+00    1.4150E+01          escape                 101    9.4286E-01    1.0453E+01
+ nucl. interaction        0    0.            0.                  energy cutoff            0    0.            0.        
+ particle decay           0    0.            0.                  time cutoff              0    0.            0.        
+ weight window            0    0.            0.                  weight window            0    0.            0.        
+ cell importance          0    0.            0.                  cell importance          0    0.            0.        
+ weight cutoff            0    0.            0.                  weight cutoff            0    0.            0.        
+ e or t importance        0    0.            0.                  e or t importance        0    0.            0.        
+ dxtran                   0    0.            0.                  dxtran                   0    0.            0.        
+ forced collisions        0    0.            0.                  forced collisions        0    0.            0.        
+ exp. transform           0    0.            0.                  exp. transform           0    0.            0.        
+ upscattering             0    0.            0.                  downscattering           0    0.            2.6421E+00
+ photonuclear             0    0.            0.                  capture                  0    6.6920E-02    9.3369E-01
+ (n,xn)                   2    1.9568E-02    1.9139E-02          loss to (n,xn)           1    9.7839E-03    1.3983E-01
+ prompt fission           0    0.            0.                  loss to fission          0    0.            0.        
+ delayed fission          0    0.            0.                  nucl. interaction        0    0.            0.        
+ prompt photofis          0    0.            0.                  particle decay           0    0.            0.        
+ tabular boundary         0    0.            0.                  tabular boundary         0    0.            0.        
+ tabular sampling         0    0.            0.                  elastic scatter          0    0.            0.        
+     total              102    1.0196E+00    1.4169E+01              total              102    1.0196E+00    1.4169E+01
+
+   number of neutrons banked                       1        average time of (shakes)              cutoffs
+   neutron tracks per source particle     1.0200E+00          escape            3.3085E+00          tco   1.0000E+33
+   neutron collisions per source particle 1.0000E+00          capture           3.1996E-01          eco   1.0000E-03
+   total neutron collisions                      100          capture or escape 3.1104E+00          wc1   1.0000E-02
+   net multiplication              1.0098E+00 0.0096          any termination   3.0806E+00          wc2   5.0000E-03
+
+ photon creation     tracks      weight        energy            photon loss         tracks      weight        energy
+                                 (per source particle)                                           (per source particle)
+
+ source                   0    0.            0.                  escape                  50    5.2259E-01    1.2023E+00
+ nucl. interaction        0    0.            0.                  energy cutoff            0    0.            4.0466E-05
+ particle decay           0    0.            0.                  time cutoff              0    0.            0.        
+ weight window            0    0.            0.                  weight window            0    0.            0.        
+ cell importance          0    0.            0.                  cell importance          0    0.            0.        
+ weight cutoff            0    0.            0.                  weight cutoff            0    0.            0.        
+ e or t importance        0    0.            0.                  e or t importance        0    0.            0.        
+ dxtran                   0    0.            0.                  dxtran                   0    0.            0.        
+ forced collisions        0    0.            0.                  forced collisions        0    0.            0.        
+ exp. transform           0    0.            0.                  exp. transform           0    0.            0.        
+ from neutrons           57    6.0594E-01    1.8155E+00          compton scatter          0    0.            4.0956E-01
+ bremsstrahlung          13    1.3225E-01    1.5628E-02          capture                 27    2.8808E-01    1.9824E-02
+ p-annihilation           6    6.1030E-02    3.1187E-02          pair production          3    3.0515E-02    2.3085E-01
+ photonuclear             0    0.            0.                  photonuclear abs         0    0.            0.        
+ electron x-rays          0    0.            0.                  loss to photofis         0    0.            0.        
+ compton fluores          0    0.            0.                                                                        
+ muon capt fluores        0    0.            0.                                                                        
+ 1st fluorescence         4    4.1977E-02    2.7379E-04                                                                
+ 2nd fluorescence         0    0.            0.                                                                        
+ cerenkov                 0    0.            0.                                                                        
+ (gamma,xgamma)           0    0.            0.                                                                        
+ tabular sampling         0    0.            0.                                                                        
+ prompt photofis          0    0.            0.                                                                        
+     total               80    8.4119E-01    1.8626E+00              total               80    8.4119E-01    1.8626E+00
+
+   number of photons banked                       76        average time of (shakes)              cutoffs
+   photon tracks per source particle      8.0000E-01          escape            6.6002E-01          tco   1.0000E+33
+   photon collisions per source particle  1.3200E+00          capture           3.1317E-01          eco   1.0000E-03
+   total photon collisions                       132          capture or escape 5.3676E-01          wc1   1.0000E-02
+                                                              any termination   5.2930E-01          wc2   5.0000E-03
+
+ computer time so far in this run     0.00 minutes            maximum number ever in bank         5
+ computer time in mcrun               0.00 minutes            bank overflows to backup file       0
+ source particles per minute            0.0000E+00
+ random numbers generated                     3986            most random numbers used was         286 in history          19
+
+ range of sampled source weights = 1.0000E+00 to 1.0000E+00
+1neutron  activity in each cell                                                                         print table 126
+
+                       tracks     population   collisions   collisions     number        flux        average      average
+              cell    entering                               * weight     weighted     weighted   track weight   track mfp
+                                                          (per history)    energy       energy     (relative)      (cm)
+
+        1        1         110          101            0    0.0000E+00   1.0807E+01   1.3367E+01   9.8427E-01   0.0000E+00
+        2        2         112           99           16    1.4838E-01   8.1308E+00   1.1667E+01   9.6311E-01   4.4727E+00
+        3        3         103           98           80    7.3359E-01   6.6155E+00   1.0779E+01   9.2225E-01   1.8561E+01
+        4        4          98           98            4    3.7188E-02   6.4601E+00   1.0161E+01   9.1936E-01   4.3410E+00
+        5        5         101          101            0    0.0000E+00   7.1185E+00   1.0977E+01   9.3177E-01   0.0000E+00
+
+           total           524          497          100    9.1916E-01
+1photon   activity in each cell                                                                         print table 126
+
+                       tracks     population   collisions   collisions     number        flux        average      average
+              cell    entering                               * weight     weighted     weighted   track weight   track mfp
+                                                          (per history)    energy       energy     (relative)      (cm)
+
+        1        1          16           13            0    0.0000E+00   2.3480E+00   2.3480E+00   1.0823E+00   0.0000E+00
+        2        2          27           26           21    2.1964E-01   2.4343E+00   2.4343E+00   1.0648E+00   2.4882E+00
+        3        3          25           71           95    1.0365E+00   2.0506E+00   2.0506E+00   1.0555E+00   1.5560E+01
+        4        4          54           56           16    1.6398E-01   2.1369E+00   2.1369E+00   1.0348E+00   2.3545E+00
+        5        5          50           50            0    0.0000E+00   2.3111E+00   2.3111E+00   1.0440E+00   0.0000E+00
+
+           total           172          216          132    1.4202E+00
+1summary of photons produced in neutron collisions in the tabular range
+
+        production by cell of photons created with energies above local photon energy cutoffs
+
+              cell      number of      weight per     energy per     avg photon      mev/gm per    weight/neut    energy/neut
+                        photons       source neut    source neut       energy       source neut     collision      collision
+
+        1        1             0       0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00
+        2        2            13       1.59036E-01    3.08762E-01    1.94146E+00    1.27070E-04    1.07184E+00    2.08094E+00
+        3        3            41       4.09995E-01    1.41290E+00    3.44613E+00    4.31275E-05    5.58886E-01    1.92599E+00
+        4        4             3       3.69089E-02    9.38665E-02    2.54319E+00    1.23802E-05    9.92486E-01    2.52408E+00
+        5        5             0       0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00
+        6        6             0       0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00
+             total            57       6.05940E-01    1.81552E+00    2.99621E+00
+
+ energy distribution of photons produced in neutron collisions in the tabular range
+
+        all sampled photons from neutron collisions in the tabular range, without regard to energy cutoffs
+
+  energy      number of        number       cum number      weight of       weight       cum weight
+ interval      photons        frequency    distribution      photons       frequency    distribution
+
+   20.000             0      0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00
+   15.000             0      0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00
+   10.000             0      0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00    0.00000E+00
+    9.000             1      1.75439E-02    1.75439E-02    9.99992E-03    1.65032E-02    1.65032E-02
+    8.000             3      5.26316E-02    7.01754E-02    2.99998E-02    4.95095E-02    6.60127E-02
+    7.000             3      5.26316E-02    1.22807E-01    2.99998E-02    4.95095E-02    1.15522E-01
+    6.000             4      7.01754E-02    1.92982E-01    4.29400E-02    7.08652E-02    1.86387E-01
+    5.000             3      5.26316E-02    2.45614E-01    2.99998E-02    4.95096E-02    2.35897E-01
+    4.000             2      3.50877E-02    2.80702E-01    1.99999E-02    3.30065E-02    2.68903E-01
+    3.000             5      8.77193E-02    3.68421E-01    5.00000E-02    8.25165E-02    3.51420E-01
+    2.000            10      1.75439E-01    5.43860E-01    1.16096E-01    1.91596E-01    5.43016E-01
+    1.000            13      2.28070E-01    7.71930E-01    1.31459E-01    2.16950E-01    7.59966E-01
+    0.500             8      1.40351E-01    9.12281E-01    9.11093E-02    1.50360E-01    9.10327E-01
+    0.100             4      7.01754E-02    9.82456E-01    4.43402E-02    7.31760E-02    9.83503E-01
+    0.010             1      1.75439E-02    1.00000E+00    9.99626E-03    1.64971E-02    1.00000E+00
+    0.000             0      0.00000E+00    1.00000E+00    0.00000E+00    0.00000E+00    1.00000E+00
+
+   total             57      1.00000E+00                   6.05940E-01    1.00000E+00
+
+
+1tally       21        nps =         100
+           tally type 1    number of particles crossing a surface.                             
+           particle(s): neutrons 
+ 
+ surface  6                                                                                                                            
+      energy   
+    1.0109E-01   0.00000E+00 0.0000
+    1.0521E-01   0.00000E+00 0.0000
+    1.0950E-01   0.00000E+00 0.0000
+    1.1397E-01   0.00000E+00 0.0000
+    1.1862E-01   0.00000E+00 0.0000
+    1.2347E-01   0.00000E+00 0.0000
+    1.2850E-01   0.00000E+00 0.0000
+    1.3375E-01   0.00000E+00 0.0000
+    1.3921E-01   0.00000E+00 0.0000
+    1.4489E-01   0.00000E+00 0.0000
+    1.5080E-01   0.00000E+00 0.0000
+    1.5696E-01   0.00000E+00 0.0000
+    1.6336E-01   0.00000E+00 0.0000
+    1.7003E-01   0.00000E+00 0.0000
+    1.7697E-01   0.00000E+00 0.0000
+    1.8419E-01   0.00000E+00 0.0000
+    1.9171E-01   0.00000E+00 0.0000
+    1.9953E-01   0.00000E+00 0.0000
+    2.0767E-01   0.00000E+00 0.0000
+    2.1615E-01   0.00000E+00 0.0000
+    2.2497E-01   0.00000E+00 0.0000
+    2.3415E-01   0.00000E+00 0.0000
+    2.4371E-01   0.00000E+00 0.0000
+    2.5365E-01   0.00000E+00 0.0000
+    2.6400E-01   0.00000E+00 0.0000
+    2.7478E-01   0.00000E+00 0.0000
+    2.8599E-01   8.56447E-03 0.9950
+    2.9766E-01   0.00000E+00 0.0000
+    3.0981E-01   0.00000E+00 0.0000
+    3.2245E-01   0.00000E+00 0.0000
+    3.3561E-01   8.78767E-03 0.9950
+    3.4931E-01   0.00000E+00 0.0000
+    3.6357E-01   1.00000E-02 0.9950
+    3.7840E-01   0.00000E+00 0.0000
+    3.9385E-01   0.00000E+00 0.0000
+    4.0992E-01   0.00000E+00 0.0000
+    4.2665E-01   0.00000E+00 0.0000
+    4.4406E-01   0.00000E+00 0.0000
+    4.6218E-01   0.00000E+00 0.0000
+    4.8105E-01   9.52905E-03 0.9950
+    5.0068E-01   0.00000E+00 0.0000
+    5.2111E-01   0.00000E+00 0.0000
+    5.4238E-01   0.00000E+00 0.0000
+    5.6451E-01   0.00000E+00 0.0000
+    5.8755E-01   9.78385E-03 0.9950
+    6.1153E-01   0.00000E+00 0.0000
+    6.3648E-01   0.00000E+00 0.0000
+    6.6246E-01   0.00000E+00 0.0000
+    6.8950E-01   8.78972E-03 0.9950
+    7.1763E-01   9.99961E-03 0.9950
+    7.4692E-01   0.00000E+00 0.0000
+    7.7740E-01   0.00000E+00 0.0000
+    8.0913E-01   0.00000E+00 0.0000
+    8.4215E-01   0.00000E+00 0.0000
+    8.7652E-01   0.00000E+00 0.0000
+    9.1229E-01   1.87615E-02 0.7015
+    9.4952E-01   0.00000E+00 0.0000
+    9.8827E-01   0.00000E+00 0.0000
+    1.0286E+00   1.00000E-02 0.9950
+    1.0706E+00   8.98838E-03 0.9950
+    1.1143E+00   0.00000E+00 0.0000
+    1.1598E+00   0.00000E+00 0.0000
+    1.2071E+00   0.00000E+00 0.0000
+    1.2563E+00   0.00000E+00 0.0000
+    1.3076E+00   0.00000E+00 0.0000
+    1.3610E+00   0.00000E+00 0.0000
+    1.4165E+00   9.78385E-03 0.9950
+    1.4743E+00   0.00000E+00 0.0000
+    1.5345E+00   9.53978E-03 0.9950
+    1.5971E+00   0.00000E+00 0.0000
+    1.6623E+00   0.00000E+00 0.0000
+    1.7301E+00   9.55075E-03 0.9950
+    1.8008E+00   0.00000E+00 0.0000
+    1.8742E+00   0.00000E+00 0.0000
+    1.9507E+00   7.69608E-03 0.9950
+    2.0303E+00   8.87433E-03 0.9950
+    2.1132E+00   0.00000E+00 0.0000
+    2.1994E+00   0.00000E+00 0.0000
+    2.2892E+00   0.00000E+00 0.0000
+    2.3826E+00   0.00000E+00 0.0000
+    2.4799E+00   0.00000E+00 0.0000
+    2.5811E+00   7.72000E-03 0.9950
+    2.6864E+00   1.85858E-02 0.7003
+    2.7960E+00   0.00000E+00 0.0000
+    2.9101E+00   7.89273E-03 0.9950
+    3.0289E+00   8.79714E-03 0.9950
+    3.1525E+00   0.00000E+00 0.0000
+    3.2812E+00   5.00285E-03 0.9950
+    3.4151E+00   8.73644E-03 0.9950
+    3.5545E+00   0.00000E+00 0.0000
+    3.6995E+00   0.00000E+00 0.0000
+    3.8505E+00   0.00000E+00 0.0000
+    4.0076E+00   0.00000E+00 0.0000
+    4.1712E+00   0.00000E+00 0.0000
+    4.3414E+00   0.00000E+00 0.0000
+    4.5186E+00   1.59846E-02 0.7024
+    4.7030E+00   0.00000E+00 0.0000
+    4.8949E+00   0.00000E+00 0.0000
+    5.0947E+00   0.00000E+00 0.0000
+    5.3026E+00   2.26172E-02 0.5848
+    5.5190E+00   8.78007E-03 0.9950
+    5.7443E+00   0.00000E+00 0.0000
+    5.9787E+00   0.00000E+00 0.0000
+    6.2227E+00   0.00000E+00 0.0000
+    6.4766E+00   0.00000E+00 0.0000
+    6.7410E+00   0.00000E+00 0.0000
+    7.0161E+00   0.00000E+00 0.0000
+    7.3024E+00   0.00000E+00 0.0000
+    7.6004E+00   0.00000E+00 0.0000
+    7.9106E+00   0.00000E+00 0.0000
+    8.2334E+00   8.80169E-03 0.9950
+    8.5694E+00   8.76930E-03 0.9950
+    8.9192E+00   8.80347E-03 0.9950
+    9.2832E+00   0.00000E+00 0.0000
+    9.6620E+00   1.62356E-02 0.7006
+    1.0056E+01   8.82129E-03 0.9950
+    1.0467E+01   0.00000E+00 0.0000
+    1.0894E+01   0.00000E+00 0.0000
+    1.1339E+01   8.76609E-03 0.9950
+    1.1801E+01   0.00000E+00 0.0000
+    1.2283E+01   8.84726E-03 0.9950
+    1.2784E+01   0.00000E+00 0.0000
+    1.3306E+01   0.00000E+00 0.0000
+    1.3849E+01   6.75732E-02 0.3651
+    1.4414E+01   1.93594E-01 0.2007
+    1.5002E+01   1.03629E-01 0.2856
+    1.5615E+01   1.16628E-01 0.2712
+    1.6252E+01   8.96288E-02 0.3180
+    1.6915E+01   5.00000E-02 0.4359
+    1.7605E+01   0.00000E+00 0.0000
+    1.8324E+01   0.00000E+00 0.0000
+    1.9072E+01   0.00000E+00 0.0000
+    1.9850E+01   0.00000E+00 0.0000
+    2.0660E+01   0.00000E+00 0.0000
+      total      9.42864E-01 0.0149
+
+
+ ***** the nps-dependent tfc bin check results are suspect because there are only  1 nps tally values to analyze *****
+
+
+ ===================================================================================================================================
+
+           results of 10 statistical checks for the estimated answer for the tally fluctuation chart (tfc) bin of tally       21
+
+ tfc bin     --mean--      ---------relative error---------      ----variance of the variance----      --figure of merit--     -pdf-
+ behavior    behavior      value   decrease   decrease rate      value   decrease   decrease rate       value     behavior     slope
+
+ desired      random       <0.10      yes      1/sqrt(nps)       <0.10      yes        1/nps           constant    random      >3.00
+ observed     random        0.01      yes          yes            0.28      yes         yes                                     0.00
+ passed?        yes          yes      yes          yes              no      yes         yes                                       no
+
+ ===================================================================================================================================
+
+
+ warning.  the tally in the tally fluctuation chart bin did not pass  2 of the 10 statistical checks.
+
+1analysis of the results in the tally fluctuation chart bin (tfc) for tally 21 with nps = 100                print table 160
+
+
+ normed average tally per history  = 9.42864E-01          unnormed average tally per history  = 9.42864E-01
+ estimated tally relative error    = 0.0149               estimated variance of the variance  = 0.2801
+ relative error from zero tallies  = 0.0000               relative error from nonzero scores  = 0.0149
+
+ number of nonzero history tallies =         100          efficiency for the nonzero tallies  = 1.0000
+ history number of largest  tally  =          77          largest  unnormalized history tally = 1.95677E+00
+ (largest  tally)/(average tally)  = 2.07535E+00          (largest  tally)/(avg nonzero tally)= 2.07535E+00
+
+ (confidence interval shift)/mean  = 0.0023               shifted confidence interval center  = 9.45003E-01
+
+
+ if the largest  history score sampled so far were to occur on the next history, the tfc bin quantities would change as follows:
+
+      estimated quantities           value at nps           value at nps+1           value(nps+1)/value(nps)-1.
+
+      mean                            9.42864E-01             9.52903E-01                     0.010647
+      relative error                  1.48923E-02             1.79649E-02                     0.206322
+      variance of the variance        2.80113E-01             2.26272E-01                    -0.192209
+      shifted center                  9.45003E-01             9.42864E-01                    -0.002264
+      figure of merit                 0.00000E+00             0.00000E+00                     0.000000
+
+ there is not enough information in the largest  history scores (usually less than 500 scores) for a reliable estimate of the slope.
+ the empirical history score probability density function appears to be increasing at the largest  history scores:
+ please examine. see print table 161.
+ the history score probability density function appears to have an unsampled region at the largest  history scores:
+ please examine. see print table 161.
+
+ fom = (histories/minute)*(f(x) signal-to-noise ratio)**2 = (0.000E+00)*( 6.715E+00)**2 = (0.000E+00)*(4.509E+01) = 0.000E+00
+
+1unnormed tally density for tally 21          nonzero tally mean(m) = 9.429E-01   nps = 100                  print table 161
+
+ abscissa              ordinate   log plot of tally probability density function in tally fluctuation chart bin(d=decade,slope= 0.0)
+  tally  number num den log den:d--------------------------------------------------d------------------------------------------------
+ 5.01-01      1 9.70-02  -1.013 ********************************                   |                                                
+ 6.31-01      1 7.71-02  -1.113 ***************************                        |                                                
+ 7.94-01      8 4.90-01  -0.310 ***************************************************|****************                                
+ 1.00+00     37 1.80+00   0.255 mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm|mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm  
+ 1.26+00     52 2.01+00   0.303 ***************************************************|************************************************
+ 1.58+00      0 0.00+00   0.000                                                    |                                                
+ 2.00+00      1 2.44-02  -1.613 *                                                  |                                                
+  total     100 1.00+00         d--------------------------------------------------d------------------------------------------------
+
+1tally       41        nps =         100
+           tally type 1    number of particles crossing a surface.                             
+           particle(s): photons  
+ 
+ surface  6                                                                                                                            
+      energy   
+    5.0000E-01   1.61545E-01 0.3427
+    6.0000E-01   1.99999E-02 0.7000
+    7.0000E-01   2.00000E-02 0.7000
+    8.0000E-01   2.00000E-02 0.7000
+    9.0000E-01   0.00000E+00 0.0000
+    1.0000E+00   1.28017E-02 0.9950
+    1.1000E+00   0.00000E+00 0.0000
+    1.2000E+00   0.00000E+00 0.0000
+    1.3000E+00   0.00000E+00 0.0000
+    1.4000E+00   0.00000E+00 0.0000
+    1.5000E+00   1.54925E-02 0.9950
+    1.6000E+00   0.00000E+00 0.0000
+    1.7000E+00   3.14590E-02 0.5699
+    1.8000E+00   2.99999E-02 0.5686
+    1.9000E+00   0.00000E+00 0.0000
+    2.0000E+00   9.99992E-03 0.9950
+    2.1000E+00   1.49054E-02 0.9950
+    2.2000E+00   1.00000E-02 0.9950
+    2.3000E+00   1.00000E-02 0.9950
+    2.4000E+00   0.00000E+00 0.0000
+    2.5000E+00   9.99995E-03 0.9950
+    2.6000E+00   0.00000E+00 0.0000
+    2.7000E+00   0.00000E+00 0.0000
+    2.8000E+00   0.00000E+00 0.0000
+    2.9000E+00   1.39665E-02 0.9950
+    3.0000E+00   0.00000E+00 0.0000
+    3.1000E+00   1.00000E-02 0.9950
+    3.2000E+00   0.00000E+00 0.0000
+    3.3000E+00   0.00000E+00 0.0000
+    3.4000E+00   1.00000E-02 0.9950
+    3.5000E+00   0.00000E+00 0.0000
+    3.6000E+00   0.00000E+00 0.0000
+    3.7000E+00   0.00000E+00 0.0000
+    3.8000E+00   0.00000E+00 0.0000
+    3.9000E+00   0.00000E+00 0.0000
+    4.0000E+00   0.00000E+00 0.0000
+    4.1000E+00   1.00000E-02 0.9950
+    4.2000E+00   0.00000E+00 0.0000
+    4.3000E+00   0.00000E+00 0.0000
+    4.4000E+00   0.00000E+00 0.0000
+    4.5000E+00   0.00000E+00 0.0000
+    4.6000E+00   9.99992E-03 0.9950
+    4.7000E+00   9.99992E-03 0.9950
+    4.8000E+00   0.00000E+00 0.0000
+    4.9000E+00   0.00000E+00 0.0000
+    5.0000E+00   0.00000E+00 0.0000
+    5.5000E+00   1.99998E-02 0.7000
+    6.0000E+00   1.00000E-02 0.9950
+    6.5000E+00   9.99992E-03 0.9950
+    7.0000E+00   1.24250E-02 0.9950
+    7.5000E+00   9.99992E-03 0.9950
+    8.0000E+00   9.99992E-03 0.9950
+    8.5000E+00   1.99998E-02 0.7000
+    9.0000E+00   0.00000E+00 0.0000
+    9.5000E+00   0.00000E+00 0.0000
+    1.0000E+01   0.00000E+00 0.0000
+    1.0500E+01   0.00000E+00 0.0000
+      total      5.22594E-01 0.1685
+
+
+ ***** the nps-dependent tfc bin check results are suspect because there are only  1 nps tally values to analyze *****
+
+
+ ===================================================================================================================================
+
+           results of 10 statistical checks for the estimated answer for the tally fluctuation chart (tfc) bin of tally       41
+
+ tfc bin     --mean--      ---------relative error---------      ----variance of the variance----      --figure of merit--     -pdf-
+ behavior    behavior      value   decrease   decrease rate      value   decrease   decrease rate       value     behavior     slope
+
+ desired      random       <0.10      yes      1/sqrt(nps)       <0.10      yes        1/nps           constant    random      >3.00
+ observed     random        0.17      yes          yes            0.05      yes         yes                                     0.00
+ passed?        yes           no      yes          yes             yes      yes         yes                                       no
+
+ ===================================================================================================================================
+
+
+ warning.  the tally in the tally fluctuation chart bin did not pass  2 of the 10 statistical checks.
+
+1analysis of the results in the tally fluctuation chart bin (tfc) for tally 41 with nps = 100                print table 160
+
+
+ normed average tally per history  = 5.22594E-01          unnormed average tally per history  = 5.22594E-01
+ estimated tally relative error    = 0.1685               estimated variance of the variance  = 0.0471
+ relative error from zero tallies  = 0.1458               relative error from nonzero scores  = 0.0846
+
+ number of nonzero history tallies =          32          efficiency for the nonzero tallies  = 0.3200
+ history number of largest  tally  =          24          largest  unnormalized history tally = 4.15457E+00
+ (largest  tally)/(average tally)  = 7.94989E+00          (largest  tally)/(avg nonzero tally)= 2.54396E+00
+
+ (confidence interval shift)/mean  = 0.0148               shifted confidence interval center  = 5.30318E-01
+
+
+ if the largest  history score sampled so far were to occur on the next history, the tfc bin quantities would change as follows:
+
+      estimated quantities           value at nps           value at nps+1           value(nps+1)/value(nps)-1.
+
+      mean                            5.22594E-01             5.58555E-01                     0.068811
+      relative error                  1.68541E-01             1.68760E-01                     0.001302
+      variance of the variance        4.70691E-02             5.02357E-02                     0.067275
+      shifted center                  5.30318E-01             5.31127E-01                     0.001525
+      figure of merit                 0.00000E+00             0.00000E+00                     0.000000
+
+ there is not enough information in the largest  history scores (usually less than 500 scores) for a reliable estimate of the slope.
+ the history score probability density function appears to have an unsampled region at the largest  history scores:
+ please examine. see print table 161.
+
+ fom = (histories/minute)*(f(x) signal-to-noise ratio)**2 = (0.000E+00)*( 5.933E-01)**2 = (0.000E+00)*(3.520E-01) = 0.000E+00
+
+1unnormed tally density for tally 41          nonzero tally mean(m) = 1.633E+00   nps = 100                  print table 161
+
+ abscissa              ordinate   log plot of tally probability density function in tally fluctuation chart bin(d=decade,slope= 0.0)
+  tally  number num den log den:d--------------------------------------------------------------d------------------------------------
+ 1.00+00      7 3.40-01  -0.468 ***************************************************************|*********************************** 
+ 1.26+00      9 3.48-01  -0.459 ***************************************************************|************************************
+ 1.58+00      3 9.20-02  -1.036 ***************************************************************|                                    
+ 2.00+00      0 0.00+00   0.000                                                                |                                    
+ 2.51+00      9 1.74-01  -0.759 ***************************************************************|*****************                   
+ 3.16+00      3 4.61-02  -1.336 ********************************************                   |                                    
+ 3.98+00      0 0.00+00   0.000                                                                |                                    
+ 5.01+00      1 9.70-03  -2.013 *                                                              |                                    
+  total      32 3.20-01         d--------------------------------------------------------------d------------------------------------
+
+1status of the statistical checks used to form confidence intervals for the mean for each tally bin
+
+
+ tally   result of statistical checks for the tfc bin (the first check not passed is listed) and error magnitude check for all bins
+
+       21   missed  2 of 10 tfc bin checks: the variance of the variance exceeds the recommended value of 0.1                         
+         missed all bin error check:   135 tally bins had    97 bins with zeros and    37 bins with relative errors exceeding 0.10
+
+       41   missed  2 of 10 tfc bin checks: the relative error exceeds the recommended value of 0.1 for nonpoint detector tallies     
+         missed all bin error check:    58 tally bins had    31 bins with zeros and    27 bins with relative errors exceeding 0.10
+
+
+ the 10 statistical checks are only for the tally fluctuation chart bin and do not apply to other tally bins.
+
+ the tally bins with zeros may or may not be correct: compare the source, cutoffs, multipliers, et cetera with the tally bins.
+
+ warning.       2 of the     2 tally fluctuation chart bins did not pass all 10 statistical checks.
+ warning.       2 of the     2 tallies had bins with relative errors greater than recommended.
+1tally fluctuation charts                              
+
+                            tally       21                          tally       41
+          nps      mean     error   vov  slope    fom      mean     error   vov  slope    fom
+          100   9.4286E-01 0.0149 0.2801  0.0           5.2259E-01 0.1685 0.0471  0.0        
+ tally data written to file Oktavian_Alm
+
+         7 warning messages so far.
+
+
+ run terminated when         100  particle histories were done.

@@ -173,9 +173,7 @@ class ExperimentalOutput(BenchmarkOutput):
         globalname = globalname[:-4]
         globalname = self.testname + "_" + globalname
         # Initialize the atlas
-        template = os.path.join(
-            self.code_path, "Code", "jade", "templates", "AtlasTemplate.docx"
-        )
+        template = os.path.join(self.session.path_templates, "AtlasTemplate.docx")
         atlas = at.Atlas(template, globalname)
 
         # Fill the atlas

@@ -55,14 +55,17 @@ class TestExpOutput:
 
     def test_spectrumoutput(self, session_mock: MockUpSession):
 
-        config = session_mock.conf.comp_default.set_index("Description")
-        conf = config.iloc[1]
+        config = session_mock.conf.exp_default.set_index("Description")
+        conf = config.iloc[0]
         os.makedirs(session_mock.path_comparison)
         os.makedirs(session_mock.path_single)
-        self.benchoutput_32c = outp.BenchmarkOutput("32c", conf, session_mock)
-        self.benchoutput_32c.single_postprocess()
-        self.benchoutput_31c = outp.BenchmarkOutput("31c", conf, session_mock)
-        self.benchoutput_31c.single_postprocess()
-        self.benchoutput_comp = outp.BenchmarkOutput(["32c", "31c"], conf, session_mock)
+        self.benchoutput_comp = expoutput.SpectrumOutput(
+            ["32c", "31c"], conf, session_mock, multiplerun=True
+        )
+        self.benchoutput_comp.compare()
+        conf = config.iloc[5]
+        self.benchoutput_comp = expoutput.MultipleSpectrumOutput(
+            ["32c", "31c"], conf, session_mock, multiplerun=True
+        )
         self.benchoutput_comp.compare()
         assert True

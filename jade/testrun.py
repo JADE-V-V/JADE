@@ -180,7 +180,7 @@ class Test:
         elif isinstance(lib, str):
             lib = lib
         return lib
-    
+
     def _get_lib_d1s(lib: str | dict) -> str:
         """Get the library name.
 
@@ -364,7 +364,9 @@ class Test:
 
         if self.d1s:
             d1s_directory = os.path.join(directory, "d1s")
-            self.run_mcnp(lib, config, libmanager, name, d1s_directory, runoption, d1s=True)
+            self.run_mcnp(
+                lib, config, libmanager, name, d1s_directory, runoption, d1s=True
+            )
 
         if self.mcnp:
             mcnp_directory = os.path.join(directory, "mcnp")
@@ -482,7 +484,7 @@ class Test:
             Whether JADE run in parallel or command line
         timeout : float, optional
             Maximum time to wait for simulation of complete, by default None
-        d1s : bool, optional 
+        d1s : bool, optional
             Flag to run d1s, by default False
 
         Returns
@@ -502,7 +504,7 @@ class Test:
         env_variables = config.mcnp_config
         inputstring = "i=" + name
         outputstring = "n=" + name
-        tasks = "tasks " + config.openmp_threads
+        tasks = "tasks " + str(config.openmp_threads)
 
         if d1s == True:
             xsstring = "xs=" + str(lib_manager.data["d1s"][lib].filename)
@@ -514,7 +516,7 @@ class Test:
             env_variables = config.mcnp_config
 
         flagnotrun = False
-        
+
         if pd.isnull(executable) is not True:
             if run_mpi:
                 run_command = [
@@ -527,7 +529,7 @@ class Test:
                     xsstring,
                 ]
             else:
-                run_command = [executable, inputstring, outputstring, xsstring]
+                run_command = [executable, inputstring, outputstring, tasks, xsstring]
 
             try:
                 cwd = os.getcwd()
@@ -548,7 +550,10 @@ class Test:
                             unix.configure(env_variables)
                         print(" ".join(run_command))
                         subprocess.run(
-                            " ".join(run_command), cwd=directory, shell=True, timeout=43200
+                            " ".join(run_command),
+                            cwd=directory,
+                            shell=True,
+                            timeout=43200,
                         )
 
                     except subprocess.TimeoutExpired:
@@ -631,7 +636,7 @@ class Test:
         )
 
         flagnotrun = False
-        
+
         if pd.isnull(executable) is not True:
             # Construct the run commands based on user OMP and MPI inputs.
             if run_omp:
@@ -649,7 +654,13 @@ class Test:
                     run_command = [executable, "-omp", str(omp_threads), inputstring]
             else:
                 if run_mpi:
-                    run_command = ["mpirun", "-np", str(mpi_tasks), executable, inputstring]
+                    run_command = [
+                        "mpirun",
+                        "-np",
+                        str(mpi_tasks),
+                        executable,
+                        inputstring,
+                    ]
                 else:
                     run_command = [executable, inputstring]
 
@@ -665,7 +676,9 @@ class Test:
                     )
 
                 except subprocess.TimeoutExpired:
-                    print("Sesion timed out after 12 hours. Consider submitting as a job.")
+                    print(
+                        "Sesion timed out after 12 hours. Consider submitting as a job."
+                    )
                     flagnotrun = True
 
             elif runoption.lower() == "s":
@@ -731,7 +744,7 @@ class Test:
         data_command = "export OPENMC_CROSS_SECTIONS=" + str(libpath)
 
         flagnotrun = False
-        
+
         if pd.isnull(executable) is not True:
             # Run OpenMC from command line either OMP, MPI or hybrid MPI-OMP
             if run_omp:
@@ -762,7 +775,9 @@ class Test:
                     )
 
                 except subprocess.TimeoutExpired:
-                    print("Sesion timed out after 12 hours. Consider submitting as a job.")
+                    print(
+                        "Sesion timed out after 12 hours. Consider submitting as a job."
+                    )
                     flagnotrun = True
 
             elif runoption.lower() == "s":
@@ -1232,7 +1247,13 @@ class SphereTest(Test):
             for folder in tqdm(os.listdir(d1s_directory)):
                 run_directory = os.path.join(d1s_directory, folder, "d1s")
                 self.run_mcnp(
-                    lib, config, libmanager, folder + "_", run_directory, runoption, d1s=True
+                    lib,
+                    config,
+                    libmanager,
+                    folder + "_",
+                    run_directory,
+                    runoption,
+                    d1s=True,
                 )
 
         if self.mcnp:

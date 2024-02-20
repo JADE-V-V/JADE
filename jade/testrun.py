@@ -20,7 +20,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with JADE.  If not, see <http://www.gnu.org/licenses/>.
-
+from __future__ import annotations
 import os
 import shutil
 import subprocess
@@ -36,6 +36,8 @@ import jade.inputfile as ipt
 import jade.matreader as mat
 import jade.unix as unix
 from jade.parsersD1S import IrradiationFile, Reaction, ReactionFile
+from jade.configuration import Configuration
+from jade.libmanager import LibManager
 
 # colors
 CRED = "\033[91m"
@@ -158,6 +160,26 @@ class Test:
         if self.openmc:
             openmc_ipt = os.path.join(inp, "openmc")
             self.openmc_inp = ipt.OpenMCInputFiles.from_path(openmc_ipt)
+
+    @staticmethod
+    def _get_lib(lib: str | dict) -> str:
+        """Get the library name.
+
+        Parameters
+        ----------
+        lib : str | dict
+            Library name.
+
+        Returns
+        -------
+        str
+            Library name.
+        """
+        if isinstance(lib, dict):
+            lib = list(lib.values())[0]
+        elif isinstance(lib, str):
+            lib = lib
+        return lib
 
     def _translate_input(self, lib, libmanager):
         """
@@ -311,6 +333,7 @@ class Test:
 
         directory = self.run_dir
         name = self.name
+        lib = self._get_lib(self.lib)
 
         if self.d1s:
             d1s_directory = os.path.join(directory, "d1s")
@@ -320,22 +343,24 @@ class Test:
         if self.mcnp:
             mcnp_directory = os.path.join(directory, "mcnp")
             if pd.isnull(config.mcnp_exec) is not True:
-                self.run_mcnp(config, libmanager, name, mcnp_directory, runoption)
+                self.run_mcnp(lib, config, libmanager, name, mcnp_directory, runoption)
 
         if self.serpent:
             serpent_directory = os.path.join(directory, "serpent")
             if pd.isnull(config.serpent_exec) is not True:
-                self.run_serpent(config, libmanager, name, serpent_directory, runoption)
+                self.run_serpent(
+                    lib, config, libmanager, name, serpent_directory, runoption
+                )
 
         if self.openmc:
             openmc_directory = os.path.join(directory, "openmc")
             if pd.isnull(config.openmc_exec) is not True:
-                self.run_openmc(config, libmanager, name, openmc_directory, runoption)
+                self.run_openmc(lib, config, libmanager, openmc_directory, runoption)
 
     # Edited by D.Wheeler, UKAEA
     # Job submission currently tailored for LoadLeveler, may be applicable to other submission systems with equivalent dummy variables
+    @staticmethod
     def job_submission(
-        self,
         config,
         directory: str,
         run_command: list,
@@ -521,8 +546,9 @@ class Test:
 
         return flagnotrun
 
+    @staticmethod
     def run_mcnp(
-        self,
+        lib: str,
         config,
         lib_manager,
         name: str,
@@ -534,6 +560,8 @@ class Test:
 
         Parameters
         ----------
+        lib : str
+            library to be run, needed to get the correct xsdir file
         config :
             Configuration settings
         lib_manager :
@@ -564,11 +592,6 @@ class Test:
         env_variables = config.mcnp_config
         inputstring = "i=" + name
         outputstring = "n=" + name
-
-        if isinstance(self.lib, dict):
-            lib = list(self.lib.values())[0]
-        elif isinstance(self.lib, str):
-            lib = self.lib
 
         xsstring = "xs=" + str(lib_manager.data["mcnp"][lib].filename)
 
@@ -619,7 +642,7 @@ class Test:
                 # Run MCNP as a job
                 cwd = os.getcwd()
                 os.chdir(directory)
-                self.job_submission(
+                Test.job_submission(
                     config,
                     directory,
                     run_command,
@@ -633,19 +656,21 @@ class Test:
 
         return flagnotrun
 
+    @staticmethod
     def run_serpent(
-        self,
-        config,
-        lib_manager,
+        lib: str,
+        config: Configuration,
+        lib_manager: LibManager,
         name: str,
         directory: Path,
         runoption: str,
-        timeout=None,
     ) -> bool:
         """Run Serpent simulation either on the command line or submitted as a job.
 
         Parameters
         ----------
+        lib : str
+            library to assess. needed to recover path to nuclear data
         config :
             Configuration settings
         lib_manager :
@@ -678,7 +703,7 @@ class Test:
         executable = config.serpent_exec
         env_variables = config.serpent_config
         inputstring = name
-        libpath = Path(str(lib_manager.data["serpent"][self.lib].filename))
+        libpath = Path(str(lib_manager.data["serpent"][lib].filename))
         data_command = (
             "export SERPENT_DATA="
             + str(libpath.parent)
@@ -726,7 +751,7 @@ class Test:
             # Run Serpent as a job
             cwd = os.getcwd()
             os.chdir(directory)
-            self.job_submission(
+            Test.job_submission(
                 config,
                 directory,
                 run_command,
@@ -739,25 +764,28 @@ class Test:
 
         return flagnotrun
 
+    @staticmethod
     def run_openmc(
-        self, config, lib_manager, name: str, directory, runoption, timeout=None
+        lib: str,
+        config: Configuration,
+        lib_manager: LibManager,
+        directory: os.PathLike,
+        runoption: str,
     ) -> bool:
         """Run OpenMC simulation either on the command line or submitted as a job.
 
         Parameters
         ----------
+        lib: str
+            library to assess. needed to recover path to nuclear data
         config :
             Configuration settings
         lib_manager :
             libmanager
-        name : str
-            Name of the simulation
         directory : str, path
             Directory where the simulation will be executed
         runoption: str
             Whether JADE run in parallel or command line
-        timeout : float, optional
-            Maximum time to wait for simulation of complete, by default None
 
         Returns
         -------
@@ -778,7 +806,7 @@ class Test:
 
         executable = config.openmc_exec
         env_variables = config.openmc_config
-        libpath = Path(str(lib_manager.data["openmc"][self.lib].filename))
+        libpath = Path(str(lib_manager.data["openmc"][lib].filename))
         data_command = "export OPENMC_CROSS_SECTIONS=" + str(libpath)
 
         # Run OpenMC from command line either OMP, MPI or hybrid MPI-OMP
@@ -819,7 +847,7 @@ class Test:
             # Run Serpent as a job
             cwd = os.getcwd()
             os.chdir(directory)
-            self.job_submission(
+            Test.job_submission(
                 config,
                 directory,
                 run_command,
@@ -1272,6 +1300,7 @@ class SphereTest(Test):
         """
 
         directory = self.run_dir
+        lib = self._get_lib(self.lib)
 
         if self.d1s:
             d1s_directory = os.path.join(directory)
@@ -1292,7 +1321,7 @@ class SphereTest(Test):
                 for folder in tqdm(os.listdir(mcnp_directory)):
                     run_directory = os.path.join(mcnp_directory, folder, "mcnp")
                     self.run_mcnp(
-                        config, libmanager, folder + "_", run_directory, runoption
+                        lib, config, libmanager, folder + "_", run_directory, runoption
                     )
 
         if self.serpent:
@@ -1301,7 +1330,7 @@ class SphereTest(Test):
                 for folder in tqdm(os.listdir(serpent_directory)):
                     run_directory = os.path.join(serpent_directory, folder, "serpent")
                     self.run_serpent(
-                        config, libmanager, folder + "_", run_directory, runoption
+                        lib, config, libmanager, folder + "_", run_directory, runoption
                     )
 
         if self.openmc:
@@ -1309,9 +1338,7 @@ class SphereTest(Test):
             if pd.isnull(config.openmc_exec) is not True:
                 for folder in tqdm(os.listdir(openmc_directory)):
                     run_directory = os.path.join(openmc_directory, folder, "openmc")
-                    self.run_openmc(
-                        config, libmanager, folder + "_", run_directory, runoption
-                    )
+                    self.run_openmc(lib, config, libmanager, run_directory, runoption)
 
 
 class SphereTestSDDR(SphereTest):

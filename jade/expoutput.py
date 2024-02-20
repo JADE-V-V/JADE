@@ -182,7 +182,6 @@ class ExperimentalOutput(BenchmarkOutput):
         atlas = self._build_atlas(tmp_path, atlas)
 
         # Save Atlas
-        print(" Producing the PDF...")
         if self.mcnp:
             atlas.save(self.atlas_path_mcnp)
         elif self.d1s:
@@ -505,7 +504,6 @@ class FNGOutput(ExperimentalOutput):
         Responsible for producing excel outputs
         """
         # Dump the global C/E table
-        print(" Dump the C/E table in Excel...")
         ex_outpath = os.path.join(
             self.excel_path_d1s, self.testname + "_CE_tables.xlsx"
         )
@@ -768,8 +766,6 @@ class SpectrumOutput(ExperimentalOutput):
         return title
 
     def _dump_ce_table(self):
-
-        print(" Dump the C/E table in Excel...")
 
         final_table = pd.concat(self.tables)
         skipcol_global = 0

@@ -59,35 +59,35 @@ import pandas as pd
 # #    outfile.save(outfile)
 
 
-def insert_df(startrow, startcolumn, df, ws, header=True):
-    """
-    Insert a DataFrame (df) into a Worksheet (ws) using xlwings.
-    (startrow) and (startcolumn) identify the starting data entry
-    """
-    columns = list(df.columns)
-    values = df.values
-    if header:
-        for i, column in enumerate(range(startcolumn, startcolumn + len(columns))):
-            value = columns[i]
-            try:
-                ws.cell(column=column, row=startrow, value=value)
-                # ws.range((startrow, column)).value = value
-            except (AttributeError, ValueError) as e:
-                print(e)
-                print("Warning! header not printes: column,value", column, value)
-        startrow = startrow + 1
+# def insert_df(startrow, startcolumn, df, ws, header=True):
+#     """
+#     Insert a DataFrame (df) into a Worksheet (ws) using xlwings.
+#     (startrow) and (startcolumn) identify the starting data entry
+#     """
+#     columns = list(df.columns)
+#     values = df.values
+#     if header:
+#         for i, column in enumerate(range(startcolumn, startcolumn + len(columns))):
+#             value = columns[i]
+#             try:
+#                 ws.cell(column=column, row=startrow, value=value)
+#                 # ws.range((startrow, column)).value = value
+#             except (AttributeError, ValueError) as e:
+#                 print(e)
+#                 print("Warning! header not printes: column,value", column, value)
+#         startrow = startrow + 1
 
-    for i, row in enumerate(range(startrow, startrow + len(df))):
-        for j, column in enumerate(range(startcolumn, startcolumn + len(df.columns))):
-            value = values[i][j]
-            try:
-                ws.cell(column=column, row=row, value=value)
-                # ws.range((row, column)).value = value
-            except (AttributeError, ValueError) as e:
-                print(e)
-                print(
-                    "Warning! value not printed: row, column, value", row, column, value
-                )
+#     for i, row in enumerate(range(startrow, startrow + len(df))):
+#         for j, column in enumerate(range(startcolumn, startcolumn + len(df.columns))):
+#             value = values[i][j]
+#             try:
+#                 ws.cell(column=column, row=row, value=value)
+#                 # ws.range((row, column)).value = value
+#             except (AttributeError, ValueError) as e:
+#                 print(e)
+#                 print(
+#                     "Warning! value not printed: row, column, value", row, column, value
+#                 )
 
 
 def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):

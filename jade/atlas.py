@@ -231,7 +231,7 @@ class Atlas:
 
         """
         outpath_word = os.path.join(outpath, self.outname + ".docx")
-        outpath_pdf = os.path.join(outpath, self.outname + ".pdf")
+        # outpath_pdf = os.path.join(outpath, self.outname + ".pdf")
 
         try:
             self.doc.save(outpath_word)
@@ -240,27 +240,9 @@ class Atlas:
             print(e)
             print("\n it may be due to invalid characters in the file name")
 
+        # Remove PDF printing. If required, word document can be saved manually. 
         if pdfprint:
-            in_file = outpath_word
-            out_file = outpath_pdf
-
-            doc = aspose.words.Document(in_file)
-            doc.save(out_file)
-
-    #            word = win32com.client.Dispatch('Word.Application')
-    #            doc = word.Documents.Open(in_file)
-    #            doc.ExportAsFixedFormat(OutputFileName=out_file,
-    #                                    # 17 = PDF output, 18=XPS output
-    #                                    ExportFormat=17,
-    #                                    OpenAfterExport=False,
-    #                                    # 0=Print (higher res), 1=Screen (lower res)
-    #                                    OptimizeFor=0,
-    #   # 0=No bookmarks, 1=Heading bookmarks only, 2=bookmarks match word bookmarks
-    #                                    CreateBookmarks=1,
-    #                                    DocStructureTags=True)
-    #
-    #            doc.Close()
-    #            word.Quit()
+            pass
 
     @staticmethod
     def _wrapper(paragraph, ptype):

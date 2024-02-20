@@ -20,6 +20,7 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from __future__ import annotations
 import sys
 import os
 import pandas as pd
@@ -97,7 +98,7 @@ class TestTest:
         conf_path = "dummy"
 
         # Build the test
-        test = Test(inp, lib, config, LOGFILE, conf_path, runoption='c')
+        test = Test(inp, lib, config, LOGFILE, conf_path, runoption="c")
         test.generate_test(tmpdir, LM)
 
         assert True

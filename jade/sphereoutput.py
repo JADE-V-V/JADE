@@ -31,6 +31,7 @@ import sys
 import numpy as np
 import pandas as pd
 import xlsxwriter
+
 # import openpyxl
 # from openpyxl.utils.dataframe import dataframe_to_rows
 from tqdm import tqdm
@@ -487,67 +488,67 @@ class SphereOutput(BenchmarkOutput):
         # template = os.path.join(os.getcwd(), 'templates', 'Sphere_single.xlsx')
         # outpath = os.path.join(self.excel_path, 'Sphere_single_' +
         #                       self.lib+'.xlsx')
-        """
-        # Get results
-        results = []
-        errors = []
-        stat_checks = []
-        outputs = {}
-        for folder in os.listdir(self.test_path):
-            results_path = os.path.join(self.test_path, folder)
-            pieces = folder.split('_')
-            # Get zaid
-            zaidnum = pieces[-2]
-            # Check for material exception
-            if zaidnum == 'Sphere':
-                zaidnum = pieces[-1].upper()
-                zaidname = self.mat_settings.loc[zaidnum, 'Name']
-            else:
-                zaidname = pieces[-1]
-            # Get mfile
-            for file in os.listdir(results_path):
-                if file[-1] == 'm':
-                    mfile = file
-                elif file[-1] == 'o':
-                    ofile = file
-            # Parse output
-            output = SphereMCNPoutput(os.path.join(results_path, mfile),
-                                      os.path.join(results_path, ofile))
-            outputs[zaidnum] = output
-            # Adjourn raw Data
-            self.raw_data[zaidnum] = output.tallydata
-            # Recover statistical checks
-            st_ck = output.stat_checks
-            # Recover results and precisions
-            res, err = output.get_single_excel_data()
-            for dic in [res, err, st_ck]:
-                dic['Zaid'] = zaidnum
-                dic['Zaid Name'] = zaidname
-            results.append(res)
-            errors.append(err)
-            stat_checks.append(st_ck)
+        # """
+        # # Get results
+        # results = []
+        # errors = []
+        # stat_checks = []
+        # outputs = {}
+        # for folder in os.listdir(self.test_path):
+        #     results_path = os.path.join(self.test_path, folder)
+        #     pieces = folder.split('_')
+        #     # Get zaid
+        #     zaidnum = pieces[-2]
+        #     # Check for material exception
+        #     if zaidnum == 'Sphere':
+        #         zaidnum = pieces[-1].upper()
+        #         zaidname = self.mat_settings.loc[zaidnum, 'Name']
+        #     else:
+        #         zaidname = pieces[-1]
+        #     # Get mfile
+        #     for file in os.listdir(results_path):
+        #         if file[-1] == 'm':
+        #             mfile = file
+        #         elif file[-1] == 'o':
+        #             ofile = file
+        #     # Parse output
+        #     output = SphereMCNPoutput(os.path.join(results_path, mfile),
+        #                               os.path.join(results_path, ofile))
+        #     outputs[zaidnum] = output
+        #     # Adjourn raw Data
+        #     self.raw_data[zaidnum] = output.tallydata
+        #     # Recover statistical checks
+        #     st_ck = output.stat_checks
+        #     # Recover results and precisions
+        #     res, err = output.get_single_excel_data()
+        #     for dic in [res, err, st_ck]:
+        #         dic['Zaid'] = zaidnum
+        #         dic['Zaid Name'] = zaidname
+        #     results.append(res)
+        #     errors.append(err)
+        #     stat_checks.append(st_ck)
 
-        # Generate DataFrames
-        results = pd.DataFrame(results)
-        errors = pd.DataFrame(errors)
-        stat_checks = pd.DataFrame(stat_checks)
+        # # Generate DataFrames
+        # results = pd.DataFrame(results)
+        # errors = pd.DataFrame(errors)
+        # stat_checks = pd.DataFrame(stat_checks)
 
-        # Swap Columns and correct zaid sorting
-        # results
-        for df in [results, errors, stat_checks]:
-            df['index'] = pd.to_numeric(df['Zaid'].values, errors='coerce')
-            df.sort_values('index', inplace=True)
-            del df['index']
+        # # Swap Columns and correct zaid sorting
+        # # results
+        # for df in [results, errors, stat_checks]:
+        #     df['index'] = pd.to_numeric(df['Zaid'].values, errors='coerce')
+        #     df.sort_values('index', inplace=True)
+        #     del df['index']
 
-            df.set_index(['Zaid', 'Zaid Name'], inplace=True)
-            df.reset_index(inplace=True)
+        #     df.set_index(['Zaid', 'Zaid Name'], inplace=True)
+        #     df.reset_index(inplace=True)
 
-        self.outputs = outputs
-        self.results = results
-        self.errors = errors
-        self.stat_checks = stat_checks
-        """
-        """ Excel writer removed by S. Bradnam """
+        # self.outputs = outputs
+        # self.results = results
+        # self.errors = errors
+        # self.stat_checks = stat_checks
+        # """
+        # """ Excel writer removed by S. Bradnam """
         ## Write excel
         # ex = SphereExcelOutputSheet(template, outpath)
         ## Results
@@ -1210,36 +1211,36 @@ class SphereOutput(BenchmarkOutput):
                 self.sphere_comp_excel_writer(
                     outpath, name, final, absdiff, std_dev, summary
                 )
-                """
-                # ex = SphereExcelOutputSheet(template, outpath)
-                # Prepare the copy of the comparison sheet
-                template_sheet = 'Comparison'
-                template_absdiff = 'Comparison (Abs diff)'
-                ws_comp = ex.wb.sheets[template_sheet]
-                ws_diff = ex.wb.sheets[template_absdiff]
+                # """
+                # # ex = SphereExcelOutputSheet(template, outpath)
+                # # Prepare the copy of the comparison sheet
+                # template_sheet = 'Comparison'
+                # template_absdiff = 'Comparison (Abs diff)'
+                # ws_comp = ex.wb.sheets[template_sheet]
+                # ws_diff = ex.wb.sheets[template_absdiff]
 
-                # WRITE RESULTS
-                # Percentage comparison
-                rangeex = ws_comp.range('B10')
-                rangeex.options(index=True, header=True).value = final
-                ws_comp.range('D1').value = name
-                rangeex2 = ws_comp.range('V10')
-                rangeex2.options(index=True, header=True).value = summary
-                # Absolute difference comparison
-                rangeex = ws_diff.range('B10')
-                rangeex.options(index=True, header=True).value = absdiff
-                ws_diff.range('D1').value = name
+                # # WRITE RESULTS
+                # # Percentage comparison
+                # rangeex = ws_comp.range('B10')
+                # rangeex.options(index=True, header=True).value = final
+                # ws_comp.range('D1').value = name
+                # rangeex2 = ws_comp.range('V10')
+                # rangeex2.options(index=True, header=True).value = summary
+                # # Absolute difference comparison
+                # rangeex = ws_diff.range('B10')
+                # rangeex.options(index=True, header=True).value = absdiff
+                # ws_diff.range('D1').value = name
 
-                # Add single pp sheets
-                for lib in [reflib, tarlib]:
-                    cp = self.session.state.get_path('single',
-                                                     [lib, 'Sphere', 'Excel'])
-                    file = os.listdir(cp)[0]
-                    cp = os.path.join(cp, file)
-                    ex.copy_sheets(cp)
+                # # Add single pp sheets
+                # for lib in [reflib, tarlib]:
+                #     cp = self.session.state.get_path('single',
+                #                                      [lib, 'Sphere', 'Excel'])
+                #     file = os.listdir(cp)[0]
+                #     cp = os.path.join(cp, file)
+                #     ex.copy_sheets(cp)
 
-                ex.save()
-                """
+                # ex.save()
+                # """
         if self.openmc:
             iteration = 0
             outputs = {}
@@ -1923,7 +1924,7 @@ class SphereOutput(BenchmarkOutput):
                 "format": green_cell_format,
             },
         )
-        """ABS DIFF"""
+        # """ABS DIFF"""
         # Merged Cells
         absdiff_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
         absdiff_sheet.merge_range("D1:E2", name, subtitle_merge_format)
@@ -2135,33 +2136,33 @@ class SphereTallyOutput:
             if tally in tallies2pp:
                 tallies.append(tally)
 
-        """if code == "mcnp":
-            for tally in tallies:
-                tally_num = str(tally.tallyNumber)
-                # Isolate tally
-                masked = data.loc[tally.tallyComment[0]]
+        # """if code == "mcnp":
+        #     for tally in tallies:
+        #         tally_num = str(tally.tallyNumber)
+        #         # Isolate tally
+        #         masked = data.loc[tally.tallyComment[0]]
 
-                if tally_num in ['12', '22', '4', '14']:  # Coarse Flux bins
-                    masked_tot = totalbins.loc[tally.tallyComment[0]]
-                    # Get energy bins
-                    bins = list(masked.reset_index()['Energy'].values)
-                    for ebin in bins:
-                        # colname = '(T.ly '+str(num)+') '+str(ebin)
-                        colname = str(ebin)+' [MeV]'+' [t'+tally_num+']'
-                        columns.append(colname)
-                        results.append(masked['Value'].loc[ebin])
-                        errors.append(masked['Error'].loc[ebin])
-                    # Add the total bin
-                    colname = 'Total'+' [t'+tally_num+']'
-                    columns.append(colname)
-                    results.append(masked_tot['Value'])
-                    errors.append(masked_tot['Error'])
-                else:
-                    columns.append(tally.tallyComment[0])
-                    results.append(masked['Value'].values[0])
-                    errors.append(masked['Error'].values[0])
+        #         if tally_num in ['12', '22', '4', '14']:  # Coarse Flux bins
+        #             masked_tot = totalbins.loc[tally.tallyComment[0]]
+        #             # Get energy bins
+        #             bins = list(masked.reset_index()['Energy'].values)
+        #             for ebin in bins:
+        #                 # colname = '(T.ly '+str(num)+') '+str(ebin)
+        #                 colname = str(ebin)+' [MeV]'+' [t'+tally_num+']'
+        #                 columns.append(colname)
+        #                 results.append(masked['Value'].loc[ebin])
+        #                 errors.append(masked['Error'].loc[ebin])
+        #             # Add the total bin
+        #             colname = 'Total'+' [t'+tally_num+']'
+        #             columns.append(colname)
+        #             results.append(masked_tot['Value'])
+        #             errors.append(masked_tot['Error'])
+        #         else:
+        #             columns.append(tally.tallyComment[0])
+        #             results.append(masked['Value'].values[0])
+        #             errors.append(masked['Error'].values[0])
 
-        if code == "openmc":"""
+        # if code == "openmc":"""
         for tally in tally_list:
             tally_num = str(tally["Tally N."].iloc[0])
             tally_description = tally["Tally Description"].iloc[0]
@@ -3111,94 +3112,94 @@ class SphereSDDRMCNPoutput(SphereMCNPoutput):
         return vals, errors
 
 
-class SphereExcelOutputSheet:
-    def __init__(self, template, outpath):
-        """
-        Excel sheet reporting the outcome of an MCNP test
+# class SphereExcelOutputSheet:
+#     def __init__(self, template, outpath):
+#         """
+#         Excel sheet reporting the outcome of an MCNP test
 
-        template: (str/path) path to the sheet template
-        """
-        self.outpath = outpath  # Path to the excel file
-        # Open template
-        shutil.copy(template, outpath)
-        #        self.app = xw.App(visible=False)
-        #        self.wb = self.app.books.open(outpath)
-        # self.wb=openpyxl.load_workbook(filename=outpath)
+#         template: (str/path) path to the sheet template
+#         """
+#         self.outpath = outpath  # Path to the excel file
+#         # Open template
+#         shutil.copy(template, outpath)
+#         #        self.app = xw.App(visible=False)
+#         #        self.wb = self.app.books.open(outpath)
+#         # self.wb=openpyxl.load_workbook(filename=outpath)
 
-    def insert_df(self, startrow, startcolumn, df, ws, header=True):
-        """
-        Insert a DataFrame (df) into a Worksheet (ws) using openpyxl.
-        (startrow) and (startcolumn) identify the starting data entry
-        """
-        #        ws = self.wb.sheets[ws]
-        ws = self.wb[self.wb.sheetnames[ws]]
+#     def insert_df(self, startrow, startcolumn, df, ws, header=True):
+#         """
+#         Insert a DataFrame (df) into a Worksheet (ws) using openpyxl.
+#         (startrow) and (startcolumn) identify the starting data entry
+#         """
+#         #        ws = self.wb.sheets[ws]
+#         ws = self.wb[self.wb.sheetnames[ws]]
 
-        exsupp.insert_df(startrow, startcolumn, df, ws, header=header)
+#         exsupp.insert_df(startrow, startcolumn, df, ws, header=header)
 
-    def copy_sheets(self, wb_origin_path):
-        """
-        Copy all sheets of the selected excel file into the current one
+#     def copy_sheets(self, wb_origin_path):
+#         """
+#         Copy all sheets of the selected excel file into the current one
 
-        Parameters
-        ----------
-        wb_origin_path : str/path
-            Path to excel file containing sheets to add.
+#         Parameters
+#         ----------
+#         wb_origin_path : str/path
+#             Path to excel file containing sheets to add.
 
-        Returns
-        -------
-        None.
+#         Returns
+#         -------
+#         None.
 
-        """
-        wb = self.app.books.open(wb_origin_path)
-        for sheet in wb.sheets:
-            # copy to a new workbook
-            sheet.api.Copy()
+#         """
+#         wb = self.app.books.open(wb_origin_path)
+#         for sheet in wb.sheets:
+#             # copy to a new workbook
+#             sheet.api.Copy()
 
-            # copy to an existing workbook by putting it in front of a
-            # worksheet object
-            sheet.api.Copy(Before=self.wb.sheets[0].api)
+#             # copy to an existing workbook by putting it in front of a
+#             # worksheet object
+#             sheet.api.Copy(Before=self.wb.sheets[0].api)
 
-    def copy_internal_sheet(self, template_sheet, newname):
-        """
-        Return a renamed copy of a particular sheet
+#     def copy_internal_sheet(self, template_sheet, newname):
+#         """
+#         Return a renamed copy of a particular sheet
 
-        Parameters
-        ----------
-        template_sheet : xw.Sheet
-            sheet to copy.
-        newname : str
-            name of the new sheet.
+#         Parameters
+#         ----------
+#         template_sheet : xw.Sheet
+#             sheet to copy.
+#         newname : str
+#             name of the new sheet.
 
-        Returns
-        -------
-        ws : xw.Sheet
-            copied sheet.
+#         Returns
+#         -------
+#         ws : xw.Sheet
+#             copied sheet.
 
-        """
-        # Copy the template sheet
-        try:  # Should work from v0.22 of xlwings
-            template_sheet.copy(before=template_sheet)
-        except AttributeError:
-            # Fall Back onto the native object
-            template_sheet.api.Copy(Before=template_sheet.api)
-        try:
-            ws = self.wb.sheets(template_sheet.name + " (2)")
-        # except pythoncom.com_error:
-        except Exception as e:
-            print("The available sheets are :" + str(self.wb.sheets))
-        try:
-            ws.name = newname
-        # except pythoncom.com_error:
-        except Exception as e:
-            ws.Name = newname
-        return ws
+#         """
+#         # Copy the template sheet
+#         try:  # Should work from v0.22 of xlwings
+#             template_sheet.copy(before=template_sheet)
+#         except AttributeError:
+#             # Fall Back onto the native object
+#             template_sheet.api.Copy(Before=template_sheet.api)
+#         try:
+#             ws = self.wb.sheets(template_sheet.name + " (2)")
+#         # except pythoncom.com_error:
+#         except Exception as e:
+#             print("The available sheets are :" + str(self.wb.sheets))
+#         try:
+#             ws.name = newname
+#         # except pythoncom.com_error:
+#         except Exception as e:
+#             ws.Name = newname
+#         return ws
 
-    def save(self):
-        """
-        Save Excel
-        """
-        #        self.app.calculate()
-        self.wb.save(self.outpath)
+#     def save(self):
+#         """
+#         Save Excel
+#         """
+#         #        self.app.calculate()
+#         self.wb.save(self.outpath)
 
-    #        self.wb.close()
-    #        self.app.quit()
+#     #        self.wb.close()
+#     #        self.app.quit()

@@ -28,7 +28,7 @@ import jade.output as bencho
 import jade.sphereoutput as spho
 
 
-def compareBenchmark(session, lib_input: str, testname: str, exp = False) -> None:
+def compareBenchmark(session, lib_input: str, testname: str, exp=False) -> None:
     """Compare benchmark results and perform post-processing.
 
     Parameters
@@ -54,7 +54,7 @@ def compareBenchmark(session, lib_input: str, testname: str, exp = False) -> Non
     # Get the settings for the tests
     if exp == True:
         config = session.conf.exp_default.set_index("Description")
-    else:        
+    else:
         config = session.conf.comp_default.set_index("Description")
     # Get the log
     log = session.log
@@ -139,48 +139,46 @@ def _get_output(action, config, lib, session):
     elif testname == "SphereSDDR":
         out = spho.SphereSDDRoutput(lib, config, session)
 
-    #TODO change testname to config
-    elif testname in ['Oktavian']:
-        if action == 'compare':
+    # TODO change testname to config
+    elif testname in ["Oktavian"]:
+        if action == "compare":
             out = expo.SpectrumOutput(lib, config, session, multiplerun=True)
-        elif action == 'pp':
+        elif action == "pp":
             print(exp_pp_message)
             return False
 
-    elif testname in ['Tiara-BC', 'FNS-TOF', 'TUD-Fe', 'TUD-W']:
-        if action == 'compare':
-            out = expo.MultipleSpectrumOutput(lib, config,
-                                              session, multiplerun=True)
-        elif action == 'pp':
+    elif testname in ["Tiara-BC", "FNS-TOF", "TUD-Fe", "TUD-W"]:
+        if action == "compare":
+            out = expo.MultipleSpectrumOutput(lib, config, session, multiplerun=True)
+        elif action == "pp":
             print(exp_pp_message)
             return False
 
-    elif testname in ['TUD-FNG']:
-        if action == 'compare':
+    elif testname in ["TUD-FNG"]:
+        if action == "compare":
             out = expo.MultipleSpectrumOutput(lib, config, session)
-        elif action == 'pp':
+        elif action == "pp":
             print(exp_pp_message)
             return False
 
-    elif testname == 'Tiara-FC':
-        if action == 'compare':
+    elif testname == "Tiara-FC":
+        if action == "compare":
             out = expo.TiaraFCOutput(lib, config, session, multiplerun=True)
-        elif action == 'pp':
+        elif action == "pp":
             print(exp_pp_message)
             return False
 
-    elif testname == 'Tiara-BS':
-        if action == 'compare':
+    elif testname == "Tiara-BS":
+        if action == "compare":
             out = expo.TiaraBSOutput(lib, config, session, multiplerun=True)
-        elif action == 'pp':
+        elif action == "pp":
             print(exp_pp_message)
             return False
 
-    elif testname in ['FNG-BKT', 'FNG-W', 'ASPIS-Fe88']:
-        if action == 'compare':
-            out = expo.ShieldingOutput(lib, config, session,
-                                       multiplerun=True)
-        elif action == 'pp':
+    elif testname in ["FNG-BKT", "FNG-W", "ASPIS-Fe88"]:
+        if action == "compare":
+            out = expo.ShieldingOutput(lib, config, session, multiplerun=True)
+        elif action == "pp":
             print(exp_pp_message)
             return False
 

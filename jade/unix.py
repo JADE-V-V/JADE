@@ -26,7 +26,6 @@ import re
 import subprocess
 import sys
 
-
 if "MODULEPATH" not in os.environ and "win" not in sys.platform:
     f = open(os.environ["MODULESHOME"] + "/init/.modulespath", "r")
     path = []

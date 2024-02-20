@@ -21,22 +21,21 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
-import docx
-# import win32com.client
-import aspose.words
-from docx.shared import Inches
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.table import WD_ALIGN_VERTICAL
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
-from docx.oxml.ns import nsdecls
-from docx.oxml import parse_xml
 # from docx.shared import Pt
 import os
+
+# import win32com.client
+import aspose.words
+import docx
 import pandas as pd
+from docx.enum.table import WD_ALIGN_VERTICAL
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml import OxmlElement, parse_xml
+from docx.oxml.ns import nsdecls, qn
+from docx.shared import Inches
 
 
-class Atlas():
+class Atlas:
     def __init__(self, template, name):
         """
         Atlas of plots for post-processing
@@ -67,8 +66,8 @@ class Atlas():
         self.name = name  # Name of the Atlas (from libraries)
         # Open The Atlas template
         doc = docx.Document(template)
-        doc.add_heading('JADE ATLAS: '+name, level=0)
-        self.outname = 'atlas_' + name  # Name for the outfile
+        doc.add_heading("JADE ATLAS: " + name, level=0)
+        self.outname = "atlas_" + name  # Name for the outfile
         self.doc = doc  # Word Document
 
     def insert_img(self, img, width=Inches(7.5)):
@@ -76,8 +75,9 @@ class Atlas():
         last_paragraph = self.doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    def insert_df(self, df, caption=None, highlight=False, #, template_idx=None,
-                  tablestyle=None):
+    def insert_df(
+        self, df, caption=None, highlight=False, tablestyle=None  # , template_idx=None,
+    ):
         """
         Inser a dataframe as a table in a Word file
 
@@ -124,7 +124,7 @@ class Atlas():
             # Understand is safety margin is barely acceptable
             flag_almost = False
             try:
-                sm = float(row['Safety Margin'])
+                sm = float(row["Safety Margin"])
                 if sm > 1 and sm < 1.1:
                     flag_almost = True
             except KeyError:
@@ -141,17 +141,17 @@ class Atlas():
                 cell.text = str(item)
                 cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
                 for par in cell.paragraphs:
-                    par.style = 'Table'
+                    par.style = "Table"
                 if highlight is not None:
-                    if cell.text == 'NOK':
+                    if cell.text == "NOK":
                         self._highlightCell(cell)
-                    elif cell.text == 'OK' and flag_almost:
-                        self._highlightCell(cell, color='FFFF46')
+                    elif cell.text == "OK" and flag_almost:
+                        self._highlightCell(cell, color="FFFF46")
 
         if caption is not None:
-            paragraph = self.doc.add_paragraph('Table ', style='Didascalia')
-            self._wrapper(paragraph, 'table')
-            paragraph.add_run(' - '+caption)
+            paragraph = self.doc.add_paragraph("Table ", style="Didascalia")
+            self._wrapper(paragraph, "table")
+            paragraph.add_run(" - " + caption)
         # paragraph = doc.add_paragraph('Figure Text', style='Didascalia')
 
         return table
@@ -183,35 +183,36 @@ class Atlas():
         tallies = []
         for img in os.listdir(images_path):
             img_path = os.path.join(images_path, img)
-            pieces = img.split('-')
+            pieces = img.split("-")
             zaid = pieces[0]
-            tally = pieces[-1].split('.')[0]
-            zaidnum = zaid.split('.')[0]
+            tally = pieces[-1].split(".")[0]
+            zaidnum = zaid.split(".")[0]
             if tally not in tallies:
                 tallies.append(tally)
 
-            images.append({'tally': tally, 'zaid': zaid, 'img': img_path,
-                           'num': zaidnum})
+            images.append(
+                {"tally": tally, "zaid": zaid, "img": img_path, "num": zaidnum}
+            )
 
         images = pd.DataFrame(images)
         # Reorder atlas
-        images['num'] = pd.to_numeric(images['num'].values, errors='coerce')
-        images.set_index('tally', inplace=True)
+        images["num"] = pd.to_numeric(images["num"].values, errors="coerce")
+        images.set_index("tally", inplace=True)
         for tally in tallies:
-            self.doc.add_heading('Tally N.'+str(tally), level=1)
+            self.doc.add_heading("Tally N." + str(tally), level=1)
             # Be sure of the reordering
-            df = images.loc[tally].sort_values('num')
+            df = images.loc[tally].sort_values("num")
             for idx, row in df.iterrows():
-                title = 'Zaid: '+row['zaid']
+                title = "Zaid: " + row["zaid"]
                 try:
-                    name, formula = libmanager.get_zaidname(row['zaid'])
-                    title = title+' ('+name+' '+formula+')'
+                    name, formula = libmanager.get_zaidname(row["zaid"])
+                    title = title + " (" + name + " " + formula + ")"
                 except ValueError:  # A material is passed instead of zaid
-                    matname = mat_settings.loc[row['zaid'], 'Name']
-                    title = title+' ('+matname+')'
+                    matname = mat_settings.loc[row["zaid"], "Name"]
+                    title = title + " (" + matname + ")"
 
                 self.doc.add_heading(title, level=2)
-                self.insert_img(row['img'])
+                self.insert_img(row["img"])
 
     def save(self, outpath, pdfprint=True):
         """
@@ -229,15 +230,15 @@ class Atlas():
         None.
 
         """
-        outpath_word = os.path.join(outpath, self.outname+'.docx')
-        outpath_pdf = os.path.join(outpath, self.outname+'.pdf')
+        outpath_word = os.path.join(outpath, self.outname + ".docx")
+        outpath_pdf = os.path.join(outpath, self.outname + ".pdf")
 
         try:
             self.doc.save(outpath_word)
         except FileNotFoundError as e:
-            print(' The following is the original exception:')
+            print(" The following is the original exception:")
             print(e)
-            print('\n it may be due to invalid characters in the file name')
+            print("\n it may be due to invalid characters in the file name")
 
         if pdfprint:
             in_file = outpath_word
@@ -245,21 +246,21 @@ class Atlas():
 
             doc = aspose.words.Document(in_file)
             doc.save(out_file)
-            
-#            word = win32com.client.Dispatch('Word.Application')
-#            doc = word.Documents.Open(in_file)
-#            doc.ExportAsFixedFormat(OutputFileName=out_file,
-#                                    # 17 = PDF output, 18=XPS output
-#                                    ExportFormat=17,
-#                                    OpenAfterExport=False,
-#                                    # 0=Print (higher res), 1=Screen (lower res)
-#                                    OptimizeFor=0,
-#   # 0=No bookmarks, 1=Heading bookmarks only, 2=bookmarks match word bookmarks
-#                                    CreateBookmarks=1,
-#                                    DocStructureTags=True)
-#
-#            doc.Close()
-#            word.Quit()
+
+    #            word = win32com.client.Dispatch('Word.Application')
+    #            doc = word.Documents.Open(in_file)
+    #            doc.ExportAsFixedFormat(OutputFileName=out_file,
+    #                                    # 17 = PDF output, 18=XPS output
+    #                                    ExportFormat=17,
+    #                                    OpenAfterExport=False,
+    #                                    # 0=Print (higher res), 1=Screen (lower res)
+    #                                    OptimizeFor=0,
+    #   # 0=No bookmarks, 1=Heading bookmarks only, 2=bookmarks match word bookmarks
+    #                                    CreateBookmarks=1,
+    #                                    DocStructureTags=True)
+    #
+    #            doc.Close()
+    #            word.Quit()
 
     @staticmethod
     def _wrapper(paragraph, ptype):
@@ -278,27 +279,28 @@ class Atlas():
         None.
 
         """
-        if ptype == 'table':
-            instruction = ' SEQ Table \\* ARABIC'
-        elif ptype == 'figure':
-            instruction = ' SEQ Figure \\* ARABIC'
+        if ptype == "table":
+            instruction = " SEQ Table \\* ARABIC"
+        elif ptype == "figure":
+            instruction = " SEQ Figure \\* ARABIC"
         else:
-            raise ValueError(ptype+' is not a supported paragraph type')
+            raise ValueError(ptype + " is not a supported paragraph type")
 
         run = run = paragraph.add_run()
         r = run._r
-        fldChar = OxmlElement('w:fldChar')
-        fldChar.set(qn('w:fldCharType'), 'begin')
+        fldChar = OxmlElement("w:fldChar")
+        fldChar.set(qn("w:fldCharType"), "begin")
         r.append(fldChar)
-        instrText = OxmlElement('w:instrText')
+        instrText = OxmlElement("w:instrText")
         instrText.text = instruction
         r.append(instrText)
-        fldChar = OxmlElement('w:fldChar')
-        fldChar.set(qn('w:fldCharType'), 'end')
+        fldChar = OxmlElement("w:fldChar")
+        fldChar.set(qn("w:fldCharType"), "end")
         r.append(fldChar)
 
     @staticmethod
-    def _highlightCell(cell, color='FBD4B4'):
-        shading_elm_1 = parse_xml(r'<w:shd {} w:fill="'.format(nsdecls('w')) +
-                                  color + r'"/>')
+    def _highlightCell(cell, color="FBD4B4"):
+        shading_elm_1 = parse_xml(
+            r'<w:shd {} w:fill="'.format(nsdecls("w")) + color + r'"/>'
+        )
         cell._tc.get_or_add_tcPr().append(shading_elm_1)

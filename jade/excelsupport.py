@@ -25,7 +25,6 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 # import openpyxl
 import pandas as pd
 
-
 # def createNewWorkbook(manyWb, theOne):
 #     for wb in manyWb:
 #         for sheetName in wb.sheetnames:

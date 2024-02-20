@@ -22,16 +22,18 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
-from typing import TYPE_CHECKING
+
 import os
 import sys
+from typing import TYPE_CHECKING
+
+from tqdm import tqdm
 
 import jade.computational as cmp
 import jade.postprocess as pp
 import jade.testrun as testrun
 import jade.utilitiesgui as uty
 from jade.__version__ import __version__
-from tqdm import tqdm
 from jade.status import EXP_TAG
 
 if TYPE_CHECKING:

@@ -20,32 +20,33 @@
 # You should have received a copy of the GNU General Public License
 # along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 
-import pandas as pd
-import numpy as np
-import os
-import jade.atlas as at
-import shutil
 import math
-
-from jade.output import BenchmarkOutput
-from jade.output import MCNPoutput
-from tqdm import tqdm
-from jade.status import EXP_TAG
-from jade.plotter import Plotter
-from scipy.interpolate import interp1d
-from abc import abstractmethod
-from jade.inputfile import D1S_Input
+import os
 import re
+import shutil
+from abc import abstractmethod
 
-MCNP_UNITS = {'Energy': 'MeV',
-              'Time': 'shakes'}
+import numpy as np
+import pandas as pd
+from scipy.interpolate import interp1d
+from tqdm import tqdm
 
-TALLY_NORMALIZATION = {'Tiara-BC': 'lethargy',
-                       'FNS-TOF': 'lethargy',
-                       'Oktavian': 'lethargy',
-                       'TUD-Fe': 'energy bins',
-                       'TUD-W': 'energy bins',
-                       'TUD-FNG': 'energy bins'}
+import jade.atlas as at
+from jade.inputfile import D1S_Input
+from jade.output import BenchmarkOutput, MCNPoutput
+from jade.plotter import Plotter
+from jade.status import EXP_TAG
+
+MCNP_UNITS = {"Energy": "MeV", "Time": "shakes"}
+
+TALLY_NORMALIZATION = {
+    "Tiara-BC": "lethargy",
+    "FNS-TOF": "lethargy",
+    "Oktavian": "lethargy",
+    "TUD-Fe": "energy bins",
+    "TUD-W": "energy bins",
+    "TUD-FNG": "energy bins",
+}
 
 
 class ExperimentalOutput(BenchmarkOutput):
@@ -69,7 +70,7 @@ class ExperimentalOutput(BenchmarkOutput):
         """
         # Add a special keyword for experimental benchmarks
         try:
-            multiplerun = kwargs.pop('multiplerun')
+            multiplerun = kwargs.pop("multiplerun")
         except KeyError:
             # Default to False
             multiplerun = False
@@ -90,7 +91,7 @@ class ExperimentalOutput(BenchmarkOutput):
         elif self.openmc:
             out = os.path.dirname(self.atlas_path_openmc)
 
-        raw_path = os.path.join(out, 'Raw_Data')
+        raw_path = os.path.join(out, "Raw_Data")
         if not os.path.exists(raw_path):
             os.mkdir(raw_path)
         self.raw_path = raw_path
@@ -108,7 +109,7 @@ class ExperimentalOutput(BenchmarkOutput):
         -------
         None.
         """
-        raise AttributeError('\n No single pp is foreseen for exp benchmark')
+        raise AttributeError("\n No single pp is foreseen for exp benchmark")
 
     def compare(self):
         """
@@ -118,19 +119,19 @@ class ExperimentalOutput(BenchmarkOutput):
         -------
         None.
         """
-        print(' Exctracting outputs...')
+        print(" Exctracting outputs...")
         self._extract_outputs()
 
-        print(' Read experimental results....')
+        print(" Read experimental results....")
         self._read_exp_results()
 
-        print(' Dumping raw data...')
+        print(" Dumping raw data...")
         self._print_raw()
 
-        print(' Generating Excel Recap...')
+        print(" Generating Excel Recap...")
         self.pp_excel_comparison()
 
-        print(' Creating Atlas...')
+        print(" Creating Atlas...")
         self.build_atlas()
 
     def pp_excel_comparison(self):
@@ -156,31 +157,32 @@ class ExperimentalOutput(BenchmarkOutput):
         """
         # Build a temporary folder for images
         if self.mcnp:
-            tmp_path = os.path.join(self.atlas_path_mcnp, 'tmp')
+            tmp_path = os.path.join(self.atlas_path_mcnp, "tmp")
         elif self.d1s:
-            tmp_path = os.path.join(self.atlas_path_d1s, 'tmp')
+            tmp_path = os.path.join(self.atlas_path_d1s, "tmp")
         elif self.openmc:
-            tmp_path = os.path.join(self.atlas_path_openmc, 'tmp')
+            tmp_path = os.path.join(self.atlas_path_openmc, "tmp")
         elif self.serpent:
-            tmp_path = os.path.join(self.atlas_path_serpent, 'tmp')
+            tmp_path = os.path.join(self.atlas_path_serpent, "tmp")
 
         os.mkdir(tmp_path)
 
-        globalname = ''
+        globalname = ""
         for lib in self.lib:
-            globalname = globalname + lib + '_Vs_'
+            globalname = globalname + lib + "_Vs_"
         globalname = globalname[:-4]
-        globalname = self.testname + '_' + globalname
+        globalname = self.testname + "_" + globalname
         # Initialize the atlas
-        template = os.path.join(self.code_path, 'Code', 'jade', 'templates',
-                                'AtlasTemplate.docx')
+        template = os.path.join(
+            self.code_path, "Code", "jade", "templates", "AtlasTemplate.docx"
+        )
         atlas = at.Atlas(template, globalname)
 
         # Fill the atlas
         atlas = self._build_atlas(tmp_path, atlas)
 
         # Save Atlas
-        print(' Producing the PDF...')
+        print(" Producing the PDF...")
         if self.mcnp:
             atlas.save(self.atlas_path_mcnp)
         elif self.d1s:
@@ -207,9 +209,8 @@ class ExperimentalOutput(BenchmarkOutput):
                     for folder in os.listdir(test_path):
                         # FIX MCNP HARD CODED PATH HERE
                         if self.mcnp:
-                            results_path = os.path.join(test_path,
-                                                        folder, "mcnp")
-                            pieces = folder.split('_')
+                            results_path = os.path.join(test_path, folder, "mcnp")
+                            pieces = folder.split("_")
                             # Get zaid
                             input = pieces[-1]
                             mfile, ofile = self._get_output_files(results_path)
@@ -224,17 +225,20 @@ class ExperimentalOutput(BenchmarkOutput):
                             if input not in inputs:
                                 inputs.append(input)
                         if self.openmc:
-                            print("Experimental comparison not implemented \
-                                for OpenMC")
+                            print(
+                                "Experimental comparison not implemented \
+                                for OpenMC"
+                            )
                             break
                         if self.serpent:
-                            print("Experimental comparison not implemented \
-                                for Serpent")
+                            print(
+                                "Experimental comparison not implemented \
+                                for Serpent"
+                            )
                             break
                         if self.d1s:
-                            results_path = os.path.join(test_path,
-                                                        folder, "d1s")
-                            pieces = folder.split('_')
+                            results_path = os.path.join(test_path, folder, "d1s")
+                            pieces = folder.split("_")
                             # Get zaid
                             input = pieces[-1]
                             mfile, ofile = self._get_output_files(results_path)
@@ -247,7 +251,7 @@ class ExperimentalOutput(BenchmarkOutput):
                             # Get the meaningful results
                             results[input, lib] = self._processMCNPdata(output)
                             if input not in inputs:
-                                inputs.append(input)                            
+                                inputs.append(input)
                     if self.mcnp:
                         self.raw_data["mcnp"] = code_raw_data
                     if self.d1s:
@@ -292,7 +296,7 @@ class ExperimentalOutput(BenchmarkOutput):
                 exp_results[folder] = {}
                 cp = os.path.join(self.path_exp_res, folder)
                 for file in os.listdir(cp):
-                    filename = file.split('.')[0]
+                    filename = file.split(".")[0]
                     filepath = os.path.join(cp, file)
                     df = self._read_exp_file(filepath)
                     c = df.columns.tolist()[1]
@@ -303,7 +307,7 @@ class ExperimentalOutput(BenchmarkOutput):
             # build the result dic
             exp_results[self.testname] = {}
             for file in os.listdir(self.path_exp_res):
-                filename = file.split('.')[0]
+                filename = file.split(".")[0]
                 filepath = os.path.join(self.path_exp_res, file)
                 df = self._read_exp_file(filepath)
                 c = df.columns.tolist()[1]
@@ -335,13 +339,13 @@ class ExperimentalOutput(BenchmarkOutput):
         None.
         """
         if self.mcnp:
-            raw_to_print = self.raw_data['mcnp'].items()
+            raw_to_print = self.raw_data["mcnp"].items()
         if self.openmc:
             pass
         if self.serpent:
             pass
         if self.d1s:
-            raw_to_print = self.raw_data['d1s'].items()
+            raw_to_print = self.raw_data["d1s"].items()
 
         for (folder, lib), item in raw_to_print:
             # Create the lib directory if it is not there
@@ -351,10 +355,9 @@ class ExperimentalOutput(BenchmarkOutput):
             # Dump everything
             for key, data in item.items():
                 if folder == self.testname:
-                    file = os.path.join(cd_lib, str(key) + '.csv')
+                    file = os.path.join(cd_lib, str(key) + ".csv")
                 else:
-                    file = os.path.join(cd_lib,
-                                        folder + ' ' + str(key) + '.csv')
+                    file = os.path.join(cd_lib, folder + " " + str(key) + ".csv")
                 data.to_csv(file, header=True, index=False)
 
     @abstractmethod
@@ -378,11 +381,11 @@ class ExperimentalOutput(BenchmarkOutput):
 
     @abstractmethod
     def _pp_excel_comparison(self):
-        '''
+        """
         Responsible for producing excel outputs
         Returns
         -------
-        '''
+        """
         pass
 
     @abstractmethod
@@ -406,12 +409,31 @@ class ExperimentalOutput(BenchmarkOutput):
 
 
 class FNGOutput(ExperimentalOutput):
-    names = ['FNG1', 'FNG2']
-    times = {'FNG1': ['1d', '7d', '15d', '30d', '60d'],
-             'FNG2': ['1.22h', '1.72h', '2.08h', '3.22h', '4.80h', '6.80h',
-                      '9.47h', '12.7h', '15.9h', '20.2h', '25.2h', '1.53d',
-                      '2.46d', '4d', '5.55d', '8.20d', '12.2d', '19.3d',
-                      '19.8d']}
+    names = ["FNG1", "FNG2"]
+    times = {
+        "FNG1": ["1d", "7d", "15d", "30d", "60d"],
+        "FNG2": [
+            "1.22h",
+            "1.72h",
+            "2.08h",
+            "3.22h",
+            "4.80h",
+            "6.80h",
+            "9.47h",
+            "12.7h",
+            "15.9h",
+            "20.2h",
+            "25.2h",
+            "1.53d",
+            "2.46d",
+            "4d",
+            "5.55d",
+            "8.20d",
+            "12.2d",
+            "19.3d",
+            "19.8d",
+        ],
+    }
 
     def _processMCNPdata(self, output):
         """
@@ -447,27 +469,25 @@ class FNGOutput(ExperimentalOutput):
 
                 # Build and store the taly df
                 df = pd.DataFrame(tallyres)
-                df.columns = ['time', 'sddr', 'err']
+                df.columns = ["time", "sddr", "err"]
                 res[str(tnum)] = df
 
             # -- Parent tracker --
             if tnum in [14, 24]:
                 for i in range(tally.nTim):
                     for j in range(tally.nUsr):
-                        val = tally.getValue(0, 0, j, 0, 0, 0,
-                                             0, i, 0, 0, 0, 0)
-                        err = tally.getValue(0, 0, j, 0, 0, 0,
-                                             0, i, 0, 0, 0, 1)
+                        val = tally.getValue(0, 0, j, 0, 0, 0, 0, i, 0, 0, 0, 0)
+                        err = tally.getValue(0, 0, j, 0, 0, 0, 0, i, 0, 0, 0, 1)
                         # Store
                         time_res = [i + 1, j, val, err]
                         tallyres.append(time_res)
 
                 # Build and store the taly df
                 df = pd.DataFrame(tallyres)
-                df.columns = ['time', 'tracked', 'sddr', 'err']
+                df.columns = ["time", "tracked", "sddr", "err"]
                 # The first row is the complementary bin (0) and last row
                 # is the total. They can be dropped
-                df = df.set_index('tracked').drop([0, j]).reset_index()
+                df = df.set_index("tracked").drop([0, j]).reset_index()
                 res[str(tnum)] = df
 
         # --- Override the raw data ---
@@ -481,36 +501,37 @@ class FNGOutput(ExperimentalOutput):
         return res
 
     def _pp_excel_comparison(self):
-        '''
+        """
         Responsible for producing excel outputs
-        '''
+        """
         # Dump the global C/E table
-        print(' Dump the C/E table in Excel...')
-        ex_outpath = os.path.join(self.excel_path_d1s, self.testname + '_CE_tables.xlsx')
+        print(" Dump the C/E table in Excel...")
+        ex_outpath = os.path.join(
+            self.excel_path_d1s, self.testname + "_CE_tables.xlsx"
+        )
         # Create a Pandas Excel writer using XlsxWriter as the engine.
-        with pd.ExcelWriter(ex_outpath, engine='xlsxwriter') as writer:
+        with pd.ExcelWriter(ex_outpath, engine="xlsxwriter") as writer:
             # --- build and dump the C/E table ---
             for folder in self.names:
                 # collect all available data
                 alldata = self._get_collected_data(folder)
-                exp_err = alldata['Relative Error']
-                exp_sddr = alldata['Experimental SDDR [Sv/h]']
+                exp_err = alldata["Relative Error"]
+                exp_sddr = alldata["Experimental SDDR [Sv/h]"]
                 # build the C\E df
                 df = pd.DataFrame(index=alldata.index)
 
                 for lib in self.lib[1:]:
                     libname = self.session.conf.get_lib_name(lib)
                     # get computational data
-                    com_err = alldata[lib + 'err']
-                    com_sddr = alldata[lib + 'sddr']
+                    com_err = alldata[lib + "err"]
+                    com_sddr = alldata[lib + "sddr"]
 
                     # compute global error (SRSS)
-                    gl_err = ((com_err**2 + exp_err**2) **
-                              (1 / 2)).round(2).astype(str)
+                    gl_err = ((com_err**2 + exp_err**2) ** (1 / 2)).round(2).astype(str)
                     # compute C/E
                     gl_val = (com_sddr / exp_sddr).round(2).astype(str)
 
-                    df[libname] = gl_val + ' +/- ' + gl_err
+                    df[libname] = gl_val + " +/- " + gl_err
 
                 # Dump the df
                 df.to_excel(writer, sheet_name=folder, startrow=2)
@@ -533,17 +554,17 @@ class FNGOutput(ExperimentalOutput):
         df : pd.DataFrame
             collective data on the campaing.
         """
-        idx = ['Cooldown Time [s]', 'Cooldown Time [d]']
+        idx = ["Cooldown Time [s]", "Cooldown Time [d]"]
         # Initialize the table with the experimental results
-        df = self.exp_results[folder]['SDDR'].copy()
+        df = self.exp_results[folder]["SDDR"].copy()
         df = df.set_index(idx).sort_index()
 
         # Avoid exp tag
         for lib in self.lib[1:]:
-            libdf = self.results[folder, lib]['4'].set_index('time').sort_index()
+            libdf = self.results[folder, lib]["4"].set_index("time").sort_index()
             # add the SDDR and relative column of each library
-            df[lib + 'sddr'] = libdf['sddr'].values
-            df[lib + 'err'] = libdf['err'].values
+            df[lib + "sddr"] = libdf["sddr"].values
+            df[lib + "err"] = libdf["err"].values
 
         return df
 
@@ -562,39 +583,40 @@ class FNGOutput(ExperimentalOutput):
         atlas : Atlas
             After being filled the atlas is returned.
         """
-        patzaid = re.compile(r'(?<=[\s\-\t])\d+(?=[\s\t\n])')
+        patzaid = re.compile(r"(?<=[\s\-\t])\d+(?=[\s\t\n])")
 
-        atlas.doc.add_heading('Shut Down Dose Rate', level=1)
-        xlabel = 'Cooldown time'
+        atlas.doc.add_heading("Shut Down Dose Rate", level=1)
+        xlabel = "Cooldown time"
         # Only two plots, one for each irradiation campaign
-        for folder, title in zip(self.names, ['1st FNG Irradiation campaign',
-                                              '2nd FNG Irradiation campaign']):
+        for folder, title in zip(
+            self.names, ["1st FNG Irradiation campaign", "2nd FNG Irradiation campaign"]
+        ):
             atlas.doc.add_heading(title, level=2)
             # --- SDDR PLOT ---
             # -- Recover data to plot --
             data = []
             x = self.times[folder]
             for lib in self.lib:
-                if lib == 'Exp':
-                    df = self.exp_results[folder]['SDDR']
-                    y = df['Experimental SDDR [Sv/h]'].values
-                    err = (df['Relative Error'] * y).values
-                    ylabel = 'Experiment'
+                if lib == "Exp":
+                    df = self.exp_results[folder]["SDDR"]
+                    y = df["Experimental SDDR [Sv/h]"].values
+                    err = (df["Relative Error"] * y).values
+                    ylabel = "Experiment"
                 else:
-                    df = self.results[folder,
-                                      lib]['4'].set_index('time').sort_index()
+                    df = self.results[folder, lib]["4"].set_index("time").sort_index()
                     y = df.sddr.values
                     err = df.err.values * y
                     ylabel = self.session.conf.get_lib_name(lib)
 
-                data.append({'x': x, 'y': y, 'err': err, 'ylabel': ylabel})
+                data.append({"x": x, "y": y, "err": err, "ylabel": ylabel})
             # -- Plot --
-            outname = 'tmp'
-            quantity = 'SDDR'
-            unit = 'Sv/h'
-            plot = Plotter(data, title, tmp_path, outname, quantity, unit,
-                           xlabel, self.testname)
-            img_path = plot.plot('Discreet Experimental points')
+            outname = "tmp"
+            quantity = "SDDR"
+            unit = "Sv/h"
+            plot = Plotter(
+                data, title, tmp_path, outname, quantity, unit, xlabel, self.testname
+            )
+            img_path = plot.plot("Discreet Experimental points")
             # Insert the image in the atlas
             atlas.insert_img(img_path)
 
@@ -605,26 +627,27 @@ class FNGOutput(ExperimentalOutput):
             for lib in self.lib[1:]:
                 file = os.path.join(self.test_path[lib], folder, "d1s", folder)
                 inp = D1S_Input.from_text(file)
-                for tallynum in ['24', '14']:
-                    card = inp.get_card_byID('settings', 'FU' + tallynum)
+                for tallynum in ["24", "14"]:
+                    card = inp.get_card_byID("settings", "FU" + tallynum)
                     strings = []
                     for line in card.lines:
                         zaids = patzaid.findall(line)
                         for zaid in zaids:
-                            if zaid != '0':
-                                _, formula = self.session.lib_manager.get_zaidname(
-                                    zaid)
+                            if zaid != "0":
+                                _, formula = self.session.lib_manager.get_zaidname(zaid)
                                 strings.append(formula)
 
                     zaid_tracked[tallynum] = strings
 
             x = self.times[folder]
-            titles = {'parent': title + ', parent isotopes contribution ',
-                      'daughter': title + ', daughter isotopes contribution '}
-            tallynums = {'parent': '24', 'daughter': '14'}
+            titles = {
+                "parent": title + ", parent isotopes contribution ",
+                "daughter": title + ", daughter isotopes contribution ",
+            }
+            tallynums = {"parent": "24", "daughter": "14"}
 
-            for tracked in ['parent', 'daughter']:
-                atlas.doc.add_heading(tracked + ' tracking', level=3)
+            for tracked in ["parent", "daughter"]:
+                atlas.doc.add_heading(tracked + " tracking", level=3)
                 for lib in self.lib[1:]:
                     libname = self.session.conf.get_lib_name(lib)
 
@@ -632,26 +655,33 @@ class FNGOutput(ExperimentalOutput):
                     tallynum = tallynums[tracked]
                     df = self.results[folder, lib][tallynum]
                     zaidstracked = set(df.tracked.values)
-                    tot_dose = df.groupby('time').sum().sddr.values
-                    df.set_index('tracked', inplace=True)
+                    tot_dose = df.groupby("time").sum().sddr.values
+                    df.set_index("tracked", inplace=True)
                     data = []
                     for i, zaid in enumerate(zaidstracked):
                         subset = df.loc[zaid]
                         assert len(subset.time.values) == len(x)
                         formula = zaid_tracked[tallynum][i]
                         y = subset.sddr.values / tot_dose * 100
-                        libdata = {'x': x, 'y': y, 'err': [],
-                                   'ylabel': formula}
+                        libdata = {"x": x, "y": y, "err": [], "ylabel": formula}
                         data.append(libdata)
 
-                    outname = 'tmp'
+                    outname = "tmp"
                     newtitle = titles[tracked] + libname
-                    quantity = 'SDDR contribution'
-                    unit = '%'
-                    xlabel = 'Cooldown time'
+                    quantity = "SDDR contribution"
+                    unit = "%"
+                    xlabel = "Cooldown time"
 
-                    plot = Plotter(data, newtitle, tmp_path, outname,
-                                   quantity, unit, xlabel, self.testname)
+                    plot = Plotter(
+                        data,
+                        newtitle,
+                        tmp_path,
+                        outname,
+                        quantity,
+                        unit,
+                        xlabel,
+                        self.testname,
+                    )
                     img_path = plot._contribution(legend_outside=True)
 
                     # Insert the image in the atlas
@@ -660,11 +690,11 @@ class FNGOutput(ExperimentalOutput):
         return atlas
 
     def _read_exp_file(self, filepath):
-        '''
+        """
         Override parent method since the separator for these experimental
         files is ";"
-        '''
-        return pd.read_csv(filepath, sep=';')
+        """
+        return pd.read_csv(filepath, sep=";")
 
 
 class SpectrumOutput(ExperimentalOutput):
@@ -676,36 +706,44 @@ class SpectrumOutput(ExperimentalOutput):
         """
         self.tables = []
         self.bench_conf = pd.read_excel(self.cnf_path)
-        self.bench_conf = self.bench_conf.set_index(['Tally'])
+        self.bench_conf = self.bench_conf.set_index(["Tally"])
         # Loop over benchmark cases
-        for input in tqdm(self.inputs, desc=' Inputs: '):
+        for input in tqdm(self.inputs, desc=" Inputs: "):
             # Loop over tallies
             for tally in self.outputs[(input, self.lib[1])].mctal.tallies:
                 # Get tally number and info
                 tallynum, particle, xlabel = self._get_tally_info(tally)
                 # Collect data
-                quantity_CE = self.bench_conf.loc[tallynum, 'Y Label']
-                e_int = self.bench_conf.loc[tallynum,
-                                            'C/E X Quantity intervals']
-                e_int = e_int.split('-')
+                quantity_CE = self.bench_conf.loc[tallynum, "Y Label"]
+                e_int = self.bench_conf.loc[tallynum, "C/E X Quantity intervals"]
+                e_int = e_int.split("-")
 
                 # Convert the list of number strings into a list of integers
                 e_intervals = [float(num) for num in e_int]
-                data, xlabel = self._data_collect(input, str(tallynum),
-                                                  quantity_CE, e_intervals)
+                data, xlabel = self._data_collect(
+                    input, str(tallynum), quantity_CE, e_intervals
+                )
                 if not data:
                     continue
 
                 # Use re.findall to extract all substrings between '[' and ']'
-                unit = self.bench_conf.loc[tallynum, 'Y Unit']
-                quantity = self.bench_conf.loc[tallynum, 'Quantity']
+                unit = self.bench_conf.loc[tallynum, "Y Unit"]
+                quantity = self.bench_conf.loc[tallynum, "Quantity"]
                 title = self._define_title(input, quantity_CE)
                 atlas.doc.add_heading(title, level=1)
                 # Once the data is collected it is passed to the plotter
-                outname = 'tmp'
-                plot = Plotter(data, title, tmp_path, outname, quantity, unit,
-                               xlabel, self.testname)
-                img_path = plot.plot('Experimental points')
+                outname = "tmp"
+                plot = Plotter(
+                    data,
+                    title,
+                    tmp_path,
+                    outname,
+                    quantity,
+                    unit,
+                    xlabel,
+                    self.testname,
+                )
+                img_path = plot.plot("Experimental points")
                 # Insert the image in the atlas
                 atlas.insert_img(img_path)
 
@@ -716,38 +754,36 @@ class SpectrumOutput(ExperimentalOutput):
 
     def _get_tally_info(self, tally):
         tallynum = tally.tallyNumber
-        particle = tally.particleList[np.where(tally.tallyParticles == 1)[0
-                                                                          ][0]]
-        quant = self.bench_conf.loc[tallynum, 'X Quantity']
-        unit = self.bench_conf.loc[tallynum, 'X Unit']
-        return tallynum, particle, quant + ' [' + unit + ']'
+        particle = tally.particleList[np.where(tally.tallyParticles == 1)[0][0]]
+        quant = self.bench_conf.loc[tallynum, "X Quantity"]
+        unit = self.bench_conf.loc[tallynum, "X Unit"]
+        return tallynum, particle, quant + " [" + unit + "]"
 
     def _define_title(self, input, quantity_CE):
 
         if not self.multiplerun:
-            title = self.testname + ', ' + quantity_CE
+            title = self.testname + ", " + quantity_CE
         else:
-            title = self.testname + ' ' + input + ', ' + quantity_CE
+            title = self.testname + " " + input + ", " + quantity_CE
         return title
 
     def _dump_ce_table(self):
 
-        print(' Dump the C/E table in Excel...')
+        print(" Dump the C/E table in Excel...")
 
         final_table = pd.concat(self.tables)
         skipcol_global = 0
-        binning_list = ['Energy', 'Time']
-        for x_ax in binning_list:   # to update if other binning will be used
+        binning_list = ["Energy", "Time"]
+        for x_ax in binning_list:  # to update if other binning will be used
 
             x_lab = x_ax[0]
-            col_check = 'Max ' + x_lab
-            ft = final_table.set_index(['Input'])
+            col_check = "Max " + x_lab
+            ft = final_table.set_index(["Input"])
 
             if col_check not in final_table.columns.tolist():
                 continue
             else:
-                todump = final_table.set_index(['Input', 'Quantity',
-                                                'Library'])
+                todump = final_table.set_index(["Input", "Quantity", "Library"])
             for binning in binning_list:
                 if binning == x_ax:
                     continue
@@ -755,38 +791,51 @@ class SpectrumOutput(ExperimentalOutput):
                     # if tallies only have one type of binning KeyError could
                     # arise
                     try:
-                        todump = todump.drop(columns=['Min ' + binning[0],
-                                                      'Max ' + binning[0]])
-                        ft = ft.drop(columns=['Min ' + binning[0],
-                                              'Max ' + binning[0]])
+                        todump = todump.drop(
+                            columns=["Min " + binning[0], "Max " + binning[0]]
+                        )
+                        ft = ft.drop(columns=["Min " + binning[0], "Max " + binning[0]])
                     except KeyError:
                         continue
 
-            todump = todump.dropna(subset=['Max ' + x_lab])
-            ft = ft.dropna(subset=['Max ' + x_lab])
-            ex_outpath = os.path.join(self.excel_path_mcnp,
-                                      self.testname + '_' + x_ax + '_CE_tables.xlsx')
+            todump = todump.dropna(subset=["Max " + x_lab])
+            ft = ft.dropna(subset=["Max " + x_lab])
+            ex_outpath = os.path.join(
+                self.excel_path_mcnp, self.testname + "_" + x_ax + "_CE_tables.xlsx"
+            )
 
             # Create a Pandas Excel writer using XlsxWriter as the engine.
-            writer = pd.ExcelWriter(ex_outpath, engine='xlsxwriter')
+            writer = pd.ExcelWriter(ex_outpath, engine="xlsxwriter")
             # dump global table
-            todump = todump[['Min ' + x_lab, 'Max ' + x_lab, 'C/E',
-                             'Standard Deviation (σ)', ]]
+            todump = todump[
+                [
+                    "Min " + x_lab,
+                    "Max " + x_lab,
+                    "C/E",
+                    "Standard Deviation (σ)",
+                ]
+            ]
 
-            todump.to_excel(writer, sheet_name='Global')
-            col_min = x_lab + '-min ' + '[' + MCNP_UNITS[x_ax] + ']'
-            col_max = x_lab + '-max ' + '[' + MCNP_UNITS[x_ax] + ']'
+            todump.to_excel(writer, sheet_name="Global")
+            col_min = x_lab + "-min " + "[" + MCNP_UNITS[x_ax] + "]"
+            col_max = x_lab + "-max " + "[" + MCNP_UNITS[x_ax] + "]"
             # Elaborate table for better output format
 
-            ft[col_min] = ft['Min ' + x_lab]
-            ft[col_max] = ft['Max ' + x_lab]
+            ft[col_min] = ft["Min " + x_lab]
+            ft[col_max] = ft["Max " + x_lab]
 
-            ft['C/E (mean +/- σ)'] = (ft['C/E'].round(2).astype(str) + ' +/- ' +
-                                      ft['Standard Deviation (σ)'
-                                         ].round(2).astype(str))
+            ft["C/E (mean +/- σ)"] = (
+                ft["C/E"].round(2).astype(str)
+                + " +/- "
+                + ft["Standard Deviation (σ)"].round(2).astype(str)
+            )
             # Delete all confusing columns
-            for column in ['Min ' + x_lab, 'Max ' + x_lab, 'C/E',
-                           'Standard Deviation (σ)', ]:
+            for column in [
+                "Min " + x_lab,
+                "Max " + x_lab,
+                "C/E",
+                "Standard Deviation (σ)",
+            ]:
                 del ft[column]
 
             # Dump also table material by material
@@ -794,9 +843,11 @@ class SpectrumOutput(ExperimentalOutput):
                 # dump material table
                 todump = ft.loc[input]
 
-                todump = todump.pivot(index=['Quantity', col_min, col_max],
-                                      columns='Library',
-                                      values='C/E (mean +/- σ)')
+                todump = todump.pivot(
+                    index=["Quantity", col_min, col_max],
+                    columns="Library",
+                    values="C/E (mean +/- σ)",
+                )
 
                 todump.sort_values(by=[col_min])
 
@@ -808,16 +859,16 @@ class SpectrumOutput(ExperimentalOutput):
                 # adjust columns' width
                 writer.sheets[input].set_column(0, 4, 18)
 
-        # Close the Pandas Excel writer and output the Excel file.
+            # Close the Pandas Excel writer and output the Excel file.
             writer.close()
         return
 
     def _data_collect(self, input, tallynum, quantity_CE, e_intervals):
 
         if self.multiplerun:
-            filename = self.testname + '_' + input + '_' + str(tallynum)
+            filename = self.testname + "_" + input + "_" + str(tallynum)
         else:
-            filename = self.testname + '_' + str(tallynum)
+            filename = self.testname + "_" + str(tallynum)
         # check if correspondent experimental data exists
         try:
             col_idx = self.exp_results[input][filename].columns.tolist()
@@ -830,8 +881,7 @@ class SpectrumOutput(ExperimentalOutput):
         y = self.exp_results[input][filename][col_idx[1]].values
         err = self.exp_results[input][filename][col_idx[2]].values
         # lib will be passed to the plotter
-        lib = {'x': x, 'y': y, 'err': err,
-               'ylabel': 'Experiment'}
+        lib = {"x": x, "y": y, "err": err, "ylabel": "Experiment"}
         # Get also the interpolator
         interpolator = interp1d(x, y, fill_value=0, bounds_error=False)
         # Collect the data to be plotted
@@ -841,15 +891,20 @@ class SpectrumOutput(ExperimentalOutput):
             try:  # The tally may not be defined
                 # Data for the plotter
                 values = self.results[input, lib_tag][tallynum]
-                lib = {'x': values[x_lab], 'y': values['C'],
-                       'err': values['Error'], 'ylabel': lib_name}
+                lib = {
+                    "x": values[x_lab],
+                    "y": values["C"],
+                    "err": values["Error"],
+                    "ylabel": lib_name,
+                }
                 data.append(lib)
                 # data for the table
-                table = _get_tablevalues(values, interpolator, x=x_lab,
-                                         e_intervals=e_intervals)
-                table['Quantity'] = quantity_CE
-                table['Input'] = input
-                table['Library'] = lib_name
+                table = _get_tablevalues(
+                    values, interpolator, x=x_lab, e_intervals=e_intervals
+                )
+                table["Quantity"] = quantity_CE
+                table["Input"] = input
+                table["Library"] = lib_name
                 self.tables.append(table)
             except KeyError:
                 # The tally is not defined
@@ -884,13 +939,12 @@ class SpectrumOutput(ExperimentalOutput):
             x_axis = data.columns.tolist()[0]
 
             # Delete the total value
-            data = data.set_index(x_axis).drop('total').reset_index()
-            flux, energies, errors = self._parse_data_df(data, output, x_axis,
-                                                         tallynum)
+            data = data.set_index(x_axis).drop("total").reset_index()
+            flux, energies, errors = self._parse_data_df(data, output, x_axis, tallynum)
 
-            res2[x_axis + ' [' + MCNP_UNITS[x_axis] + ']'] = energies
-            res2['C'] = flux
-            res2['Error'] = errors
+            res2[x_axis + " [" + MCNP_UNITS[x_axis] + "]"] = energies
+            res2["C"] = flux
+            res2["Error"] = errors
 
             res[tallynum] = res2
 
@@ -898,11 +952,11 @@ class SpectrumOutput(ExperimentalOutput):
 
     def _parse_data_df(self, data, output, x_axis, tallynum):
         # Generate a folder for each library
-        flux = data['Value'].values
+        flux = data["Value"].values
         energies = data[x_axis].values
-        errors = data['Error'].values
+        errors = data["Error"].values
 
-        if TALLY_NORMALIZATION[self.testname] == 'lethargy':
+        if TALLY_NORMALIZATION[self.testname] == "lethargy":
             # Energies for lethargy computation
             ergs = [1e-10]  # Additional "zero" energy for lethargy computation
             ergs.extend(energies.tolist())
@@ -911,28 +965,30 @@ class SpectrumOutput(ExperimentalOutput):
             # Different behaviour for photons and neutrons
             for tally in output.mctal.tallies:
                 if tallynum == str(tally.tallyNumber):
-                    particle = tally.particleList[np.where(
-                        tally.tallyParticles == 1)[0][0]]
-            if particle == 'Neutron':
+                    particle = tally.particleList[
+                        np.where(tally.tallyParticles == 1)[0][0]
+                    ]
+            if particle == "Neutron":
                 flux = flux / np.log((ergs[1:] / ergs[:-1]))
-            elif particle == 'Photon':
+            elif particle == "Photon":
                 flux = flux / (ergs[1:] - ergs[:-1])
 
-        elif TALLY_NORMALIZATION[self.testname] == 'energy bins':
+        elif TALLY_NORMALIZATION[self.testname] == "energy bins":
             # Energies for lethargy computation
-            data['bin'] = None
+            data["bin"] = None
 
             prev_e = 0
 
             for e in data[x_axis].unique().tolist():
-                data.loc[data[x_axis] == e, 'bin'] = e - prev_e
+                data.loc[data[x_axis] == e, "bin"] = e - prev_e
                 prev_e = e
-            flux = flux / data['bin'].values
+            flux = flux / data["bin"].values
         return flux, energies, errors
 
 
-def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='C',
-                     e_intervals=[0.1, 1, 5, 10, 20]):
+def _get_tablevalues(
+    df, interpolator, x="Energy [MeV]", y="C", e_intervals=[0.1, 1, 5, 10, 20]
+):
     """
     Given the benchmark and experimental results returns a df to compile the
     C/E table for energy intervals
@@ -958,21 +1014,25 @@ def _get_tablevalues(df, interpolator, x='Energy [MeV]', y='C',
     """
     rows = []
     df = pd.DataFrame(df)
-    df['Exp'] = interpolator(df[x])
-    df['C/E'] = df[y] / df['Exp']
+    df["Exp"] = interpolator(df[x])
+    df["C/E"] = df[y] / df["Exp"]
     # it is better here to drop inf values because it means that the
     # interpolated experiment was zero, i.e., no value available
     df.replace([np.inf, -np.inf], np.nan, inplace=True)  # replace inf with NaN
-    df.dropna(subset=['C/E'], how='all', inplace=True)  # drop the inf rows
+    df.dropna(subset=["C/E"], how="all", inplace=True)  # drop the inf rows
 
     e_min = e_intervals[0]
     for e_max in e_intervals[1:]:
         red = df[e_min < df[x]]
         red = red[red[x] < e_max]
-        mean = red['C/E'].mean()
-        std = red['C/E'].std()
-        row = {'C/E': mean, 'Standard Deviation (σ)': std,
-               'Max ' + x[0]: e_max, 'Min ' + x[0]: e_min}
+        mean = red["C/E"].mean()
+        std = red["C/E"].std()
+        row = {
+            "C/E": mean,
+            "Standard Deviation (σ)": std,
+            "Max " + x[0]: e_max,
+            "Min " + x[0]: e_min,
+        }
         rows.append(row)
         # adjourn min energy
         e_min = e_max
@@ -1005,26 +1065,23 @@ class TiaraOutput(ExperimentalOutput):
             case_tree = pd.DataFrame()
             for cont, case in enumerate(self.inputs):
                 # Get data from benchmark's cases' names
-                mat_name_list = case.split('-')
-                if mat_name_list[0] == 'cc':
-                    case_tree.loc[cont, 'Shield Material'] = 'Concrete'
-                elif mat_name_list[0] == 'fe':
-                    case_tree.loc[cont, 'Shield Material'] = 'Iron'
-                case_tree.loc[cont, 'Energy'] = int(mat_name_list[1])
-                case_tree.loc[cont, 'Shield Thickness'] = int(mat_name_list[2])
-                case_tree.loc[cont,
-                              'Library'] = self.session.conf.get_lib_name(lib)
+                mat_name_list = case.split("-")
+                if mat_name_list[0] == "cc":
+                    case_tree.loc[cont, "Shield Material"] = "Concrete"
+                elif mat_name_list[0] == "fe":
+                    case_tree.loc[cont, "Shield Material"] = "Iron"
+                case_tree.loc[cont, "Energy"] = int(mat_name_list[1])
+                case_tree.loc[cont, "Shield Thickness"] = int(mat_name_list[2])
+                case_tree.loc[cont, "Library"] = self.session.conf.get_lib_name(lib)
                 # Put tally values in dataframe
                 for tally in self.outputs[(case, lib)].mctal.tallies:
                     temp = (self.raw_data["mcnp"])[(case, lib)]
-                    val = temp[tally.tallyNumber].iloc[-1]['Value']
-                    err = temp[tally.tallyNumber].iloc[-1]['Error']
+                    val = temp[tally.tallyNumber].iloc[-1]["Value"]
+                    err = temp[tally.tallyNumber].iloc[-1]["Error"]
                     case_tree.loc[cont, tally.tallyComment] = val
-                    case_tree.loc[cont,
-                                  str(tally.tallyComment[0]) + ' Error'] = err
+                    case_tree.loc[cont, str(tally.tallyComment[0]) + " Error"] = err
             # Sort data in dataframe and assign to variable
-            indexes = ['Library', 'Shield Material', 'Energy',
-                       'Shield Thickness']
+            indexes = ["Library", "Shield Material", "Energy", "Shield Thickness"]
             case_tree.sort_values(indexes, inplace=True)
             case_tree = case_tree.set_index(indexes)
             case_tree.index.names = indexes
@@ -1049,21 +1106,20 @@ class TiaraOutput(ExperimentalOutput):
         # Delete experimental data
         com_index = self.case_tree_df.index.intersection(self.exp_data.index)
         self.exp_data = self.exp_data[self.exp_data.index.isin(com_index)]
-        self.case_tree_df = self.case_tree_df[self.case_tree_df.index.isin(
-            com_index)]
+        self.case_tree_df = self.case_tree_df[self.case_tree_df.index.isin(com_index)]
         self.case_tree_df = self.case_tree_df.reset_index()
         self.case_tree_df = self.case_tree_df.set_index(indexes)
         return
 
     def _get_conv_df(self, df):
         conv_df = pd.DataFrame()
-        for library in df.index.unique(level='Library').tolist():
+        for library in df.index.unique(level="Library").tolist():
             lib_df = df.loc[library]
             lib_err_df = lib_df.iloc[:, 1::2]
             max = lib_err_df.max().max()
             avg = lib_err_df.mean().mean()
-            conv_df.loc['Max Error', library] = max
-            conv_df.loc['Average Error', library] = avg
+            conv_df.loc["Max Error", library] = max
+            conv_df.loc["Average Error", library] = avg
         return conv_df
 
 
@@ -1074,8 +1130,8 @@ class TiaraFCOutput(TiaraOutput):
         # Get computational data structure for each library
         self.case_tree_df = self._case_tree_df_build()
 
-        off_dict = {0: 'On-axis', 20: '20 cm off-axis'}
-        columns = ['U238', 'U238 Error', 'Th232', 'Th232 Error']
+        off_dict = {0: "On-axis", 20: "20 cm off-axis"}
+        columns = ["U238", "U238 Error", "Th232", "Th232 Error"]
         new_idx_list = []
         # build computational dataframe with the same index structure as exp
         # dataframe
@@ -1083,8 +1139,13 @@ class TiaraFCOutput(TiaraOutput):
             for offset in [0, 20]:
                 new_idx = idx + (offset,)
                 new_idx_list.append(new_idx)
-        indexes = ['Library', 'Shield Material', 'Energy', 'Shield Thickness',
-                   'Axis offset']
+        indexes = [
+            "Library",
+            "Shield Material",
+            "Energy",
+            "Shield Thickness",
+            "Axis offset",
+        ]
         multi_index = pd.MultiIndex.from_tuples(new_idx_list, names=indexes)
         case_tree_df_2 = pd.DataFrame(index=multi_index, columns=columns)
         # Sort to avoid later warnings
@@ -1093,92 +1154,88 @@ class TiaraFCOutput(TiaraOutput):
         # Put values into new dataframe
         for idx in self.case_tree_df.index.values.tolist():
             for offset in [0, 20]:
-                for err_string in ['', ' Error']:
-                    val_str = off_dict[offset] + ' 238U FC' + err_string
+                for err_string in ["", " Error"]:
+                    val_str = off_dict[offset] + " 238U FC" + err_string
                     val = self.case_tree_df.loc[idx, val_str]
-                    case_tree_df_2.loc[idx + (offset,),
-                                       'U238' + err_string] = val
-                    val_str = off_dict[offset] + ' 232Th FC' + err_string
+                    case_tree_df_2.loc[idx + (offset,), "U238" + err_string] = val
+                    val_str = off_dict[offset] + " 232Th FC" + err_string
                     val = self.case_tree_df.loc[idx, val_str]
-                    case_tree_df_2.loc[idx + (offset,),
-                                       'Th232' + err_string] = val
+                    case_tree_df_2.loc[idx + (offset,), "Th232" + err_string] = val
 
         self.case_tree_df = case_tree_df_2.copy()
         # Discard experimental data without a correspondent computational data
         self._exp_comp_case_check(indexes=indexes)
         self.case_tree_df.sort_values(indexes, axis=0, inplace=True)
         # Build ExcelWriter object
-        filepath = os.path.join(self.excel_path_mcnp, 'Tiara_Fission_Cells_CE_tables.xlsx') 
-        writer = pd.ExcelWriter(filepath, engine='xlsxwriter')
+        filepath = os.path.join(
+            self.excel_path_mcnp, "Tiara_Fission_Cells_CE_tables.xlsx"
+        )
+        writer = pd.ExcelWriter(filepath, engine="xlsxwriter")
 
         # Create 1 worksheet for each energy/material combination
-        mats = self.case_tree_df.index.unique(level='Shield Material').tolist()
-        ens = self.case_tree_df.index.unique(level='Energy').tolist()
+        mats = self.case_tree_df.index.unique(level="Shield Material").tolist()
+        ens = self.case_tree_df.index.unique(level="Energy").tolist()
         for shield_material in mats:
             for energy in ens:
                 # Set MultiIndex structure of the table
                 # Set column names
                 column_names = []
-                temp_df = self.case_tree_df.loc(axis=0)[:, shield_material,
-                                                        energy].copy()
-                for fission_cell in ['U238', 'Th232']:
-                    column_names.append(('Exp', fission_cell, 'Value'))
-                    column_names.append(('Exp', fission_cell, 'Error'))
-                libs = self.case_tree_df.index.unique(level='Library').tolist()
+                temp_df = self.case_tree_df.loc(axis=0)[
+                    :, shield_material, energy
+                ].copy()
+                for fission_cell in ["U238", "Th232"]:
+                    column_names.append(("Exp", fission_cell, "Value"))
+                    column_names.append(("Exp", fission_cell, "Error"))
+                libs = self.case_tree_df.index.unique(level="Library").tolist()
                 for lib in libs:
-                    for fission_cell in ['U238', 'Th232']:
-                        column_names.append((lib, fission_cell, 'Value'))
-                        column_names.append((lib, fission_cell, 'C/E'))
-                        column_names.append((lib, fission_cell, 'C/E Error'))
-                names = ['Library', 'Fission Cell', '']
-                column_index = pd.MultiIndex.from_tuples(column_names,
-                                                         names=names)
+                    for fission_cell in ["U238", "Th232"]:
+                        column_names.append((lib, fission_cell, "Value"))
+                        column_names.append((lib, fission_cell, "C/E"))
+                        column_names.append((lib, fission_cell, "C/E Error"))
+                names = ["Library", "Fission Cell", ""]
+                column_index = pd.MultiIndex.from_tuples(column_names, names=names)
                 # Set row indexes
                 row_idx_list = []
                 for idx in temp_df.index.values.tolist():
                     row_idx_list.append((idx[-2], idx[-1]))
-                names = ['Shield Thickness', 'Axis offset']
+                names = ["Shield Thickness", "Axis offset"]
                 row_idx = pd.MultiIndex.from_tuples(row_idx_list, names=names)
 
                 # Build new dataframe with desired multindex structure
-                new_dataframe = pd.DataFrame(columns=column_index,
-                                             index=row_idx)
+                new_dataframe = pd.DataFrame(columns=column_index, index=row_idx)
                 # Fill the new dataframe with proper values
                 for idx_row in new_dataframe.index.values.tolist():
                     for idx_col in new_dataframe.columns.values.tolist():
-                        row_tuple = (shield_material, energy, idx_row[0],
-                                     idx_row[1])
-                        if idx_col[0] == 'Exp':
-                            if idx_col[2] == 'Value':
+                        row_tuple = (shield_material, energy, idx_row[0], idx_row[1])
+                        if idx_col[0] == "Exp":
+                            if idx_col[2] == "Value":
                                 val = self.exp_data.loc[row_tuple, idx_col[1]]
                                 new_dataframe.loc[idx_row, idx_col] = val
                             else:
-                                val = self.exp_data.loc[row_tuple,
-                                                        idx_col[1] + ' Error']
+                                val = self.exp_data.loc[
+                                    row_tuple, idx_col[1] + " Error"
+                                ]
                                 new_dataframe.loc[idx_row, idx_col] = val
                         else:
                             row_tuple = (idx_col[0],) + row_tuple
-                            if idx_col[2] == 'Value':
+                            if idx_col[2] == "Value":
                                 val = temp_df.loc[row_tuple, idx_col[1]]
                                 new_dataframe.loc[idx_row, idx_col] = val
-                            elif idx_col[2] == 'C/E Error':
-                                val1 = temp_df.loc[row_tuple,
-                                                   idx_col[1] + ' Error']
-                                val2 = self.exp_data.loc[row_tuple[1:],
-                                                         idx_col[1] + ' Error']
-                                ce_err = math.sqrt(val1 ** 2 + val2 ** 2)
+                            elif idx_col[2] == "C/E Error":
+                                val1 = temp_df.loc[row_tuple, idx_col[1] + " Error"]
+                                val2 = self.exp_data.loc[
+                                    row_tuple[1:], idx_col[1] + " Error"
+                                ]
+                                ce_err = math.sqrt(val1**2 + val2**2)
                                 new_dataframe.loc[idx_row, idx_col] = ce_err
                             else:
                                 val = temp_df.loc[row_tuple, idx_col[1]]
-                                val2 = self.exp_data.loc[row_tuple[1:],
-                                                         idx_col[1]]
-                                new_dataframe.loc[idx_row,
-                                                  idx_col] = val / val2
+                                val2 = self.exp_data.loc[row_tuple[1:], idx_col[1]]
+                                new_dataframe.loc[idx_row, idx_col] = val / val2
                 # Assign worksheet title and put into Excel
                 conv_df = self._get_conv_df(temp_df)
-                sheet_name = 'Tiara FC {}, {} MeV'.format(shield_material,
-                                                          str(energy))
-                sort = ['Axis offset', 'Shield Thickness']
+                sheet_name = "Tiara FC {}, {} MeV".format(shield_material, str(energy))
+                sort = ["Axis offset", "Shield Thickness"]
                 new_dataframe.sort_values(sort, axis=0, inplace=True)
                 new_dataframe = new_dataframe.drop_duplicates()
                 new_dataframe.to_excel(writer, sheet_name=sheet_name)
@@ -1192,55 +1249,54 @@ class TiaraFCOutput(TiaraOutput):
         """
 
         # Read experimental data from CONDERC Excel file
-        filepath = os.path.join(self.path_exp_res, 'FC_BS_Experimental-results-CONDERC.xlsx')
-        FC_data = {('Iron', '43'): pd.read_excel(filepath,
-                                                 sheet_name='Fission cell',
-                                                 usecols="A:E",
-                                                 skiprows=2,
-                                                 nrows=10),
-                   ('Iron', '68'): pd.read_excel(filepath,
-                                                 sheet_name='Fission cell',
-                                                 usecols="A:E",
-                                                 skiprows=16,
-                                                 nrows=10),
-                   ('Concrete', '43'): pd.read_excel(filepath,
-                                                     sheet_name='Fission cell',
-                                                     usecols="A:E",
-                                                     skiprows=30,
-                                                     nrows=8),
-                   ('Concrete', '68'): pd.read_excel(filepath,
-                                                     sheet_name='Fission cell',
-                                                     usecols="A:E",
-                                                     skiprows=42,
-                                                     nrows=8)}
+        filepath = os.path.join(
+            self.path_exp_res, "FC_BS_Experimental-results-CONDERC.xlsx"
+        )
+        FC_data = {
+            ("Iron", "43"): pd.read_excel(
+                filepath, sheet_name="Fission cell", usecols="A:E", skiprows=2, nrows=10
+            ),
+            ("Iron", "68"): pd.read_excel(
+                filepath,
+                sheet_name="Fission cell",
+                usecols="A:E",
+                skiprows=16,
+                nrows=10,
+            ),
+            ("Concrete", "43"): pd.read_excel(
+                filepath, sheet_name="Fission cell", usecols="A:E", skiprows=30, nrows=8
+            ),
+            ("Concrete", "68"): pd.read_excel(
+                filepath, sheet_name="Fission cell", usecols="A:E", skiprows=42, nrows=8
+            ),
+        }
         # Build experimental dataframe
         exp_data = pd.DataFrame()
-        index = ['Shield Material', 'Energy', 'Shield Thickness',
-                 'Axis offset']
+        index = ["Shield Material", "Energy", "Shield Thickness", "Axis offset"]
         for idx, element in FC_data.items():
             # Build a first useful structure from CONDERC data
-            element['Shield Material'] = idx[0]
-            element['Energy'] = int(idx[1])
-            element[["Shield Thickness", "Axis offset"]
-                    ] = element['Fission c./Position (shield t., axis offset)'
-                                ].str.split(",", expand=True)
-            element['Shield Thickness'] = element['Shield Thickness'].astype(
-                'int')
-            element['Axis offset'] = element['Axis offset'].astype('int')
-            element.drop('Fission c./Position (shield t., axis offset)',
-                         axis=1, inplace=True)
+            element["Shield Material"] = idx[0]
+            element["Energy"] = int(idx[1])
+            element[["Shield Thickness", "Axis offset"]] = element[
+                "Fission c./Position (shield t., axis offset)"
+            ].str.split(",", expand=True)
+            element["Shield Thickness"] = element["Shield Thickness"].astype("int")
+            element["Axis offset"] = element["Axis offset"].astype("int")
+            element.drop(
+                "Fission c./Position (shield t., axis offset)", axis=1, inplace=True
+            )
 
             element = element.set_index(index)
             element.index.names = index
             exp_data = exp_data.append(element)
         # Make exp data normalization compatible with tally outputs
-        exp_data['238 U [/1e24]'] *= 1e24
-        exp_data['232 Th [/1e24]'] *= 1e24
-        exp_data['err [%]'] /= 100
-        exp_data['err [%].1'] /= 100
+        exp_data["238 U [/1e24]"] *= 1e24
+        exp_data["232 Th [/1e24]"] *= 1e24
+        exp_data["err [%]"] /= 100
+        exp_data["err [%].1"] /= 100
         # Rename columns and sort values
-        exp_data.columns = ['U238', 'U238 Error', 'Th232', 'Th232 Error']
-        inde = ['Shield Material', 'Energy', 'Axis offset', 'Shield Thickness']
+        exp_data.columns = ["U238", "U238 Error", "Th232", "Th232 Error"]
+        inde = ["Shield Material", "Energy", "Axis offset", "Shield Thickness"]
         exp_data.sort_values(inde, axis=0, inplace=True)
         # Assign exp data variable
         self.exp_data = exp_data
@@ -1250,14 +1306,13 @@ class TiaraFCOutput(TiaraOutput):
         See ExperimentalOutput documentation
         """
         # Set plot and axes details
-        unit = '-'
-        quantity = ['On-axis C/E', 'Off-axis 20 cm C/E']
-        xlabel = 'Shield thickness [cm]'
-        f_cell_list = ['U238', 'Th232']
+        unit = "-"
+        quantity = ["On-axis C/E", "Off-axis 20 cm C/E"]
+        xlabel = "Shield thickness [cm]"
+        f_cell_list = ["U238", "Th232"]
         # Loop over shield material/energy combinations
-        mat_list = self.case_tree_df.index.unique(level='Shield Material'
-                                                  ).tolist()
-        e_list = self.case_tree_df.index.unique(level='Energy').tolist()
+        mat_list = self.case_tree_df.index.unique(level="Shield Material").tolist()
+        e_list = self.case_tree_df.index.unique(level="Energy").tolist()
 
         for shield_material in mat_list:
             for energy in e_list:
@@ -1265,16 +1320,15 @@ class TiaraFCOutput(TiaraOutput):
                 data_U_p = []
                 data_Th_p = []
                 exp_dat = self.exp_data.loc(axis=0)[shield_material, energy]
-                thick_list = exp_dat.index.unique(level='Shield Thickness'
-                                                  ).tolist()
-                off_list = exp_dat.index.unique(level='Axis offset').tolist()
+                thick_list = exp_dat.index.unique(level="Shield Thickness").tolist()
+                off_list = exp_dat.index.unique(level="Axis offset").tolist()
                 for thick in thick_list:
                     for offset in off_list:
                         idx = (thick, offset)
                         if idx not in exp_dat.index.values.tolist():
                             exp_dat.loc[idx, :] = [None] * len(exp_dat.columns)
                 exp_dat.replace(to_replace=[None], value=np.nan, inplace=True)
-                sort_idx = ['Axis offset', 'Shield Thickness']
+                sort_idx = ["Axis offset", "Shield Thickness"]
                 exp_dat.sort_values(sort_idx, axis=0, inplace=True)
                 x = np.array(thick_list)
 
@@ -1289,13 +1343,16 @@ class TiaraFCOutput(TiaraOutput):
                     for offset in off_list:
                         y_dat = exp_dat.loc(axis=0)[:, offset]
                         y[f_cell].append(y_dat[f_cell].to_numpy())
-                        err[f_cell].append(y_dat[f_cell + ' Error'].to_numpy())
+                        err[f_cell].append(y_dat[f_cell + " Error"].to_numpy())
                 # Append experimental data
-                ylabel = 'Experiment'
-                data_U = {'x': x, 'y': y['U238'], 'err': err['U238'],
-                          'ylabel': ylabel}
-                data_Th = {'x': x, 'y': y['Th232'], 'err': err['Th232'],
-                           'ylabel': ylabel}
+                ylabel = "Experiment"
+                data_U = {"x": x, "y": y["U238"], "err": err["U238"], "ylabel": ylabel}
+                data_Th = {
+                    "x": x,
+                    "y": y["Th232"],
+                    "err": err["Th232"],
+                    "ylabel": ylabel,
+                }
                 data_U_p.append(data_U)
                 data_Th_p.append(data_Th)
 
@@ -1303,23 +1360,23 @@ class TiaraFCOutput(TiaraOutput):
                 for lib in self.lib[1:]:
                     # Get proper computational data
                     ylabel = self.session.conf.get_lib_name(lib)
-                    mcnp_data = self.case_tree_df.loc(axis=0)[ylabel,
-                                                              shield_material,
-                                                              energy]
+                    mcnp_data = self.case_tree_df.loc(axis=0)[
+                        ylabel, shield_material, energy
+                    ]
                     thick_list = mcnp_data.index.unique(
-                        level='Shield Thickness').tolist()
-                    off_list = mcnp_data.index.unique(level='Axis offset'
-                                                      ).tolist()
+                        level="Shield Thickness"
+                    ).tolist()
+                    off_list = mcnp_data.index.unique(level="Axis offset").tolist()
                     for thick in thick_list:
                         for offset in off_list:
                             idx = (thick, offset)
                             if idx not in mcnp_data.index.values.tolist():
                                 col = mcnp_data.columns
                                 mcnp_data.loc[idx, :] = [None] * len(col)
-                    mcnp_data.replace(to_replace=[None], value=np.nan,
-                                      inplace=True)
-                    mcnp_data.sort_values(['Axis offset', 'Shield Thickness'],
-                                          axis=0, inplace=True)
+                    mcnp_data.replace(to_replace=[None], value=np.nan, inplace=True)
+                    mcnp_data.sort_values(
+                        ["Axis offset", "Shield Thickness"], axis=0, inplace=True
+                    )
                     # Save proper computational data in variables
                     x = np.array(thick_list)
 
@@ -1333,26 +1390,42 @@ class TiaraFCOutput(TiaraOutput):
                         for offset in off_list:
                             y_dat = mcnp_data.loc(axis=0)[:, offset]
                             y[f_cell].append(y_dat[f_cell].to_numpy())
-                            err[f_cell].append(y_dat[f_cell + ' Error'
-                                                     ].to_numpy())
+                            err[f_cell].append(y_dat[f_cell + " Error"].to_numpy())
 
                     # Append computational data to data dict
-                    data_U = {'x': x, 'y': y['U238'], 'err': err['U238'],
-                              'ylabel': ylabel}
-                    data_Th = {'x': x, 'y': y['Th232'],
-                               'err': err['Th232'], 'ylabel': ylabel}
+                    data_U = {
+                        "x": x,
+                        "y": y["U238"],
+                        "err": err["U238"],
+                        "ylabel": ylabel,
+                    }
+                    data_Th = {
+                        "x": x,
+                        "y": y["Th232"],
+                        "err": err["Th232"],
+                        "ylabel": ylabel,
+                    }
                     data_U_p.append(data_U)
                     data_Th_p.append(data_Th)
-                    fission_cell = ['Uranium-238', 'Thorium-232']
+                    fission_cell = ["Uranium-238", "Thorium-232"]
 
                 for cont, data in enumerate([data_U_p, data_Th_p]):
                     # Set title and send to plotter
-                    title = 'Tiara Experiment: {} Fission Cell detector,\nEnergy: {} MeV, Shield material: {}'.format(
-                        fission_cell[cont], str(energy), shield_material)
-                    outname = 'tmp'
-                    plot = Plotter(data, title, tmp_path, outname, quantity,
-                                   unit, xlabel, self.testname)
-                    img_path = plot.plot('Waves')
+                    title = "Tiara Experiment: {} Fission Cell detector,\nEnergy: {} MeV, Shield material: {}".format(
+                        fission_cell[cont], str(energy), shield_material
+                    )
+                    outname = "tmp"
+                    plot = Plotter(
+                        data,
+                        title,
+                        tmp_path,
+                        outname,
+                        quantity,
+                        unit,
+                        xlabel,
+                        self.testname,
+                    )
+                    img_path = plot.plot("Waves")
                     atlas.insert_img(img_path)
         return atlas
 
@@ -1367,47 +1440,47 @@ class TiaraBSOutput(TiaraOutput):
         # Get main dataframe with computational data of all cases
         self.case_tree_df = self._case_tree_df_build()
         # Rename columns of mcnp dataframe properly
-        columns = ['Bare', '15 mm', '30 mm', '50 mm', '90 mm']
+        columns = ["Bare", "15 mm", "30 mm", "50 mm", "90 mm"]
         err_columns = []
         for strings in columns:
-            err_columns.append(strings + ' Error')
+            err_columns.append(strings + " Error")
         columns_mcnp = []
         for i, col in enumerate(columns):
             columns_mcnp.append(columns[i])
             columns_mcnp.append(err_columns[i])
 
-        self.case_tree_df.rename(columns=dict(zip(self.case_tree_df.columns,
-                                 columns_mcnp)), inplace=True)
-        indexes = ['Library', 'Shield Material', 'Energy', 'Shield Thickness']
+        self.case_tree_df.rename(
+            columns=dict(zip(self.case_tree_df.columns, columns_mcnp)), inplace=True
+        )
+        indexes = ["Library", "Shield Material", "Energy", "Shield Thickness"]
         self._exp_comp_case_check(indexes=indexes)
         # Create ExcelWriter object
-        filepath = os.path.join(self.excel_path_mcnp ,\
-                                'Tiara_Bonner_Spheres_CE_tables.xlsx')
-        writer = pd.ExcelWriter(filepath, engine='xlsxwriter')
+        filepath = os.path.join(
+            self.excel_path_mcnp, "Tiara_Bonner_Spheres_CE_tables.xlsx"
+        )
+        writer = pd.ExcelWriter(filepath, engine="xlsxwriter")
         # Loop over shield material/energy combinations
-        mat_list = self.case_tree_df.index.unique(level='Shield Material'
-                                                  ).tolist()
-        e_list = self.case_tree_df.index.unique(level='Energy').tolist()
+        mat_list = self.case_tree_df.index.unique(level="Shield Material").tolist()
+        e_list = self.case_tree_df.index.unique(level="Energy").tolist()
         for shield_material in mat_list:
             for energy in e_list:
                 # Select the cases with the energy/material combination
                 column_names = []
-                comp_data = self.case_tree_df.loc(axis=0)[:,
-                                                          shield_material,
-                                                          energy]
+                comp_data = self.case_tree_df.loc(axis=0)[:, shield_material, energy]
                 exp_data = self.exp_data.loc(axis=0)[shield_material, energy]
                 thick_list = exp_data.index.unique().tolist()
                 for shield_thickness in thick_list:
-                    column_names.append(('Exp', shield_thickness, 'Value'))
-                lib_list = comp_data.index.unique(level='Library').tolist()
+                    column_names.append(("Exp", shield_thickness, "Value"))
+                lib_list = comp_data.index.unique(level="Library").tolist()
                 for lib in lib_list:
                     thick_list = comp_data.index.unique(
-                        level='Shield Thickness').tolist()
+                        level="Shield Thickness"
+                    ).tolist()
                     for shield_thickness in thick_list:
-                        column_names.append((lib, shield_thickness, 'Value'))
-                        column_names.append((lib, shield_thickness, 'Error'))
-                        column_names.append((lib, shield_thickness, 'C/E'))
-                names = ['Library', 'Shield Thickness', '']
+                        column_names.append((lib, shield_thickness, "Value"))
+                        column_names.append((lib, shield_thickness, "Error"))
+                        column_names.append((lib, shield_thickness, "C/E"))
+                names = ["Library", "Shield Thickness", ""]
                 index = pd.MultiIndex.from_tuples(column_names, names=names)
 
                 # Create new dataframe with the MultiIndex structure
@@ -1416,29 +1489,30 @@ class TiaraBSOutput(TiaraOutput):
                 # Add the proper values in the new dataframe
                 for idx_row in new_dataframe.index.values.tolist():
                     for idx_col in new_dataframe.columns.values.tolist():
-                        if idx_col[0] == 'Exp':
+                        if idx_col[0] == "Exp":
                             val = exp_data.loc[idx_col[1], idx_row]
                             new_dataframe.loc[idx_row, idx_col] = val
                         else:
-                            row_tuple = (idx_col[0], shield_material, energy,
-                                         idx_col[1])
-                            if idx_col[2] == 'Value':
+                            row_tuple = (
+                                idx_col[0],
+                                shield_material,
+                                energy,
+                                idx_col[1],
+                            )
+                            if idx_col[2] == "Value":
                                 val = comp_data.loc[row_tuple, idx_row]
                                 new_dataframe.loc[idx_row, idx_col] = val
-                            elif idx_col[2] == 'Error':
-                                val = comp_data.loc[row_tuple,
-                                                    idx_row + ' Error']
+                            elif idx_col[2] == "Error":
+                                val = comp_data.loc[row_tuple, idx_row + " Error"]
                                 new_dataframe.loc[idx_row, idx_col] = val
                             else:
                                 val = comp_data.loc[row_tuple, idx_row]
                                 val2 = exp_data.loc[idx_col[1], idx_row]
-                                new_dataframe.loc[idx_row,
-                                                  idx_col] = val / val2
+                                new_dataframe.loc[idx_row, idx_col] = val / val2
 
                 # Print the dataframe in a worksheet in Excel file
                 conv_df = self._get_conv_df(comp_data)
-                sheet_name = 'Tiara {}, {} MeV' .format(shield_material,
-                                                        str(energy))
+                sheet_name = "Tiara {}, {} MeV".format(shield_material, str(energy))
                 new_dataframe.to_excel(writer, sheet_name=sheet_name)
                 conv_df.to_excel(writer, sheet_name=sheet_name, startrow=12)
         # Close the Pandas Excel writer object and output the Excel file
@@ -1451,41 +1525,39 @@ class TiaraBSOutput(TiaraOutput):
 
         """
         # Get experimental data filepath
-        filepath = os.path.join(self.path_exp_res ,\
-             'FC_BS_Experimental-results-CONDERC.xlsx')
+        filepath = os.path.join(
+            self.path_exp_res, "FC_BS_Experimental-results-CONDERC.xlsx"
+        )
         # Read exp data from CONDERC excel file
-        s_name = 'Bonner sphere'
-        BS_data = {('Iron', '43'): pd.read_excel(filepath,
-                                                 sheet_name=s_name,
-                                                 usecols="A:F", skiprows=2,
-                                                 nrows=3),
-                   ('Iron', '68'): pd.read_excel(filepath,
-                                                 sheet_name=s_name,
-                                                 usecols="A:F", skiprows=9,
-                                                 nrows=3),
-                   ('Concrete', '43'): pd.read_excel(filepath,
-                                                     sheet_name=s_name,
-                                                     usecols="A:F",
-                                                     skiprows=16,
-                                                     nrows=4),
-                   ('Concrete', '68'): pd.read_excel(filepath,
-                                                     sheet_name=s_name,
-                                                     usecols="A:F",
-                                                     skiprows=24,
-                                                     nrows=3)}
+        s_name = "Bonner sphere"
+        BS_data = {
+            ("Iron", "43"): pd.read_excel(
+                filepath, sheet_name=s_name, usecols="A:F", skiprows=2, nrows=3
+            ),
+            ("Iron", "68"): pd.read_excel(
+                filepath, sheet_name=s_name, usecols="A:F", skiprows=9, nrows=3
+            ),
+            ("Concrete", "43"): pd.read_excel(
+                filepath, sheet_name=s_name, usecols="A:F", skiprows=16, nrows=4
+            ),
+            ("Concrete", "68"): pd.read_excel(
+                filepath, sheet_name=s_name, usecols="A:F", skiprows=24, nrows=3
+            ),
+        }
 
         for key, value in BS_data.items():
             value["Shield Material"] = key[0]
-            value['Energy'] = int(key[1])
+            value["Energy"] = int(key[1])
 
         exp_data = pd.DataFrame()
         for value in BS_data.values():
             exp_data = exp_data.append(value, ignore_index=True)
 
         # Adjust experimental data dataframe's structure
-        exp_data.rename(columns={'Polyethylene t./Shield t.':
-                                 'Shield Thickness'}, inplace=True)
-        indexes = ['Shield Material', 'Energy', 'Shield Thickness']
+        exp_data.rename(
+            columns={"Polyethylene t./Shield t.": "Shield Thickness"}, inplace=True
+        )
+        indexes = ["Shield Material", "Energy", "Shield Thickness"]
         exp_data = exp_data.set_index(indexes)
         exp_data.sort_values(indexes, axis=0, inplace=True)
 
@@ -1497,10 +1569,10 @@ class TiaraBSOutput(TiaraOutput):
         See ExperimentalOutput documentation
         """
         # Set plot axes
-        unit = '-'
-        quantity = ['C/E']
-        xlabel = 'Bonner Sphere Radius [mm]'
-        x = ['Bare', '15', '30', '50', '90']
+        unit = "-"
+        quantity = ["C/E"]
+        xlabel = "Bonner Sphere Radius [mm]"
+        x = ["Bare", "15", "30", "50", "90"]
 
         # Loop over all benchmark cases (materials)
         for idx, values in self.exp_data.iterrows():
@@ -1510,17 +1582,23 @@ class TiaraBSOutput(TiaraOutput):
             err = [np.zeros(len(y))]
 
             # Append experimental data to data list (sent to plotter)
-            ylabel = 'Experiment'
-            data_p = {'x': x, 'y': y, 'err': err, 'ylabel': ylabel}
+            ylabel = "Experiment"
+            data_p = {"x": x, "y": y, "err": err, "ylabel": ylabel}
             data.append(data_p)
 
             # Loop over selected libraries
             for lib in self.lib[1:]:
                 # Get library name, assign title to the plot
                 ylabel = self.session.conf.get_lib_name(lib)
-                title = 'Tiara Experiment: Bonner Spheres detector,\nEnergy: ' + \
-                    str(idx[1]) + ' MeV, Shield material: ' + idx[0] + \
-                    ', Shield thickness: ' + str(idx[2]) + ' cm'
+                title = (
+                    "Tiara Experiment: Bonner Spheres detector,\nEnergy: "
+                    + str(idx[1])
+                    + " MeV, Shield material: "
+                    + idx[0]
+                    + ", Shield thickness: "
+                    + str(idx[2])
+                    + " cm"
+                )
 
                 # Get computational data and errors for the selected case
                 comp_idx = (ylabel,) + idx
@@ -1529,14 +1607,15 @@ class TiaraBSOutput(TiaraOutput):
                 err = [err.iloc[1::2]]
 
                 # Append computational data to data list(to be sent to plotter)
-                data_p = {'x': x, 'y': y, 'err': err, 'ylabel': ylabel}
+                data_p = {"x": x, "y": y, "err": err, "ylabel": ylabel}
                 data.append(data_p)
 
             # Send data to plotter
-            outname = 'tmp'
-            plot = Plotter(data, title, tmp_path, outname, quantity, unit,
-                           xlabel, self.testname)
-            img_path = plot.plot('Waves')
+            outname = "tmp"
+            plot = Plotter(
+                data, title, tmp_path, outname, quantity, unit, xlabel, self.testname
+            )
+            img_path = plot.plot("Waves")
             atlas.insert_img(img_path)
 
         return atlas
@@ -1552,75 +1631,72 @@ class ShieldingOutput(ExperimentalOutput):
 
         lib_names_dict = {}
         column_names = []
-        column_names.append(('Exp', 'Value'))
-        column_names.append(('Exp', 'Error'))
+        column_names.append(("Exp", "Value"))
+        column_names.append(("Exp", "Error"))
         for lib in self.lib[1:]:
             namelib = self.session.conf.get_lib_name(lib)
             lib_names_dict[namelib] = lib
-            column_names.append((namelib, 'Value'))
-            column_names.append((namelib, 'C/E'))
-            column_names.append((namelib, 'C/E Error'))
+            column_names.append((namelib, "Value"))
+            column_names.append((namelib, "C/E"))
+            column_names.append((namelib, "C/E Error"))
 
-        names = ['Library', '']
+        names = ["Library", ""]
         column_index = pd.MultiIndex.from_tuples(column_names, names=names)
-        #filepath = self.excel_path_mcnp + '\\' + self.testname + '_CE_tables.xlsx'
+        # filepath = self.excel_path_mcnp + '\\' + self.testname + '_CE_tables.xlsx'
         filepath = os.path.join(self.excel_path_mcnp, f"{self.testname}_CE_tables.xlsx")
-        writer = pd.ExcelWriter(filepath, engine='xlsxwriter')
-        #TODO Replace when other transport codes implemented. 
-        code = 'mcnp'
+        writer = pd.ExcelWriter(filepath, engine="xlsxwriter")
+        # TODO Replace when other transport codes implemented.
+        code = "mcnp"
         for mat in self.inputs:
             exp_folder = os.path.join(self.path_exp_res, mat)
-            exp_filename = self.testname + '_' + mat + '.csv'
+            exp_filename = self.testname + "_" + mat + ".csv"
             exp_filepath = os.path.join(exp_folder, exp_filename)
             exp_data_df = pd.read_csv(exp_filepath)
             # Get experimental data and errors for the selected benchmark case
-            x = exp_data_df['Depth'].values.tolist()
-            indexes = pd.Index(data=x, name='Depth [cm]')
+            x = exp_data_df["Depth"].values.tolist()
+            indexes = pd.Index(data=x, name="Depth [cm]")
             df_tab = pd.DataFrame(index=indexes, columns=column_index)
             for idx_col in df_tab.columns.values.tolist():
-                if idx_col[0] == 'Exp':
-                    if idx_col[1] == 'Value':
-                        vals = exp_data_df.loc[:, 'Reaction Rate'].tolist()
+                if idx_col[0] == "Exp":
+                    if idx_col[1] == "Value":
+                        vals = exp_data_df.loc[:, "Reaction Rate"].tolist()
                         df_tab[idx_col] = vals
                     else:
-                        vals = exp_data_df.loc[:, 'Error'].to_numpy() / 100
+                        vals = exp_data_df.loc[:, "Error"].to_numpy() / 100
                         vals = vals.tolist()
                         df_tab[idx_col] = vals
                 else:
                     t = (mat, lib_names_dict[idx_col[0]])
-                    if idx_col[1] == 'Value':
-                        if mat != 'TLD':
-                            vals = self.raw_data[code][t][4]['Value'].values[:len(x)]
+                    if idx_col[1] == "Value":
+                        if mat != "TLD":
+                            vals = self.raw_data[code][t][4]["Value"].values[: len(x)]
                         else:
-                            vals = self.raw_data[code][t][6]['Value'].values[:len(x)]
+                            vals = self.raw_data[code][t][6]["Value"].values[: len(x)]
                         df_tab[idx_col] = vals
-                    elif idx_col[1] == 'C/E Error':
-                        if mat != 'TLD':
-                            errs = self.raw_data[code][t][4]['Error'].values[:len(x)]
+                    elif idx_col[1] == "C/E Error":
+                        if mat != "TLD":
+                            errs = self.raw_data[code][t][4]["Error"].values[: len(x)]
                         else:
-                            errs = self.raw_data[code][t][6]['Error'].values[:len(x)]
+                            errs = self.raw_data[code][t][6]["Error"].values[: len(x)]
                         vals1 = np.square(errs)
-                        vals2 = np.square(exp_data_df.loc[:, 'Error'
-                                                          ].to_numpy() / 100)
+                        vals2 = np.square(exp_data_df.loc[:, "Error"].to_numpy() / 100)
                         ce_err = np.sqrt(vals1 + vals2)
                         ce_err = ce_err.tolist()
                         df_tab[idx_col] = ce_err
                     else:
-                        if mat != 'TLD':
-                            vals1 = self.raw_data[code][t][4]['Value'
-                                                        ].values[:len(x)]
+                        if mat != "TLD":
+                            vals1 = self.raw_data[code][t][4]["Value"].values[: len(x)]
                         else:
-                            vals1 = self.raw_data[code][t][6]['Value'
-                                                        ].values[:len(x)]
-                        vals2 = exp_data_df.loc[:, 'Reaction Rate'].to_numpy()
+                            vals1 = self.raw_data[code][t][6]["Value"].values[: len(x)]
+                        vals2 = exp_data_df.loc[:, "Reaction Rate"].to_numpy()
                         ratio = vals1 / vals2
                         ratio = ratio.tolist()
                         df_tab[idx_col] = vals1 / vals2
 
             # Assign worksheet title and put into Excel
             conv_df = self._get_conv_df(mat, len(x))
-            sheet = self.testname.replace('-', ' ')
-            sheet_name = sheet + ', Foil {}'.format(mat)
+            sheet = self.testname.replace("-", " ")
+            sheet_name = sheet + ", Foil {}".format(mat)
             df_tab.to_excel(writer, sheet_name=sheet_name)
             conv_df.to_excel(writer, sheet_name=sheet_name, startrow=18)
             # Close the Pandas Excel writer object and output the Excel file
@@ -1631,83 +1707,88 @@ class ShieldingOutput(ExperimentalOutput):
         See ExperimentalOutput documentation
         """
         # Set plot and axes details
-        unit = '-'
-        quantity = ['C/E']
-        xlabel = 'Shielding thickness [cm]'
+        unit = "-"
+        quantity = ["C/E"]
+        xlabel = "Shielding thickness [cm]"
         data = []
-        #TODO Replace when other transport codes implemented. 
-        code = 'mcnp'
-        for material in tqdm(self.inputs, desc='Foil: '):
+        # TODO Replace when other transport codes implemented.
+        code = "mcnp"
+        for material in tqdm(self.inputs, desc="Foil: "):
             data = []
             exp_folder = os.path.join(self.path_exp_res, material)
-            exp_filename = self.testname + '_' + material + '.csv'
+            exp_filename = self.testname + "_" + material + ".csv"
             exp_filepath = os.path.join(exp_folder, exp_filename)
             exp_data_df = pd.read_csv(exp_filepath)
             # Get experimental data and errors for the selected benchmark case
-            x = exp_data_df['Depth'].values
+            x = exp_data_df["Depth"].values
             y = []
             err = []
-            y.append(exp_data_df['Reaction Rate'].values)
-            err.append(exp_data_df['Error'].values / 100)
+            y.append(exp_data_df["Reaction Rate"].values)
+            err.append(exp_data_df["Error"].values / 100)
             # Append experimental data to data list (sent to plotter)
-            ylabel = 'Experiment'
-            data_exp = {'x': x, 'y': y, 'err': err, 'ylabel': ylabel}
+            ylabel = "Experiment"
+            data_exp = {"x": x, "y": y, "err": err, "ylabel": ylabel}
             data.append(data_exp)
 
-            if material != 'TLD':
-                title = self.testname + ' experiment, Foil: ' + material
+            if material != "TLD":
+                title = self.testname + " experiment, Foil: " + material
             else:
-                title = self.testname + \
-                    ' experiment, Gamma absorbed dose in TLD-300 detectors'
+                title = (
+                    self.testname
+                    + " experiment, Gamma absorbed dose in TLD-300 detectors"
+                )
             # Loop over selected libraries
             for lib in self.lib[1:]:
                 # Get library name, assign title to the plot
                 ylabel = self.session.conf.get_lib_name(lib)
                 y = []
                 err = []
-                if material != 'TLD':
-                    v = self.raw_data[code][(material, lib)
-                                      ][4]['Value'].values[:len(x)]
+                if material != "TLD":
+                    v = self.raw_data[code][(material, lib)][4]["Value"].values[
+                        : len(x)
+                    ]
                 else:
-                    v = self.raw_data[code][(material, lib)
-                                      ][6]['Value'].values[:len(x)]
+                    v = self.raw_data[code][(material, lib)][6]["Value"].values[
+                        : len(x)
+                    ]
                 y.append(v)
-                if material != 'TLD':
-                    v = self.raw_data[code][(material, lib)
-                                      ][4]['Error'].values[:len(x)]
+                if material != "TLD":
+                    v = self.raw_data[code][(material, lib)][4]["Error"].values[
+                        : len(x)
+                    ]
                 else:
-                    v = self.raw_data[code][(material, lib)
-                                      ][6]['Error'].values[:len(x)]
+                    v = self.raw_data[code][(material, lib)][6]["Error"].values[
+                        : len(x)
+                    ]
                 err.append(v)
                 # Append computational data to data list(to be sent to plotter)
-                data_comp = {'x': x, 'y': y, 'err': err, 'ylabel': ylabel}
+                data_comp = {"x": x, "y": y, "err": err, "ylabel": ylabel}
                 data.append(data_comp)
 
             # Send data to plotter
-            outname = 'tmp'
-            plot = Plotter(data, title, tmp_path, outname, quantity, unit,
-                           xlabel, self.testname)
-            img_path = plot.plot('Waves')
+            outname = "tmp"
+            plot = Plotter(
+                data, title, tmp_path, outname, quantity, unit, xlabel, self.testname
+            )
+            img_path = plot.plot("Waves")
             atlas.insert_img(img_path)
 
         return atlas
 
     def _get_conv_df(self, mat, size):
-        #TODO Replace when other transport codes implemented. 
-        code = 'mcnp'
+        # TODO Replace when other transport codes implemented.
+        code = "mcnp"
         conv_df = pd.DataFrame()
         for lib in self.lib[1:]:
-            if mat != 'TLD':
-                max = self.raw_data[code][(mat, lib)][4]['Error'].values[:size].max()
-                avg = self.raw_data[code][(mat, lib)][4]['Error'
-                                                   ].values[:size].mean()
+            if mat != "TLD":
+                max = self.raw_data[code][(mat, lib)][4]["Error"].values[:size].max()
+                avg = self.raw_data[code][(mat, lib)][4]["Error"].values[:size].mean()
             else:
-                max = self.raw_data[code][(mat, lib)][6]['Error'].values[:size].max()
-                avg = self.raw_data[code][(mat, lib)][6]['Error'
-                                                   ].values[:size].mean()
+                max = self.raw_data[code][(mat, lib)][6]["Error"].values[:size].max()
+                avg = self.raw_data[code][(mat, lib)][6]["Error"].values[:size].mean()
             library = self.session.conf.get_lib_name(lib)
-            conv_df.loc['Max Error', library] = max
-            conv_df.loc['Average Error', library] = avg
+            conv_df.loc["Max Error", library] = max
+            conv_df.loc["Average Error", library] = avg
         return conv_df
 
 
@@ -1720,9 +1801,8 @@ class MultipleSpectrumOutput(SpectrumOutput):
         """
         self.tables = []
         self.groups = pd.read_excel(self.cnf_path)
-        self.groups = self.groups.set_index(['Group', 'Tally', 'Input'])
-        self.group_list = self.groups.index.get_level_values(
-            'Group').unique().tolist()
+        self.groups = self.groups.set_index(["Group", "Tally", "Input"])
+        self.group_list = self.groups.index.get_level_values("Group").unique().tolist()
         for group in self.group_list:
             self._plot_tally_group(group, tmp_path, atlas)
 
@@ -1734,72 +1814,87 @@ class MultipleSpectrumOutput(SpectrumOutput):
     def _plot_tally_group(self, group, tmp_path, atlas):
 
         # Extract 'Tally' and 'Input' values for the current 'Group'
-        group_data = self.groups.xs(group, level='Group',
-                                    drop_level=False)
+        group_data = self.groups.xs(group, level="Group", drop_level=False)
         data_group = {}
         group_lab = []
-        mult_factors = group_data['Multiplying factor'].values.tolist()
+        mult_factors = group_data["Multiplying factor"].values.tolist()
         for m, idx in enumerate(group_data.index.tolist()):
             tallynum = idx[1]
             input = idx[2]
             if str(tallynum) not in self.results[input, self.lib[1]].keys():
                 continue
 
-            quantity = group_data.loc[(group, tallynum, input), 'Quantity']
-            particle = group_data.loc[(group, tallynum, input),
-                                      'Particle']
-            add_info = group_data.loc[(group, tallynum, input), 'Y Label']
-            quant_string = particle + ' ' + quantity + ' ' + add_info
-            e_int = group_data.loc[(group, tallynum, input),
-                                   'C/E X Quantity intervals']
-            e_int = e_int.split('-')
+            quantity = group_data.loc[(group, tallynum, input), "Quantity"]
+            particle = group_data.loc[(group, tallynum, input), "Particle"]
+            add_info = group_data.loc[(group, tallynum, input), "Y Label"]
+            quant_string = particle + " " + quantity + " " + add_info
+            e_int = group_data.loc[(group, tallynum, input), "C/E X Quantity intervals"]
+            e_int = e_int.split("-")
 
             # Convert the list of number strings into a list of integers
             e_intervals = [float(num) for num in e_int]
-            data_temp, xlabel = self._data_collect(input, str(tallynum),
-                                                   quant_string, e_intervals)
+            data_temp, xlabel = self._data_collect(
+                input, str(tallynum), quant_string, e_intervals
+            )
             if data_temp is None:
                 continue
             data_group[m] = data_temp
-            unit = group_data.loc[(group, tallynum, input), 'Y Unit']
+            unit = group_data.loc[(group, tallynum, input), "Y Unit"]
 
             group_lab.append(add_info)
             # Once the data is collected it is passed to the plotter
         title = self._define_title(input, particle, quantity)
-        outname = 'tmp'
-        plot = Plotter(data_group, title, tmp_path, outname, quantity,
-                       unit, xlabel, self.testname, group_num=group,
-                       add_labels=group_lab, mult_factors=mult_factors)
-        img_path = plot.plot('Experimental points group')
+        outname = "tmp"
+        plot = Plotter(
+            data_group,
+            title,
+            tmp_path,
+            outname,
+            quantity,
+            unit,
+            xlabel,
+            self.testname,
+            group_num=group,
+            add_labels=group_lab,
+            mult_factors=mult_factors,
+        )
+        img_path = plot.plot("Experimental points group")
         atlas.doc.add_heading(title, level=1)
         atlas.insert_img(img_path)
-        img_path = plot.plot('Experimental points group CE')
-        atlas.doc.add_heading(title + ' C/E', level=1)
+        img_path = plot.plot("Experimental points group CE")
+        atlas.doc.add_heading(title + " C/E", level=1)
         atlas.insert_img(img_path)
         return atlas
 
     def _define_title(self, input, particle, quantity):
 
         if not self.multiplerun:
-            title = self.testname + ', ' + particle + ' ' + quantity
-        elif self.testname == 'Tiara-BC':
-            mat = input.split('-')[0]
-            if mat == 'cc':
-                material = 'Concrete'
+            title = self.testname + ", " + particle + " " + quantity
+        elif self.testname == "Tiara-BC":
+            mat = input.split("-")[0]
+            if mat == "cc":
+                material = "Concrete"
             else:
-                material = 'Iron'
-            energy = input.split('-')[1]
-            sh_th = input.split('-')[2]
-            add_coll = input.split('-')[3]
-            title = self.testname + ', Shielding: ' + material + \
-                ', ' + sh_th + 'cm; Source energy: ' + energy + \
-                ' MeV; Additional collimator: ' + add_coll + \
-                ' cm'
-        elif self.testname == 'FNS-TOF':
-            mat = input.split('-')[0]
-            sl_th = input.split('-')[1]
-            title = self.testname + ', ' + sl_th + 'cm ' + mat + ' slab'
+                material = "Iron"
+            energy = input.split("-")[1]
+            sh_th = input.split("-")[2]
+            add_coll = input.split("-")[3]
+            title = (
+                self.testname
+                + ", Shielding: "
+                + material
+                + ", "
+                + sh_th
+                + "cm; Source energy: "
+                + energy
+                + " MeV; Additional collimator: "
+                + add_coll
+                + " cm"
+            )
+        elif self.testname == "FNS-TOF":
+            mat = input.split("-")[0]
+            sl_th = input.split("-")[1]
+            title = self.testname + ", " + sl_th + "cm " + mat + " slab"
         else:
-            title = self.testname + ', ' + particle + ' ' + \
-                quantity
+            title = self.testname + ", " + particle + " " + quantity
         return title

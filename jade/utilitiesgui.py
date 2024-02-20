@@ -22,21 +22,20 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
-from jade.matreader import SubMaterial
-import jade.inputfile as ipt
-import pandas as pd
-import xlsxwriter
-import jade.matreader as mat
-
-from tqdm import tqdm
-from jade.inputfile import D1S_Input
-
+from functools import reduce
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import xlsxwriter
+from tqdm import tqdm
 
-from functools import reduce
+import jade.inputfile as ipt
+import jade.matreader as mat
 from jade.acepyne import *
+from jade.inputfile import D1S_Input
+from jade.matreader import SubMaterial
+
 
 ###############################################################################
 # ------------------------ UTILITIES ------------------------------------------
@@ -68,26 +67,26 @@ def translate_input(session, lib, inputfile, outpath=None):
     inp.update_zaidinfo(libmanager)
     info2, _ = inp.matlist.get_info(libmanager)
 
-    newdir = os.path.join(outpath, 'Translation')
+    newdir = os.path.join(outpath, "Translation")
     if not os.path.exists(newdir):
         os.mkdir(newdir)
-    outfile = os.path.join(newdir, filename+'_translated_'+lib)
+    outfile = os.path.join(newdir, filename + "_translated_" + lib)
     inp.write(outfile)
 
     # Log production
     try:
-        info1['Fraction old'] = info1['Fraction']
-        info1['Fraction new'] = info2['Fraction']
-        perc = (info1['Fraction']-info2['Fraction'])/info1['Fraction']
-        info1['Fraction difference [%]'] = perc
-        del info1['Fraction']
+        info1["Fraction old"] = info1["Fraction"]
+        info1["Fraction new"] = info2["Fraction"]
+        perc = (info1["Fraction"] - info2["Fraction"]) / info1["Fraction"]
+        info1["Fraction difference [%]"] = perc
+        del info1["Fraction"]
 
-        outlog = os.path.join(newdir, filename+'_translated_'+lib+'_LOG.xlsx')
+        outlog = os.path.join(newdir, filename + "_translated_" + lib + "_LOG.xlsx")
 
         info1.to_excel(outlog)
     # In case at leat one entire element was not translated
     except ValueError:
-        text = '  Warning: it was impossible to produce the translation Log'
+        text = "  Warning: it was impossible to produce the translation Log"
         print(text)
         session.log.adjourn(text)
 
@@ -128,29 +127,37 @@ def print_material_info(session, filepath, outpath=None):
     except PermissionError:
         return False
 
-    inforaw, info_elem = inputfile.matlist.get_info(lib_manager, zaids=True,
-                                                    complete=True)
+    inforaw, info_elem = inputfile.matlist.get_info(
+        lib_manager, zaids=True, complete=True
+    )
     if outpath is None:
-        outpath = os.path.join(session.path_uti, 'Materials Infos')
+        outpath = os.path.join(session.path_uti, "Materials Infos")
 
     if not os.path.exists(outpath):
         os.mkdir(outpath)
 
-    outname = os.path.basename(filepath)+'_materialinfo.xlsx'
+    outname = os.path.basename(filepath) + "_materialinfo.xlsx"
     outfile = os.path.join(outpath, outname)
 
     try:
-        with pd.ExcelWriter(outfile, engine='xlsxwriter') as writer:
-            inforaw.to_excel(writer, sheet_name='Sheet1')
-            info_elem.to_excel(writer, sheet_name='Sheet2')
+        with pd.ExcelWriter(outfile, engine="xlsxwriter") as writer:
+            inforaw.to_excel(writer, sheet_name="Sheet1")
+            info_elem.to_excel(writer, sheet_name="Sheet2")
     except xlsxwriter.exceptions.FileCreateError:
         return False
 
     return True
 
 
-def generate_material(session, sourcefile, materials, percentages, newlib,
-                      fractiontype='atom', outpath=None):
+def generate_material(
+    session,
+    sourcefile,
+    materials,
+    percentages,
+    newlib,
+    fractiontype="atom",
+    outpath=None,
+):
     """
     Starting from an MCNP input, materials contained in its material list can
     be used to generate a new material combining them.
@@ -193,13 +200,18 @@ def generate_material(session, sourcefile, materials, percentages, newlib,
 
     # Collect all submaterials
     submaterials = []
-    main_header = "C Material Obtained from "+os.path.basename(sourcefile)
+    main_header = "C Material Obtained from " + os.path.basename(sourcefile)
 
     for materialname, percentage in zip(materials, percentages):
         materialname = materialname.upper()
-        percentage_str = str(round(float(percentage)*100, 2))+'%'
-        main_header = (main_header+'\nC Material: '+materialname +
-                       ' Percentage: '+percentage_str)
+        percentage_str = str(round(float(percentage) * 100, 2)) + "%"
+        main_header = (
+            main_header
+            + "\nC Material: "
+            + materialname
+            + " Percentage: "
+            + percentage_str
+        )
         material = inputfile.matlist[materialname]
         # Ensure materials have the requested fraction type
         material.switch_fraction(fractiontype, session.lib_manager)
@@ -208,41 +220,46 @@ def generate_material(session, sourcefile, materials, percentages, newlib,
         totfraction = material.get_tot_fraction()
         current_submaterials = []
         for j, submat in enumerate(material.submaterials):
-            norm_factor = float(percentage)/totfraction  # normalized & scaled
-            if fractiontype == 'mass':
+            norm_factor = float(percentage) / totfraction  # normalized & scaled
+            if fractiontype == "mass":
                 norm_factor = -norm_factor
             submat.scale_fractions(norm_factor)
             submat.update_info(session.lib_manager)
             # Add info to the header in order to back-trace the generation
-            submat.header = ('C '+materialname+', submaterial '+str(j+1)+'\n' +
-                             submat.header)
+            submat.header = (
+                "C "
+                + materialname
+                + ", submaterial "
+                + str(j + 1)
+                + "\n"
+                + submat.header
+            )
             # Drop additional keys if present
             submat.additional_keys = []
             current_submaterials.append(submat)
 
         # Change the header of the first submaterial to include the mat. one
-        new_sub_header = (material.header +
-                          current_submaterials[0].header).strip('\n')
+        new_sub_header = (material.header + current_submaterials[0].header).strip("\n")
         current_submaterials[0].header = new_sub_header
         submaterials.extend(current_submaterials)
 
     # Generate new material and matlist
-    newmat = mat.Material(None, None, 'M1', submaterials=submaterials,
-                          header=main_header)
+    newmat = mat.Material(
+        None, None, "M1", submaterials=submaterials, header=main_header
+    )
     matcard = mat.MatCardsList([newmat])
     # matcard.update_info(session.lib_manager)
 
     # Dump it
     if outpath is None:
-        outfile = os.path.join(session.path_uti, 'Generated Materials')
+        outfile = os.path.join(session.path_uti, "Generated Materials")
     else:
         outfile = outpath
     if not os.path.exists(outfile):
         os.mkdir(outfile)
-    outfile = os.path.join(outfile,
-                           os.path.basename(sourcefile)+'_new Material')
+    outfile = os.path.join(outfile, os.path.basename(sourcefile) + "_new Material")
     try:
-        with open(outfile, 'w') as writer:
+        with open(outfile, "w") as writer:
             writer.write(matcard.to_text())
     except PermissionError:
         return False
@@ -282,13 +299,12 @@ def switch_fractions(session, sourcefile, fraction_type, outpath=None):
 
     # Dump it
     if outpath is None:
-        outfile = os.path.join(session.path_uti, 'Fraction switch')
+        outfile = os.path.join(session.path_uti, "Fraction switch")
     else:
         outfile = outpath
     if not os.path.exists(outfile):
         os.mkdir(outfile)
-    outfile = os.path.join(outfile,
-                           os.path.basename(sourcefile)+'_'+fraction_type)
+    outfile = os.path.join(outfile, os.path.basename(sourcefile) + "_" + fraction_type)
 
     inputfile.write(outfile)
 
@@ -312,12 +328,12 @@ def restore_default_config(session):
     msg = """
  Are you sure you want to restore the default configuration?
  All user modification will be lost [y/n] -> """
-    ans = input_with_options(msg, ['y', 'n'])
+    ans = input_with_options(msg, ["y", "n"])
 
-    if ans == 'y':
+    if ans == "y":
         session.restore_default_settings()
     else:
-        print('\n The operation was canceled.\n')
+        print("\n The operation was canceled.\n")
 
 
 def change_ACElib_suffix():
@@ -334,15 +350,14 @@ def change_ACElib_suffix():
 
     """
     # Ask for the directory where files are contained
-    message = ' Select directory containing ACE files: '
+    message = " Select directory containing ACE files: "
     folder = select_inputfile(message)
 
     # Ask for the suffix
-    old = input(' Suffix to be changed (e.g. 99c): ')
-    new = input(' New suffix to be applied (e.g. 98c): ')
+    old = input(" Suffix to be changed (e.g. 99c): ")
+    new = input(" New suffix to be applied (e.g. 98c): ")
 
-    newfolder = os.path.join(os.path.dirname(folder),
-                             os.path.basename(folder)+'new')
+    newfolder = os.path.join(os.path.dirname(folder), os.path.basename(folder) + "new")
     # Create new folder
     if not os.path.exists(newfolder):
         os.mkdir(newfolder)
@@ -350,7 +365,7 @@ def change_ACElib_suffix():
     for file in tqdm(os.listdir(folder)):
         oldfile = os.path.join(folder, file)
         newfile = os.path.join(newfolder, file)
-        with open(oldfile, 'r') as infile, open(newfile, 'w') as outfile:
+        with open(oldfile, "r") as infile, open(newfile, "w") as outfile:
             counter = 0
             try:
                 for line in infile:
@@ -361,7 +376,7 @@ def change_ACElib_suffix():
                     else:
                         outfile.write(line)
             except UnicodeDecodeError:
-                print('Decode error in '+file)
+                print("Decode error in " + file)
 
 
 def get_reaction_file(session, outpath=None):
@@ -384,7 +399,7 @@ def get_reaction_file(session, outpath=None):
 
     """
     # Select the input file
-    message = ' Please select a D1S input file: '
+    message = " Please select a D1S input file: "
     filepath = select_inputfile(message)
     # Select the library
     lib = session.lib_manager.select_lib()
@@ -392,9 +407,9 @@ def get_reaction_file(session, outpath=None):
     # Generate a D1S input
     inputfile = D1S_Input.from_text(filepath)
     reactionfile = inputfile.get_reaction_file(session.lib_manager, lib)
-    reactionfile.name = inputfile.name+'_react'+lib
+    reactionfile.name = inputfile.name + "_react" + lib
     if outpath is None:
-        outpath = os.path.join(session.path_uti, 'Reactions')
+        outpath = os.path.join(session.path_uti, "Reactions")
     # Dump it
     if not os.path.exists(outpath):  # first time the utilities is used
         os.mkdir(outpath)
@@ -423,15 +438,17 @@ def select_inputfile(message, max_n_tentatives=10):
     while True:
         i += 1
         if i > 10:
-            raise ValueError('Too many wrong entries.')
+            raise ValueError("Too many wrong entries.")
         inputfile = input(message)
         if os.path.exists(inputfile):
             return inputfile
         else:
-            print("""
+            print(
+                """
                   The file does not exist,
                   please select a new one
-                  """)
+                  """
+            )
 
 
 def input_with_options(message, options):
@@ -456,9 +473,11 @@ def input_with_options(message, options):
         if valid_input in options:
             return valid_input
         else:
-            print("""
+            print(
+                """
                   Please chose a valid option
-                  """)
+                  """
+            )
 
 
 def clean_runtpe(root):
@@ -509,7 +528,7 @@ def _rmv_runtpe_file(folder):
         if selected is None or len(file) < len(selected):
             selected = file
     # get the runtpe name
-    runtpe = selected+'r'
+    runtpe = selected + "r"
     filepath = os.path.join(folder, runtpe)
 
     # If found remove the file
@@ -524,91 +543,93 @@ def _rmv_runtpe_file(folder):
 
 def print_XS_EXFOR(session):
     # dict of ENDF reactions MT number
-    ENDF_X4_dict = {1: "N,TOT",
-                    2: "N,EL",
-                    3: "N,NON",
-                    4: "N,INL",
-                    5: "N,X",
-                    10: "N,TOT",
-                    11: "N,2N+D",
-                    16: "N,2N",
-                    17: "N,3N",
-                    18: "N,F",
-                    19: "N,F'",
-                    20: "N,N+F",
-                    21: "N,2N+F",
-                    22: "N,N+A",
-                    23: "N,N+3A",
-                    24: "N,2N+A",
-                    25: "N,3N+A",
-                    27: "N,ABS",
-                    28: "N,N+P",
-                    29: "N,N+2A",
-                    32: "N,N+D",
-                    33: "N,N+T",
-                    34: "N,N+HE3",
-                    37: "N,4N",
-                    38: "N,3N+F",
-                    41: "N,2N+P",
-                    42: "N,3N+P",
-                    44: "N,N+2P",
-                    45: "N,N+P+A",
-                    51: "N,N'",
-                    89: "N,N'",
-                    90: "N,N'",
-                    91: "N,N'",
-                    101: "N,DIS",
-                    102: "N,G",
-                    103: "N,P",
-                    104: "N,D",
-                    105: "N,T",
-                    106: "N,HE3",
-                    107: "N,A",
-                    108: "N,2A",
-                    111: "N,2P",
-                    112: "N,P+A",
-                    113: "N,T+2A",
-                    115: "N,P+D",
-                    116: "N,P+T",
-                    117: "N,D+A",
-                    151: "N,RES",
-                    201: "N,XN",
-                    202: "N,XG",
-                    203: "N,XP",
-                    204: "N,XD",
-                    205: "N,XT",
-                    206: "N,XHE3",
-                    207: "N,XA",
-                    208: "N,XPi_pos",
-                    209: "N,XPi_0",
-                    210: "N,XPi_neg",
-                    444: "damage-energy production",
-                    452: "N,nu_tot",
-                    454: "N,ind_FY",
-                    455: "N,nu_d",
-                    456: "N,nu_p",
-                    458: "N,rel_fis",
-                    459: "FY_cum",
-                    460: "N,g_bdf",
-                    600: "N,P",
-                    601: "N,P'",
-                    649: "N,P'",
-                    650: "N,D",
-                    651: "N,D'",
-                    699: "N,D'",
-                    700: "N,T",
-                    701: "N,T'",
-                    749: "N,T'",
-                    750: "N,HE3'",
-                    751: "N,HE3'",
-                    799: "N,HE3'",
-                    800: "N,A",
-                    801: "N,A'",
-                    849: "N,A'",
-                    875: "N,2N",
-                    876: "N,2N",
-                    889: "N,2N",
-                    890: "N,2N"}
+    ENDF_X4_dict = {
+        1: "N,TOT",
+        2: "N,EL",
+        3: "N,NON",
+        4: "N,INL",
+        5: "N,X",
+        10: "N,TOT",
+        11: "N,2N+D",
+        16: "N,2N",
+        17: "N,3N",
+        18: "N,F",
+        19: "N,F'",
+        20: "N,N+F",
+        21: "N,2N+F",
+        22: "N,N+A",
+        23: "N,N+3A",
+        24: "N,2N+A",
+        25: "N,3N+A",
+        27: "N,ABS",
+        28: "N,N+P",
+        29: "N,N+2A",
+        32: "N,N+D",
+        33: "N,N+T",
+        34: "N,N+HE3",
+        37: "N,4N",
+        38: "N,3N+F",
+        41: "N,2N+P",
+        42: "N,3N+P",
+        44: "N,N+2P",
+        45: "N,N+P+A",
+        51: "N,N'",
+        89: "N,N'",
+        90: "N,N'",
+        91: "N,N'",
+        101: "N,DIS",
+        102: "N,G",
+        103: "N,P",
+        104: "N,D",
+        105: "N,T",
+        106: "N,HE3",
+        107: "N,A",
+        108: "N,2A",
+        111: "N,2P",
+        112: "N,P+A",
+        113: "N,T+2A",
+        115: "N,P+D",
+        116: "N,P+T",
+        117: "N,D+A",
+        151: "N,RES",
+        201: "N,XN",
+        202: "N,XG",
+        203: "N,XP",
+        204: "N,XD",
+        205: "N,XT",
+        206: "N,XHE3",
+        207: "N,XA",
+        208: "N,XPi_pos",
+        209: "N,XPi_0",
+        210: "N,XPi_neg",
+        444: "damage-energy production",
+        452: "N,nu_tot",
+        454: "N,ind_FY",
+        455: "N,nu_d",
+        456: "N,nu_p",
+        458: "N,rel_fis",
+        459: "FY_cum",
+        460: "N,g_bdf",
+        600: "N,P",
+        601: "N,P'",
+        649: "N,P'",
+        650: "N,D",
+        651: "N,D'",
+        699: "N,D'",
+        700: "N,T",
+        701: "N,T'",
+        749: "N,T'",
+        750: "N,HE3'",
+        751: "N,HE3'",
+        799: "N,HE3'",
+        800: "N,A",
+        801: "N,A'",
+        849: "N,A'",
+        875: "N,2N",
+        876: "N,2N",
+        889: "N,2N",
+        890: "N,2N",
+    }
     MT_to_print = []
     libs_to_print = []
 
@@ -617,34 +638,39 @@ def print_XS_EXFOR(session):
 
     # choose ZAI to print
     while flag is True:
-        isotope_zai = input(' Enter nuclide ZAID (e.g. 6012): ')
-        awr_key = list(session.lib_manager.data['mcnp'].values())[0].awr.keys()
+        isotope_zai = input(" Enter nuclide ZAID (e.g. 6012): ")
+        awr_key = list(session.lib_manager.data["mcnp"].values())[0].awr.keys()
         isot_list = list(awr_key)
         if type(isotope_zai) is not str or isotope_zai not in isot_list:
-            print(' Enter a valid ZAID')
+            print(" Enter a valid ZAID")
             continue
         if int(isotope_zai[-3:]) > 260:
-            print(' Cannot print metastable nuclides')
+            print(" Cannot print metastable nuclides")
             continue
         else:
             break
 
     # choose reactions MT to print
     while flag is True:
-        mt_num = input(' Enter reaction MT(s) (Enter "continue" once finished, \
-                       "print" to list reactions MT): ')
+        mt_num = input(
+            ' Enter reaction MT(s) (Enter "continue" once finished, \
+                       "print" to list reactions MT): '
+        )
         if mt_num == "continue":
             break
         if mt_num == "print":
-            print("{" + "\n".join("{!r}: {!r},".format(k, v)
-                  for k, v in ENDF_X4_dict.items()) + "}")
+            print(
+                "{"
+                + "\n".join("{!r}: {!r},".format(k, v) for k, v in ENDF_X4_dict.items())
+                + "}"
+            )
             continue
         try:
             mt_num = int(mt_num)
         except ValueError:
-            print(' Enter a number!')
+            print(" Enter a number!")
         if mt_num not in list(ENDF_X4_dict.keys()):
-            print(' Enter a valid MT ID')
+            print(" Enter a valid MT ID")
             continue
         else:
             MT_to_print.append(mt_num)
@@ -654,70 +680,84 @@ def print_XS_EXFOR(session):
         print(session.conf.lib.index.tolist())
         msg = ' Enter library/libraries suffix to compare (Enter "continue" once finished): '
         lib_compare = input(msg)
-        if lib_compare == 'continue':
+        if lib_compare == "continue":
             break
         if lib_compare not in session.conf.lib.index.tolist():
-            print(' Enter a library present in CONFIG')
+            print(" Enter a library present in CONFIG")
             continue
-        elif lib_compare != 'continue':
+        elif lib_compare != "continue":
             libs_to_print.append(lib_compare)
 
     # Check for experimental data package
     while flag is True:
-        exp_data_flag = input(' Do you want to plot experimental data?(y/n) ')
-        if exp_data_flag == 'y':
+        exp_data_flag = input(" Do you want to plot experimental data?(y/n) ")
+        if exp_data_flag == "y":
             try:
                 from x4i3 import exfor_manager
             except ModuleNotFoundError:
-                print('Experimental data package not installed')
+                print("Experimental data package not installed")
                 exp_flag = False
                 break
             exp_flag = True
             break
-        elif exp_data_flag == 'n':
+        elif exp_data_flag == "n":
             exp_flag = False
             break
         else:
             print(' please select one between "y" or "n"')
 
     # some variables for plotting
-    markers = ['s', "8", "1", "o", "v", "^", "<", ">", 'x', '2', '*', 'd', 'h',
-               '4']
-    fill_markers = ['s', '8', ".", "o", "v", "^", "<", ">", '*', 'd', 'h']
-    colors = ['m', 'r', 'c', 'b', 'k', '#BBF90F', '#FFFF00', 'm', 'r', 'c',
-              'b', 'k', '#BBF90F', '#FFFF00']
+    markers = ["s", "8", "1", "o", "v", "^", "<", ">", "x", "2", "*", "d", "h", "4"]
+    fill_markers = ["s", "8", ".", "o", "v", "^", "<", ">", "*", "d", "h"]
+    colors = [
+        "m",
+        "r",
+        "c",
+        "b",
+        "k",
+        "#BBF90F",
+        "#FFFF00",
+        "m",
+        "r",
+        "c",
+        "b",
+        "k",
+        "#BBF90F",
+        "#FFFF00",
+    ]
 
     marker_styles = {}
-    linestyles = ['-', '--', '-.', ':', (0, (3, 5, 1, 5, 1, 5))]
+    linestyles = ["-", "--", "-.", ":", (0, (3, 5, 1, 5, 1, 5))]
     for i in range(len(markers)):
         if markers[i] in fill_markers:
-            marker_styles[i] = dict(marker=markers[i], facecolors='none',
-                                    edgecolors=colors[i], zorder=3)
+            marker_styles[i] = dict(
+                marker=markers[i], facecolors="none", edgecolors=colors[i], zorder=3
+            )
         else:
-            marker_styles[i] = dict(marker=markers[i], color=colors[i],
-                                    zorder=3)
+            marker_styles[i] = dict(marker=markers[i], color=colors[i], zorder=3)
 
     elem_dict = {}
 
     # Build elements dict for visualization purposes
     for index, row in session.lib_manager.isotopes.iterrows():
-        elem = row['E']
-        z = row['Z']
+        elem = row["E"]
+        z = row["Z"]
         if z not in elem_dict.keys():
             elem_dict[z] = elem
-    isotope_name = elem_dict[int(int(isotope_zai) / 1000)
-                             ] + '-' + str(int(isotope_zai) % 1000)
-    
+    isotope_name = (
+        elem_dict[int(int(isotope_zai) / 1000)] + "-" + str(int(isotope_zai) % 1000)
+    )
+
     # Build dict of nuclear data libraries
     XS_dict = {}
     for index, row in session.conf.lib.iterrows():
         suffix = index
-        name = row['name']
-        XS_dict[suffix] = {'suffix': suffix, 'name': name}
+        name = row["name"]
+        XS_dict[suffix] = {"suffix": suffix, "name": name}
 
     # Get xsdir object and libraries folderpath
-    datapath = list(session.lib_manager.data['mcnp'].values())[0].directory
-    XSDIR = list(session.lib_manager.data['mcnp'].values())[0]
+    datapath = list(session.lib_manager.data["mcnp"].values())[0].directory
+    XSDIR = list(session.lib_manager.data["mcnp"].values())[0]
 
     err_flag = 0
     bookXS = {}
@@ -730,39 +770,44 @@ def print_XS_EXFOR(session):
             bookXS[key] = {"suffix": suffix, "name": name}
 
     for i in bookXS.keys():
-        bookXS[i]['ZAID'] = isotope_zai + '.' + bookXS[i]['suffix']
-    
-    for j in bookXS.keys():
-        for i in XSDIR.tables:
-            if bookXS[j]['ZAID'] == i.name:
-                bookXS[j]['datapath'] = i.filename.replace("/", "\\")
+        bookXS[i]["ZAID"] = isotope_zai + "." + bookXS[i]["suffix"]
 
     for j in bookXS.keys():
-        if 'datapath' in bookXS[j]:
+        for i in XSDIR.tables:
+            if bookXS[j]["ZAID"] == i.name:
+                bookXS[j]["datapath"] = i.filename.replace("/", "\\")
+
+    for j in bookXS.keys():
+        if "datapath" in bookXS[j]:
             # Check for missing acefiles in JEFF4.0T1
             try:
-                lib_path = datapath + "\\" + bookXS[j]['datapath']
-                bookXS[j]['dataXS'] = Library(lib_path)
+                lib_path = datapath + "\\" + bookXS[j]["datapath"]
+                bookXS[j]["dataXS"] = Library(lib_path)
             except FileNotFoundError:
-                print('File not Found Error: ACEfile of nuclide \
-                      ' + isotope_name + ' not found in library ' + j + '\n')
+                print(
+                    "File not Found Error: ACEfile of nuclide \
+                      "
+                    + isotope_name
+                    + " not found in library "
+                    + j
+                    + "\n"
+                )
                 err_flag = 1
                 break
             # Check for some bad ENDF-VIII not working acefiles
             try:
-                bookXS[j]['dataXS'].read()
+                bookXS[j]["dataXS"].read()
             except ValueError:
-                s = 'Error in reading ACEfile of nuclide ' + isotope_zai + '\n'
+                s = "Error in reading ACEfile of nuclide " + isotope_zai + "\n"
                 print(s)
                 err_flag = 1
                 break
             # Check for ENDF-VIII acefiles
-            if j != '00c':
-                bookXS[j]['dataT'] = bookXS[j]['dataXS'
-                                               ].tables[bookXS[j]['ZAID']]
+            if j != "00c":
+                bookXS[j]["dataT"] = bookXS[j]["dataXS"].tables[bookXS[j]["ZAID"]]
             else:
-                ace_zaid = bookXS[j]['ZAID'].split('.')[0] + '.800nc'
-                bookXS[j]['dataT'] = bookXS[j]['dataXS'].tables[ace_zaid]
+                ace_zaid = bookXS[j]["ZAID"].split(".")[0] + ".800nc"
+                bookXS[j]["dataT"] = bookXS[j]["dataXS"].tables[ace_zaid]
 
     if err_flag == 1:
         return
@@ -770,45 +815,61 @@ def print_XS_EXFOR(session):
     for i in MT_to_print:
         if i != 1:
             for k, j in enumerate(bookXS.keys()):
-                if 'datapath' in bookXS[j]:
+                if "datapath" in bookXS[j]:
                     try:
-                        MT = 'MT'+str(i)
-                        bookXS[j][MT] = bookXS[j]['dataT'].reactions[i]
+                        MT = "MT" + str(i)
+                        bookXS[j][MT] = bookXS[j]["dataT"].reactions[i]
                     # Don't print if MT is not present in library
                     except KeyError:
-                        s = "Channel MT" + str(i) + ' ' + \
-                            'not present in ' + bookXS[j]['name']
+                        s = (
+                            "Channel MT"
+                            + str(i)
+                            + " "
+                            + "not present in "
+                            + bookXS[j]["name"]
+                        )
                         print(s)
                         continue
 
     # Get experimental data
     for i in MT_to_print:
-        MT = 'MT' + str(i)
+        MT = "MT" + str(i)
         legend_plot = []
         data_list = []
         plt.figure(figsize=(18, 11))
         if i != 444 and exp_flag is True:
             db = exfor_manager.X4DBManagerDefault()
-            iso_reac_exfor_data = db.retrieve(target=isotope_name,
-                                              reaction=ENDF_X4_dict[i],
-                                              quantity='SIG')
+            iso_reac_exfor_data = db.retrieve(
+                target=isotope_name, reaction=ENDF_X4_dict[i], quantity="SIG"
+            )
             for entry_key, entry in iso_reac_exfor_data.items():
                 datasets = entry.getSimplifiedDataSets()
                 for subentry_key, subentry in datasets.items():
-                    if subentry.simplified is True and isinstance(subentry.reaction[0].quantity, list) and len(subentry.reaction[0].quantity) == 1 and subentry.reaction[0].quantity[0] == 'SIG': # and len(subentry.reaction[0]) == 2 and subentry.reaction[0] == 'SIG':
+                    if (
+                        subentry.simplified is True
+                        and isinstance(subentry.reaction[0].quantity, list)
+                        and len(subentry.reaction[0].quantity) == 1
+                        and subentry.reaction[0].quantity[0] == "SIG"
+                    ):  # and len(subentry.reaction[0]) == 2 and subentry.reaction[0] == 'SIG':
                         x_subentry = []
                         y_subentry = []
-                        en_idx = datasets[subentry_key].labels.index('Energy')
-                        data_idx = datasets[subentry_key].labels.index('Data')
+                        en_idx = datasets[subentry_key].labels.index("Energy")
+                        data_idx = datasets[subentry_key].labels.index("Data")
                         for rows in subentry.data:
                             x_subentry.append(rows[en_idx])
                             y_subentry.append(rows[data_idx])
-                        data_list.append((x_subentry, y_subentry,
-                                          len(x_subentry),
-                                          subentry.author[0] + ', \
-                                            ' + subentry.year))
-            sorted_data_list = sorted(data_list, key=lambda x: x[2],
-                                      reverse=True)
+                        data_list.append(
+                            (
+                                x_subentry,
+                                y_subentry,
+                                len(x_subentry),
+                                subentry.author[0]
+                                + ", \
+                                            "
+                                + subentry.year,
+                            )
+                        )
+            sorted_data_list = sorted(data_list, key=lambda x: x[2], reverse=True)
 
         # plot acefiles reactions
         for k, j in enumerate(bookXS.keys()):
@@ -816,28 +877,34 @@ def print_XS_EXFOR(session):
                 # should not occur
                 # by default more than 4 libraries cannot be required
                 break
-            if MT == 'MT1' and bookXS[j]['suffix'] in libs_to_print and 'datapath' in bookXS[j]:
-                X = bookXS[j]['dataT'].energy
-                y_set = bookXS[j]['dataT'].sigma_t
+            if (
+                MT == "MT1"
+                and bookXS[j]["suffix"] in libs_to_print
+                and "datapath" in bookXS[j]
+            ):
+                X = bookXS[j]["dataT"].energy
+                y_set = bookXS[j]["dataT"].sigma_t
                 if len(X) == len(y_set):
-                    legend_plot.append(bookXS[j]['name'])
-                    plt.plot(X, y_set, linestyle=linestyles[k],
-                             linewidth=4, zorder=2)
+                    legend_plot.append(bookXS[j]["name"])
+                    plt.plot(X, y_set, linestyle=linestyles[k], linewidth=4, zorder=2)
                 else:
                     # x and y axis nor od same length
-                    print(isotope_zai + ': x and y axis nor od same length\n')
+                    print(isotope_zai + ": x and y axis nor od same length\n")
                     continue
 
-            elif MT in bookXS[j] and bookXS[j]['suffix'] in libs_to_print and 'datapath' in bookXS[j]:
-                r = bookXS[j]['dataT'].reactions[i]
-                X = bookXS[j]['dataT'].energy[r.IE:]
+            elif (
+                MT in bookXS[j]
+                and bookXS[j]["suffix"] in libs_to_print
+                and "datapath" in bookXS[j]
+            ):
+                r = bookXS[j]["dataT"].reactions[i]
+                X = bookXS[j]["dataT"].energy[r.IE :]
                 y_set = r.sigma
                 if len(X) == len(y_set):
-                    legend_plot.append(bookXS[j]['name'])
-                    plt.plot(X, y_set, linestyle=linestyles[k], linewidth=4,
-                             zorder=2)
+                    legend_plot.append(bookXS[j]["name"])
+                    plt.plot(X, y_set, linestyle=linestyles[k], linewidth=4, zorder=2)
                 else:
-                    print(isotope_zai + ': x and y axis are not of the same length\n')
+                    print(isotope_zai + ": x and y axis are not of the same length\n")
                     continue
 
         # plot exfor data
@@ -847,28 +914,32 @@ def print_XS_EXFOR(session):
                     break
                 else:
                     legend_plot.append(elem[3])
-                    plt.scatter(sorted_data_list[idx][0],
-                                sorted_data_list[idx][1],
-                                s=135, **marker_styles[idx], linewidth=2)
+                    plt.scatter(
+                        sorted_data_list[idx][0],
+                        sorted_data_list[idx][1],
+                        s=135,
+                        **marker_styles[idx],
+                        linewidth=2
+                    )
 
         # Skip if no data found for the reaction
         if not legend_plot:
             plt.close()
-            print('No data to print for ' + MT + '\n')
+            print("No data to print for " + MT + "\n")
             continue
 
         # Plot visualization
         else:
             plt.grid(visible=True)
-            plt.xscale('log')
-            plt.yscale('log')
-            plt.legend(legend_plot, loc="lower left", fontsize=10,
-                       markerscale=0.5)
+            plt.xscale("log")
+            plt.yscale("log")
+            plt.legend(legend_plot, loc="lower left", fontsize=10, markerscale=0.5)
             plt.xlabel("Energy (MeV)", fontsize=12)
             plt.ylabel("$\sigma$ (barn)", fontsize=12)
             plt.xticks(fontsize=12)
             plt.yticks(fontsize=12)
-            plt.title(isotope_name + ' ' + MT + ' (' + ENDF_X4_dict[i] + ')',
-                      fontsize=12)
+            plt.title(
+                isotope_name + " " + MT + " (" + ENDF_X4_dict[i] + ")", fontsize=12
+            )
             plt.show(block=False)
-            print(' Cross Section printed')
+            print(" Cross Section printed")

@@ -11,14 +11,19 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-20.04, ubuntu-latest]
-        #os: [ubuntu-latest, ubuntu-20.04]
-        python-version: ["3.8", "3.9", "3.10"]
-        #python-version: ["3.10"]
-        include:
-          - os: ubuntu-20.04
-            python-version: "3.6"
-          - os: ubuntu-20.04
-            python-version: "3.7"
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        full-test:
+          - ${{ contains(github.ref, 'master') || contains(github.ref, 'main') || startsWith(github.ref, 'refs/heads/release') }}
+        exclude:
+          - full-test: false
+            python-version: "3.10"
+          - full-test: false
+            python-version: "3.9"
+          - full-test: false
+            python-version: "3.8"
+          - full-test: false
+            os: "ubuntu-20.04"
+      fail-fast: false
     runs-on: ${{ matrix.os }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -55,17 +60,24 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           source /usr/local/Modules/init/sh
-          pytest --cov | tee pytest_output.log
+          pytest --cov=. --cov-report html -cov-config=.coveragerc | tee pytest_output.log
 
       # Activate environment and run pytest
       - name: Testing - Windows
         if: runner.os == 'Windows'
         run: |
-          pytest --cov | tee pytest_output.log
+          pytest --cov=. --cov-report html -cov-config=.coveragerc | tee pytest_output.log
 
-      - name: Archive results
+      - name: Archive test results
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: pytest_output_${{matrix.os}}_${{matrix.python-version}}.log
           path: pytest_output.log
+      
+      - name: Archive test coverage
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: htmlcov${{matrix.os}}_${{matrix.python-version}}
+          path: htmlcov/

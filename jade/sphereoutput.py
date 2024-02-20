@@ -21,6 +21,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 
 # import pythoncom
 import math
@@ -28,9 +29,11 @@ import os
 import shutil
 import sys
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 import pandas as pd
-import xlsxwriter
+import openpyxl
 
 # import openpyxl
 # from openpyxl.utils.dataframe import dataframe_to_rows
@@ -41,10 +44,14 @@ import jade.atlas as at
 import jade.excelsupport as exsupp
 import jade.plotter as plotter
 from jade.output import BenchmarkOutput, MCNPoutput, OpenMCOutput
+from jade.configuration import Configuration
+
+if TYPE_CHECKING:
+    from jade.main import Session
 
 
 class SphereOutput(BenchmarkOutput):
-    def __init__(self, lib, config, session):
+    def __init__(self, lib, config: Configuration, session: Session):
         super().__init__(lib, config, session)
 
         # Load the settings for zaids and materials
@@ -70,13 +77,13 @@ class SphereOutput(BenchmarkOutput):
         self.print_raw()
         print(" Generating plots...")
         if self.mcnp:
-            outpath = os.path.join(self.atlas_path_mcnp, 'tmp')
+            outpath = os.path.join(self.atlas_path_mcnp, "tmp")
         if self.serpent:
-            outpath = os.path.join(self.atlas_path_serpent, 'tmp')
+            outpath = os.path.join(self.atlas_path_serpent, "tmp")
         if self.openmc:
-            outpath = os.path.join(self.atlas_path_openmc, 'tmp')
+            outpath = os.path.join(self.atlas_path_openmc, "tmp")
         if self.d1s:
-            outpath = os.path.join(self.atlas_path_d1s, 'tmp')
+            outpath = os.path.join(self.atlas_path_d1s, "tmp")
         if not os.path.exists(outpath):
             os.mkdir(outpath)
         self._generate_single_plots(outpath)
@@ -101,7 +108,7 @@ class SphereOutput(BenchmarkOutput):
             for tally, title, quantity, unit in [
                 (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
                 (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
-            ]:               
+            ]:
                 print(" Plotting tally n." + str(tally))
                 for zaidnum, output in tqdm(outputs.items()):
                     title = title
@@ -187,13 +194,13 @@ class SphereOutput(BenchmarkOutput):
         # Plot everything
         print(" Generating Plots Atlas...")
         if self.mcnp:
-            outpath = os.path.join(self.atlas_path_mcnp, 'tmp')
+            outpath = os.path.join(self.atlas_path_mcnp, "tmp")
         if self.serpent:
-            outpath = os.path.join(self.atlas_path_serpent, 'tmp')
+            outpath = os.path.join(self.atlas_path_serpent, "tmp")
         if self.openmc:
-            outpath = os.path.join(self.atlas_path_openmc, 'tmp')
+            outpath = os.path.join(self.atlas_path_openmc, "tmp")
         if self.d1s:
-            outpath = os.path.join(self.atlas_path_d1s, 'tmp')
+            outpath = os.path.join(self.atlas_path_d1s, "tmp")
         if not os.path.exists(outpath):
             os.mkdir(outpath)
         self._generate_plots(libraries, allzaids, outputs, globalname, outpath)
@@ -270,7 +277,7 @@ class SphereOutput(BenchmarkOutput):
         errors = []
         stat_checks = []
         outputs = {}
-        #test_path_mcnp = os.path.join(self.test_path, "mcnp")
+        # test_path_mcnp = os.path.join(self.test_path, "mcnp")
         for folder in os.listdir(self.test_path):
             results_path = os.path.join(self.test_path, folder, "mcnp")
             pieces = folder.split("_")
@@ -530,8 +537,6 @@ class SphereOutput(BenchmarkOutput):
         # ex.wb.sheets[0].range('D1').value = lib_name
         # ex.save()
 
-    
-
     def pp_excel_comparison(self):
         """
          Compute the data and create the excel for all libraries comparisons.
@@ -562,7 +567,7 @@ class SphereOutput(BenchmarkOutput):
                 # Get results
                 comp_dfs = []
                 error_dfs = []
-                
+
                 for test_path in [
                     self.test_path[reflib],
                     self.test_path[tarlib],
@@ -617,7 +622,7 @@ class SphereOutput(BenchmarkOutput):
 
                     if iteration == 2:
                         outputs[tarlib] = outputs_lib
-                
+
                     # Generate DataFrames
                     columns.extend(["Zaid", "Zaid Name"])
                     comp_df = pd.DataFrame(results, columns=columns)
@@ -734,13 +739,23 @@ class SphereOutput(BenchmarkOutput):
                 # rangeex.options(index=True, header=True).value = absdiff
                 # ws_diff.range('D1').value = name
 
-                # # Add single pp sheets
-                # for lib in [reflib, tarlib]:
-                #     cp = self.session.state.get_path('single',
-                #                                      [lib, 'Sphere', 'Excel'])
-                #     file = os.listdir(cp)[0]
-                #     cp = os.path.join(cp, file)
-                #     ex.copy_sheets(cp)
+                # Add single pp sheets
+                current_wb = openpyxl.load_workbook(outpath)
+                for lib in [reflib, tarlib]:
+                    cp = self.session.state.get_path(
+                        "single", [lib, "Sphere", "mcnp", "excel"]
+                    )
+                    file = os.listdir(cp)[0]
+                    cp = os.path.join(cp, file)
+                    # open file
+                    single_wb = openpyxl.load_workbook(cp)
+                    for ws in single_wb.worksheets:
+                        destination = current_wb.create_sheet(ws.title + " " + lib)
+                        exsupp.copy_sheet(ws, destination)
+                    single_wb.close()
+
+                current_wb.save(outpath)
+                current_wb.close()
 
                 # ex.save()
                 # """
@@ -910,8 +925,6 @@ class SphereOutput(BenchmarkOutput):
         if self.serpent:
             pass
 
-    
-
     def print_raw(self):
         # for code in self.raw_data:
         #    for key, data in self.raw_data[code].items():
@@ -1069,7 +1082,7 @@ class SphereTallyOutput:
             tally_str = str(tally["Tally N."].iloc[0])
             if tally_str in tallies2pp:
                 tallies.append(tally)
-                
+
         for tally in tallies:
             tally_num = str(tally["Tally N."].iloc[0])
             tally_description = tally["Tally Description"].iloc[0]
@@ -1402,7 +1415,7 @@ class SphereSDDRoutput(SphereOutput):
         self.errors = {}
         self.stat_checks = {}
         if self.d1s:
-            #template = os.path.join(os.getcwd(), "templates", "SphereSDDR_single.xlsx")
+            # template = os.path.join(os.getcwd(), "templates", "SphereSDDR_single.xlsx")
             outpath = os.path.join(
                 self.excel_path_d1s, "SphereSDDR_single_" + self.lib + ".xlsx"
             )
@@ -1413,14 +1426,14 @@ class SphereSDDRoutput(SphereOutput):
             self.errors["d1s"] = errors
             self.stat_checks["d1s"] = stat_checks
             # Write excel
-            #ex = SphereExcelOutputSheet(template, outpath)
+            # ex = SphereExcelOutputSheet(template, outpath)
             # Results
-            #ex.insert_df(11, 2, results, 0, header=False)
-            #ex.insert_df(11, 2, errors, 1, header=False)
-            #ex.insert_df(9, 2, stat_checks, 2, header=True)
-            #lib_name = self.session.conf.get_lib_name(self.lib)
-            #ex.wb.sheets[0].range("E1").value = lib_name
-            #ex.save()
+            # ex.insert_df(11, 2, results, 0, header=False)
+            # ex.insert_df(11, 2, errors, 1, header=False)
+            # ex.insert_df(9, 2, stat_checks, 2, header=True)
+            # lib_name = self.session.conf.get_lib_name(self.lib)
+            # ex.wb.sheets[0].range("E1").value = lib_name
+            # ex.save()
             exsupp.sphere_sddr_single_excel_writer(
                 outpath, self.lib, results, errors, stat_checks
             )
@@ -1434,7 +1447,7 @@ class SphereSDDRoutput(SphereOutput):
         None.
 
         """
-        #template = os.path.join(os.getcwd(), "templates", "SphereSDDR_comparison.xlsx")
+        # template = os.path.join(os.getcwd(), "templates", "SphereSDDR_comparison.xlsx")
         if self.d1s:
             for reflib, tarlib, name in self.couples:
                 outpath = os.path.join(
@@ -1444,29 +1457,31 @@ class SphereSDDRoutput(SphereOutput):
 
                 # --- Write excel ---
                 # Generate the excel
-                #ex = SphereExcelOutputSheet(template, outpath)
+                # ex = SphereExcelOutputSheet(template, outpath)
                 # Prepare the copy of the comparison sheet
-                #ws_comp = ex.wb.sheets["Comparison"]
-                #ws_diff = ex.wb.sheets["Comparison (Abs diff)"]
+                # ws_comp = ex.wb.sheets["Comparison"]
+                # ws_diff = ex.wb.sheets["Comparison (Abs diff)"]
 
                 # WRITE RESULTS
                 # Percentage comparison
-                #rangeex = ws_comp.range("B11")
-                #rangeex.options(index=True, header=False).value = final
-                #ws_comp.range("E1").value = name
+                # rangeex = ws_comp.range("B11")
+                # rangeex.options(index=True, header=False).value = final
+                # ws_comp.range("E1").value = name
 
                 # Absolute difference comparison
-                #rangeex = ws_diff.range("B11")
-                #rangeex.options(index=True, header=False).value = absdiff
+                # rangeex = ws_diff.range("B11")
+                # rangeex.options(index=True, header=False).value = absdiff
 
                 # Add single pp sheets
-                #for lib in [reflib, tarlib]:
-                    #cp = self.session.state.get_path("single", [lib, "SphereSDDR", "Excel"])
-                    #file = os.listdir(cp)[0]
-                    #cp = os.path.join(cp, file)
-                    #ex.copy_sheets(cp)
+                # for lib in [reflib, tarlib]:
+                # cp = self.session.state.get_path("single", [lib, "SphereSDDR", "Excel"])
+                # file = os.listdir(cp)[0]
+                # cp = os.path.join(cp, file)
+                # ex.copy_sheets(cp)
 
-                exsupp.sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev)
+                exsupp.sphere_sddr_comp_excel_writer(
+                    outpath, name, final, absdiff, std_dev
+                )
 
     def _get_organized_output(self):
         """
@@ -1727,7 +1742,7 @@ class SphereSDDRoutput(SphereOutput):
         shutil.rmtree(outpath)
 
     def _extract_data4plots(self, zaid, mt, lib, time):
-        if self.d1s:  
+        if self.d1s:
             tallies = self.outputs["d1s"][zaid, mt, lib].tallydata
         # Extract values
         nflux = tallies[12].set_index("Energy").drop("total")
@@ -1756,13 +1771,15 @@ class SphereSDDRoutput(SphereOutput):
 
         """
         # Get results
-        #results = []
-        #errors = []
-        #stat_checks = []
+        # results = []
+        # errors = []
+        # stat_checks = []
         desc = " Parsing Outputs: "
         if self.d1s:
-            #for folder in tqdm(os.listdir(self.test_path), desc=desc):
-            outputs, results, errors, stat_checks = self._parserunmcnp(self.test_path, self.lib)
+            # for folder in tqdm(os.listdir(self.test_path), desc=desc):
+            outputs, results, errors, stat_checks = self._parserunmcnp(
+                self.test_path, self.lib
+            )
 
             self.outputs["d1s"] = outputs
 
@@ -1799,7 +1816,7 @@ class SphereSDDRoutput(SphereOutput):
             relative comparison table.
         absdiff : pd.DataFrame
             absolute comparison table.
-        std_dev: 
+        std_dev:
             comparison in std. dev. from mean table
 
         """
@@ -1816,7 +1833,7 @@ class SphereSDDRoutput(SphereOutput):
             # Collect the data
             outputs, res, err, _ = self._parserunmcnp(test_path, lib)
             results.append(res)
-            errors.append(err)    
+            errors.append(err)
             # Build the df and sort
             comp_df = pd.concat(results, axis=1).T
             error_df = pd.concat(errors, axis=1).T
@@ -1921,10 +1938,10 @@ class SphereSDDRoutput(SphereOutput):
             except KeyError:
                 # it is a simple zaid
                 zaidname = pieces[2]
-                mt = pieces[3] 
+                mt = pieces[3]
             # Get mfile
             for file in os.listdir(results_path):
-                if file[-1] == "m":                    
+                if file[-1] == "m":
                     mfile = file
                 elif file[-1] == "o":
                     ofile = file
@@ -1935,7 +1952,7 @@ class SphereSDDRoutput(SphereOutput):
 
             outputs[zaidnum, mt, lib] = output
             # Adjourn raw Data
-            #self.raw_data["mcnp"][zaidnum, mt, lib] = output.tallydata
+            # self.raw_data["mcnp"][zaidnum, mt, lib] = output.tallydata
             # Recover statistical checks
             st_ck = output.stat_checks
             # Recover results and precisions
@@ -1947,7 +1964,7 @@ class SphereSDDRoutput(SphereOutput):
             results.append(res)
             errors.append(err)
             stat_checks.append(st_ck)
-        
+
         return outputs, results, errors, stat_checks
 
     def print_raw(self):

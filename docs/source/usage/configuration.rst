@@ -36,7 +36,7 @@ MCNP executable
 
 MCNP config
    Name of the config shell script containing environment variables required for running MCNP on UNIX. 
-   By default this file should exist already in the same folder as the Config.xlsx named mcnp_config.sh.
+   By default this file should exist already in the same folder as the *Config.xlsx* named *mcnp_config.sh*.
    The main purpose of this file is to allow for switching modules and environment variables at runtime
    when performing multi-code runs, as it may be the case a different compiler is required for a specific
    code. If running either single or multiple codes with a correctly configured enviroment, or if running
@@ -50,33 +50,34 @@ Serpent config
    see MCNP_config above for more information.
 
 OpenMC executable
-   Path to OpenmC executable.
+   Path to OpenMC executable.
 
 OpenMC config
    Name of the config shell script containing environment variables required for running OpenMC on UNIX.
    see MCNP_config above for more information.
 
 D1S executable
-   Path to D1S executable (not yet implemented).
+   Path to D1S executable.
 
 D1S config
    Name of the config shell script containing environment variables required for running D1S on UNIX.
-   see MCNP_config above for more information (not yet implemented).
+   see MCNP_config above for more information.
 
 OpenMP threads
-    Specifies the number of threads to use when running OpenMP executables
+    Specifies the number of threads to use when running OpenMP. If the user is running MCNP in the command line
+    this is used to specify the number of tasks. 
 
 MPI tasks
-    Specifies how many cores to use when executing an MPI tasks
+    Specifies the number of mpi tasks to use with OpenMPI. **If the user is running in the command line this should
+    be set equal to 1.**
 
 Batch system
-    The command used to run a batch job on the current system, for example LLsubmit for LoadLeveler or sbatch
-    for SLURM. This command is required to run any calculation as a job, the code will default to a command
-    line run if left blank.
+    The command used to launch a batch job on the current system, for example *llsubmit* for LoadLeveler or *sbatch*
+    for SLURM workload managers.
 
 Batch file
     Template of the job submission script to be utilised on the users chosen system. This should match the 
-    command provided for the Batch system variable. Several default job submission scripts are provided in
+    command provided for the batch system variable. Several default job submission scripts are provided in
     the Job_Script_Template folder in the Configuration folder. Examples of the layout of these templates
     are detailed below.
 
@@ -103,7 +104,7 @@ Folder Name
 OnlyInput
     When this field is set to ``True`` the benchmark input is only generated but not run. This can be
     useful when the user wants to run the benchmark on a different hardware with respect to the
-    one where JADE is being used.
+    one where JADE is being used. If no code is specified, the default is MCNP.
 
     .. seealso::
         :ref:`externalrun`
@@ -124,7 +125,7 @@ OpenMC
     As above, runs the benchmark input for OpenMC if set to ``True``.
 
 D1S
-    As above, runs the benchmark input for D1S if set to ``True`` (NOT YET IMPLEMENTED).
+    As above, runs the benchmark input for D1S if set to ``True``.
 
 Post-Processing
     this field works exactly as the ``Run`` one but for the post-processing operations. 

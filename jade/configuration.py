@@ -129,17 +129,17 @@ class Configuration:
         # self.default_lib = lib[lib['Default'] == 'yes']['Suffix'].values[0]
 
     def run_option(self, exp=False) -> str:
-        """Allow user to specify whether to run in parallel or command line
+        """Present option of running in command line or submit as a job.
 
         Parameters
         ----------
-        self : self
-            self
+        exp : bool, optional
+            Whether an experimental benchmark, by default False
 
         Returns
         -------
         str
-            command line or submitted as a job.
+            c or s user selected option.
         """
         if exp:
             config = self.exp_default.set_index("Description")

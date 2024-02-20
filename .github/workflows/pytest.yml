@@ -60,13 +60,13 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           source /usr/local/Modules/init/sh
-          pytest --cov=. --cov-report html -cov-config=.coveragerc | tee pytest_output.log
+          pytest --cov=. --cov-report html -cov-config=jade.coveragerc | tee pytest_output.log
 
       # Activate environment and run pytest
       - name: Testing - Windows
         if: runner.os == 'Windows'
         run: |
-          pytest --cov=. --cov-report html -cov-config=.coveragerc | tee pytest_output.log
+          pytest --cov=. --cov-report html -cov-config="jade.coveragerc" | tee pytest_output.log
 
       - name: Archive test results
         if: always()

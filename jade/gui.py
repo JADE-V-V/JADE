@@ -357,21 +357,50 @@ def comploop(session: Session):
             elif len(unfinished) == 0:
                 print(" The assessment is already completed")
             else:
+                runoption = session.conf.run_option()
                 print(" Completing sphere assessment:")
                 session.log.adjourn(
                     "Assessment of: " + lib + " started", spacing=False, time=True
                 )
                 flagOk = True
-                for directory in tqdm(unfinished):
-                    path = os.path.join(motherdir, directory)
-                    name = directory + "_"
+                for code, directories in unfinished.items():
+                    for directory in tqdm(directories, desc=code):
+                        path = os.path.join(motherdir, directory, code)
+                        name = directory + "_"
+                        if code == "mcnp":
+                            flag = testrun.Test.run_mcnp(
+                                lib,
+                                session.conf,
+                                session.lib_manager,
+                                name,
+                                path,
+                                runoption=runoption,
+                            )
+                        elif code == "openmc":
+                            flag = testrun.Test.run_openmc(
+                                lib,
+                                session.conf,
+                                session.lib_manager,
+                                path,
+                                runoption=runoption,
+                            )
+                        elif code == "serpent":
+                            flag = testrun.Test.run_serpent(
+                                lib,
+                                session.conf,
+                                session.lib_manager,
+                                name,
+                                path,
+                                runoption=runoption,
+                            )
+                        else:
+                            raise ValueError("Code not recognized")
 
-                    flag = testrun.Test._runMCNP(
-                        "mcnp6", name, path, cpu=session.conf.cpu
-                    )
-                    if flag:
-                        flagOk = False
-                        session.log.adjourn(name + " reached timeout, eliminate folder")
+                        if flag:
+                            flagOk = False
+                            session.log.adjourn(
+                                name + " reached timeout, eliminate folder"
+                            )
 
                 if not flagOk:
                     print(

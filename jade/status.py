@@ -237,11 +237,14 @@ class Status:
             return None  # Not Generated
 
         unfinished = {}
-        for code in folders:
-            unfinished[code] = []
-            for zaid in folders[code]:
-                files = folders[code][zaid]
+        # loop on all zaids
+        for zaid, codes in folders.items():
+            # loop on all codes
+            for code, files in codes.items():
+                # add to the list of unfinished if not run (for each code)
                 if not self.check_test_run(files, code):
+                    if code not in unfinished:
+                        unfinished[code] = []
                     unfinished[code].append(zaid)
 
         motherdir = os.path.join(self.run_path, lib, test)

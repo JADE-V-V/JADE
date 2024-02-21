@@ -743,7 +743,7 @@ class SphereOutput(BenchmarkOutput):
                 current_wb = openpyxl.load_workbook(outpath)
                 for lib in [reflib, tarlib]:
                     cp = self.session.state.get_path(
-                        "single", [lib, "Sphere", "mcnp", "excel"]
+                        "single", [lib, "Sphere", "mcnp", "Excel"]
                     )
                     file = os.listdir(cp)[0]
                     cp = os.path.join(cp, file)
@@ -1489,6 +1489,7 @@ class SphereSDDRoutput(SphereOutput):
         """
         zaids = []
         for code, library_outputs in self.outputs.items():
+            print(library_outputs)
             for (zaidnum, mt, lib), outputslib in library_outputs.items():
                 zaids.append((zaidnum, mt))
 
@@ -1563,8 +1564,9 @@ class SphereSDDRoutput(SphereOutput):
                 title = "Gamma Leakage flux after a {} cooldown".format(time)
                 data = []
                 for lib in libraries:
+                    
                     try:  # Zaid could not be common to the libraries
-                        outp = self.outputs[zaidnum, mt, lib]
+                        outp = self.outputs["d1s"][zaidnum, mt, lib]
                     except KeyError:
                         # It is ok, simply nothing to plot here since zaid was
                         # not in library
@@ -1823,17 +1825,14 @@ class SphereSDDRoutput(SphereOutput):
         # Get results both of the reflib and tarlib
         comp_dfs = []
         error_dfs = []
-        outputs = {}
+        lib_dics = []
+        code_outputs = {}
         test_paths = [self.test_path[reflib], self.test_path[tarlib]]
         libs = [reflib, tarlib]
         for test_path, lib in zip(test_paths, libs):
-            results = []
-            errors = []
             # Extract all the series from the different reactions
             # Collect the data
-            outputs, res, err, _ = self._parserunmcnp(test_path, lib)
-            results.append(res)
-            errors.append(err)
+            outputs, results, errors, _ = self._parserunmcnp(test_path, lib)
             # Build the df and sort
             comp_df = pd.concat(results, axis=1).T
             error_df = pd.concat(errors, axis=1).T
@@ -1844,7 +1843,11 @@ class SphereSDDRoutput(SphereOutput):
                 # Add the df to the list
             comp_dfs.append(comp_df)
             error_dfs.append(error_df)
-
+            lib_dics.append(outputs)
+        for dic in lib_dics:
+            code_outputs.update(dic)    
+        print(code_outputs)
+        self.outputs["d1s"] = code_outputs
         # Consider only common zaids
         idx1 = comp_dfs[0].index
         idx2 = comp_dfs[1].index
@@ -1912,14 +1915,15 @@ class SphereSDDRoutput(SphereOutput):
 
         Returns
         -------
-        res : TYPE
-            DESCRIPTION.
-        err : TYPE
-            DESCRIPTION.
-        st_ck : TYPE
-            DESCRIPTION.
-        output : MCNPoutput
+        outputs : Dictionary
             MCNP output object
+        results : List
+            List of results dataframes
+        errors : List
+            List of errors dataframes
+        stat_checks : List
+            List of stat checks dataframes
+
 
         """
         results = []

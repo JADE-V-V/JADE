@@ -301,7 +301,9 @@ def comploop(session: Session):
 
         elif option == "assess":
             # Select and check library
-            codes = list(session.check_active_tests("Run").keys())
+            codes_run = list(session.check_active_tests("Run").keys())
+            codes_only_input = list(session.check_active_tests("OnlyInput").keys())
+            codes = list(set(codes_run + codes_only_input))
             lib = session.lib_manager.select_lib(codes)
             if lib == "back":
                 comploop(session)

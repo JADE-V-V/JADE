@@ -182,7 +182,7 @@ class Session:
         Parameters
         ----------
         action : str
-            either 'Post-Processing' or 'Run' (as in Configuration file)
+            either 'Post-Processing' or 'Run' or 'OnlyInput'(as in Configuration file)
         exp : boolean
             if True checks the experimental benchmarks. Default is False
 
@@ -192,9 +192,6 @@ class Session:
             list of active test names divided by code
 
         """
-        # validate action
-        if action not in ["Post-Processing", "Run"]:
-            raise ValueError("action must be either 'Post-Processing' or 'Run'")
         # Check Which benchmarks are to perform
         if exp:
             config = self.conf.exp_default
@@ -225,9 +222,17 @@ class Session:
                             if codename not in to_perform:
                                 to_perform[codename] = []
                             to_perform[codename].append(testname)
+                    # if the action is onlyinput, it should be checked that onlyinput
+                    # option is enabled
+                    elif action == "OnlyInput":
+                        only_input = row["OnlyInput"]
+                        if _eval_bool_config(only_input):
+                            if codename not in to_perform:
+                                to_perform[codename] = []
+                            to_perform[codename].append(testname)
                     else:
                         raise ValueError(
-                            "action must be either 'Post-Processing' or 'Run'"
+                            "action must be either 'Post-Processing', 'Run' or 'OnlyInput'"
                         )
 
         return to_perform

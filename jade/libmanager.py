@@ -173,14 +173,21 @@ class LibManager:
                         self.data[code][library] = xsdir
                     else:
                         logging.warning(
-                            "Library %s not present in XSDIR file: %s", library, path
+                            "Library %s not present in MCNP XSDIR file: %s", library, path
                         )
 
                 elif code == "openmc":
                     self.data[code][library] = OpenMCXsdir(path, self, library)
 
                 elif code == "serpent":
-                    self.data[code][library] = SerpentXsdir(path)
+                    xsdir = SerpentXsdir(path)
+                    available_libs = set(np.array(xsdir.tablenames)[:, 1])
+                    if library in available_libs:
+                        self.data[code][library] = xsdir
+                    else:
+                        logging.warning(
+                            "Library %s not present in Serpent XSDIR file: %s", library, path
+                        )
 
                 elif code == "d1s":
                     xsdir = Xsdir(path)
@@ -190,7 +197,7 @@ class LibManager:
                         self.data[code][library] = xsdir
                     else:
                         logging.warning(
-                            "Library %s not present in XSDIR file: %s", library, path
+                            "Library %s not present in D1S XSDIR file: %s", library, path
                         )
 
                 else:

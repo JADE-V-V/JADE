@@ -34,23 +34,29 @@ import jade.sphereoutput as sout
 
 
 # Files
-OUTP_SDDR = os.path.join(cp, 'TestFiles', 'sphereoutput',
-                         'SphereSDDR_11023_Na-23_102_o')
-OUTM_SDDR = os.path.join(cp, 'TestFiles', 'sphereoutput',
-                         'SphereSDDR_11023_Na-23_102_m')
+OUTP_SDDR = os.path.join(
+    cp, "TestFiles", "sphereoutput", "SphereSDDR_11023_Na-23_102_o"
+)
+OUTM_SDDR = os.path.join(
+    cp, "TestFiles", "sphereoutput", "SphereSDDR_11023_Na-23_102_m"
+)
 
 
 class MockSphereSDDRoutput(sout.SphereSDDRoutput):
     def __init__(self):
-        self.lib = '99c'
-        self.testname = 'SphereSDDR'
-        self.test_path = os.path.join(cp, 'TestFiles', 'sphereoutput',
-                                      'single_excel_sddr')
-        mat_settings = [{'num': 'M203', 'Name': 'material', 'other': 1},
-                        {'num': 'dummy', 'Name': 'dummy', 'dummy': 1}]
-        self.mat_settings = pd.DataFrame(mat_settings).set_index('num')
+        self.lib = "99c"
+        self.testname = "SphereSDDR"
+        self.test_path = os.path.join(
+            cp, "TestFiles", "sphereoutput", "single_excel_sddr"
+        )
+        mat_settings = [
+            {"num": "M203", "Name": "material", "other": 1},
+            {"num": "dummy", "Name": "dummy", "dummy": 1},
+        ]
+        self.mat_settings = pd.DataFrame(mat_settings).set_index("num")
         self.raw_data = {}
         self.outputs = {}
+        self.d1s = True
 
 
 class TestSphereSDDRoutput:
@@ -58,11 +64,33 @@ class TestSphereSDDRoutput:
 
     def test_compute_single_results(self):
 
-        cols = ['Parent', 'Parent Name', 'MT', 'F1.0', 'F2.0', 'F3.0', 'F4.0',
-                'F5.0', 'F6.0', 'D1.0', 'D2.0', 'D3.0', 'D4.0', 'D5.0',
-                'D6.0', 'H1.0', 'H2.0', 'H3.0', 'H4.0', 'H5.0', 'H6.0']
+        cols = [
+            "Parent",
+            "Parent Name",
+            "MT",
+            "F1.0",
+            "F2.0",
+            "F3.0",
+            "F4.0",
+            "F5.0",
+            "F6.0",
+            "D1.0",
+            "D2.0",
+            "D3.0",
+            "D4.0",
+            "D5.0",
+            "D6.0",
+            "H1.0",
+            "H2.0",
+            "H3.0",
+            "H4.0",
+            "H5.0",
+            "H6.0",
+        ]
 
-        results, errors, stat_checks = self.mockoutput._compute_single_results()
+        outputs, results, errors, stat_checks = (
+            self.mockoutput._compute_single_results()
+        )
         for df in [results, errors, stat_checks]:
             assert len(df) == 2
 

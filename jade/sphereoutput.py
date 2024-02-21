@@ -1564,7 +1564,7 @@ class SphereSDDRoutput(SphereOutput):
                 title = "Gamma Leakage flux after a {} cooldown".format(time)
                 data = []
                 for lib in libraries:
-                    
+
                     try:  # Zaid could not be common to the libraries
                         outp = self.outputs["d1s"][zaidnum, mt, lib]
                     except KeyError:
@@ -1755,7 +1755,9 @@ class SphereSDDRoutput(SphereOutput):
         # Memorize values
         return nflux, pflux, sddr
 
-    def _compute_single_results(self):
+    def _compute_single_results(
+        self,
+    ) -> tuple[dict[str, dict], pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """
         Compute the excel single post processing results and memorize them
 
@@ -1764,6 +1766,8 @@ class SphereSDDRoutput(SphereOutput):
 
         Returns
         -------
+        outputs: dict[str, dict]
+            dictionary of the outputs. the first level is the code level
         results : pd.DataFrame
             global excel datataframe of all values.
         errors : pd.DataFrame
@@ -1845,7 +1849,7 @@ class SphereSDDRoutput(SphereOutput):
             error_dfs.append(error_df)
             lib_dics.append(outputs)
         for dic in lib_dics:
-            code_outputs.update(dic)    
+            code_outputs.update(dic)
         print(code_outputs)
         self.outputs["d1s"] = code_outputs
         # Consider only common zaids

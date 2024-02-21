@@ -28,12 +28,11 @@ import math
 import os
 import shutil
 import sys
-
 from typing import TYPE_CHECKING
 
 import numpy as np
-import pandas as pd
 import openpyxl
+import pandas as pd
 
 # import openpyxl
 # from openpyxl.utils.dataframe import dataframe_to_rows
@@ -43,8 +42,8 @@ from xlsxwriter.utility import xl_rowcol_to_cell
 import jade.atlas as at
 import jade.excelsupport as exsupp
 import jade.plotter as plotter
-from jade.output import BenchmarkOutput, MCNPoutput, OpenMCOutput
 from jade.configuration import Configuration
+from jade.output import BenchmarkOutput, MCNPoutput, OpenMCOutput
 
 if TYPE_CHECKING:
     from jade.main import Session

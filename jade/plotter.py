@@ -25,14 +25,14 @@ import math
 import os
 
 import matplotlib.pyplot as plt
-plt.switch_backend('agg')
+
+plt.switch_backend("agg")
 import numpy as np
 import pandas as pd
 from matplotlib.lines import Line2D
 from matplotlib.markers import CARETDOWNBASE, CARETUPBASE
 from matplotlib.patches import Patch, Rectangle
-from matplotlib.ticker import (AutoLocator, AutoMinorLocator, LogLocator,
-                               MultipleLocator)
+from matplotlib.ticker import AutoLocator, AutoMinorLocator, LogLocator, MultipleLocator
 from scipy.interpolate import interp1d
 
 # ============================================================================

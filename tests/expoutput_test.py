@@ -69,3 +69,32 @@ class TestExpOutput:
         )
         self.benchoutput_comp.compare()
         assert True
+
+    def test_shieldingoutput(self, session_mock: MockUpSession):
+
+        config = session_mock.conf.exp_default.set_index("Description")
+        conf = config.iloc[7]
+        os.makedirs(session_mock.path_comparison)
+        os.makedirs(session_mock.path_single)
+        self.benchoutput_comp = expoutput.ShieldingOutput(
+            ["32c", "31c"], conf, session_mock, multiplerun=True
+        )
+        self.benchoutput_comp.compare()
+        assert True
+
+    def test_tiaraoutput(self, session_mock: MockUpSession):
+
+        config = session_mock.conf.exp_default.set_index("Description")
+        conf = config.iloc[3]
+        os.makedirs(session_mock.path_comparison)
+        os.makedirs(session_mock.path_single)
+        self.benchoutput_comp = expoutput.TiaraBSOutput(
+            ["32c", "31c"], conf, session_mock, multiplerun=True
+        )
+        self.benchoutput_comp.compare()
+        conf = config.iloc[4]
+        self.benchoutput_comp = expoutput.TiaraFCOutput(
+            ["32c", "31c"], conf, session_mock, multiplerun=True
+        )
+        self.benchoutput_comp.compare()
+        assert True

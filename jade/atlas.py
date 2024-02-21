@@ -240,7 +240,7 @@ class Atlas:
             print(e)
             print("\n it may be due to invalid characters in the file name")
 
-        # Remove PDF printing. If required, word document can be saved manually. 
+        # Remove PDF printing. If required, word document can be saved manually.
         if pdfprint:
             pass
 

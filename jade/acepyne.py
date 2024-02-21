@@ -21,6 +21,7 @@ from __future__ import division, unicode_literals
 import io
 import struct
 from bisect import bisect_right
+
 # from pyne.utils import QAWarning
 from collections import OrderedDict
 from warnings import warn

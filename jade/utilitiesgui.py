@@ -919,7 +919,7 @@ def print_XS_EXFOR(session):
                         sorted_data_list[idx][1],
                         s=135,
                         **marker_styles[idx],
-                        linewidth=2
+                        linewidth=2,
                     )
 
         # Skip if no data found for the reaction

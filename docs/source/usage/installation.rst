@@ -29,8 +29,11 @@ the installation:
   | ``pip install --upgrade pip``
   | ``pip install .``
 
-If you are developing JADE, you can use the '-e' option when installing. JADE has now been installed as 
-a command line tool and should now be initialised in the root directory as follows: 
+If you are developing JADE, you can use the '-e' option when installing and you should install the additional dev dependencies. 
+
+  | ``pip install -e . ".[dev]"``
+
+JADE has now been installed as a command line tool and should now be initialised in the root directory as follows: 
 
   | ``cd ../``
   | ``jade``

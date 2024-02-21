@@ -6,7 +6,7 @@ Untitled.ipynb
 Configuration/
 Experimental_Results/
 
-# These are generated folders for cache 
+# These are generated folders for cache
 .ipynb_checkpoints/
 __pycache__/
 *.pyc

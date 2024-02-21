@@ -21,11 +21,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
-import pandas as pd
-import openpyxl
 from copy import copy
-from xlsxwriter.utility import xl_rowcol_to_cell
+
+import openpyxl
+import pandas as pd
 from openpyxl.worksheet.worksheet import Worksheet
+from xlsxwriter.utility import xl_rowcol_to_cell
 
 # def insert_df(startrow, startcolumn, df, ws, header=True):
 #     """

@@ -21,6 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import annotations
+
 import os
 import shutil
 import subprocess
@@ -35,9 +36,9 @@ from tqdm import tqdm
 import jade.inputfile as ipt
 import jade.matreader as mat
 import jade.unix as unix
-from jade.parsersD1S import IrradiationFile, Reaction, ReactionFile
 from jade.configuration import Configuration
 from jade.libmanager import LibManager
+from jade.parsersD1S import IrradiationFile, Reaction, ReactionFile
 
 # colors
 CRED = "\033[91m"

@@ -21,7 +21,7 @@ class MockUpSession(Session):
         self.conf = Configuration(CONFIG_FILE_EXP)
         self.path_comparison = os.path.join(tmpdir, "Post-Processing", "Comparison")
         self.path_single = os.path.join(tmpdir, "Post-Processing", "Single_Libraries")
-        self.path_exp_res = os.path.join(resources, "Experimental_Results")
+        self.path_exp_res = os.path.join(resources, "ExperimentalResults")
         self.path_pp = os.path.join(tmpdir, "Post-Processing")
         self.path_run = os.path.join(resources, "Simulations")
         self.path_test = resources

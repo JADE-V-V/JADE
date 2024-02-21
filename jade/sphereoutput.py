@@ -28,12 +28,11 @@ import math
 import os
 import shutil
 import sys
-
 from typing import TYPE_CHECKING
 
 import numpy as np
-import pandas as pd
 import openpyxl
+import pandas as pd
 
 # import openpyxl
 # from openpyxl.utils.dataframe import dataframe_to_rows
@@ -43,8 +42,8 @@ from xlsxwriter.utility import xl_rowcol_to_cell
 import jade.atlas as at
 import jade.excelsupport as exsupp
 import jade.plotter as plotter
-from jade.output import BenchmarkOutput, MCNPoutput, OpenMCOutput
 from jade.configuration import Configuration
+from jade.output import BenchmarkOutput, MCNPoutput, OpenMCOutput
 
 if TYPE_CHECKING:
     from jade.main import Session
@@ -1489,7 +1488,6 @@ class SphereSDDRoutput(SphereOutput):
         """
         zaids = []
         for code, library_outputs in self.outputs.items():
-            print(library_outputs)
             for (zaidnum, mt, lib), outputslib in library_outputs.items():
                 zaids.append((zaidnum, mt))
 
@@ -1497,10 +1495,10 @@ class SphereSDDRoutput(SphereOutput):
         libs = []  # Not used
         outputs = []  # Not used
 
-        return zaids, libs, outputs
+        return libs, zaids, outputs
 
     def _generate_single_plots(self, outpath):
-        allzaids, libs, outputs = self._get_organized_output()
+        libs, allzaids, outputs = self._get_organized_output()
         globalname = self.lib
         self._generate_plots(libs, allzaids, outputs, globalname, outpath)
 
@@ -1543,6 +1541,7 @@ class SphereSDDRoutput(SphereOutput):
         fluxquantity = "Photon Flux"
         fluxunit = r"$p/(cm^2\cdot\#_S)$"
         allzaids.sort()
+        print(allzaids)
         # --- Binned plots of the gamma flux ---
         for zaidnum, mt in tqdm(allzaids, desc=" Binned flux plots"):
             # Get everything for the title of the zaid
@@ -1559,12 +1558,14 @@ class SphereSDDRoutput(SphereOutput):
                 times = self.times
             atlas.doc.add_heading(title, level=2)
 
+            print(times)
+            
             for time in times:
                 atlas.doc.add_heading("Cooldown time = {}".format(time), level=3)
                 title = "Gamma Leakage flux after a {} cooldown".format(time)
                 data = []
                 for lib in libraries:
-                    
+
                     try:  # Zaid could not be common to the libraries
                         outp = self.outputs["d1s"][zaidnum, mt, lib]
                     except KeyError:
@@ -1755,7 +1756,9 @@ class SphereSDDRoutput(SphereOutput):
         # Memorize values
         return nflux, pflux, sddr
 
-    def _compute_single_results(self):
+    def _compute_single_results(
+        self,
+    ) -> tuple[dict[str, dict], pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """
         Compute the excel single post processing results and memorize them
 
@@ -1764,6 +1767,8 @@ class SphereSDDRoutput(SphereOutput):
 
         Returns
         -------
+        outputs: dict[str, dict]
+            dictionary of the outputs. the first level is the code level
         results : pd.DataFrame
             global excel datataframe of all values.
         errors : pd.DataFrame
@@ -1845,8 +1850,7 @@ class SphereSDDRoutput(SphereOutput):
             error_dfs.append(error_df)
             lib_dics.append(outputs)
         for dic in lib_dics:
-            code_outputs.update(dic)    
-        print(code_outputs)
+            code_outputs.update(dic)        
         self.outputs["d1s"] = code_outputs
         # Consider only common zaids
         idx1 = comp_dfs[0].index

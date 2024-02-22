@@ -593,19 +593,27 @@ class Status:
 
         # Check if libraries in the active benchmarks have been run
         flag_not_run = False
+        code_not_run = []
         for lib in libs:
             test_run = self.check_lib_run(lib, session, "Post-Processing", exp=exp)
-            # check all code
-            for _, tests in test_run.items():
+            # check all possible transport codes
+            for code, tests in test_run.items():
                 if len(tests) == 0:
                     flag_not_run = True
                     lib_not_run = lib
+                    code_not_run.append(code)
 
         to_single_pp = []
 
         if flag_not_run:
             ans = False
-            print(" " + lib_not_run + " was not run. Please run it first.")
+            print(
+                " "
+                + lib_not_run
+                + " was not run for the following codes. Please run it first."
+            )
+            for code in code_not_run:
+                print(code)
         else:
             # Check if single pp has been done (if not experimental benchmark)
             if not exp:

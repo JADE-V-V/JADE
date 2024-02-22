@@ -38,6 +38,15 @@ have a GitHub account and that you are able to create/push to repositories on Gi
 An easy wasy to approach the world of git actions and their integration with GitHub is to use
 `GitHub Desktop <https://desktop.github.com/>`_.
 
+Branching model
+---------------
+
+.. figure:: /img/dev_guide/branching_model.svg
+    :width: 600
+    :align: center
+
+    Branching model showing Devlop, Feature, Benchmark, Release and Hotfix branches
+
 Development of JADE relies heavily on branching; specifically, we use a branching model
 sometimes referred to as git flow. If you plan to contribute to JADE development,
 we highly recommend that you read this
@@ -54,6 +63,16 @@ of Developing. When the feature is completed, a pull request is initiated on Git
 then reviewed by an approver. If the pull request is satisfactory, it is then merged into develop.
 Note that a committer may not review their own pull request
 (i.e., an independent code review is required).
+
+Release Model
+-------------
+
+The JADE project uses semantic versioning in the format Major.Minor.Patch with the choice of versioning increment
+for a specific release using the following guidelines but the final decision beign discrentionary.
+
+#.	Major: Major or non-backwards compatable functionality additions such as a new transport code being added, the class structure being modified or the input/output directory structure is changed.
+#.	Minor: Addition of new features that are additive/backward compatible with the previous version. New Benchmarks will generally be at this level.
+#.	Patch: Fixes for bugs, typos, tidying code, and other small changes that do not change or extend JADE’s intended functionality.
 
 Contribution steps
 ------------------

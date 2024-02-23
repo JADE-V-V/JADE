@@ -91,8 +91,7 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
     max_width = 0
     df_positions = []
 
-    for tally, results in tallies.items():
-        # print(results)
+    for _, results in tallies.items():
         tally_len, tally_width = results["Value"].shape
         df_positions.append([startrow, startcol])
         # print(pd.Series(results["title"]))
@@ -2093,8 +2092,38 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     # for df in (tallies, errors):
     # df.set_index("Zaid", inplace=True)
 
-    startrow = 10
-    startcol = 1
+    startrow = 9
+    startcol = 0
+
+    # Add the results column headers
+    col_headers = [
+        "PARENT",
+        "PARENT NAME",
+        " MT",
+        "0s",
+        "2.7h",
+        "24h",
+        "11.6d",
+        "30d",
+        "10y",
+        "0s",
+        "2.7h",
+        "24h",
+        "11.6d",
+        "30d",
+        "10y",
+        "0s",
+        "2.7h",
+        "24h",
+        "11.6d",
+        "30d",
+        "10y",
+        "1E-6 MeV",
+        "0.1 MeV",
+        "1 MeV",
+        "10 MeV",
+        "20 MeV",
+    ]
 
     max_len, max_width = results.shape
     results.to_excel(writer, startrow=startrow, startcol=startcol, sheet_name="Values")
@@ -2108,7 +2137,7 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
         stat_checks.to_excel(
             writer,
             startrow=startrow - 1,
-            startcol=startcol - 1,
+            startcol=startcol,
             sheet_name="Statistical Checks",
         )
         stat_sheet = writer.sheets["Statistical Checks"]
@@ -2142,8 +2171,20 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
             "valign": "center",
             "bold": True,
             "border": 2,
+            "text_wrap": True,
         }
     )
+    subsubtitle_merge_format = wb.add_format(
+        {
+            "font_size": "12",
+            "align": "center",
+            "valign": "center",
+            "bold": True,
+            "border": 2,
+            "text_wrap": True,
+        }
+    )
+
     legend_text_format = wb.add_format({"align": "center", "bg_color": "white"})
     red_cell_format = wb.add_format({"bg_color": "red"})
     orange_cell_format = wb.add_format({"bg_color": "orange"})
@@ -2174,23 +2215,31 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
         "W9:AA9", "Neutron Flux at the External surface", subtitle_merge_format
     )
     # Freeze title
-    tal_sheet.freeze_panes(9, 3)
+    tal_sheet.freeze_panes(10, 0)
+
+    start_col = 1
+    # Add the results column headers
+    for i, value in enumerate(col_headers):
+        col_index = start_col + i
+        tal_sheet.write(9, col_index, value, subsubtitle_merge_format)
 
     # out of bounds
     tal_sheet.set_column(0, 0, 4, oob_format)
-    tal_sheet.set_column(max_width + 2, max_width + 20, 18, oob_format)
+    tal_sheet.set_column(max_width + 1, max_width + 20, 18, oob_format)
     for i in range(9):
         tal_sheet.set_row(i, None, oob_format)
-    for i in range(8 + max_len, max_len + 50):
+    for i in range(8 + max_len, max_len + 200):
         tal_sheet.set_row(i, None, oob_format)
 
     # Column widths for tallies, set up to 26th col to ensure title format correct
     tal_sheet.set_column(4, 26, 8)
-    tal_sheet.set_column(1, max_width + 2, 8)
+    tal_sheet.set_column(2, 2, 12)
+    # tal_sheet.set_column(1, max_width + 2, 8)
 
     # Row Heights
-    tal_sheet.set_row(7, 31)
-    tal_sheet.set_row(9, 44)
+    tal_sheet.set_row(8, 55)
+    tal_sheet.set_row(9, 45)
+    tal_sheet.set_row(1, 30)
 
     tal_sheet.conditional_format(
         10,
@@ -2219,11 +2268,16 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
         "W9:AA9", "Neutron Flux at the External surface", subtitle_merge_format
     )
     # Freeze title
-    err_sheet.freeze_panes(9, 3)
+    err_sheet.freeze_panes(10, 0)
+
+    # Add the results column headers
+    for i, value in enumerate(col_headers):
+        col_index = start_col + i
+        err_sheet.write(9, col_index, value, subsubtitle_merge_format)
 
     # out of bounds
     err_sheet.set_column(0, 0, 4, oob_format)
-    err_sheet.set_column(max_width + 2, max_width + 20, 18, oob_format)
+    err_sheet.set_column(max_width, max_width + 50, 18, oob_format)
     for i in range(9):
         err_sheet.set_row(i, None, oob_format)
     for i in range(8 + max_len, max_len + 50):
@@ -2231,35 +2285,37 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
 
     # Column widths for errors, set up to 15th col by default to ensure title format correct
     err_sheet.set_column(4, 26, 8)
-    err_sheet.set_column(1, max_width + 2, 8)
+    # err_sheet.set_column(1, max_width + 2, 8)
 
     # Row Heights
-    err_sheet.set_row(7, 31)
+    err_sheet.set_row(8, 55)
+    err_sheet.set_row(9, 45)
+    err_sheet.set_row(1, 30)
     # err_sheet.set_row(8, 73.25)
 
     # Legend
     err_sheet.merge_range("Y3:AA3", "LEGEND", merge_format)
-    err_sheet.merge_range("Y8:AA8", "According to MCNP manual", oob_format)
+    err_sheet.merge_range("Y2:AA2", "According to MCNP manual", oob_format)
     err_sheet.write("Y4", "", red_cell_format)
     err_sheet.merge_range("Z4:AA4", "> 50%", legend_text_format)
     err_sheet.write("Y5", "", orange_cell_format)
-    err_sheet.merge_range("Z5:AA4", "20% ≤ 50%", legend_text_format)
+    err_sheet.merge_range("Z5:AA5", "20% ≤ 50%", legend_text_format)
     err_sheet.write("Y6", "", yellow_cell_format)
-    err_sheet.merge_range("Z6:AA4", "10% ≤ 20%", legend_text_format)
+    err_sheet.merge_range("Z6:AA6", "10% ≤ 20%", legend_text_format)
     err_sheet.write("Y7", "", green_cell_format)
-    err_sheet.merge_range("Z7:AA4", "< 10%", legend_text_format)
+    err_sheet.merge_range("Z7:AA7", "< 10%", legend_text_format)
 
     # Conditional Formatting
     err_sheet.conditional_format(
         startrow + 1,
-        startcol + 3,
+        startcol + 4,
         startrow + max_len,
         max_width + startcol,
         {"type": "blanks", "format": oob_format},
     )
     err_sheet.conditional_format(
         startrow + 1,
-        startcol + 3,
+        startcol + 4,
         startrow + max_len,
         max_width + startcol,
         {
@@ -2271,7 +2327,7 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     )
     err_sheet.conditional_format(
         startrow + 1,
-        startcol + 3,
+        startcol + 4,
         startrow + max_len,
         max_width + startcol,
         {
@@ -2284,7 +2340,7 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     )
     err_sheet.conditional_format(
         startrow + 1,
-        startcol + 3,
+        startcol + 4,
         startrow + max_len,
         max_width + startcol,
         {
@@ -2297,7 +2353,7 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     )
     err_sheet.conditional_format(
         startrow + 1,
-        startcol + 3,
+        startcol + 4,
         startrow + max_len,
         max_width + startcol,
         {
@@ -2309,7 +2365,7 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     )
     err_sheet.conditional_format(
         startrow + 1,
-        startcol + 3,
+        startcol + 4,
         startrow + max_len,
         max_width + startcol,
         {
@@ -2322,7 +2378,7 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     )
     err_sheet.conditional_format(
         startrow + 1,
-        startcol + 3,
+        startcol + 4,
         startrow + max_len,
         max_width + startcol,
         {
@@ -2335,7 +2391,7 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     )
     err_sheet.conditional_format(
         startrow + 1,
-        startcol + 3,
+        startcol + 4,
         startrow + max_len,
         max_width + startcol,
         {
@@ -2353,15 +2409,15 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
         stat_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
         stat_sheet.merge_range("D1:D2", lib, subtitle_merge_format)
         stat_sheet.merge_range(
-            "B3:P8",
+            "B3:P7",
             "SPHERE SDDR TEST RESULTS RECAP: 10 MCNP statistical checks",
             title_merge_format,
         )
-        # stat_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-        # stat_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
+        stat_sheet.merge_range("B8:D8", "ZAID", subtitle_merge_format)
+        stat_sheet.merge_range("E8:P8", "TALLY", subtitle_merge_format)
 
         # Freeze title
-        stat_sheet.freeze_panes(9, 3)
+        stat_sheet.freeze_panes(9, 0)
 
         # out of bounds
         stat_sheet.set_column(0, 0, 4, oob_format)
@@ -2373,11 +2429,11 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
 
         # Column widths for errors, set up to 15th col by default to ensure title format correct
         stat_sheet.set_column(1, 14, 20)
-        stat_sheet.set_column(1, stats_width + 2, 20)
+        # stat_sheet.set_column(1, stats_width + 2, 20)
 
         # Row Heights
         stat_sheet.set_row(7, 31)
-        stat_sheet.set_row(8, 73.25)
+        stat_sheet.set_row(8, 73.25, subsubtitle_merge_format)
 
         # Formatting
         stat_sheet.conditional_format(

@@ -1640,8 +1640,8 @@ def safe_override(directory):
 def check_transport_activation(lib):
     # Operate on the newlib, should arrive in the 99c-31c format
     errmsg = """
- Please define the pair activation-transport lib for the FNG benchmark
- (e.g. 99c-31c). See additional details on the documentation.
+ Please define the pair activation-transport lib for the SDDR benchmark
+ (e.g. 99c-31c). See additional details in the documentation.
             """
     try:
         activationlib = lib.split("-")[0]

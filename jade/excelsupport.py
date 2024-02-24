@@ -2194,8 +2194,6 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     value_belowzero_format = wb.add_format({"bg_color": "#FFC7CE"})
     value_abovezero_format = wb.add_format({"bg_color": "#C6EFCE"})
 
-    # tallies
-
     # Title Format
     tal_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
     tal_sheet.merge_range("D1:D2", lib, subtitle_merge_format)
@@ -2228,7 +2226,7 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     tal_sheet.set_column(max_width + 1, max_width + 20, 18, oob_format)
     for i in range(9):
         tal_sheet.set_row(i, None, oob_format)
-    for i in range(8 + max_len, max_len + 200):
+    for i in range(10 + max_len, max_len + 200):
         tal_sheet.set_row(i, None, oob_format)
 
     # Column widths for tallies, set up to 26th col to ensure title format correct
@@ -2237,17 +2235,31 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     # tal_sheet.set_column(1, max_width + 2, 8)
 
     # Row Heights
-    tal_sheet.set_row(8, 55)
-    tal_sheet.set_row(9, 45)
-    tal_sheet.set_row(1, 30)
+    tal_sheet.set_row(8, 50, oob_format)
+    tal_sheet.set_row(9, 45, oob_format)
+    tal_sheet.set_row(1, 30, oob_format)
 
+    # Conditional formatting for tally results.
+    # tal_sheet.conditional_format(
+    #    10,
+    #    1,
+    #    8 + max_len,
+    #    max_width + 1,
+    #    {"type": "blanks", "format": oob_format},
+    # )
     tal_sheet.conditional_format(
-        10,
-        1,
-        8 + max_len,
-        max_width + 1,
-        {"type": "blanks", "format": oob_format},
+        startrow + 1,
+        startcol + 4,
+        startrow + max_len,
+        max_width + startcol,
+        {
+            "type": "cell",
+            "criteria": "equal to",
+            "value": 0,
+            "format": oob_format,
+        },
     )
+
     # ERRORS
     # Title
     err_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
@@ -2290,7 +2302,7 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     # Row Heights
     err_sheet.set_row(8, 55)
     err_sheet.set_row(9, 45)
-    err_sheet.set_row(1, 30)
+    err_sheet.set_row(1, 30, oob_format)
     # err_sheet.set_row(8, 73.25)
 
     # Legend
@@ -2421,27 +2433,37 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
 
         # out of bounds
         stat_sheet.set_column(0, 0, 4, oob_format)
-        stat_sheet.set_column(stats_width + 2, stats_width + 20, 18, oob_format)
+        stat_sheet.set_column(stats_width + 1, stats_width + 50, 18, oob_format)
         for i in range(9):
             stat_sheet.set_row(i, None, oob_format)
         for i in range(9 + stats_len, stats_len + 50):
             stat_sheet.set_row(i, None, oob_format)
 
-        # Column widths for errors, set up to 15th col by default to ensure title format correct
-        stat_sheet.set_column(1, 14, 20)
-        # stat_sheet.set_column(1, stats_width + 2, 20)
+        stat_sheet.set_column(1, 3, 8)
+        stat_sheet.set_column(1, stats_width, 20)
 
         # Row Heights
         stat_sheet.set_row(7, 31)
-        stat_sheet.set_row(8, 73.25, subsubtitle_merge_format)
+        stat_sheet.set_row(8, 73.25)
 
         # Formatting
         stat_sheet.conditional_format(
-            startrow - 1,
+            startrow,
             startcol,
-            startrow - 1 + stats_len,
+            startrow + stats_len,
             stats_width + startcol,
             {"type": "blanks", "format": plain_format},
+        )
+        stat_sheet.conditional_format(
+            startrow - 1,
+            startcol + 1,
+            startrow - 1,
+            stats_width + startcol,
+            {
+                "type": "text",
+                "criteria": "containsText",
+                "format": subsubtitle_merge_format,
+            },
         )
         stat_sheet.conditional_format(
             startrow - 1,

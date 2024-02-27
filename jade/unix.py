@@ -31,7 +31,7 @@ if "MODULEPATH" not in os.environ and "win" not in sys.platform:
     path = []
     for line in f.readlines():
         line = re.sub("#.*$", "", line)
-        if line is not "":
+        if line != "":
             path.append(line)
     os.environ["MODULEPATH"] = ":".join(path)
 

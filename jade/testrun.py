@@ -425,10 +425,9 @@ class Test:
             subprocess.run("whoami", capture_output=True).stdout.decode("utf-8").strip()
         )
         os.chdir(directory)
-        job_script = directory + "/" + os.path.basename(directory) + "_job_script"
-        fout = open(job_script, "wt")
-        essential_commands = ["COMMAND", "OUT_FILE"]
-        with open(config.batch_file, "rt") as fin:
+        job_script = os.path.join(directory, os.path.basename(directory) + "_job_script")
+        essential_commands = ['MPI_TASKS']
+        with open(config.batch_file, "rt") as fin, open(job_script, "wt") as fout:
             # Replace placeholders in batch file template with actual values
             contents = fin.read()
             for cmd in essential_commands:
@@ -437,19 +436,18 @@ class Test:
                         "Unable to find essential dummy variable {} in job "
                         "script template, please check and re-run".format(cmd)
                     )
-            contents = contents.replace("COMMAND", " ".join(run_command))
-            contents = contents.replace("ENV_VARIABLES", str(data_command))
             contents = contents.replace("INITIAL_DIR", directory)
             contents = contents.replace("OUT_FILE", job_script + ".out")
             contents = contents.replace("ERROR_FILE", job_script + ".err")
             contents = contents.replace("MPI_TASKS", str(mpi_tasks))
             contents = contents.replace("OMP_THREADS", str(omp_threads))
-            contents = contents.replace("CONFIG_SCRIPT", config_script)
             contents = contents.replace("USER", user)
+            
+            contents += '\n\n' + config_script
+            contents += '\n\n' + str(data_command)
+            contents += '\n\n' + " ".join(run_command)
+            
             fout.write(contents)
-
-        fin.close()
-        fout.close()
 
         # Submit the job using the specified batch system
         subprocess.run(
@@ -495,17 +493,22 @@ class Test:
         """
 
         # Calculate MPI tasks and OpenMP threads
-        mpi_tasks = int(config.openmp_threads) * int(config.mpi_tasks)
-        omp_threads = 1
+        mpi_tasks = int(config.mpi_tasks)
+        omp_threads = int(config.openmp_threads)
         run_mpi = False
-        if int(config.mpi_tasks) > 1:
+        if mpi_tasks > 1:
             run_mpi = True
+        run_openmp = False
+        if omp_threads > 1:
+            run_openmp = True
 
         executable = config.mcnp_exec
         env_variables = config.mcnp_config
         inputstring = "i=" + name
         outputstring = "n=" + name
-        tasks = "tasks " + str(config.openmp_threads)
+        tasks = "tasks " + str(omp_threads)
+        libpath = Path(str(lib_manager.data["mcnp"][lib].filename))
+        data_command = "export DATAPATH=" + str(libpath.parent)
 
         if d1s == True:
             xsstring = "xs=" + str(lib_manager.data["d1s"][lib].filename)
@@ -519,18 +522,9 @@ class Test:
         flagnotrun = False
 
         if pd.isnull(executable) is not True:
-            if run_mpi:
-                run_command = [
-                    "mpirun",
-                    "-n",
-                    str(mpi_tasks),
-                    executable,
-                    inputstring,
-                    outputstring,
-                    xsstring,
-                ]
-            else:
-                run_command = [executable, inputstring, outputstring, tasks, xsstring]
+            run_command = [executable, inputstring, outputstring, xsstring]
+            if run_openmp:
+                run_command.append(tasks)
 
             try:
                 cwd = os.getcwd()
@@ -547,6 +541,7 @@ class Test:
 
                 if runoption.lower() == "c":
                     try:
+                        os.environ['DATAPATH'] = str(libpath.parent)
                         if not sys.platform.startswith("win"):
                             unix.configure(env_variables)
                         print(" ".join(run_command))
@@ -564,6 +559,8 @@ class Test:
                         flagnotrun = True
 
                 elif runoption.lower() == "s":
+                    if run_mpi:
+                        run_command.insert(0, config.mpi_exec_prefix)
                     # Run MCNP as a job
                     cwd = os.getcwd()
                     os.chdir(directory)
@@ -574,6 +571,7 @@ class Test:
                         mpi_tasks,
                         omp_threads,
                         env_variables,
+                        data_command
                     )
                     os.chdir(cwd)
             except subprocess.TimeoutExpired:

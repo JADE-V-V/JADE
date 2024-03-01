@@ -35,21 +35,6 @@ Please describe the tests that you ran to verify your changes. Provide instructi
 - Test B
 - etc
 
-**Test Configuration**:
-* Hardware Environment
-    * "Desktop" or cluster
-    * OS
-    * Used job submission
-* Installed codes:
-    - [ ] MCNP - vX.Y.Z
-        - Patches installed:
-    - [ ] OpenMC - vX.Y.Z
-    - [ ] Serpent - vX.Y.Z
-* Benchmarks used:
-    * SDDR
-    * Octavian
-    * etc
-
 # Checklist:
 
 - [ ] My code follows the style guidelines of this project

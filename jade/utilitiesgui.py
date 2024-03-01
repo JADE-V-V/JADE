@@ -602,6 +602,7 @@ def print_XS_EXFOR(session):
         208: "N,XPi_pos",
         209: "N,XPi_0",
         210: "N,XPi_neg",
+        301: "heating",
         444: "damage-energy production",
         452: "N,nu_tot",
         454: "N,ind_FY",
@@ -653,8 +654,7 @@ def print_XS_EXFOR(session):
     # choose reactions MT to print
     while flag is True:
         mt_num = input(
-            ' Enter reaction MT(s) (Enter "continue" once finished, \
-                       "print" to list reactions MT): '
+            ' Enter reaction MT(s) (Enter "continue" once finished, "print" to list reactions MT): '
         )
         if mt_num == "continue":
             break
@@ -727,7 +727,7 @@ def print_XS_EXFOR(session):
     ]
 
     marker_styles = {}
-    linestyles = ["-", "--", "-.", ":", (0, (3, 5, 1, 5, 1, 5))]
+    linestyles = ["-", "--", "-.", (0, (1, 1)), ":"]
     for i in range(len(markers)):
         if markers[i] in fill_markers:
             marker_styles[i] = dict(
@@ -775,7 +775,10 @@ def print_XS_EXFOR(session):
     for j in bookXS.keys():
         for i in XSDIR.tables:
             if bookXS[j]["ZAID"] == i.name:
-                bookXS[j]["datapath"] = i.filename.replace("/", "\\")
+                if j != "00c" and i.filename.split("/")[0] == "Lib80x":
+                    continue
+                else:
+                    bookXS[j]["datapath"] = i.filename.replace("/", "\\")
 
     for j in bookXS.keys():
         if "datapath" in bookXS[j]:
@@ -785,8 +788,7 @@ def print_XS_EXFOR(session):
                 bookXS[j]["dataXS"] = Library(lib_path)
             except FileNotFoundError:
                 print(
-                    "File not Found Error: ACEfile of nuclide \
-                      "
+                    "File not Found Error: ACEfile of nuclide "
                     + isotope_name
                     + " not found in library "
                     + j
@@ -863,10 +865,7 @@ def print_XS_EXFOR(session):
                                 x_subentry,
                                 y_subentry,
                                 len(x_subentry),
-                                subentry.author[0]
-                                + ", \
-                                            "
-                                + subentry.year,
+                                subentry.author[0] + ", " + subentry.year,
                             )
                         )
             sorted_data_list = sorted(data_list, key=lambda x: x[2], reverse=True)
@@ -891,7 +890,34 @@ def print_XS_EXFOR(session):
                     # x and y axis nor od same length
                     print(isotope_zai + ": x and y axis nor od same length\n")
                     continue
-
+            if (
+                MT == "MT101"
+                and bookXS[j]["suffix"] in libs_to_print
+                and "datapath" in bookXS[j]
+            ):
+                X = bookXS[j]["dataT"].energy
+                y_set = bookXS[j]["dataT"].sigma_a
+                if len(X) == len(y_set):
+                    legend_plot.append(bookXS[j]["name"])
+                    plt.plot(X, y_set, linestyle=linestyles[k], linewidth=4, zorder=2)
+                else:
+                    # x and y axis nor od same length
+                    print(isotope_zai + ": x and y axis nor od same length\n")
+                    continue
+            if (
+                MT == "MT301"
+                and bookXS[j]["suffix"] in libs_to_print
+                and "datapath" in bookXS[j]
+            ):
+                X = bookXS[j]["dataT"].energy
+                y_set = bookXS[j]["dataT"].heating
+                if len(X) == len(y_set):
+                    legend_plot.append(bookXS[j]["name"])
+                    plt.plot(X, y_set, linestyle=linestyles[k], linewidth=4, zorder=2)
+                else:
+                    # x and y axis nor od same length
+                    print(isotope_zai + ": x and y axis nor od same length\n")
+                    continue
             elif (
                 MT in bookXS[j]
                 and bookXS[j]["suffix"] in libs_to_print
@@ -933,13 +959,17 @@ def print_XS_EXFOR(session):
             plt.grid(visible=True)
             plt.xscale("log")
             plt.yscale("log")
-            plt.legend(legend_plot, loc="lower left", fontsize=10, markerscale=0.5)
-            plt.xlabel("Energy (MeV)", fontsize=12)
-            plt.ylabel("$\sigma$ (barn)", fontsize=12)
-            plt.xticks(fontsize=12)
-            plt.yticks(fontsize=12)
+            plt.legend(legend_plot, loc="lower left", fontsize=20, markerscale=0.5)
+            plt.xlabel("Energy (MeV)", fontsize=22)
+            plt.ylabel("$\sigma$ (barn)", fontsize=22)
+            plt.xticks(fontsize=22)
+            plt.yticks(fontsize=22)
             plt.title(
-                isotope_name + " " + MT + " (" + ENDF_X4_dict[i] + ")", fontsize=12
+                isotope_name + " " + MT + " (" + ENDF_X4_dict[i] + ")", fontsize=22
             )
-            plt.show(block=False)
+            plt.savefig(
+                os.path.join(
+                    session.path_uti, isotope_name + "_" + MT + "_" + "XS" + ".png"
+                )
+            )
             print(" Cross Section printed")

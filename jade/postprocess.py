@@ -102,6 +102,7 @@ def postprocessBenchmark(session, lib: str) -> None:
     # Get the log
     log = session.log
 
+    post_process = False
     for testname, row in config.iterrows():
         if (bool(row["Post-Processing"])) and (
             bool(row["MCNP"])
@@ -109,6 +110,7 @@ def postprocessBenchmark(session, lib: str) -> None:
             or bool(row["OpenMC"])
             or bool(row["d1S"])
         ):
+            post_process = True
             print(
                 "\n Post-Processing "
                 + testname
@@ -128,6 +130,11 @@ def postprocessBenchmark(session, lib: str) -> None:
                 + str(datetime.datetime.now())
             )
 
+    if not post_process:
+        print(
+            "No transport codes selected for post-processing. Please select code in Config file."
+        )
+
 
 def _get_output(action, config, lib, session):
     exp_pp_message = "\n No single pp is foreseen for experimental benchmarks"
@@ -139,7 +146,6 @@ def _get_output(action, config, lib, session):
     elif testname == "SphereSDDR":
         out = spho.SphereSDDRoutput(lib, config, session)
 
-    # TODO change testname to config
     elif testname in ["Oktavian"]:
         if action == "compare":
             out = expo.SpectrumOutput(lib, config, session, multiplerun=True)

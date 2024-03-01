@@ -101,6 +101,7 @@ class Configuration:
         self.d1s_config = self._process_path(main["Value"].loc["d1S config"])
         self.openmp_threads = main["Value"].loc["OpenMP threads"]
         self.mpi_tasks = main["Value"].loc["MPI tasks"]
+        self.mpi_exec_prefix = main["Value"].loc["MPI executable prefix"]
         self.batch_system = main["Value"].loc["Batch system"]
         self.batch_file = self._process_path(main["Value"].loc["Batch file"])
 
@@ -165,6 +166,11 @@ class Configuration:
                             print(
                                 " Cannot submit as a batch job, as no batch system has been defined in the config file."
                             )
+                        elif (pd.isnull(self.mpi_exec_prefix)) and (pd.isnull(self.mpi_tasks) is not True):
+                            if int(self.mpi_tasks) > 1:
+                                print(
+                                    " Cannot submit batch job as MPI, as no MPI executable prefix has been defined in the config file."
+                                )
                         else:
                             break
                     elif runoption == "back":

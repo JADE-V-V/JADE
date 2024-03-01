@@ -70,7 +70,7 @@ class SphereOutput(BenchmarkOutput):
         None.
 
         """
-        # print(' Generating Excel Recap...')
+        print(" Generating Excel Recap...")
         self.pp_excel_single()
         print(" Dumping Raw Data...")
         self.print_raw()
@@ -1424,6 +1424,7 @@ class SphereSDDRoutput(SphereOutput):
             self.results["d1s"] = results
             self.errors["d1s"] = errors
             self.stat_checks["d1s"] = stat_checks
+            lib_name = self.session.conf.get_lib_name(self.lib)
             # Write excel
             # ex = SphereExcelOutputSheet(template, outpath)
             # Results
@@ -1434,7 +1435,7 @@ class SphereSDDRoutput(SphereOutput):
             # ex.wb.sheets[0].range("E1").value = lib_name
             # ex.save()
             exsupp.sphere_sddr_single_excel_writer(
-                outpath, self.lib, results, errors, stat_checks
+                outpath, lib_name, results, errors, stat_checks
             )
 
     def pp_excel_comparison(self):
@@ -1541,7 +1542,6 @@ class SphereSDDRoutput(SphereOutput):
         fluxquantity = "Photon Flux"
         fluxunit = r"$p/(cm^2\cdot\#_S)$"
         allzaids.sort()
-        print(allzaids)
         # --- Binned plots of the gamma flux ---
         for zaidnum, mt in tqdm(allzaids, desc=" Binned flux plots"):
             # Get everything for the title of the zaid
@@ -1558,8 +1558,6 @@ class SphereSDDRoutput(SphereOutput):
                 times = self.times
             atlas.doc.add_heading(title, level=2)
 
-            print(times)
-            
             for time in times:
                 atlas.doc.add_heading("Cooldown time = {}".format(time), level=3)
                 title = "Gamma Leakage flux after a {} cooldown".format(time)
@@ -1850,7 +1848,7 @@ class SphereSDDRoutput(SphereOutput):
             error_dfs.append(error_df)
             lib_dics.append(outputs)
         for dic in lib_dics:
-            code_outputs.update(dic)        
+            code_outputs.update(dic)
         self.outputs["d1s"] = code_outputs
         # Consider only common zaids
         idx1 = comp_dfs[0].index

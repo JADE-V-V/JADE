@@ -19,4 +19,4 @@ jade.egg-info/
 build/
 
 venv/*
-.vscode/launch.json
+.vscode/*.json

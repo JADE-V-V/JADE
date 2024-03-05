@@ -23,6 +23,16 @@ you can clone the repository:
   | ``mv JADE Code``
   | ``cd Code``
 
+The folder strucure should now look like the following:
+::
+      <JADE_root>
+        | --------- Code
+                      | ------ jade
+                      | ------ setup.cfg
+                      | ------ pyproject.toml
+                      | ------ ...
+
+
 The user can then checkout the relevant branch of the code. It is now recommended that you upgrade pip before performing
 the installation:
 
@@ -74,6 +84,12 @@ cmdlet in order to be able to activate the virtual environment.
   | ``.\jade_venv\Scripts\activate``
 
 Once activated, the steps described above for Linux can be followed.
+
+If you use conda for managing your python environments, you can create a new environment and install JADE as follows:
+
+  | ``conda create -n jade_env python=3.X`` where 3.X is the version of python you want to use
+  | ``conda activate jade_env``
+  | ``pip install .``
 
 Currently, only the running of MCNP is supported on Windows and JADE should be configured accordingly.
 This is further detailed in :ref:`mainconfig`. 

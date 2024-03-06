@@ -40,7 +40,6 @@ An easy wasy to approach the world of git actions and their integration with Git
 
 Branching model
 ---------------
-
 .. figure:: /img/dev_guide/branching_model.svg
     :width: 600
     :align: center
@@ -97,15 +96,25 @@ following guidelines but the final decision beign discrentionary.
 
 Contribution steps
 ------------------
-These steps apply to both new features and bug fixes. The general steps for contributing
-are as follows:
+JADE follows the development process outlined in the diagram below, relying on 
+Github Issues to track requests and delivery of new features, benchmarks, 
+bugfixes and other developments.
+
+.. figure:: /img/dev_guide/dev_process.svg
+    :width: 600
+    :align: center
+
+    Development process flow diagram for JADE showing the processes for 
+    accepting issues, planning releases, reviewing Pull Requests and releasing.
+
+The general steps for contributing are as follows:
 
 #. Fork the main JADE repository from `GitHub <https://github.com/JADE-V-V/JADE>`_. This will create a
    repository with the same name under your personal account. As such, you can commit
    to it as you please without disrupting other developers.
 #. Clone locally your fork of JADE and create a new branch off of the ``Developing`` one.
 #. Setup your environment for developing JADE.
-  #. Install JADE (see :ref:`install`)
+  #. Install JADE for development (see :ref:`installdevelop`.)
   #. Install the pre-commit hooks (``pre-commit install``) and check they 
      can run (``pre-commit run --all-files``).
   #. Ensure you can run the tests (see :ref:`Testing In JADE <runtesting>`)
@@ -131,7 +140,7 @@ The following are minimum requirements necessary for the approval of a pull requ
   `black formatter <https://github.com/psf/black>`_ should be run automatically
   as part of the pre-commit hooks (see `Contribution steps`_).
 * if a new feature is developed, new test cases must be added to unit test suites.
-  `pytest <https://docs.pytest.org/en/7.4.x/>`_ must be used. Some additional 
+  `pytest <https://docs.pytest.org/en>`_ must be used. Some additional 
   info on this can be found at :ref:`testing`.
 * no conflicts are allowed with the ``Developing`` branch, i.e., the original 
   ``Developing`` branch should be pulled into the fork and all eventual 

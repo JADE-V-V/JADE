@@ -55,7 +55,6 @@ of the code which need to be performed each time the master code is adjourned.
 
 Testing in JADE
 ---------------
-
 Unit testing in JADE is defined and run with the help of the ``pytest`` module
 while the code test coverage is monitored through the ``coverage`` one.
 

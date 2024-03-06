@@ -52,7 +52,7 @@ contribute to JADE development, we highly recommend that you read this
 `blog post <https://nvie.com/posts/a-successful-git-branching-model/>`_
 to get a sense of how the branching model works. 
 
-There are two main branches that always exist: ``master`` and ``Developing``. 
+There are two primary branches that always exist: ``master`` and ``Developing``. 
 The ``master`` branch is a stable branch that contains the latest release of the 
 code. The ``Developing`` branch is where any ongoing development takes place 
 prior to a release and is not guaranteed to be stable. 
@@ -69,8 +69,9 @@ review is required).
   developed on a ``Feature`` branch off ``Developing``. Most branches on the 
   repository will be of this type and consist of work by the core JADE team.
 * **Benchmark** - This type of branch is similar to that above, except it is 
-  specifically for adding new benchmarks. This type of branch will be the most 
-  frequently Pull Requested (PR'd) from forks outside the core team.
+  specifically for adding new benchmarks. This is branched off ``Developing`` in
+  the same way as ``Feature`` branches and will be the most frequently Pull 
+  Requested (PR'd) from forks outside the core team.
 * **Release** - This type of branch will come off ``Developing`` when  the project 
   leader decides that a release should occur. This is solely for allowing further 
   testing and bug fixes for an upcoming release and will be merged into ``main`` 
@@ -84,9 +85,9 @@ Release Model
 
 The JADE project uses semantic versioning in the format **Major.Minor.Patch** 
 with the choice of versioning increment for a specific release using the 
-following guidelines but the final decision beign discrentionary.
+following guidelines but the final decision beign discretionary.
 
-* **Major** - Major or non-backwards compatable functionality additions such as a 
+* **Major** - Major or non-backwards compatible functionality additions such as a 
   new transport code being added, the class structure being modified or the 
   input/output directory structure is changed.
 * **Minor** - Addition of new features that are additive/backward compatible with 
@@ -98,7 +99,9 @@ Contribution steps
 ------------------
 JADE follows the development process outlined in the diagram below, relying on 
 Github Issues to track requests and delivery of new features, benchmarks, 
-bugfixes and other developments.
+bugfixes and other developments. If there is a specific feature/benchmark or bug
+fix you wish to work on, please initially submit an issue using the most 
+suitable template.
 
 .. figure:: /img/dev_guide/dev_process.svg
     :width: 600
@@ -120,10 +123,10 @@ The general steps for contributing are as follows:
   #. Ensure you can run the tests (see :ref:`Testing In JADE <runtesting>`)
 #. Make your changes on the new branch that you intend to have included in ``Developing``.
 #. Issue a pull request from GitHub and select the ``Developing`` branch of JADE main
-   repo as the target.
-   At a minimum, you should describe what the changes you’ve made are and why you are
-   making them. If the changes are related to an outstanding issue, make sure it is
-   cross-referenced for its resolution to be properly tracked.
+   repo as the target. You should then follow the fields in the PR template, but
+   at a minimum, you should describe what the changes you've made are and why 
+   you are making them. If the changes are related to an outstanding issue, make
+   sure it is cross-referenced for its resolution to be properly tracked.
 #. An approver will review your pull request based on the criteria above. Any issues with
    the pull request can be discussed directly on the pull request page itself.
 #. After the pull request has been thoroughly vetted, it is merged back into the develop

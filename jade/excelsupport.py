@@ -2611,6 +2611,16 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
             "text_wrap": True,
         }
     )
+    subsubtitle_merge_format = wb.add_format(
+        {
+            "font_size": "12",
+            "align": "center",
+            "valign": "center",
+            "bold": True,
+            "border": 2,
+            "text_wrap": True,
+        }
+    )
     legend_text_format = wb.add_format({"align": "center", "bg_color": "white"})
     red_cell_format = wb.add_format({"align": "center", "bg_color": "FF6961"})
     orange_cell_format = wb.add_format({"align": "center", "bg_color": "FFB54C"})
@@ -2621,6 +2631,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     identical_format = wb.add_format({"align": "center", "bg_color": "#7ABD7E"})
 
     scientific_format = wb.add_format({"num_format": "0.00E+00"})
+    percent_format = wb.add_format({"num_format": "0.00%"})
 
     # Title Format
     comp_sheet.merge_range(
@@ -2631,17 +2642,17 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     comp_sheet.merge_range("B1:D2", "LIBRARY", subtitle_merge_format)
     comp_sheet.merge_range("E1:G2", name, subtitle_merge_format)
     comp_sheet.merge_range(
-        "B3:X7", "SPHERE SDDR TEST COMPARISON: (PERCENTAGE %)", title_merge_format
+        "B3:X7", "SPHERE SDDR % COMPARISON RECAP", title_merge_format
     )
     comp_sheet.merge_range("E8:AA8", "TALLY", subtitle_merge_format)
     comp_sheet.merge_range("B8:D9", "ZAID", subtitle_merge_format)
     comp_sheet.merge_range(
         "E9:J9",
-        "Photon Flux at the External surface [p/cm^2/#s]",
+        "Photon Flux at the External surface",
         subtitle_merge_format,
     )
-    comp_sheet.merge_range("K9:P9", "Shut Down Dose Rate [Sv/h]", subtitle_merge_format)
-    comp_sheet.merge_range("Q9:V9", "Photon Heating [MeV/#s]", subtitle_merge_format)
+    comp_sheet.merge_range("K9:P9", "Shut Down Dose Rate", subtitle_merge_format)
+    comp_sheet.merge_range("Q9:V9", "Photon Heating", subtitle_merge_format)
     comp_sheet.merge_range(
         "W9:AA9", "Neutron Flux at the External surface", subtitle_merge_format
     )
@@ -2653,7 +2664,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     # Add the results column headers
     for i, value in enumerate(col_headers):
         col_index = start_col + i
-        comp_sheet.write(9, col_index, value, subtitle_merge_format)
+        comp_sheet.write(9, col_index, value, subsubtitle_merge_format)
 
     # out of bounds
     comp_sheet.set_column(0, 0, 4, oob_format)
@@ -2663,9 +2674,9 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     for i in range(9 + comp_len, 1000):
         comp_sheet.set_row(i, None, oob_format)
 
-    # Column widths for values, set up to 15th col to ensure title format correct
-    # comp_sheet.set_column(1, 14, 18)
-    # comp_sheet.set_column(1, comp_width + 5, 18)
+    # Column widths for values
+    comp_sheet.set_column(2, 2, 15)
+    comp_sheet.set_column(1, comp_width + 3, 12)
 
     # Row Heights
     comp_sheet.set_row(0, 25, oob_format)
@@ -2689,16 +2700,16 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     # Conditional Formatting
     comp_sheet.conditional_format(
         10,
-        3,
+        4,
         9 + comp_len,
-        comp_width + 2,
+        comp_width + 3,
         {"type": "blanks", "format": plain_format},
     )
     comp_sheet.conditional_format(
         10,
-        3,
+        4,
         9 + comp_len,
-        comp_width + 2,
+        comp_width + 3,
         {
             "type": "text",
             "criteria": "containing",
@@ -2708,33 +2719,33 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     )
     comp_sheet.conditional_format(
         10,
-        3,
+        4,
         9 + comp_len,
-        comp_width + 2,
+        comp_width + 3,
         {
             "type": "cell",
             "criteria": ">=",
             "value": 0,
-            "format": scientific_format,
+            "format": percent_format,
         },
     )
     comp_sheet.conditional_format(
         10,
-        3,
+        4,
         9 + comp_len,
-        comp_width + 2,
+        comp_width + 3,
         {
             "type": "cell",
             "criteria": "<",
             "value": 0,
-            "format": scientific_format,
+            "format": percent_format,
         },
     )
     comp_sheet.conditional_format(
         10,
-        3,
+        4,
         9 + comp_len,
-        comp_width + 2,
+        comp_width + 3,
         {
             "type": "text",
             "criteria": "containing",
@@ -2744,9 +2755,9 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     )
     comp_sheet.conditional_format(
         10,
-        3,
+        4,
         9 + comp_len,
-        comp_width + 2,
+        comp_width + 3,
         {
             "type": "text",
             "criteria": "containing",
@@ -2756,9 +2767,9 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     )
     comp_sheet.conditional_format(
         10,
-        3,
+        4,
         9 + comp_len,
-        comp_width + 2,
+        comp_width + 3,
         {
             "type": "text",
             "criteria": "containing",
@@ -2770,7 +2781,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + comp_len,
-        comp_width + 2,
+        comp_width + 3,
         {
             "type": "cell",
             "criteria": "greater than",
@@ -2782,7 +2793,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + comp_len,
-        comp_width + 2,
+        comp_width + 3,
         {
             "type": "cell",
             "criteria": "between",
@@ -2795,7 +2806,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + comp_len,
-        comp_width + 2,
+        comp_width + 3,
         {
             "type": "cell",
             "criteria": "between",
@@ -2808,7 +2819,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + comp_len,
-        comp_width + 2,
+        comp_width + 3,
         {
             "type": "cell",
             "criteria": "less than",
@@ -2820,7 +2831,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + comp_len,
-        comp_width + 1,
+        comp_width + 3,
         {
             "type": "cell",
             "criteria": "between",
@@ -2833,7 +2844,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + comp_len,
-        comp_width + 2,
+        comp_width + 3,
         {
             "type": "cell",
             "criteria": "between",
@@ -2842,7 +2853,6 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
             "format": yellow_cell_format,
         },
     )
-    print(comp_width)
     comp_sheet.conditional_format(
         10,
         4,
@@ -2861,25 +2871,25 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     # Title Format
     std_dev_sheet.merge_range(
         "H1:N2",
-        "Target library vs Reference library, (Reference - Target)/Target",
+        "Standard deviations from mean of reference lib",
         subtitle_merge_format,
     )
     std_dev_sheet.merge_range("B1:D2", "LIBRARY", subtitle_merge_format)
     std_dev_sheet.merge_range("E1:G2", name, subtitle_merge_format)
     std_dev_sheet.merge_range(
-        "B3:X7", "SPHERE SDDR TEST COMPARISON: (PERCENTAGE %)", title_merge_format
+        "B3:X7", "SPHERE SDDR TEST COMPARISON: (std. dev.)", title_merge_format
     )
     std_dev_sheet.merge_range("E8:AA8", "TALLY", subtitle_merge_format)
     std_dev_sheet.merge_range("B8:D9", "ZAID", subtitle_merge_format)
     std_dev_sheet.merge_range(
         "E9:J9",
-        "Photon Flux at the External surface [p/cm^2/#s]",
+        "Photon Flux at the External surface",
         subtitle_merge_format,
     )
     std_dev_sheet.merge_range(
-        "K9:P9", "Shut Down Dose Rate [Sv/h]", subtitle_merge_format
+        "K9:P9", "Shut Down Dose Rate", subtitle_merge_format
     )
-    std_dev_sheet.merge_range("Q9:V9", "Photon Heating [MeV/#s]", subtitle_merge_format)
+    std_dev_sheet.merge_range("Q9:V9", "Photon Heating", subtitle_merge_format)
     std_dev_sheet.merge_range(
         "W9:AA9", "Neutron Flux at the External surface", subtitle_merge_format
     )
@@ -2890,7 +2900,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     # Add the results column headers
     for i, value in enumerate(col_headers):
         col_index = start_col + i
-        std_dev_sheet.write(9, col_index, value, subtitle_merge_format)
+        std_dev_sheet.write(9, col_index, value, subsubtitle_merge_format)
 
     # out of bounds
     std_dev_sheet.set_column(0, 0, 4, oob_format)
@@ -2900,9 +2910,9 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     for i in range(9 + std_dev_len, 1000):
         std_dev_sheet.set_row(i, None, oob_format)
 
-    # Column widths for values, set up to 15th col to ensure title format correct
-    # std_dev_sheet.set_column(1, 14, 18)
-    # std_dev_sheet.set_column(1, std_dev_width + 3, 18)
+    # Column widths for values
+    std_dev_sheet.set_column(2, 2, 15)
+    std_dev_sheet.set_column(1, std_dev_width + 3, 12)
 
     # Row Heights
     std_dev_sheet.set_row(0, 25, oob_format)
@@ -2913,7 +2923,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
 
     # Legend
     std_dev_sheet.merge_range("Y3:AA3", "LEGEND", merge_format)
-    std_dev_sheet.merge_range("Y2:AA2", "According to MCNP manual", oob_format)
+    std_dev_sheet.merge_range("Y2:AA2", "", oob_format)
     std_dev_sheet.write("Y4", "", red_cell_format)
     std_dev_sheet.merge_range("Z4:AA4", "> 3σ", legend_text_format)
     std_dev_sheet.write("Y5", "", orange_cell_format)
@@ -2933,7 +2943,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     )
     std_dev_sheet.conditional_format(
         10,
-        3,
+        4,
         9 + comp_len,
         comp_width + 2,
         {
@@ -2945,7 +2955,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     )
     std_dev_sheet.conditional_format(
         10,
-        3,
+        4,
         9 + comp_len,
         comp_width + 2,
         {
@@ -3097,7 +3107,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     # Title
     absdiff_sheet.merge_range(
         "H1:N2",
-        "Target library vs Reference library, (Reference - Target)/Target",
+        "Target library vs Reference library, (Reference - Target)",
         subtitle_merge_format,
     )
     absdiff_sheet.merge_range("B1:D2", "LIBRARY", subtitle_merge_format)
@@ -3128,7 +3138,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     # Add the results column headers
     for i, value in enumerate(col_headers):
         col_index = start_col + i
-        absdiff_sheet.write(9, col_index, value, subtitle_merge_format)
+        absdiff_sheet.write(9, col_index, value, subsubtitle_merge_format)
 
     # out of bounds
     absdiff_sheet.set_column(0, 0, 4, oob_format)
@@ -3138,9 +3148,9 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     for i in range(10 + absdiff_len, 1000):
         absdiff_sheet.set_row(i, None, oob_format)
 
-    # Column widths for values, set up to 15th col to ensure title format correct
-    # absdiff_sheet.set_column(1, 14, 18)
-    # absdiff_sheet.set_column(1, absdiff_width + 3, 18)
+    # Column widths for values
+    absdiff_sheet.set_column(2, 2, 15)
+    absdiff_sheet.set_column(1, absdiff_width + 3, 12)
 
     # Row Heights
     absdiff_sheet.set_row(0, 25, oob_format)
@@ -3164,7 +3174,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     )
     absdiff_sheet.conditional_format(
         10,
-        3,
+        4,
         9 + comp_len,
         comp_width + 2,
         {
@@ -3176,7 +3186,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     )
     absdiff_sheet.conditional_format(
         10,
-        3,
+        4,
         9 + comp_len,
         comp_width + 2,
         {

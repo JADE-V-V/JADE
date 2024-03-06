@@ -4,7 +4,7 @@ Please include a summary of the changes and the related issue (if applicable). P
 
 Fixes # (issue)
 
-Additional dependencies intoduced.
+Additional dependencies introduced.
 - Dependency 1
 - Dependency 2
 

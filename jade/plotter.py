@@ -352,8 +352,11 @@ class Plotter:
                 axes[i].scatter(
                     norm[0],
                     norm[1],
-                    color=self.colors[j],
-                    marker=self.markers[i],
+                    edgecolors=self.colors[j],
+                    marker=self.markers[j],
+                    facecolor="none",
+                    s=300,
+                    linewidth=3,
                     label=libdata["ylabel"],
                 )
                 axes[i].scatter(

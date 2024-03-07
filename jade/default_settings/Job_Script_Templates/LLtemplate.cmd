@@ -9,9 +9,3 @@
 # @ min_processors = MPI_TASKS
 # @ queue
 
-CONFIG_SCRIPT
-
-ENV_VARIABLES
-
-COMMAND
-

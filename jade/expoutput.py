@@ -799,62 +799,60 @@ class SpectrumOutput(ExperimentalOutput):
             )
 
             # Create a Pandas Excel writer using XlsxWriter as the engine.
-            writer = pd.ExcelWriter(ex_outpath, engine="xlsxwriter")
-            # dump global table
-            todump = todump[
-                [
+            with pd.ExcelWriter(ex_outpath, engine="xlsxwriter") as writer:
+                # dump global table
+                todump = todump[
+                    [
+                        "Min " + x_lab,
+                        "Max " + x_lab,
+                        "C/E",
+                        "Standard Deviation (σ)",
+                    ]
+                ]
+
+                todump.to_excel(writer, sheet_name="Global")
+                col_min = x_lab + "-min " + "[" + MCNP_UNITS[x_ax] + "]"
+                col_max = x_lab + "-max " + "[" + MCNP_UNITS[x_ax] + "]"
+                # Elaborate table for better output format
+
+                ft[col_min] = ft["Min " + x_lab]
+                ft[col_max] = ft["Max " + x_lab]
+
+                ft["C/E (mean +/- σ)"] = (
+                    ft["C/E"].round(2).astype(str)
+                    + " +/- "
+                    + ft["Standard Deviation (σ)"].round(2).astype(str)
+                )
+                # Delete all confusing columns
+                for column in [
                     "Min " + x_lab,
                     "Max " + x_lab,
                     "C/E",
                     "Standard Deviation (σ)",
-                ]
-            ]
+                ]:
+                    del ft[column]
 
-            todump.to_excel(writer, sheet_name="Global")
-            col_min = x_lab + "-min " + "[" + MCNP_UNITS[x_ax] + "]"
-            col_max = x_lab + "-max " + "[" + MCNP_UNITS[x_ax] + "]"
-            # Elaborate table for better output format
+                # Dump also table material by material
+                for input in self.inputs:
+                    # dump material table
+                    todump = ft.loc[input]
 
-            ft[col_min] = ft["Min " + x_lab]
-            ft[col_max] = ft["Max " + x_lab]
+                    todump = todump.pivot(
+                        index=["Quantity", col_min, col_max],
+                        columns="Library",
+                        values="C/E (mean +/- σ)",
+                    )
 
-            ft["C/E (mean +/- σ)"] = (
-                ft["C/E"].round(2).astype(str)
-                + " +/- "
-                + ft["Standard Deviation (σ)"].round(2).astype(str)
-            )
-            # Delete all confusing columns
-            for column in [
-                "Min " + x_lab,
-                "Max " + x_lab,
-                "C/E",
-                "Standard Deviation (σ)",
-            ]:
-                del ft[column]
+                    todump.sort_values(by=[col_min])
 
-            # Dump also table material by material
-            for input in self.inputs:
-                # dump material table
-                todump = ft.loc[input]
+                    todump.to_excel(writer, sheet_name=input, startrow=2)
+                    ws = writer.sheets[input]
+                    if skipcol_global == 0:
+                        ws.write_string(0, 0, '"C/E (mean +/- σ)"')
 
-                todump = todump.pivot(
-                    index=["Quantity", col_min, col_max],
-                    columns="Library",
-                    values="C/E (mean +/- σ)",
-                )
+                    # adjust columns' width
+                    writer.sheets[input].set_column(0, 4, 18)
 
-                todump.sort_values(by=[col_min])
-
-                todump.to_excel(writer, sheet_name=input, startrow=2)
-                ws = writer.sheets[input]
-                if skipcol_global == 0:
-                    ws.write_string(0, 0, '"C/E (mean +/- σ)"')
-
-                # adjust columns' width
-                writer.sheets[input].set_column(0, 4, 18)
-
-            # Close the Pandas Excel writer and output the Excel file.
-            writer.close()
         return
 
     def _data_collect(self, input, tallynum, quantity_CE, e_intervals):
@@ -1051,7 +1049,7 @@ class TiaraOutput(ExperimentalOutput):
             DataFrame containing details about each benchmark case and the
             output tallies for that case
         """
-        case_tree_df = pd.DataFrame()
+        to_concat = []
 
         # Loop over libraries
         for lib in self.lib[1:]:
@@ -1080,9 +1078,9 @@ class TiaraOutput(ExperimentalOutput):
             case_tree = case_tree.set_index(indexes)
             case_tree.index.names = indexes
             # Add to overall dataframe
-            case_tree_df = case_tree_df.append(case_tree)
+            to_concat.append(case_tree)
         # Return complete dataframe
-        return case_tree_df
+        return pd.concat(to_concat)
 
     def _exp_comp_case_check(self, indexes):
         """
@@ -1164,78 +1162,83 @@ class TiaraFCOutput(TiaraOutput):
         filepath = os.path.join(
             self.excel_path_mcnp, "Tiara_Fission_Cells_CE_tables.xlsx"
         )
-        writer = pd.ExcelWriter(filepath, engine="xlsxwriter")
+        with pd.ExcelWriter(filepath, engine="xlsxwriter") as writer:
 
-        # Create 1 worksheet for each energy/material combination
-        mats = self.case_tree_df.index.unique(level="Shield Material").tolist()
-        ens = self.case_tree_df.index.unique(level="Energy").tolist()
-        for shield_material in mats:
-            for energy in ens:
-                # Set MultiIndex structure of the table
-                # Set column names
-                column_names = []
-                temp_df = self.case_tree_df.loc(axis=0)[
-                    :, shield_material, energy
-                ].copy()
-                for fission_cell in ["U238", "Th232"]:
-                    column_names.append(("Exp", fission_cell, "Value"))
-                    column_names.append(("Exp", fission_cell, "Error"))
-                libs = self.case_tree_df.index.unique(level="Library").tolist()
-                for lib in libs:
+            # Create 1 worksheet for each energy/material combination
+            mats = self.case_tree_df.index.unique(level="Shield Material").tolist()
+            ens = self.case_tree_df.index.unique(level="Energy").tolist()
+            for shield_material in mats:
+                for energy in ens:
+                    # Set MultiIndex structure of the table
+                    # Set column names
+                    column_names = []
+                    temp_df = self.case_tree_df.loc(axis=0)[
+                        :, shield_material, energy
+                    ].copy()
                     for fission_cell in ["U238", "Th232"]:
-                        column_names.append((lib, fission_cell, "Value"))
-                        column_names.append((lib, fission_cell, "C/E"))
-                        column_names.append((lib, fission_cell, "C/E Error"))
-                names = ["Library", "Fission Cell", ""]
-                column_index = pd.MultiIndex.from_tuples(column_names, names=names)
-                # Set row indexes
-                row_idx_list = []
-                for idx in temp_df.index.values.tolist():
-                    row_idx_list.append((idx[-2], idx[-1]))
-                names = ["Shield Thickness", "Axis offset"]
-                row_idx = pd.MultiIndex.from_tuples(row_idx_list, names=names)
+                        column_names.append(("Exp", fission_cell, "Value"))
+                        column_names.append(("Exp", fission_cell, "Error"))
+                    libs = self.case_tree_df.index.unique(level="Library").tolist()
+                    for lib in libs:
+                        for fission_cell in ["U238", "Th232"]:
+                            column_names.append((lib, fission_cell, "Value"))
+                            column_names.append((lib, fission_cell, "C/E"))
+                            column_names.append((lib, fission_cell, "C/E Error"))
+                    names = ["Library", "Fission Cell", ""]
+                    column_index = pd.MultiIndex.from_tuples(column_names, names=names)
+                    # Set row indexes
+                    row_idx_list = []
+                    for idx in temp_df.index.values.tolist():
+                        row_idx_list.append((idx[-2], idx[-1]))
+                    names = ["Shield Thickness", "Axis offset"]
+                    row_idx = pd.MultiIndex.from_tuples(row_idx_list, names=names)
 
-                # Build new dataframe with desired multindex structure
-                new_dataframe = pd.DataFrame(columns=column_index, index=row_idx)
-                # Fill the new dataframe with proper values
-                for idx_row in new_dataframe.index.values.tolist():
-                    for idx_col in new_dataframe.columns.values.tolist():
-                        row_tuple = (shield_material, energy, idx_row[0], idx_row[1])
-                        if idx_col[0] == "Exp":
-                            if idx_col[2] == "Value":
-                                val = self.exp_data.loc[row_tuple, idx_col[1]]
-                                new_dataframe.loc[idx_row, idx_col] = val
+                    # Build new dataframe with desired multindex structure
+                    new_dataframe = pd.DataFrame(columns=column_index, index=row_idx)
+                    # Fill the new dataframe with proper values
+                    for idx_row in new_dataframe.index.values.tolist():
+                        for idx_col in new_dataframe.columns.values.tolist():
+                            row_tuple = (
+                                shield_material,
+                                energy,
+                                idx_row[0],
+                                idx_row[1],
+                            )
+                            if idx_col[0] == "Exp":
+                                if idx_col[2] == "Value":
+                                    val = self.exp_data.loc[row_tuple, idx_col[1]]
+                                    new_dataframe.loc[idx_row, idx_col] = val
+                                else:
+                                    val = self.exp_data.loc[
+                                        row_tuple, idx_col[1] + " Error"
+                                    ]
+                                    new_dataframe.loc[idx_row, idx_col] = val
                             else:
-                                val = self.exp_data.loc[
-                                    row_tuple, idx_col[1] + " Error"
-                                ]
-                                new_dataframe.loc[idx_row, idx_col] = val
-                        else:
-                            row_tuple = (idx_col[0],) + row_tuple
-                            if idx_col[2] == "Value":
-                                val = temp_df.loc[row_tuple, idx_col[1]]
-                                new_dataframe.loc[idx_row, idx_col] = val
-                            elif idx_col[2] == "C/E Error":
-                                val1 = temp_df.loc[row_tuple, idx_col[1] + " Error"]
-                                val2 = self.exp_data.loc[
-                                    row_tuple[1:], idx_col[1] + " Error"
-                                ]
-                                ce_err = math.sqrt(val1**2 + val2**2)
-                                new_dataframe.loc[idx_row, idx_col] = ce_err
-                            else:
-                                val = temp_df.loc[row_tuple, idx_col[1]]
-                                val2 = self.exp_data.loc[row_tuple[1:], idx_col[1]]
-                                new_dataframe.loc[idx_row, idx_col] = val / val2
-                # Assign worksheet title and put into Excel
-                conv_df = self._get_conv_df(temp_df)
-                sheet_name = "Tiara FC {}, {} MeV".format(shield_material, str(energy))
-                sort = ["Axis offset", "Shield Thickness"]
-                new_dataframe.sort_values(sort, axis=0, inplace=True)
-                new_dataframe = new_dataframe.drop_duplicates()
-                new_dataframe.to_excel(writer, sheet_name=sheet_name)
-                conv_df.to_excel(writer, sheet_name=sheet_name, startrow=18)
-        # Close the Pandas Excel writer object and output the Excel file
-        writer.save()
+                                row_tuple = (idx_col[0],) + row_tuple
+                                if idx_col[2] == "Value":
+                                    val = temp_df.loc[row_tuple, idx_col[1]]
+                                    new_dataframe.loc[idx_row, idx_col] = val
+                                elif idx_col[2] == "C/E Error":
+                                    val1 = temp_df.loc[row_tuple, idx_col[1] + " Error"]
+                                    val2 = self.exp_data.loc[
+                                        row_tuple[1:], idx_col[1] + " Error"
+                                    ]
+                                    ce_err = math.sqrt(val1**2 + val2**2)
+                                    new_dataframe.loc[idx_row, idx_col] = ce_err
+                                else:
+                                    val = temp_df.loc[row_tuple, idx_col[1]]
+                                    val2 = self.exp_data.loc[row_tuple[1:], idx_col[1]]
+                                    new_dataframe.loc[idx_row, idx_col] = val / val2
+                    # Assign worksheet title and put into Excel
+                    conv_df = self._get_conv_df(temp_df)
+                    sheet_name = "Tiara FC {}, {} MeV".format(
+                        shield_material, str(energy)
+                    )
+                    sort = ["Axis offset", "Shield Thickness"]
+                    new_dataframe.sort_values(sort, axis=0, inplace=True)
+                    new_dataframe = new_dataframe.drop_duplicates()
+                    new_dataframe.to_excel(writer, sheet_name=sheet_name)
+                    conv_df.to_excel(writer, sheet_name=sheet_name, startrow=18)
 
     def _read_exp_results(self):
         """
@@ -1265,8 +1268,8 @@ class TiaraFCOutput(TiaraOutput):
             ),
         }
         # Build experimental dataframe
-        exp_data = pd.DataFrame()
         index = ["Shield Material", "Energy", "Shield Thickness", "Axis offset"]
+        to_concat = []
         for idx, element in FC_data.items():
             # Build a first useful structure from CONDERC data
             element["Shield Material"] = idx[0]
@@ -1282,7 +1285,8 @@ class TiaraFCOutput(TiaraOutput):
 
             element = element.set_index(index)
             element.index.names = index
-            exp_data = exp_data.append(element)
+            to_concat.append(element)
+        exp_data = pd.concat(to_concat)
         # Make exp data normalization compatible with tally outputs
         exp_data["238 U [/1e24]"] *= 1e24
         exp_data["232 Th [/1e24]"] *= 1e24
@@ -1452,66 +1456,65 @@ class TiaraBSOutput(TiaraOutput):
         filepath = os.path.join(
             self.excel_path_mcnp, "Tiara_Bonner_Spheres_CE_tables.xlsx"
         )
-        writer = pd.ExcelWriter(filepath, engine="xlsxwriter")
-        # Loop over shield material/energy combinations
-        mat_list = self.case_tree_df.index.unique(level="Shield Material").tolist()
-        e_list = self.case_tree_df.index.unique(level="Energy").tolist()
-        for shield_material in mat_list:
-            for energy in e_list:
-                # Select the cases with the energy/material combination
-                column_names = []
-                comp_data = self.case_tree_df.loc(axis=0)[:, shield_material, energy]
-                exp_data = self.exp_data.loc(axis=0)[shield_material, energy]
-                thick_list = exp_data.index.unique().tolist()
-                for shield_thickness in thick_list:
-                    column_names.append(("Exp", shield_thickness, "Value"))
-                lib_list = comp_data.index.unique(level="Library").tolist()
-                for lib in lib_list:
-                    thick_list = comp_data.index.unique(
-                        level="Shield Thickness"
-                    ).tolist()
+        with pd.ExcelWriter(filepath, engine="xlsxwriter") as writer:
+            # Loop over shield material/energy combinations
+            mat_list = self.case_tree_df.index.unique(level="Shield Material").tolist()
+            e_list = self.case_tree_df.index.unique(level="Energy").tolist()
+            for shield_material in mat_list:
+                for energy in e_list:
+                    # Select the cases with the energy/material combination
+                    column_names = []
+                    comp_data = self.case_tree_df.loc(axis=0)[
+                        :, shield_material, energy
+                    ]
+                    exp_data = self.exp_data.loc(axis=0)[shield_material, energy]
+                    thick_list = exp_data.index.unique().tolist()
                     for shield_thickness in thick_list:
-                        column_names.append((lib, shield_thickness, "Value"))
-                        column_names.append((lib, shield_thickness, "Error"))
-                        column_names.append((lib, shield_thickness, "C/E"))
-                names = ["Library", "Shield Thickness", ""]
-                index = pd.MultiIndex.from_tuples(column_names, names=names)
+                        column_names.append(("Exp", shield_thickness, "Value"))
+                    lib_list = comp_data.index.unique(level="Library").tolist()
+                    for lib in lib_list:
+                        thick_list = comp_data.index.unique(
+                            level="Shield Thickness"
+                        ).tolist()
+                        for shield_thickness in thick_list:
+                            column_names.append((lib, shield_thickness, "Value"))
+                            column_names.append((lib, shield_thickness, "Error"))
+                            column_names.append((lib, shield_thickness, "C/E"))
+                    names = ["Library", "Shield Thickness", ""]
+                    index = pd.MultiIndex.from_tuples(column_names, names=names)
 
-                # Create new dataframe with the MultiIndex structure
-                new_dataframe = pd.DataFrame(index=columns, columns=index)
+                    # Create new dataframe with the MultiIndex structure
+                    new_dataframe = pd.DataFrame(index=columns, columns=index)
 
-                # Add the proper values in the new dataframe
-                for idx_row in new_dataframe.index.values.tolist():
-                    for idx_col in new_dataframe.columns.values.tolist():
-                        if idx_col[0] == "Exp":
-                            val = exp_data.loc[idx_col[1], idx_row]
-                            new_dataframe.loc[idx_row, idx_col] = val
-                        else:
-                            row_tuple = (
-                                idx_col[0],
-                                shield_material,
-                                energy,
-                                idx_col[1],
-                            )
-                            if idx_col[2] == "Value":
-                                val = comp_data.loc[row_tuple, idx_row]
-                                new_dataframe.loc[idx_row, idx_col] = val
-                            elif idx_col[2] == "Error":
-                                val = comp_data.loc[row_tuple, idx_row + " Error"]
+                    # Add the proper values in the new dataframe
+                    for idx_row in new_dataframe.index.values.tolist():
+                        for idx_col in new_dataframe.columns.values.tolist():
+                            if idx_col[0] == "Exp":
+                                val = exp_data.loc[idx_col[1], idx_row]
                                 new_dataframe.loc[idx_row, idx_col] = val
                             else:
-                                val = comp_data.loc[row_tuple, idx_row]
-                                val2 = exp_data.loc[idx_col[1], idx_row]
-                                new_dataframe.loc[idx_row, idx_col] = val / val2
+                                row_tuple = (
+                                    idx_col[0],
+                                    shield_material,
+                                    energy,
+                                    idx_col[1],
+                                )
+                                if idx_col[2] == "Value":
+                                    val = comp_data.loc[row_tuple, idx_row]
+                                    new_dataframe.loc[idx_row, idx_col] = val
+                                elif idx_col[2] == "Error":
+                                    val = comp_data.loc[row_tuple, idx_row + " Error"]
+                                    new_dataframe.loc[idx_row, idx_col] = val
+                                else:
+                                    val = comp_data.loc[row_tuple, idx_row]
+                                    val2 = exp_data.loc[idx_col[1], idx_row]
+                                    new_dataframe.loc[idx_row, idx_col] = val / val2
 
-                # Print the dataframe in a worksheet in Excel file
-                conv_df = self._get_conv_df(comp_data)
-                sheet_name = "Tiara {}, {} MeV".format(shield_material, str(energy))
-                new_dataframe.to_excel(writer, sheet_name=sheet_name)
-                conv_df.to_excel(writer, sheet_name=sheet_name, startrow=12)
-        # Close the Pandas Excel writer object and output the Excel file
-        writer.save()
-        pass
+                    # Print the dataframe in a worksheet in Excel file
+                    conv_df = self._get_conv_df(comp_data)
+                    sheet_name = "Tiara {}, {} MeV".format(shield_material, str(energy))
+                    new_dataframe.to_excel(writer, sheet_name=sheet_name)
+                    conv_df.to_excel(writer, sheet_name=sheet_name, startrow=12)
 
     def _read_exp_results(self):
         """
@@ -1543,9 +1546,10 @@ class TiaraBSOutput(TiaraOutput):
             value["Shield Material"] = key[0]
             value["Energy"] = int(key[1])
 
-        exp_data = pd.DataFrame()
+        to_concat = []
         for value in BS_data.values():
-            exp_data = exp_data.append(value, ignore_index=True)
+            to_concat.append(value)
+        exp_data = pd.concat(to_concat, ignore_index=True)
 
         # Adjust experimental data dataframe's structure
         exp_data.rename(
@@ -1638,63 +1642,75 @@ class ShieldingOutput(ExperimentalOutput):
         column_index = pd.MultiIndex.from_tuples(column_names, names=names)
         # filepath = self.excel_path_mcnp + '\\' + self.testname + '_CE_tables.xlsx'
         filepath = os.path.join(self.excel_path_mcnp, f"{self.testname}_CE_tables.xlsx")
-        writer = pd.ExcelWriter(filepath, engine="xlsxwriter")
-        # TODO Replace when other transport codes implemented.
-        code = "mcnp"
-        for mat in self.inputs:
-            exp_folder = os.path.join(self.path_exp_res, mat)
-            exp_filename = self.testname + "_" + mat + ".csv"
-            exp_filepath = os.path.join(exp_folder, exp_filename)
-            exp_data_df = pd.read_csv(exp_filepath)
-            # Get experimental data and errors for the selected benchmark case
-            x = exp_data_df["Depth"].values.tolist()
-            indexes = pd.Index(data=x, name="Depth [cm]")
-            df_tab = pd.DataFrame(index=indexes, columns=column_index)
-            for idx_col in df_tab.columns.values.tolist():
-                if idx_col[0] == "Exp":
-                    if idx_col[1] == "Value":
-                        vals = exp_data_df.loc[:, "Reaction Rate"].tolist()
-                        df_tab[idx_col] = vals
+        with pd.ExcelWriter(filepath, engine="xlsxwriter") as writer:
+            # TODO Replace when other transport codes implemented.
+            code = "mcnp"
+            for mat in self.inputs:
+                exp_folder = os.path.join(self.path_exp_res, mat)
+                exp_filename = self.testname + "_" + mat + ".csv"
+                exp_filepath = os.path.join(exp_folder, exp_filename)
+                exp_data_df = pd.read_csv(exp_filepath)
+                # Get experimental data and errors for the selected benchmark case
+                x = exp_data_df["Depth"].values.tolist()
+                indexes = pd.Index(data=x, name="Depth [cm]")
+                df_tab = pd.DataFrame(index=indexes, columns=column_index)
+                for idx_col in df_tab.columns.values.tolist():
+                    if idx_col[0] == "Exp":
+                        if idx_col[1] == "Value":
+                            vals = exp_data_df.loc[:, "Reaction Rate"].tolist()
+                            df_tab[idx_col] = vals
+                        else:
+                            vals = exp_data_df.loc[:, "Error"].to_numpy() / 100
+                            vals = vals.tolist()
+                            df_tab[idx_col] = vals
                     else:
-                        vals = exp_data_df.loc[:, "Error"].to_numpy() / 100
-                        vals = vals.tolist()
-                        df_tab[idx_col] = vals
-                else:
-                    t = (mat, lib_names_dict[idx_col[0]])
-                    if idx_col[1] == "Value":
-                        if mat != "TLD":
-                            vals = self.raw_data[code][t][4]["Value"].values[: len(x)]
+                        t = (mat, lib_names_dict[idx_col[0]])
+                        if idx_col[1] == "Value":
+                            if mat != "TLD":
+                                vals = self.raw_data[code][t][4]["Value"].values[
+                                    : len(x)
+                                ]
+                            else:
+                                vals = self.raw_data[code][t][6]["Value"].values[
+                                    : len(x)
+                                ]
+                            df_tab[idx_col] = vals
+                        elif idx_col[1] == "C/E Error":
+                            if mat != "TLD":
+                                errs = self.raw_data[code][t][4]["Error"].values[
+                                    : len(x)
+                                ]
+                            else:
+                                errs = self.raw_data[code][t][6]["Error"].values[
+                                    : len(x)
+                                ]
+                            vals1 = np.square(errs)
+                            vals2 = np.square(
+                                exp_data_df.loc[:, "Error"].to_numpy() / 100
+                            )
+                            ce_err = np.sqrt(vals1 + vals2)
+                            ce_err = ce_err.tolist()
+                            df_tab[idx_col] = ce_err
                         else:
-                            vals = self.raw_data[code][t][6]["Value"].values[: len(x)]
-                        df_tab[idx_col] = vals
-                    elif idx_col[1] == "C/E Error":
-                        if mat != "TLD":
-                            errs = self.raw_data[code][t][4]["Error"].values[: len(x)]
-                        else:
-                            errs = self.raw_data[code][t][6]["Error"].values[: len(x)]
-                        vals1 = np.square(errs)
-                        vals2 = np.square(exp_data_df.loc[:, "Error"].to_numpy() / 100)
-                        ce_err = np.sqrt(vals1 + vals2)
-                        ce_err = ce_err.tolist()
-                        df_tab[idx_col] = ce_err
-                    else:
-                        if mat != "TLD":
-                            vals1 = self.raw_data[code][t][4]["Value"].values[: len(x)]
-                        else:
-                            vals1 = self.raw_data[code][t][6]["Value"].values[: len(x)]
-                        vals2 = exp_data_df.loc[:, "Reaction Rate"].to_numpy()
-                        ratio = vals1 / vals2
-                        ratio = ratio.tolist()
-                        df_tab[idx_col] = vals1 / vals2
+                            if mat != "TLD":
+                                vals1 = self.raw_data[code][t][4]["Value"].values[
+                                    : len(x)
+                                ]
+                            else:
+                                vals1 = self.raw_data[code][t][6]["Value"].values[
+                                    : len(x)
+                                ]
+                            vals2 = exp_data_df.loc[:, "Reaction Rate"].to_numpy()
+                            ratio = vals1 / vals2
+                            ratio = ratio.tolist()
+                            df_tab[idx_col] = vals1 / vals2
 
-            # Assign worksheet title and put into Excel
-            conv_df = self._get_conv_df(mat, len(x))
-            sheet = self.testname.replace("-", " ")
-            sheet_name = sheet + ", Foil {}".format(mat)
-            df_tab.to_excel(writer, sheet_name=sheet_name)
-            conv_df.to_excel(writer, sheet_name=sheet_name, startrow=18)
-            # Close the Pandas Excel writer object and output the Excel file
-        writer.save()
+                # Assign worksheet title and put into Excel
+                conv_df = self._get_conv_df(mat, len(x))
+                sheet = self.testname.replace("-", " ")
+                sheet_name = sheet + ", Foil {}".format(mat)
+                df_tab.to_excel(writer, sheet_name=sheet_name)
+                conv_df.to_excel(writer, sheet_name=sheet_name, startrow=18)
 
     def _build_atlas(self, tmp_path, atlas):
         """

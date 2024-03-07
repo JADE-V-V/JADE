@@ -2505,7 +2505,9 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     wb.close()
 
 
-def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
+def sphere_sddr_comp_excel_writer(
+    outpath, name, final, absdiff, std_dev, single_pp_files
+):
     """
     Produces library comparison excel file for Sphere SDDR using XLSXwriter
 
@@ -2671,7 +2673,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     comp_sheet.set_column(comp_width + 3, 1000, 4, oob_format)
     for i in range(9):
         comp_sheet.set_row(i, None, oob_format)
-    for i in range(9 + comp_len, 1000):
+    for i in range(10 + comp_len, 1000):
         comp_sheet.set_row(i, None, oob_format)
 
     # Column widths for values
@@ -2886,9 +2888,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         "Photon Flux at the External surface",
         subtitle_merge_format,
     )
-    std_dev_sheet.merge_range(
-        "K9:P9", "Shut Down Dose Rate", subtitle_merge_format
-    )
+    std_dev_sheet.merge_range("K9:P9", "Shut Down Dose Rate", subtitle_merge_format)
     std_dev_sheet.merge_range("Q9:V9", "Photon Heating", subtitle_merge_format)
     std_dev_sheet.merge_range(
         "W9:AA9", "Neutron Flux at the External surface", subtitle_merge_format
@@ -2907,7 +2907,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     std_dev_sheet.set_column(std_dev_width + 3, 1000, 4, oob_format)
     for i in range(9):
         std_dev_sheet.set_row(i, None, oob_format)
-    for i in range(9 + std_dev_len, 1000):
+    for i in range(10 + std_dev_len, 1000):
         std_dev_sheet.set_row(i, None, oob_format)
 
     # Column widths for values
@@ -2938,14 +2938,14 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + std_dev_len,
-        std_dev_width + 2,
+        std_dev_width + 3,
         {"type": "blanks", "format": plain_format},
     )
     std_dev_sheet.conditional_format(
         10,
         4,
         9 + comp_len,
-        comp_width + 2,
+        comp_width + 3,
         {
             "type": "cell",
             "criteria": ">=",
@@ -2957,7 +2957,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + comp_len,
-        comp_width + 2,
+        comp_width + 3,
         {
             "type": "cell",
             "criteria": "<",
@@ -2969,7 +2969,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + std_dev_len,
-        std_dev_width + 2,
+        std_dev_width + 3,
         {
             "type": "text",
             "criteria": "containing",
@@ -2981,7 +2981,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + std_dev_len,
-        std_dev_width + 2,
+        std_dev_width + 3,
         {
             "type": "text",
             "criteria": "containing",
@@ -2993,7 +2993,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + std_dev_len,
-        std_dev_width + 2,
+        std_dev_width + 3,
         {
             "type": "text",
             "criteria": "containing",
@@ -3005,7 +3005,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + std_dev_len,
-        std_dev_width + 2,
+        std_dev_width + 3,
         {
             "type": "text",
             "criteria": "containing",
@@ -3017,7 +3017,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + std_dev_len,
-        std_dev_width + 2,
+        std_dev_width + 3,
         {
             "type": "cell",
             "criteria": "greater than",
@@ -3029,7 +3029,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + std_dev_len,
-        std_dev_width + 2,
+        std_dev_width + 3,
         {
             "type": "cell",
             "criteria": "between",
@@ -3042,7 +3042,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + std_dev_len,
-        std_dev_width + 2,
+        std_dev_width + 3,
         {
             "type": "cell",
             "criteria": "between",
@@ -3055,7 +3055,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + std_dev_len,
-        std_dev_width + 2,
+        std_dev_width + 3,
         {
             "type": "cell",
             "criteria": "less than",
@@ -3067,7 +3067,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + std_dev_len,
-        std_dev_width + 1,
+        std_dev_width + 3,
         {
             "type": "cell",
             "criteria": "between",
@@ -3080,7 +3080,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + std_dev_len,
-        std_dev_width + 2,
+        std_dev_width + 3,
         {
             "type": "cell",
             "criteria": "between",
@@ -3093,7 +3093,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + std_dev_len,
-        std_dev_width + 2,
+        std_dev_width + 3,
         {
             "type": "cell",
             "criteria": "between",
@@ -3162,7 +3162,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     # Conditional Formatting
     absdiff_sheet.conditional_format(
         10,
-        3,
+        4,
         9 + absdiff_len,
         absdiff_width + 3,
         {
@@ -3176,7 +3176,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + comp_len,
-        comp_width + 2,
+        comp_width + 3,
         {
             "type": "cell",
             "criteria": ">=",
@@ -3188,7 +3188,7 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
         10,
         4,
         9 + comp_len,
-        comp_width + 2,
+        comp_width + 3,
         {
             "type": "cell",
             "criteria": "<",
@@ -3198,9 +3198,46 @@ def sphere_sddr_comp_excel_writer(outpath, name, final, absdiff, std_dev):
     )
     wb.close()
 
+    # Copy the single post processed results into the comparison workbook
+    target_file = outpath  # Target workbook filename
+    target_sheet_names = [
+        "Values",
+        "Errors",
+        "Statistical Checks",
+    ]  # Target sheet names
+
+    # Loop over the library source files
+    for source_file in single_pp_files:
+        copy_sheets_to_target(source_file, target_file, target_sheet_names)
+
+
+def copy_sheets_to_target(source_filename, target_filename, target_sheet_names):
+    """Performs copying of sheets between different workbooks
+
+    Parameters
+    ----------
+    source_filename : str
+        file for sheets to be copied from
+    target_filename : str
+        file for sheets to be copied to
+    target_sheet_names : str
+        name of sheets in target file
+    """
+    wb_target = openpyxl.load_workbook(target_filename)
+    source_wb = openpyxl.load_workbook(source_filename)
+
+    for source_sheet_name, target_sheet_name in zip(
+        source_wb.sheetnames, target_sheet_names
+    ):
+        source_sheet = source_wb[source_sheet_name]
+        target_sheet = wb_target.create_sheet(target_sheet_name)
+        copy_sheet(source_sheet, target_sheet)
+
+    wb_target.save(target_filename)
+
 
 def copy_sheet(source_sheet: Worksheet, target_sheet: Worksheet) -> None:
-    """Copy a sheet with style, format, layout, ect. from one Excel file
+    """Copy a sheet with style, format, layout, etc. from one Excel file
     to another Excel file.
 
     Parameters
@@ -3210,11 +3247,20 @@ def copy_sheet(source_sheet: Worksheet, target_sheet: Worksheet) -> None:
     target_sheet : Worksheet
         destination sheet
     """
-    _copy_cells(source_sheet, target_sheet)  # copy all the cel values and styles
+    _copy_cells(source_sheet, target_sheet)  # copy all the cell values and styles
     _copy_sheet_attributes(source_sheet, target_sheet)
 
 
 def _copy_sheet_attributes(source_sheet, target_sheet):
+    """Copy contents of workbook sheets
+
+    Parameters
+    ----------
+    source_sheet : str
+        sheet name in source workbook
+    target_sheet : str
+        sheet name in target workbook
+    """
     target_sheet.sheet_format = copy(source_sheet.sheet_format)
     target_sheet.sheet_properties = copy(source_sheet.sheet_properties)
     target_sheet.merged_cells = copy(source_sheet.merged_cells)
@@ -3251,6 +3297,15 @@ def _copy_sheet_attributes(source_sheet, target_sheet):
 
 
 def _copy_cells(source_sheet, target_sheet):
+    """Copy contents of cells including format in a workbook
+
+    Parameters
+    ----------
+    source_sheet : str
+        sheet name in source workbook
+    target_sheet : str
+        sheet name in target workbook
+    """
     for (row, col), source_cell in source_sheet._cells.items():
         target_cell = target_sheet.cell(column=col, row=row)
 

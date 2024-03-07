@@ -26,6 +26,7 @@ import pytest
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+from copy import deepcopy
 
 cp = os.path.dirname(os.path.abspath(__file__))
 modules_path = os.path.dirname(cp)
@@ -33,47 +34,56 @@ sys.path.insert(1, modules_path)
 
 from jade.atlas import Atlas
 
-TEMPLATE_PATH = os.path.join(cp, 'TestFiles', 'atlas', 'template.docx')
-KEYARGS_DF = [{'caption': 'yo', 'highlight': True},
-              {}]
+TEMPLATE_PATH = os.path.join(cp, "TestFiles", "atlas", "template.docx")
+KEYARGS_DF = [{"caption": "yo", "highlight": True}, {}]
 
 
 class TestAtlas:
 
-    atlas = Atlas(TEMPLATE_PATH, 'dummyname')
+    atlas = Atlas(TEMPLATE_PATH, "dummyname")
     df = pd.DataFrame(np.zeros((3, 3)))
-    df.columns = ['dummy1', 'dummy2', 'dummy3']
-    df['highlight'] = ['OK', 'NOK', 'OK']
+    df.columns = ["dummy1", "dummy2", "dummy3"]
+    df["highlight"] = ["OK", "NOK", "OK"]
 
     def test_insert_img(self):
         # dummy plot
         plt.plot([1, 2], [1, 2])
         try:
-            os.mkdir('tmp')
+            os.mkdir("tmp")
         except FileExistsError:
             pass
-        pathfig = os.path.join('tmp', 'dummyfig.png')
+        pathfig = os.path.join("tmp", "dummyfig.png")
         plt.savefig(pathfig)
         try:
             self.atlas.insert_img(pathfig)
             assert True
         finally:
-            shutil.rmtree('tmp')
+            shutil.rmtree("tmp")
 
     @pytest.mark.parametrize("keyargs", KEYARGS_DF)
     def test_insert_df(self, keyargs):
         self.atlas.insert_df(self.df, **keyargs)
         assert True
 
-    def test_save(self):
-        try:
-            os.mkdir('tmp')
-        except FileExistsError:
-            pass
+    def test_save(self, tmpdir):
         # Unfortunately the pdf creation cannot be tested since it requires
         # Office
-        try:
-            self.atlas.save('tmp', pdfprint=False)
-            assert True
-        finally:
-            shutil.rmtree('tmp')
+        atlas = deepcopy(self.atlas)
+        atlas.save(tmpdir, pdfprint=False)
+
+        # try to save a very long name file
+        atlas = deepcopy(self.atlas)
+        atlas.outname = "a" * 240 + ".docx"
+        outpath = os.path.join(tmpdir, "a" * 40)
+        os.mkdir(outpath)
+        atlas.save(outpath)
+        print(outpath)
+        assert len(os.listdir(outpath)) == 1
+
+        # try a name with slash
+        atlas = Atlas(TEMPLATE_PATH, "test fendlv/3.1.docx")
+        outpath = os.path.join(tmpdir, "slashname")
+        os.mkdir(outpath)
+        atlas.save(outpath)
+        print(outpath)
+        assert len(os.listdir(outpath)) == 1

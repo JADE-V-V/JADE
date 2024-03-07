@@ -490,22 +490,10 @@ def clean_runtpe(root):
         path to the root folder containing all simulation where runtpe files
         need to be removed
     """
-    # Cycle on all library folders
-    for lib in os.listdir(root):
-        libpath = os.path.join(root, lib)
-        # Cycle on all benchmarks
-        for benchmark in os.listdir(libpath):
-            benchpath = os.path.join(libpath, benchmark)
-
-            try:
-                # multi-test
-                for test in os.listdir(benchpath):
-                    testpath = os.path.join(benchpath, test)
-                    _rmv_runtpe_file(testpath)
-
-            except NotADirectoryError:
-                # single-test
-                _rmv_runtpe_file(benchpath)
+    # Walk through the root folder and remove the runtpe files
+    for pathroot, folder, files in os.walk(root):
+        if len(files) > 0:
+            _rmv_runtpe_file(pathroot)
 
 
 def _rmv_runtpe_file(folder):

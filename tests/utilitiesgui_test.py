@@ -203,10 +203,10 @@ class TestUtilities:
 
         uty.clean_runtpe(folders_copy)
         # Check files have been removed
-        example = os.path.join(folders_copy, "00c", "Example")
-        oktavian = os.path.join(folders_copy, "00c", "Oktavian", "Oktavian_Cr")
-        oktavian2 = os.path.join(folders_copy, "00c", "Oktavian", "Oktavian_Al")
-        sphere = os.path.join(folders_copy, "00c", "Sphere", "test")
+        example = os.path.join(folders_copy, "00c", "Example", "mcnp")
+        oktavian = os.path.join(folders_copy, "00c", "Oktavian", "Oktavian_Cr", "mcnp")
+        oktavian2 = os.path.join(folders_copy, "00c", "Oktavian", "Oktavian_Al", "mcnp")
+        sphere = os.path.join(folders_copy, "00c", "Sphere", "test", "mcnp")
 
         assert len(os.listdir(example)) == 1
         assert len(os.listdir(oktavian)) == 3

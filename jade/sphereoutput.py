@@ -1472,15 +1472,18 @@ class SphereSDDRoutput(SphereOutput):
                 # rangeex = ws_diff.range("B11")
                 # rangeex.options(index=True, header=False).value = absdiff
 
+                single_pp_files = []
                 # Add single pp sheets
-                # for lib in [reflib, tarlib]:
-                # cp = self.session.state.get_path("single", [lib, "SphereSDDR", "Excel"])
-                # file = os.listdir(cp)[0]
-                # cp = os.path.join(cp, file)
-                # ex.copy_sheets(cp)
+                for lib in [reflib, tarlib]:
+                    pp_dir = self.session.state.get_path(
+                        "single", [lib, "SphereSDDR", "d1s", "Excel"]
+                    )
+                    pp_file = os.listdir(pp_dir)[0]
+                    single_pp_path = os.path.join(pp_dir, pp_file)
+                    single_pp_files.append(single_pp_path)
 
                 exsupp.sphere_sddr_comp_excel_writer(
-                    outpath, name, final, absdiff, std_dev
+                    outpath, name, final, absdiff, std_dev, single_pp_files
                 )
 
     def _get_organized_output(self):

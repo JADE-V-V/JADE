@@ -39,9 +39,17 @@ the installation:
   | ``pip install --upgrade pip``
   | ``pip install .``
 
+.. _installdevelop:
+
+Development Installation
+^^^^^^^^^^^^^^^^^^^^^^^^
+
 If you are developing JADE, you can use the '-e' option when installing and you should install the additional dev dependencies. 
 
   | ``pip install -e . ".[dev]"``
+
+Running
+^^^^^^^
 
 JADE has now been installed as a command line tool and should now be initialised in the root directory as follows: 
 

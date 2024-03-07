@@ -475,7 +475,7 @@ def exploop(session: Session):
             if lib == "exit":
                 session.log.adjourn(exit_text)
                 sys.exit()
-            runoption = session.conf.run_option()
+            runoption = session.conf.run_option(exp=True)
             if runoption == "back":
                 comploop(session)
             if runoption == "exit":
@@ -491,7 +491,6 @@ def exploop(session: Session):
             # If checks are ok perform assessment
             if ans:
                 # Logging
-                runoption = session.conf.run_option(exp=True)
                 bartext = "Experimental benchmark execution started"
                 session.log.bar_adjourn(bartext)
                 session.log.adjourn(

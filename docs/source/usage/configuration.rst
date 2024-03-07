@@ -26,7 +26,7 @@ Herafter, a description of the different sheets included in the file is given.
 MAIN Config.
 ------------
 
-.. image:: ../img/conf/main.png
+.. image:: ../img/conf/main_config.JPG
     :width: 600
 
 This sheet contains the JADE *ambient variables*:
@@ -70,6 +70,10 @@ OpenMP threads
 MPI tasks
     Specifies the number of mpi tasks to use with OpenMPI. **If the user is running in the command line this should
     be set equal to 1.**
+
+MCNP executable prefix
+    This is the command which is used to launch parallel jobs and prepends your executable. The most common example of 
+    this is 'mpirun' which would be entered in this field. 
 
 Batch system
     The command used to launch a batch job on the current system, for example *llsubmit* for LoadLeveler or *sbatch*

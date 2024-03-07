@@ -8,43 +8,50 @@ usage. Some of them are listed hereafter:
 Eliminate dependency from Microsoft Office suite
 ================================================
 The need for Excel and Word may be a limiting factor for the use of JADE.
-If substituing the excel configuration files with .csv ones or a GUI is 
+Substituting the excel configuration files with .csv ones or a GUI is 
 definitely feasible, much harder would be to substitute the Excel use that is
 at the core of JADE post-processing. Either those parts of code are rewritten
 in order to use open-source equivalents (e.g. OpenOffice) or a simplified 
 version of the post-processing must be developed.
 
-Migration to Linux system
-=========================
-A great portion of science is nowadays run on Linux operative systems.
-JADE is entirely written in Python, which should be easily portable to any
-major OS system. Nevertheless,
-key modules like ``xlwings`` or ``python-docx`` which are used respectively
-to interact with Excel and Word do not fully support Linux operative systems.
+JADE may transition in the future to using an interactive web app for visualisation 
+and analysis of results. This would remove the need for the office programs. 
 
-This is currently under development on the `Linux branch <https://github.com/JADE-V-V/JADE/tree/linux>`_. 
+Implementation of additional particle transport codes
+=====================================================
+Now that JADE has capability to run additional transport codes Serpent and OpenMC 
+the framework is in theory available to expand this to other transport codes. 
+This presents an opportunity to automate the running of the codes across the suite 
+of benchmarks available in JADE. In the future cross-code comparison will be 
+possible as part of the inherent post-processing.  
 
-Implementation of open-source Monte Carlo codes
-===============================================
-The science world is more and more going in the direction of open-source
-software. Currently, in order to use JADE, a valid license of MCNP is
-necessary, and this may be a huge limiting factor for its usage. Implementing
-open-source MC code capabilities in JADE (such as OpenMC) would benefit
-the JADE project in many ways like:
+In particular, open source transport codes give significant additional 
+benefits including:
 
 * extend JADE's potential users pool;
 * give the possibility to JADE not only to compare libraries but also to
   compare different MC code results using the same library;
 * allow JADE to be used more effectively in libraries continuous integration.
 
-This is currently under development on the `Linux branch <https://github.com/JADE-V-V/JADE/tree/linux>`_. 
-
 Addition of benchmarks 
 ==============================
 The number of computational and experimental benchmarks in the JADE suite is 
 increasingly growing. This adds to the completeness of the JADE as a validation 
-and verification tool. In particular, the addition high energy benchmarks. Guidance
+and verification tool. Benchmark contributions are welcomed and the code has been 
+structured to facilitate additions in a straightforward manner. Guidance
 for adding benchmarks to JADE is given in :ref:`customcompbench` and :ref:`customexpbench`.
+General guidance for contributions to JADE is given in :ref:`codemod`.
+
+Users wishing to add a benchmark to JADE should first raise an issue on the repository using 
+the template for adding new benchmarks. 
+
+Interface with benchmark repositories
+======================================
+
+Considerable work is often required to prepare experimental benchmarks for running in JADE.
+This may include the modification of tallies or fixing small errors in input decks. These inputs 
+are currently local to JADE. Ideally, there should exist a single reference database that permits
+version control. Ways that JADE may interface with NEA and IAEA hosted repositories are currently being considered. 
 
 **Further ideas for future development**
 
@@ -52,6 +59,5 @@ for adding benchmarks to JADE is given in :ref:`customcompbench` and :ref:`custo
 *	Complete addition of OpenMC and Serpent for all benchmarks within JADE.
 *	Integrating ACE file quality checks within JADE. Further JADE as a complete tool for both verification and validation. 
 *	Production of weight windows required to run some of the benchmarks in JADE. This includes in MCNP, OpenMC and Serpent format. 
-*	General usage of JADE to ensure robustness of the code and conduct quality review of implemented benchmarks. 
-*	Complete run of JADE V&V for JEFF 4T4 or JEFF 4.0 once released. 
+* Extend the suite of Utilities in JADE which are currently for MCNP to other transport codes. 
 

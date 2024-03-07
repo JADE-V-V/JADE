@@ -51,6 +51,8 @@ collaborative features and robust version control. Nevertheless, key principles
 of the process are considered to be the automatic build and automatic testing
 of the code which need to be performed each time the master code is adjourned.
 
+.. _runtesting:
+
 Testing in JADE
 ---------------
 Unit testing in JADE is defined and run with the help of the ``pytest`` module

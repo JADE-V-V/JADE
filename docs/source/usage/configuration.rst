@@ -93,7 +93,7 @@ Computational benchmarks
 ------------------------
 
 .. image:: ../img/conf/comp.png
-    :width: 600
+    :width: 650
 
 This table collects allows to personalize which *computational benchmarks* should be included
 in the JADE assessment. Each row controls a different benchmark, where the following options
@@ -104,7 +104,7 @@ Description
     post-processing.
 
 Folder Name
-    Name of the folder containing input files for all codes. These need to be placed in ``<JADE root>\Benchmarks inputs``.
+    Name of the folder containing input files for all codes. These need to be placed in ``<JADE root>\Benchmarks_Inputs``.
 
 OnlyInput
     When this field is set to ``True`` the benchmark input is only generated but not run. This can be
@@ -152,7 +152,7 @@ Experimental benchmarks
 -----------------------
 
 .. image:: ../img/conf/exp.jpg
-    :width: 600
+    :width: 650
 
 The structure of the sheet is exactly the same as the :ref:`compsheet` one. Nevertheless,
 in this table are indicated the settings for the experimental benchmarks.
@@ -161,7 +161,7 @@ Libraries
 ---------
 
 .. image:: ../img/conf/lib.png
-    :width: 400
+    :width: 450
 
 This sheet contains the paths of nuclear data library index files for the various codes.
 It is the users responsibility to ensure these are configured correctly, and that in 
@@ -191,7 +191,7 @@ and these are the **Parent**, **MT** and **Daughter** ones.
 Computational benchmark post-processing configuration
 =====================================================
 It is possible to control (to some extent) the post-processing of each benchmark via its 
-specific configuration file. These files are located in the ``<JADE_root>\Configuration\Benchmarks Configuration``
+specific configuration file. These files are located in the ``<JADE_root>\Configuration\Benchmarks_Configuration``
 folder and their name must be identical to the one used in the ``File Name`` field in the main configuration file
 (using the .xlsx extension instead of the .i). These files are available only for computational benchmarks,
 since the high degree of customization needed for an experimental benchmark makes quite difficult to 
@@ -305,7 +305,7 @@ SpectrumOutput class benchmarks configuration files
 ---------------------------------------------------
 When a binned-values data benchmark is inserted (see :ref:`insbin`), a Configuration file 
 has to be defined based on the desired final plot result. The filepath is expected to be:
-``<JADE_root>\Configuration\Benchmarks Configuration\<BenchmarkName>.xlsx``. The Excel file
+``<JADE_root>\Configuration\Benchmarks_Configuration\<benchmark_name>.xlsx``. The Excel file
 must have the following structure: 
 
 .. figure:: /img/dev_guide/Example_config_oktavian.PNG

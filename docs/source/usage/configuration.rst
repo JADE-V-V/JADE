@@ -270,12 +270,12 @@ Atlas
 .. image:: ../img/conf/atlasbench.png
     :width: 600
 
-This sheet regulates the Atlas output (Word/PDF) derived from the benchmark. It consists of a table where each row regulates
-the output of a single tally present in the MCNP input.
+This sheet regulates the Atlas output (Word) derived from the benchmark. It consists of a table where each row regulates
+the output of a single tally present in the input.
 Hereinafter a description of the available fields is reported.
 
 Tally
-    tally number according to MCNP input file.
+    tally number according to input file.
 Quantity
     Physical quantity that will be plotted on the y-axis of the plot. For the x-axis the one specified in the Excel sheet
     under **x** will be considered. The quantity selected for plotting will always be the tallied quantity.

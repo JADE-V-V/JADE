@@ -15,7 +15,8 @@ Insert Custom Computational Benchmark
 Implementing a new computational benchmark is relatively easy and, theoretically, no additional
 code is required. The procedure is the following:
 
-#. Once the benchmark input has been finalised, save it as ``<JADE_root>\Benchmark_Inputs\<benchmark_name>\<benchmark_name>.i``. 
+#. Once the benchmark input has been finalised, save it as ``<JADE_root>\Benchmark_Inputs\<benchmark_name>\<code>\<benchmark_name>.i``. 
+   Codes currently supported are MCNP, OpenMC and Serpent
 #. Add the benchmark to the main configuration file in the computational sheet. See :ref:`compsheet`
    for additional information on this. The folder name in the path above should reflect the 'Folder Name' entered in
    the configuration file. 
@@ -127,8 +128,8 @@ introduce a binned-value data benchmark are the following:
   and should be followed also in this case. Also the folder structure is the usual one.
 * As a general rule, to each tally of each in put file it corresponds a *.csv* file in Experimental Results
   data folder.
-* Benchmark input filepath should be ``<JADE_root>\Benchmark_Inputs\<benchmark_name>\<benchmark_name>.i``.
-* For multiple run benchmarks, the filepath should be ``<JADE_root>\Benchmarks_Inputs\<benchmark_name>\<benchmark_name_input_name>\<benchmark_name>_<input_name>.i``.
+* Benchmark input filepath should be ``<JADE_root>\Benchmark_Inputs\<benchmark_name>\<code>\<benchmark_name>.i``.
+* For multiple run benchmarks, the filepath should be ``<JADE_root>\Benchmarks_Inputs\<benchmark_name>\<benchmark_name_input_name>\<code>\<benchmark_name>_<input_name>.i``.
 * The name of the experimental data file corresponding to a given tally in a given benchmark
   is supposed to be: *BenchmarkName_TallyNumber.csv*, and it must be put in
   ``<JADE_root>\Experimental_Results\<benchmark_name>\``.

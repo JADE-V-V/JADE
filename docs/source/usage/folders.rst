@@ -97,14 +97,12 @@ Hereafter, a general overview of the different JADE tree branches is presented.
 
 Benchmark inputs
 ================
-``<JADE_root>\Benchmark inputs`` contains all the inputs of the default benchmarks avaialble in the JADE suite.
+``<JADE_root>\Benchmark_Inputs`` contains all the inputs of the default benchmarks avaialble in the JADE suite.
 This is the folder where eventual user defined benchmark inputs should be positioned.
 In case of benchmarks that are composed by more than one run, all the inputs are reunited in a sub-folder
-(e.g. ``<JADE_root>\Benchmark inputs\Oktavian``.
+(e.g. ``<JADE_root>\Benchmark_Inputs\Oktavian\Oktavian_Al\``.
 
-``<JADE_root>\Benchmark inputs\VRT`` folder is especially important. Here, in specific subfolders, can be found
-all additional files required by the benchmark inputs (e.g. weight window files, irradiation files, reactions file,
-etc.)
+If weight windows are available, they should be placed in same folder as the input. 
 
 Code
 ====
@@ -136,7 +134,7 @@ tests
 Configuration
 =============
 ``<JADE_root>\Configuration`` stores the main JADE configuration file ``Config.xlsx`` and all benchmark-specific configuration
-files that are stored in ``<JADE_root>\Code\Benchmarks Configuration``. For users running on UNIX systems, this folder also 
+files that are stored in ``<JADE_root>\Code\Benchmarks_Configuration``. For users running on UNIX systems, this folder also 
 contains templates for several common job submission systems (Slurm, LoadLeveler), and config shell scripts for configuring 
 modules and environment variables at runtime.
 
@@ -145,9 +143,9 @@ modules and environment variables at runtime.
 
 Experimental results
 ====================
-``<JADE_root>\Experimental results`` stores all the experimental results needed for the post-processing of
+``<JADE_root>\Experimental_Results`` stores all the experimental results needed for the post-processing of
 experimental benchmarks. In case of benchmarks that are composed by more than one run, all the inputs are reunited in a sub-folder
-(e.g. ``<JADE_root>\Experimental results\Oktavian``.
+(e.g. ``<JADE_root>\Experimental_Results\Oktavian``.
 
 Quality
 =======

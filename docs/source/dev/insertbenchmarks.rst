@@ -13,24 +13,23 @@ described respectively in :ref:`customcompbench` and :ref:`customexpbench`.
 Insert Custom Computational Benchmark
 =====================================
 Implementing a new computational benchmark is relatively easy and, theoretically, no additional
-code is required. The procedure is composed by the following steps:
+code is required. The procedure is the following:
 
-#. Once the benchmark input has been finalized, save it as ``<JADE_root>\Benchmark inputs\<name>.i``. 
+#. Once the benchmark input has been finalised, save it as ``<JADE_root>\Benchmark_Inputs\<benchmark_name>\<code>\<benchmark_name>.i``. 
+   Codes currently supported are MCNP, OpenMC and Serpent
 #. Add the benchmark to the main configuration file in the computational sheet. See :ref:`compsheet`
-   for additional information on this.
-#. [OPTIONAL] if external weight windows (WW) are used, the WW file must be named *wwinp* and inserted in
-   ``<JADE_root>\Benchmark inputs\VRT\<name>\``.
+   for additional information on this. The folder name in the path above should reflect the 'Folder Name' entered in
+   the configuration file. 
+#. [OPTIONAL] If external weight windows (WW) are used, the WW file must be named *wwinp* and inserted in
+   the same folder as the input file above. 
 #. Create a custom post-processing configuration file as described in :ref:`ppconf` and save it in
-   ``<JADE_root>\Configuration\Benchmarks Configuration\<name>.xlsx``
+   ``<JADE_root>\Configuration\Benchmarks_Configuration\<name>.xlsx``
 
 .. note::
     The benchmark input should not contain any STOP paramaters or NPS card (this is regulated by the
     main configuration file).
-.. note::
-    It is recommended to provide a comment card (FC) for each tally. These comments are considered the
-    extended tally names and are used during post-processing.
 .. warning::
-    benchmark input file name cannot end with 'o' or 'm'.
+    Benchmark input file name cannot end with 'o' or 'm'.
 
 .. _customexpbench:
 
@@ -40,7 +39,7 @@ Inserting a custom experimental benchmark is slightly more complex, but a signif
 of customization is guaranteed.
 Steps 1) and 2) of the computational benchmarks procedure still need to be followed but then some
 additional coding needs to be performed, specifically, a new child of the :ref:`expoutputclass`
-class needs to be defined inside ``<JADE_root>\Code\expoutput.py``.
+class needs to be defined inside ``<JADE_root>\Code\jade\expoutput.py``.
 In order to do that, at least the three abstract methods ``_processMCNPdata()``, ``_pp_excel_comparison()``
 and ``_build_atlas()`` need to be implemented in the new class.
 Once this has been done, a few other adjustments need to be done to the code.
@@ -49,7 +48,7 @@ Once this has been done, a few other adjustments need to be done to the code.
 
 Call the right Output class
 ---------------------------
-In ``<JADE_root>\Code\postprocess.py``, the function ``_get_output()`` controls the creation of the
+In ``<JADE_root>\Code\jade\postprocess.py``, the function ``_get_output()`` controls the creation of the
 benchmark object during post-processing depending on the benchmark. Here an *elif* statement needs
 to be added to ensure that the newly created custom class is called when generating the output for
 the custom added experimental benchmark. Here is an example of how the FNG benchmark was added:
@@ -76,13 +75,13 @@ Additional actions for multi-run benchmarks
 .. warning::
     these next actions need to be performed **only** if the benchmark is composed by more than one input.
 
-In ``<JADE_root>\Code\status.py`` the name of the benchmark input needs to be added to the MULTI_TEST
+In ``<JADE_root>\Code\jade\status.py`` the name of the benchmark input needs to be added to the MULTI_TEST
 
 .. code-block:: python
 
     MULTI_TEST = ['Sphere', 'Oktavian', 'SphereSDDR', 'FNG']
 
-In ``<JADE_root>\Code\computational.py`` the function ``executeBenchmarksRoutines`` is responsible for
+In ``<JADE_root>\Code\jade\computational.py`` the function ``executeBenchmarksRoutines`` is responsible for
 the generation and run of the benchmarks during a JADE session. The modification here is to be performed
 in the part that is responsible for choosing the Test object to be used depending on the benchmark.
 Here is the code snippet of interest: 
@@ -122,20 +121,20 @@ Experimental results often come as quantities like spectra, leakage fluxes, etc.
 binned in energy or time. For this reason, a standard way of post-processing this kind
 of data has been introduced in JADE, to speed-up the insertion process and to remove the need 
 of adding code. The idea is to organize the benchmark by means of an Excel configuration file,
-which is way more user-friendly than writing new code. The main steps to follow to
+which is more user-friendly than writing new code. The main steps to follow to
 introduce a binned-value data benchmark are the following:
 
 * All steps mentioned above for the insertion of a generic benchmark are still valid
   and should be followed also in this case. Also the folder structure is the usual one.
-* As a general rule, to each tally of each in put file it corresponds a .csv file in Experimental Results
+* As a general rule, to each tally of each in put file it corresponds a *.csv* file in Experimental Results
   data folder.
-* Benchmark input filepath should be ``<JADE_root>\Benchmarks inputs\<BenchmarkName>``.
-* For multiple run benchmarks, the filepath should be ``<JADE_root>\Benchmarks inputs\<BenchmarkName>\<BenchmarkName>_<InputName>.i``.
+* Benchmark input filepath should be ``<JADE_root>\Benchmark_Inputs\<benchmark_name>\<code>\<benchmark_name>.i``.
+* For multiple run benchmarks, the filepath should be ``<JADE_root>\Benchmarks_Inputs\<benchmark_name>\<benchmark_name_input_name>\<code>\<benchmark_name>_<input_name>.i``.
 * The name of the experimental data file corresponding to a given tally in a given benchmark
-  is supposed to be: BenchmarkName_TallyNumber.csv, and it must be put in
-  ``<JADE_root>\Experimental Results\<BenchmarkName>``.
+  is supposed to be: *BenchmarkName_TallyNumber.csv*, and it must be put in
+  ``<JADE_root>\Experimental_Results\<benchmark_name>\``.
 * If the benchmark foresees multiple runs, the filename must be set as: BenchmarkName_InputName_TallyNumber.csv
-  and must be put in ``<JADE_root>\Experimental Results\<BenchmarkName>\<InputName>``
+  and must be put in ``<JADE_root>\Experimental_Results\<benchmark_name>\<input_name>\``
 * Tallies in MCNP input should be binned only on one variable, e.g. only energy or
   only time (JADE doesn't foresee dependency on more than one independent variable)
   and should not include total bins (they are eventually ignored by JADE).
@@ -155,7 +154,7 @@ introduce a binned-value data benchmark are the following:
     #. The last column should be named ``Relative error [-]`` and should contain 
        the values of the total relative experimental error of that bin, not in percentage.
 * Do the things explained in :ref:`calloutput` by using the ``SpectrumOutput`` class.
-* Setup the benchmark configuration file in ``<JADE_root>\Configuration\Benchmarks Configuration`` folder
+* Setup the benchmark configuration file in ``<JADE_root>\Configuration\Benchmarks_Configuration`` folder
   as explained in :ref:`spectrumconfig`.
 * In case of multiple runs, the same tally number should be used for the same quantity in all
   MCNP input files, e.g. tally number 14 in :ref:`tiara` benchmark should correspond
@@ -194,7 +193,7 @@ but the class ``MultipleSpectrumOutput`` must be used. All the other parameters 
 the related configuration file (see :ref:`multspectrumconfig`)
 
 In the configuration files, the user can also set the factor by which the experimental data
-and the MCNP results are multiplied. The factor is set in the ``<JADE_root>\Configuration\Benchmarks Configuration\<BenchmarkName>.xlsx``
+and the MCNP results are multiplied. The factor is set in the ``<JADE_root>\Configuration\Benchmarks_Configuration\<benchmark_name>.xlsx``
 configuration file; the factor is set in the ``Multiplying factor`` column, for
 each individual tally. This is useful to avoid superposition of the plots from different
 tallies, and to have a direct comparison of the differences between different cases.

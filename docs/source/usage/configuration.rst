@@ -26,6 +26,8 @@ Herafter, a description of the different sheets included in the file is given.
 MAIN Config.
 ------------
 
+The parameters here relate to the running of simulations in JADE. More detail is given in :ref:`parallelrunning`. 
+
 .. image:: ../img/conf/main_config.JPG
     :width: 600
 
@@ -68,8 +70,7 @@ OpenMP threads
     this is used to specify the number of tasks. 
 
 MPI tasks
-    Specifies the number of mpi tasks to use with OpenMPI. **If the user is running in the command line this should
-    be set equal to 1.**
+    Specifies the number of MPI tasks to use with OpenMPI. 
 
 MCNP executable prefix
     This is the command which is used to launch parallel jobs and prepends your executable. The most common example of 

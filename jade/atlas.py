@@ -23,6 +23,7 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 # from docx.shared import Pt
 import os
+import logging
 
 # import win32com.client
 import aspose.words
@@ -63,6 +64,9 @@ class Atlas:
         #     name = lib
 
         # self.lib = str(lib)  # Libraries to post process
+        # be sure that no slash is present in the name
+        name = name.replace("/", "")
+        name = name.replace("\\", "")
         self.name = name  # Name of the Atlas (from libraries)
         # Open The Atlas template
         doc = docx.Document(template)
@@ -232,13 +236,22 @@ class Atlas:
         """
         outpath_word = os.path.join(outpath, self.outname + ".docx")
         # outpath_pdf = os.path.join(outpath, self.outname + ".pdf")
+        if len(outpath_word) > 259:
+            logging.warning(
+                "The path to the word document is too long, the file will be truncated"
+            )
+            outpath_word = outpath_word[:254] + ".docx"
 
         try:
             self.doc.save(outpath_word)
         except FileNotFoundError as e:
+            # If there is still an error it may be due to special char
+            # print the original exception
             print(" The following is the original exception:")
             print(e)
-            print("\n it may be due to invalid characters in the file name")
+            print(
+                "\n it may be due to invalid characters in the file name or a path too long"
+            )
 
         # Remove PDF printing. If required, word document can be saved manually.
         if pdfprint:

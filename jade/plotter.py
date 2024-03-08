@@ -341,7 +341,10 @@ class Plotter:
             for j, libdata in enumerate(self.data[1:]):
                 tary = np.array(libdata["y"][i])
                 y = tary / refy
-
+                if j == 0:
+                    zord = 2
+                else:
+                    zord = 1
                 # Compute the plot limits
                 norm, upper, lower = _get_limits(
                     lowerlimit, upperlimit, y, libdata["x"]
@@ -358,6 +361,7 @@ class Plotter:
                     s=300,
                     linewidth=3,
                     label=libdata["ylabel"],
+                    zorder=zord,
                 )
                 axes[i].scatter(
                     upper[0], upper[1], marker=CARETUPBASE, c=self.colors[j]

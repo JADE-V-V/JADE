@@ -6,3 +6,5 @@ omit =
     # The following are not developed directly by JADE
     MCTAL_READER2.py
     xsdirpyne.py
+[html]
+show_contexts = True

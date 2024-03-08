@@ -26,6 +26,8 @@ Herafter, a description of the different sheets included in the file is given.
 MAIN Config.
 ------------
 
+The parameters here relate to the running of simulations in JADE. More detail is given in :ref:`parallelrunning`. 
+
 .. image:: ../img/conf/main_config.JPG
     :width: 600
 
@@ -68,8 +70,7 @@ OpenMP threads
     this is used to specify the number of tasks. 
 
 MPI tasks
-    Specifies the number of mpi tasks to use with OpenMPI. **If the user is running in the command line this should
-    be set equal to 1.**
+    Specifies the number of MPI tasks to use with OpenMPI. 
 
 MCNP executable prefix
     This is the command which is used to launch parallel jobs and prepends your executable. The most common example of 
@@ -92,7 +93,7 @@ Computational benchmarks
 ------------------------
 
 .. image:: ../img/conf/comp.png
-    :width: 600
+    :width: 650
 
 This table collects allows to personalize which *computational benchmarks* should be included
 in the JADE assessment. Each row controls a different benchmark, where the following options
@@ -103,7 +104,7 @@ Description
     post-processing.
 
 Folder Name
-    Name of the folder containing input files for all codes. These need to be placed in ``<JADE root>\Benchmarks inputs``.
+    Name of the folder containing input files for all codes. These need to be placed in ``<JADE root>\Benchmarks_Inputs``.
 
 OnlyInput
     When this field is set to ``True`` the benchmark input is only generated but not run. This can be
@@ -151,7 +152,7 @@ Experimental benchmarks
 -----------------------
 
 .. image:: ../img/conf/exp.jpg
-    :width: 600
+    :width: 650
 
 The structure of the sheet is exactly the same as the :ref:`compsheet` one. Nevertheless,
 in this table are indicated the settings for the experimental benchmarks.
@@ -160,7 +161,7 @@ Libraries
 ---------
 
 .. image:: ../img/conf/lib.png
-    :width: 400
+    :width: 450
 
 This sheet contains the paths of nuclear data library index files for the various codes.
 It is the users responsibility to ensure these are configured correctly, and that in 
@@ -190,7 +191,7 @@ and these are the **Parent**, **MT** and **Daughter** ones.
 Computational benchmark post-processing configuration
 =====================================================
 It is possible to control (to some extent) the post-processing of each benchmark via its 
-specific configuration file. These files are located in the ``<JADE_root>\Configuration\Benchmarks Configuration``
+specific configuration file. These files are located in the ``<JADE_root>\Configuration\Benchmarks_Configuration``
 folder and their name must be identical to the one used in the ``File Name`` field in the main configuration file
 (using the .xlsx extension instead of the .i). These files are available only for computational benchmarks,
 since the high degree of customization needed for an experimental benchmark makes quite difficult to 
@@ -269,12 +270,12 @@ Atlas
 .. image:: ../img/conf/atlasbench.png
     :width: 600
 
-This sheet regulates the Atlas output (Word/PDF) derived from the benchmark. It consists of a table where each row regulates
-the output of a single tally present in the MCNP input.
+This sheet regulates the Atlas output (Word) derived from the benchmark. It consists of a table where each row regulates
+the output of a single tally present in the input.
 Hereinafter a description of the available fields is reported.
 
 Tally
-    tally number according to MCNP input file.
+    tally number according to input file.
 Quantity
     Physical quantity that will be plotted on the y-axis of the plot. For the x-axis the one specified in the Excel sheet
     under **x** will be considered. The quantity selected for plotting will always be the tallied quantity.
@@ -304,7 +305,7 @@ SpectrumOutput class benchmarks configuration files
 ---------------------------------------------------
 When a binned-values data benchmark is inserted (see :ref:`insbin`), a Configuration file 
 has to be defined based on the desired final plot result. The filepath is expected to be:
-``<JADE_root>\Configuration\Benchmarks Configuration\<BenchmarkName>.xlsx``. The Excel file
+``<JADE_root>\Configuration\Benchmarks_Configuration\<benchmark_name>.xlsx``. The Excel file
 must have the following structure: 
 
 .. figure:: /img/dev_guide/Example_config_oktavian.PNG

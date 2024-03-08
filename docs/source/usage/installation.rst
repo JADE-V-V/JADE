@@ -17,7 +17,7 @@ Firstly, create a virtual environment and activate it:
   | ``source jade/bin/activate``
 
 Visit the `JADE repository <https://github.com/JADE-V-V/jade>`_ and if you have `git <https://git-scm.com/>`_
-you can clone the repository:
+installed you can clone the repository:
 
   | ``git clone https://github.com/JADE-V-V/JADE.git``
   | ``mv JADE Code``

@@ -28,11 +28,12 @@ import math
 import os
 import shutil
 import sys
+
 from typing import TYPE_CHECKING
 
 import numpy as np
-import openpyxl
 import pandas as pd
+import openpyxl
 
 # import openpyxl
 # from openpyxl.utils.dataframe import dataframe_to_rows
@@ -77,18 +78,34 @@ class SphereOutput(BenchmarkOutput):
         print(" Generating plots...")
         if self.mcnp:
             outpath = os.path.join(self.atlas_path_mcnp, "tmp")
+            tally_info = [
+                (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
+                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+            ]
         if self.serpent:
             outpath = os.path.join(self.atlas_path_serpent, "tmp")
+            tally_info = [
+                (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
+                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+            ]
         if self.openmc:
             outpath = os.path.join(self.atlas_path_openmc, "tmp")
+            tally_info = [
+                (4, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
+                (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+            ]
         if self.d1s:
             outpath = os.path.join(self.atlas_path_d1s, "tmp")
+            tally_info = [
+                (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
+                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+            ]
         if not os.path.exists(outpath):
             os.mkdir(outpath)
-        self._generate_single_plots(outpath)
+        self._generate_single_plots(outpath, tally_info)
         print(" Single library post-processing completed")
 
-    def _generate_single_plots(self, outpath):
+    def _generate_single_plots(self, outpath, tally_info):
         """
         Generate all the requested plots in a temporary folder
 
@@ -104,10 +121,7 @@ class SphereOutput(BenchmarkOutput):
         """
 
         for code, outputs in self.outputs.items():
-            for tally, title, quantity, unit in [
-                (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
-            ]:
+            for tally, title, quantity, unit in tally_info:
                 print(" Plotting tally n." + str(tally))
                 for zaidnum, output in tqdm(outputs.items()):
                     title = title
@@ -207,10 +221,17 @@ class SphereOutput(BenchmarkOutput):
 
     def _generate_plots(self, libraries, allzaids, outputs, globalname, outpath):
         for code, code_outputs in self.outputs.items():
-            for tally, title, quantity, unit in [
-                (2, "Leakage Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (32, "Leakage Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
-            ]:
+            if code == "mcnp":
+                tally_info = [
+                (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
+                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+                ]
+            if code == "openmc":
+                tally_info = [
+                (4, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
+                (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+                ]
+            for tally, title, quantity, unit in tally_info:
                 print(" Plotting tally n." + str(tally))
                 for zaidnum in tqdm(allzaids):
                     # title = title
@@ -333,9 +354,9 @@ class SphereOutput(BenchmarkOutput):
         errors = []
         # stat_checks = []
         outputs = {}
-        test_path_openmc = os.path.join(self.test_path, "openmc")
-        for folder in os.listdir(test_path_openmc):
-            results_path = os.path.join(test_path_openmc, folder)
+        #test_path_openmc = os.path.join(self.test_path, "openmc")
+        for folder in os.listdir(self.test_path):
+            results_path = os.path.join(self.test_path, folder, "openmc")
             pieces = folder.split("_")
             # Get zaid
             zaidnum = pieces[-2]
@@ -457,7 +478,7 @@ class SphereOutput(BenchmarkOutput):
             self.errors["openmc"] = errors
             self.stat_checks["openmc"] = stat_checks
 
-            self.sphere_single_excel_writer(outpath, self.lib, results, errors)
+            exsupp.sphere_single_excel_writer(self, outpath, self.lib, results, errors)
 
         if self.d1s:
             pass
@@ -774,15 +795,15 @@ class SphereOutput(BenchmarkOutput):
                 error_dfs = []
 
                 for test_path in [
-                    os.path.join(self.test_path[reflib], "openmc"),
-                    os.path.join(self.test_path[tarlib], "openmc"),
+                    self.test_path[reflib],
+                    self.test_path[tarlib]
                 ]:
                     results = []
                     errors = []
                     iteration = iteration + 1
                     outputs_lib = {}
                     for folder in os.listdir(test_path):
-                        results_path = os.path.join(test_path, folder)
+                        results_path = os.path.join(test_path, folder, "openmc")
                         pieces = folder.split("_")
                         # Get zaid
                         zaidnum = pieces[-2]
@@ -1067,7 +1088,10 @@ class SphereTallyOutput:
 
         """
         # Tallies to post process
-        # tallies2pp = ['12', '22', '24', '14', '34', '6', '46']
+        if code == "mcnp":     
+            binned_tallies = ["2", "12", "22", "32"]
+        if code == "openmc":
+            binned_tallies = ["4","14"]
         data = self.tallydata.set_index(["Energy"])
         totalbins = self.totalbin.set_index("Tally Description")
         results = []  # Store data to compare for different tallies
@@ -1085,7 +1109,7 @@ class SphereTallyOutput:
         for tally in tallies:
             tally_num = str(tally["Tally N."].iloc[0])
             tally_description = tally["Tally Description"].iloc[0]
-            if tally_num in ["2", "12", "22", "32"]:  # Coarse Flux bins
+            if tally_num in binned_tallies:  # Coarse Flux bins
                 # Get energy bins
                 bins = tally.index.tolist()
                 for ebin in bins:

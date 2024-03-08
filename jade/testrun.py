@@ -612,16 +612,16 @@ class Test:
         bool
             Flag if simulation not run
         """
+        
         # Calculate MPI tasks and OpenMP threads
         mpi_tasks = int(config.mpi_tasks)
         omp_threads = int(config.openmp_threads)
         run_mpi = False
-        run_omp = False
-
         if mpi_tasks > 1:
             run_mpi = True
+        run_openmp = False
         if omp_threads > 1:
-            run_omp = True
+            run_openmp = True
 
         executable = config.serpent_exec
         env_variables = config.serpent_config
@@ -637,31 +637,9 @@ class Test:
         flagnotrun = False
 
         if pd.isnull(executable) is not True:
-            # Construct the run commands based on user OMP and MPI inputs.
-            if run_omp:
-                if run_mpi:
-                    run_command = [
-                        "mpirun",
-                        "-np",
-                        str(mpi_tasks),
-                        executable,
-                        "-omp",
-                        str(omp_threads),
-                        inputstring,
-                    ]
-                else:
-                    run_command = [executable, "-omp", str(omp_threads), inputstring]
-            else:
-                if run_mpi:
-                    run_command = [
-                        "mpirun",
-                        "-np",
-                        str(mpi_tasks),
-                        executable,
-                        inputstring,
-                    ]
-                else:
-                    run_command = [executable, inputstring]
+            run_command = [executable, inputstring]
+            if run_openmp:
+                run_command = [executable, '-omp', str(omp_threads), inputstring]
 
             if runoption.lower() == "c":
                 try:
@@ -669,7 +647,6 @@ class Test:
                     os.environ["SERPENT_ACELIB"] = str(str(libpath))
                     unix.configure(env_variables)
                     print(" ".join(run_command))
-                    # subprocess.Popen(" ".join(run_command), cwd=directory, shell=True)
                     subprocess.run(
                         " ".join(run_command), cwd=directory, shell=True, timeout=43200
                     )
@@ -681,6 +658,8 @@ class Test:
                     flagnotrun = True
 
             elif runoption.lower() == "s":
+                if run_mpi:
+                    run_command.insert(0, config.mpi_exec_prefix)
                 # Run Serpent as a job
                 cwd = os.getcwd()
                 os.chdir(directory)
@@ -730,12 +709,11 @@ class Test:
         mpi_tasks = int(config.mpi_tasks)
         omp_threads = int(config.openmp_threads)
         run_mpi = False
-        run_omp = False
-
         if mpi_tasks > 1:
             run_mpi = True
+        run_openmp = False
         if omp_threads > 1:
-            run_omp = True
+            run_openmp = True
 
         executable = config.openmc_exec
         env_variables = config.openmc_config
@@ -745,24 +723,10 @@ class Test:
         flagnotrun = False
 
         if pd.isnull(executable) is not True:
+            run_command = [executable]
             # Run OpenMC from command line either OMP, MPI or hybrid MPI-OMP
-            if run_omp:
-                if run_mpi:
-                    run_command = [
-                        "mpirun",
-                        "-np",
-                        str(mpi_tasks),
-                        executable,
-                        "--threads",
-                        str(omp_threads),
-                    ]
-                else:
-                    run_command = [executable, "--threads", str(omp_threads)]
-            else:
-                if run_mpi:
-                    run_command = ["mpirun", "-np", str(mpi_tasks), executable]
-                else:
-                    run_command = [executable]
+            if run_openmp:
+                run_command = [executable, "--threads", str(omp_threads)]
 
             if runoption.lower() == "c":
                 try:
@@ -780,7 +744,9 @@ class Test:
                     flagnotrun = True
 
             elif runoption.lower() == "s":
-                # Run Serpent as a job
+                if run_mpi:
+                    run_command.insert(0, config.mpi_exec_prefix)               
+                # Run OpenMC as a job
                 cwd = os.getcwd()
                 os.chdir(directory)
                 Test.job_submission(

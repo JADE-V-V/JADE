@@ -250,9 +250,9 @@ class ExperimentalOutput(BenchmarkOutput):
                             if input not in inputs:
                                 inputs.append(input)
                     if self.mcnp:
-                        self.raw_data["mcnp"] = code_raw_data
+                        self.raw_data["mcnp"].update(code_raw_data)
                     if self.d1s:
-                        self.raw_data["d1s"] = code_raw_data
+                        self.raw_data["d1s"].update(code_raw_data)
                 # Results are organized just by lib
                 else:
                     mfile, ofile = self._get_output_files(test_path)

@@ -64,6 +64,16 @@ class TestSphereOutput:
         assert errors[0]['Neutron Flux in material cell in Vitamin-J 175 energy groups'] == 0.15204491017964072
         assert stat_checks[0]['Gamma flux in material cell [FINE@FISPACT MANUAL 24 Group Structure] [14]'] == 'Passed'
 
+    def test_read_openmc_output(self):
+        outputs, results, errors = self.mockoutput._read_openmc_output()
+        tally_values = outputs['M101'].tallydata['Value']
+        tally_errors = outputs['M101'].tallydata['Error']        
+
+        assert 0.146561 == pytest.approx(tally_values[10])
+        assert 0.00015034 == pytest.approx(tally_errors[176])
+        assert results[0]['Zaid'] == 'M101'
+        assert errors[0]['Neutron Spectra'] == 0.09626673662857144
+
 # Files
 OUTP_SDDR = os.path.join(
     cp, "TestFiles", "sphereoutput", "SphereSDDR_11023_Na-23_102_o"

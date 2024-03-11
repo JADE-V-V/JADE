@@ -5,5 +5,5 @@ NPS cut-off,CTME cut-off,Relative Error cut-off,Density [g/cc],Name,Symbol,Let O
 ,,F32-0.0005,2.2875,Ordinary Concrete,M200,TRUE
 ,,F32-0.0005,2.33,Natural Silicon,M900,TRUE
 ,,F32-0.0005,0.93,Polyethylene (non-borated),M901,TRUE
-,,F32-0.0006,19,Tungsten,M74,TRUE
-,,F32-0.0007,3.18,CaF2,M10,TRUE
+,,F32-0.0005,19,Tungsten,M74,TRUE
+,,F32-0.0005,3.18,CaF2,M10,TRUE

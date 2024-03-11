@@ -89,10 +89,18 @@ class TestExpOutput:
         self.benchoutput_comp.compare()
         conf = config.iloc[5]
         self.benchoutput_comp = expoutput.MultipleSpectrumOutput(
-            ["32c", "31c"], conf, session_mock, multiplerun=True
+            ["32c", "31c", "00c"], conf, session_mock, multiplerun=True
         )
         self.benchoutput_comp.compare()
-        assert True
+        # check that all the raw data is dumped
+        path2raw = os.path.join(
+            session_mock.path_comparison,
+            "32c_vs_31c_vs_00c",
+            conf["Folder Name"],
+            "mcnp",
+            "Raw_Data",
+        )
+        assert len(os.listdir(path2raw)) == 3
 
     def test_shieldingoutput(self, session_mock: MockUpSession):
 
@@ -101,10 +109,19 @@ class TestExpOutput:
         os.makedirs(session_mock.path_comparison)
         os.makedirs(session_mock.path_single)
         self.benchoutput_comp = expoutput.ShieldingOutput(
-            ["32c", "31c"], conf, session_mock, multiplerun=True
+            ["32c", "31c", "00c"], conf, session_mock, multiplerun=True
         )
         self.benchoutput_comp.compare()
-        assert True
+        # check that all the raw data is dumped
+        # check that all the raw data is dumped
+        path2raw = os.path.join(
+            session_mock.path_comparison,
+            "32c_vs_31c_vs_00c",
+            conf["Folder Name"],
+            "mcnp",
+            "Raw_Data",
+        )
+        assert len(os.listdir(path2raw)) == 3
 
     def test_tiaraoutput(self, session_mock: MockUpSession):
 
@@ -121,6 +138,15 @@ class TestExpOutput:
             ["32c", "31c"], conf, session_mock, multiplerun=True
         )
         self.benchoutput_comp.compare()
+        # check that all the raw data is dumped
+        path2raw = os.path.join(
+            session_mock.path_comparison,
+            "32c_vs_31c",
+            conf["Folder Name"],
+            "mcnp",
+            "Raw_Data",
+        )
+        assert len(os.listdir(path2raw)) == 2
         assert True
 
     def test_fngoutput(self, session_mock: MockUpSession):
@@ -133,4 +159,13 @@ class TestExpOutput:
             ["99c", "98c"], conf, session_mock, multiplerun=True
         )
         self.benchoutput_comp.compare()
+        # check that all the raw data is dumped
+        path2raw = os.path.join(
+            session_mock.path_comparison,
+            "99c_vs_98c",
+            conf["Folder Name"],
+            "d1s",
+            "Raw_Data",
+        )
+        assert len(os.listdir(path2raw)) == 2
         assert True

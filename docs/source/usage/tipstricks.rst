@@ -62,7 +62,7 @@ The steps to follow are the following:
   **TypicalMaterials** in the ``JADE_root>\Benchmarks inputs`` folder.
   Chose a material number that has not been already used.
 * Modify the ``<JADE_root>\Configuration\Benchmarks_Configuration\Sphere\MaterialSettings.csv``
-  and the ``<JADE_root>\Configuration\Benchmarks Configuration\SphereSDDR\MaterialSettings.csv``
+  and the ``<JADE_root>\Configuration\Benchmarks_Configuration\SphereSDDR\MaterialSettings.csv``
   to specify the run parameters for the new materials. See :ref:`runconf` for
   additional details on such files.
 

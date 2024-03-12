@@ -443,6 +443,7 @@ class SphereOutput(BenchmarkOutput):
             self.results["mcnp"] = results
             self.errors["mcnp"] = errors
             self.stat_checks["mcnp"] = stat_checks
+            lib_name = self.session.conf.get_lib_name(self.lib)
             # Generate DataFrames
             # results = pd.DataFrame(results)
             # errors = pd.DataFrame(errors)
@@ -458,7 +459,7 @@ class SphereOutput(BenchmarkOutput):
             #    df.set_index(['Zaid', 'Zaid Name'], inplace=True)
             #    df.reset_index(inplace=True)
             exsupp.sphere_single_excel_writer(
-                self, outpath, self.lib, results, errors, stat_checks
+                self, outpath, lib_name, results, errors, stat_checks
             )
 
         if self.serpent:
@@ -553,7 +554,7 @@ class SphereOutput(BenchmarkOutput):
         # ex.insert_df(9, 2, results, 0)
         # ex.insert_df(9, 2, errors, 1)
         # ex.insert_df(9, 2, stat_checks, 2)
-        # lib_name = self.session.conf.get_lib_name(self.lib)
+        #lib_name = self.session.conf.get_lib_name(self.lib)
         # ex.wb.sheets[0].range('D1').value = lib_name
         # ex.save()
 

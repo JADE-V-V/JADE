@@ -23,7 +23,7 @@ installed you can clone the repository:
   | ``mv JADE Code``
   | ``cd Code``
 
-The folder strucure should now look like the following:
+The folder structure should now look like the following:
 ::
       <JADE_root>
         | --------- Code

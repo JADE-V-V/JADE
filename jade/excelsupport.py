@@ -28,36 +28,6 @@ import pandas as pd
 from openpyxl.worksheet.worksheet import Worksheet
 from xlsxwriter.utility import xl_rowcol_to_cell
 
-# def insert_df(startrow, startcolumn, df, ws, header=True):
-#     """
-#     Insert a DataFrame (df) into a Worksheet (ws) using xlwings.
-#     (startrow) and (startcolumn) identify the starting data entry
-#     """
-#     columns = list(df.columns)
-#     values = df.values
-#     if header:
-#         for i, column in enumerate(range(startcolumn, startcolumn + len(columns))):
-#             value = columns[i]
-#             try:
-#                 ws.cell(column=column, row=startrow, value=value)
-#                 # ws.range((startrow, column)).value = value
-#             except (AttributeError, ValueError) as e:
-#                 print(e)
-#                 print("Warning! header not printes: column,value", column, value)
-#         startrow = startrow + 1
-
-#     for i, row in enumerate(range(startrow, startrow + len(df))):
-#         for j, column in enumerate(range(startcolumn, startcolumn + len(df.columns))):
-#             value = values[i][j]
-#             try:
-#                 ws.cell(column=column, row=row, value=value)
-#                 # ws.range((row, column)).value = value
-#             except (AttributeError, ValueError) as e:
-#                 print(e)
-#                 print(
-#                     "Warning! value not printed: row, column, value", row, column, value
-#                 )
-
 
 def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
     """
@@ -1032,27 +1002,12 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
     """
     writer = pd.ExcelWriter(outpath, engine="xlsxwriter")
 
-    for df in (values, errors):
-        df.set_index("Zaid", inplace=True)
-
-    values.to_excel(writer, startrow=8, startcol=1, sheet_name="Values")
-    errors.to_excel(writer, startrow=8, startcol=1, sheet_name="Errors")
-
     wb = writer.book
-    val_sheet = writer.sheets["Values"]
-    err_sheet = writer.sheets["Errors"]
-
-    values_len, values_width = values.shape
-    errors_len, errors_width = errors.shape
-
-    if stats is not None:
-        stats.set_index("Zaid", inplace=True)
-        stats.to_excel(writer, startrow=8, startcol=1, sheet_name="Statistical Checks")
-        stat_sheet = writer.sheets["Statistical Checks"]
-        stats_len, stats_width = stats.shape
 
     # Formatting styles
-    plain_format = wb.add_format({"bg_color": "#FFFFFF"})
+    plain_format = wb.add_format(
+        {"align": "center", "valign": "center", "bg_color": "#FFFFFF"}
+    )
     oob_format = wb.add_format(
         {
             "align": "center",
@@ -1061,8 +1016,9 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
             "text_wrap": True,
         }
     )
-    tally_format = wb.add_format({"bg_color": "#D9D9D9"})
-    merge_format = wb.add_format({"align": "center", "valign": "center", "border": 2})
+    merge_format = wb.add_format(
+        {"align": "center", "valign": "center", "border": 2, "text_wrap": True}
+    )
     title_merge_format = wb.add_format(
         {
             "font_size": "36",
@@ -1070,36 +1026,92 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
             "valign": "center",
             "bold": True,
             "border": 2,
+            "text_wrap": True,
         }
     )
     subtitle_merge_format = wb.add_format(
         {
             "font_size": "16",
             "align": "center",
-            "valign": "center",
+            "valign": "top",
             "bold": True,
             "border": 2,
+            "text_wrap": True,
         }
     )
-    legend_text_format = wb.add_format({"align": "center", "bg_color": "white"})
-    red_cell_format = wb.add_format({"bg_color": "red"})
-    orange_cell_format = wb.add_format({"bg_color": "orange"})
-    yellow_cell_format = wb.add_format({"bg_color": "yellow"})
-    green_cell_format = wb.add_format({"bg_color": "#A6D86E"})
-    value_allzero_format = wb.add_format({"bg_color": "#EDEDED"})
-    value_belowzero_format = wb.add_format({"bg_color": "#FFC7CE"})
-    value_abovezero_format = wb.add_format({"bg_color": "#C6EFCE"})
+    subsubtitle_merge_format = wb.add_format(
+        {
+            "font_size": "12",
+            "align": "center",
+            "valign": "top",
+            "bold": True,
+            "border": 2,
+            "text_wrap": True,
+        }
+    )
+    format_with_alignment = wb.add_format(
+        {
+            "align": "center",
+            "valign": "vcenter",
+        }
+    )
 
-    # VALUES
+    legend_text_format = wb.add_format(
+        {"align": "center", "bg_color": "white", "border": 1}
+    )
+    red_cell_format = wb.add_format({"bg_color": "red", "border": 3})
+    orange_cell_format = wb.add_format({"bg_color": "#FFC000", "border": 3})
+    yellow_cell_format = wb.add_format({"bg_color": "#FFFF00", "border": 3})
+    green_cell_format = wb.add_format({"bg_color": "#92D050", "border": 3})
+    value_allzero_format = wb.add_format({"bg_color": "#EDEDED", "border": 3})
+    value_belowzero_format = wb.add_format({"bg_color": "#FFC7CE", "border": 3})
+    value_abovezero_format = wb.add_format({"bg_color": "#C6EFCE", "border": 3})
+
+    scientific_format = wb.add_format({"num_format": "0.00E+00"})
+    percent_format = wb.add_format({"num_format": "0.00%"})
+
+    # Populate Sheets
+    # To wrap text can not overwrite dataframe formatting. https://stackoverflow.com/questions/42562977/xlsxwriter-text-wrap-not-working
+    values.to_excel(
+        writer, startrow=9, startcol=1, sheet_name="Values", index=False, header=False
+    )
+    val_sheet = writer.sheets["Values"]
+    for col_num, value in enumerate(values.columns.values):
+        val_sheet.write(8, col_num + 1, value, subsubtitle_merge_format)
+
+    errors.to_excel(
+        writer, startrow=9, startcol=1, sheet_name="Errors", index=False, header=False
+    )
+    err_sheet = writer.sheets["Errors"]
+    for col_num, value in enumerate(errors.columns.values):
+        err_sheet.write(8, col_num + 1, value, subsubtitle_merge_format)
+
+    # Get shapes to define formatting bounds
+    values_len, values_width = values.shape
+    errors_len, errors_width = errors.shape
+
+    if stats is not None:
+        stats.to_excel(
+            writer,
+            startrow=9,
+            startcol=1,
+            sheet_name="Statistical Checks",
+            index=False,
+            header=False,
+        )
+        stat_sheet = writer.sheets["Statistical Checks"]
+        stats_len, stats_width = stats.shape
+        for col_num, value in enumerate(stats.columns.values):
+            stat_sheet.write(8, col_num + 1, value, subsubtitle_merge_format)
 
     # Title Format
     val_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
     val_sheet.merge_range("D1:D2", lib, subtitle_merge_format)
     val_sheet.merge_range(
-        "B3:L7", "SPHERE LEAKAGE TEST RESULTS RECAP: VALUES", title_merge_format
+        "B3:Q7", "SPHERE LEAKAGE TEST RESULTS RECAP: VALUES", title_merge_format
     )
     val_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-    val_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
+    val_sheet.merge_range("D8:Q8", "TALLY", subtitle_merge_format)
 
     # Freeze title
     val_sheet.freeze_panes(9, 0)
@@ -1112,25 +1124,23 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
     for i in range(9 + values_len, 1000):
         val_sheet.set_row(i, None, oob_format)
 
-    # Column widths for values, set up to 15th col to ensure title format correct
-    val_sheet.set_column(1, 14, 20)
+    # Column widths
     val_sheet.set_column(1, values_width + 2, 20)
 
     # Row Heights
     val_sheet.set_row(7, 31)
-    val_sheet.set_row(8, 73.25)
+    val_sheet.set_row(8, 80)
 
     # Legend
-    val_sheet.merge_range("N3:O3", "LEGEND", merge_format)
-    val_sheet.merge_range("N8:O8", "According to MCNP manual", oob_format)
-    val_sheet.write("N4", "", red_cell_format)
-    val_sheet.write("O4", ">|5|%", legend_text_format)
-    val_sheet.write("N5", "", orange_cell_format)
-    val_sheet.write("O5", "|1|%≤|5|%", legend_text_format)
-    val_sheet.write("N6", "", yellow_cell_format)
-    val_sheet.write("O6", "|0.5|%≤|1|%", legend_text_format)
-    val_sheet.write("N7", "", green_cell_format)
-    val_sheet.write("O7", "<|0.5|%", legend_text_format)
+    val_sheet.merge_range("S3:T3", "LEGEND", merge_format)
+    val_sheet.write("S4", "", red_cell_format)
+    val_sheet.write("T4", ">|5|%", legend_text_format)
+    val_sheet.write("S5", "", orange_cell_format)
+    val_sheet.write("T5", "|1|%≤|5|%", legend_text_format)
+    val_sheet.write("S6", "", yellow_cell_format)
+    val_sheet.write("T6", "|0.5|%≤|1|%", legend_text_format)
+    val_sheet.write("S7", "", green_cell_format)
+    val_sheet.write("T7", "<|0.5|%", legend_text_format)
 
     # Conditional Formatting
     val_sheet.conditional_format(
@@ -1272,62 +1282,62 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
     err_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
     err_sheet.merge_range("D1:D2", lib, subtitle_merge_format)
     err_sheet.merge_range(
-        "B3:L7", "SPHERE LEAKAGE TEST RESULTS RECAP: ERRORS", title_merge_format
+        "B3:N7", "SPHERE LEAKAGE TEST RESULTS RECAP: ERRORS", title_merge_format
     )
     err_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-    err_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
+    err_sheet.merge_range("D8:N8", "TALLY", subtitle_merge_format)
 
     # Freeze title
     err_sheet.freeze_panes(9, 0)
 
     # out of bounds
     err_sheet.set_column(0, 0, 4, oob_format)
-    err_sheet.set_column(errors_width + 2, 1000, 18, oob_format)
+    err_sheet.set_column(errors_width, 1000, 18, oob_format)
+
     for i in range(9):
         err_sheet.set_row(i, None, oob_format)
     for i in range(9 + errors_len, 1000):
         err_sheet.set_row(i, None, oob_format)
 
-    # Column widths for errors, set up to 15th col by default to ensure title format correct
-    err_sheet.set_column(1, 14, 20)
-    err_sheet.set_column(1, errors_width + 2, 20)
+    # Column widths
+    err_sheet.set_column(1, errors_width, 20)
 
     # Row Heights
     err_sheet.set_row(7, 31)
-    err_sheet.set_row(8, 73.25)
+    err_sheet.set_row(8, 80)
 
     # Legend
-    err_sheet.merge_range("N3:O3", "LEGEND", merge_format)
-    err_sheet.merge_range("N8:O8", "According to MCNP manual", oob_format)
-    err_sheet.write("N4", "", red_cell_format)
-    err_sheet.write("O4", "> 50%", legend_text_format)
-    err_sheet.write("N5", "", orange_cell_format)
-    err_sheet.write("O5", "20% ≤ 50%", legend_text_format)
-    err_sheet.write("N6", "", yellow_cell_format)
-    err_sheet.write("O6", "10% ≤ 20%", legend_text_format)
-    err_sheet.write("N7", "", green_cell_format)
-    err_sheet.write("O7", "< 10%", legend_text_format)
+    err_sheet.merge_range("P3:Q3", "LEGEND", merge_format)
+    err_sheet.merge_range("P8:Q8", "According to MCNP manual", oob_format)
+    err_sheet.write("P4", "", red_cell_format)
+    err_sheet.write("Q4", "> 50%", legend_text_format)
+    err_sheet.write("P5", "", orange_cell_format)
+    err_sheet.write("Q5", "20% ≤ 50%", legend_text_format)
+    err_sheet.write("P6", "", yellow_cell_format)
+    err_sheet.write("Q6", "10% ≤ 20%", legend_text_format)
+    err_sheet.write("P7", "", green_cell_format)
+    err_sheet.write("Q7", "< 10%", legend_text_format)
 
     # Conditional Formatting
     err_sheet.conditional_format(
         9,
         3,
         8 + errors_len,
-        errors_width + 1,
-        {"type": "blanks", "format": plain_format},
+        errors_width,
+        {"type": "blanks", "format": oob_format},
     )
     err_sheet.conditional_format(
         9,
         3,
         8 + errors_len,
-        errors_width + 1,
+        errors_width,
         {"type": "cell", "criteria": ">", "value": 0.5, "format": red_cell_format},
     )
     err_sheet.conditional_format(
         9,
         3,
         8 + errors_len,
-        errors_width + 1,
+        errors_width,
         {
             "type": "cell",
             "criteria": "between",
@@ -1340,7 +1350,7 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
         9,
         3,
         8 + errors_len,
-        errors_width + 1,
+        errors_width,
         {
             "type": "cell",
             "criteria": "between",
@@ -1353,14 +1363,14 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
         9,
         3,
         8 + errors_len,
-        errors_width + 1,
+        errors_width,
         {"type": "cell", "criteria": "<", "value": -0.5, "format": red_cell_format},
     )
     err_sheet.conditional_format(
         9,
         3,
         8 + errors_len,
-        errors_width + 1,
+        errors_width,
         {
             "type": "cell",
             "criteria": "between",
@@ -1373,7 +1383,7 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
         9,
         3,
         8 + errors_len,
-        errors_width + 1,
+        errors_width,
         {
             "type": "cell",
             "criteria": "between",
@@ -1386,13 +1396,37 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
         9,
         3,
         8 + errors_len,
-        errors_width + 1,
+        errors_width,
         {
             "type": "cell",
             "criteria": "between",
             "minimum": -0.1,
             "maximum": 0.1,
             "format": green_cell_format,
+        },
+    )
+    err_sheet.conditional_format(
+        9,
+        3,
+        8 + errors_len,
+        errors_width,
+        {
+            "type": "cell",
+            "criteria": ">=",
+            "value": 0,
+            "format": percent_format,
+        },
+    )
+    err_sheet.conditional_format(
+        9,
+        3,
+        8 + errors_len,
+        errors_width,
+        {
+            "type": "cell",
+            "criteria": "<",
+            "value": 0,
+            "format": percent_format,
         },
     )
 
@@ -1402,45 +1436,52 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
         stat_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
         stat_sheet.merge_range("D1:D2", lib, subtitle_merge_format)
         stat_sheet.merge_range(
-            "B3:L7",
+            "B3:N7",
             "SPHERE LEAKAGE TEST RESULTS RECAP: STATISTICAL CHECKS",
             title_merge_format,
         )
         stat_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-        stat_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
+        stat_sheet.merge_range("D8:N8", "TALLY", subtitle_merge_format)
 
         # Freeze title
         stat_sheet.freeze_panes(9, 0)
 
         # out of bounds
         stat_sheet.set_column(0, 0, 4, oob_format)
-        stat_sheet.set_column(stats_width + 2, 1000, 18, oob_format)
+        stat_sheet.set_column(stats_width, 1000, 18, oob_format)
+
         for i in range(9):
             stat_sheet.set_row(i, None, oob_format)
         for i in range(9 + stats_len, 1000):
             stat_sheet.set_row(i, None, oob_format)
 
-        # Column widths for errors, set up to 15th col by default to ensure title format correct
-        stat_sheet.set_column(1, 14, 20)
-        stat_sheet.set_column(1, stats_width + 2, 20)
+        # Column widths
+        stat_sheet.set_column(1, stats_width, 20)
 
         # Row Heights
         stat_sheet.set_row(7, 31)
-        stat_sheet.set_row(8, 73.25)
+        stat_sheet.set_row(8, 80)
 
         # Formatting
         stat_sheet.conditional_format(
             9,
             3,
             8 + stats_len,
-            stats_width + 1,
+            stats_width,
             {"type": "blanks", "format": plain_format},
+        )
+        stat_sheet.conditional_format(
+            8,
+            1,
+            8,
+            stats_width,
+            {"format": subsubtitle_merge_format},
         )
         stat_sheet.conditional_format(
             9,
             3,
             8 + stats_len,
-            stats_width + 1,
+            stats_width,
             {
                 "type": "text",
                 "criteria": "containing",
@@ -1452,7 +1493,7 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
             9,
             3,
             8 + stats_len,
-            stats_width + 1,
+            stats_width,
             {
                 "type": "text",
                 "criteria": "containing",
@@ -1464,12 +1505,21 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
             9,
             3,
             8 + stats_len,
-            stats_width + 1,
+            stats_width,
             {
                 "type": "text",
                 "criteria": "containing",
                 "value": "Missed",
                 "format": value_belowzero_format,
+            },
+        )
+        stat_sheet.conditional_format(
+            9,
+            3,
+            8 + stats_len,
+            stats_width,
+            {
+                "format": format_with_alignment,  # Apply the format with alignment
             },
         )
 
@@ -2088,9 +2138,6 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     None
     """
     writer = pd.ExcelWriter(outpath, engine="xlsxwriter")
-
-    # for df in (tallies, errors):
-    # df.set_index("Zaid", inplace=True)
 
     startrow = 9
     startcol = 0

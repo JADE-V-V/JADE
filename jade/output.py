@@ -217,47 +217,6 @@ class BenchmarkOutput(AbstractOutput):
             self.excel_path = excel_path
             self.raw_path = raw_path
             self.atlas_path = atlas_path
-            #if self.mcnp:
-            #    excel_path_mcnp = os.path.join(out, "mcnp", "Excel")
-            #    atlas_path_mcnp = os.path.join(out, "mcnp", "Atlas")
-            #    raw_path_mcnp = os.path.join(out, "mcnp", "Raw_Data")
-            #    os.makedirs(excel_path_mcnp)
-            #    os.makedirs(atlas_path_mcnp)
-            #    os.makedirs(raw_path_mcnp)
-            #    self.excel_path_mcnp = excel_path_mcnp
-            #    self.raw_path_mcnp = raw_path_mcnp
-            #    self.atlas_path_mcnp = atlas_path_mcnp
-            #if self.openmc:
-            #    excel_path_openmc = os.path.join(out, "openmc", "Excel")
-            #    atlas_path_openmc = os.path.join(out, "openmc", "Atlas")
-            #    raw_path_openmc = os.path.join(out, "openmc", "Raw_Data")
-            #    os.makedirs(excel_path_openmc)
-            #    os.makedirs(atlas_path_openmc)
-            #    os.makedirs(raw_path_openmc)
-            #    self.excel_path_openmc = excel_path_openmc
-            #    self.raw_path_openmc = raw_path_openmc
-            #    self.atlas_path_openmc = atlas_path_openmc
-            #if self.serpent:
-            #    excel_path_serpent = os.path.join(out, "serpent", "Excel")
-            #    atlas_path_serpent = os.path.join(out, "serpent", "Atlas")
-            #    raw_path_serpent = os.path.join(out, "serpent", "Raw_Data")
-            #    os.makedirs(excel_path_serpent)
-            #    os.makedirs(atlas_path_serpent)
-            #    os.makedirs(raw_path_serpent)
-            #    self.excel_path_serpent = excel_path_serpent
-            #    self.raw_path_serpent = raw_path_serpent
-            #    self.atlas_path_serpent = atlas_path_serpent
-            #if self.d1s:
-            #    excel_path_d1s = os.path.join(out, "d1s", "Excel")
-            #    atlas_path_d1s = os.path.join(out, "d1s", "Atlas")
-            #    raw_path_d1s = os.path.join(out, "d1s", "Raw_Data")
-            #    os.makedirs(excel_path_d1s)
-            #    os.makedirs(atlas_path_d1s)
-            #    os.makedirs(raw_path_d1s)
-            #    self.excel_path_d1s = excel_path_d1s
-            #    self.raw_path_d1s = raw_path_d1s
-            #    self.atlas_path_d1s = atlas_path_d1s
-
             self.couples = couples  # Couples of libraries to post process
         # SINGLE-LIBRARY
         else:
@@ -273,50 +232,19 @@ class BenchmarkOutput(AbstractOutput):
             if not os.path.exists(out):
                 os.mkdir(out)
 
-            out = os.path.join(out, self.testname)
+            out = os.path.join(out, self.testname, code)
             if os.path.exists(out):
                 shutil.rmtree(out)
-            os.mkdir(out)
-            if self.mcnp:
-                excel_path_mcnp = os.path.join(out, "mcnp", "Excel")
-                atlas_path_mcnp = os.path.join(out, "mcnp", "Atlas")
-                raw_path_mcnp = os.path.join(out, "mcnp", "Raw_Data")
-                os.makedirs(excel_path_mcnp)
-                os.makedirs(atlas_path_mcnp)
-                os.makedirs(raw_path_mcnp)
-                self.excel_path_mcnp = excel_path_mcnp
-                self.raw_path_mcnp = raw_path_mcnp
-                self.atlas_path_mcnp = atlas_path_mcnp
-            if self.openmc:
-                excel_path_openmc = os.path.join(out, "openmc", "Excel")
-                atlas_path_openmc = os.path.join(out, "openmc", "Atlas")
-                raw_path_openmc = os.path.join(out, "openmc", "Raw_Data")
-                os.makedirs(excel_path_openmc)
-                os.makedirs(atlas_path_openmc)
-                os.makedirs(raw_path_openmc)
-                self.excel_path_openmc = excel_path_openmc
-                self.raw_path_openmc = raw_path_openmc
-                self.atlas_path_openmc = atlas_path_openmc
-            if self.serpent:
-                excel_path_serpent = os.path.join(out, "serpent", "Excel")
-                atlas_path_serpent = os.path.join(out, "serpent", "Atlas")
-                raw_path_serpent = os.path.join(out, "serpent", "Raw_Data")
-                os.makedirs(excel_path_serpent)
-                os.makedirs(atlas_path_serpent)
-                os.makedirs(raw_path_serpent)
-                self.excel_path_serpent = excel_path_serpent
-                self.raw_path_serpent = raw_path_serpent
-                self.atlas_path_serpent = atlas_path_serpent
-            if self.d1s:
-                excel_path_d1s = os.path.join(out, "d1s", "Excel")
-                atlas_path_d1s = os.path.join(out, "d1s", "Atlas")
-                raw_path_d1s = os.path.join(out, "d1s", "Raw_Data")
-                os.makedirs(excel_path_d1s)
-                os.makedirs(atlas_path_d1s)
-                os.makedirs(raw_path_d1s)
-                self.excel_path_d1s = excel_path_d1s
-                self.raw_path_d1s = raw_path_d1s
-                self.atlas_path_d1s = atlas_path_d1s
+            os.makedirs(out)
+            excel_path = os.path.join(out, "Excel")
+            atlas_path = os.path.join(out, "Atlas")
+            raw_path = os.path.join(out, "Raw_Data")
+            os.makedirs(excel_path)
+            os.makedirs(atlas_path)
+            os.makedirs(raw_path)
+            self.excel_path = excel_path
+            self.raw_path = raw_path
+            self.atlas_path = atlas_path
 
     def single_postprocess(self):
         """
@@ -334,7 +262,7 @@ class BenchmarkOutput(AbstractOutput):
 
         print(" Creating Atlas...")
         if self.mcnp:
-            outpath = os.path.join(self.atlas_path_mcnp, "tmp")
+            outpath = os.path.join(self.atlas_path, "tmp")
         os.mkdir(outpath)
 
         # Get atlas configuration
@@ -423,7 +351,7 @@ class BenchmarkOutput(AbstractOutput):
 
                     atlas.insert_img(img_path)
         if self.mcnp:
-            atlas.save(self.atlas_path_mcnp)
+            atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(outpath)
 
@@ -441,7 +369,7 @@ class BenchmarkOutput(AbstractOutput):
 
         print(" Creating Atlas...")
         if self.mcnp:
-            outpath = os.path.join(self.atlas_path_mcnp, "tmp")
+            outpath = os.path.join(self.atlas_path, "tmp")
         os.mkdir(outpath)
 
         # Get atlas configuration
@@ -561,7 +489,7 @@ class BenchmarkOutput(AbstractOutput):
 
                     atlas.insert_img(img_path)
         if self.mcnp:
-            atlas.save(self.atlas_path_mcnp)
+            atlas.save(self.atlas_path)
 
         # Remove tmp images
         shutil.rmtree(outpath)
@@ -605,7 +533,7 @@ class BenchmarkOutput(AbstractOutput):
         # template = os.path.join(os.getcwd(), "templates", name)
         if self.mcnp:
             outpath = os.path.join(
-                self.excel_path_mcnp, self.testname + "_" + self.lib + ".xlsx"
+                self.excel_path, self.testname + "_" + self.lib + ".xlsx"
             )
             outputs = {}
             # ex = ExcelOutputSheet(template, outpath)
@@ -759,7 +687,7 @@ class BenchmarkOutput(AbstractOutput):
                 self.outputs["mcnp"] = outputs
                 # print(outputs)
                 # Dump them for comparisons
-                raw_outpath = os.path.join(self.raw_path_mcnp, self.lib + ".pickle")
+                raw_outpath = os.path.join(self.raw_path, self.lib + ".pickle")
                 with open(raw_outpath, "wb") as outfile:
                     pickle.dump(outputs, outfile)
 
@@ -796,7 +724,7 @@ class BenchmarkOutput(AbstractOutput):
     def _print_raw(self):
         if self.mcnp:
             for key, data in self.raw_data.items():
-                file = os.path.join(self.raw_path_mcnp, str(key) + ".csv")
+                file = os.path.join(self.raw_path, str(key) + ".csv")
                 data.to_csv(file, header=True, index=False)
 
     def _generate_comparison_excel_output(self):
@@ -819,7 +747,7 @@ class BenchmarkOutput(AbstractOutput):
             std_devs = {}
             for reflib, tarlib, name in self.couples:
                 lib_to_comp = name
-                outfolder_path = self.excel_path_mcnp
+                outfolder_path = self.excel_path
                 outpath = os.path.join(
                     outfolder_path, "Comparison_" + name + "_mcnp.xlsx"
                 )

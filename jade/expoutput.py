@@ -75,22 +75,14 @@ class ExperimentalOutput(BenchmarkOutput):
             # Default to False
             multiplerun = False
         # Recover session and testname
-        session = args[2]
-        testname = str(args[1]["Folder Name"])
+        session = args[3]
+        testname = args[2]
         super().__init__(*args, **kwargs)
         # The experimental data needs to be loaded
         self.path_exp_res = os.path.join(session.path_exp_res, testname)
 
         # Add the raw path data (not created because it is a comparison)
-        if self.mcnp:
-            out = os.path.dirname(self.atlas_path_mcnp)
-        elif self.d1s:
-            out = os.path.dirname(self.atlas_path_d1s)
-        elif self.serpent:
-            out = os.path.dirname(self.atlas_path_serpent)
-        elif self.openmc:
-            out = os.path.dirname(self.atlas_path_openmc)
-
+        out = os.path.dirname(self.atlas_path)
         raw_path = os.path.join(out, "Raw_Data")
         if not os.path.exists(raw_path):
             os.mkdir(raw_path)
@@ -156,14 +148,7 @@ class ExperimentalOutput(BenchmarkOutput):
         None.
         """
         # Build a temporary folder for images
-        if self.mcnp:
-            tmp_path = os.path.join(self.atlas_path_mcnp, "tmp")
-        elif self.d1s:
-            tmp_path = os.path.join(self.atlas_path_d1s, "tmp")
-        elif self.openmc:
-            tmp_path = os.path.join(self.atlas_path_openmc, "tmp")
-        elif self.serpent:
-            tmp_path = os.path.join(self.atlas_path_serpent, "tmp")
+        tmp_path = os.path.join(self.atlas_path, "tmp")
 
         os.mkdir(tmp_path)
 
@@ -179,11 +164,7 @@ class ExperimentalOutput(BenchmarkOutput):
         # Fill the atlas
         atlas = self._build_atlas(tmp_path, atlas)
 
-        # Save Atlas
-        if self.mcnp:
-            atlas.save(self.atlas_path_mcnp)
-        elif self.d1s:
-            atlas.save(self.atlas_path_d1s)
+        atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(tmp_path)
 
@@ -795,7 +776,7 @@ class SpectrumOutput(ExperimentalOutput):
             todump = todump.dropna(subset=["Max " + x_lab])
             ft = ft.dropna(subset=["Max " + x_lab])
             ex_outpath = os.path.join(
-                self.excel_path_mcnp, self.testname + "_" + x_ax + "_CE_tables.xlsx"
+                self.excel_path, self.testname + "_" + x_ax + "_CE_tables.xlsx"
             )
 
             # Create a Pandas Excel writer using XlsxWriter as the engine.
@@ -1160,7 +1141,7 @@ class TiaraFCOutput(TiaraOutput):
         self.case_tree_df.sort_values(indexes, axis=0, inplace=True)
         # Build ExcelWriter object
         filepath = os.path.join(
-            self.excel_path_mcnp, "Tiara_Fission_Cells_CE_tables.xlsx"
+            self.excel_path, "Tiara_Fission_Cells_CE_tables.xlsx"
         )
         with pd.ExcelWriter(filepath, engine="xlsxwriter") as writer:
 
@@ -1454,7 +1435,7 @@ class TiaraBSOutput(TiaraOutput):
         self._exp_comp_case_check(indexes=indexes)
         # Create ExcelWriter object
         filepath = os.path.join(
-            self.excel_path_mcnp, "Tiara_Bonner_Spheres_CE_tables.xlsx"
+            self.excel_path, "Tiara_Bonner_Spheres_CE_tables.xlsx"
         )
         with pd.ExcelWriter(filepath, engine="xlsxwriter") as writer:
             # Loop over shield material/energy combinations
@@ -1641,7 +1622,7 @@ class ShieldingOutput(ExperimentalOutput):
         names = ["Library", ""]
         column_index = pd.MultiIndex.from_tuples(column_names, names=names)
         # filepath = self.excel_path_mcnp + '\\' + self.testname + '_CE_tables.xlsx'
-        filepath = os.path.join(self.excel_path_mcnp, f"{self.testname}_CE_tables.xlsx")
+        filepath = os.path.join(self.excel_path, f"{self.testname}_CE_tables.xlsx")
         with pd.ExcelWriter(filepath, engine="xlsxwriter") as writer:
             # TODO Replace when other transport codes implemented.
             code = "mcnp"

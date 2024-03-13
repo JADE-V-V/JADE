@@ -77,7 +77,7 @@ class SphereOutput(BenchmarkOutput):
         self.print_raw()
         print(" Generating plots...")
         self._generate_single_plots()
-        print(" Single library post-processing completed")
+        
 
     def _generate_single_plots(self):
         """
@@ -95,22 +95,19 @@ class SphereOutput(BenchmarkOutput):
         """
 
         for code, outputs in self.outputs.items():
-            print(type(list(outputs.values())[0]))
-            # edited by T. Wheeler. Not super happy with this solution, maybe JADE should be refactored to loop through each 
-            # code from the config to help with handling the differences between codes?
-            if isinstance(list(outputs.values())[0], SphereMCNPoutput):
-                outpath = os.path.join(self.atlas_path, "tmp")
-                tally_info = [
-                (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
-                ]
-            if isinstance(list(outputs.values())[0], SphereOpenMCoutput):
-                outpath = os.path.join(self.atlas_path, "tmp")
+            # edited by T. Wheeler. openmc requires separate tally numbers which is accounted for here
+            outpath = os.path.join(self.atlas_path, "tmp")
+            os.mkdir(outpath)
+            if self.openmc:
                 tally_info = [
                 (4, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
                 (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
                 ]
-            os.mkdir(outpath)
+            else:
+                tally_info = [
+                (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
+                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+                ]
             for tally, title, quantity, unit in tally_info:
                 print(" Plotting tally n." + str(tally))
                 for zaidnum, output in tqdm(outputs.items()):
@@ -197,7 +194,6 @@ class SphereOutput(BenchmarkOutput):
         # Plot everything
         print(" Generating Plots Atlas...")
         self._generate_plots(libraries, allzaids, outputs, globalname)
-        print(" Comparison post-processing completed")
 
     def _generate_plots(self, libraries, allzaids, outputs, globalname):
         for code, code_outputs in self.outputs.items():
@@ -1008,7 +1004,7 @@ class SphereOutput(BenchmarkOutput):
         #        data.to_csv(file, header=True, index=False)
         if self.mcnp:
             for key, data in self.raw_data["mcnp"].items():
-                file = os.path.join(self.raw_path_openmc, "mcnp" + key + ".csv")
+                file = os.path.join(self.raw_path, "mcnp" + key + ".csv")
                 data.to_csv(file, header=True, index=False)
         if self.serpent:
             for key, data in self.raw_data["serpent"].items():
@@ -1016,7 +1012,7 @@ class SphereOutput(BenchmarkOutput):
                 data.to_csv(file, header=True, index=False)
         if self.openmc:
             for key, data in self.raw_data["openmc"].items():
-                file = os.path.join(self.raw_path_openmc, "openmc" + key + ".csv")
+                file = os.path.join(self.raw_path, "openmc" + key + ".csv")
                 data.to_csv(file, header=True, index=False)
         if self.d1s:
             for key, data in self.raw_data["d1s"].items():

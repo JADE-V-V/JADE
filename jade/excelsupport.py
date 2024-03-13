@@ -83,7 +83,9 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
 
     if stats is not None:
         # stats.set_index("Zaid", inplace=True)
-        stats.to_excel(writer, startrow=8, startcol=1, sheet_name="Statistical Checks")
+        stats.to_excel(
+            writer, startrow=8, startcol=0, sheet_name="Statistical Checks", index=False
+        )
         stat_sheet = writer.sheets["Statistical Checks"]
         stats_len, stats_width = stats.shape
 
@@ -101,7 +103,7 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
     merge_format = wb.add_format({"align": "center", "valign": "center", "border": 2})
     title_merge_format = wb.add_format(
         {
-            "font_size": "36",
+            "font_size": "28",
             "align": "center",
             "valign": "center",
             "bold": True,
@@ -117,14 +119,20 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
             "border": 2,
         }
     )
-    legend_text_format = wb.add_format({"align": "center", "bg_color": "white"})
-    red_cell_format = wb.add_format({"bg_color": "red"})
-    orange_cell_format = wb.add_format({"bg_color": "orange"})
-    yellow_cell_format = wb.add_format({"bg_color": "yellow"})
-    green_cell_format = wb.add_format({"bg_color": "#A6D86E"})
-    value_allzero_format = wb.add_format({"bg_color": "#EDEDED"})
-    value_belowzero_format = wb.add_format({"bg_color": "#FFC7CE"})
-    value_abovezero_format = wb.add_format({"bg_color": "#C6EFCE"})
+
+    legend_text_format = wb.add_format(
+        {"align": "center", "bg_color": "white", "border": 1}
+    )
+    red_cell_format = wb.add_format({"bg_color": "red", "border": 3})
+    orange_cell_format = wb.add_format({"bg_color": "#FFC000", "border": 3})
+    yellow_cell_format = wb.add_format({"bg_color": "#FFFF00", "border": 3})
+    green_cell_format = wb.add_format({"bg_color": "#92D050", "border": 3})
+    value_allzero_format = wb.add_format({"bg_color": "#EDEDED", "border": 3})
+    value_belowzero_format = wb.add_format({"bg_color": "#FFC7CE", "border": 3})
+    value_abovezero_format = wb.add_format({"bg_color": "#C6EFCE", "border": 3})
+
+    scientific_format = wb.add_format({"num_format": "0.00E+00"})
+    percent_format = wb.add_format({"num_format": "0.00%"})
 
     # tallies
 
@@ -151,19 +159,14 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
 
     # out of bounds
     tal_sheet.set_column(0, 0, 4, oob_format)
-    tal_sheet.set_column(max_width + 2, max_width + 20, 18, oob_format)
+    tal_sheet.set_column(max_width + 1, max_width + 1000, 18, oob_format)
     for i in range(9):
         tal_sheet.set_row(i, None, oob_format)
     for i in range(8 + max_len, max_len + 50):
         tal_sheet.set_row(i, None, oob_format)
 
-    # Column widths for tallies, set up to 15th col to ensure title format correct
-    tal_sheet.set_column(1, 14, 20)
-    tal_sheet.set_column(1, max_width + 2, 20)
-
-    # Row Heights
-    tal_sheet.set_row(7, 31)
-    # tal_sheet.set_row(8, 73.25)
+    # Column widths
+    tal_sheet.set_column(1, max_width + 1, 20)
 
     tal_sheet.conditional_format(
         10,
@@ -172,7 +175,33 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
         max_width + 1,
         {"type": "blanks", "format": oob_format},
     )
+    tal_sheet.conditional_format(
+        10,
+        2,
+        8 + max_len,
+        max_width + 1,
+        {
+            "type": "cell",
+            "criteria": ">=",
+            "value": 0,
+            "format": scientific_format,
+        },
+    )
+    tal_sheet.conditional_format(
+        10,
+        2,
+        8 + max_len,
+        max_width + 1,
+        {
+            "type": "cell",
+            "criteria": "<",
+            "value": 0,
+            "format": scientific_format,
+        },
+    )
+
     # ERRORS
+
     # Title
     err_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
     err_sheet.merge_range("D1:D2", lib, subtitle_merge_format)
@@ -196,23 +225,18 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
 
     # out of bounds
     err_sheet.set_column(0, 0, 4, oob_format)
-    err_sheet.set_column(max_width + 2, max_width + 20, 18, oob_format)
+    err_sheet.set_column(max_width + 1, max_width + 1000, 18, oob_format)
     for i in range(9):
         err_sheet.set_row(i, None, oob_format)
     for i in range(8 + max_len, max_len + 50):
         err_sheet.set_row(i, None, oob_format)
 
-    # Column widths for errors, set up to 15th col by default to ensure title format correct
-    err_sheet.set_column(1, 14, 20)
-    err_sheet.set_column(1, max_width + 2, 20)
-
-    # Row Heights
-    err_sheet.set_row(7, 31)
-    # err_sheet.set_row(8, 73.25)
+    # Column widths
+    err_sheet.set_column(1, max_width + 1, 20)
 
     # Legend
     err_sheet.merge_range("N3:O3", "LEGEND", merge_format)
-    err_sheet.merge_range("N8:O8", "According to MCNP manual", oob_format)
+    err_sheet.merge_range("N2:O2", "According to MCNP manual", oob_format)
     err_sheet.write("N4", "", red_cell_format)
     err_sheet.write("O4", "> 50%", legend_text_format)
     err_sheet.write("N5", "", orange_cell_format)
@@ -319,25 +343,48 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
             "format": green_cell_format,
         },
     )
+    err_sheet.conditional_format(
+        10,
+        2,
+        8 + max_len,
+        max_width + 1,
+        {
+            "type": "cell",
+            "criteria": ">=",
+            "value": 0,
+            "format": percent_format,
+        },
+    )
+    err_sheet.conditional_format(
+        10,
+        2,
+        8 + max_len,
+        max_width + 1,
+        {
+            "type": "cell",
+            "criteria": "<",
+            "value": 0,
+            "format": percent_format,
+        },
+    )
 
     # STAT CHECKS
     if stats is not None:
         # Title
-        stat_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
-        stat_sheet.merge_range("D1:D2", lib, subtitle_merge_format)
+        stat_sheet.merge_range("A1:B2", "LIBRARY", subtitle_merge_format)
+        stat_sheet.merge_range("C1:C2", lib, subtitle_merge_format)
         stat_sheet.merge_range(
-            "B3:L8",
-            "{} RESULTS RECAP: STATISTICAL CHECKS".format(testname),
+            "A3:C8",
+            "10 MCNP Statistical Checks",
             title_merge_format,
         )
         # stat_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
         # stat_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
 
         # Freeze title
-        stat_sheet.freeze_panes(8, 0)
+        stat_sheet.freeze_panes(9, 0)
 
         # out of bounds
-        stat_sheet.set_column(0, 0, 4, oob_format)
         stat_sheet.set_column(stats_width + 2, stats_width + 20, 18, oob_format)
         for i in range(9):
             stat_sheet.set_row(i, None, oob_format)
@@ -345,26 +392,15 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
             stat_sheet.set_row(i, None, oob_format)
 
         # Column widths for errors, set up to 15th col by default to ensure title format correct
-        stat_sheet.set_column(1, 14, 20)
-        stat_sheet.set_column(1, stats_width + 2, 20)
+        stat_sheet.set_column(1, 1, 50)
+        stat_sheet.set_column(0, 0, 30)
+        stat_sheet.set_column(2, 2, 20)
 
-        # Row Heights
-        stat_sheet.set_row(7, 31)
-        stat_sheet.set_row(8, 73.25)
-
-        # Formatting
         stat_sheet.conditional_format(
             9,
-            3,
+            2,
             8 + stats_len,
-            stats_width + 1,
-            {"type": "blanks", "format": plain_format},
-        )
-        stat_sheet.conditional_format(
-            9,
-            3,
-            8 + stats_len,
-            stats_width + 1,
+            2,
             {
                 "type": "text",
                 "criteria": "containing",
@@ -374,9 +410,9 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
         )
         stat_sheet.conditional_format(
             9,
-            3,
+            2,
             8 + stats_len,
-            stats_width + 1,
+            2,
             {
                 "type": "text",
                 "criteria": "containing",
@@ -386,9 +422,9 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
         )
         stat_sheet.conditional_format(
             9,
-            3,
+            2,
             8 + stats_len,
-            stats_width + 1,
+            2,
             {
                 "type": "text",
                 "criteria": "containing",
@@ -1587,7 +1623,6 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
             "text_wrap": True,
         }
     )
-    tally_format = wb.add_format({"bg_color": "#D9D9D9"})
     merge_format = wb.add_format({"align": "center", "valign": "center", "border": 2})
     title_merge_format = wb.add_format(
         {
@@ -1608,68 +1643,63 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
             "text_wrap": True,
         }
     )
-    legend_text_format = wb.add_format({"align": "center", "bg_color": "white"})
-    red_cell_format = wb.add_format({"bg_color": "FF6961"})
-    orange_cell_format = wb.add_format({"bg_color": "FFB54C"})
-    yellow_cell_format = wb.add_format({"bg_color": "F8D66D"})
-    green_cell_format = wb.add_format({"bg_color": "#8CD47E"})
-    not_avail_format = wb.add_format({"bg_color": "#B8B8B8"})
-    target_ref_format = wb.add_format({"bg_color": "#8465C5"})
-    identical_format = wb.add_format({"bg_color": "#7ABD7E"})
+    legend_text_format = wb.add_format(
+        {"align": "center", "bg_color": "white", "border": 1}
+    )
+    red_cell_format = wb.add_format({"bg_color": "red", "border": 3})
+    orange_cell_format = wb.add_format({"bg_color": "#FFC000", "border": 3})
+    yellow_cell_format = wb.add_format({"bg_color": "#FFFF00", "border": 3})
+    green_cell_format = wb.add_format({"bg_color": "#92D050", "border": 3})
+    not_avail_format = wb.add_format({"bg_color": "#B8B8B8", "border": 3})
+    target_ref_format = wb.add_format({"bg_color": "#8465C5", "border": 3})
+    identical_format = wb.add_format({"bg_color": "#7ABD7E", "border": 3})
+
+    scientific_format = wb.add_format({"num_format": "0.00E+00"})
+    percent_format = wb.add_format({"num_format": "0.00%"})
 
     """VALUES"""
     # Merged Cells
     comp_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
     comp_sheet.merge_range("D1:E2", name, subtitle_merge_format)
     comp_sheet.merge_range(
-        "B3:L7", "SPHERE LEAKAGE % COMPARISON RECAP", title_merge_format
+        "B3:T7", "SPHERE LEAKAGE % COMPARISON RECAP", title_merge_format
     )
     comp_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-    comp_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
+    comp_sheet.merge_range("D8:T8", "TALLIES", subtitle_merge_format)
     comp_sheet.merge_range(
         "F1:L2",
         "Target library Vs Reference library\n(Reference-Target)/Reference",
         subtitle_merge_format,
     )
     comp_sheet.merge_range(
+        "D9:I9", "Neutron Flux (Coarse energy bins) Tally n.12", subtitle_merge_format
+    )
+    comp_sheet.merge_range(
+        "J9:O9", "Gamma  Flux (Coarse energy bins) Tally n.22", subtitle_merge_format
+    )
+    comp_sheet.merge_range("P9:T9", " ", subtitle_merge_format)
+    comp_sheet.merge_range(
         11 + comp_len,
         3,
         11 + comp_len,
-        11,
+        20,
         "GLOBAL QUICK RESULT: % of cells per range of comparison differences",
         subtitle_merge_format,
     )
     # Freeze title
-    comp_sheet.freeze_panes(10, 3)
+    comp_sheet.freeze_panes(10, 0)
 
     # out of bounds
     comp_sheet.set_column(0, 0, 4, oob_format)
-    comp_sheet.set_column(comp_width + 3, 1000, 4, oob_format)
+    comp_sheet.set_column(comp_width, 1000, 4, oob_format)
     for i in range(9):
         comp_sheet.set_row(i, None, oob_format)
     for i in range(9 + comp_len, 1000):
         comp_sheet.set_row(i, None, oob_format)
 
-    # Column widths for values, set up to 15th col to ensure title format correct
-
+    # Column widths
     comp_sheet.set_column(1, 14, 18)
     comp_sheet.set_column(1, comp_width + 5, 18)
-
-    # Summary background formatting workaround using conditional formatting
-    comp_sheet.conditional_format(
-        12 + comp_len,
-        3,
-        comp_len + summ_len + 12,
-        summ_width + 3,
-        {"type": "cell", "criteria": ">=", "value": 0, "format": plain_format},
-    )
-    comp_sheet.conditional_format(
-        12 + comp_len,
-        3,
-        comp_len + summ_len + 22,
-        summ_width + 3,
-        {"type": "cell", "criteria": "<", "value": 0, "format": plain_format},
-    )
 
     # Row Heights
     comp_sheet.set_row(0, 25, oob_format)
@@ -1679,15 +1709,17 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
     comp_sheet.set_row(9, 40, oob_format)
 
     # Legend
-    comp_sheet.merge_range("N3:O3", "LEGEND", merge_format)
-    comp_sheet.write("N4", "", red_cell_format)
-    comp_sheet.write("O4", ">|20|%", legend_text_format)
-    comp_sheet.write("N5", "", orange_cell_format)
-    comp_sheet.write("O5", "|20|%≤|10|%", legend_text_format)
-    comp_sheet.write("N6", "", yellow_cell_format)
-    comp_sheet.write("O6", "|10|%≤|5|%", legend_text_format)
-    comp_sheet.write("N7", "", green_cell_format)
-    comp_sheet.write("O7", "<|5|%", legend_text_format)
+    comp_sheet.merge_range("V3:W3", "LEGEND", merge_format)
+    comp_sheet.write("V4", "", red_cell_format)
+    comp_sheet.write("W4", ">|20|%", legend_text_format)
+    comp_sheet.write("V5", "", orange_cell_format)
+    comp_sheet.write("W5", "|20|%≤|10|%", legend_text_format)
+    comp_sheet.write("V6", "", yellow_cell_format)
+    comp_sheet.write("W6", "|10|%≤|5|%", legend_text_format)
+    comp_sheet.write("V7", "", green_cell_format)
+    comp_sheet.write("W7", "<|5|%", legend_text_format)
+    comp_sheet.write("V8", "Not Available", not_avail_format)
+    comp_sheet.write("W8", "Both libs returned 0", legend_text_format)
 
     # Conditional Formatting
     comp_sheet.conditional_format(
@@ -1799,7 +1831,7 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
         10,
         3,
         9 + comp_len,
-        comp_width + 1,
+        comp_width + 2,
         {
             "type": "cell",
             "criteria": "between",
@@ -1834,6 +1866,67 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
             "format": green_cell_format,
         },
     )
+    comp_sheet.conditional_format(
+        10,
+        3,
+        9 + comp_len,
+        comp_width + 2,
+        {
+            "type": "cell",
+            "criteria": ">=",
+            "value": 0,
+            "format": percent_format,
+        },
+    )
+    comp_sheet.conditional_format(
+        10,
+        3,
+        9 + comp_len,
+        comp_width + 2,
+        {
+            "type": "cell",
+            "criteria": "<",
+            "value": 0,
+            "format": percent_format,
+        },
+    )
+    # Summary background formatting workaround using conditional formatting
+    comp_sheet.conditional_format(
+        12 + comp_len,
+        3,
+        comp_len + summ_len + 22,
+        summ_width + 3,
+        {
+            "type": "cell",
+            "criteria": ">=",
+            "value": 0,
+            "format": percent_format,
+        },
+    )
+    comp_sheet.conditional_format(
+        12 + comp_len,
+        3,
+        comp_len + summ_len + 22,
+        summ_width + 3,
+        {
+            "type": "cell",
+            "criteria": "<",
+            "value": 0,
+            "format": percent_format,
+        },
+    )
+    # graded colour scale
+    comp_sheet.conditional_format(
+        12 + comp_len,
+        3,
+        comp_len + summ_len + 22,
+        summ_width + 3,
+        {
+            "type": "2_color_scale",
+            "min_color": "#FCFCFF",
+            "max_color": "#F8696B",
+        },
+    )
 
     # Summary totals
     for row in range(13 + comp_len, comp_len + summ_len + 13):
@@ -1849,25 +1942,27 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
     std_dev_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
     std_dev_sheet.merge_range("D1:E2", name, subtitle_merge_format)
     std_dev_sheet.merge_range(
-        "B3:L7", "SPHERE LEAKAGE % COMPARISON RECAP", title_merge_format
+        "B3:T7",
+        "SPHERE LEAKAGE COMPARISON (Standard deviations from reference library)",
+        title_merge_format,
     )
     std_dev_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-    std_dev_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
+    std_dev_sheet.merge_range("D8:T8", "TALLIES", subtitle_merge_format)
     std_dev_sheet.merge_range(
         "F1:L2",
-        "Target library Vs Reference library\n(Reference-Target)/Reference",
+        "Standard deviations from mean of reference library",
         subtitle_merge_format,
     )
     std_dev_sheet.merge_range(
-        11 + std_dev_len,
-        3,
-        11 + std_dev_len,
-        11,
-        "GLOBAL QUICK RESULT: % of cells per range of comparison differences",
-        subtitle_merge_format,
+        "D9:I9", "Neutron Flux (Coarse energy bins) Tally n.12", subtitle_merge_format
     )
+    std_dev_sheet.merge_range(
+        "J9:O9", "Gamma  Flux (Coarse energy bins) Tally n.22", subtitle_merge_format
+    )
+    std_dev_sheet.merge_range("P9:T9", " ", subtitle_merge_format)
+
     # Freeze title
-    std_dev_sheet.freeze_panes(10, 3)
+    std_dev_sheet.freeze_panes(10, 0)
 
     # out of bounds
     std_dev_sheet.set_column(0, 0, 4, oob_format)
@@ -1882,22 +1977,6 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
     std_dev_sheet.set_column(1, 14, 18)
     std_dev_sheet.set_column(1, std_dev_width + 5, 18)
 
-    # Summary background formatting workaround using conditional formatting
-    std_dev_sheet.conditional_format(
-        12 + std_dev_len,
-        3,
-        std_dev_len + summ_len + 12,
-        summ_width + 3,
-        {"type": "cell", "criteria": ">=", "value": 0, "format": plain_format},
-    )
-    std_dev_sheet.conditional_format(
-        12 + std_dev_len,
-        3,
-        std_dev_len + summ_len + 22,
-        summ_width + 3,
-        {"type": "cell", "criteria": "<", "value": 0, "format": plain_format},
-    )
-
     # Row Heights
     std_dev_sheet.set_row(0, 25, oob_format)
     std_dev_sheet.set_row(1, 25, oob_format)
@@ -1906,15 +1985,15 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
     std_dev_sheet.set_row(9, 40, oob_format)
 
     # Legend
-    std_dev_sheet.merge_range("N3:O3", "LEGEND", merge_format)
-    std_dev_sheet.write("N4", "", red_cell_format)
-    std_dev_sheet.write("O4", ">|20|%", legend_text_format)
-    std_dev_sheet.write("N5", "", orange_cell_format)
-    std_dev_sheet.write("O5", "|20|%≤|10|%", legend_text_format)
-    std_dev_sheet.write("N6", "", yellow_cell_format)
-    std_dev_sheet.write("O6", "|10|%≤|5|%", legend_text_format)
-    std_dev_sheet.write("N7", "", green_cell_format)
-    std_dev_sheet.write("O7", "<|5|%", legend_text_format)
+    std_dev_sheet.merge_range("V3:W3", "LEGEND", merge_format)
+    std_dev_sheet.write("V4", "", red_cell_format)
+    std_dev_sheet.write("W4", "3 < #σ", legend_text_format)
+    std_dev_sheet.write("V5", "", orange_cell_format)
+    std_dev_sheet.write("W5", "2 ≤ #σ ≤ 3", legend_text_format)
+    std_dev_sheet.write("V6", "", yellow_cell_format)
+    std_dev_sheet.write("W6", "1 ≤ #σ < 2", legend_text_format)
+    std_dev_sheet.write("V7", "", green_cell_format)
+    std_dev_sheet.write("W7", "#σ < 1", legend_text_format)
 
     # Conditional Formatting
     std_dev_sheet.conditional_format(
@@ -2061,23 +2140,55 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
             "format": green_cell_format,
         },
     )
+    std_dev_sheet.conditional_format(
+        10,
+        4,
+        9 + comp_len,
+        comp_width + 3,
+        {
+            "type": "cell",
+            "criteria": ">=",
+            "value": 0,
+            "format": scientific_format,
+        },
+    )
+    std_dev_sheet.conditional_format(
+        10,
+        4,
+        9 + comp_len,
+        comp_width + 3,
+        {
+            "type": "cell",
+            "criteria": "<",
+            "value": 0,
+            "format": scientific_format,
+        },
+    )
+
     """ABS DIFF"""
     # Merged Cells
     absdiff_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
     absdiff_sheet.merge_range("D1:E2", name, subtitle_merge_format)
     absdiff_sheet.merge_range(
-        "B3:L7", "SPHERE LEAKAGE % COMPARISON RECAP", title_merge_format
+        "B3:T7", "SPHERE LEAKAGE ABSOLUTE COMPARISON RECAP", title_merge_format
     )
     absdiff_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-    absdiff_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
+    absdiff_sheet.merge_range("D8:T8", "TALLIES", subtitle_merge_format)
     absdiff_sheet.merge_range(
         "F1:L2",
         "Target library Vs Reference library\n(Reference-Target)",
         subtitle_merge_format,
     )
+    absdiff_sheet.merge_range(
+        "D9:I9", "Neutron Flux (Coarse energy bins) Tally n.12", subtitle_merge_format
+    )
+    absdiff_sheet.merge_range(
+        "J9:O9", "Gamma  Flux (Coarse energy bins) Tally n.22", subtitle_merge_format
+    )
+    absdiff_sheet.merge_range("P9:T9", " ", subtitle_merge_format)
 
     # Freeze title
-    absdiff_sheet.freeze_panes(10, 3)
+    absdiff_sheet.freeze_panes(10, 0)
 
     # out of bounds
     absdiff_sheet.set_column(0, 0, 4, oob_format)
@@ -2110,6 +2221,30 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
             "criteria": "containing",
             "value": "Identical",
             "format": identical_format,
+        },
+    )
+    std_dev_sheet.conditional_format(
+        10,
+        4,
+        9 + comp_len,
+        comp_width + 3,
+        {
+            "type": "cell",
+            "criteria": ">=",
+            "value": 0,
+            "format": scientific_format,
+        },
+    )
+    std_dev_sheet.conditional_format(
+        10,
+        4,
+        9 + comp_len,
+        comp_width + 3,
+        {
+            "type": "cell",
+            "criteria": "<",
+            "value": 0,
+            "format": scientific_format,
         },
     )
 

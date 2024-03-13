@@ -83,7 +83,9 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
 
     if stats is not None:
         # stats.set_index("Zaid", inplace=True)
-        stats.to_excel(writer, startrow=8, startcol=1, sheet_name="Statistical Checks")
+        stats.to_excel(
+            writer, startrow=8, startcol=0, sheet_name="Statistical Checks", index=False
+        )
         stat_sheet = writer.sheets["Statistical Checks"]
         stats_len, stats_width = stats.shape
 
@@ -101,7 +103,7 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
     merge_format = wb.add_format({"align": "center", "valign": "center", "border": 2})
     title_merge_format = wb.add_format(
         {
-            "font_size": "36",
+            "font_size": "28",
             "align": "center",
             "valign": "center",
             "bold": True,
@@ -117,14 +119,20 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
             "border": 2,
         }
     )
-    legend_text_format = wb.add_format({"align": "center", "bg_color": "white"})
-    red_cell_format = wb.add_format({"bg_color": "red"})
-    orange_cell_format = wb.add_format({"bg_color": "orange"})
-    yellow_cell_format = wb.add_format({"bg_color": "yellow"})
-    green_cell_format = wb.add_format({"bg_color": "#A6D86E"})
-    value_allzero_format = wb.add_format({"bg_color": "#EDEDED"})
-    value_belowzero_format = wb.add_format({"bg_color": "#FFC7CE"})
-    value_abovezero_format = wb.add_format({"bg_color": "#C6EFCE"})
+
+    legend_text_format = wb.add_format(
+        {"align": "center", "bg_color": "white", "border": 1}
+    )
+    red_cell_format = wb.add_format({"bg_color": "red", "border": 3})
+    orange_cell_format = wb.add_format({"bg_color": "#FFC000", "border": 3})
+    yellow_cell_format = wb.add_format({"bg_color": "#FFFF00", "border": 3})
+    green_cell_format = wb.add_format({"bg_color": "#92D050", "border": 3})
+    value_allzero_format = wb.add_format({"bg_color": "#EDEDED", "border": 3})
+    value_belowzero_format = wb.add_format({"bg_color": "#FFC7CE", "border": 3})
+    value_abovezero_format = wb.add_format({"bg_color": "#C6EFCE", "border": 3})
+
+    scientific_format = wb.add_format({"num_format": "0.00E+00"})
+    percent_format = wb.add_format({"num_format": "0.00%"})
 
     # tallies
 
@@ -151,19 +159,14 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
 
     # out of bounds
     tal_sheet.set_column(0, 0, 4, oob_format)
-    tal_sheet.set_column(max_width + 2, max_width + 20, 18, oob_format)
+    tal_sheet.set_column(max_width + 1, max_width + 1000, 18, oob_format)
     for i in range(9):
         tal_sheet.set_row(i, None, oob_format)
     for i in range(8 + max_len, max_len + 50):
         tal_sheet.set_row(i, None, oob_format)
 
-    # Column widths for tallies, set up to 15th col to ensure title format correct
-    tal_sheet.set_column(1, 14, 20)
-    tal_sheet.set_column(1, max_width + 2, 20)
-
-    # Row Heights
-    tal_sheet.set_row(7, 31)
-    # tal_sheet.set_row(8, 73.25)
+    # Column widths
+    tal_sheet.set_column(1, max_width + 1, 20)
 
     tal_sheet.conditional_format(
         10,
@@ -172,7 +175,33 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
         max_width + 1,
         {"type": "blanks", "format": oob_format},
     )
+    tal_sheet.conditional_format(
+        10,
+        2,
+        8 + max_len,
+        max_width + 1,
+        {
+            "type": "cell",
+            "criteria": ">=",
+            "value": 0,
+            "format": scientific_format,
+        },
+    )
+    tal_sheet.conditional_format(
+        10,
+        2,
+        8 + max_len,
+        max_width + 1,
+        {
+            "type": "cell",
+            "criteria": "<",
+            "value": 0,
+            "format": scientific_format,
+        },
+    )
+
     # ERRORS
+
     # Title
     err_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
     err_sheet.merge_range("D1:D2", lib, subtitle_merge_format)
@@ -196,23 +225,18 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
 
     # out of bounds
     err_sheet.set_column(0, 0, 4, oob_format)
-    err_sheet.set_column(max_width + 2, max_width + 20, 18, oob_format)
+    err_sheet.set_column(max_width + 1, max_width + 1000, 18, oob_format)
     for i in range(9):
         err_sheet.set_row(i, None, oob_format)
     for i in range(8 + max_len, max_len + 50):
         err_sheet.set_row(i, None, oob_format)
 
-    # Column widths for errors, set up to 15th col by default to ensure title format correct
-    err_sheet.set_column(1, 14, 20)
-    err_sheet.set_column(1, max_width + 2, 20)
-
-    # Row Heights
-    err_sheet.set_row(7, 31)
-    # err_sheet.set_row(8, 73.25)
+    # Column widths
+    err_sheet.set_column(1, max_width + 1, 20)
 
     # Legend
     err_sheet.merge_range("N3:O3", "LEGEND", merge_format)
-    err_sheet.merge_range("N8:O8", "According to MCNP manual", oob_format)
+    err_sheet.merge_range("N2:O2", "According to MCNP manual", oob_format)
     err_sheet.write("N4", "", red_cell_format)
     err_sheet.write("O4", "> 50%", legend_text_format)
     err_sheet.write("N5", "", orange_cell_format)
@@ -319,25 +343,48 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
             "format": green_cell_format,
         },
     )
+    err_sheet.conditional_format(
+        10,
+        2,
+        8 + max_len,
+        max_width + 1,
+        {
+            "type": "cell",
+            "criteria": ">=",
+            "value": 0,
+            "format": percent_format,
+        },
+    )
+    err_sheet.conditional_format(
+        10,
+        2,
+        8 + max_len,
+        max_width + 1,
+        {
+            "type": "cell",
+            "criteria": "<",
+            "value": 0,
+            "format": percent_format,
+        },
+    )
 
     # STAT CHECKS
     if stats is not None:
         # Title
-        stat_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
-        stat_sheet.merge_range("D1:D2", lib, subtitle_merge_format)
+        stat_sheet.merge_range("A1:B2", "LIBRARY", subtitle_merge_format)
+        stat_sheet.merge_range("C1:C2", lib, subtitle_merge_format)
         stat_sheet.merge_range(
-            "B3:L8",
-            "{} RESULTS RECAP: STATISTICAL CHECKS".format(testname),
+            "A3:C8",
+            "10 MCNP Statistical Checks",
             title_merge_format,
         )
         # stat_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
         # stat_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
 
         # Freeze title
-        stat_sheet.freeze_panes(8, 0)
+        stat_sheet.freeze_panes(9, 0)
 
         # out of bounds
-        stat_sheet.set_column(0, 0, 4, oob_format)
         stat_sheet.set_column(stats_width + 2, stats_width + 20, 18, oob_format)
         for i in range(9):
             stat_sheet.set_row(i, None, oob_format)
@@ -345,26 +392,15 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
             stat_sheet.set_row(i, None, oob_format)
 
         # Column widths for errors, set up to 15th col by default to ensure title format correct
-        stat_sheet.set_column(1, 14, 20)
-        stat_sheet.set_column(1, stats_width + 2, 20)
+        stat_sheet.set_column(1, 1, 50)
+        stat_sheet.set_column(0, 0, 30)
+        stat_sheet.set_column(2, 2, 20)
 
-        # Row Heights
-        stat_sheet.set_row(7, 31)
-        stat_sheet.set_row(8, 73.25)
-
-        # Formatting
         stat_sheet.conditional_format(
             9,
-            3,
+            2,
             8 + stats_len,
-            stats_width + 1,
-            {"type": "blanks", "format": plain_format},
-        )
-        stat_sheet.conditional_format(
-            9,
-            3,
-            8 + stats_len,
-            stats_width + 1,
+            2,
             {
                 "type": "text",
                 "criteria": "containing",
@@ -374,9 +410,9 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
         )
         stat_sheet.conditional_format(
             9,
-            3,
+            2,
             8 + stats_len,
-            stats_width + 1,
+            2,
             {
                 "type": "text",
                 "criteria": "containing",
@@ -386,9 +422,9 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
         )
         stat_sheet.conditional_format(
             9,
-            3,
+            2,
             8 + stats_len,
-            stats_width + 1,
+            2,
             {
                 "type": "text",
                 "criteria": "containing",

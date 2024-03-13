@@ -1587,7 +1587,6 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
             "text_wrap": True,
         }
     )
-    tally_format = wb.add_format({"bg_color": "#D9D9D9"})
     merge_format = wb.add_format({"align": "center", "valign": "center", "border": 2})
     title_merge_format = wb.add_format(
         {
@@ -1608,34 +1607,46 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
             "text_wrap": True,
         }
     )
-    legend_text_format = wb.add_format({"align": "center", "bg_color": "white"})
-    red_cell_format = wb.add_format({"bg_color": "FF6961"})
-    orange_cell_format = wb.add_format({"bg_color": "FFB54C"})
-    yellow_cell_format = wb.add_format({"bg_color": "F8D66D"})
-    green_cell_format = wb.add_format({"bg_color": "#8CD47E"})
+    legend_text_format = wb.add_format(
+        {"align": "center", "bg_color": "white", "border": 1}
+    )
+    red_cell_format = wb.add_format({"bg_color": "red", "border": 3})
+    orange_cell_format = wb.add_format({"bg_color": "#FFC000", "border": 3})
+    yellow_cell_format = wb.add_format({"bg_color": "#FFFF00", "border": 3})
+    green_cell_format = wb.add_format({"bg_color": "#92D050", "border": 3})
     not_avail_format = wb.add_format({"bg_color": "#B8B8B8"})
     target_ref_format = wb.add_format({"bg_color": "#8465C5"})
     identical_format = wb.add_format({"bg_color": "#7ABD7E"})
+
+    scientific_format = wb.add_format({"num_format": "0.00E+00"})
+    percent_format = wb.add_format({"num_format": "0.00%"})
 
     """VALUES"""
     # Merged Cells
     comp_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
     comp_sheet.merge_range("D1:E2", name, subtitle_merge_format)
     comp_sheet.merge_range(
-        "B3:L7", "SPHERE LEAKAGE % COMPARISON RECAP", title_merge_format
+        "B3:T7", "SPHERE LEAKAGE % COMPARISON RECAP", title_merge_format
     )
     comp_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-    comp_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
+    comp_sheet.merge_range("D8:T8", "TALLIES", subtitle_merge_format)
     comp_sheet.merge_range(
         "F1:L2",
         "Target library Vs Reference library\n(Reference-Target)/Reference",
         subtitle_merge_format,
     )
     comp_sheet.merge_range(
+        "D9:I9", "Neutron Flux (Coarse energy bins) Tally n.12", subtitle_merge_format
+    )
+    comp_sheet.merge_range(
+        "J9:O9", "Gamma  Flux (Coarse energy bins) Tally n.22", subtitle_merge_format
+    )
+    comp_sheet.merge_range("P9:T9", " ", subtitle_merge_format)
+    comp_sheet.merge_range(
         11 + comp_len,
         3,
         11 + comp_len,
-        11,
+        20,
         "GLOBAL QUICK RESULT: % of cells per range of comparison differences",
         subtitle_merge_format,
     )
@@ -1650,26 +1661,9 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
     for i in range(9 + comp_len, 1000):
         comp_sheet.set_row(i, None, oob_format)
 
-    # Column widths for values, set up to 15th col to ensure title format correct
-
+    # Column widths
     comp_sheet.set_column(1, 14, 18)
     comp_sheet.set_column(1, comp_width + 5, 18)
-
-    # Summary background formatting workaround using conditional formatting
-    comp_sheet.conditional_format(
-        12 + comp_len,
-        3,
-        comp_len + summ_len + 12,
-        summ_width + 3,
-        {"type": "cell", "criteria": ">=", "value": 0, "format": plain_format},
-    )
-    comp_sheet.conditional_format(
-        12 + comp_len,
-        3,
-        comp_len + summ_len + 22,
-        summ_width + 3,
-        {"type": "cell", "criteria": "<", "value": 0, "format": plain_format},
-    )
 
     # Row Heights
     comp_sheet.set_row(0, 25, oob_format)
@@ -1679,15 +1673,17 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
     comp_sheet.set_row(9, 40, oob_format)
 
     # Legend
-    comp_sheet.merge_range("N3:O3", "LEGEND", merge_format)
-    comp_sheet.write("N4", "", red_cell_format)
-    comp_sheet.write("O4", ">|20|%", legend_text_format)
-    comp_sheet.write("N5", "", orange_cell_format)
-    comp_sheet.write("O5", "|20|%≤|10|%", legend_text_format)
-    comp_sheet.write("N6", "", yellow_cell_format)
-    comp_sheet.write("O6", "|10|%≤|5|%", legend_text_format)
-    comp_sheet.write("N7", "", green_cell_format)
-    comp_sheet.write("O7", "<|5|%", legend_text_format)
+    comp_sheet.merge_range("V3:W3", "LEGEND", merge_format)
+    comp_sheet.write("V4", "", red_cell_format)
+    comp_sheet.write("W4", ">|20|%", legend_text_format)
+    comp_sheet.write("V5", "", orange_cell_format)
+    comp_sheet.write("W5", "|20|%≤|10|%", legend_text_format)
+    comp_sheet.write("V6", "", yellow_cell_format)
+    comp_sheet.write("W6", "|10|%≤|5|%", legend_text_format)
+    comp_sheet.write("V7", "", green_cell_format)
+    comp_sheet.write("W7", "<|5|%", legend_text_format)
+
+    print(comp_width + 2)
 
     # Conditional Formatting
     comp_sheet.conditional_format(
@@ -1832,6 +1828,67 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
             "minimum": -0.05,
             "maximum": 0.05,
             "format": green_cell_format,
+        },
+    )
+    comp_sheet.conditional_format(
+        10,
+        3,
+        9 + comp_len,
+        comp_width + 2,
+        {
+            "type": "cell",
+            "criteria": ">=",
+            "value": 0,
+            "format": percent_format,
+        },
+    )
+    comp_sheet.conditional_format(
+        10,
+        3,
+        9 + comp_len,
+        comp_width + 2,
+        {
+            "type": "cell",
+            "criteria": "<",
+            "value": 0,
+            "format": percent_format,
+        },
+    )
+    # Summary background formatting workaround using conditional formatting
+    comp_sheet.conditional_format(
+        12 + comp_len,
+        3,
+        comp_len + summ_len + 22,
+        summ_width + 3,
+        {
+            "type": "cell",
+            "criteria": ">=",
+            "value": 0,
+            "format": percent_format,
+        },
+    )
+    comp_sheet.conditional_format(
+        12 + comp_len,
+        3,
+        comp_len + summ_len + 22,
+        summ_width + 3,
+        {
+            "type": "cell",
+            "criteria": "<",
+            "value": 0,
+            "format": percent_format,
+        },
+    )
+    # graded colour scale
+    comp_sheet.conditional_format(
+        12 + comp_len,
+        3,
+        comp_len + summ_len + 22,
+        summ_width + 3,
+        {
+            "type": "2_color_scale",
+            "min_color": "#FCFCFF",
+            "max_color": "#F8696B",
         },
     )
 

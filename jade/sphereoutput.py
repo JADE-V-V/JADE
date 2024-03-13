@@ -80,25 +80,25 @@ class SphereOutput(BenchmarkOutput):
             outpath = os.path.join(self.atlas_path_mcnp, "tmp")
             tally_info = [
                 (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
             ]
         if self.serpent:
             outpath = os.path.join(self.atlas_path_serpent, "tmp")
             tally_info = [
                 (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
             ]
         if self.openmc:
             outpath = os.path.join(self.atlas_path_openmc, "tmp")
             tally_info = [
                 (4, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+                (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
             ]
         if self.d1s:
             outpath = os.path.join(self.atlas_path_d1s, "tmp")
             tally_info = [
                 (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
             ]
         if not os.path.exists(outpath):
             os.mkdir(outpath)
@@ -223,13 +223,23 @@ class SphereOutput(BenchmarkOutput):
         for code, code_outputs in self.outputs.items():
             if code == "mcnp":
                 tally_info = [
-                (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+                    (
+                        2,
+                        "Averaged Neutron Flux (175 groups)",
+                        "Neutron Flux",
+                        r"$\#/cm^2$",
+                    ),
+                    (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
                 ]
             if code == "openmc":
                 tally_info = [
-                (4, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+                    (
+                        4,
+                        "Averaged Neutron Flux (175 groups)",
+                        "Neutron Flux",
+                        r"$\#/cm^2$",
+                    ),
+                    (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
                 ]
             for tally, title, quantity, unit in tally_info:
                 print(" Plotting tally n." + str(tally))
@@ -354,7 +364,7 @@ class SphereOutput(BenchmarkOutput):
         errors = []
         # stat_checks = []
         outputs = {}
-        #test_path_openmc = os.path.join(self.test_path, "openmc")
+        # test_path_openmc = os.path.join(self.test_path, "openmc")
         for folder in os.listdir(self.test_path):
             results_path = os.path.join(self.test_path, folder, "openmc")
             pieces = folder.split("_")
@@ -554,7 +564,7 @@ class SphereOutput(BenchmarkOutput):
         # ex.insert_df(9, 2, results, 0)
         # ex.insert_df(9, 2, errors, 1)
         # ex.insert_df(9, 2, stat_checks, 2)
-        #lib_name = self.session.conf.get_lib_name(self.lib)
+        # lib_name = self.session.conf.get_lib_name(self.lib)
         # ex.wb.sheets[0].range('D1').value = lib_name
         # ex.save()
 
@@ -622,7 +632,7 @@ class SphereOutput(BenchmarkOutput):
                         output = SphereMCNPoutput(mfile, outfile)
                         outputs_lib[zaidnum] = output
                         res, err, columns = output.get_comparison_data(
-                            ["12", "32", "6", "46", "14", "24", "34"], "mcnp"
+                            ["12", "22", "24", "14", "34", "6", "46"], "mcnp"
                         )
                         try:
                             zn = int(zaidnum)
@@ -688,6 +698,7 @@ class SphereOutput(BenchmarkOutput):
                     del df["index"]
                     df.set_index(["Zaid", "Zaid Name"], inplace=True)
                 final.to_csv("final_df_test.csv")
+
                 # Create and concat the summary
                 old_l = 0
                 old_lim = 0
@@ -795,10 +806,7 @@ class SphereOutput(BenchmarkOutput):
                 comp_dfs = []
                 error_dfs = []
 
-                for test_path in [
-                    self.test_path[reflib],
-                    self.test_path[tarlib]
-                ]:
+                for test_path in [self.test_path[reflib], self.test_path[tarlib]]:
                     results = []
                     errors = []
                     iteration = iteration + 1
@@ -970,8 +978,6 @@ class SphereOutput(BenchmarkOutput):
 
 
 class SphereTallyOutput:
-    """SB to replace this next!"""
-
     def get_single_excel_data(self, tallies2pp):
         """
         Get the excel data of a single MCNP output
@@ -988,12 +994,11 @@ class SphereTallyOutput:
         # tallies2pp = ['2', '32', '24', '14', '34']
         # heating_tallies = ['4', '6', '44', '46']
         # tallies2pp = ['4' '14']
+
         data = self.tallydata.set_index(["Energy"])
-        totbins = self.totalbin.set_index("Tally Description")
         results = {}  # Store excel results of different tallies
         errors = {}  # Store average error in different tallies
-        keys = {}  # Tally names and numbers
-        # heating_res = {}  # Mid-process heating results
+        heating_res = {}  # Mid-process heating results
         notes = "Negative Bins:"  # Record negative bins here
         initial_notes_length = len(notes)  # To check if notes are registered
         tally_list = [d for _, d in data.groupby(["Tally N."])]
@@ -1052,28 +1057,31 @@ class SphereTallyOutput:
         #        results[tally.tallyComment[0]] = res
         #        errors[tally.tallyComment[0]] = mean_error
 
-        # elif num in heating_tallies:
-        #    heating_res[num] = float(masked['Value'].values[0])
-        #    errors[tally.tallyComment[0]] = mean_error
+        #     if tally in heating_tallies:
+        #         heating_res[tally_num] = tally['Value'].values[0]
+        #         errors[tally_num] = mean_error
 
+        # print(heating_res)
         # comp = 'Heating comparison [F4 vs F6]'
         # try:
         #    results['Neutron '+comp] = ((heating_res['6'] - heating_res['4']) /
         #                                heating_res['6'])
         # except ZeroDivisionError:
         #    results['Neutron '+comp] = 0
-        #
+
         # try:
         #    results['Gamma '+comp] = ((heating_res['46'] - heating_res['44']) /
         #                              heating_res['46'])
         # except ZeroDivisionError:
         #    results['Gamma '+comp] = 0
 
-        # Notes adding
-        if len(notes) > initial_notes_length:
-            results["Notes"] = notes
-        else:
-            results["Notes"] = ""
+        # # Notes adding
+        # if len(notes) > initial_notes_length:
+        #     results["Notes"] = notes
+        # else:
+        #     results["Notes"] = ""
+
+        # print(results)
         return results, errors
 
     def get_comparison_data(self, tallies2pp, code):
@@ -1089,10 +1097,10 @@ class SphereTallyOutput:
 
         """
         # Tallies to post process
-        if code == "mcnp":     
-            binned_tallies = ["2", "12", "22", "32"]
+        if code == "mcnp":
+            binned_tallies = ["12", "22"]
         if code == "openmc":
-            binned_tallies = ["4","14"]
+            binned_tallies = ["4", "14"]
         data = self.tallydata.set_index(["Energy"])
         totalbins = self.totalbin.set_index("Tally Description")
         results = []  # Store data to compare for different tallies

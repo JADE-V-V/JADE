@@ -76,36 +76,10 @@ class SphereOutput(BenchmarkOutput):
         print(" Dumping Raw Data...")
         self.print_raw()
         print(" Generating plots...")
-        if self.mcnp:
-            outpath = os.path.join(self.atlas_path_mcnp, "tmp")
-            tally_info = [
-                (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
-            ]
-        if self.serpent:
-            outpath = os.path.join(self.atlas_path_serpent, "tmp")
-            tally_info = [
-                (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
-            ]
-        if self.openmc:
-            outpath = os.path.join(self.atlas_path_openmc, "tmp")
-            tally_info = [
-                (4, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
-            ]
-        if self.d1s:
-            outpath = os.path.join(self.atlas_path_d1s, "tmp")
-            tally_info = [
-                (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
-            ]
-        if not os.path.exists(outpath):
-            os.mkdir(outpath)
-        self._generate_single_plots(outpath, tally_info)
+        self._generate_single_plots()
         print(" Single library post-processing completed")
 
-    def _generate_single_plots(self, outpath, tally_info):
+    def _generate_single_plots(self):
         """
         Generate all the requested plots in a temporary folder
 
@@ -121,6 +95,22 @@ class SphereOutput(BenchmarkOutput):
         """
 
         for code, outputs in self.outputs.items():
+            print(type(list(outputs.values())[0]))
+            # edited by T. Wheeler. Not super happy with this solution, maybe JADE should be refactored to loop through each 
+            # code from the config to help with handling the differences between codes?
+            if isinstance(list(outputs.values())[0], SphereMCNPoutput):
+                outpath = os.path.join(self.atlas_path_mcnp, "tmp")
+                tally_info = [
+                (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
+                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+                ]
+            if isinstance(list(outputs.values())[0], SphereOpenMCoutput):
+                outpath = os.path.join(self.atlas_path_openmc, "tmp")
+                tally_info = [
+                (4, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
+                (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+                ]
+            os.mkdir(outpath)
             for tally, title, quantity, unit in tally_info:
                 print(" Plotting tally n." + str(tally))
                 for zaidnum, output in tqdm(outputs.items()):
@@ -206,20 +196,10 @@ class SphereOutput(BenchmarkOutput):
 
         # Plot everything
         print(" Generating Plots Atlas...")
-        if self.mcnp:
-            outpath = os.path.join(self.atlas_path_mcnp, "tmp")
-        if self.serpent:
-            outpath = os.path.join(self.atlas_path_serpent, "tmp")
-        if self.openmc:
-            outpath = os.path.join(self.atlas_path_openmc, "tmp")
-        if self.d1s:
-            outpath = os.path.join(self.atlas_path_d1s, "tmp")
-        if not os.path.exists(outpath):
-            os.mkdir(outpath)
-        self._generate_plots(libraries, allzaids, outputs, globalname, outpath)
+        self._generate_plots(libraries, allzaids, outputs, globalname)
         print(" Comparison post-processing completed")
 
-    def _generate_plots(self, libraries, allzaids, outputs, globalname, outpath):
+    def _generate_plots(self, libraries, allzaids, outputs, globalname):
         for code, code_outputs in self.outputs.items():
             if code == "mcnp":
                 tally_info = [
@@ -231,6 +211,7 @@ class SphereOutput(BenchmarkOutput):
                     ),
                     (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
                 ]
+                outpath = os.path.join(self.atlas_path_mcnp, "tmp")
             if code == "openmc":
                 tally_info = [
                     (
@@ -241,6 +222,9 @@ class SphereOutput(BenchmarkOutput):
                     ),
                     (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
                 ]
+                outpath = os.path.join(self.atlas_path_openmc, "tmp")
+            if not os.path.exists(outpath):
+                os.mkdir(outpath)
             for tally, title, quantity, unit in tally_info:
                 print(" Plotting tally n." + str(tally))
                 for zaidnum in tqdm(allzaids):
@@ -280,8 +264,11 @@ class SphereOutput(BenchmarkOutput):
                         "Energy [MeV]",
                         self.testname,
                     )
-                    plot.plot("Binned graph")
-
+                    try:
+                        plot.plot("Binned graph")
+                    except IndexError:
+                        print(data)
+                    
             self._build_atlas(outpath)
 
     def _get_organized_output(self):
@@ -302,6 +289,22 @@ class SphereOutput(BenchmarkOutput):
         return libraries, allzaids, outputs
 
     def _read_mcnp_output(self):
+        """Reads all MCNP outputs from a library
+
+        Returns
+        -------
+            outputs : dic
+                Dictionary of MCNP sphere output objects used in plotting, keys are material name or ZAID number
+            results : dic
+                Dictionary of overview of Tally values for each material/ZAID, returns either all values > 0 for
+                tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding 
+                tally bin if it finds any negative values. Contents of the "Values" worksheet.
+            errors : dic 
+                Dictionary of average errors for each tally for each material/Zaid. Contents of the "Errors" worksheet.
+            stat_checks : dic
+                Dictionary the MCNP statistical check results for each material/ZAID. Contents of the "Statistical
+                Checks" Worksheet.
+        """
         # Get results
         results = []
         errors = []
@@ -347,6 +350,21 @@ class SphereOutput(BenchmarkOutput):
         return outputs, results, errors, stat_checks
 
     def _read_serpent_output(self):
+        """Reads all Serpent outputs from a library 
+        
+        NOT YET IMPLEMENTED
+
+        Returns
+        -------
+            outputs : dic
+                Dictionary of Serpent sphere output objects used in plotting, keys are material name or ZAID number
+            results : dic
+                Dictionary of overview of Tally values for each material/ZAID, returns either all values > 0 for
+                tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding 
+                tally bin if it finds any negative values. Contents of the "Values" worksheet.
+            errors : dic 
+                Dictionary of average errors for each tally for each material/Zaid. Contents of the "Errors" worksheet.
+        """
         # Get results
         results = []
         errors = []
@@ -359,6 +377,19 @@ class SphereOutput(BenchmarkOutput):
         return outputs, results, errors, stat_checks
 
     def _read_openmc_output(self):
+        """Reads all OpenMC outputs from a library
+
+        Returns
+        -------
+            outputs : dic
+                Dictionary of OpenMC sphere output objects used for plotting, keys are material name or ZAID number
+            results : dic
+                Dictionary of overview of Tally values for each material/ZAID, returns either all values > 0 for
+                tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding 
+                tally bin if it finds any negative values. Contents of the "Values" worksheet.
+            errors : dic 
+                Dictionary of average errors for each tally for each material/Zaid. Contents of the "Errors" worksheet.
+        """
         # Get results
         results = []
         errors = []
@@ -377,7 +408,7 @@ class SphereOutput(BenchmarkOutput):
             else:
                 zaidname = pieces[-1]
             # Parse output
-            output = SphereOpenMCOutput(os.path.join(results_path, "tallies.out"))
+            output = SphereOpenMCoutput(os.path.join(results_path, "tallies.out"))
             outputs[zaidnum] = output
             # Adjourn raw Data
             self.raw_data["openmc"][zaidnum] = output.tallydata
@@ -398,6 +429,22 @@ class SphereOutput(BenchmarkOutput):
         )  # stat_checks
 
     def _generate_dataframe(self, results, errors, stat_checks=None):
+        """Function to turn the output of the read_{code}_output functions into DataFrames
+           for use with xlsxwriter
+
+        Arguments
+        ------
+            results (dic): dictionary of tally summaries for each material/ZAID.
+            errors (dic): dictionaty of average tally errors across all energy bins.
+            stat_checks (dic, optional): dictionary containing results of MCNP statistical checks
+            (MCNP only). Defaults to None.
+
+        Returns
+        -------
+            results (DataFrame): previous dictionary but in DataFrame form
+            errors (DataFrame): previous dictionary but in DataFrame form
+            stat_checks (DataFrame): previous dictionary but in DataFrame form
+        """            
         # Generate DataFrames
         results = pd.DataFrame(results)
         errors = pd.DataFrame(errors)
@@ -446,6 +493,7 @@ class SphereOutput(BenchmarkOutput):
                 outfolder_path, "Sphere_single_" + "MCNP_" + self.lib + ".xlsx"
             )
             outputs, results, errors, stat_checks = self._read_mcnp_output()
+            print(results)
             results, errors, stat_checks = self._generate_dataframe(
                 results, errors, stat_checks
             )
@@ -830,7 +878,7 @@ class SphereOutput(BenchmarkOutput):
 
                         # Parse output
                         outfile = os.path.join(results_path, outfile)
-                        output = SphereOpenMCOutput(outfile)
+                        output = SphereOpenMCoutput(outfile)
                         outputs_lib[zaidnum] = output
                         res, err, columns = output.get_comparison_data(
                             ["4", "14"], "openmc"
@@ -1374,7 +1422,7 @@ class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
         #        return results, columns
 
 
-class SphereOpenMCOutput(OpenMCOutput, SphereTallyOutput):
+class SphereOpenMCoutput(OpenMCOutput, SphereTallyOutput):
     def _create_dataframe(self, rows):
         df = pd.DataFrame(
             rows, columns=["Tally N.", "Tally Description", "Energy", "Value", "Error"]

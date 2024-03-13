@@ -654,9 +654,11 @@ Additional Post-Processing of library:"""
                             continue
 
                 # Execute Comparison
-                for testname in to_perform:
+                print(to_perform)
+                for code, testnames in to_perform.items():
+                    print(code, testnames)
                     try:
-                        pp.compareBenchmark(session, lib_input, testname)
+                        pp.compareBenchmark(session, lib_input, code, testnames)
                     except PermissionError as e:
                         clear_screen()
                         print(pp_menu)

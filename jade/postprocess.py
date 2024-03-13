@@ -28,7 +28,7 @@ import jade.output as bencho
 import jade.sphereoutput as spho
 
 
-def compareBenchmark(session, lib_input: str, testname: str, exp=False) -> None:
+def compareBenchmark(session, lib_input: str, code: str, testnames: list , exp=False) -> None:
     """Compare benchmark results and perform post-processing.
 
     Parameters
@@ -41,7 +41,7 @@ def compareBenchmark(session, lib_input: str, testname: str, exp=False) -> None:
         Named of the test to be compared and post-processed
     """
 
-    print("\n Comparing " + testname + ":" + "    " + str(datetime.datetime.now()))
+    #print("\n Comparing " + testname + ":" + "    " + str(datetime.datetime.now()))
     lib = lib_input.split("-")
     """# get the correct output object
     out = _get_output('compare', testname, lib, session)
@@ -59,31 +59,26 @@ def compareBenchmark(session, lib_input: str, testname: str, exp=False) -> None:
     # Get the log
     log = session.log
 
-    for testname, row in config.iterrows():
-        if (bool(row["Post-Processing"])) and (
-            bool(row["MCNP"])
-            or bool(row["Serpent"])
-            or bool(row["OpenMC"])
-            or bool(row["d1S"])
-        ):
-            print(
-                "\n Post-Processing "
-                + testname
-                + ":"
-                + "    "
-                + str(datetime.datetime.now())
-            )
-            # get the correct output object
-            out = _get_output("compare", row, lib, session)
-            if out:
-                out.compare()
-
-            log.adjourn(
-                testname
-                + " benchmark post-processing completed"
-                + "    "
-                + str(datetime.datetime.now())
-            )
+    for testname in testnames:
+        print("\n Comparing " + code + testname + ":" + "    " + str(datetime.datetime.now()))
+        print(testname)
+        print(
+            "\n Post-Processing "
+            + testname
+            + ":"
+            + "    "
+            + str(datetime.datetime.now())
+        )
+        # get the correct output object
+        out = _get_output("compare", code, testname, lib, session)
+        if out:
+            out.compare()
+        log.adjourn(
+            testname
+            + " benchmark post-processing completed"
+            + "    "
+            + str(datetime.datetime.now())
+        )
 
 
 def postprocessBenchmark(session, lib: str) -> None:
@@ -136,66 +131,65 @@ def postprocessBenchmark(session, lib: str) -> None:
         )
 
 
-def _get_output(action, config, lib, session):
+def _get_output(action, code, testname, lib, session):
     exp_pp_message = "\n No single pp is foreseen for experimental benchmarks"
-    testname = config["Folder Name"]
 
     if testname == "Sphere":
-        out = spho.SphereOutput(lib, config, session)
+        out = spho.SphereOutput(lib, code, testname, session)
 
     elif testname == "SphereSDDR":
-        out = spho.SphereSDDRoutput(lib, config, session)
+        out = spho.SphereSDDRoutput(lib, testname, session)
 
     elif testname in ["Oktavian"]:
         if action == "compare":
-            out = expo.SpectrumOutput(lib, config, session, multiplerun=True)
+            out = expo.SpectrumOutput(lib, testname, session, multiplerun=True)
         elif action == "pp":
             print(exp_pp_message)
             return False
 
     elif testname in ["Tiara-BC", "FNS-TOF", "TUD-Fe", "TUD-W"]:
         if action == "compare":
-            out = expo.MultipleSpectrumOutput(lib, config, session, multiplerun=True)
+            out = expo.MultipleSpectrumOutput(lib, testname, session, multiplerun=True)
         elif action == "pp":
             print(exp_pp_message)
             return False
 
     elif testname in ["TUD-FNG"]:
         if action == "compare":
-            out = expo.MultipleSpectrumOutput(lib, config, session)
+            out = expo.MultipleSpectrumOutput(lib, testname, session)
         elif action == "pp":
             print(exp_pp_message)
             return False
 
     elif testname == "Tiara-FC":
         if action == "compare":
-            out = expo.TiaraFCOutput(lib, config, session, multiplerun=True)
+            out = expo.TiaraFCOutput(lib, testname, session, multiplerun=True)
         elif action == "pp":
             print(exp_pp_message)
             return False
 
     elif testname == "Tiara-BS":
         if action == "compare":
-            out = expo.TiaraBSOutput(lib, config, session, multiplerun=True)
+            out = expo.TiaraBSOutput(lib, testname, session, multiplerun=True)
         elif action == "pp":
             print(exp_pp_message)
             return False
 
     elif testname in ["FNG-BKT", "FNG-W", "ASPIS-Fe88"]:
         if action == "compare":
-            out = expo.ShieldingOutput(lib, config, session, multiplerun=True)
+            out = expo.ShieldingOutput(lib, testname, session, multiplerun=True)
         elif action == "pp":
             print(exp_pp_message)
             return False
 
     elif testname == "FNG":
         if action == "compare":
-            out = expo.FNGOutput(lib, config, session, multiplerun=True)
+            out = expo.FNGOutput(lib, testname, session, multiplerun=True)
         elif action == "pp":
             print(exp_pp_message)
             return False
 
     else:
-        out = bencho.BenchmarkOutput(lib, config, session)
+        out = bencho.BenchmarkOutput(lib, code, testname, session)
 
     return out

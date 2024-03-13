@@ -116,7 +116,7 @@ class AbstractOutput(abc.ABC):
 
 
 class BenchmarkOutput(AbstractOutput):
-    def __init__(self, lib, config: Configuration, session: Session):
+    def __init__(self, lib, code, testname: str, session: Session):
         """
         General class for a Benchmark output
 
@@ -138,7 +138,7 @@ class BenchmarkOutput(AbstractOutput):
         """
         self.raw_data = {}  # Raw data
         self.outputs = {}  # outputs linked to the benchmark
-        self.testname = config["Folder Name"]  # test name
+        self.testname = testname  # test name
         self.code_path = os.getcwd()  # path to code
         self.state = session.state
         self.session = session
@@ -153,29 +153,29 @@ class BenchmarkOutput(AbstractOutput):
             self.cnf_path = os.path.join(session.path_cnf, self.testname)
 
         # Updated to handle multiple codes
-        try:
-            self.mcnp = bool(config["MCNP"])
+        if code == "mcnp":
+            self.mcnp = True
             self.raw_data["mcnp"] = {}
             self.outputs["mcnp"] = {}
-        except KeyError:
+        else:
             self.mcnp = False
-        try:
-            self.serpent = bool(config["Serpent"])
+        if code == "serpent":
+            self.serpent = True
             self.raw_data["serpent"] = {}
             self.outputs["serpent"] = {}
-        except KeyError:
+        else:
             self.serpent = False
-        try:
-            self.openmc = bool(config["OpenMC"])
+        if code == "openmc":
+            self.openmc = True
             self.raw_data["openmc"] = {}
             self.outputs["openmc"] = {}
-        except KeyError:
+        else:
             self.openmc = False
-        try:
-            self.d1s = bool(config["d1S"])
+        if code == "d1s":
+            self.d1s = True
             self.raw_data["d1s"] = {}
             self.outputs["d1s"] = {}
-        except KeyError:
+        else:
             self.d1s = False
 
         # COMPARISON
@@ -204,50 +204,59 @@ class BenchmarkOutput(AbstractOutput):
             if not os.path.exists(out):
                 os.mkdir(out)
 
-            out = os.path.join(out, self.testname)
+            out = os.path.join(out, self.testname, code)
             if os.path.exists(out):
                 shutil.rmtree(out)
-            os.mkdir(out)
-            if self.mcnp:
-                excel_path_mcnp = os.path.join(out, "mcnp", "Excel")
-                atlas_path_mcnp = os.path.join(out, "mcnp", "Atlas")
-                raw_path_mcnp = os.path.join(out, "mcnp", "Raw_Data")
-                os.makedirs(excel_path_mcnp)
-                os.makedirs(atlas_path_mcnp)
-                os.makedirs(raw_path_mcnp)
-                self.excel_path_mcnp = excel_path_mcnp
-                self.raw_path_mcnp = raw_path_mcnp
-                self.atlas_path_mcnp = atlas_path_mcnp
-            if self.openmc:
-                excel_path_openmc = os.path.join(out, "openmc", "Excel")
-                atlas_path_openmc = os.path.join(out, "openmc", "Atlas")
-                raw_path_openmc = os.path.join(out, "openmc", "Raw_Data")
-                os.makedirs(excel_path_openmc)
-                os.makedirs(atlas_path_openmc)
-                os.makedirs(raw_path_openmc)
-                self.excel_path_openmc = excel_path_openmc
-                self.raw_path_openmc = raw_path_openmc
-                self.atlas_path_openmc = atlas_path_openmc
-            if self.serpent:
-                excel_path_serpent = os.path.join(out, "serpent", "Excel")
-                atlas_path_serpent = os.path.join(out, "serpent", "Atlas")
-                raw_path_serpent = os.path.join(out, "serpent", "Raw_Data")
-                os.makedirs(excel_path_serpent)
-                os.makedirs(atlas_path_serpent)
-                os.makedirs(raw_path_serpent)
-                self.excel_path_serpent = excel_path_serpent
-                self.raw_path_serpent = raw_path_serpent
-                self.atlas_path_serpent = atlas_path_serpent
-            if self.d1s:
-                excel_path_d1s = os.path.join(out, "d1s", "Excel")
-                atlas_path_d1s = os.path.join(out, "d1s", "Atlas")
-                raw_path_d1s = os.path.join(out, "d1s", "Raw_Data")
-                os.makedirs(excel_path_d1s)
-                os.makedirs(atlas_path_d1s)
-                os.makedirs(raw_path_d1s)
-                self.excel_path_d1s = excel_path_d1s
-                self.raw_path_d1s = raw_path_d1s
-                self.atlas_path_d1s = atlas_path_d1s
+            os.makedirs(out)
+            excel_path = os.path.join(out, "Excel")
+            atlas_path = os.path.join(out, "Atlas")
+            raw_path = os.path.join(out, "Raw_Data")
+            os.makedirs(excel_path)
+            os.makedirs(atlas_path)
+            os.makedirs(raw_path)
+            self.excel_path = excel_path
+            self.raw_path = raw_path
+            self.atlas_path = atlas_path
+            #if self.mcnp:
+            #    excel_path_mcnp = os.path.join(out, "mcnp", "Excel")
+            #    atlas_path_mcnp = os.path.join(out, "mcnp", "Atlas")
+            #    raw_path_mcnp = os.path.join(out, "mcnp", "Raw_Data")
+            #    os.makedirs(excel_path_mcnp)
+            #    os.makedirs(atlas_path_mcnp)
+            #    os.makedirs(raw_path_mcnp)
+            #    self.excel_path_mcnp = excel_path_mcnp
+            #    self.raw_path_mcnp = raw_path_mcnp
+            #    self.atlas_path_mcnp = atlas_path_mcnp
+            #if self.openmc:
+            #    excel_path_openmc = os.path.join(out, "openmc", "Excel")
+            #    atlas_path_openmc = os.path.join(out, "openmc", "Atlas")
+            #    raw_path_openmc = os.path.join(out, "openmc", "Raw_Data")
+            #    os.makedirs(excel_path_openmc)
+            #    os.makedirs(atlas_path_openmc)
+            #    os.makedirs(raw_path_openmc)
+            #    self.excel_path_openmc = excel_path_openmc
+            #    self.raw_path_openmc = raw_path_openmc
+            #    self.atlas_path_openmc = atlas_path_openmc
+            #if self.serpent:
+            #    excel_path_serpent = os.path.join(out, "serpent", "Excel")
+            #    atlas_path_serpent = os.path.join(out, "serpent", "Atlas")
+            #    raw_path_serpent = os.path.join(out, "serpent", "Raw_Data")
+            #    os.makedirs(excel_path_serpent)
+            #    os.makedirs(atlas_path_serpent)
+            #    os.makedirs(raw_path_serpent)
+            #    self.excel_path_serpent = excel_path_serpent
+            #    self.raw_path_serpent = raw_path_serpent
+            #    self.atlas_path_serpent = atlas_path_serpent
+            #if self.d1s:
+            #    excel_path_d1s = os.path.join(out, "d1s", "Excel")
+            #    atlas_path_d1s = os.path.join(out, "d1s", "Atlas")
+            #    raw_path_d1s = os.path.join(out, "d1s", "Raw_Data")
+            #    os.makedirs(excel_path_d1s)
+            #    os.makedirs(atlas_path_d1s)
+            #    os.makedirs(raw_path_d1s)
+            #    self.excel_path_d1s = excel_path_d1s
+            #    self.raw_path_d1s = raw_path_d1s
+            #    self.atlas_path_d1s = atlas_path_d1s
 
             self.couples = couples  # Couples of libraries to post process
         # SINGLE-LIBRARY

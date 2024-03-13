@@ -51,8 +51,8 @@ if TYPE_CHECKING:
 
 
 class SphereOutput(BenchmarkOutput):
-    def __init__(self, lib, config: Configuration, session: Session):
-        super().__init__(lib, config, session)
+    def __init__(self, lib, code, testname: str, session: Session):
+        super().__init__(lib, code, testname, session)
 
         # Load the settings for zaids and materials
         mat_path = os.path.join(self.cnf_path, "MaterialsSettings.csv")
@@ -99,13 +99,13 @@ class SphereOutput(BenchmarkOutput):
             # edited by T. Wheeler. Not super happy with this solution, maybe JADE should be refactored to loop through each 
             # code from the config to help with handling the differences between codes?
             if isinstance(list(outputs.values())[0], SphereMCNPoutput):
-                outpath = os.path.join(self.atlas_path_mcnp, "tmp")
+                outpath = os.path.join(self.atlas_path, "tmp")
                 tally_info = [
                 (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
                 (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
                 ]
             if isinstance(list(outputs.values())[0], SphereOpenMCoutput):
-                outpath = os.path.join(self.atlas_path_openmc, "tmp")
+                outpath = os.path.join(self.atlas_path, "tmp")
                 tally_info = [
                 (4, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
                 (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
@@ -206,13 +206,13 @@ class SphereOutput(BenchmarkOutput):
                 (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
                 (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
                 ]
-                outpath = os.path.join(self.atlas_path_mcnp, "tmp")
+                outpath = os.path.join(self.atlas_path, "tmp")
             if code == "openmc":
                 tally_info = [
                 (4, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
                 (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
                 ]
-                outpath = os.path.join(self.atlas_path_openmc, "tmp")
+                outpath = os.path.join(self.atlas_path, "tmp")
             if not os.path.exists(outpath):
                 os.mkdir(outpath)
             for tally, title, quantity, unit in tally_info:
@@ -476,14 +476,13 @@ class SphereOutput(BenchmarkOutput):
         self.stat_checks = {}
 
         if self.mcnp:
-            outfolder_path = self.excel_path_mcnp
+            outfolder_path = self.excel_path
             # os.makedirs(outfolder_path, exist_ok=True)
             # outpath = os.path.join(self.excel_path_mcnp,'Sphere_single_' + 'MCNP_' + self.lib+'.xlsx')
             outpath = os.path.join(
                 outfolder_path, "Sphere_single_" + "MCNP_" + self.lib + ".xlsx"
             )
             outputs, results, errors, stat_checks = self._read_mcnp_output()
-            print(results)
             results, errors, stat_checks = self._generate_dataframe(
                 results, errors, stat_checks
             )
@@ -514,7 +513,7 @@ class SphereOutput(BenchmarkOutput):
             pass
 
         if self.openmc:
-            outfolder_path = self.excel_path_openmc
+            outfolder_path = self.excel_path
             # os.mkdir(outfolder_path)
             # outpath = os.path.join(self.excel_path_openmc,'Sphere_single_' + 'OpenMC_' + self.lib+'.xlsx')
             outpath = os.path.join(
@@ -626,7 +625,7 @@ class SphereOutput(BenchmarkOutput):
             iteration = 0
             outputs = {}
             for reflib, tarlib, name in self.couples:
-                outfolder_path = self.excel_path_mcnp
+                outfolder_path = self.excel_path
                 # os.mkdir(outfolder_path)
                 outpath = os.path.join(
                     outfolder_path, "Sphere_comparison_" + name + "_mcnp.xlsx"
@@ -832,7 +831,7 @@ class SphereOutput(BenchmarkOutput):
             iteration = 0
             outputs = {}
             for reflib, tarlib, name in self.couples:
-                outfolder_path = self.excel_path_openmc
+                outfolder_path = self.excel_path
                 # os.mkdir(outfolder_path)
                 outpath = os.path.join(
                     outfolder_path, "Sphere_comparison_" + name + "_openmc.xlsx"
@@ -1001,11 +1000,11 @@ class SphereOutput(BenchmarkOutput):
         #        data.to_csv(file, header=True, index=False)
         if self.mcnp:
             for key, data in self.raw_data["mcnp"].items():
-                file = os.path.join(self.raw_path_mcnp, "mcnp" + key + ".csv")
+                file = os.path.join(self.raw_path_openmc, "mcnp" + key + ".csv")
                 data.to_csv(file, header=True, index=False)
         if self.serpent:
             for key, data in self.raw_data["serpent"].items():
-                file = os.path.join(self.raw_path_serpent, "serpent" + key + ".csv")
+                file = os.path.join(self.raw_path, "serpent" + key + ".csv")
                 data.to_csv(file, header=True, index=False)
         if self.openmc:
             for key, data in self.raw_data["openmc"].items():
@@ -1013,7 +1012,7 @@ class SphereOutput(BenchmarkOutput):
                 data.to_csv(file, header=True, index=False)
         if self.d1s:
             for key, data in self.raw_data["d1s"].items():
-                file = os.path.join(self.raw_path_d1s, "d1s" + key + ".csv")
+                file = os.path.join(self.raw_path, "d1s" + key + ".csv")
                 data.to_csv(file, header=True, index=False)
 
 
@@ -1489,7 +1488,7 @@ class SphereSDDRoutput(SphereOutput):
         if self.d1s:
             # template = os.path.join(os.getcwd(), "templates", "SphereSDDR_single.xlsx")
             outpath = os.path.join(
-                self.excel_path_d1s, "SphereSDDR_single_" + self.lib + ".xlsx"
+                self.excel_path, "SphereSDDR_single_" + self.lib + ".xlsx"
             )
             # compute the results
             outputs, results, errors, stat_checks = self._compute_single_results()
@@ -1524,7 +1523,7 @@ class SphereSDDRoutput(SphereOutput):
         if self.d1s:
             for reflib, tarlib, name in self.couples:
                 outpath = os.path.join(
-                    self.excel_path_d1s, "Sphere_SDDR_comparison_" + name + ".xlsx"
+                    self.excel_path, "Sphere_SDDR_comparison_" + name + ".xlsx"
                 )
                 final, absdiff, std_dev = self._compute_compare_result(reflib, tarlib)
 
@@ -1814,7 +1813,7 @@ class SphereSDDRoutput(SphereOutput):
         ########
         print(" Building...")
         if self.d1s:
-            atlas.save(self.atlas_path_d1s)
+            atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(outpath)
 
@@ -2053,7 +2052,7 @@ class SphereSDDRoutput(SphereOutput):
         for key, data in self.raw_data.items():
             # build a folder containing each tally of the reaction
             foldername = "{}_{}".format(key[0], key[1])
-            folder = os.path.join(self.raw_path_d1s, foldername)
+            folder = os.path.join(self.raw_path, foldername)
             os.mkdir(folder)
             # Dump all tallies
             for tallynum, df in data.items():

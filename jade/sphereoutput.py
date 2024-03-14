@@ -1101,11 +1101,14 @@ class SphereTallyOutput:
         notes = "Negative Bins:"  # Record negative bins here
         initial_notes_length = len(notes)  # To check if notes are registered
         tally_list = [d for _, d in data.groupby(["Tally N."])]
+        heating_tallies = ['4', '6', '44', '46']
         for tally in tally_list:
             tally_num = str(tally["Tally N."].iloc[0])
             tally_description = tally["Tally Description"].iloc[0]
             mean_error = tally["Error"].mean()
-            if tally_num in tallies2pp:
+            if tally_num in heating_tallies:
+                heating_res[tally_num] = tally['Value'].values[0]           
+            if tally_num in tallies2pp:                 
                 tally_zero = tally[tally["Value"] == 0]
                 original_length = len(tally)
                 tally = tally[tally["Value"] < 0]
@@ -1122,7 +1125,64 @@ class SphereTallyOutput:
                 else:
                     res = "Value > 0 for all bins"
                 results[tally_description] = res
-                errors[tally_description] = mean_error
+                errors[tally_description] = mean_error            
+        # for tally in self.mctal.tallies:
+        #    num = str(tally.tallyNumber)
+        #    keys[num] = tally.tallyComment[0]
+        #    # Isolate tally
+        #    masked = data.loc[tally.tallyComment[0]]
+        #    print(masked)
+        #    # Get mean error among bins, different for single bin
+        #    if tally.ergTC == 't':
+        #        mean_error = totbins.loc[tally.tallyComment[0]]['Error']
+        #    else:
+        #        mean_error = masked['Error'].mean()
+        #
+        #    if num in tallies2pp:
+        #        masked_zero = masked[masked['Value'] == 0]
+        #        original_length = len(masked)
+        #        masked = masked[masked['Value'] < 0]
+        #        if len(masked) > 0:
+        #            res = 'Value < 0 in '+str(len(masked))+' bin(s)'
+        #            # Get energy bins
+        #            bins = list(masked.reset_index()['Energy'].values)
+        #            notes = notes+'\n('+str(num)+'): '
+        #            for ebin in bins:
+        #                notes = notes+str(ebin)+', '
+        #            notes = notes[:-2]  # Clear string from excess commas
+        #
+        #        elif len(masked_zero) == original_length:
+        #            res = 'Value = 0 for all bins'
+        #        else:
+        #            res = 'Value > 0 for all bins'
+        #
+        #        results[tally.tallyComment[0]] = res
+        #        errors[tally.tallyComment[0]] = mean_error
+
+        #     if tally in heating_tallies:
+        #         heating_res[tally_num] = tally['Value'].values[0]
+        #         errors[tally_num] = mean_error
+
+        if len(heating_res) == 4:
+            comp = 'Heating comparison [F4 vs F6]'
+            try:
+                results['Neutron '+comp] = ((heating_res['6'] - heating_res['4']) /
+                                            heating_res['6'])
+            except ZeroDivisionError:
+                results['Neutron '+comp] = 0
+
+            try:
+                results['Gamma '+comp] = ((heating_res['46'] - heating_res['44']) /
+                                            heating_res['46'])
+            except ZeroDivisionError:
+                results['Gamma '+comp] = 0
+
+        # Notes adding
+        if len(notes) > initial_notes_length:
+            results["Notes"] = notes
+        else:
+            results["Notes"] = ""
+
         return results, errors
 
     def get_comparison_data(self, tallies2pp, code):
@@ -1142,43 +1202,50 @@ class SphereTallyOutput:
             binned_tallies = ["12", "22"]
         if code == "openmc":
             binned_tallies = ["4", "14"]
+        integral_tallies = []
+        
+        # Acquire data
         data = self.tallydata.set_index(["Energy"])
         totalbins = self.totalbin.set_index("Tally Description")
         results = []  # Store data to compare for different tallies
         errors = []
         columns = []  # Tally names and numbers
+        
         # Reorder tallies
-        tallies = []
+        tallies = {}
         tally_list = [d for _, d in data.groupby(["Tally N."])]
-
         for tally in tally_list:
             tally_str = str(tally["Tally N."].iloc[0])
             if tally_str in tallies2pp:
-                tallies.append(tally)
+                tallies[tally_str] = tally
+                if tally_str not in binned_tallies:
+                    integral_tallies.append(tally_str)
 
-        for tally in tallies:
-            tally_num = str(tally["Tally N."].iloc[0])
+        # Process binned tallies
+        for tally_num in binned_tallies:
+            tally = tallies[tally_num]
             tally_description = tally["Tally Description"].iloc[0]
-            if tally_num in binned_tallies:  # Coarse Flux bins
-                # Get energy bins
-                bins = tally.index.tolist()
-                for ebin in bins:
-                    # colname = '(T.ly '+str(num)+') '+str(ebin)
-                    colname = str(ebin) + " [MeV]" + " [t" + tally_num + "]"
-                    columns.append(colname)
-                    results.append(tally["Value"].loc[ebin])
-                    errors.append(tally["Error"].loc[ebin])
-                # Add the total bin
-                colname = "Total" + " [t" + tally_num + "]"
+            # Get energy bins
+            bins = tally.index.tolist()
+            for ebin in bins:
+                colname = str(ebin) + " [MeV]" + " [t" + tally_num + "]"
                 columns.append(colname)
-                results.append(totalbins["Value"].loc[tally_description])
-                errors.append(totalbins["Error"].loc[tally_description])
-            else:
-                columns.append(tally_description)
-                results.append(float(tally["Value"]))
-                errors.append(float(tally["Error"]))
+                results.append(tally["Value"].loc[ebin])
+                errors.append(tally["Error"].loc[ebin])
+            # Add the total bin
+            colname = "Total" + " [t" + tally_num + "]"
+            columns.append(colname)
+            results.append(totalbins["Value"].loc[tally_description])
+            errors.append(totalbins["Error"].loc[tally_description])
+        
+        # Proccess integral tallies
+        for tally_num in integral_tallies:
+            tally = tallies[tally_num]
+            tally_description = tally["Tally Description"].iloc[0]            
+            columns.append(tally_description)
+            results.append(float(tally["Value"]))
+            errors.append(float(tally["Error"]))
         return results, errors, columns
-
 
 class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
     def organize_mctal(self):

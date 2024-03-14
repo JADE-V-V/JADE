@@ -141,7 +141,7 @@ def mainloop(session: Session):
                 sys.exit()
             inputfile = input(" MCNP input file: ")
 
-            if newlib in session.lib_manager.libraries:
+            if newlib in session.lib_manager.libraries['mcnp']:
                 ans = uty.translate_input(session, newlib, inputfile)
                 if ans:
                     print(" Translation successfully completed!\n")

@@ -33,7 +33,7 @@ jobs:
 
       # Install python
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -59,6 +59,7 @@ jobs:
       - name: Testing - Linux
         if: runner.os == 'Linux'
         run: |
+          set -o pipefail
           source /usr/local/Modules/init/sh
           pytest --cov=. --cov-report html -cov-config=jade.coveragerc | tee pytest_output.log
 
@@ -70,14 +71,14 @@ jobs:
 
       - name: Archive test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pytest_output_${{matrix.os}}_${{matrix.python-version}}.log
           path: pytest_output.log
 
       - name: Archive test coverage
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: htmlcov${{matrix.os}}_${{matrix.python-version}}
           path: htmlcov/

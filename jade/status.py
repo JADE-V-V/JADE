@@ -596,7 +596,6 @@ class Status:
         code_not_run = []
         for lib in libs:
             test_run = self.check_lib_run(lib, session, "Post-Processing", exp=exp)
-            print(test_run)
             # check all possible transport codes
             for code, tests in test_run.items():
                 if len(tests) == 0:

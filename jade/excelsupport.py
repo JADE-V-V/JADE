@@ -1746,20 +1746,22 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
         "GLOBAL QUICK RESULT: % of cells per range of comparison differences",
         subtitle_merge_format,
     )
+    comp_sheet.write(12 + comp_len, 20, " Total", subtitle_merge_format)
+
     # Freeze title
     comp_sheet.freeze_panes(10, 0)
 
     # out of bounds
     comp_sheet.set_column(0, 0, 4, oob_format)
-    comp_sheet.set_column(comp_width, 1000, 4, oob_format)
-    for i in range(9):
-        comp_sheet.set_row(i, None, oob_format)
-    for i in range(9 + comp_len, 1000):
+    comp_sheet.set_column(comp_width + 2, 1000, 18, oob_format)
+
+    # Set the default format
+    for i in range(1000):
         comp_sheet.set_row(i, None, oob_format)
 
     # Column widths
-    comp_sheet.set_column(1, 14, 18)
-    comp_sheet.set_column(1, comp_width + 5, 18)
+    comp_sheet.set_column(1, comp_width + 2, 18)
+    comp_sheet.set_column(2, 2, 25)
 
     # Row Heights
     comp_sheet.set_row(0, 25, oob_format)
@@ -1778,8 +1780,8 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
     comp_sheet.write("W6", "|10|%≤|5|%", legend_text_format)
     comp_sheet.write("V7", "", green_cell_format)
     comp_sheet.write("W7", "<|5|%", legend_text_format)
-    comp_sheet.write("V8", "Not Available", not_avail_format)
-    comp_sheet.write("W8", "Both libs returned 0", legend_text_format)
+    # comp_sheet.write("V8", "Not Available", not_avail_format)
+    # comp_sheet.write("W8", "Both libs returned 0", legend_text_format)
 
     # Conditional Formatting
     comp_sheet.conditional_format(
@@ -1995,7 +1997,7 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
         comp_sheet.write_formula(
             row,
             summ_width + 3,
-            "=SUM({start}:{stop})/{len}".format(start=start, stop=stop, len=summ_width),
+            "=AVERAGE({start}:{stop})".format(start=start, stop=stop, len=summ_width),
         )
 
     """STANDARD DEVIATIONS FROM MEAN"""
@@ -2026,15 +2028,15 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
 
     # out of bounds
     std_dev_sheet.set_column(0, 0, 4, oob_format)
-    std_dev_sheet.set_column(std_dev_width + 3, 1000, 4, oob_format)
-    for i in range(9):
-        std_dev_sheet.set_row(i, None, oob_format)
-    for i in range(9 + std_dev_len, 1000):
+    std_dev_sheet.set_column(std_dev_width + 2, 1000, 18, oob_format)
+
+    # set default format
+    for i in range(1000):
         std_dev_sheet.set_row(i, None, oob_format)
 
     # Column widths
-    std_dev_sheet.set_column(1, 14, 18)
-    std_dev_sheet.set_column(1, std_dev_width + 5, 18)
+    std_dev_sheet.set_column(1, std_dev_width + 2, 18)
+    std_dev_sheet.set_column(2, 2, 25)
 
     # Row Heights
     std_dev_sheet.set_row(0, 25, oob_format)
@@ -2251,15 +2253,15 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
 
     # out of bounds
     absdiff_sheet.set_column(0, 0, 4, oob_format)
-    absdiff_sheet.set_column(absdiff_width + 3, 1000, 4, oob_format)
-    for i in range(9):
-        absdiff_sheet.set_row(i, None, oob_format)
-    for i in range(10 + absdiff_len, 1000):
+    absdiff_sheet.set_column(absdiff_width + 2, 1000, 18, oob_format)
+
+    # Set default format
+    for i in range(1000):
         absdiff_sheet.set_row(i, None, oob_format)
 
-    # Column widths for values, set up to 15th col to ensure title format correct
-    absdiff_sheet.set_column(1, 14, 18)
+    # Column widths
     absdiff_sheet.set_column(1, absdiff_width + 2, 18)
+    absdiff_sheet.set_column(2, 2, 25)
 
     # Row Heights
     absdiff_sheet.set_row(0, 25, oob_format)
@@ -2272,9 +2274,9 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
 
     absdiff_sheet.conditional_format(
         10,
-        3,
+        4,
         9 + absdiff_len,
-        absdiff_width + 2,
+        absdiff_width + 3,
         {
             "type": "text",
             "criteria": "containing",
@@ -2282,7 +2284,7 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
             "format": identical_format,
         },
     )
-    std_dev_sheet.conditional_format(
+    absdiff_sheet.conditional_format(
         10,
         4,
         9 + comp_len,
@@ -2294,7 +2296,7 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
             "format": scientific_format,
         },
     )
-    std_dev_sheet.conditional_format(
+    absdiff_sheet.conditional_format(
         10,
         4,
         9 + comp_len,

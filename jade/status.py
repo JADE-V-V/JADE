@@ -480,6 +480,8 @@ class Status:
                         flag_test_run = True
                         for _, files in test.items():
                             flag_run_zaid = self.check_test_run(files[code], code)
+                            if flag_run_zaid is False:
+                                print(_)
                             if not flag_run_zaid:
                                 flag_test_run = False
                     else:
@@ -596,6 +598,7 @@ class Status:
         code_not_run = []
         for lib in libs:
             test_run = self.check_lib_run(lib, session, "Post-Processing", exp=exp)
+            print(test_run)
             # check all possible transport codes
             for code, tests in test_run.items():
                 if len(tests) == 0:

@@ -438,7 +438,10 @@ class LibManager:
         newiso = newiso.loc[~newiso.index.duplicated(keep="first")]
 
         name = newiso["Element"].loc[i]
-        formula = newiso["E"].loc[i] + "-" + str(int(isotope))
+        if int(isotope) > 0:
+            formula = newiso["E"].loc[i] + "-" + str(int(isotope))
+        else:
+            formula = newiso["E"].loc[i]
 
         return name, formula
 

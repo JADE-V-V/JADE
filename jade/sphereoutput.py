@@ -1044,6 +1044,7 @@ class SphereTallyOutput:
         notes = "Negative Bins:"  # Record negative bins here
         initial_notes_length = len(notes)  # To check if notes are registered
         tally_list = [d for _, d in data.groupby(["Tally N."])]
+        heating_tallies = ['4', '6', '44', '46']
         for tally in tally_list:
             tally_num = str(tally["Tally N."].iloc[0])
             tally_description = tally["Tally Description"].iloc[0]
@@ -1066,6 +1067,21 @@ class SphereTallyOutput:
                     res = "Value > 0 for all bins"
                 results[tally_description] = res
                 errors[tally_description] = mean_error
+            if tally_num in heating_tallies:
+                heating_res[tally_num] = tally['Value'].values[0]
+                errors[tally_num] = mean_error
+        comp = 'Heating comparison [F4 vs F6]'
+        try:
+           results['Neutron '+comp] = ((heating_res['6'] - heating_res['4']) /
+                                       heating_res['6'])
+        except ZeroDivisionError:
+           results['Neutron '+comp] = 0
+
+        try:
+           results['Gamma '+comp] = ((heating_res['46'] - heating_res['44']) /
+                                     heating_res['46'])
+        except ZeroDivisionError:
+           results['Gamma '+comp] = 0        
         # for tally in self.mctal.tallies:
         #    num = str(tally.tallyNumber)
         #    keys[num] = tally.tallyComment[0]

@@ -640,7 +640,7 @@ def pploop(session: Session):
                         print("to_perform", to_perform)
                         try:
                             print(" Single PP of library " + lib + " required")
-                            pp.postprocessBenchmark(session, lib_input, code, testnames)
+                            pp.postprocessBenchmark(session, lib, code, testnames)
                             session.log.adjourn(
                                 """
 Additional Post-Processing of library:"""

@@ -77,7 +77,6 @@ class SphereOutput(BenchmarkOutput):
         self.print_raw()
         print(" Generating plots...")
         self._generate_single_plots()
-        
 
     def _generate_single_plots(self):
         """
@@ -100,13 +99,23 @@ class SphereOutput(BenchmarkOutput):
             os.mkdir(outpath)
             if self.openmc:
                 tally_info = [
-                (4, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+                    (
+                        4,
+                        "Averaged Neutron Flux (175 groups)",
+                        "Neutron Flux",
+                        r"$\#/cm^2$",
+                    ),
+                    (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
                 ]
             else:
                 tally_info = [
-                (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+                    (
+                        2,
+                        "Averaged Neutron Flux (175 groups)",
+                        "Neutron Flux",
+                        r"$\#/cm^2$",
+                    ),
+                    (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
                 ]
             for tally, title, quantity, unit in tally_info:
                 print(" Plotting tally n." + str(tally))
@@ -338,7 +347,7 @@ class SphereOutput(BenchmarkOutput):
             )
             for dic in [res, err, st_ck]:
                 dic["Zaid"] = zaidnum
-                dic["Zaid Name"] = zaidname
+                dic["Zaid/Mat Name"] = zaidname
             results.append(res)
             errors.append(err)
             stat_checks.append(st_ck)
@@ -413,7 +422,7 @@ class SphereOutput(BenchmarkOutput):
             res, err = output.get_single_excel_data(["4", "14"])
             for dic in [res, err]:
                 dic["Zaid"] = zaidnum
-                dic["Zaid Name"] = zaidname
+                dic["Zaid/Mat Name"] = zaidname
             results.append(res)
             errors.append(err)
             # stat_checks.append(st_ck)
@@ -451,7 +460,7 @@ class SphereOutput(BenchmarkOutput):
             df.sort_values("index", inplace=True)
             del df["index"]
 
-            df.set_index(["Zaid", "Zaid Name"], inplace=True)
+            df.set_index(["Zaid", "Zaid/Mat Name"], inplace=True)
             df.reset_index(inplace=True)
 
         if stat_checks is not None:
@@ -462,7 +471,7 @@ class SphereOutput(BenchmarkOutput):
             stat_checks.sort_values("index", inplace=True)
             del stat_checks["index"]
 
-            stat_checks.set_index(["Zaid", "Zaid Name"], inplace=True)
+            stat_checks.set_index(["Zaid", "Zaid/Mat Name"], inplace=True)
             stat_checks.reset_index(inplace=True)
         return results, errors, stat_checks
 
@@ -697,11 +706,11 @@ class SphereOutput(BenchmarkOutput):
                         outputs[tarlib] = outputs_lib
 
                     # Generate DataFrames
-                    columns.extend(["Zaid", "Zaid Name"])
+                    columns.extend(["Zaid", "Zaid/Mat Name"])
                     comp_df = pd.DataFrame(results, columns=columns)
                     error_df = pd.DataFrame(errors, columns=columns)
-                    comp_df.set_index(["Zaid", "Zaid Name"], inplace=True)
-                    error_df.set_index(["Zaid", "Zaid Name"], inplace=True)
+                    comp_df.set_index(["Zaid", "Zaid/Mat Name"], inplace=True)
+                    error_df.set_index(["Zaid", "Zaid/Mat Name"], inplace=True)
                     comp_dfs.append(comp_df)
                     error_dfs.append(error_df)
 
@@ -738,8 +747,7 @@ class SphereOutput(BenchmarkOutput):
                     df["index"] = pd.to_numeric(df["Zaid"].values, errors="coerce")
                     df.sort_values("index", inplace=True)
                     del df["index"]
-                    df.set_index(["Zaid", "Zaid Name"], inplace=True)
-                final.to_csv("final_df_test.csv")
+                    df.set_index(["Zaid", "Zaid/Mat Name"], inplace=True)
 
                 # Create and concat the summary
                 old_l = 0
@@ -897,11 +905,11 @@ class SphereOutput(BenchmarkOutput):
                         outputs[tarlib] = outputs_lib
 
                     # Generate DataFrames
-                    columns.extend(["Zaid", "Zaid Name"])
+                    columns.extend(["Zaid", "Zaid/Mat Name"])
                     comp_df = pd.DataFrame(results, columns=columns)
                     error_df = pd.DataFrame(errors, columns=columns)
-                    comp_df.set_index(["Zaid", "Zaid Name"], inplace=True)
-                    error_df.set_index(["Zaid", "Zaid Name"], inplace=True)
+                    comp_df.set_index(["Zaid", "Zaid/Mat Name"], inplace=True)
+                    error_df.set_index(["Zaid", "Zaid/Mat Name"], inplace=True)
                     comp_dfs.append(comp_df)
                     error_dfs.append(error_df)
 
@@ -940,7 +948,7 @@ class SphereOutput(BenchmarkOutput):
                     df["index"] = pd.to_numeric(df["Zaid"].values, errors="coerce")
                     df.sort_values("index", inplace=True)
                     del df["index"]
-                    df.set_index(["Zaid", "Zaid Name"], inplace=True)
+                    df.set_index(["Zaid", "Zaid/Mat Name"], inplace=True)
                 # Create and concat the summary
                 old_l = 0
                 old_lim = 0

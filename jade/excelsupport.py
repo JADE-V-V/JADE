@@ -1213,14 +1213,14 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
 
     # out of bounds formatting
     val_sheet.set_column(0, 0, 4, oob_format)
-    val_sheet.set_column(values_width + 2, 1000, 18, oob_format)
+    val_sheet.set_column(values_width, 1000, 18, oob_format)
     for i in range(9):
         val_sheet.set_row(i, None, oob_format)
     for i in range(9 + values_len, 1000):
         val_sheet.set_row(i, None, oob_format)
 
     # Column widths
-    val_sheet.set_column(1, values_width + 2, 20)
+    val_sheet.set_column(1, values_width, 20)
 
     # Row Heights
     val_sheet.set_row(7, 31)
@@ -1242,14 +1242,14 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
         9,
         3,
         8 + values_len,
-        values_width + 1,
+        values_width,
         {"type": "blanks", "format": plain_format},
     )
     val_sheet.conditional_format(
         9,
         3,
         8 + values_len,
-        values_width + 1,
+        values_width,
         {
             "type": "text",
             "criteria": "containing",
@@ -1261,7 +1261,7 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
         9,
         3,
         8 + values_len,
-        values_width + 1,
+        values_width,
         {
             "type": "text",
             "criteria": "containing",
@@ -1273,7 +1273,7 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
         9,
         3,
         8 + values_len,
-        values_width + 1,
+        values_width,
         {
             "type": "text",
             "criteria": "containing",
@@ -1285,7 +1285,7 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
         9,
         3,
         8 + values_len,
-        values_width + 1,
+        values_width,
         {
             "type": "cell",
             "criteria": "greater than",
@@ -1297,7 +1297,7 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
         9,
         3,
         8 + values_len,
-        values_width + 1,
+        values_width,
         {
             "type": "cell",
             "criteria": "between",
@@ -1310,7 +1310,7 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
         9,
         3,
         8 + values_len,
-        values_width + 1,
+        values_width,
         {
             "type": "cell",
             "criteria": "between",
@@ -1323,7 +1323,7 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
         9,
         3,
         8 + values_len,
-        values_width + 1,
+        values_width,
         {
             "type": "cell",
             "criteria": "less than",
@@ -1335,7 +1335,7 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
         9,
         3,
         8 + values_len,
-        values_width + 1,
+        values_width,
         {
             "type": "cell",
             "criteria": "between",
@@ -1348,7 +1348,7 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
         9,
         3,
         8 + values_len,
-        values_width + 1,
+        values_width,
         {
             "type": "cell",
             "criteria": "between",
@@ -1361,13 +1361,37 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
         9,
         3,
         8 + values_len,
-        values_width + 1,
+        values_width,
         {
             "type": "cell",
             "criteria": "between",
             "minimum": -0.005,
             "maximum": 0.005,
             "format": green_cell_format,
+        },
+    )
+    val_sheet.conditional_format(
+        9,
+        values_width - 2,
+        8 + values_len,
+        values_width - 1,
+        {
+            "type": "cell",
+            "criteria": ">=",
+            "value": 0,
+            "format": percent_format,
+        },
+    )
+    val_sheet.conditional_format(
+        9,
+        values_width - 2,
+        8 + values_len,
+        values_width - 1,
+        {
+            "type": "cell",
+            "criteria": "<",
+            "value": 0,
+            "format": percent_format,
         },
     )
 

@@ -2057,4 +2057,4 @@ class SphereSDDRMCNPoutput(SphereMCNPoutput):
         vals = pd.concat([pfluxvals, sddrvals, heatvals, nfluxvals], axis=0)
         errors = pd.concat([pfluxerrors, sddrerrors, heaterrors, nfluxerrors], axis=0)
 
-        return vals, errorse
+        return vals, errors

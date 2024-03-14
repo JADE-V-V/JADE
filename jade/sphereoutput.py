@@ -96,19 +96,29 @@ class SphereOutput(BenchmarkOutput):
 
         for code, outputs in self.outputs.items():
             print(type(list(outputs.values())[0]))
-            # edited by T. Wheeler. Not super happy with this solution, maybe JADE should be refactored to loop through each 
+            # edited by T. Wheeler. Not super happy with this solution, maybe JADE should be refactored to loop through each
             # code from the config to help with handling the differences between codes?
             if isinstance(list(outputs.values())[0], SphereMCNPoutput):
                 outpath = os.path.join(self.atlas_path_mcnp, "tmp")
                 tally_info = [
-                (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+                    (
+                        2,
+                        "Averaged Neutron Flux (175 groups)",
+                        "Neutron Flux",
+                        r"$\#/cm^2$",
+                    ),
+                    (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
                 ]
             if isinstance(list(outputs.values())[0], SphereOpenMCoutput):
                 outpath = os.path.join(self.atlas_path_openmc, "tmp")
                 tally_info = [
-                (4, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+                    (
+                        4,
+                        "Averaged Neutron Flux (175 groups)",
+                        "Neutron Flux",
+                        r"$\#/cm^2$",
+                    ),
+                    (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
                 ]
             os.mkdir(outpath)
             for tally, title, quantity, unit in tally_info:
@@ -268,7 +278,7 @@ class SphereOutput(BenchmarkOutput):
                         plot.plot("Binned graph")
                     except IndexError:
                         print(data)
-                    
+
             self._build_atlas(outpath)
 
     def _get_organized_output(self):
@@ -297,9 +307,9 @@ class SphereOutput(BenchmarkOutput):
                 Dictionary of MCNP sphere output objects used in plotting, keys are material name or ZAID number
             results : dic
                 Dictionary of overview of Tally values for each material/ZAID, returns either all values > 0 for
-                tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding 
+                tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding
                 tally bin if it finds any negative values. Contents of the "Values" worksheet.
-            errors : dic 
+            errors : dic
                 Dictionary of average errors for each tally for each material/Zaid. Contents of the "Errors" worksheet.
             stat_checks : dic
                 Dictionary the MCNP statistical check results for each material/ZAID. Contents of the "Statistical
@@ -350,8 +360,8 @@ class SphereOutput(BenchmarkOutput):
         return outputs, results, errors, stat_checks
 
     def _read_serpent_output(self):
-        """Reads all Serpent outputs from a library 
-        
+        """Reads all Serpent outputs from a library
+
         NOT YET IMPLEMENTED
 
         Returns
@@ -360,9 +370,9 @@ class SphereOutput(BenchmarkOutput):
                 Dictionary of Serpent sphere output objects used in plotting, keys are material name or ZAID number
             results : dic
                 Dictionary of overview of Tally values for each material/ZAID, returns either all values > 0 for
-                tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding 
+                tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding
                 tally bin if it finds any negative values. Contents of the "Values" worksheet.
-            errors : dic 
+            errors : dic
                 Dictionary of average errors for each tally for each material/Zaid. Contents of the "Errors" worksheet.
         """
         # Get results
@@ -385,9 +395,9 @@ class SphereOutput(BenchmarkOutput):
                 Dictionary of OpenMC sphere output objects used for plotting, keys are material name or ZAID number
             results : dic
                 Dictionary of overview of Tally values for each material/ZAID, returns either all values > 0 for
-                tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding 
+                tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding
                 tally bin if it finds any negative values. Contents of the "Values" worksheet.
-            errors : dic 
+            errors : dic
                 Dictionary of average errors for each tally for each material/Zaid. Contents of the "Errors" worksheet.
         """
         # Get results
@@ -444,7 +454,7 @@ class SphereOutput(BenchmarkOutput):
             results (DataFrame): previous dictionary but in DataFrame form
             errors (DataFrame): previous dictionary but in DataFrame form
             stat_checks (DataFrame): previous dictionary but in DataFrame form
-        """            
+        """
         # Generate DataFrames
         results = pd.DataFrame(results)
         errors = pd.DataFrame(errors)
@@ -1123,13 +1133,12 @@ class SphereTallyOutput:
         # except ZeroDivisionError:
         #    results['Gamma '+comp] = 0
 
-        # # Notes adding
-        # if len(notes) > initial_notes_length:
-        #     results["Notes"] = notes
-        # else:
-        #     results["Notes"] = ""
+        # Notes adding
+        if len(notes) > initial_notes_length:
+            results["Notes"] = notes
+        else:
+            results["Notes"] = ""
 
-        # print(results)
         return results, errors
 
     def get_comparison_data(self, tallies2pp, code):

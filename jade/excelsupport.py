@@ -64,8 +64,6 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
     for _, results in tallies.items():
         tally_len, tally_width = results["Value"].shape
         df_positions.append([startrow, startcol])
-        # print(pd.Series(results["title"]))
-        # pd.Series(results["title"]).to_excel(writer, startrow=startrow, startcol=startcol+1, sheet_name="Values", index=False, header=False)
         results["Value"].to_excel(
             writer, startrow=startrow + 1, startcol=startcol, sheet_name="Values"
         )
@@ -82,7 +80,6 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
     err_sheet = writer.sheets["Errors"]
 
     if stats is not None:
-        # stats.set_index("Zaid", inplace=True)
         stats.to_excel(
             writer, startrow=8, startcol=0, sheet_name="Statistical Checks", index=False
         )
@@ -151,8 +148,6 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
             list(tallies.values())[tal]["title"],
             subtitle_merge_format,
         )
-    # tal_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-    # tal_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
 
     # Freeze title
     tal_sheet.freeze_panes(8, 2)
@@ -378,22 +373,20 @@ def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
             "10 MCNP Statistical Checks",
             title_merge_format,
         )
-        # stat_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-        # stat_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
 
         # Freeze title
         stat_sheet.freeze_panes(9, 0)
 
         # out of bounds
-        stat_sheet.set_column(stats_width + 2, stats_width + 20, 18, oob_format)
+        stat_sheet.set_column(3, stats_width + 1000, 18, oob_format)
         for i in range(9):
             stat_sheet.set_row(i, None, oob_format)
         for i in range(9 + stats_len, stats_len + 50):
             stat_sheet.set_row(i, None, oob_format)
 
-        # Column widths for errors, set up to 15th col by default to ensure title format correct
+        # Column widths
         stat_sheet.set_column(1, 1, 50)
-        stat_sheet.set_column(0, 0, 30)
+        stat_sheet.set_column(0, 0, 20)
         stat_sheet.set_column(2, 2, 20)
 
         stat_sheet.conditional_format(
@@ -517,7 +510,7 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
     merge_format = wb.add_format({"align": "center", "valign": "center", "border": 2})
     title_merge_format = wb.add_format(
         {
-            "font_size": "36",
+            "font_size": "28",
             "align": "center",
             "valign": "center",
             "bold": True,
@@ -533,17 +526,19 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
             "border": 2,
         }
     )
-    legend_text_format = wb.add_format({"align": "center", "bg_color": "white"})
-    red_cell_format = wb.add_format({"bg_color": "red"})
-    orange_cell_format = wb.add_format({"bg_color": "orange"})
-    yellow_cell_format = wb.add_format({"bg_color": "yellow"})
-    green_cell_format = wb.add_format({"bg_color": "#A6D86E"})
-    value_allzero_format = wb.add_format({"bg_color": "#EDEDED"})
-    value_belowzero_format = wb.add_format({"bg_color": "#FFC7CE"})
-    value_abovezero_format = wb.add_format({"bg_color": "#C6EFCE"})
-    not_avail_format = wb.add_format({"bg_color": "#B8B8B8"})
-    target_ref_format = wb.add_format({"bg_color": "#8465C5"})
-    identical_format = wb.add_format({"bg_color": "#7ABD7E"})
+    legend_text_format = wb.add_format(
+        {"align": "center", "bg_color": "white", "border": 1}
+    )
+    red_cell_format = wb.add_format({"bg_color": "red", "border": 3})
+    orange_cell_format = wb.add_format({"bg_color": "#FFC000", "border": 3})
+    yellow_cell_format = wb.add_format({"bg_color": "#FFFF00", "border": 3})
+    green_cell_format = wb.add_format({"bg_color": "#92D050", "border": 3})
+    not_avail_format = wb.add_format({"bg_color": "#B8B8B8", "border": 3})
+    target_ref_format = wb.add_format({"bg_color": "#8465C5", "border": 3})
+    identical_format = wb.add_format({"bg_color": "#7ABD7E", "border": 3})
+
+    scientific_format = wb.add_format({"num_format": "0.00E+00"})
+    percent_format = wb.add_format({"num_format": "0.00%"})
 
     # COMPARISON
 
@@ -562,38 +557,32 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
             list(comps.values())[tal]["title"],
             subtitle_merge_format,
         )
-    # comp_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-    # comp_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
 
     # Freeze title
     comp_sheet.freeze_panes(8, 2)
 
     # out of bounds
     comp_sheet.set_column(0, 0, 4, oob_format)
-    comp_sheet.set_column(max_width + 2, max_width + 20, 18, oob_format)
+    comp_sheet.set_column(max_width + 1, max_width + 1000, 18, oob_format)
     for i in range(9):
         comp_sheet.set_row(i, None, oob_format)
     for i in range(8 + max_len, max_len + 50):
         comp_sheet.set_row(i, None, oob_format)
 
-    # Column widths for tallies, set up to 15th col to ensure title format correct
-    comp_sheet.set_column(1, 14, 20)
-    comp_sheet.set_column(1, max_width + 2, 20)
-
-    # Row Heights
-    comp_sheet.set_row(7, 31)
-    # comp_sheet.set_row(8, 73.25)
+    # Column widths
+    comp_sheet.set_column(1, max_width + 1, 20)
 
     # Legend
     comp_sheet.merge_range("N3:O3", "LEGEND", merge_format)
+    comp_sheet.merge_range("N2:O2", "According to MCNP manual", oob_format)
     comp_sheet.write("N4", "", red_cell_format)
-    comp_sheet.write("O4", ">|20|%", legend_text_format)
+    comp_sheet.write("O4", "> 50%", legend_text_format)
     comp_sheet.write("N5", "", orange_cell_format)
-    comp_sheet.write("O5", "|20|%≤|10|%", legend_text_format)
+    comp_sheet.write("O5", "20% ≤ 50%", legend_text_format)
     comp_sheet.write("N6", "", yellow_cell_format)
-    comp_sheet.write("O6", "|10|%≤|5|%", legend_text_format)
+    comp_sheet.write("O6", "10% ≤ 20%", legend_text_format)
     comp_sheet.write("N7", "", green_cell_format)
-    comp_sheet.write("O7", "<|5|%", legend_text_format)
+    comp_sheet.write("O7", "< 10%", legend_text_format)
 
     comp_sheet.conditional_format(
         10,
@@ -746,14 +735,45 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
             "format": green_cell_format,
         },
     )
+    comp_sheet.conditional_format(
+        10,
+        2,
+        8 + max_len,
+        max_width + 1,
+        {
+            "type": "cell",
+            "criteria": ">=",
+            "value": 0,
+            "format": percent_format,
+        },
+    )
+    comp_sheet.conditional_format(
+        10,
+        2,
+        8 + max_len,
+        max_width + 1,
+        {
+            "type": "cell",
+            "criteria": "<",
+            "value": 0,
+            "format": percent_format,
+        },
+    )
+
     # ABSOLUTE DIFFERENCE
+
     # Title
     absdiff_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
     absdiff_sheet.merge_range("D1:D2", lib_to_comp, subtitle_merge_format)
     absdiff_sheet.merge_range(
         "B3:L8",
-        "{} RESULTS RECAP: COMPARISON (Absolute Difference)".format(testname),
+        "{} RESULTS RECAP: ABSOLUTE COMPARISON".format(testname),
         title_merge_format,
+    )
+    absdiff_sheet.merge_range(
+        "E1:L2",
+        "Target library Vs Reference library\n(Reference-Target)",
+        subtitle_merge_format,
     )
     for tal in range(len(df_positions)):
         absdiff_sheet.merge_range(
@@ -764,39 +784,20 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
             list(comps.values())[tal]["title"],
             subtitle_merge_format,
         )
-    # absdiff_sheet.merge_range("B8:C8", "ZAID", subtitle_merge_format)
-    # absdiff_sheet.merge_range("D8:L8", "TALLY", subtitle_merge_format)
 
     # Freeze title
     absdiff_sheet.freeze_panes(8, 2)
 
     # out of bounds
     absdiff_sheet.set_column(0, 0, 4, oob_format)
-    absdiff_sheet.set_column(max_width + 2, max_width + 20, 18, oob_format)
+    absdiff_sheet.set_column(max_width + 1, max_width + 1000, 18, oob_format)
     for i in range(9):
         absdiff_sheet.set_row(i, None, oob_format)
     for i in range(8 + max_len, max_len + 50):
         absdiff_sheet.set_row(i, None, oob_format)
 
-    # Column widths for errors, set up to 15th col by default to ensure title format correct
-    absdiff_sheet.set_column(1, 14, 20)
-    absdiff_sheet.set_column(1, max_width + 2, 20)
-
-    # Row Heights
-    absdiff_sheet.set_row(7, 31)
-    # absdiff_sheet.set_row(8, 73.25)
-
-    # Legend
-    absdiff_sheet.merge_range("N3:O3", "LEGEND", merge_format)
-    absdiff_sheet.merge_range("N8:O8", "According to MCNP manual", oob_format)
-    absdiff_sheet.write("N4", "", red_cell_format)
-    absdiff_sheet.write("O4", "> 50%", legend_text_format)
-    absdiff_sheet.write("N5", "", orange_cell_format)
-    absdiff_sheet.write("O5", "20% ≤ 50%", legend_text_format)
-    absdiff_sheet.write("N6", "", yellow_cell_format)
-    absdiff_sheet.write("O6", "10% ≤ 20%", legend_text_format)
-    absdiff_sheet.write("N7", "", green_cell_format)
-    absdiff_sheet.write("O7", "< 10%", legend_text_format)
+    # Column widths
+    absdiff_sheet.set_column(1, max_width + 1, 20)
 
     # Conditional Formatting
     absdiff_sheet.conditional_format(
@@ -806,6 +807,43 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
         max_width + 1,
         {"type": "blanks", "format": oob_format},
     )
+    absdiff_sheet.conditional_format(
+        10,
+        2,
+        8 + max_len,
+        max_width + 1,
+        {
+            "type": "cell",
+            "criteria": ">=",
+            "value": 0,
+            "format": scientific_format,
+        },
+    )
+    absdiff_sheet.conditional_format(
+        10,
+        2,
+        8 + max_len,
+        max_width + 1,
+        {
+            "type": "cell",
+            "criteria": "<",
+            "value": 0,
+            "format": scientific_format,
+        },
+    )
+    absdiff_sheet.conditional_format(
+        10,
+        2,
+        8 + max_len,
+        max_width + 1,
+        {
+            "type": "text",
+            "criteria": "containing",
+            "value": "Identical",
+            "format": identical_format,
+        },
+    )
+
     # STANDARD DEVIATIONS
 
     # Title Format
@@ -835,30 +873,25 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
 
     # out of bounds
     std_dev_sheet.set_column(0, 0, 4, oob_format)
-    std_dev_sheet.set_column(max_width + 2, max_width + 20, 18, oob_format)
+    std_dev_sheet.set_column(max_width + 1, max_width + 1000, 18, oob_format)
     for i in range(9):
         std_dev_sheet.set_row(i, None, oob_format)
     for i in range(8 + max_len, max_len + 50):
         std_dev_sheet.set_row(i, None, oob_format)
 
     # Column widths for tallies, set up to 15th col to ensure title format correct
-    std_dev_sheet.set_column(1, 14, 20)
-    std_dev_sheet.set_column(1, max_width + 2, 20)
-
-    # Row Heights
-    std_dev_sheet.set_row(7, 31)
-    # std_dev_sheet.set_row(8, 73.25)
+    std_dev_sheet.set_column(1, max_width + 1, 20)
 
     # Legend
     std_dev_sheet.merge_range("N3:O3", "LEGEND", merge_format)
     std_dev_sheet.write("N4", "", red_cell_format)
-    std_dev_sheet.write("O4", ">|3|%", legend_text_format)
+    std_dev_sheet.write("O4", "3 < #σ", legend_text_format)
     std_dev_sheet.write("N5", "", orange_cell_format)
-    std_dev_sheet.write("O5", "|2|%≤|3|%", legend_text_format)
+    std_dev_sheet.write("O5", "2 ≤ #σ ≤ 3", legend_text_format)
     std_dev_sheet.write("N6", "", yellow_cell_format)
-    std_dev_sheet.write("O6", "|1|%≤|2|%", legend_text_format)
+    std_dev_sheet.write("O6", "1 ≤ #σ < 2", legend_text_format)
     std_dev_sheet.write("N7", "", green_cell_format)
-    std_dev_sheet.write("O7", "<|1|%", legend_text_format)
+    std_dev_sheet.write("O7", "#σ < 1", legend_text_format)
 
     std_dev_sheet.conditional_format(
         10,
@@ -1011,6 +1044,30 @@ def comp_excel_writer(self, outpath, lib_to_comp, testname, comps, abs_diffs, st
             "format": green_cell_format,
         },
     )
+    std_dev_sheet.conditional_format(
+        10,
+        2,
+        8 + max_len,
+        max_width + 1,
+        {
+            "type": "cell",
+            "criteria": ">=",
+            "value": 0,
+            "format": scientific_format,
+        },
+    )
+    std_dev_sheet.conditional_format(
+        10,
+        2,
+        8 + max_len,
+        max_width + 1,
+        {
+            "type": "cell",
+            "criteria": "<",
+            "value": 0,
+            "format": scientific_format,
+        },
+    )
 
     wb.close()
 
@@ -1103,6 +1160,7 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
     value_belowzero_format = wb.add_format({"bg_color": "#FFC7CE", "border": 3})
     value_abovezero_format = wb.add_format({"bg_color": "#C6EFCE", "border": 3})
 
+    # Scientific or percent format for values
     scientific_format = wb.add_format({"num_format": "0.00E+00"})
     percent_format = wb.add_format({"num_format": "0.00%"})
 
@@ -1126,6 +1184,7 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
     values_len, values_width = values.shape
     errors_len, errors_width = errors.shape
 
+    # Only MCNP currently has statistical tests
     if stats is not None:
         stats.to_excel(
             writer,
@@ -1152,7 +1211,7 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
     # Freeze title
     val_sheet.freeze_panes(9, 0)
 
-    # out of bounds
+    # out of bounds formatting
     val_sheet.set_column(0, 0, 4, oob_format)
     val_sheet.set_column(values_width + 2, 1000, 18, oob_format)
     for i in range(9):
@@ -1467,6 +1526,7 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
     )
 
     # STAT CHECKS
+
     if stats is not None:
         # Title
         stat_sheet.merge_range("B1:C2", "LIBRARY", subtitle_merge_format)
@@ -1598,7 +1658,7 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
     std_dev_len, std_dev_width = std_dev.shape
     summ_len, summ_width = summary.shape
 
-    # Insert DataFrame
+    # Insert DataFrames
     final.to_excel(writer, startrow=9, startcol=1, sheet_name="Comparison (%)")
     summary.to_excel(
         writer, startrow=comp_len + 12, startcol=2, sheet_name="Comparison (%)"
@@ -1915,7 +1975,7 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
             "format": percent_format,
         },
     )
-    # graded colour scale
+    # graded colour scale for global summary
     comp_sheet.conditional_format(
         12 + comp_len,
         3,
@@ -1972,8 +2032,7 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
     for i in range(9 + std_dev_len, 1000):
         std_dev_sheet.set_row(i, None, oob_format)
 
-    # Column widths for values, set up to 15th col to ensure title format correct
-
+    # Column widths
     std_dev_sheet.set_column(1, 14, 18)
     std_dev_sheet.set_column(1, std_dev_width + 5, 18)
 
@@ -2335,7 +2394,6 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
             "text_wrap": True,
         }
     )
-    tally_format = wb.add_format({"bg_color": "#D9D9D9"})
     merge_format = wb.add_format({"align": "center", "valign": "center", "border": 2})
     title_merge_format = wb.add_format(
         {
@@ -2394,11 +2452,12 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     tal_sheet.merge_range(
         "W9:AA9", "Neutron Flux at the External surface", subtitle_merge_format
     )
+
     # Freeze title
     tal_sheet.freeze_panes(10, 0)
 
-    start_col = 1
     # Add the results column headers
+    start_col = 1
     for i, value in enumerate(col_headers):
         col_index = start_col + i
         tal_sheet.write(9, col_index, value, subsubtitle_merge_format)
@@ -2421,14 +2480,7 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     tal_sheet.set_row(9, 45, oob_format)
     tal_sheet.set_row(1, 30, oob_format)
 
-    # Conditional formatting for tally results.
-    # tal_sheet.conditional_format(
-    #    10,
-    #    1,
-    #    8 + max_len,
-    #    max_width + 1,
-    #    {"type": "blanks", "format": oob_format},
-    # )
+    # Conditional Formatting
     tal_sheet.conditional_format(
         startrow + 1,
         startcol + 4,
@@ -2461,6 +2513,7 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     err_sheet.merge_range(
         "W9:AA9", "Neutron Flux at the External surface", subtitle_merge_format
     )
+
     # Freeze title
     err_sheet.freeze_panes(10, 0)
 
@@ -2774,7 +2827,6 @@ def sphere_sddr_comp_excel_writer(
             "text_wrap": True,
         }
     )
-    tally_format = wb.add_format({"bg_color": "#D9D9D9"})
     merge_format = wb.add_format({"align": "center", "valign": "center", "border": 2})
     title_merge_format = wb.add_format(
         {

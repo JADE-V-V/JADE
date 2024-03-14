@@ -1049,7 +1049,9 @@ class SphereTallyOutput:
             tally_num = str(tally["Tally N."].iloc[0])
             tally_description = tally["Tally Description"].iloc[0]
             mean_error = tally["Error"].mean()
-            if tally_num in tallies2pp:
+            if tally_num in heating_tallies:
+                heating_res[tally_num] = tally['Value'].values[0]           
+            if tally_num in tallies2pp:                 
                 tally_zero = tally[tally["Value"] == 0]
                 original_length = len(tally)
                 tally = tally[tally["Value"] < 0]
@@ -1066,22 +1068,7 @@ class SphereTallyOutput:
                 else:
                     res = "Value > 0 for all bins"
                 results[tally_description] = res
-                errors[tally_description] = mean_error
-            if tally_num in heating_tallies:
-                heating_res[tally_num] = tally['Value'].values[0]
-                errors[tally_num] = mean_error
-        comp = 'Heating comparison [F4 vs F6]'
-        try:
-           results['Neutron '+comp] = ((heating_res['6'] - heating_res['4']) /
-                                       heating_res['6'])
-        except ZeroDivisionError:
-           results['Neutron '+comp] = 0
-
-        try:
-           results['Gamma '+comp] = ((heating_res['46'] - heating_res['44']) /
-                                     heating_res['46'])
-        except ZeroDivisionError:
-           results['Gamma '+comp] = 0        
+                errors[tally_description] = mean_error            
         # for tally in self.mctal.tallies:
         #    num = str(tally.tallyNumber)
         #    keys[num] = tally.tallyComment[0]
@@ -1119,19 +1106,19 @@ class SphereTallyOutput:
         #         heating_res[tally_num] = tally['Value'].values[0]
         #         errors[tally_num] = mean_error
 
-        # print(heating_res)
-        # comp = 'Heating comparison [F4 vs F6]'
-        # try:
-        #    results['Neutron '+comp] = ((heating_res['6'] - heating_res['4']) /
-        #                                heating_res['6'])
-        # except ZeroDivisionError:
-        #    results['Neutron '+comp] = 0
+        if len(heating_res) == 4:
+            comp = 'Heating comparison [F4 vs F6]'
+            try:
+                results['Neutron '+comp] = ((heating_res['6'] - heating_res['4']) /
+                                            heating_res['6'])
+            except ZeroDivisionError:
+                results['Neutron '+comp] = 0
 
-        # try:
-        #    results['Gamma '+comp] = ((heating_res['46'] - heating_res['44']) /
-        #                              heating_res['46'])
-        # except ZeroDivisionError:
-        #    results['Gamma '+comp] = 0
+            try:
+                results['Gamma '+comp] = ((heating_res['46'] - heating_res['44']) /
+                                            heating_res['46'])
+            except ZeroDivisionError:
+                results['Gamma '+comp] = 0
 
         # Notes adding
         if len(notes) > initial_notes_length:

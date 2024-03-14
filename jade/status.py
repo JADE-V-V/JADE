@@ -480,8 +480,6 @@ class Status:
                         flag_test_run = True
                         for _, files in test.items():
                             flag_run_zaid = self.check_test_run(files[code], code)
-                            if flag_run_zaid is False:
-                                print(_)
                             if not flag_run_zaid:
                                 flag_test_run = False
                     else:

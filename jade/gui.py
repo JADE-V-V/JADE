@@ -596,7 +596,6 @@ def pploop(session: Session):
                     "\n ########################### POST-PROCESSING STARTED ###########################\n"
                 )
                 # Core function
-                print(to_perform)
                 for code, testnames in to_perform.items():
                     pp.postprocessBenchmark(session, lib_input, code, testnames)
                 # for testname in to_perform:
@@ -635,9 +634,7 @@ def pploop(session: Session):
 
                 # Execute single pp
                 for lib in to_single_pp:
-                    print("to single pp", to_single_pp)
                     for code, testnames in to_perform.items():
-                        print("to_perform", to_perform)
                         try:
                             print(" Single PP of library " + lib + " required")
                             pp.postprocessBenchmark(session, lib, code, testnames)
@@ -656,7 +653,6 @@ Additional Post-Processing of library:"""
                             continue
 
                 # Execute Comparison
-                print(to_perform)
                 for code, testnames in to_perform.items():
                     try:
                         pp.compareBenchmark(session, lib_input, code, testnames)

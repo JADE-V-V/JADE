@@ -197,6 +197,9 @@ class SphereOutput(BenchmarkOutput):
 
     def _generate_plots(self, libraries, allzaids, outputs, globalname):
         for code, code_outputs in self.outputs.items():
+            outpath = os.path.join(self.atlas_path, "tmp")
+            if not os.path.exists(outpath):
+                os.mkdir(outpath)
             if code == "mcnp":
                 tally_info = [
                     (
@@ -207,7 +210,6 @@ class SphereOutput(BenchmarkOutput):
                     ),
                     (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
                 ]
-                outpath = os.path.join(self.atlas_path, "tmp")
             if code == "openmc":
                 tally_info = [
                     (
@@ -218,9 +220,6 @@ class SphereOutput(BenchmarkOutput):
                     ),
                     (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
                 ]
-                outpath = os.path.join(self.atlas_path, "tmp")
-            if not os.path.exists(outpath):
-                os.mkdir(outpath)
             for tally, title, quantity, unit in tally_info:
                 print(" Plotting tally n." + str(tally))
                 for zaidnum in tqdm(allzaids):
@@ -1576,12 +1575,12 @@ class SphereSDDRoutput(SphereOutput):
 
         return libs, zaids, outputs
 
-    def _generate_single_plots(self, outpath):
+    def _generate_single_plots(self):
         libs, allzaids, outputs = self._get_organized_output()
         globalname = self.lib
-        self._generate_plots(libs, allzaids, outputs, globalname, outpath)
+        self._generate_plots(libs, allzaids, outputs, globalname)
 
-    def _generate_plots(self, libraries, allzaids, outputs, globalname, outpath):
+    def _generate_plots(self, libraries, allzaids, outputs, globalname):
         """
         Generate all the plots requested by the Sphere SDDR benchmark
 
@@ -1611,6 +1610,9 @@ class SphereSDDRoutput(SphereOutput):
             libraries = self.lib
 
         # Initialize atlas
+        outpath = os.path.join(self.atlas_path, "tmp")
+        if not os.path.exists(outpath):
+            os.mkdir(outpath)
         template = os.path.join(self.path_templates, "AtlasTemplate.docx")
         atlas = at.Atlas(template, "Sphere SDDR " + globalname)
         libmanager = self.session.lib_manager

@@ -582,7 +582,7 @@ def pploop(session: Session):
             if ans:
                 lib = to_single_pp[0]
                 # Check active tests
-                # to_perform = session.check_active_tests('Post-Processing')
+                to_perform = session.check_active_tests('Post-Processing')
                 # For the moment no pp is foreseen for experimental benchmarks
                 # to_perf_exp = session.check_active_tests('Post-Processing',
                 #                                          exp=True)
@@ -596,7 +596,9 @@ def pploop(session: Session):
                     "\n ########################### POST-PROCESSING STARTED ###########################\n"
                 )
                 # Core function
-                pp.postprocessBenchmark(session, lib)
+                print(to_perform)
+                for code, testnames in to_perform.items():
+                    pp.postprocessBenchmark(session, lib_input, code, testnames)
                 # for testname in to_perform:
                 #    try:
                 #        pp.postprocessBenchmark(session, lib, testname)
@@ -633,10 +635,12 @@ def pploop(session: Session):
 
                 # Execute single pp
                 for lib in to_single_pp:
-                    for testname in to_perform:
+                    print("to single pp", to_single_pp)
+                    for code, testnames in to_perform.items():
+                        print("to_perform", to_perform)
                         try:
                             print(" Single PP of library " + lib + " required")
-                            pp.postprocessBenchmark(session, lib)
+                            pp.postprocessBenchmark(session, lib_input, code, testnames)
                             session.log.adjourn(
                                 """
 Additional Post-Processing of library:"""
@@ -652,9 +656,10 @@ Additional Post-Processing of library:"""
                             continue
 
                 # Execute Comparison
-                for testname in to_perform:
+                print(to_perform)
+                for code, testnames in to_perform.items():
                     try:
-                        pp.compareBenchmark(session, lib_input, testname)
+                        pp.compareBenchmark(session, lib_input, code, testnames)
                     except PermissionError as e:
                         clear_screen()
                         print(pp_menu)
@@ -706,9 +711,10 @@ Additional Post-Processing of library:"""
 
                 # Execute Comparison
                 lib_input = EXP_TAG + "-" + lib_input  # Insert the exp tag
-                for testname in to_perform:
+                print(to_perform)
+                for code, testname in to_perform.items():
                     try:
-                        pp.compareBenchmark(session, lib_input, testname, exp=True)
+                        pp.compareBenchmark(session, lib_input, code, testname, exp=True)
                     except PermissionError as e:
                         clear_screen()
                         print(pp_menu)

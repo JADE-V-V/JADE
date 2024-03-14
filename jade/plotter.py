@@ -34,6 +34,8 @@ from matplotlib.markers import CARETDOWNBASE, CARETUPBASE
 from matplotlib.patches import Patch, Rectangle
 from matplotlib.ticker import AutoLocator, AutoMinorLocator, LogLocator, MultipleLocator
 from scipy.interpolate import interp1d
+import warnings
+warnings.filterwarnings("ignore")
 
 # ============================================================================
 #                   Specify parameters for plots

@@ -51,7 +51,29 @@ if TYPE_CHECKING:
 
 
 class SphereOutput(BenchmarkOutput):
-    def __init__(self, lib, code, testname: str, session: Session):
+    def __init__(self, lib: str, code: str, testname: str, session: Session):
+        """
+        Initialises the SphereOutput class from the general BenchmarkOutput
+        class, see output.py for details on how self variables are assigned  
+
+        Parameters
+        ----------
+        lib : str
+            library to post-process
+        code : str
+            code being post processed
+        testname : str 
+            name of the benchmark being postprocessed
+        session : Session
+            Jade Session
+        exp : str
+            the benchmark is an experimental one
+
+        Returns
+        -------
+        None.
+
+        """
         super().__init__(lib, code, testname, session)
 
         # Load the settings for zaids and materials
@@ -77,16 +99,10 @@ class SphereOutput(BenchmarkOutput):
         self.print_raw()
         print(" Generating plots...")
         self._generate_single_plots()
-        
 
     def _generate_single_plots(self):
         """
         Generate all the requested plots in a temporary folder
-
-        Parameters
-        ----------
-        outpath : str or path
-            path to the temporary folder where to store plots.
 
         Returns
         -------
@@ -100,13 +116,23 @@ class SphereOutput(BenchmarkOutput):
             os.mkdir(outpath)
             if self.openmc:
                 tally_info = [
-                (4, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+                    (
+                        4,
+                        "Averaged Neutron Flux (175 groups)",
+                        "Neutron Flux",
+                        r"$\#/cm^2$",
+                    ),
+                    (14, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
                 ]
             else:
                 tally_info = [
-                (2, "Averaged Neutron Flux (175 groups)", "Neutron Flux", r"$\#/cm^2$"),
-                (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$")
+                    (
+                        2,
+                        "Averaged Neutron Flux (175 groups)",
+                        "Neutron Flux",
+                        r"$\#/cm^2$",
+                    ),
+                    (32, "Averaged Gamma Flux (24 groups)", "Gamma Flux", r"$\#/cm^2$"),
                 ]
             for tally, title, quantity, unit in tally_info:
                 print(" Plotting tally n." + str(tally))
@@ -193,9 +219,32 @@ class SphereOutput(BenchmarkOutput):
 
         # Plot everything
         print(" Generating Plots Atlas...")
-        self._generate_plots(libraries, allzaids, outputs, globalname)
+        self._generate_plots(allzaids, globalname)
 
-    def _generate_plots(self, libraries, allzaids, outputs, globalname):
+    def _generate_plots(self, allzaids, globalname):
+        """
+        Generate all the plots requested by the Sphere leakage benchmark
+
+        Parameters
+        ----------
+        allzaids : list
+            list of all zaids resulting from the union of the results from
+            both libraries.
+        outputs : dic
+            dictionary containing the outputs for each library, for each code
+            format: {
+                    code1:{library1:[outputs], library2:[outputs], ...}, 
+                    code2:{library1:[outputs], library2:[outputs], ...},
+                    ...
+                    }
+        globalname : str
+            name for the output.
+
+        Returns
+        -------
+        None.
+
+        """
         for code, code_outputs in self.outputs.items():
             outpath = os.path.join(self.atlas_path, "tmp")
             if not os.path.exists(outpath):
@@ -263,10 +312,23 @@ class SphereOutput(BenchmarkOutput):
                         plot.plot("Binned graph")
                     except IndexError:
                         print(data)
-
+                    
             self._build_atlas(outpath)
 
     def _get_organized_output(self):
+        """
+        Organizes the outputs for each library in each code in the 
+        outputs object
+
+        Returns:
+        libraries: list
+            list of all libraries to be post processed
+        allzaids: list
+            list of all zaids/materials that have been run 
+        outputs: list 
+            list of all output objects for all codes and all libraries
+        
+        """
         libraries = []
         outputs = []
         zaids = []
@@ -292,9 +354,9 @@ class SphereOutput(BenchmarkOutput):
                 Dictionary of MCNP sphere output objects used in plotting, keys are material name or ZAID number
             results : dic
                 Dictionary of overview of Tally values for each material/ZAID, returns either all values > 0 for
-                tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding
+                tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding 
                 tally bin if it finds any negative values. Contents of the "Values" worksheet.
-            errors : dic
+            errors : dic 
                 Dictionary of average errors for each tally for each material/Zaid. Contents of the "Errors" worksheet.
             stat_checks : dic
                 Dictionary the MCNP statistical check results for each material/ZAID. Contents of the "Statistical
@@ -338,15 +400,15 @@ class SphereOutput(BenchmarkOutput):
             )
             for dic in [res, err, st_ck]:
                 dic["Zaid"] = zaidnum
-                dic["Zaid Name"] = zaidname
+                dic["Zaid/Mat Name"] = zaidname
             results.append(res)
             errors.append(err)
             stat_checks.append(st_ck)
         return outputs, results, errors, stat_checks
 
     def _read_serpent_output(self):
-        """Reads all Serpent outputs from a library
-
+        """Reads all Serpent outputs from a library 
+        
         NOT YET IMPLEMENTED
 
         Returns
@@ -355,9 +417,9 @@ class SphereOutput(BenchmarkOutput):
                 Dictionary of Serpent sphere output objects used in plotting, keys are material name or ZAID number
             results : dic
                 Dictionary of overview of Tally values for each material/ZAID, returns either all values > 0 for
-                tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding
+                tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding 
                 tally bin if it finds any negative values. Contents of the "Values" worksheet.
-            errors : dic
+            errors : dic 
                 Dictionary of average errors for each tally for each material/Zaid. Contents of the "Errors" worksheet.
         """
         # Get results
@@ -380,9 +442,9 @@ class SphereOutput(BenchmarkOutput):
                 Dictionary of OpenMC sphere output objects used for plotting, keys are material name or ZAID number
             results : dic
                 Dictionary of overview of Tally values for each material/ZAID, returns either all values > 0 for
-                tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding
+                tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding 
                 tally bin if it finds any negative values. Contents of the "Values" worksheet.
-            errors : dic
+            errors : dic 
                 Dictionary of average errors for each tally for each material/Zaid. Contents of the "Errors" worksheet.
         """
         # Get results
@@ -413,7 +475,7 @@ class SphereOutput(BenchmarkOutput):
             res, err = output.get_single_excel_data(["4", "14"])
             for dic in [res, err]:
                 dic["Zaid"] = zaidnum
-                dic["Zaid Name"] = zaidname
+                dic["Zaid/Mat Name"] = zaidname
             results.append(res)
             errors.append(err)
             # stat_checks.append(st_ck)
@@ -439,7 +501,7 @@ class SphereOutput(BenchmarkOutput):
             results (DataFrame): previous dictionary but in DataFrame form
             errors (DataFrame): previous dictionary but in DataFrame form
             stat_checks (DataFrame): previous dictionary but in DataFrame form
-        """
+        """            
         # Generate DataFrames
         results = pd.DataFrame(results)
         errors = pd.DataFrame(errors)
@@ -451,7 +513,7 @@ class SphereOutput(BenchmarkOutput):
             df.sort_values("index", inplace=True)
             del df["index"]
 
-            df.set_index(["Zaid", "Zaid Name"], inplace=True)
+            df.set_index(["Zaid", "Zaid/Mat Name"], inplace=True)
             df.reset_index(inplace=True)
 
         if stat_checks is not None:
@@ -462,7 +524,7 @@ class SphereOutput(BenchmarkOutput):
             stat_checks.sort_values("index", inplace=True)
             del stat_checks["index"]
 
-            stat_checks.set_index(["Zaid", "Zaid Name"], inplace=True)
+            stat_checks.set_index(["Zaid", "Zaid/Mat Name"], inplace=True)
             stat_checks.reset_index(inplace=True)
         return results, errors, stat_checks
 
@@ -618,7 +680,7 @@ class SphereOutput(BenchmarkOutput):
 
          Returns
          -------
-        6b  None.
+         None.
 
         """
         # template = os.path.join(os.getcwd(), 'templates',
@@ -697,11 +759,11 @@ class SphereOutput(BenchmarkOutput):
                         outputs[tarlib] = outputs_lib
 
                     # Generate DataFrames
-                    columns.extend(["Zaid", "Zaid Name"])
+                    columns.extend(["Zaid", "Zaid/Mat Name"])
                     comp_df = pd.DataFrame(results, columns=columns)
                     error_df = pd.DataFrame(errors, columns=columns)
-                    comp_df.set_index(["Zaid", "Zaid Name"], inplace=True)
-                    error_df.set_index(["Zaid", "Zaid Name"], inplace=True)
+                    comp_df.set_index(["Zaid", "Zaid/Mat Name"], inplace=True)
+                    error_df.set_index(["Zaid", "Zaid/Mat Name"], inplace=True)
                     comp_dfs.append(comp_df)
                     error_dfs.append(error_df)
 
@@ -738,8 +800,7 @@ class SphereOutput(BenchmarkOutput):
                     df["index"] = pd.to_numeric(df["Zaid"].values, errors="coerce")
                     df.sort_values("index", inplace=True)
                     del df["index"]
-                    df.set_index(["Zaid", "Zaid Name"], inplace=True)
-                final.to_csv("final_df_test.csv")
+                    df.set_index(["Zaid", "Zaid/Mat Name"], inplace=True)
 
                 # Create and concat the summary
                 old_l = 0
@@ -897,11 +958,11 @@ class SphereOutput(BenchmarkOutput):
                         outputs[tarlib] = outputs_lib
 
                     # Generate DataFrames
-                    columns.extend(["Zaid", "Zaid Name"])
+                    columns.extend(["Zaid", "Zaid/Mat Name"])
                     comp_df = pd.DataFrame(results, columns=columns)
                     error_df = pd.DataFrame(errors, columns=columns)
-                    comp_df.set_index(["Zaid", "Zaid Name"], inplace=True)
-                    error_df.set_index(["Zaid", "Zaid Name"], inplace=True)
+                    comp_df.set_index(["Zaid", "Zaid/Mat Name"], inplace=True)
+                    error_df.set_index(["Zaid", "Zaid/Mat Name"], inplace=True)
                     comp_dfs.append(comp_df)
                     error_dfs.append(error_df)
 
@@ -940,7 +1001,7 @@ class SphereOutput(BenchmarkOutput):
                     df["index"] = pd.to_numeric(df["Zaid"].values, errors="coerce")
                     df.sort_values("index", inplace=True)
                     del df["index"]
-                    df.set_index(["Zaid", "Zaid Name"], inplace=True)
+                    df.set_index(["Zaid", "Zaid/Mat Name"], inplace=True)
                 # Create and concat the summary
                 old_l = 0
                 old_lim = 0
@@ -997,10 +1058,10 @@ class SphereOutput(BenchmarkOutput):
             pass
 
     def print_raw(self):
-        # for code in self.raw_data:
-        #    for key, data in self.raw_data[code].items():
-        #        file = os.path.join(self.raw_path, code, key+'.csv')
-        #        data.to_csv(file, header=True, index=False)
+        """
+        Assigns a path and prints the post processing data as a .csv
+        
+        """
         if self.mcnp:
             for key, data in self.raw_data["mcnp"].items():
                 file = os.path.join(self.raw_path, "mcnp" + key + ".csv")
@@ -1032,10 +1093,6 @@ class SphereTallyOutput:
             Error average in all tallies
 
         """
-        # Tallies to post process
-        # tallies2pp = ['2', '32', '24', '14', '34']
-        # heating_tallies = ['4', '6', '44', '46']
-        # tallies2pp = ['4' '14']
 
         data = self.tallydata.set_index(["Energy"])
         results = {}  # Store excel results of different tallies
@@ -1283,143 +1340,22 @@ class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
         )
         return df, dftotal
 
-        #    def get_single_excel_data(self, tallies2pp):
-        #        """
-        #        Get the excel data of a single MCNP output
-        #
-        #        Returns
-        #        -------
-        #        results : dic
-        #            Excel result for different tallies
-        #        errors : dic
-        #            Error average in all tallies
-        #
-        #        """
-        #        # Tallies to post process
-        #        #tallies2pp = ['2', '32', '24', '14', '34']
-        #        #heating_tallies = ['4', '6', '44', '46']
-        #        #tallies2pp = ['4' '14']
-        #        data = self.tallydata.set_index(['Tally Description', 'Energy'])
-        #        totbins = self.totalbin.set_index('Tally Description')
-        #        results = {}  # Store excel results of different tallies
-        #        errors = {}  # Store average error in different tallies
-        #        keys = {}  # Tally names and numbers
-        #        #heating_res = {}  # Mid-process heating results
-        #        notes = 'Negative Bins:'  # Record negative bins here
-        #        initial_notes_length = len(notes)  # To check if notes are registered
-        #        for tally in self.mctal.tallies:
-        #            num = str(tally.tallyNumber)
-        #            keys[num] = tally.tallyComment[0]
-        #            # Isolate tally
-        #            masked = data.loc[tally.tallyComment[0]]
-        #
-        #            # Get mean error among bins, different for single bin
-        #            if tally.ergTC == 't':
-        #                mean_error = totbins.loc[tally.tallyComment[0]]['Error']
-        #            else:
-        #                mean_error = masked['Error'].mean()
-        #
-        #            if num in tallies2pp:
-        #                masked_zero = masked[masked['Value'] == 0]
-        #                original_length = len(masked)
-        #                masked = masked[masked['Value'] < 0]
-        #                if len(masked) > 0:
-        #                    res = 'Value < 0 in '+str(len(masked))+' bin(s)'
-        #                    # Get energy bins
-        #                    bins = list(masked.reset_index()['Energy'].values)
-        #                    notes = notes+'\n('+str(num)+'): '
-        #                    for ebin in bins:
-        #                        notes = notes+str(ebin)+', '
-        #                    notes = notes[:-2]  # Clear string from excess commas
-        #
-        #                elif len(masked_zero) == original_length:
-        #                    res = 'Value = 0 for all bins'
-        #                else:
-        #                    res = 'Value > 0 for all bins'
-        #
-        #                results[tally.tallyComment[0]] = res
-        #                errors[tally.tallyComment[0]] = mean_error
-        #
-        #            #elif num in heating_tallies:
-        #            #    heating_res[num] = float(masked['Value'].values[0])
-        #            #    errors[tally.tallyComment[0]] = mean_error
-        #
-        #        #comp = 'Heating comparison [F4 vs F6]'
-        #        #try:
-        #        #    results['Neutron '+comp] = ((heating_res['6'] - heating_res['4']) /
-        #        #                                heating_res['6'])
-        #        #except ZeroDivisionError:
-        #        #    results['Neutron '+comp] = 0
-        #        #
-        #        #try:
-        #        #    results['Gamma '+comp] = ((heating_res['46'] - heating_res['44']) /
-        #        #                              heating_res['46'])
-        #        #except ZeroDivisionError:
-        #        #    results['Gamma '+comp] = 0
-        #
-        #        # Notes adding
-        #        if len(notes) > initial_notes_length:
-        #            results['Notes'] = notes
-        #        else:
-        #            results['Notes'] = ''
-        #
-        #        return results, errors
-        #
-        #    def get_comparison_data(self, tallies2pp):
-        #        """
-        #        Get Data for single zaid to be used in comparison.
-        #
-        #        Returns
-        #        -------
-        #        results : list
-        #            All results per tally to compare
-        #        columns : list
-        #            Tally names
-        #
-        #        """
-        #        # Tallies to post process
-        #        #tallies2pp = ['12', '22', '24', '14', '34', '6', '46']
-        #        data = self.tallydata.set_index(['Tally Description', 'Energy'])
-        #        totalbins = self.totalbin.set_index('Tally Description')
-        #        results = []  # Store data to compare for different tallies
-        #        columns = []  # Tally names and numbers
-        #        # Reorder tallies
-        #        tallies = []
-        #        for tallynum in tallies2pp:
-        #            for tally in self.mctal.tallies:
-        #                num = str(tally.tallyNumber)
-        #                if num == tallynum:
-        #                    tallies.append(tally)
-        #
-        #        for tally in tallies:
-        #            num = str(tally.tallyNumber)
-        #            # Isolate tally
-        #
-        #            masked = data.loc[tally.tallyComment[0]]
-        #            if num in tallies2pp:
-        #                if num in ['12', '22']:  # Coarse Flux bins
-        #                    masked_tot = totalbins.loc[tally.tallyComment[0]]
-        #                    # Get energy bins
-        #                    bins = list(masked.reset_index()['Energy'].values)
-        #                    for ebin in bins:
-        #                        # colname = '(T.ly '+str(num)+') '+str(ebin)
-        #                        colname = str(ebin)+' [MeV]'+' [t'+num+']'
-        #                        columns.append(colname)
-        #                        results.append(masked['Value'].loc[ebin])
-        #                    # Add the total bin
-        #                    colname = 'Total'+' [t'+num+']'
-        #                    columns.append(colname)
-        #                    results.append(masked_tot['Value'])
-        #
-        #                else:
-        #                    columns.append(tally.tallyComment[0])
-        #                    results.append(masked['Value'].values[0])
-        #
-        #        return results, columns
-
-
 class SphereOpenMCoutput(OpenMCOutput, SphereTallyOutput):
     def _create_dataframe(self, rows):
+        """Creates dataframe from the data in each output passed through as 
+        a list of lists from the process_tally function
+
+        Args:
+        rows: list 
+        list of list containing the rows of information from an output file
+
+        Returns:
+        df: DataFrame
+        dataframe containing the information from each output
+        
+        dftotal: DataFrame
+        dataframe containing the sum of all values and errors for each output
+        """
         df = pd.DataFrame(
             rows, columns=["Tally N.", "Tally Description", "Energy", "Value", "Error"]
         )
@@ -1441,14 +1377,20 @@ class SphereOpenMCoutput(OpenMCOutput, SphereTallyOutput):
         return df, dftotal
 
     def process_tally(self):
-        # tallydata = {}
-        # totalbin = {}
+        """
+        Reads data from output file and stores it as a list of lists
+        to be turned into a dataframe
+
+        Returns:
+            tallydata: Dataframe
+            see df in _create_dataframe()
+            
+            totalbin: Dataframe
+            see dftotal in _create_dataframe()
+        """
         rows = []
         for line in self.output_file_data:
             if "tally" in line.lower():
-                # if len(rows) > 0:
-                #    tallydata[tally_n], totalbin[tally_n] = self._create_dataframe(rows)
-                #    rows = []
                 parts = line.split()
                 tally_n = int(parts[2].replace(":", ""))
                 tally_description = " ".join([parts[3].title(), parts[4].title()])
@@ -1581,25 +1523,19 @@ class SphereSDDRoutput(SphereOutput):
     def _generate_single_plots(self):
         libs, allzaids, outputs = self._get_organized_output()
         globalname = self.lib
-        self._generate_plots(libs, allzaids, outputs, globalname)
+        self._generate_plots(allzaids, globalname)
 
-    def _generate_plots(self, libraries, allzaids, outputs, globalname):
+    def _generate_plots(self, allzaids, globalname):
         """
         Generate all the plots requested by the Sphere SDDR benchmark
 
         Parameters
         ----------
-        libraries : dummy
-            here only for compatibility issues.
         allzaids : list
             list of all zaids resulting from the union of the results from
             both libraries.
-        outputs : dummy
-            here only for compatibility reasons.
         globalname : str
             name for the output.
-        outpath : str
-            path to use for the dumping of imgs.
 
         Returns
         -------
@@ -1826,6 +1762,19 @@ class SphereSDDRoutput(SphereOutput):
         shutil.rmtree(outpath)
 
     def _extract_data4plots(self, zaid, mt, lib, time):
+        """_summary_
+
+        Args:
+            zaid (str): zaid of output
+            mt (str): mt 
+            lib (str): library being postprocessed
+            time (float): timestep
+
+        Returns:
+            nflux (float): neutron flux 
+            pflux (float): proton flux
+            sddr (float): shut down dose rate
+        """
         if self.d1s:
             tallies = self.outputs["d1s"][zaid, mt, lib].tallydata
         # Extract values
@@ -1835,6 +1784,7 @@ class SphereSDDRoutput(SphereOutput):
         sddr = tallies[104].set_index("Time")
         sddr = sddr.loc["D" + self.timecols[time], "Value"]
         # Memorize values
+        print (type(nflux), type(pflux), type(sddr))
         return nflux, pflux, sddr
 
     def _compute_single_results(
@@ -1959,6 +1909,13 @@ class SphereSDDRoutput(SphereOutput):
 
     @staticmethod
     def _sort_df(df):
+        """
+        Sorts the values in the passed dataframe by the Parent column,
+        then sets 3 index columns
+
+        Args:
+            df (DataFrame): Dataframe containing output data
+        """
         df["index"] = pd.to_numeric(df["Parent"].values, errors="coerce")
         df.sort_values("index", inplace=True)
         del df["index"]
@@ -2057,6 +2014,10 @@ class SphereSDDRoutput(SphereOutput):
         return outputs, results, errors, stat_checks
 
     def print_raw(self):
+        """
+        Assigns a path and prints the post processing data as a .csv
+        
+        """
         for key, data in self.raw_data.items():
             # build a folder containing each tally of the reaction
             foldername = "{}_{}".format(key[0], key[1])
@@ -2156,97 +2117,4 @@ class SphereSDDRMCNPoutput(SphereMCNPoutput):
         vals = pd.concat([pfluxvals, sddrvals, heatvals, nfluxvals], axis=0)
         errors = pd.concat([pfluxerrors, sddrerrors, heaterrors, nfluxerrors], axis=0)
 
-        return vals, errors
-
-
-# class SphereExcelOutputSheet:
-#     def __init__(self, template, outpath):
-#         """
-#         Excel sheet reporting the outcome of an MCNP test
-
-#         template: (str/path) path to the sheet template
-#         """
-#         self.outpath = outpath  # Path to the excel file
-#         # Open template
-#         shutil.copy(template, outpath)
-#         #        self.app = xw.App(visible=False)
-#         #        self.wb = self.app.books.open(outpath)
-#         # self.wb=openpyxl.load_workbook(filename=outpath)
-
-#     def insert_df(self, startrow, startcolumn, df, ws, header=True):
-#         """
-#         Insert a DataFrame (df) into a Worksheet (ws) using openpyxl.
-#         (startrow) and (startcolumn) identify the starting data entry
-#         """
-#         #        ws = self.wb.sheets[ws]
-#         ws = self.wb[self.wb.sheetnames[ws]]
-
-#         exsupp.insert_df(startrow, startcolumn, df, ws, header=header)
-
-#     def copy_sheets(self, wb_origin_path):
-#         """
-#         Copy all sheets of the selected excel file into the current one
-
-#         Parameters
-#         ----------
-#         wb_origin_path : str/path
-#             Path to excel file containing sheets to add.
-
-#         Returns
-#         -------
-#         None.
-
-#         """
-#         wb = self.app.books.open(wb_origin_path)
-#         for sheet in wb.sheets:
-#             # copy to a new workbook
-#             sheet.api.Copy()
-
-#             # copy to an existing workbook by putting it in front of a
-#             # worksheet object
-#             sheet.api.Copy(Before=self.wb.sheets[0].api)
-
-#     def copy_internal_sheet(self, template_sheet, newname):
-#         """
-#         Return a renamed copy of a particular sheet
-
-#         Parameters
-#         ----------
-#         template_sheet : xw.Sheet
-#             sheet to copy.
-#         newname : str
-#             name of the new sheet.
-
-#         Returns
-#         -------
-#         ws : xw.Sheet
-#             copied sheet.
-
-#         """
-#         # Copy the template sheet
-#         try:  # Should work from v0.22 of xlwings
-#             template_sheet.copy(before=template_sheet)
-#         except AttributeError:
-#             # Fall Back onto the native object
-#             template_sheet.api.Copy(Before=template_sheet.api)
-#         try:
-#             ws = self.wb.sheets(template_sheet.name + " (2)")
-#         # except pythoncom.com_error:
-#         except Exception as e:
-#             print("The available sheets are :" + str(self.wb.sheets))
-#         try:
-#             ws.name = newname
-#         # except pythoncom.com_error:
-#         except Exception as e:
-#             ws.Name = newname
-#         return ws
-
-#     def save(self):
-#         """
-#         Save Excel
-#         """
-#         #        self.app.calculate()
-#         self.wb.save(self.outpath)
-
-#     #        self.wb.close()
-#     #        self.app.quit()
+        return vals, errorse

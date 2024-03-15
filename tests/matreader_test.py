@@ -21,7 +21,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+from __future__ import annotations
 import sys
 import os
 
@@ -33,44 +33,48 @@ sys.path.insert(1, modules_path)
 root = os.path.dirname(cp)
 sys.path.insert(1, root)
 
-from jade.matreader import (Element, Zaid, MatCardsList)
+from jade.matreader import Element, Zaid, MatCardsList, Material
 from jade.libmanager import LibManager
 import pytest
 import pandas as pd
 
 # Files
-INP = os.path.join(cp, 'TestFiles', 'matreader', 'mat_test.i')
-INP2 = os.path.join(cp, 'TestFiles', 'matreader', 'mat_test2.i')
-ACTIVATION_INP = os.path.join(cp, 'TestFiles', 'matreader', 'activation.i')
-XSDIR = os.path.join(cp, 'TestFiles', 'matreader', 'xsdir_mcnp6.2')
+INP = os.path.join(cp, "TestFiles", "matreader", "mat_test.i")
+INP2 = os.path.join(cp, "TestFiles", "matreader", "mat_test2.i")
+ACTIVATION_INP = os.path.join(cp, "TestFiles", "matreader", "activation.i")
+XSDIR = os.path.join(cp, "TestFiles", "matreader", "xsdir_mcnp6.2")
 # Other
-ISOTOPES_FILE = os.path.join(root, 'jade', 'resources', 'Isotopes.txt')
-ACTIVATION_FILE = os.path.join(cp, 'TestFiles', 'libmanager',
-                               'Activation libs.xlsx')
+ISOTOPES_FILE = os.path.join(root, "jade", "resources", "Isotopes.txt")
+ACTIVATION_FILE = os.path.join(cp, "TestFiles", "libmanager", "Activation libs.xlsx")
 # XSDIR_FILE = os.path.join(cp, 'TestFiles', 'libmanager', 'xsdir')
+
 
 @pytest.fixture
 def LIBMAN():
     df_rows = [
-                   ['99c', 'sda', '', XSDIR],
-                   ['98c', 'acsdc', '', XSDIR],
-                   ['21c', 'adsadsa', '', XSDIR],
-                   ['31c', 'adsadas', '', XSDIR],
-                   ['00c', 'sdas', '', XSDIR],
-                   ['71c', 'sdasxcx', '', XSDIR],
-                   ['81c', 'sdasxcx', 'yes', XSDIR]]
+        ["99c", "sda", "", XSDIR],
+        ["98c", "acsdc", "", XSDIR],
+        ["21c", "adsadsa", "", XSDIR],
+        ["31c", "adsadas", "", XSDIR],
+        ["00c", "sdas", "", XSDIR],
+        ["71c", "sdasxcx", "", XSDIR],
+        ["81c", "sdasxcx", "yes", XSDIR],
+    ]
     df_lib = pd.DataFrame(df_rows)
-    df_lib.columns = ['Suffix', 'Name', 'Default', 'MCNP']
+    df_lib.columns = ["Suffix", "Name", "Default", "MCNP"]
 
-    return LibManager(df_lib, activationfile=ACTIVATION_FILE,
-                          isotopes_file=ISOTOPES_FILE)
+    return LibManager(
+        df_lib, activationfile=ACTIVATION_FILE, isotopes_file=ISOTOPES_FILE
+    )
 
 
 class TestZaid:
 
-    tests = [{'str': '1001.31c   -2.3', 'res': [-2.3, '1', '001', '31c']},
-             {'str': '1001.31c\t-2.3', 'res': [-2.3, '1', '001', '31c']},
-             {'str': '15205 1', 'res': [1, '15', '205', None]}]
+    tests = [
+        {"str": "1001.31c   -2.3", "res": [-2.3, "1", "001", "31c"]},
+        {"str": "1001.31c\t-2.3", "res": [-2.3, "1", "001", "31c"]},
+        {"str": "15205 1", "res": [1, "15", "205", None]},
+    ]
 
     def test_fromstring(self):
         """
@@ -83,9 +87,9 @@ class TestZaid:
         """
 
         for test in self.tests:
-            text = test['str']
+            text = test["str"]
             zaid = Zaid.from_string(text)
-            res = test['res']
+            res = test["res"]
             assert zaid.fraction == res[0]
             assert zaid.element == res[1]
             assert zaid.isotope == res[2]
@@ -93,7 +97,7 @@ class TestZaid:
 
 
 class TestElement:
-    zaid_strings = ['1001.31c   -1', '1002.31c   -3']
+    zaid_strings = ["1001.31c   -1", "1002.31c   -3"]
 
     def _buildElem(self):
         zaids = []
@@ -111,15 +115,14 @@ class TestElement:
         elem = self._buildElem()
 
         # Check for the correct element
-        elem.Z = '1'
+        elem.Z = "1"
 
         # Check the correct update of infos in element
         elem.update_zaidinfo(LIBMAN)
-        res = [{'fullname': 'H-1', 'ab': 25},
-               {'fullname': 'H-2', 'ab': 75}]
+        res = [{"fullname": "H-1", "ab": 25}, {"fullname": "H-2", "ab": 75}]
         for zaid, checks in zip(elem.zaids, res):
-            assert int(zaid.ab) == checks['ab']
-            assert zaid.fullname == checks['fullname']
+            assert int(zaid.ab) == checks["ab"]
+            assert zaid.fullname == checks["fullname"]
 
     def test_get_fraction(self):
         """
@@ -131,6 +134,12 @@ class TestElement:
 
 
 class Testmaterial:
+
+    def test_natural_expansion(self, LIBMAN: LibManager):
+        material = Material.from_text(["C Header", "M1 1000.31c   -2.3"])
+        material.translate("31c", LIBMAN)
+        assert len(material.submaterials[0].zaidList) == 2
+
     def test_switch_fraction(self, LIBMAN):
         # Read a material
         matcard = MatCardsList.from_input(INP)
@@ -141,41 +150,41 @@ class Testmaterial:
 
         # -- Switch back and forth --
         # this first one should do nothing
-        material.switch_fraction('atom', LIBMAN)
+        material.switch_fraction("atom", LIBMAN)
         unchanged = material.to_text()
         assert original == unchanged
         # switch to mass
-        material.switch_fraction('mass', LIBMAN)
+        material.switch_fraction("mass", LIBMAN)
         mass = material.to_text()
         # change again, should do nothing
-        material.switch_fraction('mass', LIBMAN)
+        material.switch_fraction("mass", LIBMAN)
         unchanged = material.to_text()
         assert unchanged == mass
         # go back to atom
-        material.switch_fraction('atom', LIBMAN)
+        material.switch_fraction("atom", LIBMAN)
         atom = material.to_text()
         # at last check that the inplace oprion works
-        material.switch_fraction('mass', LIBMAN, inplace=False)
+        material.switch_fraction("mass", LIBMAN, inplace=False)
         inplace = material.to_text()
         assert inplace == atom
         # go back to mass
-        material.switch_fraction('mass', LIBMAN)
+        material.switch_fraction("mass", LIBMAN)
         massnorm = material.to_text()
         assert massnorm == mass
 
     def test_switch_pnnl(self, LIBMAN):
         # --- Test the PNNL with Bismuth Germanate (BGO) ---
         # read the material cards
-        inp = os.path.join(cp, 'TestFiles', 'matreader', 'BGO_mass.i')
+        inp = os.path.join(cp, "TestFiles", "matreader", "BGO_mass.i")
         matcard = MatCardsList.from_input(inp)
         mass_material = matcard[0]
 
-        inp = os.path.join(cp, 'TestFiles', 'matreader', 'BGO_atom.i')
+        inp = os.path.join(cp, "TestFiles", "matreader", "BGO_atom.i")
         matcard = MatCardsList.from_input(inp)
         atom_material = matcard[0]
 
         # Switch the mass fraction to atomic fraction
-        mass_material.switch_fraction('atom', LIBMAN)
+        mass_material.switch_fraction("atom", LIBMAN)
         print(mass_material.to_text())
 
         tolerance = 1e-5  # tolerance for the difference with respect to pnnl
@@ -214,7 +223,7 @@ class TestMatCardList:
         """
         matcard = MatCardsList.from_input(INP)
 
-        headers = {'m1': 'C Header M1\n', 'm2': 'C Header M2\n', 'm102': ''}
+        headers = {"m1": "C Header M1\n", "m2": "C Header M2\n", "m102": ""}
         for key, header in headers.items():
             assert matcard[key].header == header
 
@@ -229,9 +238,11 @@ class TestMatCardList:
         """
         matcard = MatCardsList.from_input(INP)
 
-        headers = {'m1': ['C M1-submat1', 'C M1-Submat 2'],
-                   'm2': ['', 'C M2-submat1\nC second line'],
-                   'm102': ['']}
+        headers = {
+            "m1": ["C M1-submat1", "C M1-Submat 2"],
+            "m2": ["", "C M2-submat1\nC second line"],
+            "m102": [""],
+        }
 
         for key, subheaders in headers.items():
             for i, submat in enumerate(matcard[key].submaterials):
@@ -248,9 +259,7 @@ class TestMatCardList:
         """
         matcard = MatCardsList.from_input(INP)
 
-        zaids = {'m1': [2, 1],
-                 'm2': [1, 1],
-                 'm102': [5]}
+        zaids = {"m1": [2, 1], "m2": [1, 1], "m102": [5]}
 
         for key, zaids in zaids.items():
             for i, submat in enumerate(matcard[key].submaterials):
@@ -261,26 +270,25 @@ class TestMatCardList:
         Test that translation works (all possile modes)
         """
         # Dic mode 1
-        newlib = {'21c': '31c', '99c': '81c'}
+        newlib = {"21c": "31c", "99c": "81c"}
         matcard = MatCardsList.from_input(ACTIVATION_INP)
         matcard.translate(newlib, LIBMAN)
         translation = matcard.to_text()
-        assert translation.count('31c') == 3
-        assert translation.count('81c') == 3
+        assert translation.count("31c") == 3
+        assert translation.count("81c") == 3
 
         # dic mode 2 - test 1
         matcard = MatCardsList.from_input(ACTIVATION_INP)
-        newlib = {'99c': ['1001'], '21c': ['28061', '28062', '28064', '29063',
-                                           '5010']}
+        newlib = {"99c": ["1001"], "21c": ["28061", "28062", "28064", "29063", "5010"]}
         matcard.translate(newlib, LIBMAN)
         translation = matcard.to_text()
-        assert translation.count('99c') == 0
-        assert translation.count('21c') == 5
-        assert translation.count('81c') == 1
+        assert translation.count("99c") == 0
+        assert translation.count("21c") == 5
+        assert translation.count("81c") == 1
 
         # dic mode 2 - test 2
         matcard = MatCardsList.from_input(ACTIVATION_INP)
-        newlib = {'99c': ['1001'], '21c': ['28061', '28062', '28064', '29063']}
+        newlib = {"99c": ["1001"], "21c": ["28061", "28062", "28064", "29063"]}
         try:
             matcard.translate(newlib, LIBMAN)
             assert False
@@ -289,9 +297,9 @@ class TestMatCardList:
 
         # classic mode
         matcard = MatCardsList.from_input(INP2)
-        matcard.translate('21c', LIBMAN)
+        matcard.translate("21c", LIBMAN)
         translation = matcard.to_text()
-        assert translation.count('21c') == 10
+        assert translation.count("21c") == 10
 
     def test_get_info(self, LIBMAN):
         """

@@ -141,7 +141,7 @@ def mainloop(session: Session):
                 sys.exit()
             inputfile = input(" MCNP input file: ")
 
-            if newlib in session.lib_manager.libraries['mcnp']:
+            if newlib in session.lib_manager.libraries["mcnp"]:
                 ans = uty.translate_input(session, newlib, inputfile)
                 if ans:
                     print(" Translation successfully completed!\n")
@@ -582,7 +582,7 @@ def pploop(session: Session):
             if ans:
                 lib = to_single_pp[0]
                 # Check active tests
-                to_perform = session.check_active_tests('Post-Processing')
+                to_perform = session.check_active_tests("Post-Processing")
                 # For the moment no pp is foreseen for experimental benchmarks
                 # to_perf_exp = session.check_active_tests('Post-Processing',
                 #                                          exp=True)
@@ -707,10 +707,11 @@ Additional Post-Processing of library:"""
 
                 # Execute Comparison
                 lib_input = EXP_TAG + "-" + lib_input  # Insert the exp tag
-                print(to_perform)
                 for code, testname in to_perform.items():
                     try:
-                        pp.compareBenchmark(session, lib_input, code, testname, exp=True)
+                        pp.compareBenchmark(
+                            session, lib_input, code, testname, exp=True
+                        )
                     except PermissionError as e:
                         clear_screen()
                         print(pp_menu)

@@ -1,0 +1,6 @@
+Cooldown Time [d];Cooldown Time [s];Experimental SDDR [Sv/h];Relative Error
+1;86400;2.46E-06;0.1
+7;604800;6.99E-07;0.1
+15;1296000;4.95E-07;0.1
+30;2592000;4.16E-07;0.1
+60;5184000;3.16E-07;0.1

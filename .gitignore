@@ -3,8 +3,10 @@
 *.pyc
 Untitled.ipynb
 .coverage
+Configuration/
+Experimental_Results/
 
-# These are generated folders for cache 
+# These are generated folders for cache
 .ipynb_checkpoints/
 __pycache__/
 *.pyc
@@ -12,3 +14,9 @@ docs/build/
 docs/source/_build/
 docs/source/_static/
 docs/source/_templates/
+JADE.egg-info/
+jade.egg-info/
+build/
+
+venv/*
+.vscode/*.json

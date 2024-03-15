@@ -19,58 +19,66 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
-import sys
+
 import os
+import sys
+import pytest
+from jade.configuration import Configuration, Log
 
 cp = os.path.dirname(os.path.abspath(__file__))
 modules_path = os.path.dirname(cp)
 sys.path.insert(1, modules_path)
 
-from configuration import Configuration, Log
+resources = os.path.join(cp, "TestFiles", "configuration")
+MAIN_CONFIG_FILE = os.path.join(resources, "mainconfig.xlsx")
 
-MAIN_CONFIG_FILE = os.path.join(cp, 'TestFiles', 'configuration',
-                                'mainconfig.xlsx')
-LOGFILE = os.path.join(cp, 'tmplog.txt')
+
+@pytest.fixture
+def config():
+    configob = Configuration(MAIN_CONFIG_FILE)
+    return configob
+
+
+@pytest.fixture
+def log(tmpdir):
+    file = os.path.join(tmpdir, "tmplog.txt")
+    logob = Log(file)
+    return logob
 
 
 class TestConfiguration:
-    config = Configuration(MAIN_CONFIG_FILE)
 
-    def test_read(self):
+    def test_read(self, config):
         # TODO
         # Check that everything is read in a correct way
-        assert True
+        assert config.mpi_tasks == 4
 
-    def test_get_lib_name(self):
-        suffix_list = ['21c', '33c', 'pincopalle']
-        expected_list = ['FENDL 2.1c', '33c', 'pincopalle']
+    def test_get_lib_name(self, config):
+        suffix_list = ["21c", "33c", "pincopalle"]
+        expected_list = ["FENDL 2.1c", "33c", "pincopalle"]
         for suffix, expected in zip(suffix_list, expected_list):
-            assert self.config.get_lib_name(suffix) == expected
+            assert config.get_lib_name(suffix) == expected
 
 
 class TestLog:
     # Here it is tested that the class just works without prompting errors
     # In depth test makes no sense because the class should be substitued
     # with the pre-built python log module.
-    log = Log(LOGFILE)
 
-    def test_bar_adjourn(self):
-        txt = 'assdad'
-        self.log.bar_adjourn(txt)
-        self.log.bar_adjourn(txt, spacing=True)
+    def test_bar_adjourn(self, log):
+        txt = "assdad"
+        log.bar_adjourn(txt)
+        log.bar_adjourn(txt, spacing=True)
 
-        txt = 'asdadasdadasdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-        self.log.bar_adjourn(txt)
+        txt = "asdadasdadasdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        log.bar_adjourn(txt)
 
-        txt = 'asa'
-        self.log.bar_adjourn(txt)
+        txt = "asa"
+        log.bar_adjourn(txt)
 
         assert True
 
-    def test_adjourn(self):
-        try:
-            txt = 'adsdadasdadasd'
-            self.log.adjourn(txt, spacing=True, time=True)
-            assert True
-        finally:
-            os.remove(LOGFILE)
+    def test_adjourn(self, log):
+        txt = "adsdadasdadasd"
+        log.adjourn(txt, spacing=True, time=True)
+        assert True

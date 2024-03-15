@@ -1,0 +1,19 @@
+mcnp       6     02/21/24 14:48:47     2             100          126217
+ TUNGSTEN(W) EXPERIMENT P. B. August '02 Case for Nb, Ni and Au activation foils
+ntal     1
+    4
+tally    4                   -1    0    0
+ 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+f        4
+    641    643    645    647
+d        1
+u        0
+s        0
+m        1
+c        0
+e        0
+t        0
+vals
+  5E1 0.9426  5E1 0.5377  5E1 0.6207  5E1 0.8242
+tfc    1       1       1       1       1       1       1       1       1
+            100  5E1  5E1  1.08037E+03

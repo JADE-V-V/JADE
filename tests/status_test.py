@@ -19,6 +19,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
+
 import sys
 import os
 
@@ -26,18 +27,18 @@ cp = os.path.dirname(os.path.abspath(__file__))
 modules_path = os.path.dirname(cp)
 sys.path.insert(1, modules_path)
 
-from status import Status
-from configuration import Configuration
+from jade.status import Status
+from jade.configuration import Configuration
 from tests.configuration_test import MAIN_CONFIG_FILE
 import shutil
+import pytest
 
 
 class SessionMockUp:
-    path_test = os.path.join(cp, 'TestFiles', 'status')
-    path_run = os.path.join(path_test, 'MCNP simulations')
-    path_single = os.path.join(path_test, 'Post-Processing',
-                               'Single Libraries')
-    path_comparison = os.path.join(path_test, 'Post-Processing', 'Comparison')
+    path_test = os.path.join(cp, "TestFiles", "status")
+    path_run = os.path.join(path_test, "Simulations")
+    path_single = os.path.join(path_test, "Post-Processing", "Single_Libraries")
+    path_comparison = os.path.join(path_test, "Post-Processing", "Comparison")
 
     def __init__(self, config):
         self.conf = config
@@ -46,34 +47,38 @@ class SessionMockUp:
     def check_active_tests(self, config_option, exp=False):
         # Mocks the check in the configuration file
         if not exp:
-            return ['Sphere', 'C_Model']
+            return {
+                "mcnp": ["Sphere", "C_Model"],
+            }
         elif exp:
-            return ['Oktavian']
+            return {"mcnp": ["Oktavian"]}
 
 
 class LogMockUp:
     def adjourn(self, text):
-        print('do nothing')
+        print("do nothing")
 
 
 class TestStatus:
 
-    def_config = Configuration(MAIN_CONFIG_FILE)
+    @pytest.fixture
+    def def_config(self):
+        return Configuration(MAIN_CONFIG_FILE)
 
-    def test_update_run_status(self):
-        session = SessionMockUp(self.def_config)
+    def test_update_run_status(self, def_config: Configuration):
+        session = SessionMockUp(def_config)
         status = Status(session)
         init_run_tree = status.run_tree
 
         # modify the run tree
-        src = os.path.join(status.run_path, '31c')
-        dst = os.path.join(status.run_path, '22c')
+        src = os.path.join(status.run_path, "31c")
+        dst = os.path.join(status.run_path, "22c")
         shutil.copytree(src, dst)
         # re-read and check everything went fine
         try:
             status.update_run_status()
             try:
-                get = status.run_tree['22c']
+                get = status.run_tree["22c"]
                 assert True
             except KeyError:
                 assert False
@@ -85,21 +90,21 @@ class TestStatus:
         status.update_run_status()
         assert init_run_tree == status.run_tree
 
-    def test_update_pp_status(self):
-        session = SessionMockUp(self.def_config)
+    def test_update_pp_status(self, def_config: Configuration):
+        session = SessionMockUp(def_config)
         status = Status(session)
         init_single_tree = status.single_tree
         init_comparison_tree = status.comparison_tree
 
         # modify one of trees
-        src_single = os.path.join(status.single_path, '31c')
-        dst_single = os.path.join(status.single_path, '22c')
+        src_single = os.path.join(status.single_path, "31c")
+        dst_single = os.path.join(status.single_path, "22c")
         shutil.copytree(src_single, dst_single)
         # re-read and check everything went fine
         try:
             status.update_pp_status()
             try:
-                get = status.single_tree['22c']
+                get = status.single_tree["22c"]
                 assert True
             except KeyError:
                 assert False
@@ -112,149 +117,142 @@ class TestStatus:
         assert init_single_tree == status.single_tree
         assert init_comparison_tree == status.comparison_tree
 
-    def test_get_path(self):
-        session = SessionMockUp(self.def_config)
+    def test_get_path(self, def_config: Configuration):
+        session = SessionMockUp(def_config)
         status = Status(session)
 
-        itinerary = ['00c', 'Sphere', 'Sphere_1001_H-1']
+        itinerary = ["00c", "Sphere", "Sphere_1001_H-1"]
         cp = status.run_path
         for step in itinerary:
             cp = os.path.join(cp, step)
-        assert status.get_path('run', itinerary) == cp
+        assert status.get_path("run", itinerary) == cp
 
         try:
-            cp = status.get_path('sda', [])
+            cp = status.get_path("sda", [])
             assert False
         except KeyError:
             assert True
 
-        assert status.get_path('single', []) == status.single_path
-        assert status.get_path('comparison', []) == status.comparison_path
+        assert status.get_path("single", []) == status.single_path
+        assert status.get_path("comparison", []) == status.comparison_path
 
-    def test_get_unfinished_zaid(self):
-        session = SessionMockUp(self.def_config)
+    def test_get_unfinished_zaid(self, def_config: Configuration):
+        session = SessionMockUp(def_config)
         status = Status(session)
-        lib = '00c'
+        lib = "00c"
         unfinished, motherdir = status.get_unfinished_zaids(lib)
-        assert unfinished == ['Sphere_1002_H-2']
-        assert motherdir == os.path.join(status.run_path, lib, 'Sphere')
+        assert unfinished["mcnp"] == ["Sphere_1002_H-2"]
+        assert motherdir == os.path.join(status.run_path, lib, "Sphere")
 
-    def test_check_override_run(self, monkeypatch):
-        session = SessionMockUp(self.def_config)
+    def test_check_override_run(self, monkeypatch, def_config: Configuration):
+        session = SessionMockUp(def_config)
         status = Status(session)
 
         # If no tests are run it is safe to override
-        ans = status.check_override_run('10d', session)
+        ans = status.check_override_run("10d", session)
         assert ans
 
         # If tests are already run, ask for permission
-        monkeypatch.setattr('builtins.input', lambda _: "y")
-        ans = status.check_override_run('31c', session)
+        monkeypatch.setattr("builtins.input", lambda _: "y")
+        ans = status.check_override_run("31c", session)
         assert ans
 
-        monkeypatch.setattr('builtins.input', lambda _: "n")
-        ans = status.check_override_run('31c', session)
+        monkeypatch.setattr("builtins.input", lambda _: "n")
+        ans = status.check_override_run("31c", session)
         assert not ans
 
-    def test_check_lib_run(self):
-        session = SessionMockUp(self.def_config)
+    @pytest.mark.parametrize(
+        ["code", "directory", "expected"],
+        [
+            ["mcnp", os.path.join("00c", "Sphere", "Sphere_1001_H-1", "mcnp"), True],
+            ["mcnp", os.path.join("00c", "Sphere", "Sphere_1002_H-2", "mcnp"), False],
+        ],
+    )
+    def test_check_test_run(
+        self, def_config: Configuration, code: str, directory: str, expected: bool
+    ):
+        files = []
+        status = Status(SessionMockUp(def_config))
+        path_run = os.path.join(cp, "TestFiles", "status", "Simulations", directory)
+        for file in os.listdir(path_run):
+            files.append(os.path.join(path_run, file))
+
+        ans = status.check_test_run(files, code)
+        assert ans == expected
+
+    @pytest.mark.parametrize(
+        ["lib", "option", "expected"],
+        [
+            ["31c", False, ["Sphere", "C_Model"]],
+            ["00c", False, []],
+            ["99c", True, ["Oktavian"]],
+            ["10d", True, []],
+        ],
+    )
+    def test_check_lib_run(self, def_config: Configuration, lib, option, expected):
+        session = SessionMockUp(def_config)
         status = Status(session)
 
         # config option is not important since the session is just a mock-up
-        libs = ['31c', '00c', '99c', '10d']
-        exp_options = [False, False, True, True]
-        expected_list = [['Sphere', 'C_Model'], [], ['Oktavian'], []]
+        testrun = status.check_lib_run(lib, session, config_option="Run", exp=option)
+        try:
+            assert testrun["mcnp"] == expected
+        except KeyError:
+            # If no benchmark was run, the key is not present
+            assert True
 
-        for lib, option, expected in zip(libs, exp_options, expected_list):
-            testrun = status.check_lib_run(lib, session, config_option='Run',
-                                           exp=option)
-            assert testrun == expected
-
-    def test_check_pp_single(self):
-        session = SessionMockUp(self.def_config)
+    def test_check_pp_single(self, def_config: Configuration):
+        session = SessionMockUp(def_config)
         status = Status(session)
 
         # Single
-        libs = ['31c', '00c', '31d']
-        tree = 'single'
+        libs = ["31c", "00c", "31d"]
+        tree = "single"
         answers = [True, False, False]
         for lib, answer in zip(libs, answers):
             ans = status.check_pp_single(lib, session, tree=tree)
             assert ans == answer
 
         # Comparison
-        libs = ['32c_Vs_31c', '99c_Vs_98c_Vs_31c', '31c_Vs_30c']
-        tree = 'comparison'
+        libs = ["32c_Vs_31c", "99c_Vs_98c_Vs_31c", "31c_Vs_30c"]
+        tree = "comparison"
         exp_options = [True, True, False]
         answers = [True, False, True]
         for lib, answer, exp in zip(libs, answers, exp_options):
             ans = status.check_pp_single(lib, session, tree=tree, exp=exp)
             assert ans == answer
 
-    def test_check_override_pp(self, monkeypatch):
-        session = SessionMockUp(self.def_config)
+    @pytest.mark.parametrize(
+        ["arguments", "expected", "singlepp", "exp"],
+        [
+            # The library has been run and pp. do not ovveride
+            [["31c", "n"], False, ["31c"], False],
+            # The library has been run and pp. ovveride
+            [["31c", "y"], True, ["31c"], False],
+            # The library has been run but not pp.
+            [["32c"], True, ["32c"], False],
+            # The library has not been run correctly
+            [["00c"], False, [], False],
+            # Both libraries were run and single pp. Override
+            [["31c-30c", "y"], True, [], False],
+            # Both libraries were run and single pp. Do not override
+            [["31c-30c", "n"], False, [], False],
+            # Both libraries were run, experimental. No comparison still done
+            [["99c-98c"], True, [], True],
+            # Both libraries were run, one is missing pp.
+            [["99c-98c"], True, [], True],
+            # Both libraries were run, one is missing pp.
+            [["33c-31c"], True, ["33c"], False],
+        ],
+    )
+    def test_check_override_pp(
+        self, monkeypatch, def_config: Configuration, arguments, expected, singlepp, exp
+    ):
+        session = SessionMockUp(def_config)
         status = Status(session)
 
-        # The library has been run and pp. do not ovveride
-        responses = iter(['31c', 'n'])
-        monkeypatch.setattr('builtins.input', lambda msg: next(responses))
-        ans, to_single_pp, _ = status.check_override_pp(session)
-        assert not ans
-        assert to_single_pp == ['31c']
-
-        # The library has been run and pp. ovveride
-        responses = iter(['31c', 'y'])
-        monkeypatch.setattr('builtins.input', lambda msg: next(responses))
-        ans, to_single_pp, _ = status.check_override_pp(session)
-        assert ans
-        assert to_single_pp == ['31c']
-
-        # The library has been run but not pp.
-        responses = iter(['32c'])
-        monkeypatch.setattr('builtins.input', lambda msg: next(responses))
-        ans, to_single_pp, _ = status.check_override_pp(session)
-        assert ans
-        assert to_single_pp == ['32c']
-
-        # The library has not been run correctly
-        responses = iter(['00c'])
-        monkeypatch.setattr('builtins.input', lambda msg: next(responses))
-        ans, to_single_pp, _ = status.check_override_pp(session)
-        assert not ans
-        assert to_single_pp == []
-
-        # --- Comparisons ---
-        # Both libraries were run and single pp. Override
-        responses = iter(['31c-30c', 'y'])
-        monkeypatch.setattr('builtins.input', lambda msg: next(responses))
-        ans, to_single_pp, _ = status.check_override_pp(session)
-        assert ans
-        assert to_single_pp == []
-
-        # Both libraries were run and single pp. Do not override
-        responses = iter(['31c-30c', 'n'])
-        monkeypatch.setattr('builtins.input', lambda msg: next(responses))
-        ans, to_single_pp, _ = status.check_override_pp(session)
-        assert not ans
-        assert to_single_pp == []
-
-        # Both libraries were run, experimental. No comparison still done
-        responses = iter(['99c-98c'])
-        monkeypatch.setattr('builtins.input', lambda msg: next(responses))
-        ans, to_single_pp, _ = status.check_override_pp(session, exp=True)
-        assert ans
-        assert to_single_pp == []
-
-        # Both libraries were run, one is missing pp.
-        responses = iter(['99c-98c'])
-        monkeypatch.setattr('builtins.input', lambda msg: next(responses))
-        ans, to_single_pp, _ = status.check_override_pp(session, exp=True)
-        assert ans
-        assert to_single_pp == []
-
-        # Both libraries were run, one is missing pp.
-        responses = iter(['33c-31c'])
-        monkeypatch.setattr('builtins.input', lambda msg: next(responses))
-        ans, to_single_pp, _ = status.check_override_pp(session)
-        assert ans
-        assert to_single_pp == ['33c']
+        responses = iter(arguments)
+        monkeypatch.setattr("builtins.input", lambda msg: next(responses))
+        ans, to_single_pp, _ = status.check_override_pp(session, exp=exp)
+        assert ans == expected
+        assert to_single_pp == singlepp

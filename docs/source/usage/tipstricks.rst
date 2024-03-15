@@ -9,25 +9,19 @@ JADE additional capabilities.
 
 External Run of a benchmark
 ===========================
-It may be useful for particularly computational-intensive benchmark to be
-run on a separate hardware (e.g. a server) with respect to the one used for JADE.
-This can be achieved quite easily with the following steps:
+Although submission is parallel is now possible in JADE, it may be useful for 
+particularly computational-intensive benchmark to be run on a separate hardware
+(e.g. a server) with respect to the one used for JADE. This can be achieved quite easily
+with the following steps:
 
-#. set the ``OnlyInput`` option in the ``<JADE root>\Configuration\Conf.xlsx``
+#. Set the ``OnlyInput`` option in the ``<JADE root>\Configuration\Conf.xlsx``
    file to ``True`` for the benchmark that needs to be run externally. This
-   will generate the MCNP input file of the benchmark that can be found in
-   ``<JADE root>\Tests\MCNP simulation\<lib suffix>\<Benchmark name>``
+   will generate the input files of the benchmark that can be found in
+   ``<JADE root>\Tests\Simulations\<lib suffix>\<benchmark_name>\<code>\``
    without running it;
-#. copy the generated input file into the hardware selected for the run and start the
-   MCNP simulation. The only requirement is to use the MCNP keyword  ``name=``
-   when launching the simulation in order to obtain consistently named outputs,
-   for instance:
-
-   ``mcnp6 name=FNG tasks 32``
-
-#. once the simulation is completed, copy all MCNP outputs to the same 
-   ``<JADE root>\Tests\MCNP simulation\<lib suffix>\<Benchmark name>`` folder;
-#. normally run the post-processing.
+#. Once the simulation is completed, copy all the outputs to the same 
+   ``<JADE root>\Tests\Simulation\<lib suffix>\<benchmark name>\<code>\`` folder;
+#. Tun the post-processing as normal. 
 
 Change the plots parameters
 ===========================
@@ -67,8 +61,8 @@ The steps to follow are the following:
 * Add the material card defining the material to the MCNP input named
   **TypicalMaterials** in the ``JADE_root>\Benchmarks inputs`` folder.
   Chose a material number that has not been already used.
-* Modify the ``<JADE_root>\Configuration\Benchmarks Configuration\Sphere\MaterialSettings.csv``
-  and the ``<JADE_root>\Configuration\Benchmarks Configuration\SphereSDDR\MaterialSettings.csv``
+* Modify the ``<JADE_root>\Configuration\Benchmarks_Configuration\Sphere\MaterialSettings.csv``
+  and the ``<JADE_root>\Configuration\Benchmarks_Configuration\SphereSDDR\MaterialSettings.csv``
   to specify the run parameters for the new materials. See :ref:`runconf` for
   additional details on such files.
 

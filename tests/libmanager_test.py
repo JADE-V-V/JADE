@@ -189,10 +189,11 @@ class TestLibManger:
         assert name == "hydrogen"
         assert formula == "H-1"
 
+        # Behaviour has been modified
         zaid = "1000"
         name, formula = lm.get_zaidname(zaid)
         assert name == "hydrogen"
-        assert formula == "H-0"
+        assert formula == "H"
 
     def test_get_zaidnum(self, lm):
         zaid = "92235"

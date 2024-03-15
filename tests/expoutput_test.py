@@ -65,38 +65,38 @@ class TestExpOutput:
 
     def test_benchmarkoutput(self, session_mock: MockUpSession, lm: LibManager):
 
-        config = session_mock.conf.comp_default.set_index("Description")
-        conf = config.iloc[1]
+        code = 'mcnp'
+        testname = 'ITER_1D'
         os.makedirs(session_mock.path_comparison)
         os.makedirs(session_mock.path_single)
-        self.benchoutput_32c = outp.BenchmarkOutput("32c", conf, session_mock)
+        self.benchoutput_32c = outp.BenchmarkOutput("32c", code, testname, session_mock)
         self.benchoutput_32c.single_postprocess()
-        self.benchoutput_31c = outp.BenchmarkOutput("31c", conf, session_mock)
+        self.benchoutput_31c = outp.BenchmarkOutput("31c", code, testname, session_mock)
         self.benchoutput_31c.single_postprocess()
-        self.benchoutput_comp = outp.BenchmarkOutput(["32c", "31c"], conf, session_mock)
+        self.benchoutput_comp = outp.BenchmarkOutput(["32c", "31c"], code, testname, session_mock)
         self.benchoutput_comp.compare()
         assert True
 
     def test_spectrumoutput(self, session_mock: MockUpSession):
 
-        config = session_mock.conf.exp_default.set_index("Description")
-        conf = config.iloc[0]
+        code = 'mcnp'
         os.makedirs(session_mock.path_comparison)
         os.makedirs(session_mock.path_single)
+        testname = 'Oktavian'
         self.benchoutput_comp = expoutput.SpectrumOutput(
-            ["32c", "31c"], conf, session_mock, multiplerun=True
+            ["32c", "31c"], code, testname, session_mock, multiplerun=True
         )
         self.benchoutput_comp.compare()
-        conf = config.iloc[5]
+        testname = 'FNS-TOF'
         self.benchoutput_comp = expoutput.MultipleSpectrumOutput(
-            ["32c", "31c", "00c"], conf, session_mock, multiplerun=True
+            ["32c", "31c", "00c"], code, testname, session_mock, multiplerun=True
         )
         self.benchoutput_comp.compare()
         # check that all the raw data is dumped
         path2raw = os.path.join(
             session_mock.path_comparison,
-            "32c_vs_31c_vs_00c",
-            conf["Folder Name"],
+            "32c_Vs_31c_Vs_00c",
+            testname,
             "mcnp",
             "Raw_Data",
         )
@@ -104,20 +104,20 @@ class TestExpOutput:
 
     def test_shieldingoutput(self, session_mock: MockUpSession):
 
-        config = session_mock.conf.exp_default.set_index("Description")
-        conf = config.iloc[7]
+        code = 'mcnp'
+        testname = 'FNG-W'
         os.makedirs(session_mock.path_comparison)
         os.makedirs(session_mock.path_single)
         self.benchoutput_comp = expoutput.ShieldingOutput(
-            ["32c", "31c", "00c"], conf, session_mock, multiplerun=True
+            ["32c", "31c", "00c"], code, testname, session_mock, multiplerun=True
         )
         self.benchoutput_comp.compare()
         # check that all the raw data is dumped
         # check that all the raw data is dumped
         path2raw = os.path.join(
             session_mock.path_comparison,
-            "32c_vs_31c_vs_00c",
-            conf["Folder Name"],
+            "32c_Vs_31c_Vs_00c",
+            testname,
             "mcnp",
             "Raw_Data",
         )
@@ -125,24 +125,25 @@ class TestExpOutput:
 
     def test_tiaraoutput(self, session_mock: MockUpSession):
 
-        config = session_mock.conf.exp_default.set_index("Description")
-        conf = config.iloc[3]
+        code = 'mcnp'
+        testname = 'Tiara-BS'
         os.makedirs(session_mock.path_comparison)
         os.makedirs(session_mock.path_single)
         self.benchoutput_comp = expoutput.TiaraBSOutput(
-            ["32c", "31c"], conf, session_mock, multiplerun=True
+            ["32c", "31c"], code, testname, session_mock, multiplerun=True
         )
         self.benchoutput_comp.compare()
-        conf = config.iloc[4]
+        #conf = config.iloc[4]
+        testname = 'Tiara-FC'
         self.benchoutput_comp = expoutput.TiaraFCOutput(
-            ["32c", "31c"], conf, session_mock, multiplerun=True
+            ["32c", "31c"], code, testname, session_mock, multiplerun=True
         )
         self.benchoutput_comp.compare()
         # check that all the raw data is dumped
         path2raw = os.path.join(
             session_mock.path_comparison,
-            "32c_vs_31c",
-            conf["Folder Name"],
+            "32c_Vs_31c",
+            testname,
             "mcnp",
             "Raw_Data",
         )
@@ -151,19 +152,19 @@ class TestExpOutput:
 
     def test_fngoutput(self, session_mock: MockUpSession):
 
-        config = session_mock.conf.exp_default.set_index("Description")
-        conf = config.iloc[1]
+        code = 'd1s'
+        testname = 'FNG'
         os.makedirs(session_mock.path_comparison)
         os.makedirs(session_mock.path_single)
         self.benchoutput_comp = expoutput.FNGOutput(
-            ["99c", "98c"], conf, session_mock, multiplerun=True
+            ["99c", "98c"], code, testname, session_mock, multiplerun=True
         )
         self.benchoutput_comp.compare()
         # check that all the raw data is dumped
         path2raw = os.path.join(
             session_mock.path_comparison,
-            "99c_vs_98c",
-            conf["Folder Name"],
+            "99c_Vs_98c",
+            testname,
             "d1s",
             "Raw_Data",
         )

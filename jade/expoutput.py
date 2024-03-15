@@ -484,7 +484,7 @@ class FNGOutput(ExperimentalOutput):
         """
         # Dump the global C/E table
         ex_outpath = os.path.join(
-            self.excel_path_d1s, self.testname + "_CE_tables.xlsx"
+            self.excel_path, self.testname + "_CE_tables.xlsx"
         )
         # Create a Pandas Excel writer using XlsxWriter as the engine.
         with pd.ExcelWriter(ex_outpath, engine="xlsxwriter") as writer:

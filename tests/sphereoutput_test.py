@@ -83,14 +83,23 @@ class TestSphereOutput:
 
         return LibManager(df_lib, isotopes_file=ISOTOPES_FILE)
 
-    def test_sphereoutput(self, session_mock: MockUpSession):     
+    def test_sphereoutput_mcnp(self, session_mock: MockUpSession):     
         sphere_00c = sout.SphereOutput('00c', 'mcnp', 'Sphere', session_mock)
         sphere_00c.single_postprocess()
         sphere_31c = sout.SphereOutput('31c', 'mcnp', 'Sphere', session_mock)
         sphere_31c.single_postprocess()
         sphere_comp = sout.SphereOutput(['31c', '00c'], 'mcnp', 'Sphere', session_mock)
         sphere_comp.compare()
-        assert True          
+        assert True
+
+    def test_sphereoutput_openmc(self, session_mock: MockUpSession):     
+        sphere_00c = sout.SphereOutput('00c', 'openmc', 'Sphere', session_mock)
+        sphere_00c.single_postprocess()
+        sphere_31c = sout.SphereOutput('31c', 'openmc', 'Sphere', session_mock)
+        sphere_31c.single_postprocess()
+        sphere_comp = sout.SphereOutput(['31c', '00c'], 'openmc', 'Sphere', session_mock)
+        sphere_comp.compare()
+        assert True        
 
     def test_read_mcnp_output(self, session_mock: MockUpSession):       
         sphere_00c = sout.SphereOutput('00c', 'mcnp', 'Sphere', session_mock)

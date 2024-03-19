@@ -50,13 +50,21 @@ class MockUpSession(Session):
         self.path_pp = os.path.join(tmpdir, "Post-Processing")
         self.path_run = os.path.join(resources, "Simulations")
         self.path_test = resources
-        #self.state = Status(self)
-        self.state = None
         self.path_templates = os.path.join(resources, "templates")
         self.path_cnf = os.path.join(resources, "Benchmarks_Configuration")
         self.path_quality = None
         self.path_uti = None
         self.lib_manager = lm
+
+        keypaths = [self.path_pp,
+                    self.path_comparison,
+                    self.path_single]
+        
+        for path in keypaths:
+            if not os.path.exists(path):
+                os.mkdir(path)
+
+        self.state = Status(self)
 
 class TestSphereOutput:   
     @pytest.fixture()
@@ -75,25 +83,16 @@ class TestSphereOutput:
 
         return LibManager(df_lib, isotopes_file=ISOTOPES_FILE)
 
-    def test_single_postprocess(self, session_mock: MockUpSession):
-        os.makedirs(session_mock.path_comparison)
-        os.makedirs(session_mock.path_single)        
+    def test_sphereoutput(self, session_mock: MockUpSession):     
         sphere_00c = sout.SphereOutput('00c', 'mcnp', 'Sphere', session_mock)
         sphere_00c.single_postprocess()
-        assert True
+        sphere_31c = sout.SphereOutput('31c', 'mcnp', 'Sphere', session_mock)
+        sphere_31c.single_postprocess()
+        sphere_comp = sout.SphereOutput(['31c', '00c'], 'mcnp', 'Sphere', session_mock)
+        sphere_comp.compare()
+        assert True          
 
-    '''
-    def test_compare(self, session_mock: MockUpSession):
-        os.makedirs(session_mock.path_comparison)
-        os.makedirs(session_mock.path_single)        
-        sphere_00c = sout.SphereOutput(['31c', '00c'], 'mcnp', 'Sphere', session_mock)
-        sphere_00c.compare()
-        assert True
-    '''          
-
-    def test_read_mcnp_output(self, session_mock: MockUpSession):
-        os.makedirs(session_mock.path_comparison)
-        os.makedirs(session_mock.path_single)        
+    def test_read_mcnp_output(self, session_mock: MockUpSession):       
         sphere_00c = sout.SphereOutput('00c', 'mcnp', 'Sphere', session_mock)
         outputs, results, errors, stat_checks = sphere_00c._read_mcnp_output()
         tally_values = outputs['M10'].tallydata['Value']
@@ -104,9 +103,7 @@ class TestSphereOutput:
         assert 'M10' == results[1]['Zaid']
         assert stat_checks[1]['Gamma flux at the external surface [22]'] == 'Missed'
 
-    def test_read_openmc_output(self, session_mock: MockUpSession):
-        os.makedirs(session_mock.path_comparison)
-        os.makedirs(session_mock.path_single)        
+    def test_read_openmc_output(self, session_mock: MockUpSession):       
         sphere_00c = sout.SphereOutput('00c', 'openmc', 'Sphere', session_mock)
         outputs, results, errors = sphere_00c._read_openmc_output()
         tally_values = outputs['M10'].tallydata['Value']

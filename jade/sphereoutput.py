@@ -365,7 +365,7 @@ class SphereOutput(BenchmarkOutput):
         stat_checks = []
         outputs = {}
         # test_path_mcnp = os.path.join(self.test_path, "mcnp")
-        for folder in os.listdir(self.test_path):
+        for folder in sorted(os.listdir(self.test_path)):
             results_path = os.path.join(self.test_path, folder, "mcnp")
             pieces = folder.split("_")
             # Get zaid

@@ -119,8 +119,8 @@ class TestSphereOutput:
         tally_errors = outputs['M10'].tallydata['Error']        
         assert 0.827104 == pytest.approx(tally_values[10])
         assert 0.000227628 == pytest.approx(tally_errors[176])
-        assert 0.10131285308571429 == pytest.approx(errors[0]['Neutron Spectra'])
-        assert 'M10' == results[0]['Zaid']
+        assert 0.10131285308571429 == pytest.approx(errors[1]['Neutron Spectra'])
+        assert 'M10' == results[1]['Zaid']
 
 # Files
 OUTP_SDDR = os.path.join(

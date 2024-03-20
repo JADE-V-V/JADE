@@ -450,7 +450,7 @@ class SphereOutput(BenchmarkOutput):
         # stat_checks = []
         outputs = {}
         # test_path_openmc = os.path.join(self.test_path, "openmc")
-        for folder in os.listdir(self.test_path):
+        for folder in sorted(os.listdir(self.test_path)):
             results_path = os.path.join(self.test_path, folder, "openmc")
             pieces = folder.split("_")
             # Get zaid

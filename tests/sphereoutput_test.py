@@ -108,8 +108,8 @@ class TestSphereOutput:
         tally_errors = outputs['M10'].tallydata['Error']
         assert 3.80420E-07 == pytest.approx(tally_values[10])
         assert 0.0406 == pytest.approx(tally_errors[175])
-        assert 0.6213346456692914 == pytest.approx(errors[1]['Neutron Flux at the external surface in Vitamin-J 175 energy groups'])
-        assert 'M10' == results[1]['Zaid']
+        assert 0.6213346456692914 == pytest.approx(errors[0]['Neutron Flux at the external surface in Vitamin-J 175 energy groups'])
+        assert 'M10' == results[0]['Zaid']
         assert stat_checks[1]['Gamma flux at the external surface [22]'] == 'Missed'
 
     def test_read_openmc_output(self, session_mock: MockUpSession):       
@@ -119,8 +119,8 @@ class TestSphereOutput:
         tally_errors = outputs['M10'].tallydata['Error']        
         assert 0.827104 == pytest.approx(tally_values[10])
         assert 0.000227628 == pytest.approx(tally_errors[176])
-        assert 0.10131285308571429 == pytest.approx(errors[1]['Neutron Spectra'])
-        assert 'M10' == results[1]['Zaid']
+        assert 0.10131285308571429 == pytest.approx(errors[0]['Neutron Spectra'])
+        assert 'M10' == results[0]['Zaid']
 
 # Files
 OUTP_SDDR = os.path.join(

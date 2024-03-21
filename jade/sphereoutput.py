@@ -770,48 +770,40 @@ class SphereOutput(BenchmarkOutput):
                     df.replace(-np.inf, "Reference = 0", inplace=True)
                     df.replace(1, "Target = 0", inplace=True)
 
+                # retrieve single pp files to add as extra tabs to comparison workbook
+                single_pp_files = []
+                # Add single pp sheets
+                for lib in [reflib, tarlib]:
+                    pp_dir = self.session.state.get_path(
+                        "single", [lib, "Sphere", "mcnp", "Excel"]
+                    )
+                    pp_file = os.listdir(pp_dir)[0]
+                    single_pp_path = os.path.join(pp_dir, pp_file)
+                    single_pp_files.append(single_pp_path)
+
                 # --- Write excel ---
                 # Generate the excel
                 exsupp.sphere_comp_excel_writer(
-                    self, outpath, name, final, absdiff, std_dev, summary
+                    self, outpath, name, final, absdiff, std_dev, summary, single_pp_files
                 )
-                # """
-                # # ex = SphereExcelOutputSheet(template, outpath)
-                # # Prepare the copy of the comparison sheet
-                # template_sheet = 'Comparison'
-                # template_absdiff = 'Comparison (Abs diff)'
-                # ws_comp = ex.wb.sheets[template_sheet]
-                # ws_diff = ex.wb.sheets[template_absdiff]
 
-                # # WRITE RESULTS
-                # # Percentage comparison
-                # rangeex = ws_comp.range('B10')
-                # rangeex.options(index=True, header=True).value = final
-                # ws_comp.range('D1').value = name
-                # rangeex2 = ws_comp.range('V10')
-                # rangeex2.options(index=True, header=True).value = summary
-                # # Absolute difference comparison
-                # rangeex = ws_diff.range('B10')
-                # rangeex.options(index=True, header=True).value = absdiff
-                # ws_diff.range('D1').value = name
+                # # Add single pp sheets
+                # current_wb = openpyxl.load_workbook(outpath)
+                # for lib in [reflib, tarlib]:
+                #     cp = self.session.state.get_path(
+                #         "single", [lib, "Sphere", "mcnp", "Excel"]
+                #     )
+                #     file = os.listdir(cp)[0]
+                #     cp = os.path.join(cp, file)
+                #     # open file
+                #     single_wb = openpyxl.load_workbook(cp)
+                #     for ws in single_wb.worksheets:
+                #         destination = current_wb.create_sheet(ws.title + " " + lib)
+                #         exsupp.copy_sheet(ws, destination)
+                #     single_wb.close()
 
-                # Add single pp sheets
-                current_wb = openpyxl.load_workbook(outpath)
-                for lib in [reflib, tarlib]:
-                    cp = self.session.state.get_path(
-                        "single", [lib, "Sphere", "mcnp", "Excel"]
-                    )
-                    file = os.listdir(cp)[0]
-                    cp = os.path.join(cp, file)
-                    # open file
-                    single_wb = openpyxl.load_workbook(cp)
-                    for ws in single_wb.worksheets:
-                        destination = current_wb.create_sheet(ws.title + " " + lib)
-                        exsupp.copy_sheet(ws, destination)
-                    single_wb.close()
-
-                current_wb.save(outpath)
-                current_wb.close()
+                # current_wb.save(outpath)
+                # current_wb.close()
 
                 # ex.save()
                 # """
@@ -1680,7 +1672,6 @@ class SphereSDDRoutput(SphereOutput):
         sddr = tallies[104].set_index("Time")
         sddr = sddr.loc["D" + self.timecols[time], "Value"]
         # Memorize values
-        print(type(nflux), type(pflux), type(sddr))
         return nflux, pflux, sddr
 
     def _compute_single_results(
@@ -1894,7 +1885,7 @@ class SphereSDDRoutput(SphereOutput):
 
             outputs[zaidnum, mt, lib] = output
             # Adjourn raw Data
-            # self.raw_data["mcnp"][zaidnum, mt, lib] = output.tallydata
+            self.raw_data["d1s"][zaidnum, mt, lib] = output.tallydata
             # Recover statistical checks
             st_ck = output.stat_checks
             # Recover results and precisions
@@ -1914,16 +1905,16 @@ class SphereSDDRoutput(SphereOutput):
         Assigns a path and prints the post processing data as a .csv
 
         """
-        for key, data in self.raw_data.items():
-            # build a folder containing each tally of the reaction
-            foldername = "{}_{}".format(key[0], key[1])
-            folder = os.path.join(self.raw_path, foldername)
-            os.mkdir(folder)
-            # Dump all tallies
-            for tallynum, df in data.items():
-                filename = "{}_{}_{}.csv".format(key[0], key[1], tallynum)
-                file = os.path.join(folder, filename)
-                df.to_csv(file, header=True, index=False)
+        if self.d1s:
+            for key, data in self.raw_data["d1s"].items():
+                foldername = '{}_{}'.format(key[0], key[1])
+                folder = os.path.join(self.raw_path, foldername)
+                os.mkdir(folder)
+                # Dump all tallies
+                for tallynum, df in data.items():
+                    filename = '{}_{}_{}.csv'.format(key[0], key[1], tallynum)
+                    file = os.path.join(self.raw_path, folder, filename)
+                    df.to_csv(file, header=True, index=False)
 
 
 class SphereSDDRMCNPoutput(SphereMCNPoutput):

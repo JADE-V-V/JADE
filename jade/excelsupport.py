@@ -1646,7 +1646,7 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
     wb.close()
 
 
-def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summary):
+def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summary, single_pp_files):
     """
     Produces library comparison excel file for Sphere leakage using XLSXwriter
 
@@ -2335,6 +2335,18 @@ def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summa
 
     wb.close()
 
+    # Copy the single post processed results into the comparison workbook
+    target_file = outpath  # Target workbook filename
+    target_sheet_names = [
+        "Values",
+        "Errors",
+        "Statistical Checks",
+    ]  # Target sheet names
+
+    # Loop over the library source files
+    for source_file in single_pp_files:
+        copy_sheets_to_target(source_file, target_file, target_sheet_names)
+
 
 def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     """
@@ -2508,7 +2520,7 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     tal_sheet.set_column(max_width + 1, max_width + 20, 18, oob_format)
     for i in range(9):
         tal_sheet.set_row(i, None, oob_format)
-    for i in range(10 + max_len, max_len + 200):
+    for i in range(10 + max_len, max_len + 1000):
         tal_sheet.set_row(i, None, oob_format)
 
     # Column widths
@@ -2592,7 +2604,7 @@ def sphere_sddr_single_excel_writer(outpath, lib, results, errors, stat_checks):
     err_sheet.set_column(max_width, max_width + 50, 18, oob_format)
     for i in range(9):
         err_sheet.set_row(i, None, oob_format)
-    for i in range(8 + max_len, max_len + 50):
+    for i in range(10 + max_len, max_len + 1000):
         err_sheet.set_row(i, None, oob_format)
 
     # Column widths for errors, set up to 15th col by default to ensure title format correct

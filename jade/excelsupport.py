@@ -1646,7 +1646,9 @@ def sphere_single_excel_writer(self, outpath, lib, values, errors, stats=None):
     wb.close()
 
 
-def sphere_comp_excel_writer(self, outpath, name, final, absdiff, std_dev, summary, single_pp_files):
+def sphere_comp_excel_writer(
+    self, outpath, name, final, absdiff, std_dev, summary, single_pp_files
+):
     """
     Produces library comparison excel file for Sphere leakage using XLSXwriter
 

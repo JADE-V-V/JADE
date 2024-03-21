@@ -784,7 +784,14 @@ class SphereOutput(BenchmarkOutput):
                 # --- Write excel ---
                 # Generate the excel
                 exsupp.sphere_comp_excel_writer(
-                    self, outpath, name, final, absdiff, std_dev, summary, single_pp_files
+                    self,
+                    outpath,
+                    name,
+                    final,
+                    absdiff,
+                    std_dev,
+                    summary,
+                    single_pp_files,
                 )
 
                 # # Add single pp sheets
@@ -962,10 +969,21 @@ class SphereOutput(BenchmarkOutput):
                     df.replace(-np.inf, "Reference = 0", inplace=True)
                     df.replace(1, "Target = 0", inplace=True)
 
+                # retrieve single pp files to add as extra tabs to comparison workbook
+                single_pp_files = []
+                # Add single pp sheets
+                for lib in [reflib, tarlib]:
+                    pp_dir = self.session.state.get_path(
+                        "single", [lib, "Sphere", "openmc", "Excel"]
+                    )
+                    pp_file = os.listdir(pp_dir)[0]
+                    single_pp_path = os.path.join(pp_dir, pp_file)
+                    single_pp_files.append(single_pp_path)
+
                 # --- Write excel ---
                 # Generate the excel
                 exsupp.sphere_comp_excel_writer(
-                    self, outpath, name, final, absdiff, std_dev, summary
+                    self, outpath, name, final, absdiff, std_dev, summary, single_pp_files
                 )
         if self.serpent:
             pass
@@ -1907,12 +1925,12 @@ class SphereSDDRoutput(SphereOutput):
         """
         if self.d1s:
             for key, data in self.raw_data["d1s"].items():
-                foldername = '{}_{}'.format(key[0], key[1])
+                foldername = "{}_{}".format(key[0], key[1])
                 folder = os.path.join(self.raw_path, foldername)
                 os.mkdir(folder)
                 # Dump all tallies
                 for tallynum, df in data.items():
-                    filename = '{}_{}_{}.csv'.format(key[0], key[1], tallynum)
+                    filename = "{}_{}_{}.csv".format(key[0], key[1], tallynum)
                     file = os.path.join(self.raw_path, folder, filename)
                     df.to_csv(file, header=True, index=False)
 

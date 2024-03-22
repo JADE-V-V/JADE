@@ -13,7 +13,7 @@ Installation on Linux
 
 Firstly, create a virtual environment and activate it:
 
-  | ``python -m venv jade``
+  | ``python -m venv jade_venv``
   | ``source jade/bin/activate``
 
 Visit the `JADE repository <https://github.com/JADE-V-V/jade>`_ and if you have `git <https://git-scm.com/>`_

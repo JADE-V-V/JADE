@@ -130,8 +130,6 @@ class BenchmarkOutput(AbstractOutput):
             name of the benchmark being postprocessed
         session : Session
             Jade Session
-        exp : str
-            the benchmark is an experimental one
 
         Returns
         -------

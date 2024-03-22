@@ -1668,6 +1668,9 @@ def sphere_comp_excel_writer(
     summary: Dataframe
        Contains total number of percentage difference in the column
        within certain bounds
+    single_pp_files: list
+       Path to the single library Excel files that should be copied
+       as additional tabs
 
     Returns
     -------
@@ -2861,6 +2864,9 @@ def sphere_sddr_comp_excel_writer(
     std_dev: Dataframe
        Difference between reference and target library in terms of
        standard deviations from the mean of the reference library
+    single_pp_files: list
+       Path to the single library Excel files that should be copied
+       as additional tabs
 
 
     Returns

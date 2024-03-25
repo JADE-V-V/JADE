@@ -30,49 +30,97 @@ cp = os.path.dirname(os.path.abspath(__file__))
 modules_path = os.path.dirname(cp)
 sys.path.insert(1, modules_path)
 
+resources = os.path.join(cp, "TestFiles", "sphereoutput")
+CONFIG_FILE = os.path.join(resources, "mainconfig.xlsx")
+root = os.path.dirname(cp)
+ISOTOPES_FILE = os.path.join(root, "jade", "resources", "Isotopes.txt")
+
+from jade.main import Session
+from jade.configuration import Configuration
 from jade.libmanager import LibManager
+from jade.status import Status
+
 import jade.sphereoutput as sout
 
-class MockSphereOutput(sout.SphereOutput):
-    def __init__(self):
-        self.lib = '00c'
-        self.testname = 'Sphere'
-        self.test_path = os.path.join(cp, 'TestFiles', 'sphereoutput', 'Sphere')
-        mat_settings = [
-            {"num": "M101", "Name": "material", "other": 1},
-            {"num": "dummy", "Name": "dummy", "dummy": 1},
+class MockUpSession(Session):
+    def __init__(self, tmpdir, lm: LibManager):
+        self.conf = Configuration(CONFIG_FILE)
+        self.path_comparison = os.path.join(tmpdir, "Post-Processing", "Comparisons")
+        self.path_single = os.path.join(tmpdir, "Post-Processing", "Single_Libraries")
+        self.path_pp = os.path.join(tmpdir, "Post-Processing")
+        self.path_run = os.path.join(resources, "Simulations")
+        self.path_test = resources
+        self.path_templates = os.path.join(resources, "templates")
+        self.path_cnf = os.path.join(resources, "Benchmarks_Configuration")
+        self.path_quality = None
+        self.path_uti = None
+        self.lib_manager = lm
+
+        keypaths = [self.path_pp,
+                    self.path_comparison,
+                    self.path_single]
+        
+        for path in keypaths:
+            if not os.path.exists(path):
+                os.mkdir(path)
+
+        self.state = Status(self)
+
+class TestSphereOutput:   
+    @pytest.fixture()
+    def session_mock(self, tmpdir, lm: LibManager):
+        session = MockUpSession(tmpdir, lm)
+        return session
+    
+    @pytest.fixture
+    def lm(self):
+        df_rows = [
+            ["31c", "adsadas", ""],
+            ["00c", "sdas", "yes"],
         ]
-        self.mat_settings = pd.DataFrame(mat_settings).set_index("num")
-        self.raw_data = {'mcnp' : {},
-                         'serpent' : {},
-                         'openmc' : {}}
-        self.outputs = {'mcnp' : {},
-                        'serpent' : {},
-                        'openmc' : {}}
+        df_lib = pd.DataFrame(df_rows)
+        df_lib.columns = ["Suffix", "Name", "Default"]
 
-class TestSphereOutput:
-    mockoutput = MockSphereOutput()
+        return LibManager(df_lib, isotopes_file=ISOTOPES_FILE)
 
-    def test_read_mcnp_output(self):
-        outputs, results, errors, stat_checks = self.mockoutput._read_mcnp_output()
-        tally_values = outputs['M101'].tallydata['Value']
-        tally_errors = outputs['M101'].tallydata['Error']
+    def test_sphereoutput_mcnp(self, session_mock: MockUpSession):     
+        sphere_00c = sout.SphereOutput('00c', 'mcnp', 'Sphere', session_mock)
+        sphere_00c.single_postprocess()
+        sphere_31c = sout.SphereOutput('31c', 'mcnp', 'Sphere', session_mock)
+        sphere_31c.single_postprocess()
+        sphere_comp = sout.SphereOutput(['31c', '00c'], 'mcnp', 'Sphere', session_mock)
+        sphere_comp.compare()
+        assert True
 
-        assert 5.38195E-07 == pytest.approx(tally_values[10])
-        assert 0.0859 == pytest.approx(tally_errors[176])
-        assert results[0]['Zaid'] == 'M101'
-        assert errors[0]['Neutron Flux in material cell in Vitamin-J 175 energy groups'] == 0.15204491017964072
-        assert stat_checks[0]['Gamma flux in material cell [FINE@FISPACT MANUAL 24 Group Structure] [14]'] == 'Passed'
+    def test_sphereoutput_openmc(self, session_mock: MockUpSession):     
+        sphere_00c = sout.SphereOutput('00c', 'openmc', 'Sphere', session_mock)
+        sphere_00c.single_postprocess()
+        sphere_31c = sout.SphereOutput('31c', 'openmc', 'Sphere', session_mock)
+        sphere_31c.single_postprocess()
+        sphere_comp = sout.SphereOutput(['31c', '00c'], 'openmc', 'Sphere', session_mock)
+        sphere_comp.compare()
+        assert True        
 
-    def test_read_openmc_output(self):
-        outputs, results, errors = self.mockoutput._read_openmc_output()
-        tally_values = outputs['M101'].tallydata['Value']
-        tally_errors = outputs['M101'].tallydata['Error']        
+    def test_read_mcnp_output(self, session_mock: MockUpSession):       
+        sphere_00c = sout.SphereOutput('00c', 'mcnp', 'Sphere', session_mock)
+        outputs, results, errors, stat_checks = sphere_00c._read_mcnp_output()
+        tally_values = outputs['M10'].tallydata['Value']
+        tally_errors = outputs['M10'].tallydata['Error']
+        assert 3.80420E-07 == pytest.approx(tally_values[10])
+        assert 0.0406 == pytest.approx(tally_errors[175])
+        assert 0.6213346456692914 == pytest.approx(errors[1]['Neutron Flux at the external surface in Vitamin-J 175 energy groups'])
+        assert 'M10' == results[1]['Zaid']
+        assert stat_checks[1]['Gamma flux at the external surface [22]'] == 'Missed'
 
-        assert 0.146561 == pytest.approx(tally_values[10])
-        assert 0.00015034 == pytest.approx(tally_errors[176])
-        assert results[0]['Zaid'] == 'M101'
-        assert errors[0]['Neutron Spectra'] == 0.09626673662857144
+    def test_read_openmc_output(self, session_mock: MockUpSession):       
+        sphere_00c = sout.SphereOutput('00c', 'openmc', 'Sphere', session_mock)
+        outputs, results, errors = sphere_00c._read_openmc_output()
+        tally_values = outputs['M10'].tallydata['Value']
+        tally_errors = outputs['M10'].tallydata['Error']        
+        assert 0.827104 == pytest.approx(tally_values[10])
+        assert 0.000227628 == pytest.approx(tally_errors[176])
+        assert 0.10131285308571429 == pytest.approx(errors[1]['Neutron Spectra'])
+        assert 'M10' == results[1]['Zaid']
 
 # Files
 OUTP_SDDR = os.path.join(
@@ -95,7 +143,7 @@ class MockSphereSDDRoutput(sout.SphereSDDRoutput):
             {"num": "dummy", "Name": "dummy", "dummy": 1},
         ]
         self.mat_settings = pd.DataFrame(mat_settings).set_index("num")
-        self.raw_data = {}
+        self.raw_data = {"d1s":{}}
         self.outputs = {}
         self.d1s = True
 

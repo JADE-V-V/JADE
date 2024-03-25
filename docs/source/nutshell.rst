@@ -5,14 +5,14 @@ JADE in a nutshell
 .. image:: img/JADE_scheme.jpg
     :width: 600
 
-JADE is a tool for nuclear libraries V&V.
+JADE is a tool for validation and verification (V&V) of nuclear data libraries.
 Development was initially started by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E),
 and it is today carried out mainly by F4E and the United Kingdom Atomic Energy Authority (UKAEA).
 You can find an up to date and detailed list of contributors in the :ref:`contributor_list` section.
 
 JADE is an open source, Python 3 based software able to:
 
-* Automatically build a series of MCNP input file using different nuclear
+* Automatically build a series of MCNP input files using different nuclear
   data libraries;
 * Run simulations on such inputs;
 * Automatically parse and post-process all the generated transport codes outputs.
@@ -23,11 +23,11 @@ and experimental benchmarks. The post-processing output includes:
 * Raw data in *.csv* files containing the entire tallied output from the
   simulations;
 * Formatted Excel recap files;
-* Word and PDF atlas files collecting the plots generated during the post-processing.
+* Word files collecting the plots generated during the post-processing.
 
 Additional JADE features are:
 
-* Run JADE with the transport codes OpenMC and Serpent.
+* Run JADE with the transport codes OpenMC and Serpent for the sphere leakage benchmark.
 * The possibility to implement user-defined benchmarks;
 * Operate on the material definitions (e.g. create material mixtures, 
   translate it to a different nuclear data library or switch between atom and
@@ -47,7 +47,7 @@ When using JADE for scientific publications you are kindly encouraged to cite th
 For additional information contact: davide.laghi01@gmail.com
 
 For additional information on future developments please check the issues list on the
-`JADE GitHub repository <https://github.com/dodu94/JADE/>`_.
+`JADE GitHub repository <https://github.com/dodu94/JADE/>`_ and :ref:`futuredev`.
 
 .. seealso:: 
   * **MCNP**, Werner C.J., 2017, "MCNP User’S Manual Code", Los Alamos: LAUR-17-29981 (version 6.2).

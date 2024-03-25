@@ -8,7 +8,7 @@ JADE project was originally started as a joint effort between between `NIER inge
 `Università di Bologna (UNIBO) <https://ingegneriaindustriale.unibo.it/it>`_
 and `Fusion For Energy (F4E) <https://fusionforenergy.europa.eu/>`_.
 
-Nowadays new development is mostly carried on by F4E and the
+Currently, new development is largely undertaken by `Fusion For Energy (F4E) <https://fusionforenergy.europa.eu/>`_ and the
 `United Kingdom Atomic Energy Authority (UKAEA) <https://ccfe.ukaea.uk/>`_.
 
 This activity was partially funded by Fusion For Energy under F4E-OPE-1128 contract.

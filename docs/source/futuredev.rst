@@ -1,3 +1,5 @@
+.. _futuredev:
+
 ###################
 Future developments
 ###################

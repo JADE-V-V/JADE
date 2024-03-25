@@ -12,7 +12,7 @@ Once JADE is correctly configured
 
 The main menu is loaded at this point:
 
-.. image:: ../img/main_menu.png
+.. image:: ../img/main_menu.jpg
     :width: 400
 
 This menu allows users to interact with the tool directly from the

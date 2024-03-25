@@ -124,12 +124,12 @@ class BenchmarkOutput(AbstractOutput):
         ----------
         lib : str
             library to post-process
-        config : pd.DataFrame (single row)
-            configuration options for the test.
+        code : str
+            code being post processed
+        testname : str 
+            name of the benchmark being postprocessed
         session : Session
             Jade Session
-        exp : str
-            the benchmark is an experimental one
 
         Returns
         -------

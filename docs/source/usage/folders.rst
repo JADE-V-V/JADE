@@ -97,10 +97,10 @@ Hereafter, a general overview of the different JADE tree branches is presented.
 
 Benchmark inputs
 ================
-``<JADE_root>\Benchmark_Inputs`` contains all the inputs of the default benchmarks avaialble in the JADE suite.
+``<JADE_root>\Benchmark_Inputs`` contains all the inputs of the default benchmarks available in the JADE suite.
 This is the folder where eventual user defined benchmark inputs should be positioned.
 In case of benchmarks that are composed by more than one run, all the inputs are reunited in a sub-folder
-(e.g. ``<JADE_root>\Benchmark_Inputs\Oktavian\Oktavian_Al\``.
+(e.g. ``<JADE_root>\Benchmark_Inputs\Oktavian\Oktavian_Al\mcnp``).
 
 If weight windows are available, they should be placed in same folder as the input. 
 
@@ -125,7 +125,7 @@ jade
         Contains files to be used during the first JADE run. They do have not any appeal to the general user.
 
     resources
-        Miscelaneous resources, currently information on natural isotope abundances and atomic masses.
+        Miscellaneous resources, currently information on natural isotope abundances and atomic masses.
         
 
 tests
@@ -135,7 +135,7 @@ Configuration
 =============
 ``<JADE_root>\Configuration`` stores the main JADE configuration file ``Config.xlsx`` and all benchmark-specific configuration
 files that are stored in ``<JADE_root>\Code\Benchmarks_Configuration``. For users running on UNIX systems, this folder also 
-contains templates for several common job submission systems (Slurm, LoadLeveler), and config shell scripts for configuring 
+contains templates for several common job submission systems such as *slurm*, and code specific shell scripts for configuring 
 modules and environment variables at runtime.
 
 .. seealso::
@@ -145,7 +145,7 @@ Experimental results
 ====================
 ``<JADE_root>\Experimental_Results`` stores all the experimental results needed for the post-processing of
 experimental benchmarks. In case of benchmarks that are composed by more than one run, all the inputs are reunited in a sub-folder
-(e.g. ``<JADE_root>\Experimental_Results\Oktavian``.
+(e.g. ``<JADE_root>\Experimental_Results\Oktavian\Al``).
 
 Quality
 =======
@@ -157,7 +157,7 @@ Tests
 ``<JADE_root>\Tests`` reunites all the outputs of the benchmarks assessments. 
 
 Simulations
-    contains the results of the transport simulations.
+    location transport simulations are performed.
 
 Post-Processing
     contains all the results coming from the post-processing of results. These are divided between

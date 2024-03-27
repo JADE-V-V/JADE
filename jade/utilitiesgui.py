@@ -949,6 +949,8 @@ def print_XS_EXFOR(session):
             plt.yscale("log")
             plt.legend(legend_plot, loc="lower left", fontsize=20, markerscale=0.5)
             plt.xlabel("Energy (MeV)", fontsize=22)
+            if MT == "MT301":
+                plt.ylabel("Heating (MeV/coll)", fontsize=22)
             plt.ylabel("$\sigma$ (barn)", fontsize=22)
             plt.xticks(fontsize=22)
             plt.yticks(fontsize=22)

@@ -35,6 +35,7 @@ from matplotlib.patches import Patch, Rectangle
 from matplotlib.ticker import AutoLocator, AutoMinorLocator, LogLocator, MultipleLocator
 from scipy.interpolate import interp1d
 import warnings
+
 warnings.filterwarnings("ignore")
 
 # ============================================================================
@@ -330,9 +331,10 @@ class Plotter:
         """
         nrows = len(self.quantity)
         fig, axes = plt.subplots(
-            figsize=(18, 7.5 + 2 * nrows), nrows=nrows, sharex=True
+            figsize=(21, 7.5 + 2 * nrows), nrows=nrows, sharex=True
         )
-        fig.suptitle(self.title, weight="bold")
+        if self.testname == "Sphere SDDR":
+            fig.suptitle(self.title, weight="bold")
 
         if isinstance(axes, np.ndarray) is False:
             axes = np.array([axes])
@@ -389,10 +391,11 @@ class Plotter:
             ax.set_ylim(lowerlimit - toadd, upperlimit + toadd)
             ax.axhline(lowerlimit, color="red", linewidth=0.5)
             ax.axhline(upperlimit, color="red", linewidth=0.5)
-
+            if self.testname != "Sphere SDDR":
+                ax.set_ylabel("C/E")
         # Add the legend
         axes[0].legend(
-            loc="upper center", bbox_to_anchor=(0.88, 1.5), fancybox=True, shadow=True
+            loc="upper center", bbox_to_anchor=(1.07, 1.3), fancybox=True, shadow=True
         )
         # Handle x and y global axes
         plt.setp(
@@ -831,7 +834,7 @@ class Plotter:
         """
         nrows = len(self.data)
         fig, axes = plt.subplots(
-            figsize=(21, 6.5 + 2 * nrows), nrows=nrows, sharex=True
+            figsize=(21, 6.5 + 1.5 * nrows), nrows=nrows, sharex=True
         )
         if isinstance(axes, np.ndarray) is False:
             axes = np.array([axes])
@@ -886,7 +889,7 @@ class Plotter:
             axes[key].grid("True", which="minor", linewidth=0.20)
 
         axes[0].legend(
-            loc="upper center", bbox_to_anchor=(0.88, 1.5), fancybox=True, shadow=True
+            loc="upper center", bbox_to_anchor=(1.07, 1.3), fancybox=True, shadow=True
         )
         axes[key].set_xlabel(self.xlabel)
         return self._save()
@@ -1081,7 +1084,7 @@ class Plotter:
                 ax.plot(
                     dic["x"],
                     y,
-                    color=self.colors[i],
+                    color=self.colors[i+1],
                     drawstyle="steps-mid",
                     label=dic["ylabel"],
                     marker=marker,

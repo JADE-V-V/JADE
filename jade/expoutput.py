@@ -168,16 +168,61 @@ class ExperimentalOutput(BenchmarkOutput):
         # Remove tmp images
         shutil.rmtree(tmp_path)
 
-    def _extract_outputs(self):
+    def _extract_single_output(
+        self, results_path: os.PathLike, folder: str, lib: str
+    ) -> tuple[pd.DataFrame, str]:
+        mfile, ofile = self._get_output_files(results_path)
+        # Parse output
+        output = MCNPoutput(mfile, ofile)
+
+        # need to extract the input in case of multi
+        if self.multiplerun:
+            pieces = folder.split("_")
+            input = pieces[-1]
+            if input not in self.inputs:
+                self.inputs.append(input)
+            self.outputs[input, lib] = output
+            # Get the meaningful results
+            self.results[input, lib] = self._processMCNPdata(output)
+        else:
+            # just treat it as a special case of multiple run
+            self.outputs[self.testname, lib] = output
+            # Get the meaningful results
+            self.results[self.testname, lib] = self._processMCNPdata(output)
+            input = self.testname
+
+        return output.tallydata, input
+
+    def _extract_outputs(self) -> None:
         """
-        Extract, organize and store the results coming from the MCNP runs
+        Extract, organize and store the results coming from the different codes
+        runs
+
         Returns
         -------
         None.
         """
-        outputs = {}
-        results = {}
-        inputs = []
+        self.outputs = {}
+        self.results = {}
+
+        # Each output object is processing only one code at the time at the moment
+        if self.mcnp:
+            code_tag = "mcnp"
+        if self.openmc:
+            print("Experimental comparison not implemented for OpenMC")
+            return
+        if self.serpent:
+            print("Experimental comparison not implemented for Serpent")
+            return
+        if self.d1s:
+            code_tag = "d1s"
+
+        # only multiple runs have multiple inputs
+        if self.multiplerun:
+            self.inputs = [self.testname]
+        else:
+            self.inputs = []
+
         # Iterate on the different libraries results except 'Exp'
         for lib, test_path in self.test_path.items():
             if lib != EXP_TAG:
@@ -185,72 +230,22 @@ class ExperimentalOutput(BenchmarkOutput):
                     # Results are organized by folder and lib
                     code_raw_data = {}
                     for folder in os.listdir(test_path):
-                        # FIX MCNP HARD CODED PATH HERE
-                        if self.mcnp:
-                            results_path = os.path.join(test_path, folder, "mcnp")
-                            pieces = folder.split("_")
-                            # Get zaid
-                            input = pieces[-1]
-                            mfile, ofile = self._get_output_files(results_path)
-                            # Parse output
-                            output = MCNPoutput(mfile, ofile)
-                            outputs[input, lib] = output
-                            code_raw_data[input, lib] = output.tallydata
-                            # self.raw_data[input, lib] = output.tallydata
+                        results_path = os.path.join(test_path, folder, code_tag)
+                        tallydata, input = self._extract_single_output(
+                            results_path, folder, lib
+                        )
+                        code_raw_data[input, lib] = tallydata
 
-                            # Get the meaningful results
-                            results[input, lib] = self._processMCNPdata(output)
-                            if input not in inputs:
-                                inputs.append(input)
-                        if self.openmc:
-                            print(
-                                "Experimental comparison not implemented \
-                                for OpenMC"
-                            )
-                            break
-                        if self.serpent:
-                            print(
-                                "Experimental comparison not implemented \
-                                for Serpent"
-                            )
-                            break
-                        if self.d1s:
-                            results_path = os.path.join(test_path, folder, "d1s")
-                            pieces = folder.split("_")
-                            # Get zaid
-                            input = pieces[-1]
-                            mfile, ofile = self._get_output_files(results_path)
-                            # Parse output
-                            output = MCNPoutput(mfile, ofile)
-                            outputs[input, lib] = output
-                            code_raw_data[input, lib] = output.tallydata
-                            # self.raw_data[input, lib] = output.tallydata
-
-                            # Get the meaningful results
-                            results[input, lib] = self._processMCNPdata(output)
-                            if input not in inputs:
-                                inputs.append(input)
-                    if self.mcnp:
-                        self.raw_data["mcnp"].update(code_raw_data)
-                    if self.d1s:
-                        self.raw_data["d1s"].update(code_raw_data)
                 # Results are organized just by lib
                 else:
-                    mfile, ofile = self._get_output_files(test_path)
-                    # Parse output
-                    output = MCNPoutput(mfile, ofile)
-                    outputs[self.testname, lib] = output
-                    # Adjourn raw Data
-                    self.raw_data[self.testname, lib] = output.tallydata
-                    # Get the meaningful results
-                    results[self.testname, lib] = self._processMCNPdata(output)
+                    results_path = os.path.join(test_path, code_tag)
+                    tallydata, input = self._extract_single_output(
+                        results_path, None, lib
+                    )
+                    code_raw_data = {(self.testname, lib): tallydata}
 
-        self.outputs = outputs
-        self.results = results
-        if inputs:
-            self.inputs = inputs
-        else:
-            self.inputs = [self.testname]
+                # Adjourn raw Data
+                self.raw_data[code_tag].update(code_raw_data)
 
     def _read_exp_results(self):
         """
@@ -483,9 +478,7 @@ class FNGOutput(ExperimentalOutput):
         Responsible for producing excel outputs
         """
         # Dump the global C/E table
-        ex_outpath = os.path.join(
-            self.excel_path, self.testname + "_CE_tables.xlsx"
-        )
+        ex_outpath = os.path.join(self.excel_path, self.testname + "_CE_tables.xlsx")
         # Create a Pandas Excel writer using XlsxWriter as the engine.
         with pd.ExcelWriter(ex_outpath, engine="xlsxwriter") as writer:
             # --- build and dump the C/E table ---
@@ -673,7 +666,7 @@ class FNGOutput(ExperimentalOutput):
         filepath : str
             string containing the path to the experimental file to be read
             for comparison
-        
+
         """
         return pd.read_csv(filepath, sep=";")
 
@@ -684,7 +677,7 @@ class SpectrumOutput(ExperimentalOutput):
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
-                
+
         Parameters
         ----------
         tmp_path : str
@@ -753,7 +746,7 @@ class SpectrumOutput(ExperimentalOutput):
             tallynum (int): Tally number of the tally being plotted
             particle (str): Type of quantity being plotted on the X axis
             quant + unit (str): Unit of quantity being plotted on the X axis
-            
+
         """
         tallynum = tally.tallyNumber
         particle = tally.particleList[np.where(tally.tallyParticles == 1)[0][0]]
@@ -786,7 +779,7 @@ class SpectrumOutput(ExperimentalOutput):
 
     def _dump_ce_table(self):
         """
-        Generates the C/E table and dumps them as an .xlsx file 
+        Generates the C/E table and dumps them as an .xlsx file
         """
         final_table = pd.concat(self.tables)
         skipcol_global = 0
@@ -998,7 +991,7 @@ class SpectrumOutput(ExperimentalOutput):
         x_axis : str
             X axis title
         tallynum : int
-            Tally number, used to determine behaviour for protons and 
+            Tally number, used to determine behaviour for protons and
             neutrons
 
         Returns
@@ -1172,7 +1165,7 @@ class TiaraOutput(ExperimentalOutput):
 
     def _get_conv_df(self, df):
         """
-        Adds extra columns to the dataframe containing the maximum and 
+        Adds extra columns to the dataframe containing the maximum and
         average errors of the tallies
 
         Parameters
@@ -1184,9 +1177,9 @@ class TiaraOutput(ExperimentalOutput):
         Returns
         -------
         conv_df: Dataframe
-            Same as previous dataframe, but with two extra columns containing 
+            Same as previous dataframe, but with two extra columns containing
             maximum and average errors
-            
+
         """
         conv_df = pd.DataFrame()
         for library in df.index.unique(level="Library").tolist():
@@ -1203,7 +1196,7 @@ class TiaraFCOutput(TiaraOutput):
 
     def _pp_excel_comparison(self):
         """
-        Builds dataframe from computational output comparable to experimental 
+        Builds dataframe from computational output comparable to experimental
         data and generates the excel comparison
         """
 
@@ -1247,9 +1240,7 @@ class TiaraFCOutput(TiaraOutput):
         self._exp_comp_case_check(indexes=indexes)
         self.case_tree_df.sort_values(indexes, axis=0, inplace=True)
         # Build ExcelWriter object
-        filepath = os.path.join(
-            self.excel_path, "Tiara_Fission_Cells_CE_tables.xlsx"
-        )
+        filepath = os.path.join(self.excel_path, "Tiara_Fission_Cells_CE_tables.xlsx")
         with pd.ExcelWriter(filepath, engine="xlsxwriter") as writer:
 
             # Create 1 worksheet for each energy/material combination
@@ -1391,7 +1382,7 @@ class TiaraFCOutput(TiaraOutput):
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
-                
+
         Parameters
         ----------
         tmp_path : str
@@ -1549,9 +1540,7 @@ class TiaraBSOutput(TiaraOutput):
         indexes = ["Library", "Shield Material", "Energy", "Shield Thickness"]
         self._exp_comp_case_check(indexes=indexes)
         # Create ExcelWriter object
-        filepath = os.path.join(
-            self.excel_path, "Tiara_Bonner_Spheres_CE_tables.xlsx"
-        )
+        filepath = os.path.join(self.excel_path, "Tiara_Bonner_Spheres_CE_tables.xlsx")
         with pd.ExcelWriter(filepath, engine="xlsxwriter") as writer:
             # Loop over shield material/energy combinations
             mat_list = self.case_tree_df.index.unique(level="Shield Material").tolist()
@@ -1662,7 +1651,7 @@ class TiaraBSOutput(TiaraOutput):
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
-                
+
         Parameters
         ----------
         tmp_path : str
@@ -1822,7 +1811,7 @@ class ShieldingOutput(ExperimentalOutput):
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
-                
+
         Parameters
         ----------
         tmp_path : str
@@ -1922,7 +1911,7 @@ class MultipleSpectrumOutput(SpectrumOutput):
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
-                
+
         Parameters
         ----------
         tmp_path : str
@@ -1944,14 +1933,14 @@ class MultipleSpectrumOutput(SpectrumOutput):
         return atlas
 
     def _plot_tally_group(self, group, tmp_path, atlas):
-        """ 
-        Plots tallies for a given group of outputs and add to Atlas object 
+        """
+        Plots tallies for a given group of outputs and add to Atlas object
 
         Parameters
         ----------
         group : list
-            list of groups in the experimental benchmark object, outputs are 
-            grouped by material, several tallies for each material/group 
+            list of groups in the experimental benchmark object, outputs are
+            grouped by material, several tallies for each material/group
         tmp_path : str
             path to temporary atlas plot folder
         atlas : JADE Atlas
@@ -1960,7 +1949,7 @@ class MultipleSpectrumOutput(SpectrumOutput):
         Returns
         -------
         atlas : JADE Atlas
-            adjusted Atlas object 
+            adjusted Atlas object
         """
         # Extract 'Tally' and 'Input' values for the current 'Group'
         group_data = self.groups.xs(group, level="Group", drop_level=False)

@@ -219,9 +219,9 @@ class ExperimentalOutput(BenchmarkOutput):
 
         # only multiple runs have multiple inputs
         if self.multiplerun:
-            self.inputs = [self.testname]
-        else:
             self.inputs = []
+        else:
+            self.inputs = [self.testname]
 
         # Iterate on the different libraries results except 'Exp'
         for lib, test_path in self.test_path.items():

@@ -967,7 +967,7 @@ def print_XS_EXFOR(session):
 
 def fetch_iaea_inputs(
     session: jade.main.Session, authorization_token: str = None
-) -> None:
+) -> bool:
     """
     Fetch IAEA inputs and copy them to the inputs directory. In case the inputs
     were already present, the user is asked if they want to overwrite them.
@@ -982,8 +982,8 @@ def fetch_iaea_inputs(
 
     Returns
     -------
-    None.
-
+    bool
+        True if the inputs were successfully fetched, False otherwise.
     """
     if authorization_token:
         headers = {"Authorization": f"token {authorization_token}"}
@@ -995,6 +995,9 @@ def fetch_iaea_inputs(
         timeout=1000,
         headers=headers,
     )
+    # Ceck if the download was successful
+    if response.status_code != 200:
+        return False
     # Save the downloaded zip file
     with tempfile.TemporaryDirectory() as tmpdirname:
         tmp_zip = os.path.join(tmpdirname, "main.zip")
@@ -1028,3 +1031,5 @@ def fetch_iaea_inputs(
                 os.path.join(extracted_benchmarks, item),
                 os.path.join(session.path_inputs, item),
             )
+
+    return True

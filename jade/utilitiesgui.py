@@ -1005,7 +1005,10 @@ def fetch_iaea_inputs(
         with zipfile.ZipFile(tmp_zip, "r") as zip_ref:
             zip_ref.extractall(extract_folder)
         # check which inputs are available and prompt for overwriting
-        new = list(os.listdir(extract_folder))
+        extracted_benchmarks = os.path.join(
+            extract_folder, "open-benchmarks-main", "jade_open_benchmarks"
+        )
+        new = list(os.listdir(extracted_benchmarks))
         current = list(os.listdir(session.path_inputs))
         overwriting = False
         for benchmark in new:
@@ -1019,9 +1022,9 @@ def fetch_iaea_inputs(
             if ans == "n":
                 return
 
-        for item in os.listdir(extract_folder):
+        for item in os.listdir(extracted_benchmarks):
             # Move the desired folder to the local directory
             shutil.move(
-                os.path.join(extract_folder, item),
+                os.path.join(extracted_benchmarks, item),
                 os.path.join(session.path_inputs, item),
             )

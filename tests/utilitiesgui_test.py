@@ -229,7 +229,7 @@ class TestUtilities:
 
         # TODO test also EXFOR if installed
 
-    def test_fetch_iaea_inputs(self, tmpdir):
+    def test_fetch_iaea_inputs(self, tmpdir, monkeypatch):
         """ " Test that benchmarks can be correctly fetched from the IAEA website.
         test also the overwriting"""
         session = SessionMockup(tmpdir.mkdir("uty"), input_path=tmpdir.mkdir("inputs"))
@@ -247,6 +247,27 @@ class TestUtilities:
         # test correct fetching in an empty folder
         uty.fetch_iaea_inputs(session, authorization_token=str(token))
         assert len(os.listdir(session.path_inputs)) > 0
+
+        # test overwriting
+        # clean everything
+        shutil.rmtree(session.path_inputs)
+        os.mkdir(session.path_inputs)
+        # copy a dummy folder
+        dummy = os.path.join(cp, "TestFiles", "utilitiesgui", "Sphere")
+        shutil.copytree(dummy, os.path.join(session.path_inputs, "Sphere"))
+
+        # do not override
+        msg = ""
+        inputs = iter(["n"])
+        monkeypatch.setattr("builtins.input", lambda msg: next(inputs))
+        uty.fetch_iaea_inputs(session, authorization_token=str(token))
+        assert len(os.listdir(session.path_inputs)) == 1
+
+        # override
+        inputs = iter(["y"])
+        monkeypatch.setattr("builtins.input", lambda msg: next(inputs))
+        uty.fetch_iaea_inputs(session, authorization_token=str(token))
+        assert len(os.listdir(session.path_inputs)) > 1
 
 
 def excel_equal(fileA, fileB, n_sheets):

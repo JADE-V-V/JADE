@@ -8,6 +8,7 @@ matplotlib
 scipy
 python-docx
 aspose-words
+requests
 # DOC reqs
 sphinx
 esbonio

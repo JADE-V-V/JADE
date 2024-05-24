@@ -62,12 +62,16 @@ jobs:
           set -o pipefail
           source /usr/local/Modules/init/sh
           pytest --cov=. --cov-report html -cov-config=jade.coveragerc | tee pytest_output.log
+        env:
+          ACCESS_TOKEN_GITHUB: ${{ secrets.ACCESS_TOKEN.GITHUB }}
 
       # Activate environment and run pytest
       - name: Testing - Windows
         if: runner.os == 'Windows'
         run: |
           pytest --cov=. --cov-report html -cov-config="jade.coveragerc" | tee pytest_output.log
+        env:
+          ACCESS_TOKEN_GITHUB: ${{ secrets.ACCESS_TOKEN.GITHUB }}
 
       - name: Archive test results
         if: always()

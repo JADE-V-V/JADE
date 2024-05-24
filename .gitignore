@@ -20,3 +20,6 @@ build/
 
 venv/*
 .vscode/*.json
+
+# protect secrets
+secrets.json

@@ -19,7 +19,8 @@ jade.egg-info/
 build/
 
 venv/*
-.vscode/*.json
+.vscode/*
+docs/source/.vscode/*
 
 # protect secrets
 secrets.json

@@ -270,6 +270,12 @@ class TestUtilities:
         assert len(os.listdir(session.path_inputs)) > 1
         assert os.path.exists(os.path.join(session.path_inputs, "Sphere", "mcnp"))
 
+        # override again, there could be a bug with single files instead of folders
+        inputs = iter(["y"])
+        monkeypatch.setattr("builtins.input", lambda msg: next(inputs))
+        uty.fetch_iaea_inputs(session, authorization_token=str(token))
+        assert len(os.listdir(session.path_inputs)) > 1
+
 
 def excel_equal(fileA, fileB, n_sheets):
     for i in range(n_sheets):

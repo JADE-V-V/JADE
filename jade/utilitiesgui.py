@@ -1029,7 +1029,7 @@ def fetch_iaea_inputs(
             # The old folder needs to be deleted first, otherwise the new folder
             # is saved inside instead of substituting it
             newpath = os.path.join(session.path_inputs, item)
-            if os.path.exists(newpath):
+            if os.path.exists(newpath) and os.path.isdir(newpath):
                 shutil.rmtree(newpath)
             # Move the desired folder to the local directory
             shutil.move(

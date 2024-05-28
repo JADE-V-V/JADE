@@ -276,6 +276,12 @@ class TestUtilities:
         uty.fetch_iaea_inputs(session, authorization_token=str(token))
         assert len(os.listdir(session.path_inputs)) > 1
 
+        # check failed authentication
+        inputs = iter(["y"])
+        monkeypatch.setattr("builtins.input", lambda msg: next(inputs))
+        ans = uty.fetch_iaea_inputs(session, authorization_token="wrongtoken")
+        assert not ans
+
 
 def excel_equal(fileA, fileB, n_sheets):
     for i in range(n_sheets):

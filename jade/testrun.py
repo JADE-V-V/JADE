@@ -28,6 +28,8 @@ import subprocess
 import sys
 from copy import deepcopy
 from pathlib import Path
+import logging
+import json
 
 import numpy as np
 import pandas as pd
@@ -39,6 +41,8 @@ import jade.unix as unix
 from jade.configuration import Configuration
 from jade.libmanager import LibManager
 from jade.parsersD1S import IrradiationFile, Reaction, ReactionFile
+from jade.__version__ import __version__
+
 
 # colors
 CRED = "\033[91m"
@@ -47,7 +51,16 @@ CEND = "\033[0m"
 
 
 class Test:
-    def __init__(self, inp, lib, config, log, confpath, runoption):
+    def __init__(
+        self,
+        inp: os.PathLike,
+        lib: str,
+        config: pd.DataFrame,
+        log,
+        confpath: os.PathLike,
+        runoption: str,
+        lib_name: str,
+    ) -> None:
         """
         Class representing a general test. This class will have to be extended
         for specific tests.
@@ -64,6 +77,11 @@ class Test:
             Jade log file access.
         confpath : path like object
             path to the test configuration folder.
+        runoption : str
+            flag for parallel execution. if 'c' is run in command line, if 's'
+            is submitted as a job.
+        lib_name : str
+            extended name of the library.
 
         Raises
         ------
@@ -77,6 +95,7 @@ class Test:
         """
         # Test Library
         self.lib = lib
+        self.lib_name = lib_name
 
         # Parallel execution
         self.runoption = runoption
@@ -182,6 +201,7 @@ class Test:
             lib = lib
         return lib
 
+    @staticmethod
     def _get_lib_d1s(lib: str | dict) -> str:
         """Get the library name.
 
@@ -248,7 +268,12 @@ class Test:
             # Add openmc file translation here
             pass
 
-    def generate_test(self, lib_directory, libmanager, run_dir=None):
+    def generate_test(
+        self,
+        lib_directory: os.PathLike,
+        libmanager: LibManager,
+        run_dir: os.PathLike = None,
+    ) -> None:
         """
         Generate the test input files
 
@@ -258,8 +283,8 @@ class Test:
             Path to lib benchmarks input folders.
         libmanager : libmanager.LibManager
             Manager dealing with libraries operations.
-        MCNPdir : str or path
-            allows to ovewrite the MCNP dir if needed. The default is None
+        rundir : str or path
+            allows to ovewrite the run directory if needed. The default is None
 
         Returns
         -------
@@ -329,6 +354,62 @@ class Test:
         if self.openmc:
             # Implement openmc outputfile generation here
             pass
+
+        # Print metadata
+        self._print_metadata(motherdir)
+
+    def _print_metadata(self, outpath: os.PathLike) -> None:
+        """Print metadata file in the run directory. outpath is the path
+        to the run directory excluding the code"""
+
+        code_tags = self._get_code_tags()
+        # read, update and add metadata file to the run directory
+        metadata_inp = os.path.join(
+            os.path.dirname(self.original_inp), "benchmark_metadata.json"
+        )
+        try:
+            with open(metadata_inp, "r", encoding="utf-8") as f:
+                metadata_inp = json.load(f)
+        except FileNotFoundError:
+            logging.warning(
+                "Metadata file not found in %s", os.path.dirname(self.original_inp)
+            )
+            metadata_inp = {"name": self.name}
+
+        for code_tag in code_tags:
+            metadata = {}
+            metadata["benchmark_name"] = metadata_inp["name"]
+            try:
+                metadata["benchmark_version"] = metadata_inp["version"][code_tag]
+            except KeyError:
+                metadata["benchmark_version"] = None
+            metadata["jade_run_version"] = __version__
+            metadata["library"] = self.lib_name
+            metadata["code"] = code_tag
+            outfile = os.path.join(outpath, code_tag, "metadata.json")
+            try:
+                with open(
+                    outfile, "w", encoding="utf-8"
+                ) as f:
+                    json.dump(metadata, f, indent=4)
+            except FileNotFoundError:
+                # It may happen that the code bool is set to true but the
+                # corresponding directory is not created because generation is
+                # not implemented yet. Simply do not print the metadata in this
+                # case
+                logging.warning('metadata "%s" cannot be created', outfile)
+
+    def _get_code_tags(self) -> list[str]:
+        codes = []
+        if self.mcnp:
+            codes.append("mcnp")
+        if self.serpent:
+            codes.append("serpent")
+        if self.openmc:
+            codes.append("openmc")
+        if self.d1s:
+            codes.append("d1s")
+        return codes
 
     def custom_inp_modifications(self):
         """
@@ -425,8 +506,10 @@ class Test:
             subprocess.run("whoami", capture_output=True).stdout.decode("utf-8").strip()
         )
         os.chdir(directory)
-        job_script = os.path.join(directory, os.path.basename(directory) + "_job_script")
-        essential_commands = ['MPI_TASKS']
+        job_script = os.path.join(
+            directory, os.path.basename(directory) + "_job_script"
+        )
+        essential_commands = ["MPI_TASKS"]
         with open(config.batch_file, "rt") as fin, open(job_script, "wt") as fout:
             # Replace placeholders in batch file template with actual values
             contents = fin.read()
@@ -442,11 +525,11 @@ class Test:
             contents = contents.replace("MPI_TASKS", str(mpi_tasks))
             contents = contents.replace("OMP_THREADS", str(omp_threads))
             contents = contents.replace("USER", user)
-            
-            contents += '\n\n' + config_script
-            contents += '\n\n' + str(data_command)
-            contents += '\n\n' + " ".join(run_command)
-            
+
+            contents += "\n\n" + config_script
+            contents += "\n\n" + str(data_command)
+            contents += "\n\n" + " ".join(run_command)
+
             fout.write(contents)
 
         # Submit the job using the specified batch system
@@ -541,7 +624,7 @@ class Test:
 
                 if runoption.lower() == "c":
                     try:
-                        os.environ['DATAPATH'] = str(libpath.parent)
+                        os.environ["DATAPATH"] = str(libpath.parent)
                         if not sys.platform.startswith("win"):
                             unix.configure(env_variables)
                         print(" ".join(run_command))
@@ -571,7 +654,7 @@ class Test:
                         mpi_tasks,
                         omp_threads,
                         env_variables,
-                        data_command
+                        data_command,
                     )
                     os.chdir(cwd)
             except subprocess.TimeoutExpired:
@@ -612,7 +695,7 @@ class Test:
         bool
             Flag if simulation not run
         """
-        
+
         # Calculate MPI tasks and OpenMP threads
         mpi_tasks = int(config.mpi_tasks)
         omp_threads = int(config.openmp_threads)
@@ -639,7 +722,7 @@ class Test:
         if pd.isnull(executable) is not True:
             run_command = [executable, inputstring]
             if run_openmp:
-                run_command = [executable, '-omp', str(omp_threads), inputstring]
+                run_command = [executable, "-omp", str(omp_threads), inputstring]
 
             if runoption.lower() == "c":
                 try:
@@ -745,7 +828,7 @@ class Test:
 
             elif runoption.lower() == "s":
                 if run_mpi:
-                    run_command.insert(0, config.mpi_exec_prefix)               
+                    run_command.insert(0, config.mpi_exec_prefix)
                 # Run OpenMC as a job
                 cwd = os.getcwd()
                 os.chdir(directory)
@@ -1022,6 +1105,8 @@ class SphereTest(Test):
             os.makedirs(outpath, exist_ok=True)
             newinp.write(outpath, libmanager)
 
+        self._print_metadata(os.path.join(motherdir, outdir))
+
     @staticmethod
     def _get_zaidtestname(testname, zaid, formula, addtag=None):
         outfile = testname + "_" + zaid.element + zaid.isotope + "_" + formula + "_"
@@ -1187,6 +1272,8 @@ class SphereTest(Test):
             outpath = os.path.join(motherdir, outdir, "openmc")
             os.makedirs(outpath, exist_ok=True)
             newinp.write(outpath, libmanager)
+
+        self._print_metadata(os.path.join(motherdir, outdir))
 
     def run(self, config, libmanager, runoption: str) -> None:
         """Sphere leakage requries ad-hoc run method.
@@ -1520,7 +1607,17 @@ class FNGTest(Test):
 
 
 class MultipleTest:
-    def __init__(self, inpsfolder, lib, config, log, confpath, runoption, TestOb=Test):
+    def __init__(
+        self,
+        inpsfolder: os.PathLike,
+        lib: str,
+        config: pd.DataFrame,
+        log,
+        confpath: os.PathLike,
+        runoption: str,
+        lib_name: str,
+        TestOb=Test,
+    ):
         """
         A collection of Tests
 
@@ -1536,6 +1633,8 @@ class MultipleTest:
             Jade log file access.
         confpath : path like object
             path to the test configuration folder.
+        lib_name : str
+            name of the library to be used.
         TestOb : testrun.Test, optional
             type of test object to be used. The default is Test.
 
@@ -1547,7 +1646,7 @@ class MultipleTest:
         tests = []
         for folder in os.listdir(inpsfolder):
             inp = os.path.join(inpsfolder, folder)
-            test = TestOb(inp, lib, config, log, confpath, runoption)
+            test = TestOb(inp, lib, config, log, confpath, runoption, lib_name)
             tests.append(test)
         self.tests = tests
         self.name = os.path.basename(inpsfolder)

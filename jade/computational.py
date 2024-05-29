@@ -135,7 +135,8 @@ def executeBenchmarksRoutines(session, lib: str, runoption, exp=False) -> None:
             confpath = os.path.join(session.path_cnf, fname.split(".")[0])
 
             # Generate test
-            args = (inppath, var, row, log, confpath, runoption)
+            lib_name = session.conf.get_lib_name(var)
+            args = (inppath, var, row, log, confpath, runoption, lib_name)
             # Handle special cases
             if testname == "Sphere Leakage Test":
                 test = testrun.SphereTest(*args)

@@ -31,7 +31,7 @@ Specify here for which codes the benchmark should be developed.
 - [x] yes
 - [] no
 
-If no, please specificy who will be able to access the inputs.
+If no, please specify who will be able to access the inputs.
 
 ## Additional information/context
 Add here any additional information or context that you want to provide.
@@ -49,4 +49,4 @@ can use one of these classes or a new one needs to be created.
 - [x] yes
 - [] no
 
-If no, please specificy who will be able to access the experimental data.
+If no, please specify who will be able to access the experimental data.

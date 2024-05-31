@@ -29,6 +29,8 @@ import pickle
 import shutil
 import string
 import sys
+import json
+import logging
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -44,6 +46,7 @@ import jade.plotter as plotter
 from jade.configuration import Configuration
 from jade.meshtal import Meshtal
 from jade.outputFile import OutputFile
+from jade.__version__ import __version__
 
 if TYPE_CHECKING:
     from jade.main import Session
@@ -116,7 +119,7 @@ class AbstractOutput(abc.ABC):
 
 
 class BenchmarkOutput(AbstractOutput):
-    def __init__(self, lib, code, testname: str, session: Session):
+    def __init__(self, lib: str, code: str, testname: str, session: Session):
         """
         General class for a Benchmark output
 
@@ -126,7 +129,7 @@ class BenchmarkOutput(AbstractOutput):
             library to post-process
         code : str
             code being post processed
-        testname : str 
+        testname : str
             name of the benchmark being postprocessed
         session : Session
             Jade Session
@@ -245,6 +248,29 @@ class BenchmarkOutput(AbstractOutput):
             self.excel_path = excel_path
             self.raw_path = raw_path
             self.atlas_path = atlas_path
+
+            # Read the metadata
+            results_path = os.path.join(self.test_path, code)
+            self.metadata = self._read_metadata_run(results_path)
+
+    @staticmethod
+    def _read_metadata_run(pathtofile: os.PathLike) -> dict:
+        # Get the metadata
+
+        # try to read the metadata
+        try:
+            with open(
+                os.path.join(pathtofile, "metadata.json"),
+                "r",
+                encoding="utf-8",
+            ) as file:
+                metadata = json.load(file)
+        except FileNotFoundError:
+            logging.warning("No metadata file found at %s", pathtofile)
+            metadata = {}
+
+        metadata["jade_version"] = __version__
+        return metadata
 
     def single_postprocess(self):
         """
@@ -531,6 +557,7 @@ class BenchmarkOutput(AbstractOutput):
         # Open the excel file
         # name = "Generic_single.xlsx"
         # template = os.path.join(os.getcwd(), "templates", name)
+
         if self.mcnp:
             outpath = os.path.join(
                 self.excel_path, self.testname + "_" + self.lib + ".xlsx"
@@ -541,7 +568,6 @@ class BenchmarkOutput(AbstractOutput):
             # results = []
             # errors = []
             results_path = os.path.join(self.test_path, "mcnp")
-
             # Get mfile and outfile and possibly meshtal file
             meshtalfile = None
             for file in os.listdir(results_path):
@@ -726,6 +752,10 @@ class BenchmarkOutput(AbstractOutput):
             for key, data in self.raw_data.items():
                 file = os.path.join(self.raw_path, str(key) + ".csv")
                 data.to_csv(file, header=True, index=False)
+
+            metadata_file = os.path.join(self.raw_path, "metadata.json")
+            with open(metadata_file, "w", encoding="utf-8") as outfile:
+                json.dump(self.metadata, outfile, indent=4)
 
     def _generate_comparison_excel_output(self):
         # Get excel configuration

@@ -33,7 +33,7 @@ import warnings
 import numpy as np
 import pandas as pd
 
-import jade.acepyne as ace
+import f4enix.input.acepyne as ace
 import jade.xsdirpyne as xs
 from jade.exceptions import fatal_exception
 from jade.xsdirpyne import OpenMCXsdir, SerpentXsdir, Xsdir
@@ -173,7 +173,9 @@ class LibManager:
                         self.data[code][library] = xsdir
                     else:
                         logging.warning(
-                            "Library %s not present in MCNP XSDIR file: %s", library, path
+                            "Library %s not present in MCNP XSDIR file: %s",
+                            library,
+                            path,
                         )
 
                 elif code == "openmc":
@@ -186,7 +188,9 @@ class LibManager:
                         self.data[code][library] = xsdir
                     else:
                         logging.warning(
-                            "Library %s not present in Serpent XSDIR file: %s", library, path
+                            "Library %s not present in Serpent XSDIR file: %s",
+                            library,
+                            path,
                         )
 
                 elif code == "d1s":
@@ -197,7 +201,9 @@ class LibManager:
                         self.data[code][library] = xsdir
                     else:
                         logging.warning(
-                            "Library %s not present in D1S XSDIR file: %s", library, path
+                            "Library %s not present in D1S XSDIR file: %s",
+                            library,
+                            path,
                         )
 
                 else:

@@ -30,7 +30,7 @@ import shutil
 import string
 import sys
 from typing import TYPE_CHECKING
-
+from f4enix.output.mctal import Mctal
 import numpy as np
 
 # import xlwings as xw
@@ -39,10 +39,8 @@ from tqdm import tqdm
 
 import jade.atlas as at
 import jade.excelsupport as exsupp
-import jade.MCTAL_READER2 as mtal
 import jade.plotter as plotter
-from jade.configuration import Configuration
-from jade.meshtal import Meshtal
+import jade.meshtal as Meshtal
 from jade.outputFile import OutputFile
 
 if TYPE_CHECKING:
@@ -126,7 +124,7 @@ class BenchmarkOutput(AbstractOutput):
             library to post-process
         code : str
             code being post processed
-        testname : str 
+        testname : str
             name of the benchmark being postprocessed
         session : Session
             Jade Session
@@ -991,8 +989,7 @@ class MCNPoutput:
         self.meshtal_file = meshtal_file  # path to mcnp meshtal file
 
         # Read and parse the mctal file
-        mctal = mtal.MCTAL(mctal_file)
-        mctal.Read()
+        mctal = Mctal(mctal_file)
         self.mctal = mctal
         self.tallydata, self.totalbin = self.organize_mctal()
 
@@ -1037,9 +1034,9 @@ class MCNPoutput:
 
             # --- Reorganize values ---
             # You cannot recover the following from the mctal
-            nDir = t.getNbins("d", False)
-            nMul = t.getNbins("m", False)
-            nSeg = t.getNbins("s", False)  # this can be used
+            nDir = t._getNbins("d", False)
+            nMul = t._getNbins("m", False)
+            nSeg = t._getNbins("s", False)  # this can be used
 
             # Some checks for voids
             binnings = {
@@ -1086,7 +1083,7 @@ class MCNPoutput:
                                                     for i, ina in enumerate(
                                                         binnings["cor A"]
                                                     ):
-                                                        val = t.getValue(
+                                                        val = t._getValue(
                                                             f,
                                                             d,
                                                             u,
@@ -1100,7 +1097,7 @@ class MCNPoutput:
                                                             k,
                                                             0,
                                                         )
-                                                        err = t.getValue(
+                                                        err = t._getValue(
                                                             f,
                                                             d,
                                                             u,
@@ -1133,8 +1130,8 @@ class MCNPoutput:
                                                         )
 
                 # Only one total bin per cell is admitted
-                val = t.getValue(f, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0)
-                err = t.getValue(f, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1)
+                val = t._getValue(f, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0)
+                err = t._getValue(f, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1)
                 if t.timTC is not None:
                     rows.append(
                         [fn, d, un, sn, m, cn, en, "total", ina, jn, kn, val, err]

@@ -983,7 +983,14 @@ class SphereOutput(BenchmarkOutput):
                 # --- Write excel ---
                 # Generate the excel
                 exsupp.sphere_comp_excel_writer(
-                    self, outpath, name, final, absdiff, std_dev, summary, single_pp_files
+                    self,
+                    outpath,
+                    name,
+                    final,
+                    absdiff,
+                    std_dev,
+                    summary,
+                    single_pp_files,
                 )
         if self.serpent:
             pass
@@ -1158,22 +1165,22 @@ class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
         for t in self.mctal.tallies:
             num = t.tallyNumber
             des = t.tallyComment[0]
-            nCells = t.getNbins("f", False)
-            nCora = t.getNbins("i", False)
-            nCorb = t.getNbins("j", False)
-            nCorc = t.getNbins("k", False)
-            nDir = t.getNbins("d", False)
+            nCells = t._getNbins("f", False)
+            nCora = t._getNbins("i", False)
+            nCorb = t._getNbins("j", False)
+            nCorc = t._getNbins("k", False)
+            nDir = t._getNbins("d", False)
             # usrAxis = t.getAxis("u")
-            nUsr = t.getNbins("u", False)
+            nUsr = t._getNbins("u", False)
             # segAxis = t.getAxis("s")
-            nSeg = t.getNbins("s", False)
-            nMul = t.getNbins("m", False)
+            nSeg = t._getNbins("s", False)
+            nMul = t._getNbins("m", False)
             # cosAxis = t.getAxis("c")
-            nCos = t.getNbins("c", False)
+            nCos = t._getNbins("c", False)
             # ergAxis = t.getAxis("e")
-            nErg = t.getNbins("e", False)
+            nErg = t._getNbins("e", False)
             # timAxis = t.getAxis("t")
-            nTim = t.getNbins("t", False)
+            nTim = t._getNbins("t", False)
 
             for f in range(nCells):
                 for d in range(nDir):
@@ -1191,7 +1198,7 @@ class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
                                             for k in range(nCorc):
                                                 for j in range(nCorb):
                                                     for i in range(nCora):
-                                                        val = t.getValue(
+                                                        val = t._getValue(
                                                             f,
                                                             d,
                                                             u,
@@ -1205,7 +1212,7 @@ class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
                                                             k,
                                                             0,
                                                         )
-                                                        err = t.getValue(
+                                                        err = t._getValue(
                                                             f,
                                                             d,
                                                             u,

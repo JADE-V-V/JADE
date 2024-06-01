@@ -92,30 +92,14 @@ class Status:
 
         # Create nested dictionaries to store info on libraries, tests, codes
         # and files.
-        libraries = {}
-        for lib in os.listdir(self.run_path):
-            libraries[lib] = {}
-            cp = os.path.join(self.run_path, lib)
-            for test in os.listdir(cp):
-                if test in MULTI_TEST:
-                    libraries[lib][test] = {}
-                    cp1 = os.path.join(cp, test)
-                    for zaid in os.listdir(cp1):
-                        libraries[lib][test][zaid] = {}
-                        cp2 = os.path.join(cp1, zaid)
-                        for code in os.listdir(cp2):
-                            libraries[lib][test][zaid][code] = []
-                            cp3 = os.path.join(cp2, code)
-                            for file in os.listdir(cp3):
-                                libraries[lib][test][zaid][code].append(file)
-                else:
-                    libraries[lib][test] = {}
-                    cp1 = os.path.join(cp, test)
-                    for code in os.listdir(cp1):
-                        libraries[lib][test][code] = []
-                        cp2 = os.path.join(cp1, code)
-                        for file in os.listdir(cp2):
-                            libraries[lib][test][code].append(file)
+        def list_files(path):
+            items = os.listdir(path)
+            if all(os.path.isfile(os.path.join(path, item)) for item in items):
+                return {item: [] for item in items}
+            else:
+                return {item: list_files(os.path.join(path, item)) for item in items if os.path.isdir(os.path.join(path, item))}
+
+        libraries = {lib: list_files(os.path.join(self.run_path, lib)) for lib in os.listdir(self.run_path)}
 
         # Update tree
         self.run_tree = libraries

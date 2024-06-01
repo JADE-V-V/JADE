@@ -23,6 +23,7 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 from __future__ import annotations
 
+import itertools
 import math
 import os
 import shutil
@@ -1175,55 +1176,31 @@ class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
             # timAxis = t.getAxis("t")
             nTim = t.getNbins("t", False)
 
-            for f in range(nCells):
-                for d in range(nDir):
-                    for u in range(nUsr):
-                        for s in range(nSeg):
-                            for m in range(nMul):
-                                for c in range(nCos):
-                                    for e in range(nErg):
-                                        try:
-                                            erg = t.erg[e]
-                                        except IndexError:
-                                            erg = None
+            for f, d, u, s, m, c, e, nt, i, j, k in itertools.product(
+                range(nCells),
+                range(nDir),
+                range(nUsr),
+                range(nSeg),
+                range(nMul),
+                range(nCos),
+                range(nErg),
+                range(nTim),
+                range(nCora),
+                range(nCorb),
+                range(nCorc)
+            ):
+                try:
+                    erg = t.erg[e]
+                except IndexError:
+                    erg = None
 
-                                        for nt in range(nTim):
-                                            for k in range(nCorc):
-                                                for j in range(nCorb):
-                                                    for i in range(nCora):
-                                                        val = t.getValue(
-                                                            f,
-                                                            d,
-                                                            u,
-                                                            s,
-                                                            m,
-                                                            c,
-                                                            e,
-                                                            nt,
-                                                            i,
-                                                            j,
-                                                            k,
-                                                            0,
-                                                        )
-                                                        err = t.getValue(
-                                                            f,
-                                                            d,
-                                                            u,
-                                                            s,
-                                                            m,
-                                                            c,
-                                                            e,
-                                                            nt,
-                                                            i,
-                                                            j,
-                                                            k,
-                                                            1,
-                                                        )
-                                                        if val <= 0:
-                                                            err = np.nan
+                val = t.getValue(f, d, u, s, m, c, e, nt, i, j, k, 0)
+                err = t.getValue(f, d, u, s, m, c, e, nt, i, j, k, 1)
+                if val <= 0:
+                    err = np.nan
 
-                                                        row = [num, des, erg, val, err]
-                                                        rows.append(row)
+                row = [num, des, erg, val, err]
+                rows.append(row)
 
             # If Energy binning is involved
             if t.ergTC == "t":

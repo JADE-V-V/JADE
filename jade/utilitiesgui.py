@@ -21,11 +21,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 import os
-from functools import reduce
-
+import zipfile
+import tempfile
+import requests
+import shutil
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import xlsxwriter
 from tqdm import tqdm
@@ -34,7 +36,7 @@ import jade.inputfile as ipt
 import jade.matreader as mat
 from f4enix.input.acepyne import *
 from jade.inputfile import D1S_Input
-from jade.matreader import SubMaterial
+import jade.main
 
 
 ###############################################################################
@@ -961,3 +963,78 @@ def print_XS_EXFOR(session):
                 )
             )
             print(" Cross Section printed")
+
+
+def fetch_iaea_inputs(
+    session: jade.main.Session, authorization_token: str = None
+) -> bool:
+    """
+    Fetch IAEA inputs and copy them to the inputs directory. In case the inputs
+    were already present, the user is asked if they want to overwrite them.
+
+    Parameters
+    ----------
+    session: Session
+        JADE session.
+    authorization_token: str, optional
+        Authorization token to access the IAEA repository. Default is None when
+        it will be put public.
+
+    Returns
+    -------
+    bool
+        True if the inputs were successfully fetched, False otherwise.
+    """
+    if authorization_token:
+        headers = {"Authorization": f"token {authorization_token}"}
+    else:
+        headers = None
+    # Download the repository as a zip file
+    response = requests.get(
+        r"https://github.com/IAEA-NDS/open-benchmarks/archive/main.zip",
+        timeout=1000,
+        headers=headers,
+    )
+    # Ceck if the download was successful
+    if response.status_code != 200:
+        return False
+    # Save the downloaded zip file
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        tmp_zip = os.path.join(tmpdirname, "main.zip")
+        extract_folder = os.path.join(tmpdirname, "extracted")
+        with open(tmp_zip, "wb") as f:
+            f.write(response.content)
+        # Extract the zip file
+        with zipfile.ZipFile(tmp_zip, "r") as zip_ref:
+            zip_ref.extractall(extract_folder)
+        # check which inputs are available and prompt for overwriting
+        extracted_benchmarks = os.path.join(
+            extract_folder, "open-benchmarks-main", "jade_open_benchmarks"
+        )
+        new = list(os.listdir(extracted_benchmarks))
+        current = list(os.listdir(session.path_inputs))
+        overwriting = False
+        for benchmark in new:
+            if benchmark in current:
+                overwriting = True
+                break
+
+        if overwriting:
+            msg = "The IAEA inputs are already present. Do you want to overwrite them? [y/n] -> "
+            ans = input_with_options(msg, ["y", "n"])
+            if ans == "n":
+                return
+
+        for item in os.listdir(extracted_benchmarks):
+            # The old folder needs to be deleted first, otherwise the new folder
+            # is saved inside instead of substituting it
+            newpath = os.path.join(session.path_inputs, item)
+            if os.path.exists(newpath) and os.path.isdir(newpath):
+                shutil.rmtree(newpath)
+            # Move the desired folder to the local directory
+            shutil.move(
+                os.path.join(extracted_benchmarks, item),
+                os.path.join(session.path_inputs, item),
+            )
+
+    return True

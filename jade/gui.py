@@ -92,6 +92,7 @@ principal_menu = (
  * Produce D1S Reaction file             (react)
  * Remove all runtpe files           (rmvruntpe)
  * Compare ACE/EXFOR                (comparelib)
+ * Fetch IAEA inputs                 (iaeafetch)
  -----------------------------------------------
 
  * Exit                                   (exit)
@@ -251,6 +252,14 @@ def mainloop(session: Session):
         elif option == "rmvruntpe":
             uty.clean_runtpe(session.path_run)
             print("\n Runtpe files have been removed\n")
+
+        elif option == "iaeafetch":
+            token = input(" Please enter your GitHub token: ")
+            ans = uty.fetch_iaea_inputs(session, authorization_token=token)
+            if ans:
+                print("\n IAEA inputs have been successfully downloaded\n")
+            else:
+                print("\n Error in downloading the IAEA inputs, double check your token\n")
 
         elif option == "comparelib":
             uty.print_XS_EXFOR(session)

@@ -26,21 +26,19 @@ from __future__ import annotations
 import math
 import os
 import shutil
-import sys
+import json
+import logging
 
 from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
-import openpyxl
 
 from tqdm import tqdm
-from xlsxwriter.utility import xl_rowcol_to_cell
 
 import jade.atlas as at
 import jade.excelsupport as exsupp
 import jade.plotter as plotter
-from jade.configuration import Configuration
 from jade.output import BenchmarkOutput, MCNPoutput, OpenMCOutput
 
 if TYPE_CHECKING:
@@ -79,6 +77,19 @@ class SphereOutput(BenchmarkOutput):
 
         zaid_path = os.path.join(self.cnf_path, "ZaidSettings.csv")
         self.zaid_settings = pd.read_csv(zaid_path, sep=",").set_index("Z")
+
+        # The metadata needs to be re-read since no multitest is foreseen in the
+        # normal BenchmarkOutput class
+        # Read the metadata, they should be all equal
+        try:
+            results_path = os.path.join(
+                self.test_path, os.listdir(self.test_path)[0], code
+            )
+            self.metadata = self._read_metadata_run(results_path)
+        except TypeError:
+            # means that self.test_path is a dict, hence a comparison. No
+            # metadata involved here
+            self.metadata = None
 
     def single_postprocess(self):
         """
@@ -1016,6 +1027,10 @@ class SphereOutput(BenchmarkOutput):
             for key, data in self.raw_data["d1s"].items():
                 file = os.path.join(self.raw_path, "d1s" + key + ".csv")
                 data.to_csv(file, header=True, index=False)
+
+        metadata_file = os.path.join(self.raw_path, "metadata.json")
+        with open(metadata_file, "w", encoding="utf-8") as outfile:
+            json.dump(self.metadata, outfile, indent=4)
 
 
 class SphereTallyOutput:

@@ -24,6 +24,7 @@ import math
 import os
 import re
 import shutil
+import json
 from abc import abstractmethod
 
 import numpy as np
@@ -88,6 +89,22 @@ class ExperimentalOutput(BenchmarkOutput):
             os.mkdir(raw_path)
         self.raw_path = raw_path
         self.multiplerun = multiplerun
+
+        # Read the metadata from the simulations
+        metadata = {}
+        for lib, test_path in self.test_path.items():
+            if lib == EXP_TAG:
+                continue
+            code = args[1]
+            if self.multiplerun:
+                # I still need only one metadata. They should be all the same
+                results_path = os.path.join(test_path, os.listdir(test_path)[0], code)
+                metadata_lib = self._read_metadata_run(results_path)
+            else:
+                results_path = os.path.join(test_path, code)
+                self.metadata_lib = self._read_metadata_run(results_path)
+            metadata[lib] = metadata_lib
+        self.metadata = metadata
 
     def single_postprocess(self):
         """
@@ -330,6 +347,12 @@ class ExperimentalOutput(BenchmarkOutput):
             cd_lib = os.path.join(self.raw_path, lib)
             if not os.path.exists(cd_lib):
                 os.mkdir(cd_lib)
+                # dump also the metadata if it is the first time
+                with open(
+                    os.path.join(cd_lib, "metadata.json"), "w", encoding="utf-8"
+                ) as f:
+                    json.dump(self.metadata[lib], f)
+
             # Dump everything
             for key, data in item.items():
                 if folder == self.testname:

@@ -98,10 +98,10 @@ class TestTest:
         conf_path = "dummy"
 
         # Build the test
-        test = Test(inp, lib, config, LOGFILE, conf_path, runoption="c")
+        test = Test(inp, lib, config, LOGFILE, conf_path, "c", "dummy")
         test.generate_test(tmpdir, LM)
-
-        assert True
+        metadata_file = os.path.join(tmpdir, "ITER_1D", "mcnp", "metadata.json")
+        assert os.path.exists(metadata_file)
 
     def test_build_d1s(self, LM: LibManager, LOGFILE: Log):
         # Just check that nothing breaks
@@ -125,7 +125,7 @@ class TestTest:
         conf_path = os.path.join(self.files, "ITER_Cyl_SDDR_cnf")
 
         # Build the test
-        test = Test(inp, lib, config, LOGFILE, conf_path, runoption="c")
+        test = Test(inp, lib, config, LOGFILE, conf_path, "c", "dummy")
         try:
             os.mkdir(self.dummyout)
             test.generate_test(self.dummyout, LM)
@@ -160,8 +160,16 @@ class TestSphereTest:
         conf_path = os.path.join(self.files, "Spherecnf")
 
         # Build the test
-        test = SphereTest(inp, lib, config, LOGFILE, conf_path, runoption="c")
+        test = SphereTest(inp, lib, config, LOGFILE, conf_path, "c", "dummy")
         test.generate_test(tmpdir, LM)
+        metadata_file = os.path.join(
+            tmpdir, "Sphere", "Sphere_1001_H-1", "mcnp", "metadata.json"
+        )
+        assert os.path.exists(metadata_file)
+        metadata_file = os.path.join(
+            tmpdir, "Sphere", "Sphere_1001_H-1", "openmc", "metadata.json"
+        )
+        assert os.path.exists(metadata_file)
 
         assert True
 
@@ -190,8 +198,14 @@ class TestSphereTestSDDR:
         conf_path = os.path.join(self.files, "cnf")
 
         # Build the test
-        test = SphereTestSDDR(inp, lib, config, LOGFILE, conf_path, runoption="c")
+        test = SphereTestSDDR(inp, lib, config, LOGFILE, conf_path, "c", "dummy")
         test.generate_test(tmpdir, LM)
+        metadata_file = os.path.join(
+            tmpdir, "SphereSDDR", "SphereSDDR_M101", "d1s", "metadata.json"
+        )
+        assert os.path.exists(metadata_file)
+
+        assert True
 
 
 class TestMultipleTest:
@@ -222,7 +236,11 @@ class TestMultipleTest:
         conf_path = os.path.join(self.files, "cnf")
 
         # Build the test
-        test = MultipleTest(inp, lib, config, LOGFILE, conf_path, runoption="c")
+        test = MultipleTest(inp, lib, config, LOGFILE, conf_path, "c", "dummy")
         test.generate_test(tmpdir, LM)
+        metadata_file = os.path.join(
+            tmpdir, "Oktavian", "Oktavian_Al", "mcnp", "metadata.json"
+        )
+        assert os.path.exists(metadata_file)
 
         assert True

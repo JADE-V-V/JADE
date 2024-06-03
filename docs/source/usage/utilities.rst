@@ -263,3 +263,13 @@ plotter:
 .. figure:: ../img/uty/Fe-56_MT102.png
     :width: 600
     :align: center
+
+Download benchmark inputs from the IAEA GitHub repository
+=========================================================
+``iaeafetch``
+
+This function is used to fetch JADE inputs from the IAEA GitHub. 
+The files are hosted at https://github.com/IAEA-NDS/open-benchmarks.
+At the moment this repository is private and fetching requires the
+provision of a GitHub token from a GitHub account that have access.
+More information on GitHub tokens can be found at https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens

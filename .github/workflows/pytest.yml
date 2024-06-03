@@ -18,8 +18,6 @@ jobs:
           - full-test: false
             python-version: "3.10"
           - full-test: false
-            python-version: "3.9"
-          - full-test: false
             os: "ubuntu-20.04"
       fail-fast: false
     runs-on: ${{ matrix.os }}
@@ -60,12 +58,16 @@ jobs:
           set -o pipefail
           source /usr/local/Modules/init/sh
           pytest --cov=. --cov-report html -cov-config=jade.coveragerc | tee pytest_output.log
+        env:
+          ACCESS_TOKEN_GITHUB: ${{ secrets.ACCESS_TOKEN_GITHUB }}
 
       # Activate environment and run pytest
       - name: Testing - Windows
         if: runner.os == 'Windows'
         run: |
           pytest --cov=. --cov-report html -cov-config="jade.coveragerc" | tee pytest_output.log
+        env:
+          ACCESS_TOKEN_GITHUB: ${{ secrets.ACCESS_TOKEN_GITHUB }}
 
       - name: Archive test results
         if: always()

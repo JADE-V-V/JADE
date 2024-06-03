@@ -33,10 +33,10 @@ import warnings
 import numpy as np
 import pandas as pd
 
-import f4enix.input.acepyne as ace
-import jade.xsdirpyne as xs
+import f4enix.input.xsdirpyne as xs
 from jade.exceptions import fatal_exception
-from jade.xsdirpyne import OpenMCXsdir, SerpentXsdir, Xsdir
+from f4enix.input.xsdirpyne import Xsdir
+from jade.xsdirpyne import OpenMCXsdir, SerpentXsdir
 
 # colors
 CRED = "\033[91m"

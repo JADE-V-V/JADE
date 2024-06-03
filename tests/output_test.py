@@ -91,14 +91,19 @@ class TestBenchmarkOutput:
 
         assert os.path.exists(
             os.path.join(
-                session.path_single, r"32c\ITER_1D\mcnp\Excel\ITER_1D_32c.xlsx"
+                session.path_single,
+                "32c",
+                "ITER_1D",
+                "mcnp",
+                "Excel",
+                "ITER_1D_32c.xlsx",
             )
         )
         metadata_path = os.path.join(
-            session.path_single, r"32c\ITER_1D\mcnp\Raw_Data\metadata.json"
+            session.path_single, "32c", "ITER_1D", "mcnp", "Raw_Data", "metadata.json"
         )
         assert os.path.exists(metadata_path)
-        with open(metadata_path, "r") as f:
+        with open(metadata_path, "r", encoding="utf-8") as f:
             metadata = json.load(f)
         assert metadata["jade_run_version"] == "0.0.1"
         assert metadata["jade_version"] == __version__

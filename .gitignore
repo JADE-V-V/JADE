@@ -20,3 +20,6 @@ build/
 
 venv/*
 .vscode/*.json
+
+# secret file for local testing
+tests/secrets.json

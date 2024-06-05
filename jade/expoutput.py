@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import annotations
 import math
 import os
 import re
@@ -183,16 +184,61 @@ class ExperimentalOutput(BenchmarkOutput):
         # Remove tmp images
         shutil.rmtree(tmp_path)
 
-    def _extract_outputs(self):
+    def _extract_single_output(
+        self, results_path: os.PathLike, folder: str, lib: str
+    ) -> tuple[pd.DataFrame, str]:
+        mfile, ofile = self._get_output_files(results_path)
+        # Parse output
+        output = MCNPoutput(mfile, ofile)
+
+        # need to extract the input in case of multi
+        if self.multiplerun:
+            pieces = folder.split("_")
+            input = pieces[-1]
+            if input not in self.inputs:
+                self.inputs.append(input)
+            self.outputs[input, lib] = output
+            # Get the meaningful results
+            self.results[input, lib] = self._processMCNPdata(output)
+        else:
+            # just treat it as a special case of multiple run
+            self.outputs[self.testname, lib] = output
+            # Get the meaningful results
+            self.results[self.testname, lib] = self._processMCNPdata(output)
+            input = self.testname
+
+        return output.tallydata, input
+
+    def _extract_outputs(self) -> None:
         """
-        Extract, organize and store the results coming from the MCNP runs
+        Extract, organize and store the results coming from the different codes
+        runs
+
         Returns
         -------
         None.
         """
-        outputs = {}
-        results = {}
-        inputs = []
+        self.outputs = {}
+        self.results = {}
+
+        # Each output object is processing only one code at the time at the moment
+        if self.mcnp:
+            code_tag = "mcnp"
+        if self.openmc:
+            print("Experimental comparison not implemented for OpenMC")
+            return
+        if self.serpent:
+            print("Experimental comparison not implemented for Serpent")
+            return
+        if self.d1s:
+            code_tag = "d1s"
+
+        # only multiple runs have multiple inputs
+        if self.multiplerun:
+            self.inputs = []
+        else:
+            self.inputs = [self.testname]
+
         # Iterate on the different libraries results except 'Exp'
         for lib, test_path in self.test_path.items():
             if lib != EXP_TAG:
@@ -200,72 +246,22 @@ class ExperimentalOutput(BenchmarkOutput):
                     # Results are organized by folder and lib
                     code_raw_data = {}
                     for folder in os.listdir(test_path):
-                        # FIX MCNP HARD CODED PATH HERE
-                        if self.mcnp:
-                            results_path = os.path.join(test_path, folder, "mcnp")
-                            pieces = folder.split("_")
-                            # Get zaid
-                            input = pieces[-1]
-                            mfile, ofile = self._get_output_files(results_path)
-                            # Parse output
-                            output = MCNPoutput(mfile, ofile)
-                            outputs[input, lib] = output
-                            code_raw_data[input, lib] = output.tallydata
-                            # self.raw_data[input, lib] = output.tallydata
+                        results_path = os.path.join(test_path, folder, code_tag)
+                        tallydata, input = self._extract_single_output(
+                            results_path, folder, lib
+                        )
+                        code_raw_data[input, lib] = tallydata
 
-                            # Get the meaningful results
-                            results[input, lib] = self._processMCNPdata(output)
-                            if input not in inputs:
-                                inputs.append(input)
-                        if self.openmc:
-                            print(
-                                "Experimental comparison not implemented \
-                                for OpenMC"
-                            )
-                            break
-                        if self.serpent:
-                            print(
-                                "Experimental comparison not implemented \
-                                for Serpent"
-                            )
-                            break
-                        if self.d1s:
-                            results_path = os.path.join(test_path, folder, "d1s")
-                            pieces = folder.split("_")
-                            # Get zaid
-                            input = pieces[-1]
-                            mfile, ofile = self._get_output_files(results_path)
-                            # Parse output
-                            output = MCNPoutput(mfile, ofile)
-                            outputs[input, lib] = output
-                            code_raw_data[input, lib] = output.tallydata
-                            # self.raw_data[input, lib] = output.tallydata
-
-                            # Get the meaningful results
-                            results[input, lib] = self._processMCNPdata(output)
-                            if input not in inputs:
-                                inputs.append(input)
-                    if self.mcnp:
-                        self.raw_data["mcnp"].update(code_raw_data)
-                    if self.d1s:
-                        self.raw_data["d1s"].update(code_raw_data)
                 # Results are organized just by lib
                 else:
-                    mfile, ofile = self._get_output_files(test_path)
-                    # Parse output
-                    output = MCNPoutput(mfile, ofile)
-                    outputs[self.testname, lib] = output
-                    # Adjourn raw Data
-                    self.raw_data[self.testname, lib] = output.tallydata
-                    # Get the meaningful results
-                    results[self.testname, lib] = self._processMCNPdata(output)
+                    results_path = os.path.join(test_path, code_tag)
+                    tallydata, input = self._extract_single_output(
+                        results_path, None, lib
+                    )
+                    code_raw_data = {(self.testname, lib): tallydata}
 
-        self.outputs = outputs
-        self.results = results
-        if inputs:
-            self.inputs = inputs
-        else:
-            self.inputs = [self.testname]
+                # Adjourn raw Data
+                self.raw_data[code_tag].update(code_raw_data)
 
     def _read_exp_results(self):
         """

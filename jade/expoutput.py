@@ -28,6 +28,7 @@ from abc import abstractmethod
 
 import numpy as np
 import pandas as pd
+from docx.shared import Inches
 from scipy.interpolate import interp1d
 from tqdm import tqdm
 
@@ -46,6 +47,20 @@ TALLY_NORMALIZATION = {
     "TUD-Fe": "energy bins",
     "TUD-W": "energy bins",
     "TUD-FNG": "energy bins",
+}
+
+ACTIVATION_REACTION = {
+    "Ni-n2n": "Ni-58(n,2n)Ni-57",
+    "Al": "Al-27(n,a)Na-24",
+    "Fe": "Fe-56(n,p)Mn-56",
+    "Ni-np": "Ni-58(n,p)Co-58",
+    "Nb": "Nb-93(n,2n)Nb-92",
+    "In": "In-115(n,n')In-115m",
+    "Mn": "Mn-55(n,g)Mn-56",
+    "Au": "Au-197(n,g)Au-198",
+    "Rh": "Rh-103(n,n')Rh-103*",
+    "S": "S-32(n,p)P-32",
+    "Zr": "Zr-90(n,2n)Zr-89",
 }
 
 
@@ -483,9 +498,7 @@ class FNGOutput(ExperimentalOutput):
         Responsible for producing excel outputs
         """
         # Dump the global C/E table
-        ex_outpath = os.path.join(
-            self.excel_path, self.testname + "_CE_tables.xlsx"
-        )
+        ex_outpath = os.path.join(self.excel_path, self.testname + "_CE_tables.xlsx")
         # Create a Pandas Excel writer using XlsxWriter as the engine.
         with pd.ExcelWriter(ex_outpath, engine="xlsxwriter") as writer:
             # --- build and dump the C/E table ---
@@ -673,7 +686,7 @@ class FNGOutput(ExperimentalOutput):
         filepath : str
             string containing the path to the experimental file to be read
             for comparison
-        
+
         """
         return pd.read_csv(filepath, sep=";")
 
@@ -684,7 +697,7 @@ class SpectrumOutput(ExperimentalOutput):
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
-                
+
         Parameters
         ----------
         tmp_path : str
@@ -753,7 +766,7 @@ class SpectrumOutput(ExperimentalOutput):
             tallynum (int): Tally number of the tally being plotted
             particle (str): Type of quantity being plotted on the X axis
             quant + unit (str): Unit of quantity being plotted on the X axis
-            
+
         """
         tallynum = tally.tallyNumber
         particle = tally.particleList[np.where(tally.tallyParticles == 1)[0][0]]
@@ -786,7 +799,7 @@ class SpectrumOutput(ExperimentalOutput):
 
     def _dump_ce_table(self):
         """
-        Generates the C/E table and dumps them as an .xlsx file 
+        Generates the C/E table and dumps them as an .xlsx file
         """
         final_table = pd.concat(self.tables)
         skipcol_global = 0
@@ -998,7 +1011,7 @@ class SpectrumOutput(ExperimentalOutput):
         x_axis : str
             X axis title
         tallynum : int
-            Tally number, used to determine behaviour for protons and 
+            Tally number, used to determine behaviour for protons and
             neutrons
 
         Returns
@@ -1172,7 +1185,7 @@ class TiaraOutput(ExperimentalOutput):
 
     def _get_conv_df(self, df):
         """
-        Adds extra columns to the dataframe containing the maximum and 
+        Adds extra columns to the dataframe containing the maximum and
         average errors of the tallies
 
         Parameters
@@ -1184,9 +1197,9 @@ class TiaraOutput(ExperimentalOutput):
         Returns
         -------
         conv_df: Dataframe
-            Same as previous dataframe, but with two extra columns containing 
+            Same as previous dataframe, but with two extra columns containing
             maximum and average errors
-            
+
         """
         conv_df = pd.DataFrame()
         for library in df.index.unique(level="Library").tolist():
@@ -1203,7 +1216,7 @@ class TiaraFCOutput(TiaraOutput):
 
     def _pp_excel_comparison(self):
         """
-        Builds dataframe from computational output comparable to experimental 
+        Builds dataframe from computational output comparable to experimental
         data and generates the excel comparison
         """
 
@@ -1247,9 +1260,7 @@ class TiaraFCOutput(TiaraOutput):
         self._exp_comp_case_check(indexes=indexes)
         self.case_tree_df.sort_values(indexes, axis=0, inplace=True)
         # Build ExcelWriter object
-        filepath = os.path.join(
-            self.excel_path, "Tiara_Fission_Cells_CE_tables.xlsx"
-        )
+        filepath = os.path.join(self.excel_path, "Tiara_Fission_Cells_CE_tables.xlsx")
         with pd.ExcelWriter(filepath, engine="xlsxwriter") as writer:
 
             # Create 1 worksheet for each energy/material combination
@@ -1391,7 +1402,7 @@ class TiaraFCOutput(TiaraOutput):
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
-                
+
         Parameters
         ----------
         tmp_path : str
@@ -1401,7 +1412,7 @@ class TiaraFCOutput(TiaraOutput):
         """
         # Set plot and axes details
         unit = "-"
-        quantity = ["On-axis C/E", "Off-axis 20 cm C/E"]
+        quantity = ["On-axis reaction rate", "Off-axis 20 cm reaction rate"]
         xlabel = "Shield thickness [cm]"
         f_cell_list = ["U238", "Th232"]
         # Loop over shield material/energy combinations
@@ -1505,9 +1516,11 @@ class TiaraFCOutput(TiaraOutput):
 
                 for cont, data in enumerate([data_U_p, data_Th_p]):
                     # Set title and send to plotter
-                    title = "Tiara Experiment: {} Fission Cell detector,\nEnergy: {} MeV, Shield material: {}".format(
+                    title = "Tiara Experiment: {} Fission Cell detector, Energy: {} MeV, Shield material: {}".format(
                         fission_cell[cont], str(energy), shield_material
                     )
+                    hea = atlas.doc.add_heading(title, level=1)
+                    hea.alignment = 1
                     outname = "tmp"
                     plot = Plotter(
                         data,
@@ -1520,7 +1533,8 @@ class TiaraFCOutput(TiaraOutput):
                         self.testname,
                     )
                     img_path = plot.plot("Waves")
-                    atlas.insert_img(img_path)
+                    atlas.insert_img(img_path, width=Inches(9))
+                    atlas.doc.add_page_break()
         return atlas
 
 
@@ -1549,9 +1563,7 @@ class TiaraBSOutput(TiaraOutput):
         indexes = ["Library", "Shield Material", "Energy", "Shield Thickness"]
         self._exp_comp_case_check(indexes=indexes)
         # Create ExcelWriter object
-        filepath = os.path.join(
-            self.excel_path, "Tiara_Bonner_Spheres_CE_tables.xlsx"
-        )
+        filepath = os.path.join(self.excel_path, "Tiara_Bonner_Spheres_CE_tables.xlsx")
         with pd.ExcelWriter(filepath, engine="xlsxwriter") as writer:
             # Loop over shield material/energy combinations
             mat_list = self.case_tree_df.index.unique(level="Shield Material").tolist()
@@ -1662,7 +1674,7 @@ class TiaraBSOutput(TiaraOutput):
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
-                
+
         Parameters
         ----------
         tmp_path : str
@@ -1672,7 +1684,7 @@ class TiaraBSOutput(TiaraOutput):
         """
         # Set plot axes
         unit = "-"
-        quantity = ["C/E"]
+        quantity = ["Experiment reaction rate"]
         xlabel = "Bonner Sphere Radius [mm]"
         x = ["Bare", "15", "30", "50", "90"]
 
@@ -1693,7 +1705,7 @@ class TiaraBSOutput(TiaraOutput):
                 # Get library name, assign title to the plot
                 ylabel = self.session.conf.get_lib_name(lib)
                 title = (
-                    "Tiara Experiment: Bonner Spheres detector,\nEnergy: "
+                    "Tiara Experiment: Bonner Spheres detector, Energy: "
                     + str(idx[1])
                     + " MeV, Shield material: "
                     + idx[0]
@@ -1713,12 +1725,15 @@ class TiaraBSOutput(TiaraOutput):
                 data.append(data_p)
 
             # Send data to plotter
+            hea = atlas.doc.add_heading(title, level=1)
+            hea.alignment = 1
             outname = "tmp"
             plot = Plotter(
                 data, title, tmp_path, outname, quantity, unit, xlabel, self.testname
             )
             img_path = plot.plot("Waves")
-            atlas.insert_img(img_path)
+            atlas.insert_img(img_path, width=Inches(9))
+            atlas.doc.add_page_break()
 
         return atlas
 
@@ -1822,7 +1837,7 @@ class ShieldingOutput(ExperimentalOutput):
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
-                
+
         Parameters
         ----------
         tmp_path : str
@@ -1832,7 +1847,6 @@ class ShieldingOutput(ExperimentalOutput):
         """
         # Set plot and axes details
         unit = "-"
-        quantity = ["C/E"]
         xlabel = "Shielding thickness [cm]"
         data = []
         # TODO Replace when other transport codes implemented.
@@ -1891,11 +1905,17 @@ class ShieldingOutput(ExperimentalOutput):
 
             # Send data to plotter
             outname = "tmp"
+            if material != "TLD":
+                quantity = [ACTIVATION_REACTION[material] + " Reaction Rate"]
+            else:
+                quantity = ["Absorbed dose"]
+            atlas.doc.add_heading(title, level=1)
             plot = Plotter(
                 data, title, tmp_path, outname, quantity, unit, xlabel, self.testname
             )
             img_path = plot.plot("Waves")
-            atlas.insert_img(img_path)
+            atlas.insert_img(img_path, width=Inches(9))
+            atlas.doc.add_page_break()
 
         return atlas
 
@@ -1922,7 +1942,7 @@ class MultipleSpectrumOutput(SpectrumOutput):
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
-                
+
         Parameters
         ----------
         tmp_path : str
@@ -1944,14 +1964,14 @@ class MultipleSpectrumOutput(SpectrumOutput):
         return atlas
 
     def _plot_tally_group(self, group, tmp_path, atlas):
-        """ 
-        Plots tallies for a given group of outputs and add to Atlas object 
+        """
+        Plots tallies for a given group of outputs and add to Atlas object
 
         Parameters
         ----------
         group : list
-            list of groups in the experimental benchmark object, outputs are 
-            grouped by material, several tallies for each material/group 
+            list of groups in the experimental benchmark object, outputs are
+            grouped by material, several tallies for each material/group
         tmp_path : str
             path to temporary atlas plot folder
         atlas : JADE Atlas
@@ -1960,7 +1980,7 @@ class MultipleSpectrumOutput(SpectrumOutput):
         Returns
         -------
         atlas : JADE Atlas
-            adjusted Atlas object 
+            adjusted Atlas object
         """
         # Extract 'Tally' and 'Input' values for the current 'Group'
         group_data = self.groups.xs(group, level="Group", drop_level=False)
@@ -2011,7 +2031,7 @@ class MultipleSpectrumOutput(SpectrumOutput):
         atlas.insert_img(img_path)
         img_path = plot.plot("Experimental points group CE")
         atlas.doc.add_heading(title + " C/E", level=1)
-        atlas.insert_img(img_path)
+        atlas.insert_img(img_path, width=Inches(9))
         return atlas
 
     def _define_title(self, input, particle, quantity):

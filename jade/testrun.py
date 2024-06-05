@@ -629,6 +629,9 @@ class Test:
 
                 if runoption.lower() == "c":
                     try:
+                        # in case of run in console dump the prints to a file
+                        # to get the code version in the metadata
+                        run_command.append(" > dump.out")
                         os.environ["DATAPATH"] = str(libpath.parent)
                         if not sys.platform.startswith("win"):
                             unix.configure(env_variables)

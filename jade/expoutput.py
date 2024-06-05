@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import annotations
 import math
 import os
 import re
@@ -29,6 +30,7 @@ from abc import abstractmethod
 
 import numpy as np
 import pandas as pd
+from docx.shared import Inches
 from scipy.interpolate import interp1d
 from tqdm import tqdm
 
@@ -47,6 +49,20 @@ TALLY_NORMALIZATION = {
     "TUD-Fe": "energy bins",
     "TUD-W": "energy bins",
     "TUD-FNG": "energy bins",
+}
+
+ACTIVATION_REACTION = {
+    "Ni-n2n": "Ni-58(n,2n)Ni-57",
+    "Al": "Al-27(n,a)Na-24",
+    "Fe": "Fe-56(n,p)Mn-56",
+    "Ni-np": "Ni-58(n,p)Co-58",
+    "Nb": "Nb-93(n,2n)Nb-92",
+    "In": "In-115(n,n')In-115m",
+    "Mn": "Mn-55(n,g)Mn-56",
+    "Au": "Au-197(n,g)Au-198",
+    "Rh": "Rh-103(n,n')Rh-103*",
+    "S": "S-32(n,p)P-32",
+    "Zr": "Zr-90(n,2n)Zr-89",
 }
 
 
@@ -185,16 +201,61 @@ class ExperimentalOutput(BenchmarkOutput):
         # Remove tmp images
         shutil.rmtree(tmp_path)
 
-    def _extract_outputs(self):
+    def _extract_single_output(
+        self, results_path: os.PathLike, folder: str, lib: str
+    ) -> tuple[pd.DataFrame, str]:
+        mfile, ofile = self._get_output_files(results_path)
+        # Parse output
+        output = MCNPoutput(mfile, ofile)
+
+        # need to extract the input in case of multi
+        if self.multiplerun:
+            pieces = folder.split("_")
+            input = pieces[-1]
+            if input not in self.inputs:
+                self.inputs.append(input)
+            self.outputs[input, lib] = output
+            # Get the meaningful results
+            self.results[input, lib] = self._processMCNPdata(output)
+        else:
+            # just treat it as a special case of multiple run
+            self.outputs[self.testname, lib] = output
+            # Get the meaningful results
+            self.results[self.testname, lib] = self._processMCNPdata(output)
+            input = self.testname
+
+        return output.tallydata, input
+
+    def _extract_outputs(self) -> None:
         """
-        Extract, organize and store the results coming from the MCNP runs
+        Extract, organize and store the results coming from the different codes
+        runs
+
         Returns
         -------
         None.
         """
-        outputs = {}
-        results = {}
-        inputs = []
+        self.outputs = {}
+        self.results = {}
+
+        # Each output object is processing only one code at the time at the moment
+        if self.mcnp:
+            code_tag = "mcnp"
+        if self.openmc:
+            print("Experimental comparison not implemented for OpenMC")
+            return
+        if self.serpent:
+            print("Experimental comparison not implemented for Serpent")
+            return
+        if self.d1s:
+            code_tag = "d1s"
+
+        # only multiple runs have multiple inputs
+        if self.multiplerun:
+            self.inputs = []
+        else:
+            self.inputs = [self.testname]
+
         # Iterate on the different libraries results except 'Exp'
         for lib, test_path in self.test_path.items():
             if lib != EXP_TAG:
@@ -202,72 +263,22 @@ class ExperimentalOutput(BenchmarkOutput):
                     # Results are organized by folder and lib
                     code_raw_data = {}
                     for folder in os.listdir(test_path):
-                        # FIX MCNP HARD CODED PATH HERE
-                        if self.mcnp:
-                            results_path = os.path.join(test_path, folder, "mcnp")
-                            pieces = folder.split("_")
-                            # Get zaid
-                            input = pieces[-1]
-                            mfile, ofile = self._get_output_files(results_path)
-                            # Parse output
-                            output = MCNPoutput(mfile, ofile)
-                            outputs[input, lib] = output
-                            code_raw_data[input, lib] = output.tallydata
-                            # self.raw_data[input, lib] = output.tallydata
+                        results_path = os.path.join(test_path, folder, code_tag)
+                        tallydata, input = self._extract_single_output(
+                            results_path, folder, lib
+                        )
+                        code_raw_data[input, lib] = tallydata
 
-                            # Get the meaningful results
-                            results[input, lib] = self._processMCNPdata(output)
-                            if input not in inputs:
-                                inputs.append(input)
-                        if self.openmc:
-                            print(
-                                "Experimental comparison not implemented \
-                                for OpenMC"
-                            )
-                            break
-                        if self.serpent:
-                            print(
-                                "Experimental comparison not implemented \
-                                for Serpent"
-                            )
-                            break
-                        if self.d1s:
-                            results_path = os.path.join(test_path, folder, "d1s")
-                            pieces = folder.split("_")
-                            # Get zaid
-                            input = pieces[-1]
-                            mfile, ofile = self._get_output_files(results_path)
-                            # Parse output
-                            output = MCNPoutput(mfile, ofile)
-                            outputs[input, lib] = output
-                            code_raw_data[input, lib] = output.tallydata
-                            # self.raw_data[input, lib] = output.tallydata
-
-                            # Get the meaningful results
-                            results[input, lib] = self._processMCNPdata(output)
-                            if input not in inputs:
-                                inputs.append(input)
-                    if self.mcnp:
-                        self.raw_data["mcnp"].update(code_raw_data)
-                    if self.d1s:
-                        self.raw_data["d1s"].update(code_raw_data)
                 # Results are organized just by lib
                 else:
-                    mfile, ofile = self._get_output_files(test_path)
-                    # Parse output
-                    output = MCNPoutput(mfile, ofile)
-                    outputs[self.testname, lib] = output
-                    # Adjourn raw Data
-                    self.raw_data[self.testname, lib] = output.tallydata
-                    # Get the meaningful results
-                    results[self.testname, lib] = self._processMCNPdata(output)
+                    results_path = os.path.join(test_path, code_tag)
+                    tallydata, input = self._extract_single_output(
+                        results_path, None, lib
+                    )
+                    code_raw_data = {(self.testname, lib): tallydata}
 
-        self.outputs = outputs
-        self.results = results
-        if inputs:
-            self.inputs = inputs
-        else:
-            self.inputs = [self.testname]
+                # Adjourn raw Data
+                self.raw_data[code_tag].update(code_raw_data)
 
     def _read_exp_results(self):
         """
@@ -1420,7 +1431,7 @@ class TiaraFCOutput(TiaraOutput):
         """
         # Set plot and axes details
         unit = "-"
-        quantity = ["On-axis C/E", "Off-axis 20 cm C/E"]
+        quantity = ["On-axis reaction rate", "Off-axis 20 cm reaction rate"]
         xlabel = "Shield thickness [cm]"
         f_cell_list = ["U238", "Th232"]
         # Loop over shield material/energy combinations
@@ -1524,9 +1535,11 @@ class TiaraFCOutput(TiaraOutput):
 
                 for cont, data in enumerate([data_U_p, data_Th_p]):
                     # Set title and send to plotter
-                    title = "Tiara Experiment: {} Fission Cell detector,\nEnergy: {} MeV, Shield material: {}".format(
+                    title = "Tiara Experiment: {} Fission Cell detector, Energy: {} MeV, Shield material: {}".format(
                         fission_cell[cont], str(energy), shield_material
                     )
+                    hea = atlas.doc.add_heading(title, level=1)
+                    hea.alignment = 1
                     outname = "tmp"
                     plot = Plotter(
                         data,
@@ -1539,7 +1552,8 @@ class TiaraFCOutput(TiaraOutput):
                         self.testname,
                     )
                     img_path = plot.plot("Waves")
-                    atlas.insert_img(img_path)
+                    atlas.insert_img(img_path, width=Inches(9))
+                    atlas.doc.add_page_break()
         return atlas
 
 
@@ -1689,7 +1703,7 @@ class TiaraBSOutput(TiaraOutput):
         """
         # Set plot axes
         unit = "-"
-        quantity = ["C/E"]
+        quantity = ["Experiment reaction rate"]
         xlabel = "Bonner Sphere Radius [mm]"
         x = ["Bare", "15", "30", "50", "90"]
 
@@ -1710,7 +1724,7 @@ class TiaraBSOutput(TiaraOutput):
                 # Get library name, assign title to the plot
                 ylabel = self.session.conf.get_lib_name(lib)
                 title = (
-                    "Tiara Experiment: Bonner Spheres detector,\nEnergy: "
+                    "Tiara Experiment: Bonner Spheres detector, Energy: "
                     + str(idx[1])
                     + " MeV, Shield material: "
                     + idx[0]
@@ -1730,12 +1744,15 @@ class TiaraBSOutput(TiaraOutput):
                 data.append(data_p)
 
             # Send data to plotter
+            hea = atlas.doc.add_heading(title, level=1)
+            hea.alignment = 1
             outname = "tmp"
             plot = Plotter(
                 data, title, tmp_path, outname, quantity, unit, xlabel, self.testname
             )
             img_path = plot.plot("Waves")
-            atlas.insert_img(img_path)
+            atlas.insert_img(img_path, width=Inches(9))
+            atlas.doc.add_page_break()
 
         return atlas
 
@@ -1849,7 +1866,6 @@ class ShieldingOutput(ExperimentalOutput):
         """
         # Set plot and axes details
         unit = "-"
-        quantity = ["C/E"]
         xlabel = "Shielding thickness [cm]"
         data = []
         # TODO Replace when other transport codes implemented.
@@ -1908,11 +1924,17 @@ class ShieldingOutput(ExperimentalOutput):
 
             # Send data to plotter
             outname = "tmp"
+            if material != "TLD":
+                quantity = [ACTIVATION_REACTION[material] + " Reaction Rate"]
+            else:
+                quantity = ["Absorbed dose"]
+            atlas.doc.add_heading(title, level=1)
             plot = Plotter(
                 data, title, tmp_path, outname, quantity, unit, xlabel, self.testname
             )
             img_path = plot.plot("Waves")
-            atlas.insert_img(img_path)
+            atlas.insert_img(img_path, width=Inches(9))
+            atlas.doc.add_page_break()
 
         return atlas
 
@@ -2028,7 +2050,7 @@ class MultipleSpectrumOutput(SpectrumOutput):
         atlas.insert_img(img_path)
         img_path = plot.plot("Experimental points group CE")
         atlas.doc.add_heading(title + " C/E", level=1)
-        atlas.insert_img(img_path)
+        atlas.insert_img(img_path, width=Inches(9))
         return atlas
 
     def _define_title(self, input, particle, quantity):

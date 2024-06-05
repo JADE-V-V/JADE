@@ -813,13 +813,7 @@ def print_XS_EXFOR(session):
                         bookXS[j][MT] = bookXS[j]["dataT"].reactions[i]
                     # Don't print if MT is not present in library
                     except KeyError:
-                        s = (
-                            "Channel MT"
-                            + str(i)
-                            + " "
-                            + "not present in "
-                            + bookXS[j]["name"]
-                        )
+                        s = f"Channel MT{i} not present in {bookXS[j]['name']}"
                         print(s)
                         continue
 
@@ -951,6 +945,8 @@ def print_XS_EXFOR(session):
             plt.yscale("log")
             plt.legend(legend_plot, loc="lower left", fontsize=20, markerscale=0.5)
             plt.xlabel("Energy (MeV)", fontsize=22)
+            if MT == "MT301":
+                plt.ylabel("Heating (MeV/coll)", fontsize=22)
             plt.ylabel("$\sigma$ (barn)", fontsize=22)
             plt.xticks(fontsize=22)
             plt.yticks(fontsize=22)
@@ -959,7 +955,7 @@ def print_XS_EXFOR(session):
             )
             plt.savefig(
                 os.path.join(
-                    session.path_uti, isotope_name + "_" + MT + "_" + "XS" + ".png"
+                    session.path_uti, f"{isotope_name}_{MT}_XS.png"
                 )
             )
             print(" Cross Section printed")

@@ -395,17 +395,7 @@ class Status:
                     logtext = "\nThe following test results have been overwritten:"
                     for code, test_runned in all_test_runned.items():
                         for test in test_runned:
-                            logtext = (
-                                logtext
-                                + "\n"
-                                + "- "
-                                + code
-                                + ": "
-                                + test
-                                + " ["
-                                + lib
-                                + "]"
-                            )
+                            logtext += f"\n- {code}: {test} [{lib}]"
                     session.log.adjourn(logtext)
                     return True
 

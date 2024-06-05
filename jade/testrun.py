@@ -364,15 +364,22 @@ class Test:
 
         code_tags = self._get_code_tags()
         # read, update and add metadata file to the run directory
-        metadata_inp = os.path.join(
-            os.path.dirname(self.original_inp), "benchmark_metadata.json"
-        )
+        # if it is a multiple run, there is a trick to check by the path
+        pieces = self.original_inp.split(os.sep)
+        if pieces[-2] in pieces[-1]:
+            # then is a multiple run and we should go up one level
+            metadata_inp = os.path.join(
+                os.path.dirname(self.original_inp), "benchmark_metadata.json"
+            )
+        else:
+            metadata_inp = os.path.join(self.original_inp, "benchmark_metadata.json")
+
         try:
             with open(metadata_inp, "r", encoding="utf-8") as f:
                 metadata_inp = json.load(f)
         except FileNotFoundError:
             logging.warning(
-                "Metadata file not found in %s", os.path.dirname(self.original_inp)
+                "Metadata file not found in %s", os.path.dirname(metadata_inp)
             )
             metadata_inp = {"name": self.name}
 
@@ -388,9 +395,7 @@ class Test:
             metadata["code"] = code_tag
             outfile = os.path.join(outpath, code_tag, "metadata.json")
             try:
-                with open(
-                    outfile, "w", encoding="utf-8"
-                ) as f:
+                with open(outfile, "w", encoding="utf-8") as f:
                     json.dump(metadata, f, indent=4)
             except FileNotFoundError:
                 # It may happen that the code bool is set to true but the
@@ -1646,6 +1651,8 @@ class MultipleTest:
         tests = []
         for folder in os.listdir(inpsfolder):
             inp = os.path.join(inpsfolder, folder)
+            if os.path.isfile(inp):
+                continue
             test = TestOb(inp, lib, config, log, confpath, runoption, lib_name)
             tests.append(test)
         self.tests = tests

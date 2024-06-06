@@ -32,7 +32,8 @@ import sys
 import json
 import logging
 from typing import TYPE_CHECKING
-from f4enix.output.mctal import Mctal
+from f4enix.output.mctal import Mctal, Tally
+from f4enix.output.meshtal import Meshtal, Fmesh, Fmesh1D
 import numpy as np
 
 # import xlwings as xw
@@ -42,7 +43,7 @@ from tqdm import tqdm
 import jade.atlas as at
 import jade.excelsupport as exsupp
 import jade.plotter as plotter
-import jade.meshtal as Meshtal
+
 from jade.outputFile import OutputFile
 from jade.__version__ import __version__
 
@@ -353,8 +354,8 @@ class BenchmarkOutput(AbstractOutput):
                     except KeyError:
                         # this means that the column is only one and we have
                         # two distinct DFs for values and errors
-                        values = vals_df["Value"]
-                        error = err_df["Error"]
+                        values = vals_df["Value"].values
+                        error = err_df["Error"].values
 
                     lib_name = self.session.conf.get_lib_name(self.lib)
                     lib = {"x": x, "y": values, "err": error, "ylabel": lib_name}
@@ -1021,244 +1022,29 @@ class MCNPoutput:
         # Read and parse the mctal file
         mctal = Mctal(mctal_file)
         self.mctal = mctal
-        self.tallydata, self.totalbin = self.organize_mctal()
-
+        self.tallydata = mctal.tallydata
+        self.totalbin = mctal.totalbin
         # Read the output file
         self.out = OutputFile(output_file)
         self.out.assign_tally_description(self.mctal.tallies)
         self.stat_checks = self.out.stat_checks
-
         # Read the meshtal file
         if meshtal_file is not None:
             self.meshtal = Meshtal(meshtal_file)
+            self.meshtal.readMesh()
             # Extract the available 1D to be merged with normal tallies
-            fmesh1D = self.meshtal.extract_1D()
-            for tallynum, data in fmesh1D.items():
-                tallynum = int(tallynum)  # Coherence with tallies
-                # Add them to the tallly data
-                self.tallydata[tallynum] = data["data"]
-                self.totalbin[tallynum] = None
-
-                # Create fake tallies to be added to the mctal
-                faketally = mtal.Tally(tallynum)
-                faketally.tallyComment = [data["desc"]]
-                self.mctal.tallies.append(faketally)
-
-    def organize_mctal(self):
-        """
-        Retrieve and organize mctal data into a DataFrame.
-
-        Returns
-        -------
-        tallydata : pd.DataFrame
-            organized tally data.
-        totalbin : pd.DataFrame
-            organized tally data (only total bins).
-
-        """
-        tallydata = {}
-        totalbin = {}
-
-        for t in self.mctal.tallies:
-            rows = []
-
-            # --- Reorganize values ---
-            # You cannot recover the following from the mctal
-            nDir = t._getNbins("d", False)
-            nMul = t._getNbins("m", False)
-            nSeg = t._getNbins("s", False)  # this can be used
-
-            # Some checks for voids
-            binnings = {
-                "cells": t.cells,
-                "user": t.usr,
-                "segments": t.seg,
-                "cosine": t.cos,
-                "energy": t.erg,
-                "time": t.tim,
-                "cor A": t.cora,
-                "cor B": t.corb,
-                "cor C": t.corc,
-            }
-
-            # Cells may have a series of zeros, the last one may be for the
-            # total
-            cells = []
-            # last_idx = len(binnings['cells'])-1
-            for i, cell in enumerate(binnings["cells"]):
-                if int(cell) == 0:
-                    newval = "Input " + str(i + 1)
-                    cells.append(newval)
-                # Everything is fine, nothing to modify
+            for msh in self.meshtal.mesh.values():
+                if isinstance(msh, Fmesh1D):
+                    tallynum, tallydata, comment = msh.convert2tally()
+                    # Add them to the tallly data
+                    self.tallydata[tallynum] = tallydata
+                    self.totalbin[tallynum] = None
+                    # Create fake tallies to be added to the mctal
+                    faketally = Tally(tallynum)
+                    faketally.tallyComment = [comment]
+                    self.mctal.tallies.append(faketally)
                 else:
-                    cells.append(cell)
-            binnings["cells"] = cells
-
-            for name, binning in binnings.items():
-                if len(binning) == 0:
-                    binnings[name] = [np.nan]
-            # Start iteration
-            for f, fn in enumerate(binnings["cells"]):
-                for d in range(nDir):  # Unused
-                    for u, un in enumerate(binnings["user"]):
-                        for sn in range(1, nSeg + 1):
-                            for m in range(nMul):  # (unused)
-                                for c, cn in enumerate(binnings["cosine"]):
-                                    for e, en in enumerate(binnings["energy"]):
-                                        for nt, ntn in enumerate(binnings["time"]):
-                                            for k, kn in enumerate(binnings["cor C"]):
-                                                for j, jn in enumerate(
-                                                    binnings["cor B"]
-                                                ):
-                                                    for i, ina in enumerate(
-                                                        binnings["cor A"]
-                                                    ):
-                                                        val = t._getValue(
-                                                            f,
-                                                            d,
-                                                            u,
-                                                            sn - 1,
-                                                            m,
-                                                            c,
-                                                            e,
-                                                            nt,
-                                                            i,
-                                                            j,
-                                                            k,
-                                                            0,
-                                                        )
-                                                        err = t._getValue(
-                                                            f,
-                                                            d,
-                                                            u,
-                                                            sn - 1,
-                                                            m,
-                                                            c,
-                                                            e,
-                                                            nt,
-                                                            i,
-                                                            j,
-                                                            k,
-                                                            1,
-                                                        )
-                                                        rows.append(
-                                                            [
-                                                                fn,
-                                                                d,
-                                                                un,
-                                                                sn,
-                                                                m,
-                                                                cn,
-                                                                en,
-                                                                ntn,
-                                                                ina,
-                                                                jn,
-                                                                kn,
-                                                                val,
-                                                                err,
-                                                            ]
-                                                        )
-
-                # Only one total bin per cell is admitted
-                val = t._getValue(f, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0)
-                err = t._getValue(f, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1)
-                if t.timTC is not None:
-                    rows.append(
-                        [fn, d, un, sn, m, cn, en, "total", ina, jn, kn, val, err]
-                    )
-                    total = "Time"
-
-                elif t.ergTC is not None:
-                    rows.append(
-                        [fn, d, un, sn, m, cn, "total", ntn, ina, jn, kn, val, err]
-                    )
-                    total = "Energy"
-
-                elif t.segTC is not None:
-                    rows.append(
-                        [fn, d, un, "total", m, cn, en, ntn, ina, jn, kn, val, err]
-                    )
-                    total = "Segments"
-
-                elif t.cosTC is not None:
-                    rows.append(
-                        [fn, d, un, sn, m, "total", en, ntn, ina, jn, kn, val, err]
-                    )
-                    total = "Cosine"
-
-                elif t.usrTC is not None:
-                    rows.append(
-                        [fn, d, "total", sn, m, cn, en, ntn, ina, jn, kn, val, err]
-                    )
-                    total = "User"
-
-            # --- Build the tally DataFrame ---
-            columns = [
-                "Cells",
-                "Dir",
-                "User",
-                "Segments",
-                "Multiplier",
-                "Cosine",
-                "Energy",
-                "Time",
-                "Cor C",
-                "Cor B",
-                "Cor A",
-                "Value",
-                "Error",
-            ]
-            df = pd.DataFrame(rows, columns=columns)
-
-            # Default drop of multiplier and Dir
-            del df["Dir"]
-            del df["Multiplier"]
-            # --- Keep only meaningful binning ---
-            # Drop NA
-            df.dropna(axis=1, inplace=True)
-            # Drop constant axes (if len is > 1)
-            if len(df) > 1:
-                for column in df.columns:
-                    if column not in ["Value", "Error"]:
-                        firstval = df[column].values[0]
-                        # Should work as long as they are the exact same value
-                        allequal = (df[column] == firstval).all()
-                        if allequal:
-                            del df[column]
-
-            # Drop rows if they are exactly the same values
-            # (untraced behaviour)
-            df.drop_duplicates(inplace=True)
-
-            # The double binning Surfaces/cells with segments can create
-            # issues for JADE since if another binning is added
-            # (such as energy) it is not supported. Nevertheless,
-            # the additional segmentation can be quite useful and this can be
-            # collapsed de facto in a single geometrical binning
-
-            if "Cells" in df.columns and "Segments" in df.columns and len(df) > 1:
-                # Then we can collapse this in a single geometrical binning
-                values = []
-                for cell, segment in zip(df.Cells, df.Segments):
-                    val = str(int(cell)) + "-" + str(int(segment))
-                    values.append(val)
-                df["Cells-Segments"] = values
-                # delete the collapsed columns
-                del df["Cells"]
-                del df["Segments"]
-
-            # Sub DF containing only total bins
-            try:
-                dftotal = df[df[total] == "total"]
-            except (KeyError, NameError):
-                # KeyError : there is no total bin in df
-                # NameError: total variable was not defined
-                dftotal = None
-
-            tallydata[t.tallyNumber] = df
-            totalbin[t.tallyNumber] = dftotal
-
-        return tallydata, totalbin
+                    continue
 
 
 class OpenMCOutput:

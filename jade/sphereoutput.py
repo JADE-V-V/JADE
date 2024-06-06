@@ -40,6 +40,8 @@ import jade.atlas as at
 import jade.excelsupport as exsupp
 import jade.plotter as plotter
 from jade.output import BenchmarkOutput, MCNPoutput, OpenMCOutput
+from f4enix.output.mctal import Mctal
+from jade.outputFile import OutputFile
 
 if TYPE_CHECKING:
     from jade.main import Session
@@ -1167,8 +1169,8 @@ class SphereTallyOutput:
         return results, errors, columns
 
 
-class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
-    def organize_mctal(self):
+class SphereMctal(Mctal):
+    def _get_dfs(self):
         """
         Retrieve and organize mctal data. Simplified for sphere leakage case
 
@@ -1177,7 +1179,7 @@ class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
         # Extract data
         rows = []
         rowstotal = []
-        for t in self.mctal.tallies:
+        for t in self.tallies:
             num = t.tallyNumber
             des = t.tallyComment[0]
             nCells = t._getNbins("f", False)
@@ -1266,6 +1268,41 @@ class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
             rowstotal, columns=["Tally N.", "Tally Description", "Value", "Error"]
         )
         return df, dftotal
+
+
+class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
+
+    def __init__(self, mctal_file, output_file, meshtal_file=None):
+        """
+        Class representing the output coming from the sphere leakage benchmark
+
+        Parameters
+        ----------
+        mctal_file : path like object
+            path to the mctal file.
+        output_file : path like object
+            path to the outp file.
+        meshtal_file : path like object, optional
+            path to the meshtal file. The default is None.
+
+        Returns
+        -------
+        None.
+
+        """
+        self.mctal_file = mctal_file  # path to mcnp mctal file
+        self.output_file = output_file  # path to mcnp output file
+        self.meshtal_file = meshtal_file  # path to mcnp meshtal file
+
+        # Read and parse the mctal file
+        mctal = SphereMctal(mctal_file)
+        self.mctal = mctal
+        self.tallydata = mctal.tallydata
+        self.totalbin = mctal.totalbin
+        # Read the output file
+        self.out = OutputFile(output_file)
+        self.out.assign_tally_description(self.mctal.tallies)
+        self.stat_checks = self.out.stat_checks
 
 
 class SphereOpenMCoutput(OpenMCOutput, SphereTallyOutput):

@@ -79,6 +79,21 @@ class TestExpOutput:
         self.benchoutput_comp.compare()
         assert True
 
+    def test_benchmarkoutputmesh(self, session_mock: MockUpSession, lm: LibManager):
+        code = "mcnp"
+        testname = "WCLL_TBM_1D"
+        os.makedirs(session_mock.path_comparison)
+        os.makedirs(session_mock.path_single)
+        self.benchoutput_32c = outp.BenchmarkOutput("32c", code, testname, session_mock)
+        self.benchoutput_32c.single_postprocess()
+        self.benchoutput_31c = outp.BenchmarkOutput("31c", code, testname, session_mock)
+        self.benchoutput_31c.single_postprocess()
+        self.benchoutput_comp = outp.BenchmarkOutput(
+            ["32c", "31c"], code, testname, session_mock
+        )
+        self.benchoutput_comp.compare()
+        assert True
+
     def test_spectrumoutput(self, session_mock: MockUpSession):
 
         code = "mcnp"

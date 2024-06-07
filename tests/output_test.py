@@ -36,7 +36,7 @@ from jade.expoutput import SpectrumOutput
 from jade.sphereoutput import SphereOutput
 from jade.configuration import Configuration
 from jade.__version__ import __version__
-
+from f4enix.output.MCNPoutput import MCNPoutput
 
 # Files
 OUTP_SDDR = os.path.join(
@@ -64,18 +64,6 @@ class MockSession:
         self.path_exp_res = os.path.join(
             modules_path, "jade", "install_files", "Experimental_Results"
         )
-
-
-class TestSphereSDDRMCNPoutput:
-
-    def test_organizemctal(self):
-        out = output.MCNPoutput(OUTM_SDDR, OUTP_SDDR)
-        t4 = out.tallydata[4]
-        t2 = out.tallydata[2]
-        assert list(t4.columns) == ["Cells", "Segments", "Value", "Error"]
-        assert len(t4) == 1
-        assert len(t2) == 176
-        assert list(t2.columns) == ["Energy", "Value", "Error"]
 
 
 class TestBenchmarkOutput:

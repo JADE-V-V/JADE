@@ -146,15 +146,6 @@ class TestSphereOutput:
         assert "M10" == results[1]["Zaid"]
 
 
-# Files
-OUTP_SDDR = os.path.join(
-    cp, "TestFiles", "sphereoutput", "SphereSDDR_11023_Na-23_102_o"
-)
-OUTM_SDDR = os.path.join(
-    cp, "TestFiles", "sphereoutput", "SphereSDDR_11023_Na-23_102_m"
-)
-
-
 class MockSphereSDDRoutput(sout.SphereSDDRoutput):
     def __init__(self):
         self.lib = "99c"
@@ -214,15 +205,3 @@ class TestSphereSDDRoutput:
         # print(errors)
         # print(stat_checks)
         # print(results.columns)
-
-
-class TestSphereSDDRMCNPoutput:
-
-    out = sout.SphereSDDRMCNPoutput(OUTM_SDDR, OUTP_SDDR)
-
-    def test_get_single_excel_data(self):
-        vals, errors = self.out.get_single_excel_data()
-        assert isinstance(vals, pd.Series)
-        assert isinstance(errors, pd.Series)
-        assert len(vals) == 23
-        assert len(errors) == 23

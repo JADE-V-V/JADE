@@ -32,8 +32,7 @@ import sys
 import json
 import logging
 from typing import TYPE_CHECKING
-from f4enix.output.mctal import Mctal, Tally
-from f4enix.output.meshtal import Meshtal, Fmesh, Fmesh1D
+from f4enix.output.MCNPoutput import MCNPoutput
 import numpy as np
 
 # import xlwings as xw
@@ -44,7 +43,6 @@ import jade.atlas as at
 import jade.excelsupport as exsupp
 import jade.plotter as plotter
 
-from jade.outputFile import OutputFile
 from jade.__version__ import __version__
 
 if TYPE_CHECKING:
@@ -994,57 +992,6 @@ class BenchmarkOutput(AbstractOutput):
                     abs_diffs,
                     std_devs,
                 )
-
-
-class MCNPoutput:
-    def __init__(self, mctal_file, output_file, meshtal_file=None):
-        """
-        Class representing all outputs coming from and MCNP run
-
-        Parameters
-        ----------
-        mctal_file : path like object
-            path to the mctal file.
-        output_file : path like object
-            path to the outp file.
-        meshtal_file : path like object, optional
-            path to the meshtal file. The default is None.
-
-        Returns
-        -------
-        None.
-
-        """
-        self.mctal_file = mctal_file  # path to mcnp mctal file
-        self.output_file = output_file  # path to mcnp output file
-        self.meshtal_file = meshtal_file  # path to mcnp meshtal file
-
-        # Read and parse the mctal file
-        mctal = Mctal(mctal_file)
-        self.mctal = mctal
-        self.tallydata = mctal.tallydata
-        self.totalbin = mctal.totalbin
-        # Read the output file
-        self.out = OutputFile(output_file)
-        self.out.assign_tally_description(self.mctal.tallies)
-        self.stat_checks = self.out.stat_checks
-        # Read the meshtal file
-        if meshtal_file is not None:
-            self.meshtal = Meshtal(meshtal_file)
-            self.meshtal.readMesh()
-            # Extract the available 1D to be merged with normal tallies
-            for msh in self.meshtal.mesh.values():
-                if isinstance(msh, Fmesh1D):
-                    tallynum, tallydata, comment = msh.convert2tally()
-                    # Add them to the tallly data
-                    self.tallydata[tallynum] = tallydata
-                    self.totalbin[tallynum] = None
-                    # Create fake tallies to be added to the mctal
-                    faketally = Tally(tallynum)
-                    faketally.tallyComment = [comment]
-                    self.mctal.tallies.append(faketally)
-                else:
-                    continue
 
 
 class OpenMCOutput:

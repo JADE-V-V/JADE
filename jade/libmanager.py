@@ -123,6 +123,8 @@ class LibManager:
         self.isotopes = self.isotope_parser.isotopes
 
         # Convert all columns to lower case
+        # create a copy here or it will modify the configuration file one
+        lib_df = lib_df.copy()
         new_columns = []
         for column in lib_df:
             new_columns.append(column.lower())
@@ -135,6 +137,7 @@ class LibManager:
 
         self.data = {}
         self.codes = []
+
         lib_df.set_index("suffix", inplace=True)
         # Initilize the Xsdir object
         # self.XS = xs.Xsdir(xsdir_file)
@@ -173,7 +176,9 @@ class LibManager:
                         self.data[code][library] = xsdir
                     else:
                         logging.warning(
-                            "Library %s not present in MCNP XSDIR file: %s", library, path
+                            "Library %s not present in MCNP XSDIR file: %s",
+                            library,
+                            path,
                         )
 
                 elif code == "openmc":
@@ -186,7 +191,9 @@ class LibManager:
                         self.data[code][library] = xsdir
                     else:
                         logging.warning(
-                            "Library %s not present in Serpent XSDIR file: %s", library, path
+                            "Library %s not present in Serpent XSDIR file: %s",
+                            library,
+                            path,
                         )
 
                 elif code == "d1s":
@@ -197,7 +204,9 @@ class LibManager:
                         self.data[code][library] = xsdir
                     else:
                         logging.warning(
-                            "Library %s not present in D1S XSDIR file: %s", library, path
+                            "Library %s not present in D1S XSDIR file: %s",
+                            library,
+                            path,
                         )
 
                 else:

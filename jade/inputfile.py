@@ -31,8 +31,8 @@ from contextlib import contextmanager
 
 from numjuggler import parser as par
 
-import jade.matreader as mat
-from jade.parsersD1S import Reaction, ReactionFile
+import f4enix.input.materials as mat
+from f4enix.input.d1suned import Reaction, ReactionFile
 
 
 class InputFile:

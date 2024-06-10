@@ -1,46 +1,51 @@
-# -*- coding: utf-8 -*-
-# Created on Fri Sep  3 09:23:52 2021
+"""
+Parsing of D1S-UNED additional files
 
-# @author: Davide Laghi
+Parsers for the irradiation and reaction files necessary for Direct-1-Step
+calculation using D1S-UNED.
+"""
 
-# Copyright 2021, the JADE Development Team. All rights reserved.
+from __future__ import annotations
 
-# This file is part of JADE.
+"""
+Copyright 2019 F4E | European Joint Undertaking for ITER and the Development of
+Fusion Energy (‘Fusion for Energy’). Licensed under the EUPL, Version 1.2 or - 
+as soon they will be approved by the European Commission - subsequent versions
+of the EUPL (the “Licence”). You may not use this work except in compliance
+with the Licence. You may obtain a copy of the Licence at:
+    https://eupl.eu/1.2/en/
+Unless required by applicable law or agreed to in writing, software distributed
+under the Licence is distributed on an “AS IS” basis, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the Licence permissions
+and limitations under the Licence.
+"""
 
-# JADE is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-
-# JADE is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License
-# along with JADE.  If not, see <http://www.gnu.org/licenses/>.
-
-import os
 import re
+import os
+import logging
 
-PAT_BLANK = re.compile(r"[\s\tCc]*\n")
-PAT_COMMENT = re.compile("[Cc]+")
-PAT_SPACE = re.compile(r"[\s\t]+")
+from f4enix.constants import PAT_BLANK, PAT_COMMENT, PAT_SPACE
+from f4enix.input.libmanager import LibManager
+
+# PAT_COMMENT = re.compile('[Cc]+')
+
 REACFORMAT = "{:>13s}{:>7s}{:>9s}{:>40s}"
-
-# colors
-CRED = "\033[91m"
-CORANGE = "\033[93m"
-CEND = "\033[0m"
 
 
 class IrradiationFile:
 
     def __init__(
-        self, nsc, irr_schedules, header=None, formatting=[8, 14, 13, 9], name="irrad"
-    ):
+        self,
+        nsc: int,
+        irr_schedules: list[Irradiation],
+        header: str = None,
+        formatting: list[int] = [8, 14, 13, 9],
+        name: str = "irrad",
+    ) -> None:
         """
-        Object representing an irradiation D1S file
+        Object representing an irradiation D1S-UNED file.
+
+        It is built as a container of single irradiation object
 
         Parameters
         ----------
@@ -54,6 +59,42 @@ class IrradiationFile:
             fwf values for the output columns. The default is [8, 14, 13, 9].
         name : str, optional
             name of the file. The default is 'irrad'.
+
+        Attributes
+        ----------
+        nsc : int
+            number of irradiation schedule.
+        irr_schedules : list of Irradiation object
+            contains all irradiation objects.
+        header : str, optional
+            Header of the file. The default is None.
+        formatting : list of int, optional
+            fwf values for the output columns. The default is [8, 14, 13, 9].
+        name : str, optional
+            name of the file. The default is 'irrad'.
+
+        Examples
+        --------
+        Some usage examples
+
+        >>> # parse an existing file
+        ... irrad_file = IrradiationFile.from_text('irr_test')
+        ... # get the list of irradiation schedules
+        ... irrad_file.irr_schedules
+        [['24051', '2.896e-07', '5.982e+00', '5.697e+00', 'Cr51'],
+         ['25054', '2.570e-08', '5.881e+00', '1.829e+00', 'Mn54'],
+         ['26055', '8.031e-09', '4.487e+00', '6.364e-01', 'Fe55']]
+
+        >>> # auxiliary method to retrieve a specific irradiation
+        ... print(irrad_file.get_irrad('24051'))
+        Daughter: 24051
+        lambda [1/s]: 2.896e-07
+        times: ['5.982e+00', '5.697e+00']
+        comment: Cr51
+
+        >>> # auxiliary method to get all daughters
+        ... print(irrad_file.get_daughters())
+        ['24051', '25054', '26055']
 
         Returns
         -------
@@ -77,16 +118,16 @@ class IrradiationFile:
 
         head += w4 + "s}"
 
-        self.irrformat = head
+        self._irrformat = head
         self.name = name
 
-    def get_daughters(self):
+    def get_daughters(self) -> list[str]:
         """
         Get a list of all daughters among all irradiation files
 
         Returns
         -------
-        list
+        list[str]
             list of daughters.
 
         """
@@ -97,18 +138,18 @@ class IrradiationFile:
 
         return daughters
 
-    def get_irrad(self, daughter):
+    def get_irrad(self, daughter: str) -> Irradiation | None:
         """
         Return the irradiation correspondent to the daughter
 
         Parameters
         ----------
-        daughter : TYPE
-            DESCRIPTION.
+        daughter : str
+            (e.g. '24051').
 
         Returns
         -------
-        Irradiation
+        Irradiation | None
             Returns the irradiation corresponding to the daughter.
             If no irradiation is found returns None.
 
@@ -120,22 +161,24 @@ class IrradiationFile:
         return None
 
     @classmethod
-    def from_text(cls, filepath):
+    def from_text(cls, filepath: os.PathLike) -> IrradiationFile:
         """
-        Parse irradiation file
+        Initialize an IrradiationFile object directly parsing and existing
+        irradiation file
 
         Parameters
         ----------
         cls : TYPE
             DESCRIPTION.
-        filepath : str/path
-            path to the irradiation file.
+        filepath : os.PathLike
+            path to the existing irradiation file.
 
         Returns
         -------
         None.
 
         """
+        logging.info("Parsing {}".format(filepath))
         pat_nsc = re.compile("(?i)(nsc)")
         pat_num = re.compile(r"\d+")
         # name = os.path.basename(filepath)
@@ -162,16 +205,19 @@ class IrradiationFile:
 
                         irr_schedules.append(Irradiation.from_text(line, nsc))
 
+        logging.info("{} correctly parsed".format(filepath))
+
         return cls(nsc, irr_schedules, header=header)
 
-    def write(self, path):
+    def write(self, path: os.PathLike) -> None:
         """
         Write the D1S irradiation file
 
         Parameters
         ----------
-        path : str or path
-            output path where to save the file (only directory).
+        path : os.PathLike
+            output path where to save the file (only directory). self.name will
+            be used as output file name
 
         Returns
         -------
@@ -191,20 +237,35 @@ class IrradiationFile:
             for i in range(self.nsc):
                 args.append("time_fact_" + str(i + 1))
             args.append("comments")
-            outfile.write("C " + self.irrformat.format(*args) + "\n")
+            outfile.write("C " + self._irrformat.format(*args) + "\n")
 
             # write schedules
             for schedule in self.irr_schedules:
                 args = schedule._get_format_args()
-                outfile.write(self.irrformat.format(*args) + "\n")
+                outfile.write(self._irrformat.format(*args) + "\n")
+
+        logging.info("Irradiation file written at {}".format(outfile))
 
 
 class Irradiation:
-    def __init__(self, daughter, lambd, times, comment=None):
+    def __init__(
+        self, daughter: str, lambd: str, times: list[str], comment: str = None
+    ) -> None:
         """
         Irradiation object
 
         Parameters
+        ----------
+        daughter : str
+            daughter nuclide (e.g. 24051).
+        lambd : str
+            disintegration constant [1/s].
+        times : list of strings
+            time correction factors.
+        comment : str, optional
+            comment to the irradiation. The default is None.
+
+        Attributes
         ----------
         daughter : str
             daughter nuclide (e.g. 24051).
@@ -225,7 +286,7 @@ class Irradiation:
         self.times = times
         self.comment = comment
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         """
         Get a more appropriate equivalence function. Two irradiation are equal
         if they have the same daughter, lambda and correction factors
@@ -249,7 +310,7 @@ class Irradiation:
             return False
 
     @classmethod
-    def from_text(cls, text, nsc):
+    def from_text(cls, text: str, nsc: int) -> Irradiation:
         """
         Parse a single irradiation
 
@@ -264,8 +325,8 @@ class Irradiation:
 
         Returns
         -------
-        TYPE
-            DESCRIPTION.
+        Irradiation
+            Instance of irradiation object.
 
         """
         pieces = PAT_SPACE.split(text)
@@ -296,25 +357,56 @@ class Irradiation:
 
         return cls(daughter, lambd, times, comment=comment)
 
-    def _get_format_args(self):
+    def _get_format_args(self) -> list:
         args = [self.daughter, self.lambd]
         for time in self.times:
             args.append(time)
         args.append(self.comment)
         return args
 
+    def _print(self) -> str:
+        text = """
+Daughter: {}
+lambda [1/s]: {}
+times: {}
+comment: {}
+""".format(
+            self.daughter, self.lambd, self.times, self.comment
+        )
+
+        return text
+
+    def __repr__(self) -> str:
+        return str(self._get_format_args())
+
+    def __str__(self) -> str:
+        return self._print()
+
 
 class ReactionFile:
-    def __init__(self, reactions, name="react"):
+    def __init__(self, reactions: list[Reaction], name: str = "react") -> None:
         """
         Reaction file object
 
         Parameters
         ----------
-        reactions : list
+        reactions : list[Reaction]
             contains all reaction objects contained in the file.
         name : name, optional
             file name. The default is 'react'.
+
+        Examples
+        --------
+        It is possible to change the libraries of a reaction file
+
+        >>> from f4enix.input.d1suned import ReactionFile
+        ... reac_file = ReactionFile.from_text('reac_fe')
+        ... reac_file.change_lib('98c')
+
+        and obtain a list of the parents
+
+        >>> reac_file.get_parents()
+        ['26054', '26056', '26057', '26058']
 
         Returns
         -------
@@ -325,7 +417,7 @@ class ReactionFile:
         self.name = name
 
     @classmethod
-    def from_text(cls, filepath):
+    def from_text(cls, filepath: os.PathLike) -> ReactionFile:
         """
         Generate a reaction file directly from text file
 
@@ -333,7 +425,7 @@ class ReactionFile:
         ----------
         cls : TYPE
             DESCRIPTION.
-        filepath : str or path
+        filepath : os.PathLike
             file to read.
 
         Returns
@@ -343,6 +435,7 @@ class ReactionFile:
 
         """
         # read all reactions
+        logging.info("Parsing {}".format(filepath))
         reactions = []
         with open(filepath, "r") as infile:
             for line in infile:
@@ -351,16 +444,18 @@ class ReactionFile:
                     # parse reactions
                     reaction = Reaction.from_text(line)
                     reactions.append(reaction)
+        logging.info("{} correctly parsed".format(filepath))
 
         return cls(reactions)  # , name=os.path.basename(filepath))
 
-    def get_parents(self):
+    def get_parents(self) -> set[str]:
         """
         Get a list of all parents
 
         Returns
         -------
-        None.
+        set[str]
+            list of parents from all reactions
 
         """
         parents = []
@@ -368,9 +463,9 @@ class ReactionFile:
             parent = reaction.parent.split(".")[0]
             if parent not in parents:
                 parents.append(parent)
-        return parents
+        return sorted(set(parents))
 
-    def change_lib(self, newlib, libmanager=None):
+    def change_lib(self, newlib: str, libmanager: LibManager = None):
         """
         change the parent library tag of the reactions. If no libmanager is
         provided, the check on the availability of the parent in the xsdir
@@ -409,23 +504,16 @@ class ReactionFile:
                 if newlib in libs:
                     reaction.change_lib(lib)
                 else:
-                    print(
-                        CORANGE
-                        + """
- Warning: {} is not available in xsdir, it will be not translated
- """.format(
-                            zaid
-                        )
-                        + CEND
-                    )
+                    warning = "{} is not available in xsdir, not translated"
+                    logging.warning(warning.format(zaid))
 
-    def write(self, path):
+    def write(self, path: os.PathLike) -> None:
         """
         write formatted reaction file
 
         Parameters
         ----------
-        path : str/path
+        path : os.PathLike
             path to the output file (only dir).
 
         Returns
@@ -436,11 +524,26 @@ class ReactionFile:
         filepath = os.path.join(path, self.name)
         with open(filepath, "w") as outfile:
             for reaction in self.reactions:
-                outfile.write(REACFORMAT.format(*reaction.write()) + "\n")
+                outfile.write(REACFORMAT.format(*reaction._get_text()) + "\n")
+        logging.info("Reaction file written at {}".format(outfile))
+
+    def _print(self) -> str:
+        text = REACFORMAT.format("Parent", "MT", "Daughter", "Comment") + "\n"
+        for reaction in self.reactions:
+            text = text + REACFORMAT.format(*reaction._get_text()) + "\n"
+        return text
+
+    def __repr__(self) -> str:
+        return self._print()
+
+    def __str__(self) -> str:
+        return self._print()
 
 
 class Reaction:
-    def __init__(self, parent, MT, daughter, comment=None):
+    def __init__(
+        self, parent: str, MT: int | str, daughter: str, comment: str = None
+    ) -> None:
         """
         Represents a single reaction of the reaction file
 
@@ -450,8 +553,23 @@ class Reaction:
             parent nuclide ZZAAA.XXc representing stable isotope to be
             activated. ZZ and AAA represent the atomic and mass number and
             extension XX, is the extension number of the modified D1S library.
+        MT : int | str
+            integer, reaction type (ENDF definition, e.g. 102).
+        daughter : str
+            integer, tag of the daughter nuclide. The value could be
+            defined as ZZAAA of daughter nuclide, but any other identification
+            type (with integer value) can be used.
+        comment : str, optional
+            comment to the reaction. The default is None.
+
+        Attributes
+        ----------
+        parent : str
+            parent nuclide ZZAAA.XXc representing stable isotope to be
+            activated. ZZ and AAA represent the atomic and mass number and
+            extension XX, is the extension number of the modified D1S library.
         MT : str
-            integer, reaction type (ENDF definition).
+            integer, reaction type (ENDF definition, e.g. '102').
         daughter : str
             integer, tag of the daughter nuclide. The value could be
             defined as ZZAAA of daughter nuclide, but any other identification
@@ -469,14 +587,14 @@ class Reaction:
         self.daughter = daughter
         self.comment = comment
 
-    def change_lib(self, newlib):
+    def change_lib(self, newlib: str) -> None:
         """
         Change the library tag
 
         Parameters
         ----------
         newlib : str
-            (e.g. 52c).
+            library extension as used in xsdir format (e.g. 00c).
 
         Returns
         -------
@@ -487,7 +605,7 @@ class Reaction:
         # Override lib
         self.parent = pieces[0] + "." + newlib
 
-    def write(self):
+    def _get_text(self) -> list[str]:
         """
         Generate the reaction text
 
@@ -507,10 +625,21 @@ class Reaction:
 
         return textpieces
 
+    def _nice_print(self) -> str:
+        text = """
+parent: {}
+MT channel: {}
+daughter: {}
+comment: {}
+""".format(
+            self.parent, self.MT, self.daughter, self.comment
+        )
+        return text
+
     @classmethod
-    def from_text(cls, text):
+    def from_text(cls, text: str) -> Reaction:
         """
-        Create a reaction object from text
+        Create a Reaction object from text
 
         Parameters
         ----------
@@ -539,3 +668,9 @@ class Reaction:
         comment = comment.strip()
 
         return cls(parent, MT, daughter, comment=comment)
+
+    def __repr__(self) -> str:
+        return self._nice_print()
+
+    def __str__(self) -> str:
+        return self._nice_print()

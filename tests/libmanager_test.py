@@ -32,8 +32,8 @@ cp = os.path.dirname(os.path.abspath(__file__))
 root = os.path.dirname(cp)
 sys.path.insert(1, root)
 
-from jade.libmanager import LibManager
-from jade.matreader import Zaid
+from f4enix.input.libmanager import LibManager
+from f4enix.input.materials import Zaid
 
 
 ACTIVATION_FILE = os.path.join(cp, "TestFiles", "libmanager", "Activation libs.xlsx")
@@ -71,6 +71,15 @@ class TestLibManger:
         assert "31c" in libs
         assert "00c" in libs
         assert "71c" in libs
+
+    def test_default(self):
+        """
+        Test the ability to recover the available libraries
+        """
+        lm = LibManager(
+            None, activationfile=ACTIVATION_FILE, isotopes_file=ISOTOPES_FILE
+        )
+        assert True
 
     def test_reactionfilereading(self, lm):
         assert len(lm.reactions["99c"]) == 100

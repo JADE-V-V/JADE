@@ -33,7 +33,7 @@ sys.path.insert(1, root)
 
 from jade.configuration import Log
 from jade.testrun import Test, SphereTest, SphereTestSDDR, FNGTest, MultipleTest
-from jade.libmanager import LibManager
+from f4enix.input.libmanager import LibManager
 import pytest
 
 # Get a libmanager

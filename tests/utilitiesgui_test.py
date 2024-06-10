@@ -32,7 +32,7 @@ root = os.path.dirname(cp)
 sys.path.insert(1, root)
 
 import jade.utilitiesgui as uty
-from jade.libmanager import LibManager
+from f4enix.input.libmanager import LibManager
 
 
 ACTIVATION_FILE = os.path.join(cp, "TestFiles", "libmanager", "Activation libs.xlsx")

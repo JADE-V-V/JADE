@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # -*- coding: utf-8 -*-
 
 # Created on Mon Nov  4 16:52:09 2019
@@ -20,7 +22,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with JADE.  If not, see <http://www.gnu.org/licenses/>.
-from __future__ import annotations
+
 
 import os
 import shutil
@@ -36,11 +38,11 @@ import pandas as pd
 from tqdm import tqdm
 
 import jade.inputfile as ipt
-import jade.matreader as mat
+import f4enix.input.materials as mat
 import jade.unix as unix
 from jade.configuration import Configuration
-from jade.libmanager import LibManager
-from jade.parsersD1S import IrradiationFile, Reaction, ReactionFile
+from f4enix.input.libmanager import LibManager
+from f4enix.input.d1suned import IrradiationFile, Reaction, ReactionFile
 from jade.__version__ import __version__
 
 
@@ -388,9 +390,7 @@ class Test:
             metadata["code"] = code_tag
             outfile = os.path.join(outpath, code_tag, "metadata.json")
             try:
-                with open(
-                    outfile, "w", encoding="utf-8"
-                ) as f:
+                with open(outfile, "w", encoding="utf-8") as f:
                     json.dump(metadata, f, indent=4)
             except FileNotFoundError:
                 # It may happen that the code bool is set to true but the

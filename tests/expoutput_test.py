@@ -12,7 +12,7 @@ sys.path.insert(1, modules_path)
 resources = os.path.join(cp, "TestFiles", "expoutput")
 import jade.expoutput as expoutput
 import jade.output as outp
-from jade.libmanager import LibManager
+from f4enix.input.libmanager import LibManager
 
 root = os.path.dirname(cp)
 CONFIG_FILE_EXP = os.path.join(resources, "mainconfig.xlsx")

@@ -38,7 +38,7 @@ ISOTOPES_FILE = os.path.join(root, "jade", "resources", "Isotopes.txt")
 
 from jade.main import Session
 from jade.configuration import Configuration
-from jade.libmanager import LibManager
+from f4enix.input.libmanager import LibManager
 from jade.status import Status
 from jade.__version__ import __version__
 

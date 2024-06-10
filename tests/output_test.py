@@ -29,7 +29,7 @@ cp = os.path.dirname(os.path.abspath(__file__))
 modules_path = os.path.dirname(cp)
 sys.path.insert(1, modules_path)
 
-from jade.libmanager import LibManager
+from f4enix.input.libmanager import LibManager
 from jade.configuration import Configuration
 import jade.output as output
 from jade.expoutput import SpectrumOutput

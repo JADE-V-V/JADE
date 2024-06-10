@@ -33,8 +33,9 @@ sys.path.insert(1, modules_path)
 root = os.path.dirname(cp)
 sys.path.insert(1, root)
 
-from jade.matreader import Element, Zaid, MatCardsList, Material
-from jade.libmanager import LibManager
+from f4enix.input.materials import Element, Zaid, MatCardsList, Material
+from f4enix.input.libmanager import LibManager
+from importlib.resources import files, as_file
 import pytest
 import pandas as pd
 
@@ -145,7 +146,7 @@ class Testmaterial:
         matcard = MatCardsList.from_input(INP)
         # Fake translation in order to normalize the fractions
         material = matcard[0]
-        material.update_info(LIBMAN)
+        material._update_info(LIBMAN)
         original = material.to_text()
 
         # -- Switch back and forth --

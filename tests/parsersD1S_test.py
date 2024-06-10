@@ -24,14 +24,14 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 import os
 import pytest
-from jade.parsersD1S import (
+from f4enix.input.d1suned import (
     Reaction,
     ReactionFile,
     Irradiation,
     IrradiationFile,
     REACFORMAT,
 )
-from jade.libmanager import LibManager
+from f4enix.input.libmanager import LibManager
 import pandas as pd
 
 cp = os.path.dirname(os.path.abspath(__file__))
@@ -188,7 +188,7 @@ class TestReaction:
         """
         text = "26054.99c  102  26055     Fe55 and  some"
         reaction = Reaction.from_text(text)
-        ftext = reaction.write()
+        ftext = reaction._get_text()
         comptext = ["26054.99c", "102", "26055", "Fe55 and some"]
         assert comptext == ftext
 

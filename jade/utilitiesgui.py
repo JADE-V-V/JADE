@@ -33,9 +33,9 @@ import xlsxwriter
 from tqdm import tqdm
 
 import jade.inputfile as ipt
-import jade.matreader as mat
+import f4enix.input.materials as mat
 
-from f4enix.input.acepyne import *
+from f4enix.input.acepyne import Library
 from jade.inputfile import D1S_Input
 import jade.main
 
@@ -65,10 +65,10 @@ def translate_input(session, lib, inputfile, outpath=None):
     except PermissionError:
         return False
 
-    info1, _ = inp.matlist.get_info(libmanager)
+    info1, _ = inp.matlist.get_info(libmanager, complete=False)
     inp.translate(lib, libmanager)
     inp.update_zaidinfo(libmanager)
-    info2, _ = inp.matlist.get_info(libmanager)
+    info2, _ = inp.matlist.get_info(libmanager, complete=False)
 
     newdir = os.path.join(outpath, "Translation")
     if not os.path.exists(newdir):
@@ -227,7 +227,7 @@ def generate_material(
             if fractiontype == "mass":
                 norm_factor = -norm_factor
             submat.scale_fractions(norm_factor)
-            submat.update_info(session.lib_manager)
+            submat._update_info(session.lib_manager)
             # Add info to the header in order to back-trace the generation
             submat.header = (
                 "C "

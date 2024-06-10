@@ -31,7 +31,7 @@ import warnings
 
 import jade.configuration as cnf
 import jade.gui as gui
-import jade.libmanager as libmanager
+import f4enix.input.libmanager as libmanager
 import jade.status as status
 from jade.exceptions import fatal_exception
 

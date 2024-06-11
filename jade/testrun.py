@@ -1007,7 +1007,7 @@ class SphereTest(Test):
             newinp = deepcopy(self.d1s_inp)
             newinp.materials = materials  # Assign material
             # adjourn density
-            sphere_cell = newinp.cells["1"]
+            sphere_cell = newinp.cells["2"]
             sphere_cell.set_d(str(density))
             sphere_cell.lines = sphere_cell.card()
             # assign stop card
@@ -1046,7 +1046,7 @@ class SphereTest(Test):
             newinp = deepcopy(self.mcnp_inp)
             newinp.materials = materials  # Assign material
             # adjourn density
-            sphere_cell = newinp.cells["1"]
+            sphere_cell = newinp.cells["2"]
             sphere_cell.set_d(str(density))
             sphere_cell.lines = sphere_cell.card()
             # assign stop card
@@ -1180,7 +1180,7 @@ class SphereTest(Test):
             newinp = deepcopy(self.d1s_inp)
             newinp.materials = materials  # Assign material
             # adjourn density
-            sphere_cell = newinp.cells["1"]
+            sphere_cell = newinp.cells["2"]
             sphere_cell.set_d(str(density))
             sphere_cell.lines = sphere_cell.card()
             # add stop card
@@ -1219,7 +1219,7 @@ class SphereTest(Test):
             newinp = deepcopy(self.mcnp_inp)
             newinp.materials = materials  # Assign material
             # adjourn density
-            sphere_cell = newinp.cells["1"]
+            sphere_cell = newinp.cells["2"]
             sphere_cell.set_d(str(density))
             sphere_cell.lines = sphere_cell.card()
             # add stop card
@@ -1501,12 +1501,14 @@ class SphereTestSDDR(SphereTest):
                 )
             except FileNotFoundError:
                 raise FileNotFoundError("Irradiation file could not be found.")
+
             # --- Add the irradiation file ---
             self.d1s_inp.irrad_file = IrradiationFile.from_text(filepath)
             ans = self.d1s_inp.irrad_file.update_irradiation_file(daughterlist)
 
             # --- Add the reaction file ---
             self.d1s_inp.get_reaction_file(libmanager, self.activationlib)
+
             super().generate_material_test(
                 material,
                 density,

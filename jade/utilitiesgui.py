@@ -36,7 +36,7 @@ import jade.inputfile as ipt
 import f4enix.input.materials as mat
 
 from f4enix.input.acepyne import Library
-from jade.inputfile import D1S_Input
+from f4enix.input.MCNPinput import D1S_Input
 import jade.main
 
 

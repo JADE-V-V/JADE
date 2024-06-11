@@ -33,7 +33,7 @@ from scipy.interpolate import interp1d
 from tqdm import tqdm
 
 import jade.atlas as at
-from jade.inputfile import D1S_Input
+from f4enix.input.MCNPinput import D1S_Input
 from jade.output import BenchmarkOutput
 from f4enix.output.MCNPoutput import MCNPoutput
 from jade.plotter import Plotter

@@ -65,7 +65,7 @@ def check_transport_activation(lib):
 
 
 class SerpentInputFile:
-    def __init__(self, lines, matlist, name=None):
+    def __init__(self, lines, materials, name=None):
         """
         Object representing a Serpent input file
 
@@ -73,7 +73,7 @@ class SerpentInputFile:
         ----------
         cards : dic
             contains the cells, surfaces, settings and title cards.
-        matlist : matreader.MatCardList
+        materials : matreader.MatCardList
             material list in the input.
         name : str, optional
             name associated with the file. The default is None.
@@ -88,7 +88,7 @@ class SerpentInputFile:
         self.lines = lines
 
         # Materials list (see matreader.py)
-        self.matlist = matlist
+        self.materials = materials
 
         # Set a name
         self.name = name
@@ -122,9 +122,9 @@ class SerpentInputFile:
             else:
                 break
 
-        matlist = None
+        materials = None
 
-        return cls(lines, matlist, name=os.path.basename(inputfile).split(".")[0])
+        return cls(lines, materials, name=os.path.basename(inputfile).split(".")[0])
 
     def add_stopCard(self, nps: int) -> None:
         """Add number of particles card
@@ -147,7 +147,7 @@ class SerpentInputFile:
         """
 
         # Add materials
-        self.lines.append(self.matlist.to_text())
+        self.lines.append(self.materials.to_text())
         self.lines.append("\n")  # Missing
 
         toprint = ""
@@ -177,7 +177,9 @@ class SerpentInputFile:
 
 
 class OpenMCInputFiles:
-    def __init__(self, geometry, settings, tallies, materials, matlist, name=None):
+    def __init__(
+        self, geometry, settings, tallies, openmc_materials, materials, name=None
+    ):
         """Object representing an OpenMC input file.
 
         Parameters
@@ -188,9 +190,9 @@ class OpenMCInputFiles:
             OpenMC settings
         tallies : List[str], optional
             OpenMC tallies
-        materials : List[str], optional
+        openmc_materials : List[str], optional
             OpenMC materials
-        matlist : List[str], optional
+        materials : List[str], optional
             material list in the input
         name : str, optional
             name associated with the file, by default None
@@ -200,11 +202,11 @@ class OpenMCInputFiles:
         self.geometry = geometry
         self.settings = settings
         self.tallies = tallies
-        # Temporary material holder until matlist supports openmc mats
-        self.materials = materials
+        # Temporary material holder until materials supports openmc mats
+        self.openmc_materials = openmc_materials
 
         # Materials list (see matreader.py)
-        self.matlist = matlist
+        self.materials = materials
 
         # Set a name
         self.name = name
@@ -232,7 +234,7 @@ class OpenMCInputFiles:
 
     @classmethod
     def from_path(cls, path: str) -> "OpenMCInputFiles":
-        """Reads contents of geometry, settings, tallies, materials from XML files.
+        """Reads contents of geometry, settings, tallies, openmc_materials from XML files.
 
         Parameters
         ----------
@@ -254,14 +256,14 @@ class OpenMCInputFiles:
         tallies_file = os.path.join(path, "tallies.xml")
         tallies = cls._get_lines(cls, tallies_file)
 
-        materials_file = os.path.join(path, "materials.xml")
-        materials = cls._get_lines(cls, materials_file)
+        openmc_materials_file = os.path.join(path, "materials.xml")
+        openmc_materials = cls._get_lines(cls, openmc_materials_file)
 
-        matlist = None
+        materials = None
 
         name = os.path.basename(os.path.dirname(path))
 
-        return cls(geometry, settings, tallies, materials, matlist, name=name)
+        return cls(geometry, settings, tallies, openmc_materials, materials, name=name)
 
     def add_stopCard(self, nps: int) -> None:
         """Add number of particles to simulate
@@ -291,11 +293,11 @@ class OpenMCInputFiles:
         Returns
         -------
         tuple
-            A tuple containing XML representations of geometry, settings, tallies, and materials.
+            A tuple containing XML representations of geometry, settings, tallies, and openmc_materials.
         """
 
         # Add materials
-        self.materials = self.matlist.to_xml(libmanager)
+        self.openmc_materials = self.materials.to_xml(libmanager)
 
         geometry = ""
         for line in self.geometry:
@@ -309,9 +311,9 @@ class OpenMCInputFiles:
         for line in self.tallies:
             tallies = tallies + line
 
-        materials = self.materials
+        openmc_materials = self.openmc_materials
 
-        return geometry, settings, tallies, materials
+        return geometry, settings, tallies, openmc_materials
 
     def write(self, path, libmanager) -> None:
         """
@@ -327,7 +329,7 @@ class OpenMCInputFiles:
         None.
 
         """
-        geometry, settings, tallies, materials = self._to_xml(libmanager)
+        geometry, settings, tallies, openmc_materials = self._to_xml(libmanager)
 
         geometry_file = os.path.join(path, "geometry.xml")
         with open(geometry_file, "w") as outfile:
@@ -341,6 +343,6 @@ class OpenMCInputFiles:
         with open(tallies_file, "w") as outfile:
             outfile.write(tallies)
 
-        materials_file = os.path.join(path, "materials.xml")
-        with open(materials_file, "w") as outfile:
-            outfile.write(materials)
+        openmc_materials_file = os.path.join(path, "materials.xml")
+        with open(openmc_materials_file, "w") as outfile:
+            outfile.write(openmc_materials)

@@ -1392,17 +1392,7 @@ class SphereTestSDDR(SphereTest):
                     self.test_conf_path, "irrad_" + self.activationlib
                 )
             except FileNotFoundError:
-                print(
-                    CRED
-                    + """
-    Please provide an irradiation file summary for lib {}. Check the documentation
-    for additional details. The application will now exit.
-                    """.format(
-                        self.activationlib
-                    )
-                    + CEND
-                )
-                sys.exit()
+                raise FileNotFoundError("Irradiation file could not be found.")
             # --- Add the irradiation file ---
             self.d1s_inp.irrad_file = IrradiationFile.from_text(filepath)
             ans = self.d1s_inp.irrad_file.update_irradiation_file([daughter])
@@ -1510,20 +1500,12 @@ class SphereTestSDDR(SphereTest):
                     self.test_conf_path, "irrad_" + self.activationlib
                 )
             except FileNotFoundError:
-                print(
-                    CRED
-                    + """
-    Please provide an irradiation file summary for lib {}. Check the documentation
-    for additional details. The application will now exit.
-                    """.format(
-                        self.activationlib
-                    )
-                    + CEND
-                )
-                sys.exit()
+                raise FileNotFoundError("Irradiation file could not be found.")
             # --- Add the irradiation file ---
             self.d1s_inp.irrad_file = IrradiationFile.from_text(filepath)
             ans = self.d1s_inp.irrad_file.update_irradiation_file(daughterlist)
+
+            # --- Add the reaction file ---
             self.d1s_inp.get_reaction_file(libmanager, self.activationlib)
             super().generate_material_test(
                 material,
@@ -1533,7 +1515,7 @@ class SphereTestSDDR(SphereTest):
                 motherdir,
                 lib=libs,
             )
-            # Generate the reaction file
+
             # recover output directory and write file
             outdir = testname + "_" + truename
 

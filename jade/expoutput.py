@@ -623,9 +623,9 @@ class FNGOutput(ExperimentalOutput):
             zaid_tracked = {}
             for lib in self.lib[1:]:
                 file = os.path.join(self.test_path[lib], folder, "d1s", folder)
-                inp = D1S_Input.from_text(file)
+                inp = D1S_Input.from_input(file)
                 for tallynum in ["24", "14"]:
-                    card = inp.get_card_byID("settings", "FU" + tallynum)
+                    card = inp.get_data_cards("FU" + tallynum)["FU" + tallynum]
                     strings = []
                     for line in card.lines:
                         zaids = patzaid.findall(line)

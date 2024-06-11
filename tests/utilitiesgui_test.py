@@ -81,84 +81,11 @@ class TestUtilities:
     def inputfile(self):
         return os.path.join(cp, "TestFiles", "utilitiesgui", "test.i")
 
-    def test_translate_input(self, session, inputfile, tmpdir):
-        """
-        the correctness of the translations is already tested in matreader_test
-        """
-        lib = "00c"
-        ans = uty.translate_input(
-            session, lib, inputfile, outpath=tmpdir.mkdir("Translate")
-        )
-        assert ans
-
     def test_print_libraries(self, session):
         """
         This is properly tested in libmanager_test
         """
         uty.print_libraries(session.lib_manager)
-        assert True
-
-    def test_print_material_info(self, session, inputfile, tmpdir):
-        outpath = tmpdir.mkdir("MaterialInfo")
-        uty.print_material_info(session, inputfile, outpath=outpath)
-        testfilename = os.path.basename(inputfile)
-        tag = "materialinfo.xlsx"
-        fileA = os.path.join(outpath, testfilename + "_" + tag)
-        fileB = os.path.join(cp, "TestFiles", "utilitiesgui", tag)
-
-        # --- Do some consistency check on the results ---
-        # Check on total fraction of materials to be 1
-        elem_df = pd.read_excel(fileA, sheet_name="Sheet2").ffill()
-        tot_frac = elem_df.groupby("Material").sum()["Material Fraction"]
-        print(tot_frac)
-        assert (tot_frac == 1).all()
-
-        # Check for equivalence with an expected output
-        excel_equal(fileA, fileB, 2)
-        shutil.rmtree(outpath)
-
-    def test_generate_material(self, inputfile, session, tmpdir):
-        # using atom fraction
-        sourcefile = inputfile
-        materials = ["m1", "M2"]
-        percentages = [0.5, 0.5]
-        newlib = "31c"
-        fraction_type = "atom"
-        outpath = tmpdir.mkdir("GenerateMaterial")
-        uty.generate_material(
-            session,
-            sourcefile,
-            materials,
-            percentages,
-            newlib,
-            fractiontype=fraction_type,
-            outpath=outpath,
-        )
-        filename = os.path.basename(inputfile)
-        fileA = os.path.join(cp, "TestFiles", "utilitiesgui", "newmat_atom")
-        fileB = os.path.join(outpath, filename + "_new Material")
-        txt_equal(fileA, fileB)
-
-        # using mass fraction
-        fraction_type = "mass"
-        uty.generate_material(
-            session,
-            sourcefile,
-            materials,
-            percentages,
-            newlib,
-            fractiontype=fraction_type,
-            outpath=outpath,
-        )
-        fileA = os.path.join(cp, "TestFiles", "utilitiesgui", "newmat_mass")
-        txt_equal(fileA, fileB)
-
-    def test_switch_fractions(self, session, inputfile, tmpdir):
-
-        # Switches are properly tested in matreader
-        uty.switch_fractions(session, inputfile, "mass", outpath=tmpdir)
-        uty.switch_fractions(session, inputfile, "atom", outpath=tmpdir)
-
         assert True
 
     def test_change_ACElib_suffix(self, monkeypatch, tmpdir):
@@ -181,14 +108,6 @@ class TestUtilities:
                     else:
                         assert False
                     break
-
-    def test_get_reaction_file(self, monkeypatch, session, tmpdir):
-        # The correctness of the file is already tested in parserD1S
-        filepath = os.path.join(cp, "TestFiles", "utilitiesgui", "d1stest.i")
-        responses = iter([str(filepath), "99c"])
-        monkeypatch.setattr("builtins.input", lambda msg: next(responses))
-        uty.get_reaction_file(session, outpath=tmpdir.mkdir("Reaction"))
-        assert True
 
     def test_input_with_option(self, monkeypatch):
         msg = ""

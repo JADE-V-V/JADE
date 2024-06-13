@@ -309,6 +309,7 @@ class BenchmarkOutput(AbstractOutput):
                 "Code version not found in the output file or aux file for %s",
                 pathtofile,
             )
+            logging.warning("Contents of the directory: %s", os.listdir(pathtofile))
             return None
 
     def single_postprocess(self):

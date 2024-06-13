@@ -281,7 +281,7 @@ class BenchmarkOutput(AbstractOutput):
         Parameters
         ----------
         pathtofile : os.PathLike
-            path to the metadatafile, from its abs, other paths may be found
+            path to the folder where results are stored
 
         Returns
         -------
@@ -294,10 +294,21 @@ class BenchmarkOutput(AbstractOutput):
         return None
 
     def _read_mcnp_code_version(self, pathtofile: os.PathLike) -> str | None:
-        folder = os.path.dirname(pathtofile)
-        _, ofile = self._get_output_files(folder)
+        try:
+            _, ofile = self._get_output_files(pathtofile)
+        except FileNotFoundError:
+            return None
+
         outp = MCNPOutputFile(ofile)
-        return outp.get_code_version()
+        try:
+            version = outp.get_code_version()
+            return version
+        except ValueError:
+            logging.warning(
+                "Code version not found in the output file or aux file for %s",
+                pathtofile,
+            )
+            return None
 
     def single_postprocess(self):
         """

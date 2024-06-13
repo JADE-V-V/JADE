@@ -102,6 +102,7 @@ class TestSphereOutput:
             metadata = json.load(f)
         assert metadata["jade_run_version"] == "0.0.1"
         assert metadata["jade_version"] == __version__
+        assert metadata["code_version"] == "6.2"
 
         sphere_31c = sout.SphereOutput("31c", "mcnp", "Sphere", session_mock)
         sphere_31c.single_postprocess()

@@ -12,16 +12,6 @@ Session
 .. autoclass:: main.Session
     :members:
 
-libmanager module
-=================
-
-.. _libmanagerob:
-
-LibManager
-----------
-.. autoclass:: libmanager.LibManager
-    :members:
-
 state module
 ============
 

@@ -23,7 +23,7 @@ Configuration
     the :ref:`confob` object is the one that handles the
     parsing of the :ref:`mainconfig` file.
 Library Manager
-    the :ref:`libmanagerob` is responsible for all operations related
+    the libmanager is responsible for all operations related
     to nuclear data libraries. These include for instance checking the
     availability of a library, or handling the translation of a single isotope.
 
@@ -50,9 +50,8 @@ In JADE the object representing a benchmark is the :ref:`testob` (or :ref:`multi
 in case the benchmark is composed by more than one run). This object is responsible
 for the creation of the MCNP input and for its run. A vital attribute of the benchmark
 is its associated :ref:`inputob` or one of its children. In case the benchmark is run
-with d1s code, an :ref:`irradfileob` and a :ref:`reacfileob` are also associated with the
-test. A fundamental attribute of inputs is the :ref:`matcardob` which handles all operations
-related to the materials (including library translations).
+with d1s code, an irradiation file and a reaction file are also associated with the
+test.
 
 Post-processing
 ===============

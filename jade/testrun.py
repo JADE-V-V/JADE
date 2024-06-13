@@ -1395,7 +1395,7 @@ class SphereTestSDDR(SphereTest):
                 raise FileNotFoundError("Irradiation file could not be found.")
             # --- Add the irradiation file ---
             self.d1s_inp.irrad_file = IrradiationFile.from_text(filepath)
-            ans = self.d1s_inp.irrad_file.update_irradiation_file([daughter])
+            ans = self.d1s_inp.irrad_file.select_daughters_irradiation_file([daughter])
 
             # generate file
             self.d1s_inp.get_reaction_file(libmanager, self.activationlib)
@@ -1504,7 +1504,9 @@ class SphereTestSDDR(SphereTest):
 
             # --- Add the irradiation file ---
             self.d1s_inp.irrad_file = IrradiationFile.from_text(filepath)
-            ans = self.d1s_inp.irrad_file.update_irradiation_file(daughterlist)
+            ans = self.d1s_inp.irrad_file.select_daughters_irradiation_file(
+                daughterlist
+            )
 
             # --- Add the reaction file ---
             self.d1s_inp.get_reaction_file(libmanager, self.activationlib)

@@ -27,6 +27,7 @@ import math
 import os
 import shutil
 import json
+import itertools
 import logging
 
 from typing import TYPE_CHECKING
@@ -1208,55 +1209,31 @@ class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
             # timAxis = t.getAxis("t")
             nTim = t._getNbins("t", False)
 
-            for f in range(nCells):
-                for d in range(nDir):
-                    for u in range(nUsr):
-                        for s in range(nSeg):
-                            for m in range(nMul):
-                                for c in range(nCos):
-                                    for e in range(nErg):
-                                        try:
-                                            erg = t.erg[e]
-                                        except IndexError:
-                                            erg = None
+            for f, d, u, s, m, c, e, nt, i, j, k in itertools.product(
+                range(nCells),
+                range(nDir),
+                range(nUsr),
+                range(nSeg),
+                range(nMul),
+                range(nCos),
+                range(nErg),
+                range(nTim),
+                range(nCora),
+                range(nCorb),
+                range(nCorc),
+            ):
+                try:
+                    erg = t.erg[e]
+                except IndexError:
+                    erg = None
 
-                                        for nt in range(nTim):
-                                            for k in range(nCorc):
-                                                for j in range(nCorb):
-                                                    for i in range(nCora):
-                                                        val = t._getValue(
-                                                            f,
-                                                            d,
-                                                            u,
-                                                            s,
-                                                            m,
-                                                            c,
-                                                            e,
-                                                            nt,
-                                                            i,
-                                                            j,
-                                                            k,
-                                                            0,
-                                                        )
-                                                        err = t._getValue(
-                                                            f,
-                                                            d,
-                                                            u,
-                                                            s,
-                                                            m,
-                                                            c,
-                                                            e,
-                                                            nt,
-                                                            i,
-                                                            j,
-                                                            k,
-                                                            1,
-                                                        )
-                                                        if val <= 0:
-                                                            err = np.nan
+                val = t.getValue(f, d, u, s, m, c, e, nt, i, j, k, 0)
+                err = t.getValue(f, d, u, s, m, c, e, nt, i, j, k, 1)
+                if val <= 0:
+                    err = np.nan
 
-                                                        row = [num, des, erg, val, err]
-                                                        rows.append(row)
+                row = [num, des, erg, val, err]
+                rows.append(row)
 
             # If Energy binning is involved
             if t.ergTC == "t":
@@ -1277,84 +1254,6 @@ class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
             rowstotal, columns=["Tally N.", "Tally Description", "Value", "Error"]
         )
         return df, dftotal
-
-
-class SphereSDDRMCNPoutput(SphereMCNPoutput):
-
-    def _get_tallydata(self, mctal):
-
-        return self.tallydata, self.totalbin
-
-    def get_single_excel_data(self):
-        """
-        Return the data that will be used in the single
-        post-processing excel output for a single reaction
-
-        Returns
-        -------
-        vals : pd.Series
-            series reporting the result of a single reaction.
-        errors : pd.Series
-            series containing the errors associated with the
-            reactions.
-
-        """
-        # 32 -> fine gamma flux
-        # 104 -> Dose rate
-        nflux = self.tallydata[12]
-        pflux = self.tallydata[32]
-        sddr = self.tallydata[104]
-        heat = self.tallydata[46]
-
-        # Differentiate time labels
-        pflux["Time"] = "F" + pflux["Time"].astype(str)
-        sddr["Time"] = "D" + sddr["Time"].astype(str)
-        heat["Time"] = "H" + heat["Time"].astype(str)
-
-        # Get the total values of the flux at different cooling times
-        pfluxvals = pflux.groupby("Time").sum()["Value"]
-        # Get the mean error of the flux at different cooling times
-        pfluxerrors = pflux.groupby("Time").mean()["Error"]
-
-        # Get the total values of the SDDR at different cooling times
-        sddrvals = sddr.groupby("Time").sum()["Value"]
-        # Get the mean error of the SDDR at different cooling times
-        sddrerrors = sddr.groupby("Time").mean()["Error"]
-
-        # Get the total Heating at different cooling times
-        heatvals = heat.set_index("Time")["Value"]
-        # Get the Heating mean error at different cooling times
-        heaterrors = heat.set_index("Time")["Error"]
-
-        # Neutron flux binned in energy
-        nfluxvals = nflux.set_index("Energy")["Value"]
-        # Errors of the neutron flux
-        nfluxerrors = nflux.set_index("Energy")["Error"]
-
-        # Delete the total row in case it is there
-        for df, tag in zip(
-            [pfluxvals, pfluxerrors, sddrvals, sddrerrors, heatvals, heaterrors],
-            ["F", "F", "D", "D", "H", "H"],
-        ):
-            try:
-                del df[tag + "total"]
-            except KeyError:
-                # If total value is not there it is ok
-                pass
-
-        # Do the same for the flux
-        for df in [nfluxvals, nfluxerrors]:
-            try:
-                del df["total"]
-            except KeyError:
-                # If total value is not there it is ok
-                pass
-
-        # 2 series need to be built here, one for values and one for errors
-        vals = pd.concat([pfluxvals, sddrvals, heatvals, nfluxvals], axis=0)
-        errors = pd.concat([pfluxerrors, sddrerrors, heaterrors, nfluxerrors], axis=0)
-
-        return vals, errors
 
 
 class SphereOpenMCoutput(OpenMCOutput, SphereTallyOutput):
@@ -2044,3 +1943,81 @@ class SphereSDDRoutput(SphereOutput):
                     filename = "{}_{}_{}.csv".format(key[0], key[1], tallynum)
                     file = os.path.join(self.raw_path, folder, filename)
                     df.to_csv(file, header=True, index=False)
+
+
+class SphereSDDRMCNPoutput(SphereMCNPoutput):
+
+    def _get_tallydata(self, mctal):
+
+        return self.tallydata, self.totalbin
+
+    def get_single_excel_data(self):
+        """
+        Return the data that will be used in the single
+        post-processing excel output for a single reaction
+
+        Returns
+        -------
+        vals : pd.Series
+            series reporting the result of a single reaction.
+        errors : pd.Series
+            series containing the errors associated with the
+            reactions.
+
+        """
+        # 32 -> fine gamma flux
+        # 104 -> Dose rate
+        nflux = self.tallydata[12]
+        pflux = self.tallydata[32]
+        sddr = self.tallydata[104]
+        heat = self.tallydata[46]
+
+        # Differentiate time labels
+        pflux["Time"] = "F" + pflux["Time"].astype(str)
+        sddr["Time"] = "D" + sddr["Time"].astype(str)
+        heat["Time"] = "H" + heat["Time"].astype(str)
+
+        # Get the total values of the flux at different cooling times
+        pfluxvals = pflux.groupby("Time").sum()["Value"]
+        # Get the mean error of the flux at different cooling times
+        pfluxerrors = pflux.groupby("Time").mean()["Error"]
+
+        # Get the total values of the SDDR at different cooling times
+        sddrvals = sddr.groupby("Time").sum()["Value"]
+        # Get the mean error of the SDDR at different cooling times
+        sddrerrors = sddr.groupby("Time").mean()["Error"]
+
+        # Get the total Heating at different cooling times
+        heatvals = heat.set_index("Time")["Value"]
+        # Get the Heating mean error at different cooling times
+        heaterrors = heat.set_index("Time")["Error"]
+
+        # Neutron flux binned in energy
+        nfluxvals = nflux.set_index("Energy")["Value"]
+        # Errors of the neutron flux
+        nfluxerrors = nflux.set_index("Energy")["Error"]
+
+        # Delete the total row in case it is there
+        for df, tag in zip(
+            [pfluxvals, pfluxerrors, sddrvals, sddrerrors, heatvals, heaterrors],
+            ["F", "F", "D", "D", "H", "H"],
+        ):
+            try:
+                del df[tag + "total"]
+            except KeyError:
+                # If total value is not there it is ok
+                pass
+
+        # Do the same for the flux
+        for df in [nfluxvals, nfluxerrors]:
+            try:
+                del df["total"]
+            except KeyError:
+                # If total value is not there it is ok
+                pass
+
+        # 2 series need to be built here, one for values and one for errors
+        vals = pd.concat([pfluxvals, sddrvals, heatvals, nfluxvals], axis=0)
+        errors = pd.concat([pfluxerrors, sddrerrors, heaterrors, nfluxerrors], axis=0)
+
+        return vals, errors

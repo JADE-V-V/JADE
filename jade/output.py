@@ -47,6 +47,7 @@ from jade.configuration import Configuration
 from jade.meshtal import Meshtal
 from jade.outputFile import OutputFile
 from jade.__version__ import __version__
+from f4enix.output.MCNPoutput import Output as MCNPOutputFile
 
 if TYPE_CHECKING:
     from jade.main import Session
@@ -253,8 +254,7 @@ class BenchmarkOutput(AbstractOutput):
             results_path = os.path.join(self.test_path, code)
             self.metadata = self._read_metadata_run(results_path)
 
-    @staticmethod
-    def _read_metadata_run(pathtofile: os.PathLike) -> dict:
+    def _read_metadata_run(self, pathtofile: os.PathLike) -> dict:
         # Get the metadata
 
         # try to read the metadata
@@ -270,7 +270,34 @@ class BenchmarkOutput(AbstractOutput):
             metadata = {}
 
         metadata["jade_version"] = __version__
+        metadata["code_version"] = self._read_code_version(pathtofile)
+
         return metadata
+
+    def _read_code_version(self, pathtofile: os.PathLike) -> str | None:
+        """Read the code version from the output files or in other ways depending
+        on the used code.
+
+        Parameters
+        ----------
+        pathtofile : os.PathLike
+            path to the metadatafile, from its abs, other paths may be found
+
+        Returns
+        -------
+        str | None
+            version of the code used to run the benchmarks
+        """
+        if self.mcnp:
+            return self._read_mcnp_code_version(pathtofile)
+
+        return None
+
+    def _read_mcnp_code_version(self, pathtofile: os.PathLike) -> str | None:
+        folder = os.path.dirname(pathtofile)
+        _, ofile = self._get_output_files(folder)
+        outp = MCNPOutputFile(ofile)
+        return outp.get_code_version()
 
     def single_postprocess(self):
         """
@@ -356,12 +383,16 @@ class BenchmarkOutput(AbstractOutput):
                         # this means that the column is only one and we have
                         # two distinct DFs for values and errors
                         # depending on pandas version, these may be series or
-                        # directly arrays     
+                        # directly arrays
                         values = vals_df["Value"]
                         error = err_df["Error"]
-                        if isinstance(values, pd.Series) or isinstance(values, pd.DataFrame):
+                        if isinstance(values, pd.Series) or isinstance(
+                            values, pd.DataFrame
+                        ):
                             values = values.values
-                        if isinstance(error, pd.Series) or isinstance(error, pd.DataFrame):
+                        if isinstance(error, pd.Series) or isinstance(
+                            error, pd.DataFrame
+                        ):
                             error = error.values
 
                     lib_name = self.session.conf.get_lib_name(self.lib)

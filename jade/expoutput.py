@@ -37,7 +37,7 @@ from tqdm import tqdm
 import jade.atlas as at
 from f4enix.input.MCNPinput import D1S_Input
 from jade.output import BenchmarkOutput
-from f4enix.output.MCNPoutput import MCNPoutput
+from jade.output import MCNPoutput
 from jade.plotter import Plotter
 from jade.status import EXP_TAG
 

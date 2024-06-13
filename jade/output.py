@@ -32,7 +32,9 @@ import sys
 import json
 import logging
 from typing import TYPE_CHECKING
-from f4enix.output.MCNPoutput import MCNPoutput
+from f4enix.output.mctal import Mctal, Tally
+from f4enix.output.meshtal import Meshtal, Fmesh1D
+from f4enix.output.MCNPoutput import Output
 import numpy as np
 
 # import xlwings as xw
@@ -353,12 +355,16 @@ class BenchmarkOutput(AbstractOutput):
                         # this means that the column is only one and we have
                         # two distinct DFs for values and errors
                         # depending on pandas version, these may be series or
-                        # directly arrays     
+                        # directly arrays
                         values = vals_df["Value"]
                         error = err_df["Error"]
-                        if isinstance(values, pd.Series) or isinstance(values, pd.DataFrame):
+                        if isinstance(values, pd.Series) or isinstance(
+                            values, pd.DataFrame
+                        ):
                             values = values.values
-                        if isinstance(error, pd.Series) or isinstance(error, pd.DataFrame):
+                        if isinstance(error, pd.Series) or isinstance(
+                            error, pd.DataFrame
+                        ):
                             error = error.values
 
                     lib_name = self.session.conf.get_lib_name(self.lib)
@@ -998,6 +1004,60 @@ class BenchmarkOutput(AbstractOutput):
                     abs_diffs,
                     std_devs,
                 )
+
+
+class MCNPoutput:
+    def __init__(self, mctal_file, output_file, meshtal_file=None):
+        """
+        Class representing all outputs coming from and MCNP run
+
+        Parameters
+        ----------
+        mctal_file : path like object
+            path to the mctal file.
+        output_file : path like object
+            path to the outp file.
+        meshtal_file : path like object, optional
+            path to the meshtal file. The default is None.
+
+        Returns
+        -------
+        None.
+
+        """
+        self.mctal_file = mctal_file  # path to mcnp mctal file
+        self.output_file = output_file  # path to mcnp output file
+        self.meshtal_file = meshtal_file  # path to mcnp meshtal file
+
+        # Read and parse the mctal file
+        mctal = Mctal(mctal_file)
+        self.mctal = mctal
+        self.tallydata = mctal.tallydata
+        self.totalbin = mctal.totalbin
+        # Read the output file
+        self.out = Output(self.output_file)
+        self.out.stat_checks = self.out.get_statistical_checks_tfc_bins()
+        self.out.stat_checks = self.out.assign_tally_description(
+            self.out.stat_checks, self.mctal.tallies
+        )
+        self.stat_checks = self.out.stat_checks
+        # Read the meshtal file
+        if meshtal_file is not None:
+            self.meshtal = Meshtal(meshtal_file)
+            self.meshtal.readMesh()
+            # Extract the available 1D to be merged with normal tallies
+            for msh in self.meshtal.mesh.values():
+                if isinstance(msh, Fmesh1D):
+                    tallynum, tallydata, comment = msh.convert2tally()
+                    # Add them to the tallly data
+                    self.tallydata[tallynum] = tallydata
+                    self.totalbin[tallynum] = None
+                    # Create fake tallies to be added to the mctal
+                    faketally = Tally(tallynum)
+                    faketally.tallyComment = [comment]
+                    self.mctal.tallies.append(faketally)
+                else:
+                    continue
 
 
 class OpenMCOutput:

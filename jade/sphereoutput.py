@@ -35,6 +35,8 @@ import numpy as np
 import pandas as pd
 
 from tqdm import tqdm
+from xlsxwriter.utility import xl_rowcol_to_cell
+from docx.shared import Inches
 
 import jade.atlas as at
 import jade.excelsupport as exsupp
@@ -1407,7 +1409,7 @@ class SphereSDDRoutput(SphereOutput):
                     datapiece, title, outpath, outname, quantity, unit, xlabel, testname
                 )
                 outfile = plot.plot("Waves")
-                atlas.insert_img(outfile)
+                atlas.insert_img(outfile, width=Inches(9))
 
             # --- Single wave plot for each material ---
             atlas.doc.add_heading("Materials ratio plot", level=1)
@@ -1447,7 +1449,7 @@ class SphereSDDRoutput(SphereOutput):
                 plot = plotter.Plotter(
                     data, title, outpath, outname, quantity, unit, xlabel, testname
                 )
-                outfile = plot.plot("Waves")
+                outfile = plot.plot("Waves", width=Inches(9))
                 atlas.insert_img(outfile)
 
         ########

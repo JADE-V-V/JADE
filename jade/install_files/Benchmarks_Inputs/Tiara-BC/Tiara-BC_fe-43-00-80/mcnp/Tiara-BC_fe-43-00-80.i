@@ -157,17 +157,17 @@ c -----------------------------------------------------------------------------
 c         TALLIES
 c -----------------------------------------------------------------------------  
 c Absolute normalization of results 9.403044+10 (=2.17*3450000000*4*3.14=peak to continuum from SINBAD html note, peak flux of neutrons in SINBAD html, solid angle (4 pi))    
-F14:n 113
-FC14 BC 501A Liquid scintilator - off-axis 20 cm
-FM14 9.403044+10
-E14      5  6  7  8  9 10 11 12 13 14
+F24:n 113
+FC24 Neutron flux 20 cm off-axis
+FM24 9.403044+10
+E24      5  6  7  8  9 10 11 12 13 14
         15 16 17 18 19 20 21 22 23 24
         25 26 27 28 29 30 31 32 33 34
         35 36 37 38 39 40 41 42 43 44 46 48
-F24:n 115
-FC24 BC 501A Liquid scintilator - off-axis 40 cm
-FM24 9.403044+10
-E24      5  6  7  8  9 10 11 12 13 14
+F34:n 115
+FC34 Neutron flux 40 cm off-axis
+FM34 9.403044+10
+E34      5  6  7  8  9 10 11 12 13 14
         15 16 17 18 19 20 21 22 23 24
         25 26 27 28 29 30 31 32 33 34
         35 36 37 38 39 40 41 42 43 44 46 48

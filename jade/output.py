@@ -352,8 +352,14 @@ class BenchmarkOutput(AbstractOutput):
                     except KeyError:
                         # this means that the column is only one and we have
                         # two distinct DFs for values and errors
-                        values = vals_df["Value"].values
-                        error = err_df["Error"].values
+                        # depending on pandas version, these may be series or
+                        # directly arrays     
+                        values = vals_df["Value"]
+                        error = err_df["Error"]
+                        if isinstance(values, pd.Series) or isinstance(values, pd.DataFrame):
+                            values = values.values
+                        if isinstance(error, pd.Series) or isinstance(error, pd.DataFrame):
+                            error = error.values
 
                     lib_name = self.session.conf.get_lib_name(self.lib)
                     lib = {"x": x, "y": values, "err": error, "ylabel": lib_name}

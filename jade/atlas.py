@@ -26,7 +26,7 @@ import os
 import logging
 
 # import win32com.client
-import aspose.words
+# import aspose.words
 import docx
 import pandas as pd
 from docx.enum.table import WD_ALIGN_VERTICAL

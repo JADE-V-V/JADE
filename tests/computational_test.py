@@ -4,7 +4,7 @@ import pytest
 
 from jade.main import Session
 from jade.configuration import Configuration
-from jade.libmanager import LibManager
+from f4enix.input.libmanager import LibManager
 from jade.status import Status
 from jade.computational import executeBenchmarksRoutines
 

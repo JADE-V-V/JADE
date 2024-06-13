@@ -294,11 +294,12 @@ class BenchmarkOutput(AbstractOutput):
         return None
 
     def _read_mcnp_code_version(self, pathtofile: os.PathLike) -> str | None:
-        try:
-            _, ofile = self._get_output_files(pathtofile)
-        except FileNotFoundError:
-            return None
+        if self.testname in ['Sphere', 'SphereSDDR']:
+            if not os.path.exists(pathtofile):
+                # this can happen the first time
+                return None
 
+        _, ofile = self._get_output_files(pathtofile)
         outp = MCNPOutputFile(ofile)
         try:
             version = outp.get_code_version()

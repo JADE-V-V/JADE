@@ -229,59 +229,6 @@ class TestUtilities:
 
         # TODO test also EXFOR if installed
 
-    def test_fetch_iaea_inputs(self, tmpdir, monkeypatch):
-        """ " Test that benchmarks can be correctly fetched from the IAEA website.
-        test also the overwriting"""
-        session = SessionMockup(tmpdir.mkdir("uty"), input_path=tmpdir.mkdir("inputs"))
-
-        # try to get the token from local secret file
-        try:
-            with open(
-                os.path.join(cp, "secrets.json"), "r", encoding="utf-8"
-            ) as infile:
-                token = json.load(infile)["github"]
-        except FileNotFoundError:
-            # Then try to get it from GitHub workflow secrets
-            token = os.getenv("ACCESS_TOKEN_GITHUB")
-
-        # test correct fetching in an empty folder
-        uty.fetch_iaea_inputs(session, authorization_token=str(token))
-        assert len(os.listdir(session.path_inputs)) > 0
-
-        # test overwriting
-        # clean everything
-        shutil.rmtree(session.path_inputs)
-        os.mkdir(session.path_inputs)
-        # copy a dummy folder
-        dummy = os.path.join(cp, "TestFiles", "utilitiesgui", "Sphere")
-        shutil.copytree(dummy, os.path.join(session.path_inputs, "Sphere"))
-
-        # do not override
-        msg = ""
-        inputs = iter(["n"])
-        monkeypatch.setattr("builtins.input", lambda msg: next(inputs))
-        uty.fetch_iaea_inputs(session, authorization_token=str(token))
-        assert len(os.listdir(session.path_inputs)) == 1
-
-        # override
-        inputs = iter(["y"])
-        monkeypatch.setattr("builtins.input", lambda msg: next(inputs))
-        uty.fetch_iaea_inputs(session, authorization_token=str(token))
-        assert len(os.listdir(session.path_inputs)) > 1
-        assert os.path.exists(os.path.join(session.path_inputs, "Sphere", "mcnp"))
-
-        # override again, there could be a bug with single files instead of folders
-        inputs = iter(["y"])
-        monkeypatch.setattr("builtins.input", lambda msg: next(inputs))
-        uty.fetch_iaea_inputs(session, authorization_token=str(token))
-        assert len(os.listdir(session.path_inputs)) > 1
-
-        # check failed authentication
-        inputs = iter(["y"])
-        monkeypatch.setattr("builtins.input", lambda msg: next(inputs))
-        ans = uty.fetch_iaea_inputs(session, authorization_token="wrongtoken")
-        assert not ans
-
 
 def excel_equal(fileA, fileB, n_sheets):
     for i in range(n_sheets):

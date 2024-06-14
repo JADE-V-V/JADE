@@ -61,9 +61,7 @@ class MockSession:
         self.conf = conf
         self.path_comparison = root_dir.mkdir("comparison")
         self.path_single = root_dir.mkdir("single")
-        self.path_exp_res = os.path.join(
-            modules_path, "jade", "install_files", "Experimental_Results"
-        )
+        self.path_exp_res = os.path.join(cp, "TestFiles", "output", "exp_results")
 
 
 class TestSphereSDDRMCNPoutput:

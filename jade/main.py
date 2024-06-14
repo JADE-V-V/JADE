@@ -142,6 +142,9 @@ class Session:
             files = self.path_default_settings
             shutil.copytree(files, os.path.dirname(self.path_cnf))
 
+            # create the inputs and exp results folders
+            for folder in [self.path_exp_res, self.path_inputs]:
+                os.mkdir(folder)
             # Fetch the open benchmarks and relative experimental data from
             # the IAEA website
             fetch_iaea_inputs(self)

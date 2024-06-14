@@ -1,7 +1,6 @@
 import sys
 import os
 import shutil
-import json
 import pandas as pd
 
 cp = os.path.dirname(os.path.abspath(__file__))

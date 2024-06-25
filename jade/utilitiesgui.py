@@ -28,15 +28,9 @@ import tempfile
 import requests
 import shutil
 import matplotlib.pyplot as plt
-import pandas as pd
-import xlsxwriter
 from tqdm import tqdm
 
-import f4enix.input.MCNPinput as ipt
-import f4enix.input.materials as mat
-
-from f4enix.input.acepyne import Library
-from f4enix.input.MCNPinput import D1S_Input
+from jade.acepyne import Library
 import jade.main
 import jade.resources as pkg_res
 from importlib.resources import files, as_file
@@ -651,11 +645,7 @@ def print_XS_EXFOR(session):
             plt.title(
                 isotope_name + " " + MT + " (" + ENDF_X4_dict[i] + ")", fontsize=22
             )
-            plt.savefig(
-                os.path.join(
-                    session.path_uti, f"{isotope_name}_{MT}_XS.png"
-                )
-            )
+            plt.savefig(os.path.join(session.path_uti, f"{isotope_name}_{MT}_XS.png"))
             print(" Cross Section printed")
 
 

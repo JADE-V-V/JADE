@@ -1227,8 +1227,8 @@ class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
                 except IndexError:
                     erg = None
 
-                val = t.getValue(f, d, u, s, m, c, e, nt, i, j, k, 0)
-                err = t.getValue(f, d, u, s, m, c, e, nt, i, j, k, 1)
+                val = t._getValue(f, d, u, s, m, c, e, nt, i, j, k, 0)
+                err = t._getValue(f, d, u, s, m, c, e, nt, i, j, k, 1)
                 if val <= 0:
                     err = np.nan
 

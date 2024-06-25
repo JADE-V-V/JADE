@@ -144,6 +144,9 @@ class TestUtilities:
         inputs = iter(["1001", "1", "continue", "31c", "continue", "n"])
         monkeypatch.setattr("builtins.input", lambda msg: next(inputs))
         uty.print_XS_EXFOR(session)
+        inputs = iter(["1001", "1", "continue", "31c", "continue", "y"])
+        monkeypatch.setattr("builtins.input", lambda msg: next(inputs))
+        uty.print_XS_EXFOR(session)
         assert True
 
         # TODO test also EXFOR if installed

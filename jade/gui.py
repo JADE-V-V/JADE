@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import os
 import sys
+import json
 from typing import TYPE_CHECKING
 
 from tqdm import tqdm
@@ -39,6 +40,9 @@ from jade.status import EXP_TAG
 if TYPE_CHECKING:
     from jade.main import Session
 
+# colors
+CRED = "\033[91m"
+CEND = "\033[0m"
 
 date = "10/05/2022"
 version = __version__
@@ -198,7 +202,7 @@ def comploop(session: Session):
             codes_run = list(session.check_active_tests("Run").keys())
             codes_only_input = list(session.check_active_tests("OnlyInput").keys())
             codes = list(set(codes_run + codes_only_input))
-            lib = session.lib_manager.select_lib(codes)
+            lib = select_lib(session.lib_manager, codes)
             if lib == "back":
                 comploop(session)
             if lib == "exit":
@@ -237,7 +241,7 @@ def comploop(session: Session):
             # Select and check library
             # Warning: this is done only for sphere test at the moment
             codes = list(session.check_active_tests("Run").keys())
-            lib = session.lib_manager.select_lib(codes)
+            lib = select_lib(session.lib_manager, codes)
             if lib == "back":
                 comploop(session)
             if lib == "exit":
@@ -363,7 +367,7 @@ def exploop(session: Session):
             session.conf.read_settings()
             # Select and check library
             codes = list(session.check_active_tests("Run", exp=True).keys())
-            lib = session.lib_manager.select_lib(codes)
+            lib = select_lib(session.lib_manager, codes)
             if lib == "back":
                 comploop(session)
             if lib == "exit":
@@ -630,3 +634,73 @@ Additional Post-Processing of library:"""
             clear_screen()
             print(pp_menu)
             print(" Please enter a valid option!")
+
+
+def select_lib(lm, codes: list[str] = ["mcnp"]) -> str:
+    """
+    Prompt a library input selection with Xsdir availabilty check
+
+    Parameters
+    ----------
+    code: list[str], optional
+        code for which the library is selected. default is MCNP
+
+    Returns
+    -------
+    lib : str
+        Library to assess.
+
+    """
+    error = (
+        CRED
+        + """
+Error: {}
+The selected library is not available.
+"""
+        + CEND
+    )
+    # Add a counter to avoid falling in an endless loop
+    i = 0
+    while True:
+        i += 1
+        lib = input(" Select library (e.g. 31c or 99c-31c): ")
+        # check that library is available in all requested codes
+
+        if lm.is_lib_available(lib, codes):
+            break  # if the library is available for all codes, break loop
+
+        elif lib[0] == "{":
+            libs = json.loads(lib)
+            # all libraries should be available
+            tocheck = list(libs.values())
+            tocheck.extend(list(libs.keys()))
+            flag = True
+            for val in tocheck:
+                if not lm.is_lib_available(val, codes):
+                    print(error.format(val))
+                    flag = False
+            if flag:
+                break
+
+        elif "-" in lib:
+            libs = lib.split("-")
+            flag = True
+            for val in libs:
+                if not lm.is_lib_available(val, codes):
+                    print(error.format(val))
+                    flag = False
+            if flag:
+                break
+
+        elif lib == "back":
+            break
+
+        elif lib == "exit":
+            break
+
+        else:
+            print(error.format(lib))
+
+        if i > 20:
+            raise ValueError("Too many wrong inputs")
+    return lib

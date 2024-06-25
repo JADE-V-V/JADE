@@ -3,13 +3,14 @@ import os
 import shutil
 import pandas as pd
 
+from jade.input_fetch import fetch_iaea_inputs, fetch_from_git
+from jade.libmanager import LibManager
+
+
 cp = os.path.dirname(os.path.abspath(__file__))
 # TODO change this using the files and resources support in Python>10
 root = os.path.dirname(cp)
 sys.path.insert(1, root)
-
-from jade.input_fetch import fetch_iaea_inputs
-from jade.libmanager import LibManager
 
 
 ACTIVATION_FILE = os.path.join(cp, "TestFiles", "libmanager", "Activation libs.xlsx")
@@ -105,3 +106,12 @@ def test_fetch_iaea_inputs(tmpdir, monkeypatch):
     # monkeypatch.setattr("builtins.input", lambda msg: next(inputs))
     # ans = fetch_iaea_inputs(session, authorization_token="wrongtoken")
     # assert not ans
+
+
+def test_fetch_gitlab():
+    """Test fetching from GitLab"""
+    url = "https://git.oecd-nea.org/sinbad/sinbad.v2/sinbad-version-2-volume-1/FUS-ATN-BLK-STR-PNT-001-FNG-Osaka-Aluminium-Sphere-OKTAVIAN-oktav_al/-/archive/jade/FUS-ATN-BLK-STR-PNT-001-FNG-Osaka-Aluminium-Sphere-OKTAVIAN-oktav_al-jade.zip"
+    extracted_folder = fetch_from_git(
+        url, user="davide.laghi@ext.f4e.europa.eu", password="iXVvEwdo"
+    )
+    assert extracted_folder

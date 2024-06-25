@@ -1,21 +1,26 @@
 from __future__ import annotations
-
+from typing import TYPE_CHECKING
 import tempfile
 import os
 import shutil
 import zipfile
 import requests
 
-import jade.main
 from jade.utilitiesgui import input_with_options
+
+if TYPE_CHECKING:
+    import jade.main
 
 
 IAEA_URL = r"https://github.com/IAEA-NDS/open-benchmarks/archive/main.zip"
 
 
-def fetch_from_git(url: str, authorization_token: str = None) -> str:
+def fetch_from_git(
+    url: str, authorization_token: str = None, user: str = None, password: str = None
+) -> str:
     """Download a repository from GitHub/GitLab and extract
-    it to a temporary folder. It can also deal with authentication.
+    it to a temporary folder. It can also deal with authentication. Supported
+    authentication is either by token or by username and password.
 
     Parameters
     ----------
@@ -23,6 +28,10 @@ def fetch_from_git(url: str, authorization_token: str = None) -> str:
         pointer for the zip download
     authorization_token : str, optional
         Authorization token to access the IAEA repository. Default is None.
+    user : str, optional
+        Username for authentication. Default is None.
+    password : str, optional
+        Password for authentication. Default is None.
 
     Returns
     -------
@@ -31,6 +40,8 @@ def fetch_from_git(url: str, authorization_token: str = None) -> str:
     """
     if authorization_token:
         headers = {"Authorization": f"token {authorization_token}"}
+    elif user and password:
+        headers = {"Authorization": f"Basic {user}:{password}"}
     else:
         headers = None
     # Download the repository as a zip file

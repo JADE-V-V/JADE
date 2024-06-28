@@ -1064,7 +1064,8 @@ class Plotter:
         # Plot all data
         y_max = 0
         y_min = 0
-        try:
+        # try:
+        if len(data) > 1:
             for i, dic in enumerate(data[1:]):
                 y = dic["y"] / ref["y"]
                 # Adjourn y max and min
@@ -1085,12 +1086,10 @@ class Plotter:
                     dic["x"],
                     y,
                     color=self.colors[i+1],
-                    drawstyle="steps-mid",
+                    drawstyle="steps-pre",
                     label=dic["ylabel"],
-                    marker=marker,
                 )
-
-        except KeyError:
+        else:
             # it is a single pp
             return self._save()
 

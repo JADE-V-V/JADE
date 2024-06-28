@@ -1,5 +1,8 @@
-"""This module is for reading ACE-format cross sections. ACE stands for "A
-Compact ENDF" format and originated from work on MCNP_. It is used in a number
+from __future__ import division, unicode_literals
+
+"""This module is for reading ACE-format cross sections. 
+
+ACE stands for "A Compact ENDF" format and originated from work on MCNP_. It is used in a number
 of other Monte Carlo particle transport codes.
 
 ACE-format cross sections are typically generated from ENDF_ files through a
@@ -12,11 +15,51 @@ generates ACE-format cross sections.
 .. _MCNP: https://laws.lanl.gov/vhosts/mcnp.lanl.gov/
 .. _NJOY: http://t2.lanl.gov/codes.shtml
 .. _ENDF: http://www.nndc.bnl.gov/endf
-
-.. moduleauthor:: Paul Romano <paul.k.romano@gmail.com>, Anthony Scopatz <scopatz@gmail.com>
 """
 
-from __future__ import division, unicode_literals
+"""
+.. moduleauthor:: Paul Romano <paul.k.romano@gmail.com>, Anthony Scopatz <scopatz@gmail.com>
+@author: Pyne https://github.com/pyne/pyne
+
+Copyright 2011-2020, the PyNE Development Team. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are
+permitted provided that the following conditions are met:
+
+   1. Redistributions of source code must retain the above copyright notice, this list of
+      conditions and the following disclaimer.
+
+   2. Redistributions in binary form must reproduce the above copyright notice, this list
+      of conditions and the following disclaimer in the documentation and/or other materials
+      provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE PYNE DEVELOPMENT TEAM "AS IS" AND ANY EXPRESS OR IMPLIED
+WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+The views and conclusions contained in the software and documentation are those of the
+authors and should not be interpreted as representing official policies, either expressed
+or implied, of the stakeholders of the PyNE project or the employers of PyNE developers.
+"""
+
+"""
+Copyright 2019 F4E | European Joint Undertaking for ITER and the Development of
+Fusion Energy (‘Fusion for Energy’). Licensed under the EUPL, Version 1.2 or - 
+as soon they will be approved by the European Commission - subsequent versions
+of the EUPL (the “Licence”). You may not use this work except in compliance
+with the Licence. You may obtain a copy of the Licence at:
+    https://eupl.eu/1.2/en/
+Unless required by applicable law or agreed to in writing, software distributed
+under the Licence is distributed on an “AS IS” basis, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the Licence permissions
+and limitations under the Licence.
+"""
 
 import io
 import struct

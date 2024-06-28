@@ -1012,6 +1012,8 @@ class SphereTest(Test):
             sphere_cell.lines = sphere_cell.card()
             # assign stop card
             newinp.add_stopCard(nps)
+            # generate file
+            newinp.get_reaction_file(libmanager, lib)
             # add PIKMT if requested
             newinp.add_PIKMT_card()
 
@@ -1024,6 +1026,8 @@ class SphereTest(Test):
             os.makedirs(outpath, exist_ok=True)
             outinpfile = os.path.join(outpath, outfile)
             newinp.write(outinpfile)
+            newinp.irrad_file.write(outpath)
+            newinp.reac_file.write(outpath)
 
             # Copy also wwinp file
             if os.path.exists(directoryVRT):
@@ -1185,6 +1189,10 @@ class SphereTest(Test):
             sphere_cell.lines = sphere_cell.card()
             # add stop card
             newinp.add_stopCard(self.nps)
+            # --- Add the reaction file ---
+            # python dicts are ordered now, first entry is activation lib
+            activation_lib = list(lib.keys())[0]
+            newinp.get_reaction_file(libmanager, activation_lib)
             # Add PIKMT card if required
             newinp.add_PIKMT_card()
 
@@ -1196,6 +1204,8 @@ class SphereTest(Test):
             os.makedirs(outpath, exist_ok=True)
             outinpfile = os.path.join(outpath, outfile)
             newinp.write(outinpfile)
+            newinp.irrad_file.write(outpath)
+            newinp.reac_file.write(outpath)
 
             # Copy also wwinp file
             if os.path.exists(directoryVRT):
@@ -1397,8 +1407,6 @@ class SphereTestSDDR(SphereTest):
             self.d1s_inp.irrad_file = IrradiationFile.from_text(filepath)
             ans = self.d1s_inp.irrad_file.select_daughters_irradiation_file([daughter])
 
-            # generate file
-            self.d1s_inp.get_reaction_file(libmanager, self.activationlib)
             # generate the input file
             super().generate_zaid_test(
                 zaid,
@@ -1411,25 +1419,10 @@ class SphereTestSDDR(SphereTest):
                 lib=self.activationlib,
             )
 
-            # Recover ouput directory
-            name, formula = libmanager.get_zaidname(zaid)
-            zaidob = mat.Zaid(1, zaid[:-3], zaid[-3:], self.activationlib)
-            _, outdir = self._get_zaidtestname(testname, zaidob, formula, addtag=MT)
-
-            # select outpath, at the moment only d1s is supported
-            if self.d1s:
-                outpath = os.path.join(motherdir, outdir, "d1s")
-            else:
-                raise NotImplementedError(
-                    "Only d1s is supported at the moment for SDDR tests"
-                )
-
-            self.d1s_inp.reac_file.write(outpath)
-
             if not ans:
                 print(
                     CORANGE
-                    + " Warning: {} irr file was not generated".format(outdir)
+                    + " Warning: {}-{} irr file was not generated".format(zaid, MT)
                     + CEND
                 )
 
@@ -1508,9 +1501,6 @@ class SphereTestSDDR(SphereTest):
                 daughterlist
             )
 
-            # --- Add the reaction file ---
-            self.d1s_inp.get_reaction_file(libmanager, self.activationlib)
-
             super().generate_material_test(
                 material,
                 density,
@@ -1522,16 +1512,6 @@ class SphereTestSDDR(SphereTest):
 
             # recover output directory and write file
             outdir = testname + "_" + truename
-
-            # select outpath, at the moment only d1s is supported
-            if self.d1s:
-                outpath = os.path.join(motherdir, outdir, "d1s")
-            else:
-                raise NotImplementedError(
-                    "Only d1s is supported at the moment for SDDR tests"
-                )
-
-            self.d1s_inp.reac_file.write(outpath)
 
             if not ans:
                 print(

@@ -1710,7 +1710,7 @@ class SphereSDDRoutput(SphereOutput):
         # Extract values
         nflux = tallies[12].set_index("Energy").drop("total")
         nflux = nflux.sum().loc["Value"]
-        pflux = tallies[22].groupby("Time").sum().loc[1, "Value"]
+        pflux = tallies[22].groupby("Time").sum(numeric_only=True).loc[1, "Value"]
         sddr = tallies[104].set_index("Time")
         sddr = sddr.loc["D" + self.timecols[time], "Value"]
         # Memorize values
@@ -2004,14 +2004,14 @@ class SphereSDDRMCNPoutput(SphereMCNPoutput):
         heat["Time"] = "H" + heat["Time"].astype(str)
 
         # Get the total values of the flux at different cooling times
-        pfluxvals = pflux.groupby("Time").sum()["Value"]
+        pfluxvals = pflux.groupby("Time").sum(numeric_only=True)["Value"]
         # Get the mean error of the flux at different cooling times
-        pfluxerrors = pflux.groupby("Time").mean()["Error"]
+        pfluxerrors = pflux.groupby("Time").mean(numeric_only=True)["Error"]
 
         # Get the total values of the SDDR at different cooling times
-        sddrvals = sddr.groupby("Time").sum()["Value"]
+        sddrvals = sddr.groupby("Time").sum(numeric_only=True)["Value"]
         # Get the mean error of the SDDR at different cooling times
-        sddrerrors = sddr.groupby("Time").mean()["Error"]
+        sddrerrors = sddr.groupby("Time").mean(numeric_only=True)["Error"]
 
         # Get the total Heating at different cooling times
         heatvals = heat.set_index("Time")["Value"]

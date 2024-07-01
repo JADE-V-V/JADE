@@ -1947,16 +1947,17 @@ class SphereSDDRoutput(SphereOutput):
         Assigns a path and prints the post processing data as a .csv
 
         """
-        if self.d1s:
-            for key, data in self.raw_data["d1s"].items():
-                foldername = "{}_{}".format(key[0], key[1])
-                folder = os.path.join(self.raw_path, foldername)
-                os.mkdir(folder)
-                # Dump all tallies
-                for tallynum, df in data.items():
-                    filename = "{}_{}_{}.csv".format(key[0], key[1], tallynum)
-                    file = os.path.join(self.raw_path, folder, filename)
-                    df.to_csv(file, header=True, index=False)
+        for key, data in self.raw_data["d1s"].items():
+            # Follow the same structure of other benchmarks
+            for tallynum, df in data.items():
+                filename = "{}_{}_{}.csv".format(key[0], key[1], tallynum)
+                file = os.path.join(self.raw_path, filename)
+                df.to_csv(file, header=True, index=False)
+        
+        # add dump of metadata
+        metadata_file = os.path.join(self.raw_path, "metadata.json")
+        with open(metadata_file, "w", encoding="utf-8") as outfile:
+            json.dump(self.metadata, outfile, indent=4)
 
 
 class SphereSDDRMCNPoutput(SphereMCNPoutput):

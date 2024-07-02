@@ -1,0 +1,8 @@
+{
+    "name": "ITER_1D",
+    "version": {
+        "mcnp": "1.0",
+        "openmc": "1.0",
+        "serpent": "1.0"
+    }
+}

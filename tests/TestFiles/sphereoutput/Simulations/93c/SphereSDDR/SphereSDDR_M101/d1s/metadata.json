@@ -1,0 +1,7 @@
+{
+    "benchmark_name": "SphereSDDR",
+    "benchmark_version": "1.0",
+    "jade_run_version": "3.0.1",
+    "library": "93c-32c",
+    "code": "d1s"
+}

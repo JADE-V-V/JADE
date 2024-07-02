@@ -1,0 +1,67 @@
+ mcnp     ver=6    , ld=02/20/18  06/13/24 12:50:25                   
+          Code Name & Version = MCNP_6.20, 6.2.0
+          Copyright LANS/LANL/DOE - see output file
+  
+     _/      _/        _/_/_/       _/      _/       _/_/_/         _/_/_/ 
+    _/_/  _/_/      _/             _/_/    _/       _/    _/     _/        
+   _/  _/  _/      _/             _/  _/  _/       _/_/_/       _/_/_/     
+  _/      _/      _/             _/    _/_/       _/           _/    _/    
+ _/      _/        _/_/_/       _/      _/       _/             _/_/       
+  
+  comment.  Physics models disabled.
+ 1 s 0 0 0 5                                                          
+  warning.  this surface has been replaced by a surface of type so
+ 2 s 0 0 0 50                                                         
+  warning.  this surface has been replaced by a surface of type so
+ 3 s 0 0 0 60                                                         
+  warning.  this surface has been replaced by a surface of type so
+ mode n P                                                             
+  comment.  photonuclear physics may be needed (phys:p).
+ f22:p 2                                                              
+  warning.  without bremsstrahlung, flux estimates will be low.
+ f32:p 2                                                              
+  warning.  without bremsstrahlung, flux estimates will be low.
+ f44:p 2                                                              
+  warning.  without bremsstrahlung, flux estimates will be low.
+ comment. using random number generator  1, initial seed = 19073486328125      
+ 
+  comment.  total nubar used if fissionable isotopes are present.
+  warning.  surface        3 is not used for anything.
+  comment.  threading will be used when possible in portions of mcnp6.
+  comment.  threading will be used for n/p/e table physics.
+  comment.  threading will generally not be used for model physics.
+ imcn   is done
+
+  warning.  fm/pert card rxn 207 is missing from   1001.31c
+  warning.  fm/pert card rxn 205 is missing from   1001.31c
+  comment.  1 cross sections modified by free gas thermal treatment.
+  warning.  simple physics turned on for photons > 100 mev.
+  comment.  setting up hash-based fast table search for xsec tables
+
+ ctm =        0.00   nrn =                 0
+ dump    1 on file Sphere_1001_H-1_r   nps =           0   coll =                0
+ xact   is done
+
+ cp0 =   0.01
+      run terminated when        1000  particle histories were done.
+
+ =====>      47.95 M histories/hr    (based on wall-clock time in mcrun)
+
+
+  warning.  tally        2 tfc bin did not pass  1 of 10 statistical checks.
+  warning.  tally        4 tfc bin did not pass  1 of 10 statistical checks.
+  warning.  tally        6 tfc bin did not pass  1 of 10 statistical checks.
+  warning.  tally       12 tfc bin did not pass  1 of 10 statistical checks.
+  warning.  tally       22 tfc bin did not pass  1 of 10 statistical checks.
+  warning.  tally       32 tfc bin did not pass  1 of 10 statistical checks.
+  warning.  tally       44 tfc bin did not pass  1 of 10 statistical checks.
+  warning.  tally       46 tfc bin did not pass  1 of 10 statistical checks.
+  warning.    10 of  11 tallies did not pass all 10 statistical checks.
+  warning.     2 of  11 tallies were all zeros.
+ additional error messages on file Sphere_1001_H-1_o
+
+ ctm =        0.01   nrn =           2749571
+ dump    2 on file Sphere_1001_H-1_r   nps =        1000   coll =           160422
+ tally data written to file Sphere_1001_H-1_m
+ mcrun  is done
+

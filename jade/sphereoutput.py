@@ -1718,7 +1718,7 @@ class SphereSDDRoutput(SphereOutput):
         if self.d1s:
             tallies = self.outputs["d1s"][zaid, mt, lib].tallydata
         # Extract values
-        nflux = tallies[12].set_index("Energy").drop("total")
+        nflux = tallies[12].set_index("Energy")  # .drop("total")
         nflux = nflux.sum().loc["Value"]
         pflux = tallies[22].groupby("Time").sum(numeric_only=True).loc[1, "Value"]
         sddr = tallies[104].set_index("Time")
@@ -1988,6 +1988,15 @@ class SphereSDDRMCNPoutput(SphereMCNPoutput):
 
         return tallydata, totalbin
 
+    @staticmethod
+    def _drop_total_rows(df: pd.DataFrame):
+        # drop all total rows
+        for key in ["User", "Time", "Energy"]:
+            try:
+                df.drop(df[df[key] == "total"].index, inplace=True)
+            except KeyError:
+                pass
+
     def get_single_excel_data(self):
         """
         Return the data that will be used in the single
@@ -2008,6 +2017,10 @@ class SphereSDDRMCNPoutput(SphereMCNPoutput):
         pflux = self.tallydata[32]
         sddr = self.tallydata[104]
         heat = self.tallydata[46]
+
+        # drop the total rows
+        for df in [nflux, pflux, sddr, heat]:
+            self._drop_total_rows(df)
 
         # Differentiate time labels
         pflux["Time"] = "F" + pflux["Time"].astype(str)
@@ -2034,24 +2047,24 @@ class SphereSDDRMCNPoutput(SphereMCNPoutput):
         # Errors of the neutron flux
         nfluxerrors = nflux.set_index("Energy")["Error"]
 
-        # Delete the total row in case it is there
-        for df, tag in zip(
-            [pfluxvals, pfluxerrors, sddrvals, sddrerrors, heatvals, heaterrors],
-            ["F", "F", "D", "D", "H", "H"],
-        ):
-            try:
-                del df[tag + "total"]
-            except KeyError:
-                # If total value is not there it is ok
-                pass
+        # # Delete the total row in case it is there
+        # for df, tag in zip(
+        #     [pfluxvals, pfluxerrors, sddrvals, sddrerrors, heatvals, heaterrors],
+        #     ["F", "F", "D", "D", "H", "H"],
+        # ):
+        #     try:
+        #         del df[tag + "total"]
+        #     except KeyError:
+        #         # If total value is not there it is ok
+        #         pass
 
-        # Do the same for the flux
-        for df in [nfluxvals, nfluxerrors]:
-            try:
-                del df["total"]
-            except KeyError:
-                # If total value is not there it is ok
-                pass
+        # # Do the same for the flux
+        # for df in [nfluxvals, nfluxerrors]:
+        #     try:
+        #         del df["total"]
+        #     except KeyError:
+        #         # If total value is not there it is ok
+        #         pass
 
         # 2 series need to be built here, one for values and one for errors
         vals = pd.concat([pfluxvals, sddrvals, heatvals, nfluxvals], axis=0)

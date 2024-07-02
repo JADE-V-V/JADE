@@ -1599,7 +1599,13 @@ class SphereSDDRoutput(SphereOutput):
                 ylabel = self.session.conf.get_lib_name(lib)
                 for zaid, mt in zaid_couples:
                     # Extract values
-                    nflux, pflux, sddr = self._extract_data4plots(zaid, mt, lib, time)
+                    try:
+                        nflux, pflux, sddr = self._extract_data4plots(
+                            zaid, mt, lib, time
+                        )
+                    except KeyError:
+                        # it may be that the zaid is not in the library
+                        continue
                     # Memorize values
                     nfluxs.append(nflux)
                     pfluxs.append(pflux)
@@ -1641,7 +1647,7 @@ class SphereSDDRoutput(SphereOutput):
                     datapiece, title, outpath, outname, quantity, unit, xlabel, testname
                 )
                 outfile = plot.plot("Waves")
-                atlas.insert_img(outfile, width=Inches(9))
+                atlas.insert_img(outfile)
 
             # --- Single wave plot for each material ---
             atlas.doc.add_heading("Materials ratio plot", level=1)
@@ -1658,9 +1664,13 @@ class SphereSDDRoutput(SphereOutput):
                     pfluxs = []
                     sddrs = []
                     for time in self.times:
-                        nflux, pflux, sddr = self._extract_data4plots(
-                            material, "All", lib, time
-                        )
+                        try:
+                            nflux, pflux, sddr = self._extract_data4plots(
+                                material, "All", lib, time
+                            )
+                        except KeyError:
+                            # it may be that the zaid is not in the library
+                            continue
                         # Memorize
                         nfluxs.append(nflux)
                         pfluxs.append(pflux)
@@ -1681,7 +1691,7 @@ class SphereSDDRoutput(SphereOutput):
                 plot = plotter.Plotter(
                     data, title, outpath, outname, quantity, unit, xlabel, testname
                 )
-                outfile = plot.plot("Waves", width=Inches(9))
+                outfile = plot.plot("Waves")
                 atlas.insert_img(outfile)
 
         ########
@@ -1811,7 +1821,7 @@ class SphereSDDRoutput(SphereOutput):
             lib_dics.append(outputs)
         for dic in lib_dics:
             code_outputs.update(dic)
-        self.outputs["d1s"] = code_outputs
+        self.outputs["d1s"].update(code_outputs)
         # Consider only common zaids
         idx1 = comp_dfs[0].index
         idx2 = comp_dfs[1].index
@@ -1953,7 +1963,7 @@ class SphereSDDRoutput(SphereOutput):
                 filename = "{}_{}_{}.csv".format(key[0], key[1], tallynum)
                 file = os.path.join(self.raw_path, filename)
                 df.to_csv(file, header=True, index=False)
-        
+
         # add dump of metadata
         metadata_file = os.path.join(self.raw_path, "metadata.json")
         with open(metadata_file, "w", encoding="utf-8") as outfile:

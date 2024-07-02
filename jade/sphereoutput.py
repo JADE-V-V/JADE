@@ -1501,10 +1501,12 @@ class SphereSDDRoutput(SphereOutput):
                 # For zaids cooldown time does not change anything
                 # Keep the multiple times only for materials
                 times = [self.times[0]]
+                zaidmatname = f"{formula}_{mt}"
             except ValueError:  # A material is passed instead of zaid
                 matname = self.mat_settings.loc[zaidnum, "Name"]
                 title = zaidnum + " (" + matname + ")"
                 times = self.times
+                zaidmatname = f"{matname}_all"
             atlas.doc.add_heading(title, level=2)
 
             for time in times:
@@ -1532,11 +1534,11 @@ class SphereSDDRoutput(SphereOutput):
                     values = tally_data["Value"].values
                     error = tally_data["Error"].values
                     lib_name = self.session.conf.get_lib_name(lib)
-                    ylabel = "{}_{} ({})".format(formula, mt, lib_name)
+                    ylabel = f"{zaidmatname} ({lib_name})"
                     libdata = {"x": energy, "y": values, "err": error, "ylabel": ylabel}
                     data.append(libdata)
 
-                outname = "{}-{}-{}-{}-{}".format(zaidnum, mt, globalname, 32, t)
+                outname = "{}-{}-{}-{}".format(zaidmatname, globalname, 32, t)
                 plot = plotter.Plotter(
                     data,
                     title,

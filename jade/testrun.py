@@ -1012,8 +1012,6 @@ class SphereTest(Test):
             sphere_cell.lines = sphere_cell.card()
             # assign stop card
             newinp.add_stopCard(nps)
-            # generate file
-            newinp.get_reaction_file(libmanager, lib)
             # add PIKMT if requested
             newinp.add_PIKMT_card()
 
@@ -1406,6 +1404,10 @@ class SphereTestSDDR(SphereTest):
             # --- Add the irradiation file ---
             self.d1s_inp.irrad_file = IrradiationFile.from_text(filepath)
             ans = self.d1s_inp.irrad_file.select_daughters_irradiation_file([daughter])
+            # generate the reaction file with only the specific MT
+            reaction = Reaction(zaid, MT, daughter)
+            reacfile = ReactionFile([reaction])
+            self.d1s_inp.reac_file = reacfile
 
             # generate the input file
             super().generate_zaid_test(

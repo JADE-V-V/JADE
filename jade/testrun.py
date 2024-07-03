@@ -1405,7 +1405,7 @@ class SphereTestSDDR(SphereTest):
             self.d1s_inp.irrad_file = IrradiationFile.from_text(filepath)
             ans = self.d1s_inp.irrad_file.select_daughters_irradiation_file([daughter])
             # generate the reaction file with only the specific MT
-            reaction = Reaction(zaid, MT, daughter)
+            reaction = Reaction(f"{zaid}.{self.activationlib}", MT, daughter)
             reacfile = ReactionFile([reaction])
             self.d1s_inp.reac_file = reacfile
 

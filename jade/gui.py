@@ -35,6 +35,7 @@ import jade.testrun as testrun
 import jade.utilitiesgui as uty
 from jade.__version__ import __version__
 from jade.status import EXP_TAG
+from jade.input_fetch import fetch_iaea_inputs
 
 if TYPE_CHECKING:
     from jade.main import Session
@@ -92,6 +93,7 @@ principal_menu = (
  * Produce D1S Reaction file             (react)
  * Remove all runtpe files           (rmvruntpe)
  * Compare ACE/EXFOR                (comparelib)
+ * Fetch IAEA inputs                 (iaeafetch)
  -----------------------------------------------
 
  * Exit                                   (exit)
@@ -251,6 +253,16 @@ def mainloop(session: Session):
         elif option == "rmvruntpe":
             uty.clean_runtpe(session.path_run)
             print("\n Runtpe files have been removed\n")
+
+        elif option == "iaeafetch":
+            # token = input(" Please enter your GitHub token: ")
+            ans = fetch_iaea_inputs(session)
+            if ans:
+                print("\n IAEA inputs have been successfully downloaded\n")
+            else:
+                print(
+                    "\n Error in downloading the IAEA inputs, double check your token\n"
+                )
 
         elif option == "comparelib":
             uty.print_XS_EXFOR(session)

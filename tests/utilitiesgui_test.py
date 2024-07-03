@@ -22,6 +22,9 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 import os
 import shutil
+import json
+import pandas as pd
+import pytest
 
 cp = os.path.dirname(os.path.abspath(__file__))
 # TODO change this using the files and resources support in Python>10
@@ -30,9 +33,7 @@ sys.path.insert(1, root)
 
 import jade.utilitiesgui as uty
 from jade.libmanager import LibManager
-import shutil
-import pandas as pd
-import pytest
+
 
 ACTIVATION_FILE = os.path.join(cp, "TestFiles", "libmanager", "Activation libs.xlsx")
 XSDIR_FILE = os.path.join(cp, "TestFiles", "libmanager", "xsdir")
@@ -41,7 +42,7 @@ ISOTOPES_FILE = os.path.join(root, "jade", "resources", "Isotopes.txt")
 
 class SessionMockup:
 
-    def __init__(self, uti_path):
+    def __init__(self, uti_path, input_path=None):
         df_rows = [
             ["99c", "sda", "", XSDIR_FILE, XSDIR_FILE],
             ["98c", "acsdc", "", XSDIR_FILE, XSDIR_FILE],
@@ -58,6 +59,8 @@ class SessionMockup:
         # Always use fixtures for temporary directories
         self.path_uti = uti_path
         self.conf = ConfMockup()
+        if input_path is not None:
+            self.path_inputs = input_path
 
 
 class ConfMockup:

@@ -21,11 +21,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
+from __future__ import annotations
 import os
-from functools import reduce
-
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import xlsxwriter
 from tqdm import tqdm
@@ -34,7 +32,6 @@ import jade.inputfile as ipt
 import jade.matreader as mat
 from jade.acepyne import *
 from jade.inputfile import D1S_Input
-from jade.matreader import SubMaterial
 
 
 ###############################################################################
@@ -951,9 +948,5 @@ def print_XS_EXFOR(session):
             plt.title(
                 isotope_name + " " + MT + " (" + ENDF_X4_dict[i] + ")", fontsize=22
             )
-            plt.savefig(
-                os.path.join(
-                    session.path_uti, f"{isotope_name}_{MT}_XS.png"
-                )
-            )
+            plt.savefig(os.path.join(session.path_uti, f"{isotope_name}_{MT}_XS.png"))
             print(" Cross Section printed")

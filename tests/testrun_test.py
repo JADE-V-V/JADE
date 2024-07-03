@@ -64,6 +64,7 @@ def LM():
         ["00c", "sdas", "", XSDIR_FILE, None, None, None],
         ["71c", "sdasxcx", "", XSDIR_FILE, None, None, None],
         ["81c", "sdasxcx", "yes", XSDIR_FILE, None, None, None],
+        ["93c", "sda", "", XSDIR_FILE, XSDIR_FILE, None, None],
     ]
     df_lib = pd.DataFrame(df_rows)
     df_lib.columns = ["Suffix", "Name", "Default", "MCNP", "d1S", "OpenMC", "Serpent"]
@@ -188,7 +189,7 @@ class TestSphereTestSDDR:
 
     def test_build(self, LM: LibManager, tmpdir, LOGFILE: Log):
         # Just check that nothing breaks
-        lib = "99c-31c"
+        lib = "93c-31c"
         inp_name = "SphereSDDR"
         inp = os.path.join(self.files, inp_name)
         config_data = {
@@ -209,6 +210,15 @@ class TestSphereTestSDDR:
         # Build the test
         test = SphereTestSDDR(inp, lib, config, LOGFILE, conf_path, "c", "dummy")
         test.generate_test(tmpdir, LM)
+        # Ensure only one channel is used
+        reac_file = os.path.join(
+            tmpdir, "SphereSDDR", "SphereSDDR_12025_Mg-25_28", "d1s", "react"
+        )
+        reac_file = ReactionFile.from_text(reac_file)
+        print(reac_file.reactions)
+        assert len(reac_file.reactions) == 1
+
+        # Check metadata production
         metadata_file = os.path.join(
             tmpdir, "SphereSDDR", "SphereSDDR_M101", "d1s", "metadata.json"
         )

@@ -27,7 +27,6 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 from jade.acepyne import Library
-import jade.main
 import jade.resources as pkg_res
 from importlib.resources import files, as_file
 

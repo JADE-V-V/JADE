@@ -6,7 +6,10 @@ import shutil
 import zipfile
 import requests
 
-import jade.main
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import jade.main
 from jade.utilitiesgui import input_with_options
 
 

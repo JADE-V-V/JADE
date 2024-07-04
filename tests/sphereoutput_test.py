@@ -236,7 +236,10 @@ class TestSphereSDDRoutput:
 
 class TestSphereSDDRMCNPoutput:
 
-    out = sout.SphereSDDRMCNPoutput(OUTM_SDDR, OUTP_SDDR)
+    out = sout.SphereSDDRMCNPoutput(
+        os.path.join(resources, "SphereSDDR_11023_Na-23_102_m"),
+        os.path.join(resources, "SphereSDDR_11023_Na-23_102_o"),
+    )
 
     def test_get_single_excel_data(self):
         vals, errors = self.out.get_single_excel_data()

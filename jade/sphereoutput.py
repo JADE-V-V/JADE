@@ -725,7 +725,9 @@ class SphereOutput(BenchmarkOutput):
                 idx2 = error_dfs[0].index
                 newidx = idx1.intersection(idx2)
 
-                std_dev = absdiff.loc[newidx] / error_dfs[0].loc[newidx]
+                std_dev = absdiff.loc[newidx] / (
+                    error_dfs[0].loc[newidx] * comp_dfs[0].loc[newidx]
+                )
 
                 # self.std_dev["mcnp"] = std_dev
                 # Correct sorting
@@ -1837,7 +1839,7 @@ class SphereSDDRoutput(SphereOutput):
         # Build the final excel data
         absdiff = ref - tar
         final = absdiff / ref
-        std_dev = absdiff / ref_err
+        std_dev = absdiff / (ref_err * ref)
 
         # If it is zero the CS are equal! (NaN if both zeros)
         for df in [final, absdiff, std_dev]:

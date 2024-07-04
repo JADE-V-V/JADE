@@ -46,11 +46,11 @@ import jade.sphereoutput as sout
 
 
 class MockUpSession(Session):
-    def __init__(self, tmpdir, lm: LibManager):
+    def __init__(self, tmp_dir: os.PathLike, lm: LibManager):
         self.conf = Configuration(CONFIG_FILE)
-        self.path_comparison = os.path.join(tmpdir, "Post-Processing", "Comparisons")
-        self.path_single = os.path.join(tmpdir, "Post-Processing", "Single_Libraries")
-        self.path_pp = os.path.join(tmpdir, "Post-Processing")
+        self.path_comparison = os.path.join(tmp_dir, "Post-Processing", "Comparisons")
+        self.path_single = os.path.join(tmp_dir, "Post-Processing", "Single_Libraries")
+        self.path_pp = os.path.join(tmp_dir, "Post-Processing")
         self.path_run = os.path.join(resources, "Simulations")
         self.path_test = resources
         self.path_templates = os.path.join(resources, "templates")
@@ -102,6 +102,7 @@ class TestSphereOutput:
             metadata = json.load(f)
         assert metadata["jade_run_version"] == "0.0.1"
         assert metadata["jade_version"] == __version__
+        assert metadata["code_version"] == "6.2"
 
         sphere_31c = sout.SphereOutput("31c", "mcnp", "Sphere", session_mock)
         sphere_31c.single_postprocess()
@@ -151,7 +152,7 @@ class MockSphereSDDRoutput(sout.SphereSDDRoutput):
         self.lib = "99c"
         self.testname = "SphereSDDR"
         self.test_path = os.path.join(
-            cp, "TestFiles", "sphereoutput", "single_excel_sddr"
+            cp, "TestFiles", "sphereoutput", "single_excel_sddr", "99c"
         )
         mat_settings = [
             {"num": "M203", "Name": "material", "other": 1},
@@ -165,6 +166,19 @@ class MockSphereSDDRoutput(sout.SphereSDDRoutput):
 
 class TestSphereSDDRoutput:
     mockoutput = MockSphereSDDRoutput()
+
+    @pytest.fixture
+    def lm(self):
+        df_rows = [
+            ["31c", "adsadas", ""],
+            ["00c", "sdas", "yes"],
+            ["99c", "sddr1", ""],
+            ["98c", "sddr2", ""],
+            ["93c", "sddr3", ""],
+        ]
+        df_lib = pd.DataFrame(df_rows)
+        df_lib.columns = ["Suffix", "Name", "Default"]
+        return LibManager(df_lib, isotopes_file=ISOTOPES_FILE)
 
     def test_compute_single_results(self):
 
@@ -205,3 +219,28 @@ class TestSphereSDDRoutput:
         # print(errors)
         # print(stat_checks)
         # print(results.columns)
+
+    def test_full_comparison(self, tmpdir, lm: LibManager):
+        session = MockUpSession(tmpdir, lm)
+        session.conf = Configuration(os.path.join(resources, "config_SphereSDDR.xlsx"))
+        # do the single pp first
+        for lib in ["99c", "98c", "93c"]:
+            output = sout.SphereSDDRoutput(lib, "d1s", "SphereSDDR", session)
+            output.single_postprocess()
+        output = sout.SphereSDDRoutput(
+            ["98c", "99c", "93c"], "d1s", "SphereSDDR", session
+        )
+        output.compare()
+        assert True
+
+
+class TestSphereSDDRMCNPoutput:
+
+    out = sout.SphereSDDRMCNPoutput(OUTM_SDDR, OUTP_SDDR)
+
+    def test_get_single_excel_data(self):
+        vals, errors = self.out.get_single_excel_data()
+        assert isinstance(vals, pd.Series)
+        assert isinstance(errors, pd.Series)
+        assert len(vals) == 23
+        assert len(errors) == 23

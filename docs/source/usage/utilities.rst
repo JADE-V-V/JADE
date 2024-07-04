@@ -107,7 +107,7 @@ Download benchmark inputs from the IAEA GitHub repository
 =========================================================
 ``iaeafetch``
 
-This function is used to fetch JADE inputs from the IAEA GitHub. 
+This function is used to fetch JADE inputs and experimental data from the IAEA GitHub. 
 The files are hosted at https://github.com/IAEA-NDS/open-benchmarks.
 At the moment this repository is private and fetching requires the
 provision of a GitHub token from a GitHub account that have access.

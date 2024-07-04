@@ -728,7 +728,9 @@ class SphereOutput(BenchmarkOutput):
                 idx2 = error_dfs[0].index
                 newidx = idx1.intersection(idx2)
 
-                std_dev = absdiff.loc[newidx] / error_dfs[0].loc[newidx]
+                std_dev = absdiff.loc[newidx] / (
+                    error_dfs[0].loc[newidx] * comp_dfs[0].loc[newidx]
+                )
 
                 # self.std_dev["mcnp"] = std_dev
                 # Correct sorting
@@ -1487,10 +1489,12 @@ class SphereSDDRoutput(SphereOutput):
                 # For zaids cooldown time does not change anything
                 # Keep the multiple times only for materials
                 times = [self.times[0]]
+                zaidmatname = f"{formula}_{mt}"
             except ValueError:  # A material is passed instead of zaid
                 matname = self.mat_settings.loc[zaidnum, "Name"]
                 title = zaidnum + " (" + matname + ")"
                 times = self.times
+                zaidmatname = f"{matname}_all"
             atlas.doc.add_heading(title, level=2)
 
             for time in times:
@@ -1518,11 +1522,11 @@ class SphereSDDRoutput(SphereOutput):
                     values = tally_data["Value"].values
                     error = tally_data["Error"].values
                     lib_name = self.session.conf.get_lib_name(lib)
-                    ylabel = "{}_{} ({})".format(formula, mt, lib_name)
+                    ylabel = f"{zaidmatname} ({lib_name})"
                     libdata = {"x": energy, "y": values, "err": error, "ylabel": ylabel}
                     data.append(libdata)
 
-                outname = "{}-{}-{}-{}-{}".format(zaidnum, mt, globalname, 32, t)
+                outname = "{}-{}-{}-{}".format(zaidmatname, globalname, 32, t)
                 plot = plotter.Plotter(
                     data,
                     title,
@@ -1585,7 +1589,13 @@ class SphereSDDRoutput(SphereOutput):
                 ylabel = self.session.conf.get_lib_name(lib)
                 for zaid, mt in zaid_couples:
                     # Extract values
-                    nflux, pflux, sddr = self._extract_data4plots(zaid, mt, lib, time)
+                    try:
+                        nflux, pflux, sddr = self._extract_data4plots(
+                            zaid, mt, lib, time
+                        )
+                    except KeyError:
+                        # it may be that the zaid is not in the library
+                        continue
                     # Memorize values
                     nfluxs.append(nflux)
                     pfluxs.append(pflux)
@@ -1627,7 +1637,7 @@ class SphereSDDRoutput(SphereOutput):
                     datapiece, title, outpath, outname, quantity, unit, xlabel, testname
                 )
                 outfile = plot.plot("Waves")
-                atlas.insert_img(outfile, width=Inches(9))
+                atlas.insert_img(outfile)
 
             # --- Single wave plot for each material ---
             atlas.doc.add_heading("Materials ratio plot", level=1)
@@ -1644,9 +1654,13 @@ class SphereSDDRoutput(SphereOutput):
                     pfluxs = []
                     sddrs = []
                     for time in self.times:
-                        nflux, pflux, sddr = self._extract_data4plots(
-                            material, "All", lib, time
-                        )
+                        try:
+                            nflux, pflux, sddr = self._extract_data4plots(
+                                material, "All", lib, time
+                            )
+                        except KeyError:
+                            # it may be that the zaid is not in the library
+                            continue
                         # Memorize
                         nfluxs.append(nflux)
                         pfluxs.append(pflux)
@@ -1667,7 +1681,7 @@ class SphereSDDRoutput(SphereOutput):
                 plot = plotter.Plotter(
                     data, title, outpath, outname, quantity, unit, xlabel, testname
                 )
-                outfile = plot.plot("Waves", width=Inches(9))
+                outfile = plot.plot("Waves")
                 atlas.insert_img(outfile)
 
         ########
@@ -1694,9 +1708,9 @@ class SphereSDDRoutput(SphereOutput):
         if self.d1s:
             tallies = self.outputs["d1s"][zaid, mt, lib].tallydata
         # Extract values
-        nflux = tallies[12].set_index("Energy").drop("total")
+        nflux = tallies[12].set_index("Energy")  # .drop("total")
         nflux = nflux.sum().loc["Value"]
-        pflux = tallies[22].groupby("Time").sum().loc[1, "Value"]
+        pflux = tallies[22].groupby("Time").sum(numeric_only=True).loc[1, "Value"]
         sddr = tallies[104].set_index("Time")
         sddr = sddr.loc["D" + self.timecols[time], "Value"]
         # Memorize values
@@ -1797,7 +1811,7 @@ class SphereSDDRoutput(SphereOutput):
             lib_dics.append(outputs)
         for dic in lib_dics:
             code_outputs.update(dic)
-        self.outputs["d1s"] = code_outputs
+        self.outputs["d1s"].update(code_outputs)
         # Consider only common zaids
         idx1 = comp_dfs[0].index
         idx2 = comp_dfs[1].index
@@ -1811,7 +1825,7 @@ class SphereSDDRoutput(SphereOutput):
         # Build the final excel data
         absdiff = ref - tar
         final = absdiff / ref
-        std_dev = absdiff / ref_err
+        std_dev = absdiff / (ref_err * ref)
 
         # If it is zero the CS are equal! (NaN if both zeros)
         for df in [final, absdiff, std_dev]:
@@ -1933,16 +1947,17 @@ class SphereSDDRoutput(SphereOutput):
         Assigns a path and prints the post processing data as a .csv
 
         """
-        if self.d1s:
-            for key, data in self.raw_data["d1s"].items():
-                foldername = "{}_{}".format(key[0], key[1])
-                folder = os.path.join(self.raw_path, foldername)
-                os.mkdir(folder)
-                # Dump all tallies
-                for tallynum, df in data.items():
-                    filename = "{}_{}_{}.csv".format(key[0], key[1], tallynum)
-                    file = os.path.join(self.raw_path, folder, filename)
-                    df.to_csv(file, header=True, index=False)
+        for key, data in self.raw_data["d1s"].items():
+            # Follow the same structure of other benchmarks
+            for tallynum, df in data.items():
+                filename = "{}_{}_{}.csv".format(key[0], key[1], tallynum)
+                file = os.path.join(self.raw_path, filename)
+                df.to_csv(file, header=True, index=False)
+
+        # add dump of metadata
+        metadata_file = os.path.join(self.raw_path, "metadata.json")
+        with open(metadata_file, "w", encoding="utf-8") as outfile:
+            json.dump(self.metadata, outfile, indent=4)
 
 
 class SphereSDDRMCNPoutput(SphereMCNPoutput):
@@ -1950,6 +1965,15 @@ class SphereSDDRMCNPoutput(SphereMCNPoutput):
     def _get_tallydata(self, mctal):
 
         return self.tallydata, self.totalbin
+
+    @staticmethod
+    def _drop_total_rows(df: pd.DataFrame):
+        # drop all total rows
+        for key in ["User", "Time", "Energy"]:
+            try:
+                df.drop(df[df[key] == "total"].index, inplace=True)
+            except KeyError:
+                pass
 
     def get_single_excel_data(self):
         """
@@ -1972,20 +1996,24 @@ class SphereSDDRMCNPoutput(SphereMCNPoutput):
         sddr = self.tallydata[104]
         heat = self.tallydata[46]
 
+        # drop the total rows
+        for df in [nflux, pflux, sddr, heat]:
+            self._drop_total_rows(df)
+
         # Differentiate time labels
         pflux["Time"] = "F" + pflux["Time"].astype(str)
         sddr["Time"] = "D" + sddr["Time"].astype(str)
         heat["Time"] = "H" + heat["Time"].astype(str)
 
         # Get the total values of the flux at different cooling times
-        pfluxvals = pflux.groupby("Time").sum()["Value"]
+        pfluxvals = pflux.groupby("Time").sum(numeric_only=True)["Value"]
         # Get the mean error of the flux at different cooling times
-        pfluxerrors = pflux.groupby("Time").mean()["Error"]
+        pfluxerrors = pflux.groupby("Time").mean(numeric_only=True)["Error"]
 
         # Get the total values of the SDDR at different cooling times
-        sddrvals = sddr.groupby("Time").sum()["Value"]
+        sddrvals = sddr.groupby("Time").sum(numeric_only=True)["Value"]
         # Get the mean error of the SDDR at different cooling times
-        sddrerrors = sddr.groupby("Time").mean()["Error"]
+        sddrerrors = sddr.groupby("Time").mean(numeric_only=True)["Error"]
 
         # Get the total Heating at different cooling times
         heatvals = heat.set_index("Time")["Value"]
@@ -1997,24 +2025,24 @@ class SphereSDDRMCNPoutput(SphereMCNPoutput):
         # Errors of the neutron flux
         nfluxerrors = nflux.set_index("Energy")["Error"]
 
-        # Delete the total row in case it is there
-        for df, tag in zip(
-            [pfluxvals, pfluxerrors, sddrvals, sddrerrors, heatvals, heaterrors],
-            ["F", "F", "D", "D", "H", "H"],
-        ):
-            try:
-                del df[tag + "total"]
-            except KeyError:
-                # If total value is not there it is ok
-                pass
+        # # Delete the total row in case it is there
+        # for df, tag in zip(
+        #     [pfluxvals, pfluxerrors, sddrvals, sddrerrors, heatvals, heaterrors],
+        #     ["F", "F", "D", "D", "H", "H"],
+        # ):
+        #     try:
+        #         del df[tag + "total"]
+        #     except KeyError:
+        #         # If total value is not there it is ok
+        #         pass
 
-        # Do the same for the flux
-        for df in [nfluxvals, nfluxerrors]:
-            try:
-                del df["total"]
-            except KeyError:
-                # If total value is not there it is ok
-                pass
+        # # Do the same for the flux
+        # for df in [nfluxvals, nfluxerrors]:
+        #     try:
+        #         del df["total"]
+        #     except KeyError:
+        #         # If total value is not there it is ok
+        #         pass
 
         # 2 series need to be built here, one for values and one for errors
         vals = pd.concat([pfluxvals, sddrvals, heatvals, nfluxvals], axis=0)

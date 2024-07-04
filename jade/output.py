@@ -46,6 +46,7 @@ import jade.excelsupport as exsupp
 import jade.plotter as plotter
 
 from jade.__version__ import __version__
+from f4enix.output.MCNPoutput import Output as MCNPOutputFile
 
 if TYPE_CHECKING:
     from jade.main import Session
@@ -252,8 +253,7 @@ class BenchmarkOutput(AbstractOutput):
             results_path = os.path.join(self.test_path, code)
             self.metadata = self._read_metadata_run(results_path)
 
-    @staticmethod
-    def _read_metadata_run(pathtofile: os.PathLike) -> dict:
+    def _read_metadata_run(self, pathtofile: os.PathLike) -> dict:
         # Get the metadata
 
         # try to read the metadata
@@ -269,7 +269,47 @@ class BenchmarkOutput(AbstractOutput):
             metadata = {}
 
         metadata["jade_version"] = __version__
+        metadata["code_version"] = self._read_code_version(pathtofile)
+
         return metadata
+
+    def _read_code_version(self, pathtofile: os.PathLike) -> str | None:
+        """Read the code version from the output files or in other ways depending
+        on the used code.
+
+        Parameters
+        ----------
+        pathtofile : os.PathLike
+            path to the folder where results are stored
+
+        Returns
+        -------
+        str | None
+            version of the code used to run the benchmarks
+        """
+        if self.mcnp:
+            return self._read_mcnp_code_version(pathtofile)
+
+        return None
+
+    def _read_mcnp_code_version(self, pathtofile: os.PathLike) -> str | None:
+        if self.testname in ['Sphere', 'SphereSDDR']:
+            if not os.path.exists(pathtofile):
+                # this can happen the first time
+                return None
+
+        _, ofile = self._get_output_files(pathtofile)
+        outp = MCNPOutputFile(ofile)
+        try:
+            version = outp.get_code_version()
+            return version
+        except ValueError:
+            logging.warning(
+                "Code version not found in the output file or aux file for %s",
+                pathtofile,
+            )
+            logging.warning("Contents of the directory: %s", os.listdir(pathtofile))
+            return None
 
     def single_postprocess(self):
         """

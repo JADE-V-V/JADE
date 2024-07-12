@@ -309,6 +309,9 @@ class Plotter:
         else:
             raise ValueError(plot_type + " is not an admissible plot type")
 
+        # Be sure to close the plot once saved
+        plt.close()
+
         return outp
 
     def _waves(self, upperlimit=1.5, lowerlimit=0.5):

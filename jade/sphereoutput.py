@@ -1481,6 +1481,7 @@ class SphereSDDRoutput(SphereOutput):
         allzaids.sort()
         # --- Binned plots of the gamma flux ---
         for zaidnum, mt in tqdm(allzaids, desc=" Binned flux plots"):
+            material = False
             # Get everything for the title of the zaid
             try:
                 name, formula = libmanager.get_zaidname(zaidnum)
@@ -1495,7 +1496,64 @@ class SphereSDDRoutput(SphereOutput):
                 title = zaidnum + " (" + matname + ")"
                 times = self.times
                 zaidmatname = f"{matname}_all"
+                material = True
             atlas.doc.add_heading(title, level=2)
+
+            # --- Plot the parent contributions ---
+            if material:
+                for lib in libraries:
+                    try:  # Zaid could not be common to the libraries
+                        outp = self.outputs["d1s"][zaidnum, mt, lib]
+                    except KeyError:
+                        # It is ok, simply nothing to plot here since zaid was
+                        # not in library
+                        continue
+                    try:
+                        sddr = outp.tallydata[104].set_index("User")
+                    except KeyError:
+                        continue  # older version were parents were not tracked
+
+                    lib_name = self.session.conf.get_lib_name(lib)
+                    atlas.doc.add_heading(
+                        "Parent contribution for {}".format(lib_name), level=3
+                    )
+                    title = "Parent contribution to SDDR - {}".format(lib_name)
+                    libdatas = []
+
+                    tot_dose = sddr.groupby("Time").sum()["Value"].values
+                    for parentzaid in set(sddr.index):
+                        if int(parentzaid) != 0:
+                            _, formula_parent = self.session.lib_manager.get_zaidname(
+                                str(abs(parentzaid))
+                            )
+                            y = sddr.loc[parentzaid]["Value"] / tot_dose * 100
+                            libdata = {
+                                "x": self.times,
+                                "y": y,
+                                "err": [],
+                                "ylabel": formula_parent,
+                            }
+                            libdatas.append(libdata)
+
+                    outname = "tmp"
+                    quantity = "SDDR contribution"
+                    unit = "%"
+                    xlabel = "Cooldown time"
+
+                    plot = plotter.Plotter(
+                        libdatas,
+                        title,
+                        outpath,
+                        outname,
+                        quantity,
+                        unit,
+                        xlabel,
+                        self.testname,
+                    )
+                    img_path = plot._contribution(legend_outside=True)
+
+                    # Insert the image in the atlas
+                    atlas.insert_img(img_path)
 
             for time in times:
                 atlas.doc.add_heading("Cooldown time = {}".format(time), level=3)
@@ -1932,6 +1990,7 @@ class SphereSDDRoutput(SphereOutput):
             st_ck = output.stat_checks
             # Recover results and precisions
             res, err = output.get_single_excel_data()
+
             for series in [res, err, st_ck]:
                 series["Parent"] = zaidnum
                 series["Parent Name"] = zaidname
@@ -2000,6 +2059,9 @@ class SphereSDDRMCNPoutput(SphereMCNPoutput):
         for df in [nflux, pflux, sddr, heat]:
             self._drop_total_rows(df)
 
+        # extend sddr to handle parent contributions abs error is needed
+        sddr["abs_error"] = sddr["Error"] * sddr["Value"]
+
         # Differentiate time labels
         pflux["Time"] = "F" + pflux["Time"].astype(str)
         sddr["Time"] = "D" + sddr["Time"].astype(str)
@@ -2013,7 +2075,7 @@ class SphereSDDRMCNPoutput(SphereMCNPoutput):
         # Get the total values of the SDDR at different cooling times
         sddrvals = sddr.groupby("Time").sum(numeric_only=True)["Value"]
         # Get the mean error of the SDDR at different cooling times
-        sddrerrors = sddr.groupby("Time").mean(numeric_only=True)["Error"]
+        sddrerrors = sddr.groupby("Time").sum()["abs_error"] / sddrvals
 
         # Get the total Heating at different cooling times
         heatvals = heat.set_index("Time")["Value"]

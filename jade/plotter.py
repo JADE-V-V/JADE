@@ -252,6 +252,7 @@ class Plotter:
                     xlimits=XLIM_HCPB,
                     markers=True,
                     figsize=(24, 13.5),
+                    steps="steps-pre",
                 )
             elif self.testname == "WCLL_TBM_1D":
                 outp = self._ratio_plot(
@@ -259,6 +260,7 @@ class Plotter:
                     xlimits=XLIM_WCLL,
                     markers=True,
                     figsize=(24, 13.5),
+                    steps="steps-pre",
                 )
             else:
                 outp = self._ratio_plot()
@@ -1028,6 +1030,7 @@ class Plotter:
         xlimits=None,
         markers=False,
         figsize=(16, 9),
+        steps="steps-mid",
     ):
         """
         Plot a ratio plot where all data dictionaries are plotted against the
@@ -1094,7 +1097,7 @@ class Plotter:
                     dic["x"],
                     y,
                     color=self.colors[i + 1],
-                    drawstyle="steps-pre",
+                    drawstyle=steps,
                     label=dic["ylabel"],
                 )
         else:

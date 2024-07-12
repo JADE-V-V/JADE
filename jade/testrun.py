@@ -254,19 +254,11 @@ class Test:
             # actions are required
             tr_lib = lib.split("-")[0]
             act_lib = lib.split("-")[1]
+            self.react = self.d1s_inp.get_reaction_file(
+                libmanager, act_lib, set_as_attribute=True
+            )
             self.d1s_inp.smart_translate(tr_lib, act_lib, libmanager)
 
-            newirradiations = []
-            available_daughters = self.d1s_inp.irrad_file.get_daughters()
-            for reaction in self.d1s_inp.reac_file.reactions:
-                if reaction.daughter in available_daughters:
-                    # add the correspondent irradiation
-                    irr = self.d1s_inp.irrad_file.get_irrad(reaction.daughter)
-                    if irr not in newirradiations:
-                        newirradiations.append(irr)
-            self.irrad.irr_schedules = newirradiations
-
-            self.react.reactions = self.d1s_inp.reac_file.reactions
             self.d1s_inp.update_zaidinfo(libmanager)
         if self.mcnp:
             self.mcnp_inp.translate(lib, libmanager)

@@ -29,6 +29,7 @@ from shutil import rmtree
 from jade.configuration import Log
 from jade.testrun import Test, SphereTest, SphereTestSDDR, MultipleTest
 from f4enix.input.libmanager import LibManager
+from f4enix.input.MCNPinput import D1S_Input
 import pytest
 import json
 from jade.__version__ import __version__
@@ -218,6 +219,13 @@ class TestSphereTestSDDR:
         reac_file = ReactionFile.from_text(reac_file)
         print(reac_file.reactions)
         assert len(reac_file.reactions) == 1
+
+        # check the correct production of parent tracking
+        file = os.path.join(
+            tmpdir, "SphereSDDR", "SphereSDDR_M101", "d1s", "SphereSDDR_M101_"
+        )
+        inp = D1S_Input.from_input(file)
+        assert len(inp.other_data["FU104"].lines) > 5
 
         # Check metadata production
         metadata_file = os.path.join(

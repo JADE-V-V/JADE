@@ -29,6 +29,7 @@ from shutil import rmtree
 from jade.configuration import Log
 from jade.testrun import Test, SphereTest, SphereTestSDDR, MultipleTest
 from f4enix.input.libmanager import LibManager
+from f4enix.input.MCNPinput import D1S_Input
 import pytest
 import json
 from jade.__version__ import __version__
@@ -111,7 +112,7 @@ class TestTest:
         assert metadata["jade_run_version"] == __version__
         assert metadata["benchmark_version"] == "1.0"
 
-    def test_build_d1s(self, LM: LibManager, LOGFILE: Log):
+    def test_build_d1s(self, LM: LibManager, LOGFILE: Log, tmpdir):
         # Just check that nothing breaks
         lib = "99c-31c"
         inp_name = "ITER_Cyl_SDDR"
@@ -134,11 +135,17 @@ class TestTest:
 
         # Build the test
         test = Test(inp, lib, config, LOGFILE, conf_path, "c", "dummy")
-        try:
-            os.mkdir(self.dummyout)
-            test.generate_test(self.dummyout, LM)
-        finally:
-            rmtree(self.dummyout)
+        test.generate_test(tmpdir, LM)
+        translated_inp = D1S_Input.from_input(
+            os.path.join(tmpdir, "ITER_Cyl_SDDR", "d1s", "ITER_Cyl_SDDR"),
+            os.path.join(tmpdir, "ITER_Cyl_SDDR", "d1s", "irrad"),
+            os.path.join(tmpdir, "ITER_Cyl_SDDR", "d1s", "react"),
+        )
+        assert translated_inp.reac_file.reactions[2].parent == "25055.99c"
+        assert (
+            translated_inp.materials["M1"].submaterials[0].zaidList[31].name
+            == translated_inp.reac_file.reactions[2].parent
+        )
         assert True
 
 

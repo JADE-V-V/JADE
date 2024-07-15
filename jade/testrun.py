@@ -252,12 +252,11 @@ class Test:
         if self.d1s:
             # Then it was the translation of a D1S input, additional
             # actions are required
-            tr_lib = lib.split("-")[0]
-            act_lib = lib.split("-")[1]
+            act_lib, tr_lib = check_transport_activation(lib)
             self.react = self.d1s_inp.get_reaction_file(
                 libmanager, act_lib, set_as_attribute=True
             )
-            self.d1s_inp.smart_translate(tr_lib, act_lib, libmanager)
+            self.d1s_inp.smart_translate(act_lib, tr_lib, libmanager)
 
             self.d1s_inp.update_zaidinfo(libmanager)
         if self.mcnp:

@@ -255,7 +255,7 @@ def mainloop(session: Session):
             print("\n Runtpe files have been removed\n")
 
         elif option == "iaeafetch":
-            token = input(" Please enter your GitHub token: ")
+            # token = input(" Please enter your GitHub token: ")
             ans = fetch_iaea_inputs(session)
             if ans:
                 print("\n IAEA inputs have been successfully downloaded\n")

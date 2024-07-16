@@ -104,6 +104,11 @@ class Configuration:
         self.mpi_exec_prefix = main["Value"].loc["MPI executable prefix"]
         self.batch_system = main["Value"].loc["Batch system"]
         self.batch_file = self._process_path(main["Value"].loc["Batch file"])
+        # make nea token optional
+        try:
+            self.nea_token = main["Value"].loc["NEA token"]
+        except KeyError:
+            self.nea_token = None
 
         """ Legacy config variables """
         # self.xsdir_path = main['Value'].loc['xsdir Path']
@@ -166,7 +171,9 @@ class Configuration:
                             print(
                                 " Cannot submit as a batch job, as no batch system has been defined in the config file."
                             )
-                        elif (pd.isnull(self.mpi_exec_prefix)) and (pd.isnull(self.mpi_tasks) is not True):
+                        elif (pd.isnull(self.mpi_exec_prefix)) and (
+                            pd.isnull(self.mpi_tasks) is not True
+                        ):
                             if int(self.mpi_tasks) > 1:
                                 print(
                                     " Cannot submit batch job as MPI, as no MPI executable prefix has been defined in the config file."

@@ -2,14 +2,16 @@ import sys
 import os
 import shutil
 import pandas as pd
+import json
+
+from jade.input_fetch import fetch_iaea_inputs, fetch_nea_inputs, fetch_from_gitlab
+from jade.libmanager import LibManager
+
 
 cp = os.path.dirname(os.path.abspath(__file__))
 # TODO change this using the files and resources support in Python>10
 root = os.path.dirname(cp)
 sys.path.insert(1, root)
-
-from jade.input_fetch import fetch_iaea_inputs
-from jade.libmanager import LibManager
 
 
 ACTIVATION_FILE = os.path.join(cp, "TestFiles", "libmanager", "Activation libs.xlsx")
@@ -47,6 +49,16 @@ class ConfMockup:
         self.lib = pd.DataFrame(
             [["00c", "A"], ["31c", "B"]], columns=["Suffix", "name"]
         ).set_index("Suffix")
+        token = None
+        try:
+            with open(
+                os.path.join(cp, "secrets.json"), "r", encoding="utf-8"
+            ) as infile:
+                token = json.load(infile)["gitlab"]
+        except FileNotFoundError:
+            # Then try to get it from GitHub workflow secrets
+            token = os.getenv("ACCESS_TOKEN_GITLAB")
+        self.nea_token = token
 
 
 def test_fetch_iaea_inputs(tmpdir, monkeypatch):
@@ -93,15 +105,28 @@ def test_fetch_iaea_inputs(tmpdir, monkeypatch):
     fetch_iaea_inputs(session)
     assert len(os.listdir(session.path_inputs)) > 1
 
-    # # check failed authentication (this can be used later for gitlab)
-    # # try to get the token from local secret file
-    # try:
-    #     with open(os.path.join(cp, "secrets.json"), "r", encoding="utf-8") as infile:
-    #         token = json.load(infile)["github"]
-    # except FileNotFoundError:
-    #     # Then try to get it from GitHub workflow secrets
-    #     token = os.getenv("ACCESS_TOKEN_GITHUB")
-    # inputs = iter(["y"])
-    # monkeypatch.setattr("builtins.input", lambda msg: next(inputs))
-    # ans = fetch_iaea_inputs(session, authorization_token="wrongtoken")
-    # assert not ans
+
+def test_fetch_gitlab():
+    """Test fetching from GitLab"""
+    try:
+        with open(os.path.join(cp, "secrets.json"), "r", encoding="utf-8") as infile:
+            token = json.load(infile)["gitlab"]
+    except FileNotFoundError:
+        # Then try to get it from GitHub workflow secrets
+        token = os.getenv("ACCESS_TOKEN_GITLAB")
+    url = "https://git.oecd-nea.org"
+    path = r"sinbad/sinbad.v2/sinbad-version-2-volume-1/FUS-ATN-BLK-STR-PNT-001-FNG-Osaka-Aluminium-Sphere-OKTAVIAN-oktav_al"
+    extracted_folder = fetch_from_gitlab(url, path, authorization_token=token)
+
+    assert extracted_folder
+
+
+def test_fetch_nea_inputs(tmpdir):
+    session = SessionMockup(
+        tmpdir.mkdir("uty"), tmpdir.mkdir("inputs"), tmpdir.mkdir("exp")
+    )
+
+    # test correct fetching in an empty folder
+    fetch_nea_inputs(session)
+    assert len(os.listdir(session.path_inputs)) > 0
+    assert len(os.listdir(session.path_exp_res)) > 0

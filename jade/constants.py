@@ -21,3 +21,9 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 CODES = {"MCNP": "mcnp", "Serpent": "serpent", "OpenMC": "openmc", "d1S": "d1s"}
+
+NEA_TREE = {
+    "Oktavian_NEA": {
+        "path": "sinbad/sinbad.v2/sinbad-version-2-volume-1/FUS-ATN-BLK-STR-PNT-001-FNG-Osaka-Aluminium-Sphere-OKTAVIAN-oktav_al",
+    }
+}

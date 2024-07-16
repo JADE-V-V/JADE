@@ -104,7 +104,11 @@ class Configuration:
         self.mpi_exec_prefix = main["Value"].loc["MPI executable prefix"]
         self.batch_system = main["Value"].loc["Batch system"]
         self.batch_file = self._process_path(main["Value"].loc["Batch file"])
-        self.nea_token = main["Value"].loc["NEA token"]
+        # make nea token optional
+        try:
+            self.nea_token = main["Value"].loc["NEA token"]
+        except KeyError:
+            self.nea_token = None
 
         """ Legacy config variables """
         # self.xsdir_path = main['Value'].loc['xsdir Path']

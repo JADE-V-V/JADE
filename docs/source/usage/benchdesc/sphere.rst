@@ -18,6 +18,8 @@ plus some typically used material in the ITER project namely:
 * SS316L(N)-IG;
 * Natural Silicon;
 * Polyethylene (non-borated).
+* Tungsten
+* CaF2
 
 Geometry and run parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -43,6 +45,8 @@ fissile isotopes like U235. A 1 m diameter sphere containing a pure fissile isot
 an extremely super-critical geometrical configuration and the high number of secondary particles (i.e. other neutrons) produced 
 caused the simulations to fail due to memory limitations. For this reason, the density of these isotopes 
 was imposed equal to 1 g/cc as if an aerosol was considered.
+A similar thing was done with the Tungsten, where the nominal density was halved. This has been done
+to ensure a good enough statistics for the leak fluxes tallies.
 
 STOP cards based on computation time and precision are not available in OpenMC and Serpent, and have
 been removed as a capability. The only stopping condition currently utilised is the NPS cut-off. 

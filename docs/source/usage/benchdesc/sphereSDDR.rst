@@ -28,6 +28,14 @@ the densities to be applied for each element and material (default is set to NTP
 conditions with few exceptions) and control on the STOP parameters to be used.
 The same 0-14 MeV uniform neutron point source is also defined.
 
+In addition to the parameters that can be set for the Sphere Leakage benchmark, the D1S-UNED
+irradiation files must also be provided for each activation library that needs to be tested.
+These irradiation files contain the D1S time factors related to the SA-2 scenarios (see next paragraph) for all 
+available daughter nuclides in the library. The file must be named as ``irrad_<library>`` where
+``<library>`` is the suffix of the activation library the time factor refers to. This should be
+the same as the one used in the :ref:`activationfile`. The file must be placed in the same folder
+as the ``MaterialsSettings.csv`` and the ``ZaidSettings.csv`` files.
+
 SDDR parameters
 ^^^^^^^^^^^^^^^
 

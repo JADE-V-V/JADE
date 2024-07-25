@@ -118,6 +118,14 @@ class TestBenchmarkOutput:
         assert metadata["jade_run_version"] == "0.0.1"
         assert metadata["jade_version"] == __version__
 
+    def test_iter_cyl(self, tmpdir):
+        conf = Configuration(
+            os.path.join(cp, "TestFiles", "output", "config_itercyl.xlsx")
+        )
+        session = MockSession(conf, tmpdir)
+        out = output.BenchmarkOutput("99c", "d1s", "ITER_Cyl_SDDR", session)
+        out.single_postprocess()
+
 
 class TestExperimentalOutput:
 

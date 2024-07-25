@@ -1054,9 +1054,49 @@ class MCNPoutput:
 
         # Read and parse the mctal file
         mctal = Mctal(mctal_file)
+        # --- restore cabability to collapse segment and cells ---
+        # The double binning Surfaces/cells with segments can create
+        # issues for JADE since if another binning is added
+        # (such as energy) it is not supported. Nevertheless,
+        # the additional segmentation can be quite useful and this can be
+        # collapsed de facto in a single geometrical binning
+        tallydata = mctal.tallydata
+        total_bin = mctal.totalbin
+        for dictionary in [tallydata, total_bin]:
+            for _, df in dictionary.items():
+                if df is not None:
+                    if (
+                        "Cells" in df.columns
+                        and "Segments" in df.columns
+                        and len(df) > 1
+                    ):
+                        # Then we can collapse this in a single geometrical binning
+                        values = []
+                        for cell, segment in zip(df.Cells, df.Segments):
+                            val = str(int(cell)) + "-" + str(int(segment))
+                            values.append(val)
+                        df["Cells-Segments"] = values
+                        # delete the collapsed columns
+                        del df["Cells"]
+                        del df["Segments"]
+
+                    # another thing that can happen mostly for d1s is that there
+                    # are user bins with fake total bin, i.e., there is only one bin
+                    # and a total bin having the same value. This is a problem
+                    # since f4enix parser will not drop the "fake" additional column
+                    try:
+                        usr_bins = set(df["User"].to_list())
+                        if len(usr_bins) <= 2 and "total" in usr_bins:
+                            # then the column does not add any additional info, to drop
+                            del df["User"]
+                            # and drop the duplicates
+                            df.drop_duplicates(inplace=True)
+                    except KeyError:
+                        pass  # no user column
+
         self.mctal = mctal
-        self.tallydata = mctal.tallydata
-        self.totalbin = mctal.totalbin
+        self.tallydata = tallydata
+        self.totalbin = total_bin
         # Read the output file
         self.out = Output(self.output_file)
         self.out.stat_checks = self.out.get_statistical_checks_tfc_bins()

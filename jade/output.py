@@ -44,6 +44,7 @@ from tqdm import tqdm
 import jade.atlas as at
 import jade.excelsupport as exsupp
 import jade.plotter as plotter
+from jade.constants import CODES
 
 from jade.__version__ import __version__
 from f4enix.output.MCNPoutput import Output as MCNPOutputFile
@@ -156,30 +157,20 @@ class BenchmarkOutput(AbstractOutput):
             self.cnf_path = os.path.join(session.path_cnf, self.testname)
 
         # Updated to handle multiple codes
-        if code == "mcnp":
-            self.mcnp = True
-            self.raw_data["mcnp"] = {}
-            self.outputs["mcnp"] = {}
-        else:
-            self.mcnp = False
-        if code == "serpent":
-            self.serpent = True
-            self.raw_data["serpent"] = {}
-            self.outputs["serpent"] = {}
-        else:
-            self.serpent = False
-        if code == "openmc":
-            self.openmc = True
-            self.raw_data["openmc"] = {}
-            self.outputs["openmc"] = {}
-        else:
-            self.openmc = False
-        if code == "d1s":
-            self.d1s = True
-            self.raw_data["d1s"] = {}
-            self.outputs["d1s"] = {}
-        else:
-            self.d1s = False
+        # initialize them so that intellisense knows they are available
+        self.mcnp = False
+        self.d1s = False
+        self.serpent = False
+        self.d1s = False
+        for available_code in CODES.values():
+            if code == available_code:
+                setattr(self, available_code, True)
+                self.raw_data[code] = {}
+                self.outputs[code] = {}
+            else:
+                setattr(self, available_code, False)
+
+        self.code = code  # this can be handy in a lot of places to avoid if else
 
         # COMPARISON
         if isinstance(lib, list) and len(lib) > 1:
@@ -287,13 +278,13 @@ class BenchmarkOutput(AbstractOutput):
         str | None
             version of the code used to run the benchmarks
         """
-        if self.mcnp:
+        if self.mcnp or self.d1s:
             return self._read_mcnp_code_version(pathtofile)
 
         return None
 
     def _read_mcnp_code_version(self, pathtofile: os.PathLike) -> str | None:
-        if self.testname in ['Sphere', 'SphereSDDR']:
+        if self.testname in ["Sphere", "SphereSDDR"]:
             if not os.path.exists(pathtofile):
                 # this can happen the first time
                 return None
@@ -326,8 +317,7 @@ class BenchmarkOutput(AbstractOutput):
         self._print_raw()
 
         print(" Creating Atlas...")
-        if self.mcnp:
-            outpath = os.path.join(self.atlas_path, "tmp")
+        outpath = os.path.join(self.atlas_path, "tmp")
         os.mkdir(outpath)
 
         # Get atlas configuration
@@ -347,8 +337,7 @@ class BenchmarkOutput(AbstractOutput):
             atl_cnf_plot = atl_cnf[atl_cnf[plot_type]]
             for tally_num in tqdm(atl_cnf_plot.index, desc="Tallies"):
                 try:
-                    if self.mcnp:
-                        output = self.outputs["mcnp"][tally_num]
+                    output = self.outputs[self.code][tally_num]
                 except KeyError:
                     fatal_exception(
                         "tally n. "
@@ -425,8 +414,7 @@ class BenchmarkOutput(AbstractOutput):
                     img_path = plot.plot(plot_type)
 
                     atlas.insert_img(img_path)
-        if self.mcnp:
-            atlas.save(self.atlas_path)
+        atlas.save(self.atlas_path)
         # Remove tmp images
         shutil.rmtree(outpath)
 
@@ -443,8 +431,7 @@ class BenchmarkOutput(AbstractOutput):
         self._generate_comparison_excel_output()
 
         print(" Creating Atlas...")
-        if self.mcnp:
-            outpath = os.path.join(self.atlas_path, "tmp")
+        outpath = os.path.join(self.atlas_path, "tmp")
         os.mkdir(outpath)
 
         # Get atlas configuration
@@ -460,15 +447,14 @@ class BenchmarkOutput(AbstractOutput):
         outputs_dic = {}
         for lib in self.lib:
             # Recover lib output
-            if self.mcnp:
-                out_path = os.path.join(
-                    self.session.path_single,
-                    lib,
-                    self.testname,
-                    "mcnp",
-                    "Raw_Data",
-                    lib + ".pickle",
-                )
+            out_path = os.path.join(
+                self.session.path_single,
+                lib,
+                self.testname,
+                self.code,
+                "Raw_Data",
+                lib + ".pickle",
+            )
             with open(out_path, "rb") as handle:
                 outputs = pickle.load(handle)
             outputs_dic[lib] = outputs
@@ -483,8 +469,7 @@ class BenchmarkOutput(AbstractOutput):
             for tally_num in tqdm(atl_cnf_plot.index, desc="Tallies"):
                 # The last 'outputs' can be easily used for common data
                 try:
-                    if self.mcnp:
-                        output = self.outputs["mcnp"][tally_num]
+                    output = self.outputs[self.code][tally_num]
                 except KeyError:
                     fatal_exception(
                         "tally n. "
@@ -563,8 +548,7 @@ class BenchmarkOutput(AbstractOutput):
                     img_path = plot.plot(plot_type)
 
                     atlas.insert_img(img_path)
-        if self.mcnp:
-            atlas.save(self.atlas_path)
+        atlas.save(self.atlas_path)
 
         # Remove tmp images
         shutil.rmtree(outpath)
@@ -607,7 +591,7 @@ class BenchmarkOutput(AbstractOutput):
         # name = "Generic_single.xlsx"
         # template = os.path.join(os.getcwd(), "templates", name)
 
-        if self.mcnp:
+        if self.mcnp or self.d1s:
             outpath = os.path.join(
                 self.excel_path, self.testname + "_" + self.lib + ".xlsx"
             )
@@ -616,7 +600,7 @@ class BenchmarkOutput(AbstractOutput):
             # Get results
             # results = []
             # errors = []
-            results_path = os.path.join(self.test_path, "mcnp")
+            results_path = os.path.join(self.test_path, self.code)
             # Get mfile and outfile and possibly meshtal file
             meshtalfile = None
             for file in os.listdir(results_path):
@@ -759,7 +743,7 @@ class BenchmarkOutput(AbstractOutput):
                         #    header=(key, "Tally n." + str(num)),
                         # )
                 # memorize data for atlas
-                self.outputs["mcnp"] = outputs
+                self.outputs[self.code] = outputs
                 # print(outputs)
                 # Dump them for comparisons
                 raw_outpath = os.path.join(self.raw_path, self.lib + ".pickle")
@@ -797,14 +781,13 @@ class BenchmarkOutput(AbstractOutput):
             )
 
     def _print_raw(self):
-        if self.mcnp:
-            for key, data in self.raw_data.items():
-                file = os.path.join(self.raw_path, str(key) + ".csv")
-                data.to_csv(file, header=True, index=False)
+        for key, data in self.raw_data.items():
+            file = os.path.join(self.raw_path, str(key) + ".csv")
+            data.to_csv(file, header=True, index=False)
 
-            metadata_file = os.path.join(self.raw_path, "metadata.json")
-            with open(metadata_file, "w", encoding="utf-8") as outfile:
-                json.dump(self.metadata, outfile, indent=4)
+        metadata_file = os.path.join(self.raw_path, "metadata.json")
+        with open(metadata_file, "w", encoding="utf-8") as outfile:
+            json.dump(self.metadata, outfile, indent=4)
 
     def _generate_comparison_excel_output(self):
         # Get excel configuration
@@ -819,7 +802,7 @@ class BenchmarkOutput(AbstractOutput):
         # name_tag = "Generic_comparison.xlsx"
         # template = os.path.join(os.getcwd(), "templates", name_tag)
 
-        if self.mcnp:
+        if self.mcnp or self.d1s:
             mcnp_outputs = {}
             comps = {}
             abs_diffs = {}
@@ -828,7 +811,7 @@ class BenchmarkOutput(AbstractOutput):
                 lib_to_comp = name
                 outfolder_path = self.excel_path
                 outpath = os.path.join(
-                    outfolder_path, "Comparison_" + name + "_mcnp.xlsx"
+                    outfolder_path, "Comparison_" + name + f"_{self.code}.xlsx"
                 )
 
                 # ex = ExcelOutputSheet(template, outpath)
@@ -837,8 +820,8 @@ class BenchmarkOutput(AbstractOutput):
                 # for lib in to_read:
                 #    results_path = self.test_path[lib]
                 for lib, results_path in {
-                    reflib: os.path.join(self.test_path[reflib], "mcnp"),
-                    tarlib: os.path.join(self.test_path[tarlib], "mcnp"),
+                    reflib: os.path.join(self.test_path[reflib], self.code),
+                    tarlib: os.path.join(self.test_path[tarlib], self.code),
                 }.items():
                     results = []
                     errors = []
@@ -1034,7 +1017,7 @@ class BenchmarkOutput(AbstractOutput):
                 #    ex.copy_sheets(cp)
 
                 # ex.save()
-                self.outputs["mcnp"] = comps
+                self.outputs[self.code] = comps
                 exsupp.comp_excel_writer(
                     self,
                     outpath,

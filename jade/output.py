@@ -469,7 +469,7 @@ class BenchmarkOutput(AbstractOutput):
             for tally_num in tqdm(atl_cnf_plot.index, desc="Tallies"):
                 # The last 'outputs' can be easily used for common data
                 try:
-                    output = self.outputs[self.code][tally_num]
+                    output = outputs_dic[lib][tally_num]
                 except KeyError:
                     fatal_exception(
                         "tally n. "
@@ -823,8 +823,6 @@ class BenchmarkOutput(AbstractOutput):
                     reflib: os.path.join(self.test_path[reflib], self.code),
                     tarlib: os.path.join(self.test_path[tarlib], self.code),
                 }.items():
-                    results = []
-                    errors = []
                     # Get mfile and outfile and possibly meshtal file
                     meshtalfile = None
                     for file in os.listdir(results_path):
@@ -860,18 +858,18 @@ class BenchmarkOutput(AbstractOutput):
                         x_name = tally_settings["x"]
                         x_tag = tally_settings["x name"]
                         y_name = tally_settings["y"]
-                        y_tag = tally_settings["y name"]
-                        ylim = tally_settings["cut Y"]
+                        # y_tag = tally_settings["y name"]
+                        # ylim = tally_settings["cut Y"]
                         # select the index format
                         if label == "Value":
                             for dic in [comps, abs_diffs, std_devs]:
                                 dic[num] = {"title": key, "x_label": x_tag}
 
-                        if x_name == "Energy":
-                            idx_format = "0.00E+00"
-                            # TODO all possible cases should be addressed
-                        else:
-                            idx_format = "0"
+                        # if x_name == "Energy":
+                        #     idx_format = "0.00E+00"
+                        #     # TODO all possible cases should be addressed
+                        # else:
+                        #     idx_format = "0"
 
                         if y_name != "tally":
                             tdata_ref.set_index(x_name, inplace=True)
@@ -899,6 +897,9 @@ class BenchmarkOutput(AbstractOutput):
                                     ref = tdata_ref.loc[xval, "Value"]
                                     ref_err = tdata_ref.loc[xval, "Error"]
                                     tar = tdata_tar.loc[xval, "Value"]
+                                    row_fin = []
+                                    row_abs_diff = []
+                                    row_std_dev = []
                                     for i in range(prev_len - 1):
                                         row_fin.append(np.nan)
                                         row_abs_diff.append(np.nan)

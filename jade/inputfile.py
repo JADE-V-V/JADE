@@ -826,6 +826,7 @@ class SerpentInputFile:
             outfile.write(to_print)
 
 
+'''
 class OpenMCInputFiles:
     def __init__(self, geometry, settings, tallies, materials, matlist, name=None):
         """Object representing an OpenMC input file.
@@ -994,3 +995,4 @@ class OpenMCInputFiles:
         materials_file = os.path.join(path, "materials.xml")
         with open(materials_file, "w") as outfile:
             outfile.write(materials)
+'''

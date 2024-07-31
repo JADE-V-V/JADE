@@ -43,6 +43,9 @@ from jade.libmanager import LibManager
 from jade.parsersD1S import IrradiationFile, Reaction, ReactionFile
 from jade.__version__ import __version__
 
+if sys.platform == 'linux':
+    import jade.openmc as omc
+
 
 # colors
 CRED = "\033[91m"
@@ -178,8 +181,8 @@ class Test:
             serpent_ipt = os.path.join(inp, "serpent", os.path.basename(inp) + ".i")
             self.serpent_inp = ipt.SerpentInputFile.from_text(serpent_ipt)
         if self.openmc:
-            openmc_ipt = os.path.join(inp, "openmc")
-            self.openmc_inp = ipt.OpenMCInputFiles.from_path(openmc_ipt)
+            #openmc_ipt = os.path.join(inp, "openmc")
+            self.openmc_inp = omc.OpenMCInputFiles()
 
     @staticmethod
     def _get_lib(lib: str | dict) -> str:

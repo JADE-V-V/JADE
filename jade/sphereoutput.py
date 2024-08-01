@@ -1612,6 +1612,8 @@ class SphereSDDRoutput(SphereOutput):
             # Build a df will all possible zaid, mt, lib combination
             if self.d1s:
                 allkeys = list(self.outputs["d1s"].keys())
+            else:
+                raise NotImplementedError("Only d1s is implemented")
             df = pd.DataFrame(allkeys)
             df.columns = ["zaid", "mt", "lib"]
             df["zaid-mt"] = df["zaid"].astype(str) + "-" + df["mt"].astype(str)
@@ -1763,13 +1765,15 @@ class SphereSDDRoutput(SphereOutput):
             pflux (float): proton flux
             sddr (float): shut down dose rate
         """
-        if self.d1s:
-            tallies = self.outputs["d1s"][zaid, mt, lib].tallydata
+        tallies = self.outputs["d1s"][zaid, mt, lib].tallydata
         # Extract values
         nflux = tallies[12].set_index("Energy")  # .drop("total")
         nflux = nflux.sum().loc["Value"]
         pflux = tallies[22].groupby("Time").sum(numeric_only=True).loc[1, "Value"]
-        sddr = tallies[104].set_index("Time")
+        # a simple set_index is not enough as now dose contribution is split
+        # by parent in the materials and needs to be summed up
+        sddr = tallies[104].groupby("Time").sum(numeric_only=True)
+        sddr["Error"] = sddr["abs_error"] / sddr["Value"]
         sddr = sddr.loc["D" + self.timecols[time], "Value"]
         # Memorize values
         return nflux, pflux, sddr

@@ -1103,7 +1103,9 @@ class SphereTest(Test):
 
             # Generate the new input
             newinp = deepcopy(self.openmc_inp)
-            newinp.matlist = matlist  # Assign material
+            
+            # Assign material
+            newinp.matlist_to_openmc(matlist, libmanager)
 
             # assign stop card
             newinp.add_stopCard(nps)
@@ -1114,7 +1116,7 @@ class SphereTest(Test):
             )
             outpath = os.path.join(motherdir, outdir, "openmc")
             os.makedirs(outpath, exist_ok=True)
-            newinp.write(outpath, libmanager)
+            newinp.write(outpath)
 
         self._print_metadata(os.path.join(motherdir, outdir))
 

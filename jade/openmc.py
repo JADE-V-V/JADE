@@ -1,4 +1,5 @@
 import os
+import re
 import openmc
 
 class OpenMCInputFiles:
@@ -15,19 +16,25 @@ class OpenMCInputFiles:
             path to input file destination
         """
         files = os.listdir(path)
-        if 'settings.xml' in files:
-            self.load_settings(os.path.join(path, 'settings.xml'))        
-        if 'tallies.xml' in files:
-            self.load_tallies(os.path.join(path, 'tallies.xml'))
         if 'geometry.xml' in files:
             if 'materials.xml' in files:
                 self.load_geometry(os.path.join(path, 'geometry.xml'), materials=os.path.join('materials.xml'))
             else:
                 self.load_geometry(os.path.join(path, 'geometry.xml'))
+        else:
+            self.geometry = openmc.Geometry()        
+        if 'settings.xml' in files:
+            self.load_settings(os.path.join(path, 'settings.xml'))
+        else:
+            self.settings = openmc.Settings()        
+        if 'tallies.xml' in files:
+            self.load_tallies(os.path.join(path, 'tallies.xml'))
+        else:
+            self.tallies = openmc.Tallies()
         if 'materials.xml' in files:
             self.load_materials(os.path.join(path, 'materials.xml'))
-
-
+        else:
+            self.materials = openmc.Materials()
     
     def load_geometry(self, geometry : str, materials=None) -> None:
         """Initialise OpenMC geometry from xml
@@ -85,7 +92,42 @@ class OpenMCInputFiles:
         self.settings.batches = batches
         self.settings.particles = int(nps) / batches
 
-    def write(self, path) -> None:
+    def zaid_to_openmc(self, zaid, openmc_material, libmanager):
+        nuclide = zaid.get_fullname(libmanager).replace("-", "")
+        if zaid.fraction < 0.0:
+            openmc_material.add_nuclide(nuclide, 100*abs(zaid.fraction), type='wo')
+        else:
+            openmc_material.add_nuclide(nuclide, 100*abs(zaid.fraction), type='ao')
+    
+    def submat_to_openmc(self, submaterial, openmc_material, libmanager):
+        if submaterial.elements is not None:
+            for elem in submaterial.elements:
+                for zaid in elem.zaids:
+                    self.zaid_to_openmc(zaid, openmc_material, libmanager)
+        else:
+            for zaid in submaterial.zaidList:
+                self.zaid_to_openmc(zaid, openmc_material, libmanager)
+    
+    def mat_to_openmc(self, material, libmanager):
+        matid = re.sub("[^0-9]", "", str(material.name))
+        matname = str(self.name)
+        matdensity = abs(self.density)
+        if self.density < 0:
+            density_units = "g/cc"
+        else:
+            density_units = "atom/b-cm"
+        openmc_material = openmc.Material(matid, name=matname)
+        openmc_material.set_density(density_units, matdensity)
+        if material.submaterials is not None:
+            for submaterial in material.submaterials:
+                self.submat_to_openmc(submaterial, openmc_material, libmanager)
+        self.materials.append(openmc_material)
+    
+    def matlist_to_openmc(self, matlist, libmanager):
+        for material in matlist:
+            self.mat_to_openmc(material, libmanager)
+
+    def write(self, path : str) -> None:
         """Write OpenMC input files to xml
 
         Parameters
@@ -102,6 +144,4 @@ class OpenMCInputFiles:
 class OpenMCSphereInputFiles(OpenMCInputFiles):
     def __init__(self, path : str, name=None) -> None:        
         OpenMCInputFiles.__init__(self, path, name=name)
-
-    
     

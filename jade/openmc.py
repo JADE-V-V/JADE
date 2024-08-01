@@ -4,8 +4,9 @@ import openmc
 
 class OpenMCInputFiles:
     def __init__(self, path : str, name=None) -> None:        
-        self.initialise(path)
+        self.path = path
         self.name = name
+        self.initialise(path)
 
     def initialise(self, path : str) -> None:
         """Initialise OpenMC input files from xml
@@ -16,13 +17,11 @@ class OpenMCInputFiles:
             path to input file destination
         """
         files = os.listdir(path)
-        if 'geometry.xml' in files:
-            if 'materials.xml' in files:
-                self.load_geometry(os.path.join(path, 'geometry.xml'), materials=os.path.join('materials.xml'))
-            else:
-                self.load_geometry(os.path.join(path, 'geometry.xml'))
+        if ('geometry.xml' in files) and ('materials.xml') in files:
+            self.load_geometry(os.path.join(path, 'geometry.xml'), materials=os.path.join('materials.xml'))
         else:
-            self.geometry = openmc.Geometry()        
+            self.geometry = openmc.Geometry()
+            self.materials = openmc.Materials()        
         if 'settings.xml' in files:
             self.load_settings(os.path.join(path, 'settings.xml'))
         else:
@@ -31,25 +30,18 @@ class OpenMCInputFiles:
             self.load_tallies(os.path.join(path, 'tallies.xml'))
         else:
             self.tallies = openmc.Tallies()
-        if 'materials.xml' in files:
-            self.load_materials(os.path.join(path, 'materials.xml'))
-        else:
-            self.materials = openmc.Materials()
     
-    def load_geometry(self, geometry : str, materials=None) -> None:
+    def load_geometry(self, geometry : str, materials) -> None:
         """Initialise OpenMC geometry from xml
 
         Parameters
         ----------
         geometry : str
             path to geometry input xml
-        materials : str (optional)
-            path to materials input xml
+        materials : str
+            path to materials input xml, or openmc.Materials object
         """         
-        if materials is None:
-            self.geometry = openmc.Geometry.from_xml(geometry)
-        else:
-            self.geometry = openmc.Geometry.from_xml(geometry, materials)
+        self.geometry = openmc.Geometry.from_xml(geometry, materials)
 
     def load_settings(self, settings : str) -> None:
         """Initialise OpenMC settings from xml
@@ -90,14 +82,14 @@ class OpenMCInputFiles:
             number of particles to simulate
         """
         self.settings.batches = batches
-        self.settings.particles = int(nps) / batches
+        self.settings.particles = int(nps/batches)
 
     def zaid_to_openmc(self, zaid, openmc_material, libmanager):
         nuclide = zaid.get_fullname(libmanager).replace("-", "")
         if zaid.fraction < 0.0:
-            openmc_material.add_nuclide(nuclide, 100*abs(zaid.fraction), type='wo')
+            openmc_material.add_nuclide(nuclide, 100*abs(zaid.fraction), 'wo')
         else:
-            openmc_material.add_nuclide(nuclide, 100*abs(zaid.fraction), type='ao')
+            openmc_material.add_nuclide(nuclide, 100*abs(zaid.fraction), 'ao')
     
     def submat_to_openmc(self, submaterial, openmc_material, libmanager):
         if submaterial.elements is not None:
@@ -109,10 +101,10 @@ class OpenMCInputFiles:
                 self.zaid_to_openmc(zaid, openmc_material, libmanager)
     
     def mat_to_openmc(self, material, libmanager):
-        matid = re.sub("[^0-9]", "", str(material.name))
-        matname = str(self.name)
-        matdensity = abs(self.density)
-        if self.density < 0:
+        matid = int(re.sub("[^0-9]", "", str(material.name)))
+        matname = str(material.name)
+        matdensity = abs(material.density)
+        if material.density < 0:
             density_units = "g/cc"
         else:
             density_units = "atom/b-cm"
@@ -126,6 +118,7 @@ class OpenMCInputFiles:
     def matlist_to_openmc(self, matlist, libmanager):
         for material in matlist:
             self.mat_to_openmc(material, libmanager)
+        self.load_geometry(os.path.join(self.path, 'geometry.xml'), self.materials)
 
     def write(self, path : str) -> None:
         """Write OpenMC input files to xml

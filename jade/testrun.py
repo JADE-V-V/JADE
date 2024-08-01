@@ -181,8 +181,8 @@ class Test:
             serpent_ipt = os.path.join(inp, "serpent", os.path.basename(inp) + ".i")
             self.serpent_inp = ipt.SerpentInputFile.from_text(serpent_ipt)
         if self.openmc:
-            #openmc_ipt = os.path.join(inp, "openmc")
-            self.openmc_inp = omc.OpenMCInputFiles()
+            openmc_ipt = os.path.join(inp, "openmc")
+            self.openmc_inp = omc.OpenMCInputFiles(openmc_ipt)
 
     @staticmethod
     def _get_lib(lib: str | dict) -> str:
@@ -1274,7 +1274,10 @@ class SphereTest(Test):
 
             # Generate the new input
             newinp = deepcopy(self.openmc_inp)
-            newinp.matlist = matlist  # Assign material
+
+            # Assign material
+            newinp.matlist_to_openmc(matlist, libmanager)
+            
             # add stop card
             newinp.add_stopCard(self.nps)
 
@@ -1284,7 +1287,7 @@ class SphereTest(Test):
 
             outpath = os.path.join(motherdir, outdir, "openmc")
             os.makedirs(outpath, exist_ok=True)
-            newinp.write(outpath, libmanager)
+            newinp.write(outpath)
 
         self._print_metadata(os.path.join(motherdir, outdir))
 

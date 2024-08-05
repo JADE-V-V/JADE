@@ -1769,7 +1769,12 @@ class SphereSDDRoutput(SphereOutput):
         # Extract values
         nflux = tallies[12].set_index("Energy")  # .drop("total")
         nflux = nflux.sum().loc["Value"]
-        pflux = tallies[22].groupby("Time").sum(numeric_only=True).loc[1, "Value"]
+        pflux = (
+            tallies[22]
+            .groupby("Time")
+            .sum(numeric_only=True)
+            .loc[int(float(self.timecols[time])), "Value"]
+        )
         # a simple set_index is not enough as now dose contribution is split
         # by parent in the materials and needs to be summed up
         sddr = tallies[104].groupby("Time").sum(numeric_only=True)

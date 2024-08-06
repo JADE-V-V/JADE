@@ -26,7 +26,6 @@ import os
 import pandas as pd
 from shutil import rmtree
 
-from jade.configuration import Log
 from jade.testrun import Test, SphereTest, SphereTestSDDR, MultipleTest
 from f4enix.input.libmanager import LibManager
 from f4enix.input.MCNPinput import D1S_Input
@@ -49,11 +48,6 @@ XSDIR31c_SERPENT = os.path.join(cp, "TestFiles", "libmanager", "xsdir.serp")
 
 # Useful files
 FILES = os.path.join(cp, "TestFiles", "testrun")
-
-
-@pytest.fixture
-def LOGFILE(tmpdir):
-    return Log(tmpdir.join("log.txt"))
 
 
 @pytest.fixture
@@ -80,7 +74,7 @@ class TestTest:
     files = os.path.join(FILES, "Test")
     dummyout = os.path.join(FILES, "dummy")
 
-    def test_build_normal(self, LM: LibManager, tmpdir, LOGFILE: Log):
+    def test_build_normal(self, LM: LibManager, tmpdir):
         # Just check that nothing breaks
         lib = "81c"
         inp_name = "ITER_1D"
@@ -103,7 +97,7 @@ class TestTest:
         conf_path = "dummy"
 
         # Build the test
-        test = Test(inp, lib, config, LOGFILE, conf_path, "c", "dummy")
+        test = Test(inp, lib, config, conf_path, "c", "dummy")
         test.generate_test(tmpdir, LM)
         metadata_file = os.path.join(tmpdir, "ITER_1D", "mcnp", "metadata.json")
         assert os.path.exists(metadata_file)
@@ -112,7 +106,7 @@ class TestTest:
         assert metadata["jade_run_version"] == __version__
         assert metadata["benchmark_version"] == "1.0"
 
-    def test_build_d1s(self, LM: LibManager, LOGFILE: Log, tmpdir):
+    def test_build_d1s(self, LM: LibManager, tmpdir):
         # Just check that nothing breaks
         lib = "99c-31c"
         inp_name = "ITER_Cyl_SDDR"
@@ -134,7 +128,7 @@ class TestTest:
         conf_path = os.path.join(self.files, "ITER_Cyl_SDDR_cnf")
 
         # Build the test
-        test = Test(inp, lib, config, LOGFILE, conf_path, "c", "dummy")
+        test = Test(inp, lib, config, conf_path, "c", "dummy")
         test.generate_test(tmpdir, LM)
         translated_inp = D1S_Input.from_input(
             os.path.join(tmpdir, "ITER_Cyl_SDDR", "d1s", "ITER_Cyl_SDDR"),
@@ -153,7 +147,7 @@ class TestSphereTest:
     files = os.path.join(FILES, "SphereTest")
     dummyout = os.path.join(FILES, "dummy")
 
-    def test_build(self, LM: LibManager, LOGFILE: Log, tmpdir):
+    def test_build(self, LM: LibManager, tmpdir):
         # Just check that nothing breaks
         lib = "31c"
         inp_name = "Sphere"
@@ -175,7 +169,7 @@ class TestSphereTest:
         conf_path = os.path.join(self.files, "Spherecnf")
 
         # Build the test
-        test = SphereTest(inp, lib, config, LOGFILE, conf_path, "c", "dummy")
+        test = SphereTest(inp, lib, config, conf_path, "c", "dummy")
         test.generate_test(tmpdir, LM)
         metadata_file = os.path.join(
             tmpdir, "Sphere", "Sphere_1001_H-1", "mcnp", "metadata.json"
@@ -195,7 +189,7 @@ class TestSphereTest:
 class TestSphereTestSDDR:
     files = os.path.join(FILES, "SphereTestSDDR")
 
-    def test_build(self, LM: LibManager, tmpdir, LOGFILE: Log):
+    def test_build(self, LM: LibManager, tmpdir):
         # Just check that nothing breaks
         lib = "93c-31c"
         inp_name = "SphereSDDR"
@@ -216,7 +210,7 @@ class TestSphereTestSDDR:
         conf_path = os.path.join(self.files, "cnf")
 
         # Build the test
-        test = SphereTestSDDR(inp, lib, config, LOGFILE, conf_path, "c", "dummy")
+        test = SphereTestSDDR(inp, lib, config, conf_path, "c", "dummy")
         test.generate_test(tmpdir, LM)
         # Ensure only one channel is used
         reac_file = os.path.join(
@@ -244,7 +238,7 @@ class TestMultipleTest:
     files = os.path.join(FILES, "MultipleTest")
     dummyout = os.path.join(FILES, "dummy")
 
-    def test_build(self, LM: LibManager, tmpdir, LOGFILE: Log):
+    def test_build(self, LM: LibManager, tmpdir):
         # Just check that nothing breaks
         lib = "31c"
         # inp_folder = os.path.join(self.files, "Inputs")
@@ -268,7 +262,7 @@ class TestMultipleTest:
         conf_path = os.path.join(self.files, "cnf")
 
         # Build the test
-        test = MultipleTest(inp, lib, config, LOGFILE, conf_path, "c", "dummy")
+        test = MultipleTest(inp, lib, config, conf_path, "c", "dummy")
         test.generate_test(tmpdir, LM)
         metadata_file = os.path.join(
             tmpdir, "Oktavian", "Oktavian_Al", "mcnp", "metadata.json"

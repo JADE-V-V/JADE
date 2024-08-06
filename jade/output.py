@@ -293,7 +293,7 @@ class BenchmarkOutput(AbstractOutput):
         return None
 
     def _read_mcnp_code_version(self, pathtofile: os.PathLike) -> str | None:
-        if self.testname in ['Sphere', 'SphereSDDR']:
+        if self.testname in ["Sphere", "SphereSDDR"]:
             if not os.path.exists(pathtofile):
                 # this can happen the first time
                 return None
@@ -792,9 +792,7 @@ class BenchmarkOutput(AbstractOutput):
             # ws.range("A9").options(index=False, header=False).value = df
 
             # ex.save()
-            exsupp.single_excel_writer(
-                self, outpath, self.lib, self.testname, outputs, stats
-            )
+            exsupp.single_excel_writer(outpath, self.lib, self.testname, outputs, stats)
 
     def _print_raw(self):
         if self.mcnp:

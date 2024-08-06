@@ -24,6 +24,7 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import annotations
 
 import os
+import logging
 import sys
 import json
 from typing import TYPE_CHECKING
@@ -155,7 +156,7 @@ def mainloop(session: Session):
             uty.print_XS_EXFOR(session)
 
         elif option == "exit":
-            session.log.adjourn("\nSession concluded normally \n")
+            logging.info("\nSession concluded normally \n")
             sys.exit()
 
         else:
@@ -207,23 +208,21 @@ def comploop(session: Session):
             if lib == "back":
                 comploop(session)
             if lib == "exit":
-                session.log.adjourn(exit_text)
+                logging.info(exit_text)
                 sys.exit()
             runoption = session.conf.run_option()
             if runoption == "back":
                 comploop(session)
             if runoption == "exit":
-                session.log.adjourn(exit_text)
+                logging.info(exit_text)
                 sys.exit()
             ans = session.state.check_override_run(lib, session)
             # If checks are ok perform assessment
             if ans:
                 # Logging
                 bartext = "Computational benchmark execution started"
-                session.log.bar_adjourn(bartext)
-                session.log.adjourn(
-                    "Selected Library: " + lib, spacing=False, time=True
-                )
+                logging.info(bartext)
+                logging.info("Selected Library: %s", lib)
                 print(
                     " ########################### COMPUTATIONAL BENCHMARKS EXECUTION ###########################\n"
                 )
@@ -232,7 +231,7 @@ def comploop(session: Session):
                     " ####################### COMPUTATIONAL BENCHMARKS RUN ENDED ###############################\n"
                 )
                 t = "Computational benchmark execution ended"
-                session.log.bar_adjourn(t)
+                logging.info(t)
             else:
                 clear_screen()
                 print(computational_menu)
@@ -246,7 +245,7 @@ def comploop(session: Session):
             if lib == "back":
                 comploop(session)
             if lib == "exit":
-                session.log.adjourn(exit_text)
+                logging.info(exit_text)
                 sys.exit()
             try:
                 unfinished, motherdir = session.state.get_unfinished_zaids(lib)
@@ -260,9 +259,7 @@ def comploop(session: Session):
             else:
                 runoption = session.conf.run_option()
                 print(" Completing sphere assessment:")
-                session.log.adjourn(
-                    "Assessment of: " + lib + " started", spacing=False, time=True
-                )
+                logging.info("Assessment of: %s  started", lib)
                 flagOk = True
                 for code, directories in unfinished.items():
                     for directory in tqdm(directories, desc=code):
@@ -299,9 +296,7 @@ def comploop(session: Session):
 
                         if flag:
                             flagOk = False
-                            session.log.adjourn(
-                                name + " reached timeout, eliminate folder"
-                            )
+                            logging.info("%s reached timeout, eliminate folder", name)
 
                 if not flagOk:
                     print(
@@ -312,15 +307,13 @@ def comploop(session: Session):
 
                 print(" Assessment completed")
 
-                session.log.adjourn(
-                    "Assessment of: " + lib + " completed", spacing=True, time=True
-                )
+                logging.info("Assessment of: %s completed", lib)
 
         elif option == "back":
             mainloop(session)
 
         elif option == "exit":
-            session.log.adjourn(exit_text)
+            logging.info(exit_text)
             sys.exit()
 
         else:
@@ -372,13 +365,13 @@ def exploop(session: Session):
             if lib == "back":
                 comploop(session)
             if lib == "exit":
-                session.log.adjourn(exit_text)
+                logging.info(exit_text)
                 sys.exit()
             runoption = session.conf.run_option(exp=True)
             if runoption == "back":
                 comploop(session)
             if runoption == "exit":
-                session.log.adjourn(exit_text)
+                logging.info(exit_text)
                 sys.exit()
             # it may happen that lib are two but only the first is the assessed
             pieces = lib.split("-")
@@ -391,10 +384,8 @@ def exploop(session: Session):
             if ans:
                 # Logging
                 bartext = "Experimental benchmark execution started"
-                session.log.bar_adjourn(bartext)
-                session.log.adjourn(
-                    "Selected Library: " + lib, spacing=False, time=True
-                )
+                logging.info(bartext)
+                logging.info("Selected Library: %s", lib)
                 print(
                     " ########################### EXPERIMENTAL BENCHMARKS EXECUTION ###########################\n"
                 )
@@ -404,7 +395,7 @@ def exploop(session: Session):
                     " ####################### EXPERIMENTAL BENCHMARKS RUN ENDED ###############################\n"
                 )
                 t = "Experimental benchmark execution ended"
-                session.log.bar_adjourn(t)
+                logging.info(t)
             else:
                 clear_screen()
                 print(computational_menu)
@@ -421,7 +412,7 @@ def exploop(session: Session):
             mainloop(session)
 
         elif option == "exit":
-            session.log.adjourn(exit_text)
+            logging.info(exit_text)
             sys.exit()
 
         else:
@@ -489,8 +480,8 @@ def pploop(session: Session):
 
                 # Logging
                 bartext = "Post-Processing started"
-                session.log.bar_adjourn(bartext)
-                session.log.adjourn("Selected Library: " + lib, spacing=False)
+                logging.info(bartext)
+                logging.info("Selected Library: %s", lib)
                 print(
                     "\n ########################### POST-PROCESSING STARTED ###########################\n"
                 )
@@ -510,7 +501,7 @@ def pploop(session: Session):
                     "\n ######################### POST-PROCESSING ENDED ###############################\n"
                 )
                 t = "Post-Processing completed"
-                session.log.bar_adjourn(t, spacing=False)
+                logging.info(t)
 
         elif option == "compare":
             # Update the configuration file
@@ -522,8 +513,8 @@ def pploop(session: Session):
             if ans:
                 # Logging
                 bartext = "Comparison Post-Processing started"
-                session.log.bar_adjourn(bartext)
-                session.log.adjourn("Selected Library: " + lib_input, spacing=True)
+                logging.info(bartext)
+                logging.info("Selected Library: %s", lib_input)
                 print(
                     "\n ########################### COMPARISON STARTED ###########################\n"
                 )
@@ -537,12 +528,10 @@ def pploop(session: Session):
                         try:
                             print(" Single PP of library " + lib + " required")
                             pp.postprocessBenchmark(session, lib, code, testnames)
-                            session.log.adjourn(
+                            logging.info(
                                 """
-Additional Post-Processing of library:"""
-                                + lib
-                                + " completed\n",
-                                spacing=False,
+Additional Post-Processing of library: %s completed\n""",
+                                lib,
                             )
                         except PermissionError as e:
                             clear_screen()
@@ -566,7 +555,7 @@ Additional Post-Processing of library:"""
                     "\n ######################### COMPARISON ENDED ###############################\n"
                 )
                 t = "Post-Processing completed"
-                session.log.bar_adjourn(t, spacing=False)
+                logging.info(t)
 
         elif option == "compexp":
             # Update the configuration file
@@ -580,8 +569,8 @@ Additional Post-Processing of library:"""
             if ans:
                 # Logging
                 bartext = "Comparison Post-Processing started"
-                session.log.bar_adjourn(bartext)
-                session.log.adjourn("Selected Library: " + lib_input, spacing=True)
+                logging.info(bartext)
+                logging.info("Selected Library:  %s", lib_input)
                 print(
                     "\n ########################### COMPARISON STARTED ###########################\n"
                 )
@@ -595,7 +584,7 @@ Additional Post-Processing of library:"""
                 #                         try:
                 #                             print(' Single PP of library '+lib+' required')
                 #                             pp.postprocessBenchmark(session, lib, testname)
-                #                             session.log.adjourn("""
+                #                             logging.info("""
                 # Additional Post-Processing of library:"""+lib+' completed\n', spacing=False)
                 #                         except PermissionError as e:
                 #                             clear_screen()
@@ -622,13 +611,13 @@ Additional Post-Processing of library:"""
                     "\n ######################### COMPARISON ENDED ###############################\n"
                 )
                 t = "Post-Processing completed"
-                session.log.bar_adjourn(t, spacing=False)
+                logging.info(t)
 
         elif option == "back":
             mainloop(session)
 
         elif option == "exit":
-            session.log.adjourn(exit_text)
+            logging.info(exit_text)
             sys.exit()
 
         else:

@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import os
 import re
+import logging
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -396,7 +397,7 @@ class Status:
                     for code, test_runned in all_test_runned.items():
                         for test in test_runned:
                             logtext += f"\n- {code}: {test} [{lib}]"
-                    session.log.adjourn(logtext)
+                    logging.info(logtext)
                     return True
 
                 elif i == "n":
@@ -632,7 +633,7 @@ class Status:
                                 + str(lib)
                                 + " has been overwritten"
                             )
-                            session.log.adjourn(logtext)
+                            logging.info(logtext)
                             break
                         elif i == "n":
                             ans = False
@@ -674,7 +675,7 @@ class Status:
                                 + str(lib)
                                 + " has been overwritten"
                             )
-                            session.log.adjourn(logtext)
+                            logging.info(logtext)
                             break
                         elif i == "n":
                             ans = False

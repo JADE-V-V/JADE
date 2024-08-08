@@ -28,7 +28,7 @@ from tqdm import tqdm
 
 from jade.acepyne import Library
 import jade.resources as pkg_res
-from importlib.resources import files, as_file
+from importlib.resources import files
 
 JADE_RESOURCES = files(pkg_res)
 

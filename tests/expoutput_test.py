@@ -63,7 +63,7 @@ class TestExpOutput:
             df_lib, activationfile=ACTIVATION_FILE, isotopes_file=ISOTOPES_FILE
         )
 
-    def test_benchmarkoutput(self, session_mock: MockUpSession, lm: LibManager):
+    def test_benchmarkoutput(self, session_mock: MockUpSession):
 
         code = "mcnp"
         testname = "ITER_1D"
@@ -77,9 +77,11 @@ class TestExpOutput:
             ["32c", "31c"], code, testname, session_mock
         )
         self.benchoutput_comp.compare()
+        assert self.benchoutput_31c.raw_data[24]["Error"].iloc[10] == 0.7602
+        assert self.benchoutput_31c.raw_data[94]["Cells"].iloc[2] == 54
         assert True
 
-    def test_benchmarkoutputmesh(self, session_mock: MockUpSession, lm: LibManager):
+    def test_benchmarkoutputmesh(self, session_mock: MockUpSession):
         code = "mcnp"
         testname = "WCLL_TBM_1D"
         os.makedirs(session_mock.path_comparison)
@@ -92,6 +94,8 @@ class TestExpOutput:
             ["32c", "31c"], code, testname, session_mock
         )
         self.benchoutput_comp.compare()
+        assert self.benchoutput_31c.raw_data[214]["Error"].iloc[74] == 0.028364
+        assert self.benchoutput_31c.raw_data[244]["Cor A"].iloc[78] == 1084.20
         assert True
 
     def test_spectrumoutput(self, session_mock: MockUpSession):

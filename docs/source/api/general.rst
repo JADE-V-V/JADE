@@ -17,7 +17,7 @@ Paths
     through Session it is possible to recover many paths to the
     different folders that constitutes the JADE tree (see also :ref:`folders`).
 Status
-    the Status object has informations on which libraries have
+    the Status object has information on which libraries have
     been assessed or post-processed.
 Configuration
     the Configuration object is the one that handles the
@@ -50,8 +50,8 @@ module.
 In JADE the object representing a benchmark is the Test object (or MultipleTest object
 in case the benchmark is composed by more than one run). This object is responsible
 for the creation of the MCNP input and for its run. A vital attribute of the benchmark
-is its associated Input object (`<https://f4enix.readthedocs.io/en/latest/_autosummary/f4enix.input.MCNPinput.html>`_) or one of its children. In case the benchmark is run
-with d1s code, an irradiation file and a reaction file (`<https://f4enix.readthedocs.io/en/latest/_autosummary/f4enix.input.d1suned.html>`) are also associated with the
+is its associated Input object (`Input object <https://f4enix.readthedocs.io/en/latest/_autosummary/f4enix.input.MCNPinput.html>`_) or one of its children. In case the benchmark is run
+with d1s code, an irradiation file and a reaction file (`D1S files <https://f4enix.readthedocs.io/en/latest/_autosummary/f4enix.input.d1suned.html>`_) are also associated with the
 test.
 
 Post-processing

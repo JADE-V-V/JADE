@@ -293,7 +293,7 @@ class BenchmarkOutput(AbstractOutput):
         return None
 
     def _read_mcnp_code_version(self, pathtofile: os.PathLike) -> str | None:
-        if self.testname in ['Sphere', 'SphereSDDR']:
+        if self.testname in ["Sphere", "SphereSDDR"]:
             if not os.path.exists(pathtofile):
                 # this can happen the first time
                 return None
@@ -1093,9 +1093,9 @@ class MCNPoutput:
                     self.tallydata[tallynum] = tallydata
                     self.totalbin[tallynum] = None
                     # Create fake tallies to be added to the mctal
-                    faketally = Tally(tallynum)
-                    faketally.tallyComment = [comment]
-                    self.mctal.tallies.append(faketally)
+                    dummyTally = Tally(tallynum)
+                    dummyTally.tallyComment = [comment]
+                    self.mctal.tallies.append(dummyTally)
                 else:
                     continue
 

@@ -92,7 +92,7 @@ def test_executeBenchmarksRoutines(session_mock: MockUpSession):
     executeBenchmarksRoutines(session_mock, lib, runoption, exp)
 
 
-def test_select_lib(monkeypatch):
+def test_select_lib_1(monkeypatch):
     # monkeypatch the "input" function
     lm = LibManager(os.path.join(resources, "xsdir"))
     # Good trials
@@ -101,12 +101,16 @@ def test_select_lib(monkeypatch):
         selectedlib = select_lib(lm, ["mcnp"])
         assert selectedlib == lib
 
+
+def test_select_lib_2(monkeypatch):
+    # monkeypatch the "input" function
+    lm = LibManager(os.path.join(resources, "xsdir"))
+    # Good trials
     # Not found
     for lib in ["44c", '{"21c": "44c", "44c": "71c"}', "21c-44c"]:
         monkeypatch.setattr("builtins.input", lambda _: lib)
         try:
-            selectedlib = select_lib(lm, ["mcnp"])
-            print(lib)
+            select_lib(lm, ["mcnp"])
             assert False
         except ValueError:
             assert True

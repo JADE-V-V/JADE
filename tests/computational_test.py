@@ -4,8 +4,9 @@ import pytest
 
 from jade.main import Session
 from jade.configuration import Configuration
-from jade.libmanager import LibManager
+from f4enix.input.libmanager import LibManager
 from jade.status import Status
+from jade.gui import select_lib
 from jade.computational import executeBenchmarksRoutines
 
 cp = os.path.dirname(os.path.abspath(__file__))
@@ -89,3 +90,27 @@ def test_executeBenchmarksRoutines(session_mock: MockUpSession):
     runoption = "c"  # should not change anything
     exp = False
     executeBenchmarksRoutines(session_mock, lib, runoption, exp)
+
+
+def test_select_lib_1(monkeypatch):
+    # monkeypatch the "input" function
+    lm = LibManager(os.path.join(resources, "xsdir"))
+    # Good trials
+    for lib in ["31c", '{"21c": "31c", "00c": "71c"}', "21c-31c"]:
+        monkeypatch.setattr("builtins.input", lambda _: lib)
+        selectedlib = select_lib(lm, ["mcnp"])
+        assert selectedlib == lib
+
+
+def test_select_lib_2(monkeypatch):
+    # monkeypatch the "input" function
+    lm = LibManager(os.path.join(resources, "xsdir"))
+    # Good trials
+    # Not found
+    for lib in ["44c", '{"21c": "44c", "44c": "71c"}', "21c-44c"]:
+        monkeypatch.setattr("builtins.input", lambda _: lib)
+        try:
+            select_lib(lm, ["mcnp"])
+            assert False
+        except ValueError:
+            assert True

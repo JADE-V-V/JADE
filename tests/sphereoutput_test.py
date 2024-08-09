@@ -38,10 +38,10 @@ ISOTOPES_FILE = os.path.join(root, "jade", "resources", "Isotopes.txt")
 
 from jade.main import Session
 from jade.configuration import Configuration
-from jade.libmanager import LibManager
+from f4enix.input.libmanager import LibManager
 from jade.status import Status
 from jade.__version__ import __version__
-
+from jade.output import MCNPoutput
 import jade.sphereoutput as sout
 
 
@@ -147,15 +147,6 @@ class TestSphereOutput:
         assert "M10" == results[1]["Zaid"]
 
 
-# Files
-OUTP_SDDR = os.path.join(
-    cp, "TestFiles", "sphereoutput", "SphereSDDR_11023_Na-23_102_o"
-)
-OUTM_SDDR = os.path.join(
-    cp, "TestFiles", "sphereoutput", "SphereSDDR_11023_Na-23_102_m"
-)
-
-
 class MockSphereSDDRoutput(sout.SphereSDDRoutput):
     def __init__(self):
         self.lib = "99c"
@@ -245,7 +236,10 @@ class TestSphereSDDRoutput:
 
 class TestSphereSDDRMCNPoutput:
 
-    out = sout.SphereSDDRMCNPoutput(OUTM_SDDR, OUTP_SDDR)
+    out = sout.SphereSDDRMCNPoutput(
+        os.path.join(resources, "SphereSDDR_11023_Na-23_102_m"),
+        os.path.join(resources, "SphereSDDR_11023_Na-23_102_o"),
+    )
 
     def test_get_single_excel_data(self):
         vals, errors = self.out.get_single_excel_data()

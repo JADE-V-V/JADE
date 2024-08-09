@@ -35,8 +35,9 @@ from scipy.interpolate import interp1d
 from tqdm import tqdm
 
 import jade.atlas as at
-from jade.inputfile import D1S_Input
-from jade.output import BenchmarkOutput, MCNPoutput
+from f4enix.input.MCNPinput import D1S_Input
+from jade.output import BenchmarkOutput
+from jade.output import MCNPoutput
 from jade.plotter import Plotter
 from jade.status import EXP_TAG
 
@@ -472,8 +473,8 @@ class FNGOutput(ExperimentalOutput):
             # -- Get SDDR --
             if tnum == 4:
                 for i, time in enumerate(tally.tim):
-                    val = tally.getValue(0, 0, 0, 0, 0, 0, 0, i, 0, 0, 0, 0)
-                    err = tally.getValue(0, 0, 0, 0, 0, 0, 0, i, 0, 0, 0, 1)
+                    val = tally._getValue(0, 0, 0, 0, 0, 0, 0, i, 0, 0, 0, 0)
+                    err = tally._getValue(0, 0, 0, 0, 0, 0, 0, i, 0, 0, 0, 1)
 
                     # Store
                     time_res = [i + 1, val, err]
@@ -488,8 +489,8 @@ class FNGOutput(ExperimentalOutput):
             if tnum in [14, 24]:
                 for i in range(tally.nTim):
                     for j in range(tally.nUsr):
-                        val = tally.getValue(0, 0, j, 0, 0, 0, 0, i, 0, 0, 0, 0)
-                        err = tally.getValue(0, 0, j, 0, 0, 0, 0, i, 0, 0, 0, 1)
+                        val = tally._getValue(0, 0, j, 0, 0, 0, 0, i, 0, 0, 0, 0)
+                        err = tally._getValue(0, 0, j, 0, 0, 0, 0, i, 0, 0, 0, 1)
                         # Store
                         time_res = [i + 1, j, val, err]
                         tallyres.append(time_res)
@@ -633,9 +634,9 @@ class FNGOutput(ExperimentalOutput):
             zaid_tracked = {}
             for lib in self.lib[1:]:
                 file = os.path.join(self.test_path[lib], folder, "d1s", folder)
-                inp = D1S_Input.from_text(file)
+                inp = D1S_Input.from_input(file)
                 for tallynum in ["24", "14"]:
-                    card = inp.get_card_byID("settings", "FU" + tallynum)
+                    card = inp.get_data_cards("FU" + tallynum)["FU" + tallynum]
                     strings = []
                     for line in card.lines:
                         zaids = patzaid.findall(line)

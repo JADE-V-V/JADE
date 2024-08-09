@@ -25,6 +25,7 @@ import shutil
 import json
 import pandas as pd
 import pytest
+import re
 
 cp = os.path.dirname(os.path.abspath(__file__))
 # TODO change this using the files and resources support in Python>10
@@ -150,6 +151,29 @@ class TestUtilities:
         assert True
 
         # TODO test also EXFOR if installed
+
+    def test_add_rmode(self, tmpdir):
+        pattern = re.compile(r"RMODE 0")
+        src = os.path.join(cp, "TestFiles", "utilitiesgui", "benchmark_inputs")
+        dest = tmpdir.join("inputs")
+        session = SessionMockup(tmpdir.join("uty"), dest)
+        # first copy some benchmarks there
+        shutil.copytree(src, dest)
+        # add the rmode keywords
+        uty.add_rmode(session)
+        for dirpath, dirnames, filenames in os.walk(dest):
+            if len(filenames) > 0:
+                file = filenames[0]
+                if os.path.basename(dirpath) == "mcnp":
+                    # ensure RMODE 0 is added only once
+                    with open(
+                        os.path.join(dirpath, file), "r", encoding="utf-8"
+                    ) as infile:
+                        counter = 0
+                        for line in infile:
+                            if pattern.match(line):
+                                counter += 1
+                        assert counter == 1
 
 
 def excel_equal(fileA, fileB, n_sheets):

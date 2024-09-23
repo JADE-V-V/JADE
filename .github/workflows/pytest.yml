@@ -57,7 +57,7 @@ jobs:
         run: |
           set -o pipefail
           source /usr/local/Modules/init/sh
-          pytest --cov=. --cov-report html -cov-config=jade.coveragerc | tee pytest_output.log
+          pytest --cov=. -cov-config=jade.coveragerc --cov-report xml
         env:
           ACCESS_TOKEN_GITHUB: ${{ secrets.ACCESS_TOKEN_GITHUB }}
 
@@ -65,20 +65,16 @@ jobs:
       - name: Testing - Windows
         if: runner.os == 'Windows'
         run: |
-          pytest --cov=. --cov-report html -cov-config="jade.coveragerc" | tee pytest_output.log
+          pytest
         env:
           ACCESS_TOKEN_GITHUB: ${{ secrets.ACCESS_TOKEN_GITHUB }}
-
-      - name: Archive test results
-        if: always()
-        uses: actions/upload-artifact@v4
+      
+      # Upload coverage to Codecov. Do it only for one case of the matrix.
+      - name: Upload coverage to Codecov
+        # do it only once for python 3.10
+        if: matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest'
+        uses: codecov/codecov-action@v4
         with:
-          name: pytest_output_${{matrix.os}}_${{matrix.python-version}}.log
-          path: pytest_output.log
-
-      - name: Archive test coverage
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: htmlcov${{matrix.os}}_${{matrix.python-version}}
-          path: htmlcov/
+          verbose: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

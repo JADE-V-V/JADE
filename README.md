@@ -1,5 +1,6 @@
 [![Testing](https://github.com/JADE-V-V/JADE/actions/workflows/pytest.yml/badge.svg?branch=master)](https://github.com/JADE-V-V/JADE/actions/workflows/pytest.yml)
 [![Documentation Status](https://readthedocs.org/projects/jade-a-nuclear-data-libraries-vv-tool/badge/?version=latest)](https://jade-a-nuclear-data-libraries-vv-tool.readthedocs.io/en/latest/?badge=latest)
+[![codecov](https://codecov.io/gh/JADE-V-V/JADE/graph/badge.svg?token=C0Q75M9FVH)](https://codecov.io/gh/JADE-V-V/JADE)
 
 <img src="https://user-images.githubusercontent.com/25747626/118662537-5f124900-b7f0-11eb-8d69-282305f795c4.png" width="300" />
 

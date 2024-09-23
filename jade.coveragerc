@@ -2,9 +2,9 @@
 [run]
 omit =
     # No need to cover the test files
-    tests/*
+    */tests/*
     # The following are not developed directly by JADE
-    MCTAL_READER2.py
-    xsdirpyne.py
+    */MCTAL_READER2.py
+    */xsdirpyne.py
 [html]
 show_contexts = True

@@ -1194,6 +1194,13 @@ class SphereTest(Test):
             newinp.get_reaction_file(libmanager, activation_lib)
             # Add PIKMT card if required
             newinp.add_PIKMT_card()
+            # Add the tracking for the contributions of different parents
+            # and daughthers
+            # delete the default FU card and assign parent tracking
+            del newinp.other_data["FU104"]
+            newinp.add_track_contribution(
+                "F104", newinp.reac_file.get_parents(), who="parent"
+            )
 
             # Write new input file
             outfile = testname + "_" + truename + "_"

@@ -226,6 +226,13 @@ class TestSphereTestSDDR:
         print(reac_file.reactions)
         assert len(reac_file.reactions) == 1
 
+        # check the correct production of parent tracking
+        file = os.path.join(
+            tmpdir, "SphereSDDR", "SphereSDDR_M101", "d1s", "SphereSDDR_M101_"
+        )
+        inp = D1S_Input.from_input(file)
+        assert len(inp.other_data["FU104"].lines) > 5
+
         # Check metadata production
         metadata_file = os.path.join(
             tmpdir, "SphereSDDR", "SphereSDDR_M101", "d1s", "metadata.json"

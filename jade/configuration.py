@@ -166,7 +166,9 @@ class Configuration:
                             print(
                                 " Cannot submit as a batch job, as no batch system has been defined in the config file."
                             )
-                        elif (pd.isnull(self.mpi_exec_prefix)) and (pd.isnull(self.mpi_tasks) is not True):
+                        elif (pd.isnull(self.mpi_exec_prefix)) and (
+                            pd.isnull(self.mpi_tasks) is not True
+                        ):
                             if int(self.mpi_tasks) > 1:
                                 print(
                                     " Cannot submit batch job as MPI, as no MPI executable prefix has been defined in the config file."

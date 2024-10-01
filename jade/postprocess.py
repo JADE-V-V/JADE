@@ -28,7 +28,9 @@ import jade.output as bencho
 import jade.sphereoutput as spho
 
 
-def compareBenchmark(session, lib_input: str, code: str, testnames: list , exp=False) -> None:
+def compareBenchmark(
+    session, lib_input: str, code: str, testnames: list, exp=False
+) -> None:
     """Compare benchmark results and perform post-processing.
 
     Parameters
@@ -41,7 +43,7 @@ def compareBenchmark(session, lib_input: str, code: str, testnames: list , exp=F
         Named of the test to be compared and post-processed
     """
 
-    #print("\n Comparing " + testname + ":" + "    " + str(datetime.datetime.now()))
+    # print("\n Comparing " + testname + ":" + "    " + str(datetime.datetime.now()))
     lib = lib_input.split("-")
     """# get the correct output object
     out = _get_output('compare', testname, lib, session)
@@ -60,7 +62,15 @@ def compareBenchmark(session, lib_input: str, code: str, testnames: list , exp=F
     log = session.log
 
     for testname in testnames:
-        print("\n Comparing " + code + " " + testname + ":" + "    " + str(datetime.datetime.now()))
+        print(
+            "\n Comparing "
+            + code
+            + " "
+            + testname
+            + ":"
+            + "    "
+            + str(datetime.datetime.now())
+        )
         # get the correct output object
         out = _get_output("compare", code, testname, lib, session)
         if out:
@@ -90,12 +100,13 @@ def postprocessBenchmark(session, lib: str, code: str, testnames: list) -> None:
     log = session.log
 
     post_process = False
-    
+
     for testname in testnames:
         post_process = True
         print(
             "\n Post-Processing "
-            + code + " "
+            + code
+            + " "
             + testname
             + ":"
             + "    "
@@ -136,7 +147,9 @@ def _get_output(action, code, testname, lib, session):
 
     elif testname in ["Tiara-BC", "FNS-TOF", "TUD-Fe", "TUD-W"]:
         if action == "compare":
-            out = expo.MultipleSpectrumOutput(lib, code, testname, session, multiplerun=True)
+            out = expo.MultipleSpectrumOutput(
+                lib, code, testname, session, multiplerun=True
+            )
         elif action == "pp":
             print(exp_pp_message)
             return False

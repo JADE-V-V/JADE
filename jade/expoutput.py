@@ -41,6 +41,14 @@ from jade.output import MCNPoutput
 from jade.plotter import Plotter
 from jade.status import EXP_TAG
 
+FOILS_REACTION = {
+    "Al": "Al(n,alpha)",
+    "S": "S-32(n,p)",
+    "In": "In-115(n,n')",
+    "Rh": "Rh-103(n,n')",
+    "Au": "Au-197(n,gamma)",
+}
+
 MCNP_UNITS = {"Energy": "MeV", "Time": "shakes"}
 
 TALLY_NORMALIZATION = {
@@ -1849,7 +1857,7 @@ class ShieldingOutput(ExperimentalOutput):
                 # Assign worksheet title and put into Excel
                 conv_df = self._get_conv_df(mat, len(x))
                 sheet = self.testname.replace("-", " ")
-                sheet_name = sheet + ", Foil {}".format(mat)
+                sheet_name = sheet + ", Foil {}".format(FOILS_REACTION[mat])
                 df_tab.to_excel(writer, sheet_name=sheet_name)
                 conv_df.to_excel(writer, sheet_name=sheet_name, startrow=18)
 

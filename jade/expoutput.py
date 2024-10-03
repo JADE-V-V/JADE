@@ -1857,7 +1857,7 @@ class ShieldingOutput(ExperimentalOutput):
                 # Assign worksheet title and put into Excel
                 conv_df = self._get_conv_df(mat, len(x))
                 sheet = self.testname.replace("-", " ")
-                sheet_name = sheet + ", Foil {}".format(FOILS_REACTION[mat])
+                sheet_name = sheet + ", Foil {}".format(mat)
                 df_tab.to_excel(writer, sheet_name=sheet_name)
                 conv_df.to_excel(writer, sheet_name=sheet_name, startrow=18)
 
@@ -1897,7 +1897,7 @@ class ShieldingOutput(ExperimentalOutput):
             data.append(data_exp)
 
             if material != "TLD":
-                title = self.testname + " experiment, Foil: " + material
+                title = self.testname + " experiment, Foil: " + FOILS_REACTION[material]
             else:
                 title = (
                     self.testname

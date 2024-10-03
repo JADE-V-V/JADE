@@ -41,6 +41,14 @@ from jade.output import MCNPoutput
 from jade.plotter import Plotter
 from jade.status import EXP_TAG
 
+FOILS_REACTION = {
+    "Al": "Al(n,alpha)",
+    "S": "S-32(n,p)",
+    "In": "In-115(n,n')",
+    "Rh": "Rh-103(n,n')",
+    "Au": "Au-197(n,gamma)",
+}
+
 MCNP_UNITS = {"Energy": "MeV", "Time": "shakes"}
 
 TALLY_NORMALIZATION = {
@@ -1889,7 +1897,7 @@ class ShieldingOutput(ExperimentalOutput):
             data.append(data_exp)
 
             if material != "TLD":
-                title = self.testname + " experiment, Foil: " + material
+                title = self.testname + " experiment, Foil: " + FOILS_REACTION[material]
             else:
                 title = (
                     self.testname

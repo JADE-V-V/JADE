@@ -22,6 +22,7 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import datetime
+import logging
 
 import jade.expoutput as expo
 import jade.output as bencho
@@ -58,8 +59,6 @@ def compareBenchmark(
         config = session.conf.exp_default.set_index("Description")
     else:
         config = session.conf.comp_default.set_index("Description")
-    # Get the log
-    log = session.log
 
     for testname in testnames:
         print(
@@ -75,11 +74,10 @@ def compareBenchmark(
         out = _get_output("compare", code, testname, lib, session)
         if out:
             out.compare()
-        log.adjourn(
-            testname
-            + " benchmark post-processing completed"
-            + "    "
-            + str(datetime.datetime.now())
+        logging.info(
+            "%s benchmark post-processing completed    %s",
+            testname,
+            str(datetime.datetime.now()),
         )
 
 
@@ -96,8 +94,6 @@ def postprocessBenchmark(session, lib: str, code: str, testnames: list) -> None:
 
     # Get the settings for the tests
     config = session.conf.comp_default.set_index("Description")
-    # Get the log
-    log = session.log
 
     post_process = False
 
@@ -116,7 +112,7 @@ def postprocessBenchmark(session, lib: str, code: str, testnames: list) -> None:
         out = _get_output("pp", code, testname, lib, session)
         if out:
             out.single_postprocess()
-        log.adjourn(
+        logging.info(
             testname
             + " benchmark post-processing completed"
             + "    "

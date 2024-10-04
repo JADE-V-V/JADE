@@ -28,6 +28,7 @@ import shutil
 import sys
 import time
 import warnings
+import logging
 
 import jade.configuration as cnf
 import jade.gui as gui
@@ -35,6 +36,7 @@ import f4enix.input.libmanager as libmanager
 import jade.status as status
 from jade.exceptions import fatal_exception
 from jade.input_fetch import fetch_iaea_inputs
+from jade.constants import JADE_TITLE
 
 # Long messages
 FIRST_INITIALIZATION = """
@@ -161,7 +163,7 @@ class Session:
         log = os.path.join(
             self.path_logs, "Log " + time.ctime().replace(":", "-") + ".txt"
         )
-        self.log = cnf.Log(log)
+        self._initialize_log(log)
 
         # --- Create the library manager ---
         # dl = self.conf.default_lib
@@ -173,6 +175,30 @@ class Session:
 
         # --- Initialize status ---
         self.state = status.Status(self)
+
+    @staticmethod
+    def _initialize_log(log: str | os.PathLike) -> None:
+        logger = logging.getLogger()
+        logger.setLevel(logging.INFO)
+
+        # set the logging to a file and keep warnings to video
+        # Create a file handler for logging INFO level messages
+        file_handler = logging.FileHandler(log, encoding="utf-8")
+        file_handler.setLevel(logging.INFO)
+        file_handler.setFormatter(
+            logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        )
+        # Create a console handler for logging WARNING and ERROR level messages
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(logging.WARNING)
+
+        for handler in logger.handlers:
+            # there should already be a streamhandler
+            if isinstance(handler, logging.StreamHandler):
+                handler.setLevel(logging.WARNING)
+        logger.addHandler(file_handler)
+        # logger.addHandler(console_handler)
+        logging.info(JADE_TITLE)
 
     def check_active_tests(self, action: str, exp=False) -> dict[str, list[str]]:
         """

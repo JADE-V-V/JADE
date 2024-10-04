@@ -23,7 +23,7 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import sys
 import pytest
-from jade.configuration import Configuration, Log
+from jade.configuration import Configuration
 
 cp = os.path.dirname(os.path.abspath(__file__))
 modules_path = os.path.dirname(cp)
@@ -39,13 +39,6 @@ def config():
     return configob
 
 
-@pytest.fixture
-def log(tmpdir):
-    file = os.path.join(tmpdir, "tmplog.txt")
-    logob = Log(file)
-    return logob
-
-
 class TestConfiguration:
 
     def test_read(self, config):
@@ -58,27 +51,3 @@ class TestConfiguration:
         expected_list = ["FENDL 2.1c", "33c", "pincopalle"]
         for suffix, expected in zip(suffix_list, expected_list):
             assert config.get_lib_name(suffix) == expected
-
-
-class TestLog:
-    # Here it is tested that the class just works without prompting errors
-    # In depth test makes no sense because the class should be substitued
-    # with the pre-built python log module.
-
-    def test_bar_adjourn(self, log):
-        txt = "assdad"
-        log.bar_adjourn(txt)
-        log.bar_adjourn(txt, spacing=True)
-
-        txt = "asdadasdadasdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-        log.bar_adjourn(txt)
-
-        txt = "asa"
-        log.bar_adjourn(txt)
-
-        assert True
-
-    def test_adjourn(self, log):
-        txt = "adsdadasdadasd"
-        log.adjourn(txt, spacing=True, time=True)
-        assert True

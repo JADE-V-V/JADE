@@ -59,7 +59,6 @@ class Test:
         inp: os.PathLike,
         lib: str,
         config: pd.DataFrame,
-        log,
         confpath: os.PathLike,
         runoption: str,
         lib_name: str,
@@ -76,8 +75,6 @@ class Test:
             library suffix to use (e.g. 31c).
         config : pd.DataFrame (single row)
             configuration options for the test.
-        log : Log
-            Jade log file access.
         confpath : path like object
             path to the test configuration folder.
         runoption : str
@@ -108,9 +105,6 @@ class Test:
 
         # MCNP original input
         self.original_inp = inp
-
-        # Log for warnings
-        self.log = log
 
         # VRT path
         self.path_VRT = inp
@@ -171,9 +165,7 @@ class Test:
                 self.d1s_inp.irrad_file = self.irrad
                 self.d1s_inp.reac_file = self.react
             except FileNotFoundError:
-                self.log.adjourn(
-                    "d1S irradition and reaction files not found, skipping..."
-                )
+                logging.info("d1S irradition and reaction files not found, skipping...")
             self.name = os.path.basename(d1s_ipt).split(".")[0]
         if self.mcnp:
             mcnp_ipt = os.path.join(inp, "mcnp", os.path.basename(inp) + ".i")
@@ -1547,7 +1539,6 @@ class MultipleTest:
         inpsfolder: os.PathLike,
         lib: str,
         config: pd.DataFrame,
-        log,
         confpath: os.PathLike,
         runoption: str,
         lib_name: str,
@@ -1564,8 +1555,6 @@ class MultipleTest:
             library suffix to use (e.g. 31c).
         config : pd.DataFrame (single row)
             configuration options for the test.
-        log : Log
-            Jade log file access.
         confpath : path like object
             path to the test configuration folder.
         lib_name : str
@@ -1583,7 +1572,7 @@ class MultipleTest:
             inp = os.path.join(inpsfolder, folder)
             if os.path.isfile(inp):
                 continue
-            test = TestOb(inp, lib, config, log, confpath, runoption, lib_name)
+            test = TestOb(inp, lib, config, confpath, runoption, lib_name)
             tests.append(test)
         self.tests = tests
         self.name = os.path.basename(inpsfolder)

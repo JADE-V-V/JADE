@@ -792,9 +792,7 @@ class BenchmarkOutput(AbstractOutput):
             # ws.range("A9").options(index=False, header=False).value = df
 
             # ex.save()
-            exsupp.single_excel_writer(
-                self, outpath, self.lib, self.testname, outputs, stats
-            )
+            exsupp.single_excel_writer(outpath, self.lib, self.testname, outputs, stats)
 
     def _print_raw(self):
         if self.mcnp:

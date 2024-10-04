@@ -181,9 +181,12 @@ def executeBenchmarksRoutines(session, lib: str, runoption: str, exp=False) -> N
 
             if bool(row["OnlyInput"]):
                 print("\n        -- " + testname.upper() + " COMPLETED --\n")
+                logging.info("Only inputs were generated for %s", testname.upper())
             else:
                 # --- Input Run ---
-                print(" Simulation running:         " + str(datetime.datetime.now()))
+                text = " Simulation running:         " + str(datetime.datetime.now())
+                print(text)
+                logging.info(text)
                 # test.run(cpu=session.conf.cpu)
                 test.run(session.conf, session.lib_manager, runoption)
                 print("\n        -- " + testname.upper() + " COMPLETED --\n")

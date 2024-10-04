@@ -29,6 +29,10 @@ from tqdm import tqdm
 from jade.acepyne import Library
 import jade.resources as pkg_res
 from importlib.resources import files
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import jade.main
 
 JADE_RESOURCES = files(pkg_res)
 
@@ -642,3 +646,24 @@ def print_XS_EXFOR(session):
             )
             plt.savefig(os.path.join(session.path_uti, f"{isotope_name}_{MT}_XS.png"))
             print(" Cross Section printed")
+
+
+def add_rmode(session: jade.main.Session):
+    root = session.path_inputs
+    # walk trough the root tree, when mcnp folder is found, the RMODE 0 line has
+    # to be added to the input file
+    for dirpath, dirnames, filenames in os.walk(root):
+        if "mcnp" in dirnames:
+            mcnp_dir = os.path.join(dirpath, "mcnp")
+            for filename in os.listdir(mcnp_dir):
+                filepath = os.path.join(mcnp_dir, filename)
+                with open(filepath, "r", encoding="utf-8") as f:
+                    lines = f.readlines()
+                flag_no_rmode = True
+                with open(filepath, "w", encoding="utf-8") as f:
+                    for line in lines:
+                        f.write(line)
+                        if "RMODE" in line:
+                            flag_no_rmode = False
+                    if flag_no_rmode:
+                        f.write("RMODE 0\n")

@@ -27,6 +27,7 @@ import os
 import sys
 import json
 from typing import TYPE_CHECKING
+import logging
 
 from tqdm import tqdm
 
@@ -93,6 +94,7 @@ principal_menu = (
  * Remove all runtpe files           (rmvruntpe)
  * Compare ACE/EXFOR                (comparelib)
  * Fetch IAEA inputs                 (iaeafetch)
+ * Add RMODE 0 key                       (rmode)               
  -----------------------------------------------
 
  * Exit                                   (exit)
@@ -140,6 +142,12 @@ def mainloop(session: Session):
         elif option == "rmvruntpe":
             uty.clean_runtpe(session.path_run)
             print("\n Runtpe files have been removed\n")
+
+        elif option == "rmode":
+            uty.add_rmode(session)
+            msg = "RMODE 0 key has been added to the inputs"
+            logging.info(msg)
+            print(f"\n {msg}\n")
 
         elif option == "iaeafetch":
             # token = input(" Please enter your GitHub token: ")

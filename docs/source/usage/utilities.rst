@@ -112,3 +112,12 @@ The files are hosted at https://github.com/IAEA-NDS/open-benchmarks.
 At the moment this repository is private and fetching requires the
 provision of a GitHub token from a GitHub account that have access.
 More information on GitHub tokens can be found at https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
+
+Add RMODE 0 card to MCNP input files
+====================================
+``rmode``
+
+When running in clusters it may be useful to run the benchmarks with the prompt version of
+D1SUNED which is faster with respect to vanilla MCNP. In order to do so, inputs need to
+have the RMODE 0 keyword in them. This utility adds the RMODE 0 card to all the mcnp input files.
+If there is a need to restore the original inputs, these can be re-fetched from the IAEA GitHub repository.

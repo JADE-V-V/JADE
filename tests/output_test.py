@@ -38,6 +38,7 @@ import jade.sphereoutput as sout
 from jade.configuration import Configuration
 from jade.__version__ import __version__
 from jade.output import MCNPoutput
+from jade.postprocess import compareBenchmark
 
 # Files
 OUTP_SDDR = os.path.join(
@@ -71,6 +72,14 @@ class TestMCNPoutput:
         assert list(t2.columns) == ["Energy", "Value", "Error"]
 
 
+class MockLog:
+    def __init__(self) -> None:
+        self.log = []
+
+    def adjourn(self, message: str) -> None:
+        self.log.append(message)
+
+
 class MockSession:
     def __init__(self, conf: Configuration, root_dir: os.PathLike) -> None:
         self.state = "dummy"
@@ -86,6 +95,7 @@ class MockSession:
         self.path_comparison = root_dir.mkdir("comparison")
         self.path_single = root_dir.mkdir("single")
         self.path_exp_res = os.path.join(cp, "TestFiles", "output", "exp_results")
+        self.log = MockLog()
 
 
 class TestBenchmarkOutput:
@@ -117,6 +127,17 @@ class TestBenchmarkOutput:
             metadata = json.load(f)
         assert metadata["jade_run_version"] == "0.0.1"
         assert metadata["jade_version"] == __version__
+
+    def test_iter_cyl(self, tmpdir):
+        conf = Configuration(
+            os.path.join(cp, "TestFiles", "output", "config_itercyl.xlsx")
+        )
+        session = MockSession(conf, tmpdir)
+        out = output.BenchmarkOutput("99c", "d1s", "ITER_Cyl_SDDR", session)
+        out.single_postprocess()
+        out = output.BenchmarkOutput("93c", "d1s", "ITER_Cyl_SDDR", session)
+        out.single_postprocess()
+        compareBenchmark(session, "99c-93c", "d1s", ["ITER_Cyl_SDDR"], exp=False)
 
 
 class TestExperimentalOutput:

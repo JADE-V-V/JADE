@@ -1,0 +1,163 @@
+ d1suned  ver=411  , ld=05/19/22  07/24/24 18:46:09                   
+          Code Name & Version = MCNP_6.20, 6.2.0
+          Copyright LANS/LANL/DOE - see output file
+  
+     _/      _/        _/_/_/       _/      _/       _/_/_/         _/_/_/ 
+    _/_/  _/_/      _/             _/_/    _/       _/    _/     _/        
+   _/  _/  _/      _/             _/  _/  _/       _/_/_/       _/_/_/     
+  _/      _/      _/             _/    _/_/       _/           _/    _/    
+ _/      _/        _/_/_/       _/      _/       _/             _/_/       
+  
+  comment.  Physics models disabled.
+ mode n p                                                             
+  comment.  photonuclear physics may be needed (phys:p).
+ comment. using random number generator  1, initial seed = 19073486328125      
+ 
+  comment.  total nubar used if fissionable isotopes are present.
+  warning.  last time bin of tally       14 is less than time cutoff.
+  warning.  last time bin of tally       34 is less than time cutoff.
+  warning.  last time bin of tally       44 is less than time cutoff.
+  warning.  last time bin of tally       54 is less than time cutoff.
+  warning.  last time bin of tally       74 is less than time cutoff.
+  warning.  last time bin of tally      124 is less than time cutoff.
+  warning.    2 materials had unnormalized fractions. print table 40.
+  warning.  sum of segment sizes differs from total in   8 cases.
+  comment.  threading will be used when possible in portions of mcnp6.
+  comment.  threading will be used for n/p/e table physics.
+  comment.  threading will generally not be used for model physics.
+ imcn   is done
+
+  warning.        1 coincident energy grid points in   7014.32c
+  warning.        1 coincident energy grid points in   7015.32c
+  warning.        1 coincident energy grid points in   8016.32c
+  warning.        1 coincident energy grid points in  41093.32c
+  warning.        1 coincident energy grid points in  42098.32c
+  comment.  16 cross sections modified by free gas thermal treatment.
+  comment.  setting up hash-based fast table search for xsec tables
+
+ ctm =        0.00   nrn =                 0
+ dump    1 on file ITER_Cyl_SDDRr   nps =           0   coll =                0
+ xact   is done
+
+ cp0 =   0.56
+ master starting      15 MPI slave tasks with      48 threads each  07/24/24 18:46:34 
+ master broadcasting static commons...
+ master broadcasting dynamic commons...
+ master broadcasting cross section data...
+ master completed initialization broadcasts.
+ master set rendezvous nps =    20000000,  work chunks =    15    07/24/24 18:46:36 
+
+ ctm =     6065.10   nrn =      454156870259
+ dump    2 on file ITER_Cyl_SDDRr   nps =    20000000   coll =      28164473713
+ master set rendezvous nps =    40000000,  work chunks =    15    07/24/24 18:55:12 
+
+ ctm =    12141.25   nrn =      908854237602
+ dump    3 on file ITER_Cyl_SDDRr   nps =    40000000   coll =      56363515294
+ master set rendezvous nps =    60000000,  work chunks =    15    07/24/24 19:03:50 
+
+ ctm =    18187.68   nrn =     1362138848431
+ dump    4 on file ITER_Cyl_SDDRr   nps =    60000000   coll =      84475715756
+ master set rendezvous nps =    80000000,  work chunks =    15    07/24/24 19:12:25 
+
+ ctm =    24246.74   nrn =     1816709227993
+ dump    5 on file ITER_Cyl_SDDRr   nps =    80000000   coll =     112667872655
+ master set rendezvous nps =   100000000,  work chunks =    15    07/24/24 19:20:59 
+
+ ctm =    30296.34   nrn =     2270579349003
+ dump    6 on file ITER_Cyl_SDDRr   nps =   100000000   coll =     140815574792
+ master set rendezvous nps =   120000000,  work chunks =    15    07/24/24 19:29:33 
+
+ ctm =    36352.97   nrn =     2724949317710
+ dump    7 on file ITER_Cyl_SDDRr   nps =   120000000   coll =     168993998851
+ master set rendezvous nps =   140000000,  work chunks =    15    07/24/24 19:38:09 
+
+ ctm =    42403.68   nrn =     3179208592935
+ dump    8 on file ITER_Cyl_SDDRr   nps =   140000000   coll =     197164264238
+ master set rendezvous nps =   160000000,  work chunks =    15    07/24/24 19:46:46 
+
+ ctm =    48445.32   nrn =     3633126154605
+ dump    9 on file ITER_Cyl_SDDRr   nps =   160000000   coll =     225314436963
+ master set rendezvous nps =   180000000,  work chunks =    15    07/24/24 19:55:22 
+
+ ctm =    54489.10   nrn =     4087853767422
+ dump   10 on file ITER_Cyl_SDDRr   nps =   180000000   coll =     253514989694
+ master set rendezvous nps =   200000000,  work chunks =    15    07/24/24 20:03:58 
+
+ ctm =    60527.81   nrn =     4542347794710
+ dump   11 on file ITER_Cyl_SDDRr   nps =   200000000   coll =     281700636590
+ master set rendezvous nps =   220000000,  work chunks =    15    07/24/24 20:12:36 
+
+ ctm =    66554.68   nrn =     4996398365871
+ dump   12 on file ITER_Cyl_SDDRr   nps =   220000000   coll =     309860141094
+ master set rendezvous nps =   240000000,  work chunks =    15    07/24/24 20:21:09 
+
+ ctm =    72582.82   nrn =     5450728058655
+ dump   13 on file ITER_Cyl_SDDRr   nps =   240000000   coll =     338035838108
+ master set rendezvous nps =   260000000,  work chunks =    15    07/24/24 20:29:43 
+
+ ctm =    78606.73   nrn =     5904736987446
+ dump   14 on file ITER_Cyl_SDDRr   nps =   260000000   coll =     366190568754
+ master set rendezvous nps =   280000000,  work chunks =    15    07/24/24 20:38:15 
+
+ ctm =    84633.66   nrn =     6358904181759
+ dump   15 on file ITER_Cyl_SDDRr   nps =   280000000   coll =     394355776099
+ master set rendezvous nps =   300000000,  work chunks =    15    07/24/24 20:46:47 
+
+ ctm =    90656.80   nrn =     6812832088906
+ dump   16 on file ITER_Cyl_SDDRr   nps =   300000000   coll =     422507145912
+ master set rendezvous nps =   320000000,  work chunks =    15    07/24/24 20:55:18 
+
+ ctm =    96683.22   nrn =     7266939775032
+ dump   17 on file ITER_Cyl_SDDRr   nps =   320000000   coll =     450668995598
+ master set rendezvous nps =   340000000,  work chunks =    15    07/24/24 21:03:49 
+
+ ctm =   102709.16   nrn =     7721165736943
+ dump   18 on file ITER_Cyl_SDDRr   nps =   340000000   coll =     478838662506
+ master set rendezvous nps =   360000000,  work chunks =    15    07/24/24 21:12:21 
+
+ ctm =   108738.92   nrn =     8175515922285
+ dump   19 on file ITER_Cyl_SDDRr   nps =   360000000   coll =     507015617929
+ master set rendezvous nps =   380000000,  work chunks =    15    07/24/24 21:20:53 
+
+ ctm =   114763.72   nrn =     8629645231680
+ dump   20 on file ITER_Cyl_SDDRr   nps =   380000000   coll =     535179142538
+ master set rendezvous nps =   400000000,  work chunks =    15    07/24/24 21:29:24 
+
+ ctm =   120790.99   nrn =     9084224384524
+ dump   21 on file ITER_Cyl_SDDRr   nps =   400000000   coll =     563370334994
+ master set rendezvous nps =   420000000,  work chunks =    15    07/24/24 21:37:54 
+
+ ctm =   126818.94   nrn =     9538826424362
+ dump   22 on file ITER_Cyl_SDDRr   nps =   420000000   coll =     591563437543
+ master set rendezvous nps =   440000000,  work chunks =    15    07/24/24 21:46:26 
+
+ ctm =   132842.28   nrn =     9993114822207
+ dump   23 on file ITER_Cyl_SDDRr   nps =   440000000   coll =     619737252716
+ master set rendezvous nps =   460000000,  work chunks =    15    07/24/24 21:54:56 
+
+ ctm =   138863.61   nrn =    10447271513796
+ dump   24 on file ITER_Cyl_SDDRr   nps =   460000000   coll =     647902331458
+ master set rendezvous nps =   480000000,  work chunks =    15    07/24/24 22:03:25 
+
+ ctm =   144881.13   nrn =    10901177073599
+ dump   25 on file ITER_Cyl_SDDRr   nps =   480000000   coll =     676052628785
+ master set rendezvous nps =   500000000,  work chunks =    15    07/24/24 22:11:56 
+      run terminated when   500000000  particle histories were done.
+
+ =====>     140.25 M histories/hr    (based on wall-clock time in mcrun)
+
+
+  warning.   random number stride   152917 exceeded 36681403 times.
+  warning.  random number period exceeded.  decrease stride.
+  warning.  importance function may be poor.  see print table 120.
+  warning.  importance function may be poor.  see print table 120.
+  warning.  tally      202 tfc bin did not pass  1 of 10 statistical checks.
+  warning.  tally      242 tfc bin did not pass  1 of 10 statistical checks.
+  warning.  tally       14 tfc bin did not pass  3 of 10 statistical checks.
+ additional error messages on file ITER_Cyl_SDDRo
+
+ ctm =   150910.61   nrn =    11356254878386
+ dump   26 on file ITER_Cyl_SDDRr   nps =   500000000   coll =     704275011538
+ tally data written to file ITER_Cyl_SDDRm
+ mcrun  is done
+

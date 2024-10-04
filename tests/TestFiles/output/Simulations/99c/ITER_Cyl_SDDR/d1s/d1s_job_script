@@ -1,0 +1,27 @@
+#!/bin/bash
+#SBATCH --job-name="JADE"
+#SBATCH --output=/marconi_work/FUA37_F4E/DAVIDE/jade_root_cloned/Tests/Simulations/99c/ITER_Cyl_SDDR/d1s/d1s_job_script.out
+#SBATCH --error=/marconi_work/FUA37_F4E/DAVIDE/jade_root_cloned/Tests/Simulations/99c/ITER_Cyl_SDDR/d1s/d1s_job_script.err
+#SBATCH --time=12:59:00
+#SBATCH --nodes=16
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=48
+#SBATCH --account=FUA38_F4E
+#SBATCH --partition=skl_fua_prod
+#SBATCH --exclusive
+#SBATCH --chdir=/marconi_work/FUA37_F4E/DAVIDE/jade_root_cloned/Tests/Simulations/99c/ITER_Cyl_SDDR/d1s
+
+
+
+
+module load intel/pe-xe-2018--binary intelmpi/2018--binary
+
+export OMP_NUM_THREADS=48
+export OMP_PLACES=cores
+export OMP_PROC_BIND=true
+export PSM2_MQ_RECVREQS_MAX=1000000 
+export I_MPI_FABRICS=shm:ofa
+
+export DATAPATH=/marconi_work/FUA37_F4E/MCNP/MCNP_DATA
+
+mpirun /marconi_work/FUA37_F4E/D1SUNED411_OpenMP/d1suned411_openmp i=ITER_Cyl_SDDR n=ITER_Cyl_SDDR xs=/marconi_work/FUA37_F4E/MCNP/MCNP_DATA/xsdir_test_d1s3 tasks 48

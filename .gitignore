@@ -5,6 +5,7 @@ Untitled.ipynb
 .coverage
 Configuration/
 Experimental_Results/
+*/test.ipynb
 
 # These are generated folders for cache
 .ipynb_checkpoints/
@@ -20,3 +21,6 @@ build/
 
 venv/*
 .vscode/*.json
+
+# secret file for local testing
+tests/secrets.json

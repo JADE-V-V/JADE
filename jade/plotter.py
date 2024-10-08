@@ -35,6 +35,7 @@ from matplotlib.patches import Patch, Rectangle
 from matplotlib.ticker import AutoLocator, AutoMinorLocator, LogLocator, MultipleLocator
 from scipy.interpolate import interp1d
 import warnings
+
 warnings.filterwarnings("ignore")
 
 # ============================================================================
@@ -251,6 +252,7 @@ class Plotter:
                     xlimits=XLIM_HCPB,
                     markers=True,
                     figsize=(24, 13.5),
+                    steps="steps-pre",
                 )
             elif self.testname == "WCLL_TBM_1D":
                 outp = self._ratio_plot(
@@ -258,6 +260,7 @@ class Plotter:
                     xlimits=XLIM_WCLL,
                     markers=True,
                     figsize=(24, 13.5),
+                    steps="steps-pre",
                 )
             else:
                 outp = self._ratio_plot()
@@ -308,6 +311,9 @@ class Plotter:
         else:
             raise ValueError(plot_type + " is not an admissible plot type")
 
+        # Be sure to close the plot once saved
+        plt.close()
+
         return outp
 
     def _waves(self, upperlimit=1.5, lowerlimit=0.5):
@@ -330,9 +336,10 @@ class Plotter:
         """
         nrows = len(self.quantity)
         fig, axes = plt.subplots(
-            figsize=(18, 7.5 + 2 * nrows), nrows=nrows, sharex=True
+            figsize=(21, 7.5 + 2 * nrows), nrows=nrows, sharex=True
         )
-        fig.suptitle(self.title, weight="bold")
+        if self.testname == "SphereSDDR":
+            fig.suptitle(self.title, weight="bold")
 
         if isinstance(axes, np.ndarray) is False:
             axes = np.array([axes])
@@ -342,7 +349,12 @@ class Plotter:
             refy = np.array(self.data[0]["y"][i])
             for j, libdata in enumerate(self.data[1:]):
                 tary = np.array(libdata["y"][i])
-                y = tary / refy
+                try:
+                    y = tary / refy
+                except ValueError:
+                    # then the list is empty since the zaid was
+                    # not found in the library
+                    continue
                 if j == 0:
                     zord = 2
                 else:
@@ -389,16 +401,20 @@ class Plotter:
             ax.set_ylim(lowerlimit - toadd, upperlimit + toadd)
             ax.axhline(lowerlimit, color="red", linewidth=0.5)
             ax.axhline(upperlimit, color="red", linewidth=0.5)
-
+            if self.testname != "SphereSDDR":
+                ax.set_ylabel("C/E")
         # Add the legend
         axes[0].legend(
-            loc="upper center", bbox_to_anchor=(0.88, 1.5), fancybox=True, shadow=True
+            loc="upper center", bbox_to_anchor=(1.07, 1.3), fancybox=True, shadow=True
         )
         # Handle x and y global axes
         plt.setp(
             axes[-1].get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor"
         )
         axes[-1].set_xlabel(self.xlabel)
+        if self.testname == "SphereSDDR":
+            # set only in the central ax
+            axes[1].set_ylabel("Ratio vs {}".format(self.data[0]["ylabel"]))
 
         return self._save()
 
@@ -831,7 +847,7 @@ class Plotter:
         """
         nrows = len(self.data)
         fig, axes = plt.subplots(
-            figsize=(21, 6.5 + 2 * nrows), nrows=nrows, sharex=True
+            figsize=(21, 6.5 + 1.5 * nrows), nrows=nrows, sharex=True
         )
         if isinstance(axes, np.ndarray) is False:
             axes = np.array([axes])
@@ -886,7 +902,7 @@ class Plotter:
             axes[key].grid("True", which="minor", linewidth=0.20)
 
         axes[0].legend(
-            loc="upper center", bbox_to_anchor=(0.88, 1.5), fancybox=True, shadow=True
+            loc="upper center", bbox_to_anchor=(1.07, 1.3), fancybox=True, shadow=True
         )
         axes[key].set_xlabel(self.xlabel)
         return self._save()
@@ -1017,6 +1033,7 @@ class Plotter:
         xlimits=None,
         markers=False,
         figsize=(16, 9),
+        steps="steps-mid",
     ):
         """
         Plot a ratio plot where all data dictionaries are plotted against the
@@ -1061,7 +1078,8 @@ class Plotter:
         # Plot all data
         y_max = 0
         y_min = 0
-        try:
+        # try:
+        if len(data) > 1:
             for i, dic in enumerate(data[1:]):
                 y = dic["y"] / ref["y"]
                 # Adjourn y max and min
@@ -1081,13 +1099,11 @@ class Plotter:
                 ax.plot(
                     dic["x"],
                     y,
-                    color=self.colors[i],
-                    drawstyle="steps-mid",
+                    color=self.colors[i + 1],
+                    drawstyle=steps,
                     label=dic["ylabel"],
-                    marker=marker,
                 )
-
-        except KeyError:
+        else:
             # it is a single pp
             return self._save()
 

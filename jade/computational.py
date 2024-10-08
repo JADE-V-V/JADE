@@ -29,7 +29,7 @@ import sys
 import jade.testrun as testrun
 
 
-def executeBenchmarksRoutines(session, lib: str, runoption, exp=False) -> None:
+def executeBenchmarksRoutines(session, lib: str, runoption: str, exp=False) -> None:
     """
     Check which benchmarks have to be generated and/or run and execute their
     routines
@@ -42,6 +42,8 @@ def executeBenchmarksRoutines(session, lib: str, runoption, exp=False) -> None:
         library to assess (e.g. 31c)
         or couple activation+transport (e.g. 99c-31c).
         Double quotes are needed.
+    runoption : str
+        if 'c' the code is run in console mode, if 's' is submitted as batch.
     exp : bool
         if True the experimental Benchmarks are selected. The default is False
 
@@ -135,7 +137,8 @@ def executeBenchmarksRoutines(session, lib: str, runoption, exp=False) -> None:
             confpath = os.path.join(session.path_cnf, fname.split(".")[0])
 
             # Generate test
-            args = (inppath, var, row, log, confpath, runoption)
+            lib_name = session.conf.get_lib_name(var)
+            args = (inppath, var, row, log, confpath, runoption, lib_name)
             # Handle special cases
             if testname == "Sphere Leakage Test":
                 test = testrun.SphereTest(*args)

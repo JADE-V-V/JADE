@@ -26,15 +26,19 @@ import os
 import pandas as pd
 from shutil import rmtree
 
+from jade.configuration import Log
+from jade.testrun import Test, SphereTest, SphereTestSDDR, MultipleTest
+from f4enix.input.libmanager import LibManager
+from f4enix.input.MCNPinput import D1S_Input
+import pytest
+import json
+from jade.__version__ import __version__
+from f4enix.input.d1suned import ReactionFile
+
 cp = os.path.dirname(os.path.abspath(__file__))
 # TODO change this using the files and resources support in Python>10
 root = os.path.dirname(cp)
 sys.path.insert(1, root)
-
-from jade.configuration import Log
-from jade.testrun import Test, SphereTest, SphereTestSDDR, FNGTest, MultipleTest
-from jade.libmanager import LibManager
-import pytest
 
 # Get a libmanager
 ACTIVATION_FILE = os.path.join(cp, "TestFiles", "libmanager", "Activation libs.xlsx")
@@ -62,6 +66,7 @@ def LM():
         ["00c", "sdas", "", XSDIR_FILE, None, None, None],
         ["71c", "sdasxcx", "", XSDIR_FILE, None, None, None],
         ["81c", "sdasxcx", "yes", XSDIR_FILE, None, None, None],
+        ["93c", "sda", "", XSDIR_FILE, XSDIR_FILE, None, None],
     ]
     df_lib = pd.DataFrame(df_rows)
     df_lib.columns = ["Suffix", "Name", "Default", "MCNP", "d1S", "OpenMC", "Serpent"]
@@ -98,12 +103,16 @@ class TestTest:
         conf_path = "dummy"
 
         # Build the test
-        test = Test(inp, lib, config, LOGFILE, conf_path, runoption="c")
+        test = Test(inp, lib, config, LOGFILE, conf_path, "c", "dummy")
         test.generate_test(tmpdir, LM)
+        metadata_file = os.path.join(tmpdir, "ITER_1D", "mcnp", "metadata.json")
+        assert os.path.exists(metadata_file)
+        with open(metadata_file, "r", encoding="utf-8") as f:
+            metadata = json.load(f)
+        assert metadata["jade_run_version"] == __version__
+        assert metadata["benchmark_version"] == "1.0"
 
-        assert True
-
-    def test_build_d1s(self, LM: LibManager, LOGFILE: Log):
+    def test_build_d1s(self, LM: LibManager, LOGFILE: Log, tmpdir):
         # Just check that nothing breaks
         lib = "99c-31c"
         inp_name = "ITER_Cyl_SDDR"
@@ -125,12 +134,18 @@ class TestTest:
         conf_path = os.path.join(self.files, "ITER_Cyl_SDDR_cnf")
 
         # Build the test
-        test = Test(inp, lib, config, LOGFILE, conf_path, runoption="c")
-        try:
-            os.mkdir(self.dummyout)
-            test.generate_test(self.dummyout, LM)
-        finally:
-            rmtree(self.dummyout)
+        test = Test(inp, lib, config, LOGFILE, conf_path, "c", "dummy")
+        test.generate_test(tmpdir, LM)
+        translated_inp = D1S_Input.from_input(
+            os.path.join(tmpdir, "ITER_Cyl_SDDR", "d1s", "ITER_Cyl_SDDR"),
+            os.path.join(tmpdir, "ITER_Cyl_SDDR", "d1s", "irrad"),
+            os.path.join(tmpdir, "ITER_Cyl_SDDR", "d1s", "react"),
+        )
+        assert translated_inp.reac_file.reactions[2].parent == "25055.99c"
+        assert (
+            translated_inp.materials["M1"].submaterials[0].zaidList[31].name
+            == translated_inp.reac_file.reactions[2].parent
+        )
         assert True
 
 
@@ -160,10 +175,21 @@ class TestSphereTest:
         conf_path = os.path.join(self.files, "Spherecnf")
 
         # Build the test
-        test = SphereTest(inp, lib, config, LOGFILE, conf_path, runoption="c")
+        test = SphereTest(inp, lib, config, LOGFILE, conf_path, "c", "dummy")
         test.generate_test(tmpdir, LM)
+        metadata_file = os.path.join(
+            tmpdir, "Sphere", "Sphere_1001_H-1", "mcnp", "metadata.json"
+        )
+        assert os.path.exists(metadata_file)
+        metadata_file = os.path.join(
+            tmpdir, "Sphere", "Sphere_1001_H-1", "openmc", "metadata.json"
+        )
+        assert os.path.exists(metadata_file)
 
-        assert True
+        with open(metadata_file, "r", encoding="utf-8") as f:
+            metadata = json.load(f)
+        assert metadata["jade_run_version"] == __version__
+        assert metadata["benchmark_version"] == "1.0"
 
 
 class TestSphereTestSDDR:
@@ -171,7 +197,7 @@ class TestSphereTestSDDR:
 
     def test_build(self, LM: LibManager, tmpdir, LOGFILE: Log):
         # Just check that nothing breaks
-        lib = "99c-31c"
+        lib = "93c-31c"
         inp_name = "SphereSDDR"
         inp = os.path.join(self.files, inp_name)
         config_data = {
@@ -190,8 +216,35 @@ class TestSphereTestSDDR:
         conf_path = os.path.join(self.files, "cnf")
 
         # Build the test
-        test = SphereTestSDDR(inp, lib, config, LOGFILE, conf_path, runoption="c")
+        test = SphereTestSDDR(inp, lib, config, LOGFILE, conf_path, "c", "dummy")
         test.generate_test(tmpdir, LM)
+        # Ensure only one channel is used
+        reac_file = os.path.join(
+            tmpdir, "SphereSDDR", "SphereSDDR_12025_Mg-25_28", "d1s", "react"
+        )
+        reac_file = ReactionFile.from_text(reac_file)
+        print(reac_file.reactions)
+        assert len(reac_file.reactions) == 1
+
+        # check the correct production of parent tracking
+        file = os.path.join(
+            tmpdir, "SphereSDDR", "SphereSDDR_M101", "d1s", "SphereSDDR_M101_"
+        )
+        inp = D1S_Input.from_input(file)
+        assert len(inp.other_data["FU104"].lines) > 5
+
+        # Check metadata production
+        metadata_file = os.path.join(
+            tmpdir, "SphereSDDR", "SphereSDDR_M101", "d1s", "metadata.json"
+        )
+        assert os.path.exists(metadata_file)
+
+        with open(metadata_file, "r", encoding="utf-8") as f:
+            metadata = json.load(f)
+        assert metadata["jade_run_version"] == __version__
+        assert metadata["benchmark_version"] == "1.0"
+
+        assert True
 
 
 class TestMultipleTest:
@@ -222,7 +275,14 @@ class TestMultipleTest:
         conf_path = os.path.join(self.files, "cnf")
 
         # Build the test
-        test = MultipleTest(inp, lib, config, LOGFILE, conf_path, runoption="c")
+        test = MultipleTest(inp, lib, config, LOGFILE, conf_path, "c", "dummy")
         test.generate_test(tmpdir, LM)
+        metadata_file = os.path.join(
+            tmpdir, "Oktavian", "Oktavian_Al", "mcnp", "metadata.json"
+        )
+        assert os.path.exists(metadata_file)
 
-        assert True
+        with open(metadata_file, "r", encoding="utf-8") as f:
+            metadata = json.load(f)
+        assert metadata["jade_run_version"] == __version__
+        assert metadata["benchmark_version"] == "1.0"

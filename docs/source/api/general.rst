@@ -9,22 +9,23 @@ General OOP scheme
     General OOP scheme for the JADE code
 
 All user interactions that happen through the command console are handled
-by the ``gui.py module``. When JADE is started, a :ref:`sessionob` object
+by the ``gui.py module``. When JADE is started, a Session object
 is intialized which is a container for a series of information and tools
 that many parts of the code may need to access. In particular it contains:
 
 Paths
-    through :ref:`sessionob` it is possible to recover many paths to the
+    through Session it is possible to recover many paths to the
     different folders that constitutes the JADE tree (see also :ref:`folders`).
 Status
-    the :ref:`statusob` object has informations on which libraries have
+    the Status object has information on which libraries have
     been assessed or post-processed.
 Configuration
-    the :ref:`confob` object is the one that handles the
+    the Configuration object is the one that handles the
     parsing of the :ref:`mainconfig` file.
 Library Manager
-    the :ref:`libmanagerob` is responsible for all operations related
-    to nuclear data libraries. These include for instance checking the
+    the libmanager is responsible for all operations related
+    to nuclear data libraries. It is now included in f4enix here: `f4enix documentation <https://f4enix.readthedocs.io/en/latest/_autosummary/f4enix.input.libmanager.html#module-f4enix.input.libmanager>`_
+    These include for instance checking the
     availability of a library, or handling the translation of a single isotope.
 
 Generally speaking, the user can request three types of thing to the gui:
@@ -46,20 +47,19 @@ Benchmarks generation and run
 =============================
 Operations for the benchmarks generation and run are handled by the ``computational.py``
 module.
-In JADE the object representing a benchmark is the :ref:`testob` (or :ref:`multitestob`
+In JADE the object representing a benchmark is the Test object (or MultipleTest object
 in case the benchmark is composed by more than one run). This object is responsible
 for the creation of the MCNP input and for its run. A vital attribute of the benchmark
-is its associated :ref:`inputob` or one of its children. In case the benchmark is run
-with d1s code, an :ref:`irradfileob` and a :ref:`reacfileob` are also associated with the
-test. A fundamental attribute of inputs is the :ref:`matcardob` which handles all operations
-related to the materials (including library translations).
+is its associated Input object (`Input object <https://f4enix.readthedocs.io/en/latest/_autosummary/f4enix.input.MCNPinput.html>`_) or one of its children. In case the benchmark is run
+with d1s code, an irradiation file and a reaction file (`D1S files <https://f4enix.readthedocs.io/en/latest/_autosummary/f4enix.input.d1suned.html>`_) are also associated with the
+test.
 
 Post-processing
 ===============
 Operations for the post-processing of benchmark run results are handled by the
 ``postprocessing.py`` module.
 All objects representing outputs of a benchmark run must be a child of the abstract class
-:ref:`abstractoutputob`. These classes always include an :ref:`mcnpoutputob` which collect
+AbstractOutput. These classes always include an MCNPoutput which collect
 the results coming from the parsers of the different MCNP outputs.
 
     

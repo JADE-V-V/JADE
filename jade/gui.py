@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import os
 import sys
+import json
 from typing import TYPE_CHECKING
 
 from tqdm import tqdm
@@ -35,10 +36,14 @@ import jade.testrun as testrun
 import jade.utilitiesgui as uty
 from jade.__version__ import __version__
 from jade.status import EXP_TAG
+from jade.input_fetch import fetch_iaea_inputs
 
 if TYPE_CHECKING:
     from jade.main import Session
 
+# colors
+CRED = "\033[91m"
+CEND = "\033[0m"
 
 date = "10/05/2022"
 version = __version__
@@ -84,14 +89,10 @@ principal_menu = (
 
  * Print available libraries          (printlib)
  * Restore default configurations      (restore)
- * Translate an MCNP input               (trans)
- * Print materials info               (printmat)
- * Generate material                  (generate)
- * Switch fractions                     (switch)
  * Change ACE lib suffix                (acelib)
- * Produce D1S Reaction file             (react)
  * Remove all runtpe files           (rmvruntpe)
  * Compare ACE/EXFOR                (comparelib)
+ * Fetch IAEA inputs                 (iaeafetch)
  -----------------------------------------------
 
  * Exit                                   (exit)
@@ -132,125 +133,23 @@ def mainloop(session: Session):
         elif option == "restore":
             uty.restore_default_config(session)
 
-        elif option == "trans":
-            newlib = session.lib_manager.select_lib(codes=["mcnp"])
-            if newlib == "back":
-                mainloop(session)
-            if newlib == "exit":
-                session.log.adjourn(exit_text)
-                sys.exit()
-            inputfile = input(" MCNP input file: ")
-
-            if newlib in session.lib_manager.libraries["mcnp"]:
-                ans = uty.translate_input(session, newlib, inputfile)
-                if ans:
-                    print(" Translation successfully completed!\n")
-                    session.log.adjourn(
-                        "file" + inputfile + " successfully translated to " + newlib
-                    )
-                else:
-                    print(
-                        """
-    Error:
-    The file does not exist or can't be opened
-                      """
-                    )
-
-            else:
-                print(
-                    """
-    Error:
-    The selected library is not available.
-    Check your available libraries using 'printlib'
-                      """
-                )
-
-        elif option == "printmat":
-            inputfile = input(" MCNP Input file of interest: ")
-            ans = uty.print_material_info(session, inputfile)
-            if ans:
-                print(" Material infos printed")
-            else:
-                print(
-                    """
-    Error:
-    Either the input or output files do not exist or can't be opened
-                      """
-                )
-
-        elif option == "generate":
-            inputfile = uty.select_inputfile(" MCNP input file: ")
-            message = " Fraction type (either 'mass' or 'atom'): "
-            options = ["mass", "atom"]
-            fraction_type = uty.input_with_options(message, options)
-            materials = input(" Source materials (e.g. m1-m10): ")
-            percentages = input(" Materials percentages (e.g. 0.1-0.9): ")
-            lib = session.lib_manager.select_lib(codes=["mcnp"])
-            if lib == "back":
-                mainloop(session)
-            if lib == "exit":
-                session.log.adjourn(exit_text)
-                sys.exit()
-            materials = materials.split("-")
-            percentages = percentages.split("-")
-
-            if len(materials) == len(percentages):
-                ans = uty.generate_material(
-                    session,
-                    inputfile,
-                    materials,
-                    percentages,
-                    lib,
-                    fractiontype=fraction_type,
-                )
-                if ans:
-                    print(" Material generated")
-                else:
-                    print(
-                        """
-    Error:
-    Either the input or output files can't be opened
-                          """
-                    )
-
-            else:
-                print(
-                    """
-    Error:
-    The number of materials and percentages must be the same
-                          """
-                )
-
-        elif option == "switch":
-            # Select MCNP input
-            inputfile = uty.select_inputfile(" MCNP input file: ")
-            # Select fraction type
-            options = ["mass", "atom"]
-            message = " Fraction to switch to (either 'mass' or 'atom'): "
-            fraction_type = uty.input_with_options(message, options)
-
-            # Switch fraction
-            ans = uty.switch_fractions(session, inputfile, fraction_type)
-            if ans:
-                print(" Fractions have been switched")
-            else:
-                print(
-                    """
-    Error:
-    Either the input or output files can't be opened"""
-                )
-
         elif option == "acelib":
             uty.change_ACElib_suffix()
             print("\n Suffix change was completed\n")
 
-        elif option == "react":
-            uty.get_reaction_file(session)
-            print("\n Reaction file has been dumped\n")
-
         elif option == "rmvruntpe":
             uty.clean_runtpe(session.path_run)
             print("\n Runtpe files have been removed\n")
+
+        elif option == "iaeafetch":
+            # token = input(" Please enter your GitHub token: ")
+            ans = fetch_iaea_inputs(session)
+            if ans:
+                print("\n IAEA inputs have been successfully downloaded\n")
+            else:
+                print(
+                    "\n Error in downloading the IAEA inputs, double check your token\n"
+                )
 
         elif option == "comparelib":
             uty.print_XS_EXFOR(session)
@@ -304,7 +203,7 @@ def comploop(session: Session):
             codes_run = list(session.check_active_tests("Run").keys())
             codes_only_input = list(session.check_active_tests("OnlyInput").keys())
             codes = list(set(codes_run + codes_only_input))
-            lib = session.lib_manager.select_lib(codes)
+            lib = select_lib(session.lib_manager, codes)
             if lib == "back":
                 comploop(session)
             if lib == "exit":
@@ -343,7 +242,7 @@ def comploop(session: Session):
             # Select and check library
             # Warning: this is done only for sphere test at the moment
             codes = list(session.check_active_tests("Run").keys())
-            lib = session.lib_manager.select_lib(codes)
+            lib = select_lib(session.lib_manager, codes)
             if lib == "back":
                 comploop(session)
             if lib == "exit":
@@ -469,7 +368,7 @@ def exploop(session: Session):
             session.conf.read_settings()
             # Select and check library
             codes = list(session.check_active_tests("Run", exp=True).keys())
-            lib = session.lib_manager.select_lib(codes)
+            lib = select_lib(session.lib_manager, codes)
             if lib == "back":
                 comploop(session)
             if lib == "exit":
@@ -736,3 +635,73 @@ Additional Post-Processing of library:"""
             clear_screen()
             print(pp_menu)
             print(" Please enter a valid option!")
+
+
+def select_lib(lm, codes: list[str] = ["mcnp"]) -> str:
+    """
+    Prompt a library input selection with Xsdir availabilty check
+
+    Parameters
+    ----------
+    code: list[str], optional
+        code for which the library is selected. default is MCNP
+
+    Returns
+    -------
+    lib : str
+        Library to assess.
+
+    """
+    error = (
+        CRED
+        + """
+Error: {}
+The selected library is not available.
+"""
+        + CEND
+    )
+    # Add a counter to avoid falling in an endless loop
+    i = 0
+    while True:
+        i += 1
+        lib = input(" Select library (e.g. 31c or 99c-31c): ")
+        # check that library is available in all requested codes
+
+        if lm.is_lib_available(lib, codes):
+            break  # if the library is available for all codes, break loop
+
+        elif lib[0] == "{":
+            libs = json.loads(lib)
+            # all libraries should be available
+            tocheck = list(libs.values())
+            tocheck.extend(list(libs.keys()))
+            flag = True
+            for val in tocheck:
+                if not lm.is_lib_available(val, codes):
+                    print(error.format(val))
+                    flag = False
+            if flag:
+                break
+
+        elif "-" in lib:
+            libs = lib.split("-")
+            flag = True
+            for val in libs:
+                if not lm.is_lib_available(val, codes):
+                    print(error.format(val))
+                    flag = False
+            if flag:
+                break
+
+        elif lib == "back":
+            break
+
+        elif lib == "exit":
+            break
+
+        else:
+            print(error.format(lib))
+
+        if i > 20:
+            raise ValueError("Too many wrong inputs")
+    return lib

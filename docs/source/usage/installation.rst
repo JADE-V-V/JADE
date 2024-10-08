@@ -46,7 +46,7 @@ Development Installation
 
 If you are developing JADE, you can use the '-e' option when installing and you should install the additional dev dependencies. 
 
-  | ``pip install -e . ".[dev]"``
+  | ``pip install -e .[dev]``
 
 Running
 ^^^^^^^

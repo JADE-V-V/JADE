@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # -*- coding: utf-8 -*-
 
 # Created on Mon Nov  4 16:52:09 2019
@@ -20,7 +22,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with JADE.  If not, see <http://www.gnu.org/licenses/>.
-from __future__ import annotations
+
 
 import os
 import shutil
@@ -28,17 +30,22 @@ import subprocess
 import sys
 from copy import deepcopy
 from pathlib import Path
+import logging
+import json
 
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-import jade.inputfile as ipt
-import jade.matreader as mat
+import f4enix.input.MCNPinput as ipt
+import jade.inputfile as inputfile
+import f4enix.input.materials as mat
 import jade.unix as unix
 from jade.configuration import Configuration
-from jade.libmanager import LibManager
-from jade.parsersD1S import IrradiationFile, Reaction, ReactionFile
+from f4enix.input.libmanager import LibManager
+from f4enix.input.d1suned import IrradiationFile, Reaction, ReactionFile
+from jade.__version__ import __version__
+
 
 # colors
 CRED = "\033[91m"
@@ -47,7 +54,16 @@ CEND = "\033[0m"
 
 
 class Test:
-    def __init__(self, inp, lib, config, log, confpath, runoption):
+    def __init__(
+        self,
+        inp: os.PathLike,
+        lib: str,
+        config: pd.DataFrame,
+        log,
+        confpath: os.PathLike,
+        runoption: str,
+        lib_name: str,
+    ) -> None:
         """
         Class representing a general test. This class will have to be extended
         for specific tests.
@@ -64,6 +80,11 @@ class Test:
             Jade log file access.
         confpath : path like object
             path to the test configuration folder.
+        runoption : str
+            flag for parallel execution. if 'c' is run in command line, if 's'
+            is submitted as a job.
+        lib_name : str
+            extended name of the library.
 
         Raises
         ------
@@ -77,6 +98,7 @@ class Test:
         """
         # Test Library
         self.lib = lib
+        self.lib_name = lib_name
 
         # Parallel execution
         self.runoption = runoption
@@ -140,27 +162,29 @@ class Test:
         # Generate input file template according to transport code
         if self.d1s:
             d1s_ipt = os.path.join(inp, "d1s", os.path.basename(inp) + ".i")
-            self.d1s_inp = ipt.D1S_Input.from_text(d1s_ipt)
             irrfile = os.path.join(inp, "d1s", os.path.basename(inp) + "_irrad")
             reacfile = os.path.join(inp, "d1s", os.path.basename(inp) + "_react")
+            self.d1s_inp = ipt.D1S_Input.from_input(d1s_ipt)
             try:
                 self.irrad = IrradiationFile.from_text(irrfile)
                 self.react = ReactionFile.from_text(reacfile)
+                self.d1s_inp.irrad_file = self.irrad
+                self.d1s_inp.reac_file = self.react
             except FileNotFoundError:
                 self.log.adjourn(
                     "d1S irradition and reaction files not found, skipping..."
                 )
-            self.name = self.d1s_inp.name
+            self.name = os.path.basename(d1s_ipt).split(".")[0]
         if self.mcnp:
             mcnp_ipt = os.path.join(inp, "mcnp", os.path.basename(inp) + ".i")
-            self.mcnp_inp = ipt.InputFile.from_text(mcnp_ipt)
-            self.name = self.mcnp_inp.name
+            self.mcnp_inp = ipt.Input.from_input(mcnp_ipt)
+            self.name = os.path.basename(mcnp_ipt).split(".")[0]
         if self.serpent:
             serpent_ipt = os.path.join(inp, "serpent", os.path.basename(inp) + ".i")
-            self.serpent_inp = ipt.SerpentInputFile.from_text(serpent_ipt)
+            self.serpent_inp = inputfile.SerpentInputFile.from_text(serpent_ipt)
         if self.openmc:
             openmc_ipt = os.path.join(inp, "openmc")
-            self.openmc_inp = ipt.OpenMCInputFiles.from_path(openmc_ipt)
+            self.openmc_inp = inputfile.OpenMCInputFiles.from_path(openmc_ipt)
 
     @staticmethod
     def _get_lib(lib: str | dict) -> str:
@@ -182,6 +206,7 @@ class Test:
             lib = lib
         return lib
 
+    @staticmethod
     def _get_lib_d1s(lib: str | dict) -> str:
         """Get the library name.
 
@@ -227,19 +252,15 @@ class Test:
         if self.d1s:
             # Then it was the translation of a D1S input, additional
             # actions are required
-            add = self.d1s_inp.translate(
-                lib,
-                libmanager,
-                original_irradfile=self.irrad,
-                original_reacfile=self.react,
+            act_lib, tr_lib = check_transport_activation(lib)
+            self.react = self.d1s_inp.get_reaction_file(
+                libmanager, act_lib, set_as_attribute=True
             )
-            newirradiations = add[0]
-            newreactions = add[1]
-            self.irrad.irr_schedules = newirradiations
-            self.react.reactions = newreactions
+            self.d1s_inp.smart_translate(act_lib, tr_lib, libmanager)
+
             self.d1s_inp.update_zaidinfo(libmanager)
         if self.mcnp:
-            self.mcnp_inp.translate(lib, libmanager, "mcnp")
+            self.mcnp_inp.translate(lib, libmanager)
             self.mcnp_inp.update_zaidinfo(libmanager)
         if self.serpent:
             # Add serpent file translation here
@@ -248,7 +269,12 @@ class Test:
             # Add openmc file translation here
             pass
 
-    def generate_test(self, lib_directory, libmanager, run_dir=None):
+    def generate_test(
+        self,
+        lib_directory: os.PathLike,
+        libmanager: LibManager,
+        run_dir: os.PathLike = None,
+    ) -> None:
         """
         Generate the test input files
 
@@ -258,8 +284,8 @@ class Test:
             Path to lib benchmarks input folders.
         libmanager : libmanager.LibManager
             Manager dealing with libraries operations.
-        MCNPdir : str or path
-            allows to ovewrite the MCNP dir if needed. The default is None
+        rundir : str or path
+            allows to ovewrite the run directory if needed. The default is None
 
         Returns
         -------
@@ -329,6 +355,67 @@ class Test:
         if self.openmc:
             # Implement openmc outputfile generation here
             pass
+
+        # Print metadata
+        self._print_metadata(motherdir)
+
+    def _print_metadata(self, outpath: os.PathLike) -> None:
+        """Print metadata file in the run directory. outpath is the path
+        to the run directory excluding the code"""
+
+        code_tags = self._get_code_tags()
+        # read, update and add metadata file to the run directory
+        # if it is a multiple run, there is a trick to check by the path
+        pieces = self.original_inp.split(os.sep)
+        if pieces[-2] in pieces[-1]:
+            # then is a multiple run and we should go up one level
+            metadata_inp = os.path.join(
+                os.path.dirname(self.original_inp), "benchmark_metadata.json"
+            )
+        else:
+            metadata_inp = os.path.join(self.original_inp, "benchmark_metadata.json")
+
+        try:
+            with open(metadata_inp, "r", encoding="utf-8") as f:
+                metadata_inp = json.load(f)
+        except FileNotFoundError:
+            logging.warning(
+                "Metadata file not found in %s", os.path.dirname(metadata_inp)
+            )
+            metadata_inp = {"name": self.name}
+
+        for code_tag in code_tags:
+            metadata = {}
+            metadata["benchmark_name"] = metadata_inp["name"]
+            try:
+                metadata["benchmark_version"] = metadata_inp["version"][code_tag]
+            except KeyError:
+                metadata["benchmark_version"] = None
+            metadata["jade_run_version"] = __version__
+            metadata["library"] = self.lib_name
+            metadata["code"] = code_tag
+            outfile = os.path.join(outpath, code_tag, "metadata.json")
+            try:
+                with open(outfile, "w", encoding="utf-8") as f:
+                    json.dump(metadata, f, indent=4)
+            except FileNotFoundError:
+                # It may happen that the code bool is set to true but the
+                # corresponding directory is not created because generation is
+                # not implemented yet. Simply do not print the metadata in this
+                # case
+                logging.warning('metadata "%s" cannot be created', outfile)
+
+    def _get_code_tags(self) -> list[str]:
+        codes = []
+        if self.mcnp:
+            codes.append("mcnp")
+        if self.serpent:
+            codes.append("serpent")
+        if self.openmc:
+            codes.append("openmc")
+        if self.d1s:
+            codes.append("d1s")
+        return codes
 
     def custom_inp_modifications(self):
         """
@@ -425,8 +512,10 @@ class Test:
             subprocess.run("whoami", capture_output=True).stdout.decode("utf-8").strip()
         )
         os.chdir(directory)
-        job_script = os.path.join(directory, os.path.basename(directory) + "_job_script")
-        essential_commands = ['MPI_TASKS']
+        job_script = os.path.join(
+            directory, os.path.basename(directory) + "_job_script"
+        )
+        essential_commands = ["MPI_TASKS"]
         with open(config.batch_file, "rt") as fin, open(job_script, "wt") as fout:
             # Replace placeholders in batch file template with actual values
             contents = fin.read()
@@ -442,11 +531,11 @@ class Test:
             contents = contents.replace("MPI_TASKS", str(mpi_tasks))
             contents = contents.replace("OMP_THREADS", str(omp_threads))
             contents = contents.replace("USER", user)
-            
-            contents += '\n\n' + config_script
-            contents += '\n\n' + str(data_command)
-            contents += '\n\n' + " ".join(run_command)
-            
+
+            contents += "\n\n" + config_script
+            contents += "\n\n" + str(data_command)
+            contents += "\n\n" + " ".join(run_command)
+
             fout.write(contents)
 
         # Submit the job using the specified batch system
@@ -541,7 +630,10 @@ class Test:
 
                 if runoption.lower() == "c":
                     try:
-                        os.environ['DATAPATH'] = str(libpath.parent)
+                        # in case of run in console dump the prints to a file
+                        # to get the code version in the metadata
+                        run_command.append(" > dump.out")
+                        os.environ["DATAPATH"] = str(libpath.parent)
                         if not sys.platform.startswith("win"):
                             unix.configure(env_variables)
                         print(" ".join(run_command))
@@ -571,7 +663,7 @@ class Test:
                         mpi_tasks,
                         omp_threads,
                         env_variables,
-                        data_command
+                        data_command,
                     )
                     os.chdir(cwd)
             except subprocess.TimeoutExpired:
@@ -612,7 +704,7 @@ class Test:
         bool
             Flag if simulation not run
         """
-        
+
         # Calculate MPI tasks and OpenMP threads
         mpi_tasks = int(config.mpi_tasks)
         omp_threads = int(config.openmp_threads)
@@ -639,7 +731,7 @@ class Test:
         if pd.isnull(executable) is not True:
             run_command = [executable, inputstring]
             if run_openmp:
-                run_command = [executable, '-omp', str(omp_threads), inputstring]
+                run_command = [executable, "-omp", str(omp_threads), inputstring]
 
             if runoption.lower() == "c":
                 try:
@@ -745,7 +837,7 @@ class Test:
 
             elif runoption.lower() == "s":
                 if run_mpi:
-                    run_command.insert(0, config.mpi_exec_prefix)               
+                    run_command.insert(0, config.mpi_exec_prefix)
                 # Run OpenMC as a job
                 cwd = os.getcwd()
                 os.chdir(directory)
@@ -792,8 +884,8 @@ class SphereTest(Test):
         # Get typical materials input
         dirmat = os.path.dirname(self.original_inp)
         matpath = os.path.join(dirmat, "TypicalMaterials")
-        inpmat = ipt.InputFile.from_text(matpath)
-        matlist = inpmat.matlist
+        inpmat = ipt.Input.from_input(matpath)
+        materials = inpmat.materials
 
         # Get zaids available in the selected library
         if self.d1s:
@@ -845,8 +937,8 @@ class SphereTest(Test):
             )
 
         print(" Materials:")
-        # for material in tqdm(matlist.materials):
-        for material in tqdm(matlist.materials[:limit]):
+        # for material in tqdm(materials.materials):
+        for material in tqdm(materials.materials[:limit]):
             # Get density
             density = settings_mat.loc[material.name.upper(), "Density [g/cc]"]
 
@@ -863,7 +955,6 @@ class SphereTest(Test):
         density,
         nps,
         addtag=None,
-        parentlist=None,
         lib=None,
     ):
         """
@@ -911,18 +1002,19 @@ class SphereTest(Test):
             # Create MCNP material card
             submat = mat.SubMaterial("M1", [zaid], header="C " + name + " " + formula)
             material = mat.Material([zaid], None, "M1", submaterials=[submat])
-            matlist = mat.MatCardsList([material])
+            materials = mat.MatCardsList([material])
 
             # Generate the new input
             newinp = deepcopy(self.d1s_inp)
-            newinp.matlist = matlist  # Assign material
+            newinp.materials = materials  # Assign material
             # adjourn density
-            newinp.change_density(density)
+            sphere_cell = newinp.cells["2"]
+            sphere_cell.set_d(str(density))
+            sphere_cell.lines = sphere_cell.card()
             # assign stop card
             newinp.add_stopCard(nps)
             # add PIKMT if requested
-            if parentlist is not None:
-                newinp.add_PIKMT_card(parentlist)
+            newinp.add_PIKMT_card()
 
             # Write new input file
             outfile, outdir = self._get_zaidtestname(
@@ -933,6 +1025,8 @@ class SphereTest(Test):
             os.makedirs(outpath, exist_ok=True)
             outinpfile = os.path.join(outpath, outfile)
             newinp.write(outinpfile)
+            newinp.irrad_file.write(outpath)
+            newinp.reac_file.write(outpath)
 
             # Copy also wwinp file
             if os.path.exists(directoryVRT):
@@ -949,13 +1043,15 @@ class SphereTest(Test):
             # Create MCNP material card
             submat = mat.SubMaterial("M1", [zaid], header="C " + name + " " + formula)
             material = mat.Material([zaid], None, "M1", submaterials=[submat])
-            matlist = mat.MatCardsList([material])
+            materials = mat.MatCardsList([material])
 
             # Generate the new input
             newinp = deepcopy(self.mcnp_inp)
-            newinp.matlist = matlist  # Assign material
+            newinp.materials = materials  # Assign material
             # adjourn density
-            newinp.change_density(density)
+            sphere_cell = newinp.cells["2"]
+            sphere_cell.set_d(str(density))
+            sphere_cell.lines = sphere_cell.card()
             # assign stop card
             newinp.add_stopCard(nps)
             # Write new input file
@@ -981,11 +1077,11 @@ class SphereTest(Test):
             material = mat.Material(
                 [zaid], None, "mat 1", submaterials=[submat], density=density
             )
-            matlist = mat.MatCardsList([material])
+            materials = mat.MatCardsList([material])
 
             # Generate the new input
             newinp = deepcopy(self.serpent_inp)
-            newinp.matlist = matlist  # Assign material
+            newinp.materials = materials  # Assign material
 
             # assign stop card
             newinp.add_stopCard(nps)
@@ -1005,11 +1101,11 @@ class SphereTest(Test):
             material = mat.Material(
                 [zaid], None, "m1", submaterials=[submat], density=density
             )
-            matlist = mat.MatCardsList([material])
+            materials = mat.MatCardsList([material])
 
             # Generate the new input
             newinp = deepcopy(self.openmc_inp)
-            newinp.matlist = matlist  # Assign material
+            newinp.materials = materials  # Assign material
 
             # assign stop card
             newinp.add_stopCard(nps)
@@ -1021,6 +1117,8 @@ class SphereTest(Test):
             outpath = os.path.join(motherdir, outdir, "openmc")
             os.makedirs(outpath, exist_ok=True)
             newinp.write(outpath, libmanager)
+
+        self._print_metadata(os.path.join(motherdir, outdir))
 
     @staticmethod
     def _get_zaidtestname(testname, zaid, formula, addtag=None):
@@ -1040,7 +1138,6 @@ class SphereTest(Test):
         libmanager,
         testname,
         motherdir,
-        parentlist=None,
         lib=None,
     ):
         """
@@ -1059,8 +1156,6 @@ class SphereTest(Test):
             name of the benchmark.
         motherdir : str/path
             Path to the benchmark folder.
-        parentlist : list, optional
-            add the PIKMT if requested (list of parent zaids)
 
         Returns
         -------
@@ -1082,18 +1177,30 @@ class SphereTest(Test):
             newmat.translate(lib, libmanager, "d1s")
             newmat.header = material.header + "C\nC True name:" + truename
             newmat.name = "M1"
-            matlist = mat.MatCardsList([newmat])
+            materials = mat.MatCardsList([newmat])
 
             # Generate the new input
             newinp = deepcopy(self.d1s_inp)
-            newinp.matlist = matlist  # Assign material
+            newinp.materials = materials  # Assign material
             # adjourn density
-            newinp.change_density(density)
+            sphere_cell = newinp.cells["2"]
+            sphere_cell.set_d(str(density))
+            sphere_cell.lines = sphere_cell.card()
             # add stop card
             newinp.add_stopCard(self.nps)
+            # --- Add the reaction file ---
+            # python dicts are ordered now, first entry is activation lib
+            activation_lib = list(lib.keys())[0]
+            newinp.get_reaction_file(libmanager, activation_lib)
             # Add PIKMT card if required
-            if parentlist is not None:
-                newinp.add_PIKMT_card(parentlist)
+            newinp.add_PIKMT_card()
+            # Add the tracking for the contributions of different parents
+            # and daughthers
+            # delete the default FU card and assign parent tracking
+            del newinp.other_data["FU104"]
+            newinp.add_track_contribution(
+                "F104", newinp.reac_file.get_parents(), who="parent"
+            )
 
             # Write new input file
             outfile = testname + "_" + truename + "_"
@@ -1103,6 +1210,8 @@ class SphereTest(Test):
             os.makedirs(outpath, exist_ok=True)
             outinpfile = os.path.join(outpath, outfile)
             newinp.write(outinpfile)
+            newinp.irrad_file.write(outpath)
+            newinp.reac_file.write(outpath)
 
             # Copy also wwinp file
             if os.path.exists(directoryVRT):
@@ -1120,13 +1229,15 @@ class SphereTest(Test):
             newmat.translate(lib, libmanager, "mcnp")
             newmat.header = material.header + "C\nC True name:" + truename
             newmat.name = "M1"
-            matlist = mat.MatCardsList([newmat])
+            materials = mat.MatCardsList([newmat])
 
             # Generate the new input
             newinp = deepcopy(self.mcnp_inp)
-            newinp.matlist = matlist  # Assign material
+            newinp.materials = materials  # Assign material
             # adjourn density
-            newinp.change_density(density)
+            sphere_cell = newinp.cells["2"]
+            sphere_cell.set_d(str(density))
+            sphere_cell.lines = sphere_cell.card()
             # add stop card
             newinp.add_stopCard(self.nps)
 
@@ -1151,11 +1262,11 @@ class SphereTest(Test):
             newmat.header = material.header + "%\n% True name:" + truename
             newmat.name = "mat 1"
             newmat.density = density
-            matlist = mat.MatCardsList([newmat])
+            materials = mat.MatCardsList([newmat])
 
             # Generate the new input
             newinp = deepcopy(self.serpent_inp)
-            newinp.matlist = matlist  # Assign material
+            newinp.materials = materials  # Assign material
             # add stop card
             newinp.add_stopCard(self.nps)
 
@@ -1172,11 +1283,11 @@ class SphereTest(Test):
             newmat = deepcopy(material)
             newmat.name = "m1"
             newmat.density = density
-            matlist = mat.MatCardsList([newmat])
+            materials = mat.MatCardsList([newmat])
 
             # Generate the new input
             newinp = deepcopy(self.openmc_inp)
-            newinp.matlist = matlist  # Assign material
+            newinp.materials = materials  # Assign material
             # add stop card
             newinp.add_stopCard(self.nps)
 
@@ -1187,6 +1298,8 @@ class SphereTest(Test):
             outpath = os.path.join(motherdir, outdir, "openmc")
             os.makedirs(outpath, exist_ok=True)
             newinp.write(outpath, libmanager)
+
+        self._print_metadata(os.path.join(motherdir, outdir))
 
     def run(self, config, libmanager, runoption: str) -> None:
         """Sphere leakage requries ad-hoc run method.
@@ -1290,6 +1403,20 @@ class SphereTestSDDR(SphereTest):
         for reaction in reactions:
             MT = reaction[0]
             daughter = reaction[1]
+            try:
+                filepath = os.path.join(
+                    self.test_conf_path, "irrad_" + self.activationlib
+                )
+            except FileNotFoundError:
+                raise FileNotFoundError("Irradiation file could not be found.")
+            # --- Add the irradiation file ---
+            self.d1s_inp.irrad_file = IrradiationFile.from_text(filepath)
+            ans = self.d1s_inp.irrad_file.select_daughters_irradiation_file([daughter])
+            # generate the reaction file with only the specific MT
+            reaction = Reaction(f"{zaid}.{self.activationlib}", MT, daughter)
+            reacfile = ReactionFile([reaction])
+            self.d1s_inp.reac_file = reacfile
+
             # generate the input file
             super().generate_zaid_test(
                 zaid,
@@ -1299,35 +1426,13 @@ class SphereTestSDDR(SphereTest):
                 density,
                 nps,
                 addtag=MT,
-                parentlist=[zaid],
                 lib=self.activationlib,
             )
 
-            # --- Add the irradiation file ---
-            # generate file
-            reacfile = self._generate_reaction_file([(zaid, MT, daughter)])
-            # Recover ouput directory
-            name, formula = libmanager.get_zaidname(zaid)
-            zaidob = mat.Zaid(1, zaid[:-3], zaid[-3:], self.activationlib)
-            _, outdir = self._get_zaidtestname(testname, zaidob, formula, addtag=MT)
-
-            # select outpath, at the moment only d1s is supported
-            if self.d1s:
-                outpath = os.path.join(motherdir, outdir, "d1s")
-            else:
-                raise NotImplementedError(
-                    "Only d1s is supported at the moment for SDDR tests"
-                )
-
-            reacfile.write(outpath)
-
-            # --- Add the irradiation file ---
-            irrfile, ans = self._generate_irradiation_file([daughter])
-            irrfile.write(outpath)
             if not ans:
                 print(
                     CORANGE
-                    + " Warning: {} irr file was not generated".format(outdir)
+                    + " Warning: {}-{} irr file was not generated".format(zaid, MT)
                     + CEND
                 )
 
@@ -1393,120 +1498,37 @@ class SphereTestSDDR(SphereTest):
         else:
             # generate the input
             libs = {self.activationlib: parentlist, self.transportlib: transportlist}
+            try:
+                filepath = os.path.join(
+                    self.test_conf_path, "irrad_" + self.activationlib
+                )
+            except FileNotFoundError:
+                raise FileNotFoundError("Irradiation file could not be found.")
+
+            # --- Add the irradiation file ---
+            self.d1s_inp.irrad_file = IrradiationFile.from_text(filepath)
+            ans = self.d1s_inp.irrad_file.select_daughters_irradiation_file(
+                daughterlist
+            )
+
             super().generate_material_test(
                 material,
                 density,
                 libmanager,
                 testname,
                 motherdir,
-                parentlist=parentlist,
                 lib=libs,
             )
-            # Generate the reaction file
-            reac_file = self._generate_reaction_file(reactions)
+
             # recover output directory and write file
             outdir = testname + "_" + truename
 
-            # select outpath, at the moment only d1s is supported
-            if self.d1s:
-                outpath = os.path.join(motherdir, outdir, "d1s")
-            else:
-                raise NotImplementedError(
-                    "Only d1s is supported at the moment for SDDR tests"
-                )
-
-            reac_file.write(outpath)
-
-            # --- Add the irradiation file ---
-            irrfile, ans = self._generate_irradiation_file(set(daughterlist))
-            irrfile.write(outpath)
             if not ans:
                 print(
                     CORANGE
                     + " Warning: {} irr file was not generated".format(outdir)
                     + CEND
                 )
-
-    def _generate_reaction_file(self, reactions):
-        """
-        Generate a reaction file object given the parents and reactions
-        selected
-
-        Parameters
-        ----------
-        parent : str
-            parent zaid num (e.g. 1001).
-        reactions : list
-            list of reactions (parent, MT, daughter) to be used.
-
-        Returns
-        -------
-        ReactionFile
-            Reaction file associated with the test.
-
-        """
-        reaction_list = []
-        for parent, MT, daughter in reactions:
-            parent = parent + "." + self.activationlib
-            rx = Reaction(parent, MT, daughter)
-            reaction_list.append(rx)
-
-        return ReactionFile(reaction_list)
-
-    def _generate_irradiation_file(self, daughters):
-        """
-        Generate a D1S irradiation file selecting irradiation schedules from
-        an existing file.
-
-        Parameters
-        ----------
-        daughters : list.
-            daughter zaids to be selected
-
-        Returns
-        -------
-        irradfile : IrradiationFile
-            newly generated irradiation file
-        ans : bool
-            the object was created without issues
-
-        """
-        try:
-            filepath = os.path.join(self.test_conf_path, "irrad_" + self.activationlib)
-        except FileNotFoundError:
-            print(
-                CRED
-                + """
- Please provide an irradiation file summary for lib {}. Check the documentation
- for additional details. The application will now exit.
-                  """.format(
-                    self.activationlib
-                )
-                + CEND
-            )
-            sys.exit()
-
-        irradfile = IrradiationFile.from_text(filepath)
-        # Keep only useful irradiations
-        new_irradiations = []
-        for irradiation in irradfile.irr_schedules:
-            if irradiation.daughter in daughters:
-                new_irradiations.append(irradiation)
-
-        if len(new_irradiations) != len(daughters):
-            print(
-                CORANGE
-                + """
- Warning: irradiation schedules were not found for all specified daughters.
- """
-                + CEND
-            )
-            ans = False
-        else:
-            ans = True
-
-        irradfile.irr_schedules = new_irradiations
-        return irradfile, ans
 
 
 class FNGTest(Test):
@@ -1520,7 +1542,17 @@ class FNGTest(Test):
 
 
 class MultipleTest:
-    def __init__(self, inpsfolder, lib, config, log, confpath, runoption, TestOb=Test):
+    def __init__(
+        self,
+        inpsfolder: os.PathLike,
+        lib: str,
+        config: pd.DataFrame,
+        log,
+        confpath: os.PathLike,
+        runoption: str,
+        lib_name: str,
+        TestOb=Test,
+    ):
         """
         A collection of Tests
 
@@ -1536,6 +1568,8 @@ class MultipleTest:
             Jade log file access.
         confpath : path like object
             path to the test configuration folder.
+        lib_name : str
+            name of the library to be used.
         TestOb : testrun.Test, optional
             type of test object to be used. The default is Test.
 
@@ -1547,7 +1581,9 @@ class MultipleTest:
         tests = []
         for folder in os.listdir(inpsfolder):
             inp = os.path.join(inpsfolder, folder)
-            test = TestOb(inp, lib, config, log, confpath, runoption)
+            if os.path.isfile(inp):
+                continue
+            test = TestOb(inp, lib, config, log, confpath, runoption, lib_name)
             tests.append(test)
         self.tests = tests
         self.name = os.path.basename(inpsfolder)

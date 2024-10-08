@@ -31,9 +31,10 @@ import warnings
 
 import jade.configuration as cnf
 import jade.gui as gui
-import jade.libmanager as libmanager
+import f4enix.input.libmanager as libmanager
 import jade.status as status
 from jade.exceptions import fatal_exception
+from jade.input_fetch import fetch_iaea_inputs
 
 # Long messages
 FIRST_INITIALIZATION = """
@@ -141,13 +142,12 @@ class Session:
             files = self.path_default_settings
             shutil.copytree(files, os.path.dirname(self.path_cnf))
 
-            # Copy files into benchmark inputs folder
-            files = os.path.join(code_root, "install_files", "Benchmarks_Inputs")
-            shutil.copytree(files, self.path_inputs)
-
-            # Copy experimental results folder
-            files = os.path.join(code_root, "install_files", "Experimental_Results")
-            shutil.copytree(files, self.path_exp_res)
+            # create the inputs and exp results folders
+            for folder in [self.path_exp_res, self.path_inputs]:
+                os.mkdir(folder)
+            # Fetch the open benchmarks and relative experimental data from
+            # the IAEA website
+            fetch_iaea_inputs(self)
 
             # the application needs to be closed
             sys.exit()

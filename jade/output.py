@@ -29,8 +29,12 @@ import pickle
 import shutil
 import string
 import sys
+import json
+import logging
 from typing import TYPE_CHECKING
-
+from f4enix.output.mctal import Mctal, Tally
+from f4enix.output.meshtal import Meshtal, Fmesh1D
+from f4enix.output.MCNPoutput import Output
 import numpy as np
 
 # import xlwings as xw
@@ -39,11 +43,10 @@ from tqdm import tqdm
 
 import jade.atlas as at
 import jade.excelsupport as exsupp
-import jade.MCTAL_READER2 as mtal
 import jade.plotter as plotter
-from jade.configuration import Configuration
-from jade.meshtal import Meshtal
-from jade.outputFile import OutputFile
+
+from jade.__version__ import __version__
+from f4enix.output.MCNPoutput import Output as MCNPOutputFile
 
 if TYPE_CHECKING:
     from jade.main import Session
@@ -116,7 +119,7 @@ class AbstractOutput(abc.ABC):
 
 
 class BenchmarkOutput(AbstractOutput):
-    def __init__(self, lib, code, testname: str, session: Session):
+    def __init__(self, lib: str, code: str, testname: str, session: Session):
         """
         General class for a Benchmark output
 
@@ -126,7 +129,7 @@ class BenchmarkOutput(AbstractOutput):
             library to post-process
         code : str
             code being post processed
-        testname : str 
+        testname : str
             name of the benchmark being postprocessed
         session : Session
             Jade Session
@@ -246,6 +249,68 @@ class BenchmarkOutput(AbstractOutput):
             self.raw_path = raw_path
             self.atlas_path = atlas_path
 
+            # Read the metadata
+            results_path = os.path.join(self.test_path, code)
+            self.metadata = self._read_metadata_run(results_path)
+
+    def _read_metadata_run(self, pathtofile: os.PathLike) -> dict:
+        # Get the metadata
+
+        # try to read the metadata
+        try:
+            with open(
+                os.path.join(pathtofile, "metadata.json"),
+                "r",
+                encoding="utf-8",
+            ) as file:
+                metadata = json.load(file)
+        except FileNotFoundError:
+            logging.warning("No metadata file found at %s", pathtofile)
+            metadata = {}
+
+        metadata["jade_version"] = __version__
+        metadata["code_version"] = self._read_code_version(pathtofile)
+
+        return metadata
+
+    def _read_code_version(self, pathtofile: os.PathLike) -> str | None:
+        """Read the code version from the output files or in other ways depending
+        on the used code.
+
+        Parameters
+        ----------
+        pathtofile : os.PathLike
+            path to the folder where results are stored
+
+        Returns
+        -------
+        str | None
+            version of the code used to run the benchmarks
+        """
+        if self.mcnp:
+            return self._read_mcnp_code_version(pathtofile)
+
+        return None
+
+    def _read_mcnp_code_version(self, pathtofile: os.PathLike) -> str | None:
+        if self.testname in ["Sphere", "SphereSDDR"]:
+            if not os.path.exists(pathtofile):
+                # this can happen the first time
+                return None
+
+        _, ofile = self._get_output_files(pathtofile)
+        outp = MCNPOutputFile(ofile)
+        try:
+            version = outp.get_code_version()
+            return version
+        except ValueError:
+            logging.warning(
+                "Code version not found in the output file or aux file for %s",
+                pathtofile,
+            )
+            logging.warning("Contents of the directory: %s", os.listdir(pathtofile))
+            return None
+
     def single_postprocess(self):
         """
         Execute the full post-processing of a single library (i.e. excel,
@@ -329,8 +394,18 @@ class BenchmarkOutput(AbstractOutput):
                     except KeyError:
                         # this means that the column is only one and we have
                         # two distinct DFs for values and errors
+                        # depending on pandas version, these may be series or
+                        # directly arrays
                         values = vals_df["Value"]
                         error = err_df["Error"]
+                        if isinstance(values, pd.Series) or isinstance(
+                            values, pd.DataFrame
+                        ):
+                            values = values.values
+                        if isinstance(error, pd.Series) or isinstance(
+                            error, pd.DataFrame
+                        ):
+                            error = error.values
 
                     lib_name = self.session.conf.get_lib_name(self.lib)
                     lib = {"x": x, "y": values, "err": error, "ylabel": lib_name}
@@ -531,6 +606,7 @@ class BenchmarkOutput(AbstractOutput):
         # Open the excel file
         # name = "Generic_single.xlsx"
         # template = os.path.join(os.getcwd(), "templates", name)
+
         if self.mcnp:
             outpath = os.path.join(
                 self.excel_path, self.testname + "_" + self.lib + ".xlsx"
@@ -541,7 +617,6 @@ class BenchmarkOutput(AbstractOutput):
             # results = []
             # errors = []
             results_path = os.path.join(self.test_path, "mcnp")
-
             # Get mfile and outfile and possibly meshtal file
             meshtalfile = None
             for file in os.listdir(results_path):
@@ -726,6 +801,10 @@ class BenchmarkOutput(AbstractOutput):
             for key, data in self.raw_data.items():
                 file = os.path.join(self.raw_path, str(key) + ".csv")
                 data.to_csv(file, header=True, index=False)
+
+            metadata_file = os.path.join(self.raw_path, "metadata.json")
+            with open(metadata_file, "w", encoding="utf-8") as outfile:
+                json.dump(self.metadata, outfile, indent=4)
 
     def _generate_comparison_excel_output(self):
         # Get excel configuration
@@ -991,247 +1070,34 @@ class MCNPoutput:
         self.meshtal_file = meshtal_file  # path to mcnp meshtal file
 
         # Read and parse the mctal file
-        mctal = mtal.MCTAL(mctal_file)
-        mctal.Read()
+        mctal = Mctal(mctal_file)
         self.mctal = mctal
-        self.tallydata, self.totalbin = self.organize_mctal()
-
+        self.tallydata = mctal.tallydata
+        self.totalbin = mctal.totalbin
         # Read the output file
-        self.out = OutputFile(output_file)
-        self.out.assign_tally_description(self.mctal.tallies)
+        self.out = Output(self.output_file)
+        self.out.stat_checks = self.out.get_statistical_checks_tfc_bins()
+        self.out.stat_checks = self.out.assign_tally_description(
+            self.out.stat_checks, self.mctal.tallies
+        )
         self.stat_checks = self.out.stat_checks
-
         # Read the meshtal file
         if meshtal_file is not None:
             self.meshtal = Meshtal(meshtal_file)
+            self.meshtal.readMesh()
             # Extract the available 1D to be merged with normal tallies
-            fmesh1D = self.meshtal.extract_1D()
-            for tallynum, data in fmesh1D.items():
-                tallynum = int(tallynum)  # Coherence with tallies
-                # Add them to the tallly data
-                self.tallydata[tallynum] = data["data"]
-                self.totalbin[tallynum] = None
-
-                # Create fake tallies to be added to the mctal
-                faketally = mtal.Tally(tallynum)
-                faketally.tallyComment = [data["desc"]]
-                self.mctal.tallies.append(faketally)
-
-    def organize_mctal(self):
-        """
-        Retrieve and organize mctal data into a DataFrame.
-
-        Returns
-        -------
-        tallydata : pd.DataFrame
-            organized tally data.
-        totalbin : pd.DataFrame
-            organized tally data (only total bins).
-
-        """
-        tallydata = {}
-        totalbin = {}
-
-        for t in self.mctal.tallies:
-            rows = []
-
-            # --- Reorganize values ---
-            # You cannot recover the following from the mctal
-            nDir = t.getNbins("d", False)
-            nMul = t.getNbins("m", False)
-            nSeg = t.getNbins("s", False)  # this can be used
-
-            # Some checks for voids
-            binnings = {
-                "cells": t.cells,
-                "user": t.usr,
-                "segments": t.seg,
-                "cosine": t.cos,
-                "energy": t.erg,
-                "time": t.tim,
-                "cor A": t.cora,
-                "cor B": t.corb,
-                "cor C": t.corc,
-            }
-
-            # Cells may have a series of zeros, the last one may be for the
-            # total
-            cells = []
-            # last_idx = len(binnings['cells'])-1
-            for i, cell in enumerate(binnings["cells"]):
-                if int(cell) == 0:
-                    newval = "Input " + str(i + 1)
-                    cells.append(newval)
-                # Everything is fine, nothing to modify
+            for msh in self.meshtal.mesh.values():
+                if isinstance(msh, Fmesh1D):
+                    tallynum, tallydata, comment = msh.convert2tally()
+                    # Add them to the tallly data
+                    self.tallydata[tallynum] = tallydata
+                    self.totalbin[tallynum] = None
+                    # Create fake tallies to be added to the mctal
+                    dummyTally = Tally(tallynum)
+                    dummyTally.tallyComment = [comment]
+                    self.mctal.tallies.append(dummyTally)
                 else:
-                    cells.append(cell)
-            binnings["cells"] = cells
-
-            for name, binning in binnings.items():
-                if len(binning) == 0:
-                    binnings[name] = [np.nan]
-            # Start iteration
-            for f, fn in enumerate(binnings["cells"]):
-                for d in range(nDir):  # Unused
-                    for u, un in enumerate(binnings["user"]):
-                        for sn in range(1, nSeg + 1):
-                            for m in range(nMul):  # (unused)
-                                for c, cn in enumerate(binnings["cosine"]):
-                                    for e, en in enumerate(binnings["energy"]):
-                                        for nt, ntn in enumerate(binnings["time"]):
-                                            for k, kn in enumerate(binnings["cor C"]):
-                                                for j, jn in enumerate(
-                                                    binnings["cor B"]
-                                                ):
-                                                    for i, ina in enumerate(
-                                                        binnings["cor A"]
-                                                    ):
-                                                        val = t.getValue(
-                                                            f,
-                                                            d,
-                                                            u,
-                                                            sn - 1,
-                                                            m,
-                                                            c,
-                                                            e,
-                                                            nt,
-                                                            i,
-                                                            j,
-                                                            k,
-                                                            0,
-                                                        )
-                                                        err = t.getValue(
-                                                            f,
-                                                            d,
-                                                            u,
-                                                            sn - 1,
-                                                            m,
-                                                            c,
-                                                            e,
-                                                            nt,
-                                                            i,
-                                                            j,
-                                                            k,
-                                                            1,
-                                                        )
-                                                        rows.append(
-                                                            [
-                                                                fn,
-                                                                d,
-                                                                un,
-                                                                sn,
-                                                                m,
-                                                                cn,
-                                                                en,
-                                                                ntn,
-                                                                ina,
-                                                                jn,
-                                                                kn,
-                                                                val,
-                                                                err,
-                                                            ]
-                                                        )
-
-                # Only one total bin per cell is admitted
-                val = t.getValue(f, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0)
-                err = t.getValue(f, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1)
-                if t.timTC is not None:
-                    rows.append(
-                        [fn, d, un, sn, m, cn, en, "total", ina, jn, kn, val, err]
-                    )
-                    total = "Time"
-
-                elif t.ergTC is not None:
-                    rows.append(
-                        [fn, d, un, sn, m, cn, "total", ntn, ina, jn, kn, val, err]
-                    )
-                    total = "Energy"
-
-                elif t.segTC is not None:
-                    rows.append(
-                        [fn, d, un, "total", m, cn, en, ntn, ina, jn, kn, val, err]
-                    )
-                    total = "Segments"
-
-                elif t.cosTC is not None:
-                    rows.append(
-                        [fn, d, un, sn, m, "total", en, ntn, ina, jn, kn, val, err]
-                    )
-                    total = "Cosine"
-
-                elif t.usrTC is not None:
-                    rows.append(
-                        [fn, d, "total", sn, m, cn, en, ntn, ina, jn, kn, val, err]
-                    )
-                    total = "User"
-
-            # --- Build the tally DataFrame ---
-            columns = [
-                "Cells",
-                "Dir",
-                "User",
-                "Segments",
-                "Multiplier",
-                "Cosine",
-                "Energy",
-                "Time",
-                "Cor C",
-                "Cor B",
-                "Cor A",
-                "Value",
-                "Error",
-            ]
-            df = pd.DataFrame(rows, columns=columns)
-
-            # Default drop of multiplier and Dir
-            del df["Dir"]
-            del df["Multiplier"]
-            # --- Keep only meaningful binning ---
-            # Drop NA
-            df.dropna(axis=1, inplace=True)
-            # Drop constant axes (if len is > 1)
-            if len(df) > 1:
-                for column in df.columns:
-                    if column not in ["Value", "Error"]:
-                        firstval = df[column].values[0]
-                        # Should work as long as they are the exact same value
-                        allequal = (df[column] == firstval).all()
-                        if allequal:
-                            del df[column]
-
-            # Drop rows if they are exactly the same values
-            # (untraced behaviour)
-            df.drop_duplicates(inplace=True)
-
-            # The double binning Surfaces/cells with segments can create
-            # issues for JADE since if another binning is added
-            # (such as energy) it is not supported. Nevertheless,
-            # the additional segmentation can be quite useful and this can be
-            # collapsed de facto in a single geometrical binning
-
-            if "Cells" in df.columns and "Segments" in df.columns and len(df) > 1:
-                # Then we can collapse this in a single geometrical binning
-                values = []
-                for cell, segment in zip(df.Cells, df.Segments):
-                    val = str(int(cell)) + "-" + str(int(segment))
-                    values.append(val)
-                df["Cells-Segments"] = values
-                # delete the collapsed columns
-                del df["Cells"]
-                del df["Segments"]
-
-            # Sub DF containing only total bins
-            try:
-                dftotal = df[df[total] == "total"]
-            except (KeyError, NameError):
-                # KeyError : there is no total bin in df
-                # NameError: total variable was not defined
-                dftotal = None
-
-            tallydata[t.tallyNumber] = df
-            totalbin[t.tallyNumber] = dftotal
-
-        return tallydata, totalbin
+                    continue
 
 
 class OpenMCOutput:

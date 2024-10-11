@@ -39,6 +39,12 @@ the installation:
   | ``pip install --upgrade pip``
   | ``pip install .``
 
+If the user wishes to use the OpenMC features within JADE, they should alternatively install JADE with OpenMC as follows:
+
+  | ``pip install .[openmc]``
+
+Note that currently version 0.14.0 of OpenMC is supported.
+
 .. _installdevelop:
 
 Development Installation

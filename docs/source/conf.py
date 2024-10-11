@@ -12,15 +12,16 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../jade'))
+
+sys.path.insert(0, os.path.abspath("../../jade"))
 
 from __version__ import __version__
 
 # -- Project information -----------------------------------------------------
 
-project = 'JADE'
-copyright = '2023, JADE team'
-author = 'JADE Team'
+project = "JADE"
+copyright = "2023, JADE team"
+author = "JADE Team"
 
 # The full version, including alpha/beta/rc tags
 release = __version__
@@ -31,14 +32,14 @@ release = __version__
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['myst_parser', 'sphinx.ext.autodoc', 'sphinx.ext.napoleon']
+extensions = ["myst_parser", "sphinx.ext.autodoc", "sphinx.ext.napoleon"]
 
 source_suffix = {
-    '.rst': 'restructuredtext',
-    '.md': 'markdown',
+    ".rst": "restructuredtext",
+    ".md": "markdown",
 }
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -46,24 +47,27 @@ templates_path = ['_templates']
 exclude_patterns = []
 
 # Option for autodoc
-autodoc_default_options = {
-    'show-inheritance': True,
-    'exclude-members': '__weakref__'
-}
-autoclass_content = 'init'
+autodoc_default_options = {"show-inheritance": True, "exclude-members": "__weakref__"}
+autoclass_content = "init"
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
-html_logo = './img/Jade_white.jpg'
+html_theme = "sphinx_rtd_theme"
+html_logo = "./img/Jade_white.jpg"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 # Mock Windows modules or Linux-based read the docs building would not work
-autodoc_mock_imports = ['psutil', 'win32com', 'win32com.client', 'aem',
-                        'appscript', 'pythoncom']
+autodoc_mock_imports = [
+    "psutil",
+    "win32com",
+    "win32com.client",
+    "aem",
+    "appscript",
+    "pythoncom",
+]

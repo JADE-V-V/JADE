@@ -27,6 +27,7 @@ import re
 import sys
 
 import jade.testrun as testrun
+import logging
 
 
 def executeBenchmarksRoutines(session, lib: str, runoption: str, exp=False) -> None:
@@ -57,8 +58,6 @@ def executeBenchmarksRoutines(session, lib: str, runoption: str, exp=False) -> N
         config = session.conf.exp_default.set_index("Description")
     else:
         config = session.conf.comp_default.set_index("Description")
-    # Get the log
-    log = session.log
 
     for testname, row in config.iterrows():
         # Check for active test first
@@ -98,11 +97,8 @@ def executeBenchmarksRoutines(session, lib: str, runoption: str, exp=False) -> N
 
             print("        -- " + testname.upper() + " STARTED --\n")
             print(" Generating input files:" + "    " + str(datetime.datetime.now()))
-            log.adjourn(
-                testname.upper()
-                + " run started"
-                + "    "
-                + str(datetime.datetime.now())
+            logging.info(
+                "%s run started     %s", testname.upper(), str(datetime.datetime.now())
             )
 
             # --- Input Generation ---
@@ -137,7 +133,8 @@ def executeBenchmarksRoutines(session, lib: str, runoption: str, exp=False) -> N
             confpath = os.path.join(session.path_cnf, fname.split(".")[0])
 
             # Generate test
-            args = (inppath, var, row, log, confpath, runoption)
+            lib_name = session.conf.get_lib_name(var)
+            args = (inppath, var, row, confpath, runoption, lib_name)
             # Handle special cases
             if testname == "Sphere Leakage Test":
                 test = testrun.SphereTest(*args)
@@ -176,27 +173,28 @@ def executeBenchmarksRoutines(session, lib: str, runoption: str, exp=False) -> N
             else:
                 test.generate_test(outpath, libmanager)
             # Adjourn log
-            log.adjourn(
-                testname.upper()
-                + " test input generated with success"
-                + "    "
-                + str(datetime.datetime.now())
+            logging.info(
+                "%s test input generated with success      %s",
+                testname.upper(),
+                str(datetime.datetime.now()),
             )
 
             if bool(row["OnlyInput"]):
                 print("\n        -- " + testname.upper() + " COMPLETED --\n")
+                logging.info("Only inputs were generated for %s", testname.upper())
             else:
                 # --- Input Run ---
-                print(" Simulation running:         " + str(datetime.datetime.now()))
+                text = " Simulation running:         " + str(datetime.datetime.now())
+                print(text)
+                logging.info(text)
                 # test.run(cpu=session.conf.cpu)
                 test.run(session.conf, session.lib_manager, runoption)
                 print("\n        -- " + testname.upper() + " COMPLETED --\n")
                 # Adjourn log
-                log.adjourn(
-                    testname.upper()
-                    + " run completed with success"
-                    + "    "
-                    + str(datetime.datetime.now())
+                logging.info(
+                    "%s run completed with success    %s",
+                    testname.upper(),
+                    str(datetime.datetime.now()),
                 )
 
 

@@ -25,6 +25,7 @@ import math
 import os
 import re
 import shutil
+import json
 from abc import abstractmethod
 
 import numpy as np
@@ -34,10 +35,19 @@ from scipy.interpolate import interp1d
 from tqdm import tqdm
 
 import jade.atlas as at
-from jade.inputfile import D1S_Input
-from jade.output import BenchmarkOutput, MCNPoutput
+from f4enix.input.MCNPinput import D1S_Input
+from jade.output import BenchmarkOutput
+from jade.output import MCNPoutput
 from jade.plotter import Plotter
 from jade.status import EXP_TAG
+
+FOILS_REACTION = {
+    "Al": "Al(n,alpha)",
+    "S": "S-32(n,p)",
+    "In": "In-115(n,n')",
+    "Rh": "Rh-103(n,n')",
+    "Au": "Au-197(n,gamma)",
+}
 
 MCNP_UNITS = {"Energy": "MeV", "Time": "shakes"}
 
@@ -104,6 +114,22 @@ class ExperimentalOutput(BenchmarkOutput):
             os.mkdir(raw_path)
         self.raw_path = raw_path
         self.multiplerun = multiplerun
+
+        # Read the metadata from the simulations
+        metadata = {}
+        for lib, test_path in self.test_path.items():
+            if lib == EXP_TAG:
+                continue
+            code = args[1]
+            if self.multiplerun:
+                # I still need only one metadata. They should be all the same
+                results_path = os.path.join(test_path, os.listdir(test_path)[0], code)
+                metadata_lib = self._read_metadata_run(results_path)
+            else:
+                results_path = os.path.join(test_path, code)
+                self.metadata_lib = self._read_metadata_run(results_path)
+            metadata[lib] = metadata_lib
+        self.metadata = metadata
 
     def single_postprocess(self):
         """
@@ -341,6 +367,12 @@ class ExperimentalOutput(BenchmarkOutput):
             cd_lib = os.path.join(self.raw_path, lib)
             if not os.path.exists(cd_lib):
                 os.mkdir(cd_lib)
+                # dump also the metadata if it is the first time
+                with open(
+                    os.path.join(cd_lib, "metadata.json"), "w", encoding="utf-8"
+                ) as f:
+                    json.dump(self.metadata[lib], f)
+
             # Dump everything
             for key, data in item.items():
                 if folder == self.testname:
@@ -449,8 +481,8 @@ class FNGOutput(ExperimentalOutput):
             # -- Get SDDR --
             if tnum == 4:
                 for i, time in enumerate(tally.tim):
-                    val = tally.getValue(0, 0, 0, 0, 0, 0, 0, i, 0, 0, 0, 0)
-                    err = tally.getValue(0, 0, 0, 0, 0, 0, 0, i, 0, 0, 0, 1)
+                    val = tally._getValue(0, 0, 0, 0, 0, 0, 0, i, 0, 0, 0, 0)
+                    err = tally._getValue(0, 0, 0, 0, 0, 0, 0, i, 0, 0, 0, 1)
 
                     # Store
                     time_res = [i + 1, val, err]
@@ -465,8 +497,8 @@ class FNGOutput(ExperimentalOutput):
             if tnum in [14, 24]:
                 for i in range(tally.nTim):
                     for j in range(tally.nUsr):
-                        val = tally.getValue(0, 0, j, 0, 0, 0, 0, i, 0, 0, 0, 0)
-                        err = tally.getValue(0, 0, j, 0, 0, 0, 0, i, 0, 0, 0, 1)
+                        val = tally._getValue(0, 0, j, 0, 0, 0, 0, i, 0, 0, 0, 0)
+                        err = tally._getValue(0, 0, j, 0, 0, 0, 0, i, 0, 0, 0, 1)
                         # Store
                         time_res = [i + 1, j, val, err]
                         tallyres.append(time_res)
@@ -610,9 +642,9 @@ class FNGOutput(ExperimentalOutput):
             zaid_tracked = {}
             for lib in self.lib[1:]:
                 file = os.path.join(self.test_path[lib], folder, "d1s", folder)
-                inp = D1S_Input.from_text(file)
+                inp = D1S_Input.from_input(file)
                 for tallynum in ["24", "14"]:
-                    card = inp.get_card_byID("settings", "FU" + tallynum)
+                    card = inp.get_data_cards("FU" + tallynum)["FU" + tallynum]
                     strings = []
                     for line in card.lines:
                         zaids = patzaid.findall(line)
@@ -1865,7 +1897,7 @@ class ShieldingOutput(ExperimentalOutput):
             data.append(data_exp)
 
             if material != "TLD":
-                title = self.testname + " experiment, Foil: " + material
+                title = self.testname + " experiment, Foil: " + FOILS_REACTION[material]
             else:
                 title = (
                     self.testname

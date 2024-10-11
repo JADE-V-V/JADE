@@ -1,9 +1,5 @@
 import sys
-
-# colors
-CRED = "\033[91m"
-CORANGE = "\033[93m"
-CEND = "\033[0m"
+import logging
 
 
 def fatal_exception(message=None):
@@ -24,5 +20,5 @@ def fatal_exception(message=None):
         message = "A Fatal exception have occured"
 
     message = message + ", the application will now exit"
-    print(CRED + " FATAL EXCEPTION: \n" + message + CEND)
+    logging.critical(" FATAL EXCEPTION: \n%s", message)
     sys.exit()

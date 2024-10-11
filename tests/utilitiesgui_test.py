@@ -22,6 +22,10 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 import os
 import shutil
+import json
+import pandas as pd
+import pytest
+import re
 
 cp = os.path.dirname(os.path.abspath(__file__))
 # TODO change this using the files and resources support in Python>10
@@ -29,10 +33,8 @@ root = os.path.dirname(cp)
 sys.path.insert(1, root)
 
 import jade.utilitiesgui as uty
-from jade.libmanager import LibManager
-import shutil
-import pandas as pd
-import pytest
+from f4enix.input.libmanager import LibManager
+
 
 ACTIVATION_FILE = os.path.join(cp, "TestFiles", "libmanager", "Activation libs.xlsx")
 XSDIR_FILE = os.path.join(cp, "TestFiles", "libmanager", "xsdir")
@@ -41,7 +43,7 @@ ISOTOPES_FILE = os.path.join(root, "jade", "resources", "Isotopes.txt")
 
 class SessionMockup:
 
-    def __init__(self, uti_path):
+    def __init__(self, uti_path, input_path=None):
         df_rows = [
             ["99c", "sda", "", XSDIR_FILE, XSDIR_FILE],
             ["98c", "acsdc", "", XSDIR_FILE, XSDIR_FILE],
@@ -58,6 +60,8 @@ class SessionMockup:
         # Always use fixtures for temporary directories
         self.path_uti = uti_path
         self.conf = ConfMockup()
+        if input_path is not None:
+            self.path_inputs = input_path
 
 
 class ConfMockup:
@@ -78,84 +82,11 @@ class TestUtilities:
     def inputfile(self):
         return os.path.join(cp, "TestFiles", "utilitiesgui", "test.i")
 
-    def test_translate_input(self, session, inputfile, tmpdir):
-        """
-        the correctness of the translations is already tested in matreader_test
-        """
-        lib = "00c"
-        ans = uty.translate_input(
-            session, lib, inputfile, outpath=tmpdir.mkdir("Translate")
-        )
-        assert ans
-
     def test_print_libraries(self, session):
         """
         This is properly tested in libmanager_test
         """
         uty.print_libraries(session.lib_manager)
-        assert True
-
-    def test_print_material_info(self, session, inputfile, tmpdir):
-        outpath = tmpdir.mkdir("MaterialInfo")
-        uty.print_material_info(session, inputfile, outpath=outpath)
-        testfilename = os.path.basename(inputfile)
-        tag = "materialinfo.xlsx"
-        fileA = os.path.join(outpath, testfilename + "_" + tag)
-        fileB = os.path.join(cp, "TestFiles", "utilitiesgui", tag)
-
-        # --- Do some consistency check on the results ---
-        # Check on total fraction of materials to be 1
-        elem_df = pd.read_excel(fileA, sheet_name="Sheet2").ffill()
-        tot_frac = elem_df.groupby("Material").sum()["Material Fraction"]
-        print(tot_frac)
-        assert (tot_frac == 1).all()
-
-        # Check for equivalence with an expected output
-        excel_equal(fileA, fileB, 2)
-        shutil.rmtree(outpath)
-
-    def test_generate_material(self, inputfile, session, tmpdir):
-        # using atom fraction
-        sourcefile = inputfile
-        materials = ["m1", "M2"]
-        percentages = [0.5, 0.5]
-        newlib = "31c"
-        fraction_type = "atom"
-        outpath = tmpdir.mkdir("GenerateMaterial")
-        uty.generate_material(
-            session,
-            sourcefile,
-            materials,
-            percentages,
-            newlib,
-            fractiontype=fraction_type,
-            outpath=outpath,
-        )
-        filename = os.path.basename(inputfile)
-        fileA = os.path.join(cp, "TestFiles", "utilitiesgui", "newmat_atom")
-        fileB = os.path.join(outpath, filename + "_new Material")
-        txt_equal(fileA, fileB)
-
-        # using mass fraction
-        fraction_type = "mass"
-        uty.generate_material(
-            session,
-            sourcefile,
-            materials,
-            percentages,
-            newlib,
-            fractiontype=fraction_type,
-            outpath=outpath,
-        )
-        fileA = os.path.join(cp, "TestFiles", "utilitiesgui", "newmat_mass")
-        txt_equal(fileA, fileB)
-
-    def test_switch_fractions(self, session, inputfile, tmpdir):
-
-        # Switches are properly tested in matreader
-        uty.switch_fractions(session, inputfile, "mass", outpath=tmpdir)
-        uty.switch_fractions(session, inputfile, "atom", outpath=tmpdir)
-
         assert True
 
     def test_change_ACElib_suffix(self, monkeypatch, tmpdir):
@@ -178,14 +109,6 @@ class TestUtilities:
                     else:
                         assert False
                     break
-
-    def test_get_reaction_file(self, monkeypatch, session, tmpdir):
-        # The correctness of the file is already tested in parserD1S
-        filepath = os.path.join(cp, "TestFiles", "utilitiesgui", "d1stest.i")
-        responses = iter([str(filepath), "99c"])
-        monkeypatch.setattr("builtins.input", lambda msg: next(responses))
-        uty.get_reaction_file(session, outpath=tmpdir.mkdir("Reaction"))
-        assert True
 
     def test_input_with_option(self, monkeypatch):
         msg = ""
@@ -222,9 +145,35 @@ class TestUtilities:
         inputs = iter(["1001", "1", "continue", "31c", "continue", "n"])
         monkeypatch.setattr("builtins.input", lambda msg: next(inputs))
         uty.print_XS_EXFOR(session)
+        inputs = iter(["1001", "1", "continue", "31c", "continue", "y"])
+        monkeypatch.setattr("builtins.input", lambda msg: next(inputs))
+        uty.print_XS_EXFOR(session)
         assert True
 
         # TODO test also EXFOR if installed
+
+    def test_add_rmode(self, tmpdir):
+        pattern = re.compile(r"RMODE 0")
+        src = os.path.join(cp, "TestFiles", "utilitiesgui", "benchmark_inputs")
+        dest = tmpdir.join("inputs")
+        session = SessionMockup(tmpdir.join("uty"), dest)
+        # first copy some benchmarks there
+        shutil.copytree(src, dest)
+        # add the rmode keywords
+        uty.add_rmode(session)
+        for dirpath, dirnames, filenames in os.walk(dest):
+            if len(filenames) > 0:
+                file = filenames[0]
+                if os.path.basename(dirpath) == "mcnp":
+                    # ensure RMODE 0 is added only once
+                    with open(
+                        os.path.join(dirpath, file), "r", encoding="utf-8"
+                    ) as infile:
+                        counter = 0
+                        for line in infile:
+                            if pattern.match(line):
+                                counter += 1
+                        assert counter == 1
 
 
 def excel_equal(fileA, fileB, n_sheets):

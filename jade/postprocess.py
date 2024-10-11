@@ -22,13 +22,16 @@ You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
 import datetime
+import logging
 
 import jade.expoutput as expo
 import jade.output as bencho
 import jade.sphereoutput as spho
 
 
-def compareBenchmark(session, lib_input: str, code: str, testnames: list , exp=False) -> None:
+def compareBenchmark(
+    session, lib_input: str, code: str, testnames: list, exp=False
+) -> None:
     """Compare benchmark results and perform post-processing.
 
     Parameters
@@ -41,7 +44,7 @@ def compareBenchmark(session, lib_input: str, code: str, testnames: list , exp=F
         Named of the test to be compared and post-processed
     """
 
-    #print("\n Comparing " + testname + ":" + "    " + str(datetime.datetime.now()))
+    # print("\n Comparing " + testname + ":" + "    " + str(datetime.datetime.now()))
     lib = lib_input.split("-")
     """# get the correct output object
     out = _get_output('compare', testname, lib, session)
@@ -56,20 +59,25 @@ def compareBenchmark(session, lib_input: str, code: str, testnames: list , exp=F
         config = session.conf.exp_default.set_index("Description")
     else:
         config = session.conf.comp_default.set_index("Description")
-    # Get the log
-    log = session.log
 
     for testname in testnames:
-        print("\n Comparing " + code + " " + testname + ":" + "    " + str(datetime.datetime.now()))
+        print(
+            "\n Comparing "
+            + code
+            + " "
+            + testname
+            + ":"
+            + "    "
+            + str(datetime.datetime.now())
+        )
         # get the correct output object
         out = _get_output("compare", code, testname, lib, session)
         if out:
             out.compare()
-        log.adjourn(
-            testname
-            + " benchmark post-processing completed"
-            + "    "
-            + str(datetime.datetime.now())
+        logging.info(
+            "%s benchmark post-processing completed    %s",
+            testname,
+            str(datetime.datetime.now()),
         )
 
 
@@ -86,16 +94,15 @@ def postprocessBenchmark(session, lib: str, code: str, testnames: list) -> None:
 
     # Get the settings for the tests
     config = session.conf.comp_default.set_index("Description")
-    # Get the log
-    log = session.log
 
     post_process = False
-    
+
     for testname in testnames:
         post_process = True
         print(
             "\n Post-Processing "
-            + code + " "
+            + code
+            + " "
             + testname
             + ":"
             + "    "
@@ -105,7 +112,7 @@ def postprocessBenchmark(session, lib: str, code: str, testnames: list) -> None:
         out = _get_output("pp", code, testname, lib, session)
         if out:
             out.single_postprocess()
-        log.adjourn(
+        logging.info(
             testname
             + " benchmark post-processing completed"
             + "    "
@@ -136,7 +143,9 @@ def _get_output(action, code, testname, lib, session):
 
     elif testname in ["Tiara-BC", "FNS-TOF", "TUD-Fe", "TUD-W"]:
         if action == "compare":
-            out = expo.MultipleSpectrumOutput(lib, code, testname, session, multiplerun=True)
+            out = expo.MultipleSpectrumOutput(
+                lib, code, testname, session, multiplerun=True
+            )
         elif action == "pp":
             print(exp_pp_message)
             return False

@@ -27,6 +27,7 @@ import math
 import os
 import shutil
 import json
+import itertools
 import logging
 
 from typing import TYPE_CHECKING
@@ -41,7 +42,7 @@ from docx.shared import Inches
 import jade.atlas as at
 import jade.excelsupport as exsupp
 import jade.plotter as plotter
-from jade.output import BenchmarkOutput, MCNPoutput, OpenMCOutput
+from jade.output import BenchmarkOutput, OpenMCOutput, MCNPoutput
 
 if TYPE_CHECKING:
     from jade.main import Session
@@ -399,6 +400,7 @@ class SphereOutput(BenchmarkOutput):
             output = SphereMCNPoutput(
                 os.path.join(results_path, mfile), os.path.join(results_path, ofile)
             )
+
             outputs[zaidnum] = output
             # Adjourn raw Data
             self.raw_data["mcnp"][zaidnum] = output.tallydata
@@ -668,6 +670,7 @@ class SphereOutput(BenchmarkOutput):
                         mfile = os.path.join(results_path, mfile)
                         outfile = os.path.join(results_path, outfile)
                         output = SphereMCNPoutput(mfile, outfile)
+
                         outputs_lib[zaidnum] = output
                         res, err, columns = output.get_comparison_data(
                             ["12", "22", "24", "14", "34", "6", "46"], "mcnp"
@@ -1038,6 +1041,9 @@ class SphereOutput(BenchmarkOutput):
 
 
 class SphereTallyOutput:
+    def __init__(self):
+        raise RuntimeError("SphereTallyOutput cannot be instantiated")
+
     def get_single_excel_data(self, tallies2pp):
         """
         Get the excel data of a single MCNP output
@@ -1172,7 +1178,11 @@ class SphereTallyOutput:
 
 
 class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
-    def organize_mctal(self):
+    def __init__(self, mfile, outfile):
+        super().__init__(mfile, outfile)
+        self.tallydata, self.totalbin = self._get_tallydata(self.mctal)
+
+    def _get_tallydata(self, mctal):
         """
         Retrieve and organize mctal data. Simplified for sphere leakage case
 
@@ -1181,75 +1191,51 @@ class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
         # Extract data
         rows = []
         rowstotal = []
-        for t in self.mctal.tallies:
+        for t in mctal.tallies:
             num = t.tallyNumber
             des = t.tallyComment[0]
-            nCells = t.getNbins("f", False)
-            nCora = t.getNbins("i", False)
-            nCorb = t.getNbins("j", False)
-            nCorc = t.getNbins("k", False)
-            nDir = t.getNbins("d", False)
+            nCells = t._getNbins("f", False)
+            nCora = t._getNbins("i", False)
+            nCorb = t._getNbins("j", False)
+            nCorc = t._getNbins("k", False)
+            nDir = t._getNbins("d", False)
             # usrAxis = t.getAxis("u")
-            nUsr = t.getNbins("u", False)
+            nUsr = t._getNbins("u", False)
             # segAxis = t.getAxis("s")
-            nSeg = t.getNbins("s", False)
-            nMul = t.getNbins("m", False)
+            nSeg = t._getNbins("s", False)
+            nMul = t._getNbins("m", False)
             # cosAxis = t.getAxis("c")
-            nCos = t.getNbins("c", False)
+            nCos = t._getNbins("c", False)
             # ergAxis = t.getAxis("e")
-            nErg = t.getNbins("e", False)
+            nErg = t._getNbins("e", False)
             # timAxis = t.getAxis("t")
-            nTim = t.getNbins("t", False)
+            nTim = t._getNbins("t", False)
 
-            for f in range(nCells):
-                for d in range(nDir):
-                    for u in range(nUsr):
-                        for s in range(nSeg):
-                            for m in range(nMul):
-                                for c in range(nCos):
-                                    for e in range(nErg):
-                                        try:
-                                            erg = t.erg[e]
-                                        except IndexError:
-                                            erg = None
+            for f, d, u, s, m, c, e, nt, i, j, k in itertools.product(
+                range(nCells),
+                range(nDir),
+                range(nUsr),
+                range(nSeg),
+                range(nMul),
+                range(nCos),
+                range(nErg),
+                range(nTim),
+                range(nCora),
+                range(nCorb),
+                range(nCorc),
+            ):
+                try:
+                    erg = t.erg[e]
+                except IndexError:
+                    erg = None
 
-                                        for nt in range(nTim):
-                                            for k in range(nCorc):
-                                                for j in range(nCorb):
-                                                    for i in range(nCora):
-                                                        val = t.getValue(
-                                                            f,
-                                                            d,
-                                                            u,
-                                                            s,
-                                                            m,
-                                                            c,
-                                                            e,
-                                                            nt,
-                                                            i,
-                                                            j,
-                                                            k,
-                                                            0,
-                                                        )
-                                                        err = t.getValue(
-                                                            f,
-                                                            d,
-                                                            u,
-                                                            s,
-                                                            m,
-                                                            c,
-                                                            e,
-                                                            nt,
-                                                            i,
-                                                            j,
-                                                            k,
-                                                            1,
-                                                        )
-                                                        if val <= 0:
-                                                            err = np.nan
+                val = t._getValue(f, d, u, s, m, c, e, nt, i, j, k, 0)
+                err = t._getValue(f, d, u, s, m, c, e, nt, i, j, k, 1)
+                if val <= 0:
+                    err = np.nan
 
-                                                        row = [num, des, erg, val, err]
-                                                        rows.append(row)
+                row = [num, des, erg, val, err]
+                rows.append(row)
 
             # If Energy binning is involved
             if t.ergTC == "t":
@@ -1495,6 +1481,7 @@ class SphereSDDRoutput(SphereOutput):
         allzaids.sort()
         # --- Binned plots of the gamma flux ---
         for zaidnum, mt in tqdm(allzaids, desc=" Binned flux plots"):
+            material = False
             # Get everything for the title of the zaid
             try:
                 name, formula = libmanager.get_zaidname(zaidnum)
@@ -1509,7 +1496,64 @@ class SphereSDDRoutput(SphereOutput):
                 title = zaidnum + " (" + matname + ")"
                 times = self.times
                 zaidmatname = f"{matname}_all"
+                material = True
             atlas.doc.add_heading(title, level=2)
+
+            # --- Plot the parent contributions ---
+            if material:
+                for lib in libraries:
+                    try:  # Zaid could not be common to the libraries
+                        outp = self.outputs["d1s"][zaidnum, mt, lib]
+                    except KeyError:
+                        # It is ok, simply nothing to plot here since zaid was
+                        # not in library
+                        continue
+                    try:
+                        sddr = outp.tallydata[104].set_index("User")
+                    except KeyError:
+                        continue  # older version were parents were not tracked
+
+                    lib_name = self.session.conf.get_lib_name(lib)
+                    atlas.doc.add_heading(
+                        "Parent contribution for {}".format(lib_name), level=3
+                    )
+                    title = "Parent contribution to SDDR - {}".format(lib_name)
+                    libdatas = []
+
+                    tot_dose = sddr.groupby("Time").sum()["Value"].values
+                    for parentzaid in set(sddr.index):
+                        if int(parentzaid) != 0:
+                            _, formula_parent = self.session.lib_manager.get_zaidname(
+                                str(abs(parentzaid))
+                            )
+                            y = sddr.loc[parentzaid]["Value"] / tot_dose * 100
+                            libdata = {
+                                "x": self.times,
+                                "y": y,
+                                "err": [],
+                                "ylabel": formula_parent,
+                            }
+                            libdatas.append(libdata)
+
+                    outname = "tmp"
+                    quantity = "SDDR contribution"
+                    unit = "%"
+                    xlabel = "Cooldown time"
+
+                    plot = plotter.Plotter(
+                        libdatas,
+                        title,
+                        outpath,
+                        outname,
+                        quantity,
+                        unit,
+                        xlabel,
+                        self.testname,
+                    )
+                    img_path = plot._contribution(legend_outside=True)
+
+                    # Insert the image in the atlas
+                    atlas.insert_img(img_path)
 
             for time in times:
                 atlas.doc.add_heading("Cooldown time = {}".format(time), level=3)
@@ -1568,6 +1612,8 @@ class SphereSDDRoutput(SphereOutput):
             # Build a df will all possible zaid, mt, lib combination
             if self.d1s:
                 allkeys = list(self.outputs["d1s"].keys())
+            else:
+                raise NotImplementedError("Only d1s is implemented")
             df = pd.DataFrame(allkeys)
             df.columns = ["zaid", "mt", "lib"]
             df["zaid-mt"] = df["zaid"].astype(str) + "-" + df["mt"].astype(str)
@@ -1719,13 +1765,20 @@ class SphereSDDRoutput(SphereOutput):
             pflux (float): proton flux
             sddr (float): shut down dose rate
         """
-        if self.d1s:
-            tallies = self.outputs["d1s"][zaid, mt, lib].tallydata
+        tallies = self.outputs["d1s"][zaid, mt, lib].tallydata
         # Extract values
         nflux = tallies[12].set_index("Energy")  # .drop("total")
         nflux = nflux.sum().loc["Value"]
-        pflux = tallies[22].groupby("Time").sum(numeric_only=True).loc[1, "Value"]
-        sddr = tallies[104].set_index("Time")
+        pflux = (
+            tallies[22]
+            .groupby("Time")
+            .sum(numeric_only=True)
+            .loc[int(float(self.timecols[time])), "Value"]
+        )
+        # a simple set_index is not enough as now dose contribution is split
+        # by parent in the materials and needs to be summed up
+        sddr = tallies[104].groupby("Time").sum(numeric_only=True)
+        sddr["Error"] = sddr["abs_error"] / sddr["Value"]
         sddr = sddr.loc["D" + self.timecols[time], "Value"]
         # Memorize values
         return nflux, pflux, sddr
@@ -1946,6 +1999,7 @@ class SphereSDDRoutput(SphereOutput):
             st_ck = output.stat_checks
             # Recover results and precisions
             res, err = output.get_single_excel_data()
+
             for series in [res, err, st_ck]:
                 series["Parent"] = zaidnum
                 series["Parent Name"] = zaidname
@@ -1975,22 +2029,10 @@ class SphereSDDRoutput(SphereOutput):
 
 
 class SphereSDDRMCNPoutput(SphereMCNPoutput):
-    def organize_mctal(self):
-        """
-        Reorganize the MCTAL data in dataframes
 
-        Returns
-        -------
-        tallydata : dic of DataFrame
-            contains the tally data in a df format.
-        totalbin : dic of DataFrame
-            contain the total bin data.
-        """
-        # This should use the original MCNPotput organization of
-        # MCTAL
-        tallydata, totalbin = super(SphereMCNPoutput, self).organize_mctal()
+    def _get_tallydata(self, mctal):
 
-        return tallydata, totalbin
+        return self.tallydata, self.totalbin
 
     @staticmethod
     def _drop_total_rows(df: pd.DataFrame):
@@ -2026,6 +2068,9 @@ class SphereSDDRMCNPoutput(SphereMCNPoutput):
         for df in [nflux, pflux, sddr, heat]:
             self._drop_total_rows(df)
 
+        # extend sddr to handle parent contributions abs error is needed
+        sddr["abs_error"] = sddr["Error"] * sddr["Value"]
+
         # Differentiate time labels
         pflux["Time"] = "F" + pflux["Time"].astype(str)
         sddr["Time"] = "D" + sddr["Time"].astype(str)
@@ -2039,7 +2084,7 @@ class SphereSDDRMCNPoutput(SphereMCNPoutput):
         # Get the total values of the SDDR at different cooling times
         sddrvals = sddr.groupby("Time").sum(numeric_only=True)["Value"]
         # Get the mean error of the SDDR at different cooling times
-        sddrerrors = sddr.groupby("Time").mean(numeric_only=True)["Error"]
+        sddrerrors = sddr.groupby("Time").sum()["abs_error"] / sddrvals
 
         # Get the total Heating at different cooling times
         heatvals = heat.set_index("Time")["Value"]

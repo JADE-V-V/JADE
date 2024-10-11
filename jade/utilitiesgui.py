@@ -24,288 +24,21 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import annotations
 import os
 import matplotlib.pyplot as plt
-import pandas as pd
-import xlsxwriter
 from tqdm import tqdm
 
-import jade.inputfile as ipt
-import jade.matreader as mat
-from jade.acepyne import *
-from jade.inputfile import D1S_Input
+from jade.acepyne import Library
+import jade.resources as pkg_res
+from importlib.resources import files
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    import jade.main
 
-###############################################################################
-# ------------------------ UTILITIES ------------------------------------------
-###############################################################################
-def translate_input(session, lib, inputfile, outpath=None):
-    """
-    Translate an input file to a selected library. A log of the translation is
-    also produced.
-    """
-    print(" Translating...")
-
-    libmanager = session.lib_manager
-
-    if outpath is None:
-        outpath = session.path_uti
-    else:
-        if not os.path.exists(outpath):
-            os.mkdir(outpath)
-
-    filename = os.path.basename(inputfile)
-
-    try:
-        inp = ipt.InputFile.from_text(inputfile)
-    except PermissionError:
-        return False
-
-    info1, _ = inp.matlist.get_info(libmanager)
-    inp.translate(lib, libmanager)
-    inp.update_zaidinfo(libmanager)
-    info2, _ = inp.matlist.get_info(libmanager)
-
-    newdir = os.path.join(outpath, "Translation")
-    if not os.path.exists(newdir):
-        os.mkdir(newdir)
-    outfile = os.path.join(newdir, filename + "_translated_" + lib)
-    inp.write(outfile)
-
-    # Log production
-    try:
-        info1["Fraction old"] = info1["Fraction"]
-        info1["Fraction new"] = info2["Fraction"]
-        perc = (info1["Fraction"] - info2["Fraction"]) / info1["Fraction"]
-        info1["Fraction difference [%]"] = perc
-        del info1["Fraction"]
-
-        outlog = os.path.join(newdir, filename + "_translated_" + lib + "_LOG.xlsx")
-
-        info1.to_excel(outlog)
-    # In case at leat one entire element was not translated
-    except ValueError:
-        text = "  Warning: it was impossible to produce the translation Log"
-        print(text)
-        session.log.adjourn(text)
-
-    return True
+JADE_RESOURCES = files(pkg_res)
 
 
 def print_libraries(libmanager):
     print(libmanager.libraries)
-
-
-def print_material_info(session, filepath, outpath=None):
-    """
-    Print materialcard information to excel file.
-
-    Parameters
-    ----------
-    session : jade.Session
-        JADE current session.
-
-    filepath : str or path
-        path to the input file.
-
-
-    outpath: str/os.Path
-        output path. Default is None, in this case the utilities folder is
-        used
-
-    Returns
-    -------
-    bool
-        If False there was a permission error on the input or output file.
-
-    """
-    lib_manager = session.lib_manager
-
-    try:
-        inputfile = ipt.InputFile.from_text(filepath)
-    except PermissionError:
-        return False
-
-    inforaw, info_elem = inputfile.matlist.get_info(
-        lib_manager, zaids=True, complete=True
-    )
-    if outpath is None:
-        outpath = os.path.join(session.path_uti, "Materials Infos")
-
-    if not os.path.exists(outpath):
-        os.mkdir(outpath)
-
-    outname = os.path.basename(filepath) + "_materialinfo.xlsx"
-    outfile = os.path.join(outpath, outname)
-
-    try:
-        with pd.ExcelWriter(outfile, engine="xlsxwriter") as writer:
-            inforaw.to_excel(writer, sheet_name="Sheet1")
-            info_elem.to_excel(writer, sheet_name="Sheet2")
-    except xlsxwriter.exceptions.FileCreateError:
-        return False
-
-    return True
-
-
-def generate_material(
-    session,
-    sourcefile,
-    materials,
-    percentages,
-    newlib,
-    fractiontype="atom",
-    outpath=None,
-):
-    """
-    Starting from an MCNP input, materials contained in its material list can
-    be used to generate a new material combining them.
-
-    Parameters
-    ----------
-    session : main.Session
-        JADE session.
-    sourcefile : path/str
-        MCNP input file.
-    materials : list
-        list of materials to mix (e.g. ['m1', 'M2']).
-    percentages : str
-        percentages associated to the source materials in the new materials
-        (e.g. 0.1-0.9). Their are intended as atom or mass fraction depending
-        on the fractiontype that is specified.
-    newlib : str
-        library for the new material.
-    fractiontype : str, optional
-        type of fraction to use in the new material (either 'atom' or 'mass'.
-        The default is 'atom'.
-    outpath : str/path, optional
-        specify a particular path for the output file. The default is None.
-
-    Returns
-    -------
-    bool
-        If False a problem with the opening of the input or output file was
-        encountered.
-
-    """
-    # Read the source file
-    try:
-        inputfile = ipt.InputFile.from_text(sourcefile)
-    except PermissionError:
-        return False
-
-    # Translate to requested lib
-    inputfile.translate(newlib, session.lib_manager)
-
-    # Collect all submaterials
-    submaterials = []
-    main_header = "C Material Obtained from " + os.path.basename(sourcefile)
-
-    for materialname, percentage in zip(materials, percentages):
-        materialname = materialname.upper()
-        percentage_str = str(round(float(percentage) * 100, 2)) + "%"
-        main_header = (
-            main_header
-            + "\nC Material: "
-            + materialname
-            + " Percentage: "
-            + percentage_str
-        )
-        material = inputfile.matlist[materialname]
-        # Ensure materials have the requested fraction type
-        material.switch_fraction(fractiontype, session.lib_manager)
-
-        # Scale fractions
-        totfraction = material.get_tot_fraction()
-        current_submaterials = []
-        for j, submat in enumerate(material.submaterials):
-            norm_factor = float(percentage) / totfraction  # normalized & scaled
-            if fractiontype == "mass":
-                norm_factor = -norm_factor
-            submat.scale_fractions(norm_factor)
-            submat.update_info(session.lib_manager)
-            # Add info to the header in order to back-trace the generation
-            submat.header = (
-                "C "
-                + materialname
-                + ", submaterial "
-                + str(j + 1)
-                + "\n"
-                + submat.header
-            )
-            # Drop additional keys if present
-            submat.additional_keys = []
-            current_submaterials.append(submat)
-
-        # Change the header of the first submaterial to include the mat. one
-        new_sub_header = (material.header + current_submaterials[0].header).strip("\n")
-        current_submaterials[0].header = new_sub_header
-        submaterials.extend(current_submaterials)
-
-    # Generate new material and matlist
-    newmat = mat.Material(
-        None, None, "M1", submaterials=submaterials, header=main_header
-    )
-    matcard = mat.MatCardsList([newmat])
-    # matcard.update_info(session.lib_manager)
-
-    # Dump it
-    if outpath is None:
-        outfile = os.path.join(session.path_uti, "Generated Materials")
-    else:
-        outfile = outpath
-    if not os.path.exists(outfile):
-        os.mkdir(outfile)
-    outfile = os.path.join(outfile, os.path.basename(sourcefile) + "_new Material")
-    try:
-        with open(outfile, "w") as writer:
-            writer.write(matcard.to_text())
-    except PermissionError:
-        return False
-
-    return True
-
-
-def switch_fractions(session, sourcefile, fraction_type, outpath=None):
-    """
-    Switch all fractions of an MCNP input either to mass or atom fraction.
-
-    Parameters
-    ----------
-    session : main.Session
-        JADE session.
-    sourcefile : str/path
-        MCNP input to switch.
-    fraction_type : str
-        either 'atom' or 'mass'.
-    outpath : str/path, optional
-        specific a different outpath. The default is None.
-
-    Returns
-    -------
-    bool
-        DESCRIPTION.
-
-    """
-    # Read the source file
-    try:
-        inputfile = ipt.InputFile.from_text(sourcefile)
-    except PermissionError:
-        return False
-
-    for material in inputfile.matlist:
-        material.switch_fraction(fraction_type, session.lib_manager)
-
-    # Dump it
-    if outpath is None:
-        outfile = os.path.join(session.path_uti, "Fraction switch")
-    else:
-        outfile = outpath
-    if not os.path.exists(outfile):
-        os.mkdir(outfile)
-    outfile = os.path.join(outfile, os.path.basename(sourcefile) + "_" + fraction_type)
-
-    inputfile.write(outfile)
-
-    return True
 
 
 def restore_default_config(session):
@@ -374,43 +107,6 @@ def change_ACElib_suffix():
                         outfile.write(line)
             except UnicodeDecodeError:
                 print("Decode error in " + file)
-
-
-def get_reaction_file(session, outpath=None):
-    """
-    Given a D1S input file the utility dumps a reaction file that includes
-    all possible reactions that can generate for the requested libraries in
-    the materials of the input.
-
-    Parameters
-    ----------
-    session : Session
-        JADE session.
-    outpath : str or path, optional
-        path where to save the reaction file. If None (default), the JADE
-        default utilities folder is used.
-
-    Returns
-    -------
-    None.
-
-    """
-    # Select the input file
-    message = " Please select a D1S input file: "
-    filepath = select_inputfile(message)
-    # Select the library
-    lib = session.lib_manager.select_lib(codes=["d1s"])
-
-    # Generate a D1S input
-    inputfile = D1S_Input.from_text(filepath)
-    reactionfile = inputfile.get_reaction_file(session.lib_manager, lib)
-    reactionfile.name = inputfile.name + "_react" + lib
-    if outpath is None:
-        outpath = os.path.join(session.path_uti, "Reactions")
-    # Dump it
-    if not os.path.exists(outpath):  # first time the utilities is used
-        os.mkdir(outpath)
-    reactionfile.write(outpath)
 
 
 def select_inputfile(message, max_n_tentatives=10):
@@ -950,3 +646,24 @@ def print_XS_EXFOR(session):
             )
             plt.savefig(os.path.join(session.path_uti, f"{isotope_name}_{MT}_XS.png"))
             print(" Cross Section printed")
+
+
+def add_rmode(session: jade.main.Session):
+    root = session.path_inputs
+    # walk trough the root tree, when mcnp folder is found, the RMODE 0 line has
+    # to be added to the input file
+    for dirpath, dirnames, filenames in os.walk(root):
+        if "mcnp" in dirnames:
+            mcnp_dir = os.path.join(dirpath, "mcnp")
+            for filename in os.listdir(mcnp_dir):
+                filepath = os.path.join(mcnp_dir, filename)
+                with open(filepath, "r", encoding="utf-8") as f:
+                    lines = f.readlines()
+                flag_no_rmode = True
+                with open(filepath, "w", encoding="utf-8") as f:
+                    for line in lines:
+                        f.write(line)
+                        if "RMODE" in line:
+                            flag_no_rmode = False
+                    if flag_no_rmode:
+                        f.write("RMODE 0\n")

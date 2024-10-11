@@ -29,14 +29,16 @@ cp = os.path.dirname(os.path.abspath(__file__))
 modules_path = os.path.dirname(cp)
 sys.path.insert(1, modules_path)
 
-from jade.libmanager import LibManager
+from f4enix.input.libmanager import LibManager
 from jade.configuration import Configuration
 import jade.output as output
+import pandas as pd
 from jade.expoutput import SpectrumOutput
-from jade.sphereoutput import SphereOutput
+import jade.sphereoutput as sout
 from jade.configuration import Configuration
 from jade.__version__ import __version__
-
+from jade.output import MCNPoutput
+from jade.postprocess import compareBenchmark
 
 # Files
 OUTP_SDDR = os.path.join(
@@ -45,6 +47,37 @@ OUTP_SDDR = os.path.join(
 OUTM_SDDR = os.path.join(
     cp, "TestFiles", "sphereoutput", "SphereSDDR_11023_Na-23_102_m"
 )
+
+
+class TestSphereSDDRMCNPoutput:
+
+    out = sout.SphereSDDRMCNPoutput(OUTM_SDDR, OUTP_SDDR)
+
+    def test_get_single_excel_data(self):
+        vals, errors = self.out.get_single_excel_data()
+        assert isinstance(vals, pd.Series)
+        assert isinstance(errors, pd.Series)
+        assert len(vals) == 23
+        assert len(errors) == 23
+
+
+class TestMCNPoutput:
+    def test_mcnpoutput(self):
+        out = MCNPoutput(OUTM_SDDR, OUTP_SDDR)
+        t4 = out.tallydata[4]
+        t2 = out.tallydata[2]
+        assert list(t4.columns) == ["Cells", "Segments", "Value", "Error"]
+        assert len(t4) == 1
+        assert len(t2) == 176
+        assert list(t2.columns) == ["Energy", "Value", "Error"]
+
+
+class MockLog:
+    def __init__(self) -> None:
+        self.log = []
+
+    def adjourn(self, message: str) -> None:
+        self.log.append(message)
 
 
 class MockSession:
@@ -62,18 +95,7 @@ class MockSession:
         self.path_comparison = root_dir.mkdir("comparison")
         self.path_single = root_dir.mkdir("single")
         self.path_exp_res = os.path.join(cp, "TestFiles", "output", "exp_results")
-
-
-class TestSphereSDDRMCNPoutput:
-
-    def test_organizemctal(self):
-        out = output.MCNPoutput(OUTM_SDDR, OUTP_SDDR)
-        t4 = out.tallydata[4]
-        t2 = out.tallydata[2]
-        assert list(t4.columns) == ["Cells", "Segments", "Value", "Error"]
-        assert len(t4) == 1
-        assert len(t2) == 176
-        assert list(t2.columns) == ["Energy", "Value", "Error"]
+        self.log = MockLog()
 
 
 class TestBenchmarkOutput:
@@ -105,6 +127,17 @@ class TestBenchmarkOutput:
             metadata = json.load(f)
         assert metadata["jade_run_version"] == "0.0.1"
         assert metadata["jade_version"] == __version__
+
+    def test_iter_cyl(self, tmpdir):
+        conf = Configuration(
+            os.path.join(cp, "TestFiles", "output", "config_itercyl.xlsx")
+        )
+        session = MockSession(conf, tmpdir)
+        out = output.BenchmarkOutput("99c", "d1s", "ITER_Cyl_SDDR", session)
+        out.single_postprocess()
+        out = output.BenchmarkOutput("93c", "d1s", "ITER_Cyl_SDDR", session)
+        out.single_postprocess()
+        compareBenchmark(session, "99c-93c", "d1s", ["ITER_Cyl_SDDR"], exp=False)
 
 
 class TestExperimentalOutput:

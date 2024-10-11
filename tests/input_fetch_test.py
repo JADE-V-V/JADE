@@ -9,7 +9,7 @@ root = os.path.dirname(cp)
 sys.path.insert(1, root)
 
 from jade.input_fetch import fetch_iaea_inputs
-from jade.libmanager import LibManager
+from f4enix.input.libmanager import LibManager
 
 
 ACTIVATION_FILE = os.path.join(cp, "TestFiles", "libmanager", "Activation libs.xlsx")

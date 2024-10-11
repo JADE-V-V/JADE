@@ -17,6 +17,9 @@ JADE is an open source, Python 3 based software able to:
 * Run simulations on such inputs;
 * Automatically parse and post-process all the generated transport codes outputs.
 
+MCNP input and output handling is performed by F4Enix (`f4enix documentation <https://f4enix.readthedocs.io/en/latest/>`_).
+This package contains a range of utilities for the creation and post-processing of MCNP files.
+
 The benchmarks implemented by default are divided between computational
 and experimental benchmarks. The post-processing output includes:
 

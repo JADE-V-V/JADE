@@ -29,7 +29,7 @@ from openpyxl.worksheet.worksheet import Worksheet
 from xlsxwriter.utility import xl_rowcol_to_cell
 
 
-def single_excel_writer(self, outpath, lib, testname, tallies, stats=None):
+def single_excel_writer(outpath, lib, testname, tallies, stats=None):
     """
     Produces single library summary excel file using XLSXwriter
 

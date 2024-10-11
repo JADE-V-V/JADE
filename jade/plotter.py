@@ -252,6 +252,7 @@ class Plotter:
                     xlimits=XLIM_HCPB,
                     markers=True,
                     figsize=(24, 13.5),
+                    steps="steps-pre",
                 )
             elif self.testname == "WCLL_TBM_1D":
                 outp = self._ratio_plot(
@@ -259,6 +260,7 @@ class Plotter:
                     xlimits=XLIM_WCLL,
                     markers=True,
                     figsize=(24, 13.5),
+                    steps="steps-pre",
                 )
             else:
                 outp = self._ratio_plot()
@@ -308,6 +310,9 @@ class Plotter:
         # --- Deafault ---
         else:
             raise ValueError(plot_type + " is not an admissible plot type")
+
+        # Be sure to close the plot once saved
+        plt.close()
 
         return outp
 
@@ -1028,6 +1033,7 @@ class Plotter:
         xlimits=None,
         markers=False,
         figsize=(16, 9),
+        steps="steps-mid",
     ):
         """
         Plot a ratio plot where all data dictionaries are plotted against the
@@ -1072,7 +1078,8 @@ class Plotter:
         # Plot all data
         y_max = 0
         y_min = 0
-        try:
+        # try:
+        if len(data) > 1:
             for i, dic in enumerate(data[1:]):
                 y = dic["y"] / ref["y"]
                 # Adjourn y max and min
@@ -1093,12 +1100,10 @@ class Plotter:
                     dic["x"],
                     y,
                     color=self.colors[i + 1],
-                    drawstyle="steps-mid",
+                    drawstyle=steps,
                     label=dic["ylabel"],
-                    marker=marker,
                 )
-
-        except KeyError:
+        else:
             # it is a single pp
             return self._save()
 

@@ -55,7 +55,7 @@ class TestExcelSupport:
         # Test case: Write data to excel
         outpath = tmpdir.join("test.xlsx")
         single_excel_writer(
-            self, outpath, self.lib, self.testname, self.tallies, self.stat_df
+            outpath, self.lib, self.testname, self.tallies, self.stat_df
         )
 
         # Assert that the file exists

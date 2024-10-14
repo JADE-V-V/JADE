@@ -280,6 +280,8 @@ class BenchmarkOutput(AbstractOutput):
         """
         if self.mcnp or self.d1s:
             return self._read_mcnp_code_version(pathtofile)
+        elif self.openmc:
+            return self._read_openmc_code_version(pathtofile)
 
         return None
 
@@ -301,6 +303,10 @@ class BenchmarkOutput(AbstractOutput):
             )
             logging.warning("Contents of the directory: %s", os.listdir(pathtofile))
             return None
+    
+    def _read_openmc_code_version(self, pathtofile: os.PathLike) -> str | None:
+        pass
+        
 
     def single_postprocess(self):
         """

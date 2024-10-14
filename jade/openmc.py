@@ -2,6 +2,8 @@ import os
 import re
 import openmc
 
+from jade.output import AbstractOutput
+
 class OpenMCInputFiles:
     def __init__(self, path : str, name=None) -> None:        
         self.path = path
@@ -138,3 +140,52 @@ class OpenMCSphereInputFiles(OpenMCInputFiles):
     def __init__(self, path : str, name=None) -> None:        
         OpenMCInputFiles.__init__(self, path, name=name)
     
+
+# Output handling for OpenMC
+class OpenMCOutput(AbstractOutput):
+    @staticmethod
+    def _get_output_files(results_path):
+        """
+        Recover the statepoint and summary file from a directory
+
+        Parameters
+        ----------
+        results_path : str or path
+            path where the OpenMC results are contained.
+
+        Raises
+        ------
+        FileNotFoundError
+            if either statepoint or summary are not found.
+
+        Returns
+        -------
+        spfile : path
+            path to the statepoint file
+        summaryfile : path
+            path to the summary file
+
+        """
+        # Get statepoint file and summary file.
+        spfile = None
+        summaryfile = None
+
+        for file in os.listdir(results_path):
+            if file.startswith("statepoint"):
+                spfile = file
+            elif file.startswith("summary"):
+                summaryfile = file
+
+        if spfile is None or summaryfile is None:
+            raise FileNotFoundError(
+                """
+ The following path does not contain either the statepoint or summary file:
+ {}""".format(
+                    results_path
+                )
+            )
+
+        spfile = os.path.join(results_path, spfile)
+        summaryfile = os.path.join(results_path, summaryfile)
+
+        return spfile, summaryfile

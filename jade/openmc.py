@@ -18,7 +18,7 @@ class OpenMCInputFiles:
         """
         files = os.listdir(path)
         if ('geometry.xml' in files) and ('materials.xml') in files:
-            self.load_geometry(os.path.join(path, 'geometry.xml'), materials=os.path.join('materials.xml'))
+            self.load_geometry(os.path.join(path, 'geometry.xml'), materials=os.path.join(path, 'materials.xml'))
         else:
             self.geometry = openmc.Geometry()
             self.materials = openmc.Materials()        
@@ -81,6 +81,9 @@ class OpenMCInputFiles:
         nps : int
             number of particles to simulate
         """
+        if nps < batches:
+            batches = nps
+        
         self.settings.batches = batches
         self.settings.particles = int(nps/batches)
 

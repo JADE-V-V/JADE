@@ -46,8 +46,10 @@ from f4enix.input.libmanager import LibManager
 from f4enix.input.d1suned import IrradiationFile, Reaction, ReactionFile
 from jade.__version__ import __version__
 
-if sys.platform == 'linux':
+try:
     import jade.openmc as omc
+except ImportError:
+    print("OpenMC has not been installed")
 
 
 # colors
@@ -1100,7 +1102,7 @@ class SphereTest(Test):
 
             # Generate the new input
             newinp = deepcopy(self.openmc_inp)
-            
+
             # Assign material
             newinp.matlist_to_openmc(materials, libmanager)
 
@@ -1287,7 +1289,7 @@ class SphereTest(Test):
 
             # Assign material
             newinp.matlist_to_openmc(materials, libmanager)
-            
+
             # add stop card
             newinp.add_stopCard(self.nps)
 

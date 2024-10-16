@@ -45,11 +45,10 @@ from jade.configuration import Configuration
 from f4enix.input.libmanager import LibManager
 from f4enix.input.d1suned import IrradiationFile, Reaction, ReactionFile
 from jade.__version__ import __version__
+from jade.__openmc__ import OMC_AVAIL
 
-try:
+if OMC_AVAIL:
     import jade.openmc as omc
-except ImportError:
-    print("OpenMC has not been installed")
 
 
 # colors

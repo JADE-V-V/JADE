@@ -47,9 +47,14 @@ jobs:
 
       # Install dependencies
       - name: Install dependencies
+        if: runner.os == 'Linux'
         run: |
-          pip install -e .
+          pip install -e .[openmc]
           pip install pytest pytest-cov
+        else:
+          run: |
+          pip install -e .
+          pip install pytest pytest-cov      
 
       # Activate environment and run pytest
       - name: Testing - Linux

@@ -100,7 +100,7 @@ class MockSession:
 
 class TestBenchmarkOutput:
 
-    def test_single_excel(self, tmpdir):
+    def test_single_excel_mcnp(self, tmpdir):
         conf = Configuration(
             os.path.join(cp, "TestFiles", "output", "config_test.xlsx")
         )
@@ -127,6 +127,28 @@ class TestBenchmarkOutput:
             metadata = json.load(f)
         assert metadata["jade_run_version"] == "0.0.1"
         assert metadata["jade_version"] == __version__
+        assert metadata["code_version"] == "6.2"
+
+    def test_single_excel_openmc(self, tmpdir):
+        conf = Configuration(
+            os.path.join(cp, "TestFiles", "output", "config_test.xlsx")
+        )
+        session = MockSession(conf, tmpdir)
+        out = output.BenchmarkOutput("32c", "openmc", "ITER_1D", session)
+        # Elaborate on this method as above once output generation is implemented for OpenMC
+        spfile = os.path.join(
+            cp,
+            "TestFiles",
+            "output",
+            "Simulations",
+            "32c",
+            "ITER_1D",
+            "openmc",
+            "statepoint.50.h5",
+        )
+        version = out._read_openmc_code_version(spfile)
+
+        assert version == "0.14.0"
 
     def test_iter_cyl(self, tmpdir):
         conf = Configuration(

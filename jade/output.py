@@ -94,31 +94,29 @@ class AbstractOutput(abc.ABC):
         file1 : path
             path to the first file
         file2 : path
-            path to the second file
+            path to the second file (only for mcnp)
 
         """
         file1 = None
         file2 = None
 
-        for file in os.listdir(results_path):
+        for file_name in os.listdir(results_path):
             if code == "mcnp":
-                if file[-1] == "m":
-                    file1 = file
-                elif file[-1] == "o":
-                    file2 = file
+                if file_name[-1] == "m":
+                    file1 = file_name
+                elif file_name[-1] == "o":
+                    file2 = file_name
             elif code == "openmc":
-                if file.startswith("summary"):
-                    file1 = file
-                elif file.startswith("statepoint"):
-                    file2 = file
+                if file_name.startswith("statepoint"):
+                    file1 = file_name
 
-        if file1 is None or file2 is None:
+        if file1 is None or (code == "mcnp" and file2 is None):
             raise FileNotFoundError(
                 f"The following path does not contain the required files for {code} output: {results_path}"
             )
 
         file1 = os.path.join(results_path, file1)
-        file2 = os.path.join(results_path, file2)
+        file2 = os.path.join(results_path, file2) if file2 else None
 
         return file1, file2
 
@@ -307,7 +305,7 @@ class BenchmarkOutput(AbstractOutput):
 
         return None
 
-    def _read_mcnp_code_version(ofile: os.PathLike) -> str | None:
+    def _read_mcnp_code_version(self, ofile: os.PathLike) -> str | None:
         """Read MCNP code version from the output file
 
         Parameters
@@ -335,7 +333,7 @@ class BenchmarkOutput(AbstractOutput):
             )
             return None
 
-    def _read_openmc_code_version(spfile: os.PathLike) -> str | None:
+    def _read_openmc_code_version(self, spfile: os.PathLike) -> str | None:
         """Read OpenMC code version from the statepoint file
 
         Parameters
@@ -360,7 +358,7 @@ class BenchmarkOutput(AbstractOutput):
             )
             return None
 
-    def _read_serpent_code_version(ofile: os.PathLike) -> str | None:
+    def _read_serpent_code_version(self, ofile: os.PathLike) -> str | None:
         pass
 
     def single_postprocess(self):

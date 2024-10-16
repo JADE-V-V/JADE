@@ -52,7 +52,7 @@ jobs:
           pip install -e .[openmc]
           pip install pytest pytest-cov
         else:
-          run: |
+        run: |
           pip install -e .
           pip install pytest pytest-cov      
 

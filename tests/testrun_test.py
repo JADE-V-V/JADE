@@ -176,10 +176,11 @@ class TestSphereTest:
             tmpdir, "Sphere", "Sphere_1001_H-1", "mcnp", "metadata.json"
         )
         assert os.path.exists(metadata_file)
-        metadata_file = os.path.join(
-            tmpdir, "Sphere", "Sphere_1001_H-1", "openmc", "metadata.json"
-        )
-        assert os.path.exists(metadata_file)
+        if OMC_AVAIL:
+            metadata_file = os.path.join(
+                tmpdir, "Sphere", "Sphere_1001_H-1", "openmc", "metadata.json"
+            )
+            assert os.path.exists(metadata_file)
 
         with open(metadata_file, "r", encoding="utf-8") as f:
             metadata = json.load(f)

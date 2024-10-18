@@ -28,8 +28,6 @@ class OpenMCInputFiles:
             self.materials = openmc.Materials()
         if "settings.xml" in files:
             self.load_settings(os.path.join(path, "settings.xml"))
-        else:
-            self.settings = openmc.Settings()
         if "tallies.xml" in files:
             self.load_tallies(os.path.join(path, "tallies.xml"))
         else:
@@ -67,16 +65,6 @@ class OpenMCInputFiles:
         """
         self.tallies = openmc.Tallies.from_xml(tallies)
 
-    def load_materials(self, materials: str) -> None:
-        """Initialise OpenMC materials from xml
-
-        Parameters
-        ----------
-        materials : str
-            path to geometry input xml
-        """
-        self.materials = openmc.Materials.from_xml(materials)
-
     def add_stopCard(self, nps: int, batches=100) -> None:
         """Add number of particles to simulate
 
@@ -99,12 +87,8 @@ class OpenMCInputFiles:
             openmc_material.add_nuclide(nuclide, 100 * abs(zaid.fraction), "ao")
 
     def submat_to_openmc(self, submaterial, openmc_material, libmanager):
-        if submaterial.elements is not None:
-            for elem in submaterial.elements:
-                for zaid in elem.zaids:
-                    self.zaid_to_openmc(zaid, openmc_material, libmanager)
-        else:
-            for zaid in submaterial.zaidList:
+        for elem in submaterial.elements:
+            for zaid in elem.zaids:
                 self.zaid_to_openmc(zaid, openmc_material, libmanager)
 
     def mat_to_openmc(self, material, libmanager):
@@ -113,8 +97,6 @@ class OpenMCInputFiles:
         matdensity = abs(material.density)
         if material.density < 0:
             density_units = "g/cc"
-        else:
-            density_units = "atom/b-cm"
         openmc_material = openmc.Material(matid, name=matname)
         openmc_material.set_density(density_units, matdensity)
         if material.submaterials is not None:
@@ -140,7 +122,3 @@ class OpenMCInputFiles:
         self.tallies.export_to_xml(os.path.join(path, "tallies.xml"))
         self.materials.export_to_xml(os.path.join(path, "materials.xml"))
 
-
-class OpenMCSphereInputFiles(OpenMCInputFiles):
-    def __init__(self, path: str, name=None) -> None:
-        OpenMCInputFiles.__init__(self, path, name=name)

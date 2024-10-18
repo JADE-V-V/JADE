@@ -24,6 +24,7 @@ along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 import os
 import json
+import pytest
 
 cp = os.path.dirname(os.path.abspath(__file__))
 modules_path = os.path.dirname(cp)
@@ -39,6 +40,10 @@ from jade.configuration import Configuration
 from jade.__version__ import __version__
 from jade.output import MCNPoutput
 from jade.postprocess import compareBenchmark
+from jade.__openmc__ import OMC_AVAIL
+
+if OMC_AVAIL:
+    import jade.openmc as omc
 
 # Files
 OUTP_SDDR = os.path.join(
@@ -129,6 +134,7 @@ class TestBenchmarkOutput:
         assert metadata["jade_version"] == __version__
         assert metadata["code_version"] == "6.2"
 
+    @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC is not available")
     def test_single_excel_openmc(self, tmpdir):
         conf = Configuration(
             os.path.join(cp, "TestFiles", "output", "config_test.xlsx")
@@ -146,7 +152,8 @@ class TestBenchmarkOutput:
             "openmc",
             "statepoint.50.h5",
         )
-        version = out._read_openmc_code_version(spfile)
+        statepoint = omc.OpenMCOutput(spfile)
+        version = statepoint.read_openmc_version()
 
         assert version == "0.14.0"
 

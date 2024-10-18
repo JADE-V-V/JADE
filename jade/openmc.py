@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 import openmc
@@ -122,3 +123,28 @@ class OpenMCInputFiles:
         self.tallies.export_to_xml(os.path.join(path, "tallies.xml"))
         self.materials.export_to_xml(os.path.join(path, "materials.xml"))
 
+class OpenMCOutput():
+    
+    def __init__(self, spfile: str) -> None:
+        self.spfile = spfile
+        self.version = self.read_openmc_version()
+
+    def read_openmc_version(self) -> str:
+        """Get OpenMC version from statepoint file
+
+        Returns
+        -------
+        str
+            OpenMC version
+        """
+        try:
+            # Retrieve the version from the statepoint file (convert from tuple of integers to string)
+            sp = openmc.StatePoint(self.spfile)
+            version = ".".join(map(str, sp.version))
+            return version
+        except (FileNotFoundError, KeyError):
+            logging.warning(
+                "OpenMC version not found in the statepoint file for %s",
+                self.spfile,
+            )
+            return None

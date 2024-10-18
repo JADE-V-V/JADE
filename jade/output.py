@@ -24,7 +24,6 @@
 from __future__ import annotations
 
 import abc
-import openmc
 import os
 import pickle
 import shutil
@@ -49,6 +48,10 @@ from jade.constants import CODES
 
 from jade.__version__ import __version__
 from f4enix.output.MCNPoutput import Output as MCNPOutputFile
+from jade.__openmc__ import OMC_AVAIL
+
+if OMC_AVAIL:
+    import jade.openmc as omc
 
 if TYPE_CHECKING:
     from jade.main import Session
@@ -346,17 +349,9 @@ class BenchmarkOutput(AbstractOutput):
         str | None
             version of the OpenMC code used to run the benchmark
         """
-        try:
-            # Retreieve the version from the statepoint file (convert from tuple of integers to string)
-            sp = openmc.StatePoint(spfile)
-            version = ".".join(map(str, sp.version))
-            return version
-        except (FileNotFoundError, KeyError):
-            logging.warning(
-                "OpenMC version not found in the statepoint file for %s",
-                spfile,
-            )
-            return None
+        statepoint = omc.OpenMCOutput(spfile)
+        version = statepoint.read_openmc_version()
+        return version
 
     def _read_serpent_code_version(self, ofile: os.PathLike) -> str | None:
         pass

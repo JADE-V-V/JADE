@@ -26,6 +26,7 @@ import os
 import pandas as pd
 import pytest
 import json
+from jade.__openmc__ import OMC_AVAIL
 
 cp = os.path.dirname(os.path.abspath(__file__))
 modules_path = os.path.dirname(cp)
@@ -110,6 +111,7 @@ class TestSphereOutput:
         sphere_comp.compare()
         assert True
 
+    @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC is not available")
     def test_sphereoutput_openmc(self, session_mock: MockUpSession):
         sphere_00c = sout.SphereOutput("00c", "openmc", "Sphere", session_mock)
         sphere_00c.single_postprocess()
@@ -136,6 +138,7 @@ class TestSphereOutput:
         assert "M10" == results[1]["Zaid"]
         assert stat_checks[1]["Gamma flux at the external surface [22]"] == "Missed"
 
+    @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC is not available")
     def test_read_openmc_output(self, session_mock: MockUpSession):
         sphere_00c = sout.SphereOutput("00c", "openmc", "Sphere", session_mock)
         outputs, results, errors = sphere_00c._read_openmc_output()

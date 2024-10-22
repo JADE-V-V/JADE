@@ -136,12 +136,6 @@ class TestBenchmarkOutput:
 
     @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC is not available")
     def test_single_excel_openmc(self, tmpdir):
-        conf = Configuration(
-            os.path.join(cp, "TestFiles", "output", "config_test.xlsx")
-        )
-        session = MockSession(conf, tmpdir)
-        out = output.BenchmarkOutput("32c", "openmc", "ITER_1D", session)
-        # Elaborate on this method as above once output generation is implemented for OpenMC
         spfile = os.path.join(
             cp,
             "TestFiles",

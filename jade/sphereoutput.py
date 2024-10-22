@@ -47,6 +47,11 @@ from jade.output import BenchmarkOutput, OpenMCOutput, MCNPoutput
 if TYPE_CHECKING:
     from jade.main import Session
 
+from jade.__openmc__ import OMC_AVAIL
+
+if OMC_AVAIL:
+    import jade.openmc as omc
+
 
 class SphereOutput(BenchmarkOutput):
     def __init__(self, lib: str, code: str, testname: str, session: Session):
@@ -477,7 +482,8 @@ class SphereOutput(BenchmarkOutput):
             else:
                 zaidname = pieces[-1]
             # Parse output
-            output = SphereOpenMCoutput(os.path.join(results_path, "tallies.out"))
+            #output = SphereOpenMCoutput(os.path.join(results_path, "tallies.out"))
+            output = SphereOpenMCoutput(results_path)
             outputs[zaidnum] = output
             # Adjourn raw Data
             self.raw_data["openmc"][zaidnum] = output.tallydata
@@ -870,8 +876,8 @@ class SphereOutput(BenchmarkOutput):
                                 outfile = file
 
                         # Parse output
-                        outfile = os.path.join(results_path, outfile)
-                        output = SphereOpenMCoutput(outfile)
+                        #outfile = os.path.join(results_path, outfile)
+                        output = SphereOpenMCoutput(results_path)
                         outputs_lib[zaidnum] = output
                         res, err, columns = output.get_comparison_data(
                             ["4", "14"], "openmc"
@@ -1306,6 +1312,7 @@ class SphereOpenMCoutput(OpenMCOutput, SphereTallyOutput):
             totalbin: Dataframe
             see dftotal in _create_dataframe()
         """
+        """
         rows = []
         for line in self.output_file_data:
             if "tally" in line.lower():
@@ -1322,6 +1329,8 @@ class SphereOpenMCoutput(OpenMCOutput, SphereTallyOutput):
                     parts = line.split()
                     value, error = float(parts[1]), float(parts[3])
                     rows.append([tally_n, tally_description, energy, value, error])
+        """
+        rows = self.output.tally_to_rows()
         tallydata, totalbin = self._create_dataframe(rows)
         return tallydata, totalbin
 

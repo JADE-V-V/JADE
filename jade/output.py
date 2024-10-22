@@ -297,7 +297,7 @@ class BenchmarkOutput(AbstractOutput):
                 # this can happen the first time
                 return None
 
-        if self.mcnp or self.d1s:
+        elif self.mcnp or self.d1s:
             _, mcnp_ofile = self._get_output_files(pathtofile, "mcnp")
             return self._read_mcnp_code_version(mcnp_ofile)
         elif self.openmc:
@@ -350,7 +350,7 @@ class BenchmarkOutput(AbstractOutput):
             version of the OpenMC code used to run the benchmark
         """
         statepoint = omc.OpenMCOutput(spfile)
-        version = statepoint.read_openmc_version()
+        version = statepoint.version
         return version
 
     def _read_serpent_code_version(self, ofile: os.PathLike) -> str | None:

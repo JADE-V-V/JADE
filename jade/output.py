@@ -110,8 +110,11 @@ class AbstractOutput(abc.ABC):
                 elif file_name[-1] == "o":
                     file2 = file_name
             elif code == "openmc":
-                if file_name.startswith("statepoint"):
+                if file_name.endswith('.out'):
                     file1 = file_name
+                elif file_name.startswith("statepoint"):
+                    file2 = file_name
+                
 
         if file1 is None or (code == "mcnp" and file2 is None):
             raise FileNotFoundError(
@@ -297,12 +300,12 @@ class BenchmarkOutput(AbstractOutput):
                 # this can happen the first time
                 return None
 
-        elif self.mcnp or self.d1s:
+        if self.mcnp or self.d1s:
             _, mcnp_ofile = self._get_output_files(pathtofile, "mcnp")
             return self._read_mcnp_code_version(mcnp_ofile)
         elif self.openmc:
-            _, openmc_ofile = self._get_output_files(pathtofile, "openmc")
-            return self._read_openmc_code_version(openmc_ofile)
+            _, openmc_sfile = self._get_output_files(pathtofile, "openmc")
+            return self._read_openmc_code_version(openmc_sfile)
         elif self.serpent:
             pass
 

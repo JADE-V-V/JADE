@@ -2,6 +2,7 @@ import logging
 import os
 import re
 import openmc
+import inspect
 
 
 class OpenMCInputFiles:
@@ -125,11 +126,10 @@ class OpenMCInputFiles:
 
 
 class OpenMCOutput:
-
     def __init__(self, spfile_path: str) -> None:
         self.initialise(spfile_path)
         self.version = self.read_openmc_version()
-
+   
     def initialise(self, spfile_path: str) -> None:
         """Read in statepoint file
 
@@ -161,17 +161,18 @@ class OpenMCOutput:
 
 class OpenMCSphereOutput(OpenMCOutput):
     def __init__(self, spfile_path: str) -> None:
-        super.__init__(self, spfile_path)
+        super().__init__(spfile_path)
 
     def _get_tally_data(self, rows: list, filter: openmc.Filter):
         tally = self.statepoint.get_tally(filters=[filter])
-        tally_n = tally.tally_id
+        tally_n = tally.id
         tally_description = tally.name
         energy_bins = tally.find_filter(openmc.EnergyFilter).values[1:]
-        fluxes = tally.mean
-        errors = tally.std_dev
+        fluxes = tally.mean.flatten()
+        errors = tally.std_dev.flatten()
         for energy, flux, error in zip(energy_bins, fluxes, errors):
-            rows.append([tally_n, tally_description,energy, flux, error])
+            rows.append([tally_n, tally_description, energy, flux, error])
+        return rows
     
     def tally_to_rows(self):
         rows = []

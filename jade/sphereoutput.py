@@ -482,8 +482,8 @@ class SphereOutput(BenchmarkOutput):
             else:
                 zaidname = pieces[-1]
             # Parse output
-            #output = SphereOpenMCoutput(os.path.join(results_path, "tallies.out"))
-            output = SphereOpenMCoutput(results_path)
+            _, outfile = self._get_output_files(results_path, 'openmc')
+            output = SphereOpenMCoutput(outfile)
             outputs[zaidnum] = output
             # Adjourn raw Data
             self.raw_data["openmc"][zaidnum] = output.tallydata
@@ -874,10 +874,11 @@ class SphereOutput(BenchmarkOutput):
                         for file in os.listdir(results_path):
                             if "tallies.out" in file:
                                 outfile = file
+                        
 
                         # Parse output
-                        #outfile = os.path.join(results_path, outfile)
-                        output = SphereOpenMCoutput(results_path)
+                        _, outfile = self._get_output_files(results_path, 'openmc')
+                        output = SphereOpenMCoutput(outfile)
                         outputs_lib[zaidnum] = output
                         res, err, columns = output.get_comparison_data(
                             ["4", "14"], "openmc"
@@ -1265,6 +1266,12 @@ class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
 
 
 class SphereOpenMCoutput(OpenMCOutput, SphereTallyOutput):
+    def __init__(self, output_path):
+        self.output = omc.OpenMCSphereOutput(output_path)
+        self.tallydata, self.totalbin = self.process_tally()
+        self.stat_checks = None
+
+    
     def _create_dataframe(self, rows):
         """Creates dataframe from the data in each output passed through as
         a list of lists from the process_tally function

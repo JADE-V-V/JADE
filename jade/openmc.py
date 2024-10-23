@@ -3,6 +3,7 @@ import os
 import re
 import openmc
 
+
 class OpenMCInputFiles:
     def __init__(self, path: str, name=None) -> None:
         self.path = path
@@ -127,7 +128,7 @@ class OpenMCOutput:
     def __init__(self, spfile_path: str) -> None:
         self.initialise(spfile_path)
         self.version = self.read_openmc_version()
-   
+
     def initialise(self, spfile_path: str) -> None:
         """Read in statepoint file
 
@@ -157,6 +158,7 @@ class OpenMCOutput:
         version = ".".join(map(str, self.statepoint.version))
         return version
 
+
 class OpenMCSphereOutput(OpenMCOutput):
     def __init__(self, spfile_path: str) -> None:
         super().__init__(spfile_path)
@@ -171,17 +173,11 @@ class OpenMCSphereOutput(OpenMCOutput):
         for energy, flux, error in zip(energy_bins, fluxes, errors):
             rows.append([tally_n, tally_description, energy, flux, error])
         return rows
-    
+
     def tally_to_rows(self):
         rows = []
-        neutron_particle_filter = openmc.ParticleFilter(['neutron'])
+        neutron_particle_filter = openmc.ParticleFilter(["neutron"])
         rows = self._get_tally_data(rows, neutron_particle_filter)
-        photon_particle_filter = openmc.ParticleFilter(['photon'])
+        photon_particle_filter = openmc.ParticleFilter(["photon"])
         rows = self._get_tally_data(rows, photon_particle_filter)
         return rows
-
-
-
-
-
-    

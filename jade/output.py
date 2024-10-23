@@ -110,11 +110,10 @@ class AbstractOutput(abc.ABC):
                 elif file_name[-1] == "o":
                     file2 = file_name
             elif code == "openmc":
-                if file_name.endswith('.out'):
+                if file_name.endswith(".out"):
                     file1 = file_name
                 elif file_name.startswith("statepoint"):
                     file2 = file_name
-                
 
         if file1 is None or (code == "mcnp" and file2 is None):
             raise FileNotFoundError(
@@ -1182,7 +1181,6 @@ class MCNPoutput:
 class OpenMCOutput:
     def __init__(self, output_path):
         self.output = omc.OpenMCOutput(output_path)
-        #self.output_file_data = self.read(output_file)
         self.tallydata, self.totalbin = self.process_tally()
         self.stat_checks = None
 

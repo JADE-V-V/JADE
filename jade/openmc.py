@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 import openmc
@@ -122,3 +123,61 @@ class OpenMCInputFiles:
         self.tallies.export_to_xml(os.path.join(path, "tallies.xml"))
         self.materials.export_to_xml(os.path.join(path, "materials.xml"))
 
+
+class OpenMCOutput:
+    def __init__(self, spfile_path: str) -> None:
+        self.initialise(spfile_path)
+        self.version = self.read_openmc_version()
+
+    def initialise(self, spfile_path: str) -> None:
+        """Read in statepoint file
+
+        Parameters
+        ----------
+        spfile_path : str
+            path to statepoint file
+        """
+        try:
+            # Retrieve the version from the statepoint file (convert from tuple of integers to string)
+            self.statepoint = openmc.StatePoint(spfile_path)
+        except (FileNotFoundError, KeyError):
+            logging.warning(
+                "OpenMC version not found in the statepoint file for %s",
+                spfile_path,
+            )
+            return None
+
+    def read_openmc_version(self) -> str:
+        """Get OpenMC version from statepoint file
+
+        Returns
+        -------
+        str
+            OpenMC version
+        """
+        version = ".".join(map(str, self.statepoint.version))
+        return version
+
+
+class OpenMCSphereOutput(OpenMCOutput):
+    def __init__(self, spfile_path: str) -> None:
+        super().__init__(spfile_path)
+
+    def _get_tally_data(self, rows: list, filter: openmc.Filter):
+        tally = self.statepoint.get_tally(filters=[filter])
+        tally_n = tally.id
+        tally_description = tally.name.title()
+        energy_bins = tally.find_filter(openmc.EnergyFilter).values[1:]
+        fluxes = tally.mean.flatten()
+        errors = tally.std_dev.flatten()
+        for energy, flux, error in zip(energy_bins, fluxes, errors):
+            rows.append([tally_n, tally_description, energy, flux, error])
+        return rows
+
+    def tally_to_rows(self):
+        rows = []
+        neutron_particle_filter = openmc.ParticleFilter(["neutron"])
+        rows = self._get_tally_data(rows, neutron_particle_filter)
+        photon_particle_filter = openmc.ParticleFilter(["photon"])
+        rows = self._get_tally_data(rows, photon_particle_filter)
+        return rows

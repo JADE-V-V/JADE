@@ -2,8 +2,6 @@ import logging
 import os
 import re
 import openmc
-import inspect
-
 
 class OpenMCInputFiles:
     def __init__(self, path: str, name=None) -> None:
@@ -166,7 +164,7 @@ class OpenMCSphereOutput(OpenMCOutput):
     def _get_tally_data(self, rows: list, filter: openmc.Filter):
         tally = self.statepoint.get_tally(filters=[filter])
         tally_n = tally.id
-        tally_description = tally.name
+        tally_description = tally.name.title()
         energy_bins = tally.find_filter(openmc.EnergyFilter).values[1:]
         fluxes = tally.mean.flatten()
         errors = tally.std_dev.flatten()

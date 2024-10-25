@@ -91,6 +91,8 @@ class AbstractOutput(abc.ABC):
         ------
         FileNotFoundError
             if the required files are not found.
+        NotImplementedError
+            if the code is not supported.
 
         Returns
         -------
@@ -104,19 +106,22 @@ class AbstractOutput(abc.ABC):
         file2 = None
 
         for file_name in os.listdir(results_path):
-            if code == "mcnp":
+            if code in ["mcnp", "d1s"]:
                 if file_name[-1] == "m":
                     file1 = file_name
                 elif file_name[-1] == "o":
                     file2 = file_name
             elif code == "openmc":
-                if file_name.endswith('.out'):
+                if file_name.endswith(".out"):
                     file1 = file_name
                 elif file_name.startswith("statepoint"):
                     file2 = file_name
-                
+            else:
+                raise NotImplementedError(
+                    f"The code '{code}' is not currently supported."
+                )
 
-        if file1 is None or (code == "mcnp" and file2 is None):
+        if file1 is None or (code in ["mcnp", "d1s"] and file2 is None):
             raise FileNotFoundError(
                 f"The following path does not contain the required files for {code} output: {results_path}"
             )

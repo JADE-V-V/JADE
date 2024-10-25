@@ -48,6 +48,10 @@ from jade.constants import CODES
 
 from jade.__version__ import __version__
 from f4enix.output.MCNPoutput import Output as MCNPOutputFile
+from jade.__openmc__ import OMC_AVAIL
+
+if OMC_AVAIL:
+    import jade.openmc as omc
 
 if TYPE_CHECKING:
     from jade.main import Session
@@ -72,51 +76,60 @@ class AbstractOutput(abc.ABC):
         """
 
     @staticmethod
-    def _get_output_files(results_path):
+    def _get_output_files(results_path, code):
         """
-        Recover the meshtal and outp file from a directory
+        Recover the output files from a directory
 
         Parameters
         ----------
         results_path : str or path
-            path where the MCNP results are contained.
+            path where the results are contained.
+        code : str
+            code that generated the output ('mcnp' or 'openmc')
 
         Raises
         ------
         FileNotFoundError
-            if either meshtal or outp are not found.
+            if the required files are not found.
+        NotImplementedError
+            if the code is not supported.
 
         Returns
         -------
-        mfile : path
-            path to the meshtal file
-        ofile : path
-            path to the outp file
+        file1 : path
+            path to the first file
+        file2 : path
+            path to the second file (only for mcnp)
 
         """
-        # Get mfile
-        mfile = None
-        ofile = None
+        file1 = None
+        file2 = None
 
-        for file in os.listdir(results_path):
-            if file[-1] == "m":
-                mfile = file
-            elif file[-1] == "o":
-                ofile = file
-
-        if mfile is None or ofile is None:
-            raise FileNotFoundError(
-                """
- The followig path does not contain either the .m or .o file:
- {}""".format(
-                    results_path
+        for file_name in os.listdir(results_path):
+            if code in ["mcnp", "d1s"]:
+                if file_name[-1] == "m":
+                    file1 = file_name
+                elif file_name[-1] == "o":
+                    file2 = file_name
+            elif code == "openmc":
+                if file_name.endswith(".out"):
+                    file1 = file_name
+                elif file_name.startswith("statepoint"):
+                    file2 = file_name
+            else:
+                raise NotImplementedError(
+                    f"The code '{code}' is not currently supported."
                 )
+
+        if file1 is None or (code in ["mcnp", "d1s"] and file2 is None):
+            raise FileNotFoundError(
+                f"The following path does not contain the required files for {code} output: {results_path}"
             )
 
-        mfile = os.path.join(results_path, mfile)
-        ofile = os.path.join(results_path, ofile)
+        file1 = os.path.join(results_path, file1)
+        file2 = os.path.join(results_path, file2) if file2 else None
 
-        return mfile, ofile
+        return file1, file2
 
 
 class BenchmarkOutput(AbstractOutput):
@@ -245,9 +258,18 @@ class BenchmarkOutput(AbstractOutput):
             self.metadata = self._read_metadata_run(results_path)
 
     def _read_metadata_run(self, pathtofile: os.PathLike) -> dict:
-        # Get the metadata
+        """Retrieve the metadata from the run
 
-        # try to read the metadata
+        Parameters
+        ----------
+        pathtofile : os.PathLike
+            path to metadata file
+
+        Returns
+        -------
+        dict
+            metadata dictionary
+        """
         try:
             with open(
                 os.path.join(pathtofile, "metadata.json"),
@@ -278,18 +300,36 @@ class BenchmarkOutput(AbstractOutput):
         str | None
             version of the code used to run the benchmarks
         """
-        if self.mcnp or self.d1s:
-            return self._read_mcnp_code_version(pathtofile)
-
-        return None
-
-    def _read_mcnp_code_version(self, pathtofile: os.PathLike) -> str | None:
         if self.testname in ["Sphere", "SphereSDDR"]:
             if not os.path.exists(pathtofile):
                 # this can happen the first time
                 return None
 
-        _, ofile = self._get_output_files(pathtofile)
+        if self.mcnp or self.d1s:
+            _, mcnp_ofile = self._get_output_files(pathtofile, "mcnp")
+            return self._read_mcnp_code_version(mcnp_ofile)
+        elif self.openmc:
+            _, openmc_sfile = self._get_output_files(pathtofile, "openmc")
+            return self._read_openmc_code_version(openmc_sfile)
+        elif self.serpent:
+            pass
+
+        return None
+
+    def _read_mcnp_code_version(self, ofile: os.PathLike) -> str | None:
+        """Read MCNP code version from the output file
+
+        Parameters
+        ----------
+        ofile : os.PathLike
+            output file path
+
+        Returns
+        -------
+        str | None
+            version of the MCNP code used to run the benchmark
+        """
+
         outp = MCNPOutputFile(ofile)
         try:
             version = outp.get_code_version()
@@ -297,10 +337,32 @@ class BenchmarkOutput(AbstractOutput):
         except ValueError:
             logging.warning(
                 "Code version not found in the output file or aux file for %s",
-                pathtofile,
+                ofile,
             )
-            logging.warning("Contents of the directory: %s", os.listdir(pathtofile))
+            logging.warning(
+                "Contents of the directory: %s", os.listdir(os.path.dirname(ofile))
+            )
             return None
+
+    def _read_openmc_code_version(self, spfile: os.PathLike) -> str | None:
+        """Read OpenMC code version from the statepoint file
+
+        Parameters
+        ----------
+        spfile : os.PathLike
+            statepoint file path
+
+        Returns
+        -------
+        str | None
+            version of the OpenMC code used to run the benchmark
+        """
+        statepoint = omc.OpenMCOutput(spfile)
+        version = statepoint.version
+        return version
+
+    def _read_serpent_code_version(self, ofile: os.PathLike) -> str | None:
+        pass
 
     def single_postprocess(self):
         """

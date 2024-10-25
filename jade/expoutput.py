@@ -213,7 +213,7 @@ class ExperimentalOutput(BenchmarkOutput):
     def _extract_single_output(
         self, results_path: os.PathLike, folder: str, lib: str
     ) -> tuple[pd.DataFrame, str]:
-        mfile, ofile = self._get_output_files(results_path)
+        mfile, ofile = self._get_output_files(results_path, "mcnp")
         # Parse output
         output = MCNPoutput(mfile, ofile)
 

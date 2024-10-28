@@ -172,7 +172,7 @@ class BenchmarkOutput(AbstractOutput):
         # Updated to handle multiple codes
         # initialize them so that intellisense knows they are available
         self.mcnp = False
-        self.d1s = False
+        self.openmc = False
         self.serpent = False
         self.d1s = False
         for available_code in CODES.values():
@@ -1185,9 +1185,8 @@ class MCNPoutput:
 
 
 class OpenMCOutput:
-    def __init__(self, output_file):
-        self.output_file = output_file
-        self.output_file_data = self.read(output_file)
+    def __init__(self, output_path):
+        self.output = omc.OpenMCOutput(output_path)
         self.tallydata, self.totalbin = self.process_tally()
         self.stat_checks = None
 

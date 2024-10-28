@@ -47,6 +47,11 @@ from jade.output import BenchmarkOutput, OpenMCOutput, MCNPoutput
 if TYPE_CHECKING:
     from jade.main import Session
 
+from jade.__openmc__ import OMC_AVAIL
+
+if OMC_AVAIL:
+    import jade.openmc as omc
+
 
 class SphereOutput(BenchmarkOutput):
     def __init__(self, lib: str, code: str, testname: str, session: Session):
@@ -477,7 +482,8 @@ class SphereOutput(BenchmarkOutput):
             else:
                 zaidname = pieces[-1]
             # Parse output
-            output = SphereOpenMCoutput(os.path.join(results_path, "tallies.out"))
+            _, outfile = self._get_output_files(results_path, "openmc")
+            output = SphereOpenMCoutput(outfile)
             outputs[zaidnum] = output
             # Adjourn raw Data
             self.raw_data["openmc"][zaidnum] = output.tallydata
@@ -870,7 +876,7 @@ class SphereOutput(BenchmarkOutput):
                                 outfile = file
 
                         # Parse output
-                        outfile = os.path.join(results_path, outfile)
+                        _, outfile = self._get_output_files(results_path, "openmc")
                         output = SphereOpenMCoutput(outfile)
                         outputs_lib[zaidnum] = output
                         res, err, columns = output.get_comparison_data(
@@ -1259,6 +1265,11 @@ class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
 
 
 class SphereOpenMCoutput(OpenMCOutput, SphereTallyOutput):
+    def __init__(self, output_path):
+        self.output = omc.OpenMCSphereOutput(output_path)
+        self.tallydata, self.totalbin = self.process_tally()
+        self.stat_checks = None
+
     def _create_dataframe(self, rows):
         """Creates dataframe from the data in each output passed through as
         a list of lists from the process_tally function
@@ -1306,6 +1317,7 @@ class SphereOpenMCoutput(OpenMCOutput, SphereTallyOutput):
             totalbin: Dataframe
             see dftotal in _create_dataframe()
         """
+        """
         rows = []
         for line in self.output_file_data:
             if "tally" in line.lower():
@@ -1322,6 +1334,8 @@ class SphereOpenMCoutput(OpenMCOutput, SphereTallyOutput):
                     parts = line.split()
                     value, error = float(parts[1]), float(parts[3])
                     rows.append([tally_n, tally_description, energy, value, error])
+        """
+        rows = self.output.tally_to_rows()
         tallydata, totalbin = self._create_dataframe(rows)
         return tallydata, totalbin
 

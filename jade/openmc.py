@@ -125,7 +125,6 @@ class OpenMCInputFiles:
 
 
 class OpenMCOutput:
-
     def __init__(self, spfile_path: str) -> None:
         self.initialise(spfile_path)
         self.version = self.read_openmc_version()
@@ -158,3 +157,27 @@ class OpenMCOutput:
         """
         version = ".".join(map(str, self.statepoint.version))
         return version
+
+
+class OpenMCSphereOutput(OpenMCOutput):
+    def __init__(self, spfile_path: str) -> None:
+        super().__init__(spfile_path)
+
+    def _get_tally_data(self, rows: list, filter: openmc.Filter):
+        tally = self.statepoint.get_tally(filters=[filter])
+        tally_n = tally.id
+        tally_description = tally.name.title()
+        energy_bins = tally.find_filter(openmc.EnergyFilter).values[1:]
+        fluxes = tally.mean.flatten()
+        errors = tally.std_dev.flatten()
+        for energy, flux, error in zip(energy_bins, fluxes, errors):
+            rows.append([tally_n, tally_description, energy, flux, error])
+        return rows
+
+    def tally_to_rows(self):
+        rows = []
+        neutron_particle_filter = openmc.ParticleFilter(["neutron"])
+        rows = self._get_tally_data(rows, neutron_particle_filter)
+        photon_particle_filter = openmc.ParticleFilter(["photon"])
+        rows = self._get_tally_data(rows, photon_particle_filter)
+        return rows

@@ -144,8 +144,8 @@ class TestSphereOutput:
         outputs, results, errors = sphere_00c._read_openmc_output()
         tally_values = outputs["M10"].tallydata["Value"]
         tally_errors = outputs["M10"].tallydata["Error"]
-        assert 0.827104 == pytest.approx(tally_values[10])
-        assert 0.000227628 == pytest.approx(tally_errors[176])
+        assert 0.8271037652370498 == pytest.approx(tally_values[10])
+        assert 0.00022762768783691538 == pytest.approx(tally_errors[176])
         assert 0.10131285308571429 == pytest.approx(errors[1]["Neutron Spectra"])
         assert "M10" == results[1]["Zaid"]
 

@@ -1,11 +1,31 @@
+from __future__ import annotations
 import logging
 import os
 import re
 import openmc
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from f4enix.input.libmanager import LibManager
+    from f4enix.input.materials import Material, SubMaterial, Zaid
+
 
 class OpenMCInputFiles:
     def __init__(self, path: str, name=None) -> None:
+        """Class to handle the OpenMC input file generation
+
+        Parameters
+        ----------
+        path : str
+            path to input files
+        name : str, optional
+            name associated with the input file, by default None
+
+        Returns
+        -------
+        None
+        """
         self.path = path
         self.name = name
         self.initialise(path)
@@ -17,6 +37,10 @@ class OpenMCInputFiles:
         ----------
         path : str
             path to input file destination
+
+        Returns
+        -------
+        None
         """
         files = os.listdir(path)
         if ("geometry.xml" in files) and ("materials.xml") in files:
@@ -34,7 +58,7 @@ class OpenMCInputFiles:
         else:
             self.tallies = openmc.Tallies()
 
-    def load_geometry(self, geometry: str, materials) -> None:
+    def load_geometry(self, geometry: str, materials: str) -> None:
         """Initialise OpenMC geometry from xml
 
         Parameters
@@ -43,6 +67,10 @@ class OpenMCInputFiles:
             path to geometry input xml
         materials : str
             path to materials input xml, or openmc.Materials object
+
+        Returns
+        -------
+        None
         """
         self.geometry = openmc.Geometry.from_xml(geometry, materials)
 
@@ -52,7 +80,11 @@ class OpenMCInputFiles:
         Parameters
         ----------
         settings : str
-            path to geometry input xml
+            path to settings input xml
+
+        Returns
+        -------
+        None
         """
         self.settings = openmc.Settings.from_xml(settings)
 
@@ -63,16 +95,26 @@ class OpenMCInputFiles:
         ----------
         talllies : str
             path to geometry input xml
+
+        Returns
+        -------
+        None
         """
         self.tallies = openmc.Tallies.from_xml(tallies)
 
-    def add_stopCard(self, nps: int, batches=100) -> None:
+    def add_stopCard(self, nps: int, batches: int = 100) -> None:
         """Add number of particles to simulate
 
         Parameters
         ----------
         nps : int
             number of particles to simulate
+        batches : int, optional
+            number of batches, by default 100
+
+        Returns
+        -------
+        None
         """
         if nps < batches:
             batches = nps
@@ -80,19 +122,68 @@ class OpenMCInputFiles:
         self.settings.batches = batches
         self.settings.particles = int(nps / batches)
 
-    def zaid_to_openmc(self, zaid, openmc_material, libmanager):
+    def zaid_to_openmc(
+        self, zaid: Zaid, openmc_material: openmc.Material, libmanager: LibManager
+    ) -> None:
+        """Convert Zaid to OpenMC format with atom or weight fraction
+
+        Parameters
+        ----------
+        zaid : str
+            Zaid to be added to the OpenMC material
+        openmc_material : openmc.Material
+            An instance of the OpenMC Material class representing the material used in the simulation.
+
+        Returns
+        -------
+        None
+        """
         nuclide = zaid.get_fullname(libmanager).replace("-", "")
         if zaid.fraction < 0.0:
             openmc_material.add_nuclide(nuclide, 100 * abs(zaid.fraction), "wo")
         else:
             openmc_material.add_nuclide(nuclide, 100 * abs(zaid.fraction), "ao")
 
-    def submat_to_openmc(self, submaterial, openmc_material, libmanager):
+    def submat_to_openmc(
+        self,
+        submaterial: SubMaterial,
+        openmc_material: openmc.Material,
+        libmanager: LibManager,
+    ) -> None:
+        """Handle submaterials in OpenMC
+
+        Parameters
+        ----------
+        submaterial : SubMaterial
+            An instance of the SubMaterial class representing a subcomponent of a material.
+            It contains elements, each of which has ZAIDs (nuclide identifiers).
+        openmc_material : openmc.Material
+            An instance of the OpenMC Material class representing the material used in the simulation.
+        libmanager : libmanager.LibManager
+            An instance of the LibManager class responsible for managing external libraries.
+
+        Returns
+        -------
+        None
+        """
         for elem in submaterial.elements:
             for zaid in elem.zaids:
                 self.zaid_to_openmc(zaid, openmc_material, libmanager)
 
-    def mat_to_openmc(self, material, libmanager):
+    def mat_to_openmc(self, material: Material, libmanager: LibManager) -> None:
+        """Convert a material to an OpenMC material and handle its submaterials.
+
+        Parameters
+        ----------
+        material : Material
+            An instance of the Material class representing the material to be converted.
+        libmanager : LibManager
+            An instance of the LibManager class responsible for managing external libraries.
+
+        Returns
+        -------
+        None
+        """
         matid = int(re.sub("[^0-9]", "", str(material.name)))
         matname = str(material.name)
         matdensity = abs(material.density)
@@ -105,7 +196,21 @@ class OpenMCInputFiles:
                 self.submat_to_openmc(submaterial, openmc_material, libmanager)
         self.materials.append(openmc_material)
 
-    def matlist_to_openmc(self, matlist, libmanager):
+    def matlist_to_openmc(self, matlist: list, libmanager: LibManager) -> None:
+        """Convert a list of materials to OpenMC materials and load the geometry.
+
+        Parameters
+        ----------
+        matlist : list of Material
+            A list of Material instances to be converted. Each material should have the necessary
+            attributes required by the mat_to_openmc method.
+        libmanager : LibManager
+            An instance of the LibManager class responsible for managing external libraries.
+
+        Returns
+        -------
+        None
+        """
         for material in matlist:
             self.mat_to_openmc(material, libmanager)
         self.load_geometry(os.path.join(self.path, "geometry.xml"), self.materials)
@@ -117,6 +222,10 @@ class OpenMCInputFiles:
         ----------
         path : str
             path to input file destination
+
+        Returns
+        -------
+        None
         """
         self.geometry.export_to_xml(os.path.join(path, "geometry.xml"))
         self.settings.export_to_xml(os.path.join(path, "settings.xml"))
@@ -124,8 +233,15 @@ class OpenMCInputFiles:
         self.materials.export_to_xml(os.path.join(path, "materials.xml"))
 
 
-class OpenMCOutput:
+class OpenMCSimOutput:
     def __init__(self, spfile_path: str) -> None:
+        """Class for handling OpenMC tatepoint file
+
+        Parameters
+        ----------
+        spfile_path : str
+            path to statepoint file
+        """
         self.initialise(spfile_path)
         self.version = self.read_openmc_version()
 
@@ -159,11 +275,32 @@ class OpenMCOutput:
         return version
 
 
-class OpenMCSphereOutput(OpenMCOutput):
+class OpenMCSphereSimOutput(OpenMCSimOutput):
     def __init__(self, spfile_path: str) -> None:
+        """Class to handle the data extraction of the Sphere leakage benchmark in OpenMC
+
+        Parameters
+        ----------
+        spfile_path : str
+            path to statepoint file
+        """
         super().__init__(spfile_path)
 
-    def _get_tally_data(self, rows: list, filter: openmc.Filter):
+    def _get_tally_data(self, rows: list, filter: openmc.Filter) -> list:
+        """Extract tally data from statepoint file
+
+        Parameters
+        ----------
+        rows : list
+            list of rows to append tally data to
+        filter : openmc.Filter
+            determines OpenMC tally type
+
+        Returns
+        -------
+        list
+            list of rows with tally data appended
+        """
         tally = self.statepoint.get_tally(filters=[filter])
         tally_n = tally.id
         tally_description = tally.name.title()
@@ -174,7 +311,14 @@ class OpenMCSphereOutput(OpenMCOutput):
             rows.append([tally_n, tally_description, energy, flux, error])
         return rows
 
-    def tally_to_rows(self):
+    def tally_to_rows(self) -> list:
+        """Call to extract tally data from statepoint file
+
+        Returns
+        -------
+        list
+            list of rows with all sphere case tally data
+        """
         rows = []
         neutron_particle_filter = openmc.ParticleFilter(["neutron"])
         rows = self._get_tally_data(rows, neutron_particle_filter)

@@ -146,7 +146,7 @@ class TestBenchmarkOutput:
             "openmc",
             "statepoint.50.h5",
         )
-        statepoint = omc.OpenMCOutput(spfile)
+        statepoint = omc.OpenMCSimOutput(spfile)
         version = statepoint.read_openmc_version()
 
         assert version == "0.14.0"

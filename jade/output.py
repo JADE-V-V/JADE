@@ -357,7 +357,7 @@ class BenchmarkOutput(AbstractOutput):
         str | None
             version of the OpenMC code used to run the benchmark
         """
-        statepoint = omc.OpenMCOutput(spfile)
+        statepoint = omc.OpenMCSimOutput(spfile)
         version = statepoint.version
         return version
 
@@ -1186,7 +1186,7 @@ class MCNPoutput:
 
 class OpenMCOutput:
     def __init__(self, output_path):
-        self.output = omc.OpenMCOutput(output_path)
+        self.output = omc.OpenMCSimOutput(output_path)
         self.tallydata, self.totalbin = self.process_tally()
         self.stat_checks = None
 

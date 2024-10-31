@@ -1266,7 +1266,7 @@ class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
 
 class SphereOpenMCoutput(OpenMCOutput, SphereTallyOutput):
     def __init__(self, output_path):
-        self.output = omc.OpenMCSphereOutput(output_path)
+        self.output = omc.OpenMCSphereSimOutput(output_path)
         self.tallydata, self.totalbin = self.process_tally()
         self.stat_checks = None
 

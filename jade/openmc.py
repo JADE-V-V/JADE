@@ -215,6 +215,44 @@ class OpenMCSimOutput:
         version = ".".join(map(str, self.statepoint.version))
         return version
 
+    def _get_tally_data(self, rows: list, name: str):
+        """Extract tally data from statepoint file
+
+        Parameters
+        ----------
+        rows : list
+            list of rows to append tally data to
+        name : str
+            tally name
+
+        Returns
+        -------
+        list
+            list of rows with tally data appended
+        """
+        tally = self.statepoint.get_tally(name=name)
+        tally_n = tally.id
+        tally_description = tally.name.title()
+        energy_bins = tally.find_filter(openmc.EnergyFilter).values[1:]
+        fluxes = tally.mean.flatten()
+        errors = tally.std_dev.flatten()
+        for energy, flux, error in zip(energy_bins, fluxes, errors):
+            rows.append([tally_n, tally_description, energy, flux, error])
+        return rows
+    
+    def tally_to_rows(self):
+        """Call to extract tally data from statepoint file
+
+        Returns
+        -------
+        list
+            list of rows with all sphere case tally data
+        """
+        rows = []
+        for t in self.statepoint.tallies.keys():
+            rows = self._get_tally_data(rows, t.name)        
+        return rows
+
 
 class OpenMCSphereSimOutput(OpenMCSimOutput):
     def __init__(self, spfile_path: str) -> None:

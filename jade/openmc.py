@@ -1,3 +1,4 @@
+from __future__ import annotations
 import logging
 import os
 import re
@@ -7,7 +8,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from f4enix.input.libmanager import LibManager
-    from f4enix.input.materials import Material, SubMaterial
+    from f4enix.input.materials import Material, SubMaterial, Zaid
 
 
 class OpenMCInputFiles:
@@ -122,14 +123,14 @@ class OpenMCInputFiles:
         self.settings.particles = int(nps / batches)
 
     def zaid_to_openmc(
-        self, zaid: str, openmc_material: openmc.Material, libmanager: "LibManager"
+        self, zaid: Zaid, openmc_material: openmc.Material, libmanager: LibManager
     ) -> None:
         """Convert Zaid to OpenMC format with atom or weight fraction
 
         Parameters
         ----------
         zaid : str
-            Zaid identifier
+            Zaid to be added to the OpenMC material
         openmc_material : openmc.Material
             An instance of the OpenMC Material class representing the material used in the simulation.
 
@@ -145,9 +146,9 @@ class OpenMCInputFiles:
 
     def submat_to_openmc(
         self,
-        submaterial: "SubMaterial",
+        submaterial: SubMaterial,
         openmc_material: openmc.Material,
-        libmanager: "LibManager",
+        libmanager: LibManager,
     ) -> None:
         """Handle submaterials in OpenMC
 
@@ -169,7 +170,7 @@ class OpenMCInputFiles:
             for zaid in elem.zaids:
                 self.zaid_to_openmc(zaid, openmc_material, libmanager)
 
-    def mat_to_openmc(self, material: "Material", libmanager: "LibManager") -> None:
+    def mat_to_openmc(self, material: Material, libmanager: LibManager) -> None:
         """Convert a material to an OpenMC material and handle its submaterials.
 
         Parameters
@@ -195,7 +196,7 @@ class OpenMCInputFiles:
                 self.submat_to_openmc(submaterial, openmc_material, libmanager)
         self.materials.append(openmc_material)
 
-    def matlist_to_openmc(self, matlist: list, libmanager: "LibManager") -> None:
+    def matlist_to_openmc(self, matlist: list, libmanager: LibManager) -> None:
         """Convert a list of materials to OpenMC materials and load the geometry.
 
         Parameters

@@ -274,30 +274,55 @@ class OpenMCSimOutput:
         version = ".".join(map(str, self.statepoint.version))
         return version
 
-    def _get_tally_data(self, rows: list, name: str):
+    def _get_filters(self, tally: openmc.Tally) -> list:
+        """
+
+        Args:
+            tally (openmc.Tally): openmc tally object
+
+        Returns:
+            filters (dict): list of contained openmc filters
+        """
+        filters = []
+        if tally.contains_filter(openmc.CellFilter):
+            filters.append(openmc.CellFilter)
+        if tally.contains_filter(openmc.SurfaceFilter):
+            filters.append(openmc.SurfaceFilter)
+        if tally.contains_filter(openmc.EnergyFilter):
+            filters.append(openmc.EnergyFilter)
+        if tally.contains_filter(openmc.TimeFilter):
+            filters.append(openmc.TimeFilter)
+        return filters
+
+
+    def _get_tally_data(self, rows: list, tally: openmc.Tally):
         """Extract tally data from statepoint file
 
         Parameters
         ----------
         rows : list
             list of rows to append tally data to
-        name : str
-            tally name
+        tally : openmc.Tally
+            openmc tally
 
         Returns
         -------
         list
             list of rows with tally data appended
         """
-        tally = self.statepoint.get_tally(name=name)
+        print(tally)
+        df = tally.get_pandas_dataframe()
+        print(df)
         tally_n = tally.id
         tally_description = tally.name.title()
-        energy_bins = tally.find_filter(openmc.EnergyFilter).values[1:]
-        fluxes = tally.mean.flatten()
-        errors = tally.std_dev.flatten()
-        for energy, flux, error in zip(energy_bins, fluxes, errors):
-            rows.append([tally_n, tally_description, energy, flux, error])
-        return rows
+        filters = self._get_filters(tally)
+        print(tally_n)
+        print(tally_description)
+        print('Filters:', filters)
+        values = tally.get_values(filters=filters, value='mean')
+        errors = tally.get_values(value='std_dev')
+        print('Values:', values)
+        print('Errors:', errors)
     
     def tally_to_rows(self):
         """Call to extract tally data from statepoint file
@@ -308,8 +333,8 @@ class OpenMCSimOutput:
             list of rows with all sphere case tally data
         """
         rows = []
-        for t in self.statepoint.tallies.keys():
-            rows = self._get_tally_data(rows, t.name)        
+        for tally_n in sorted(self.statepoint.tallies.keys()):
+            rows = self._get_tally_data(rows, self.statepoint.tallies[tally_n])        
         return rows
 
 

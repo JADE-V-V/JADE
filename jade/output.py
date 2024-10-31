@@ -652,6 +652,11 @@ class BenchmarkOutput(AbstractOutput):
         # Open the excel file
         # name = "Generic_single.xlsx"
         # template = os.path.join(os.getcwd(), "templates", name)
+      
+        if self.openmc:
+            results_path = os.path.join(self.test_path, self.code)
+            _, outfile = self._get_output_files(results_path, "openmc")
+            openmc_output = OpenMCOutput(outfile)
 
         if self.mcnp or self.d1s:
             outpath = os.path.join(
@@ -843,6 +848,7 @@ class BenchmarkOutput(AbstractOutput):
     def _print_raw(self):
         for key, data in self.raw_data.items():
             file = os.path.join(self.raw_path, str(key) + ".csv")
+            print(file)
             data.to_csv(file, header=True, index=False)
 
         metadata_file = os.path.join(self.raw_path, "metadata.json")
@@ -1233,51 +1239,53 @@ class OpenMCOutput:
         return output_file_data
 
     def process_tally(self):
-        tallydata = {}
-        totalbin = {}
-        rows = []
-        for line in self.output_file_data:
-            if "tally" in line.lower():
-                if len(rows) > 0:
-                    tallydata[tallynum], totalbin[tallynum] = self._create_dataframe(
-                        rows
-                    )
-                    rows = []
-                parts = line.split()
-                tallynum = int(parts[2].replace(":", ""))
-                cells = False
-                user = False
-                segments = False
-                cosine = False
-                energy = False
-                time = False
-                cor_c = False
-                cor_b = False
-                cor_a = False
-                value = False
-                error = False
-            if "incoming energy" in line.lower():
-                parts = line.split()
-                energy = 1e-6 * float(parts[3].replace(")", ""))
-            if "flux" in line.lower():
-                parts = line.split()
-                value, error = float(parts[1]), float(parts[2])
-                rows.append(
-                    [
-                        cells,
-                        user,
-                        segments,
-                        cosine,
-                        energy,
-                        time,
-                        cor_c,
-                        cor_b,
-                        cor_a,
-                        value,
-                        error,
-                    ]
-                )
-            tallydata[tallynum], totalbin[tallynum] = self._create_dataframe(rows)
+        #tallydata = {}
+        #totalbin = {}
+        #rows = []
+        #for line in self.output_file_data:
+        #    if "tally" in line.lower():
+        #        if len(rows) > 0:
+        #            tallydata[tallynum], totalbin[tallynum] = self._create_dataframe(
+        #                rows
+        #            )
+        #            rows = []
+        #        parts = line.split()
+        #        tallynum = int(parts[2].replace(":", ""))
+        #        cells = False
+        #        user = False
+        #        segments = False
+        #        cosine = False
+        #        energy = False
+        #        time = False
+        #        cor_c = False
+        #        cor_b = False
+        #        cor_a = False
+        #        value = False
+        #        error = False
+        #    if "incoming energy" in line.lower():
+        #        parts = line.split()
+        #        energy = 1e-6 * float(parts[3].replace(")", ""))
+        #    if "flux" in line.lower():
+        #        parts = line.split()
+        #        value, error = float(parts[1]), float(parts[2])
+        #        rows.append(
+        #            [
+        #                cells,
+        #                user,
+        #                segments,
+        #                cosine,
+        #                energy,
+        #                time,
+        #                cor_c,
+        #                cor_b,
+        #                cor_a,
+        #                value,
+        #                error,
+        #            ]
+        #        )
+        #    
+        rows = self.output.tally_to_rows()
+        tallydata, totalbin = self._create_dataframe(rows)
         return tallydata, totalbin
 
 

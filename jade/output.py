@@ -654,6 +654,9 @@ class BenchmarkOutput(AbstractOutput):
         # template = os.path.join(os.getcwd(), "templates", name)
       
         outputs = {}
+        outpath = os.path.join(
+            self.excel_path, self.testname + "_" + self.lib + ".xlsx"
+        )
         
         if self.openmc:
             results_path = os.path.join(self.test_path, self.code)
@@ -664,9 +667,6 @@ class BenchmarkOutput(AbstractOutput):
 
 
         if self.mcnp or self.d1s:
-            outpath = os.path.join(
-                self.excel_path, self.testname + "_" + self.lib + ".xlsx"
-            )
             # ex = ExcelOutputSheet(template, outpath)
             # Get results
             # results = []
@@ -840,7 +840,7 @@ The application will now exit """.format(
             key_dic = key + " [" + str(num) + "]"
             try:
                 stat = dic_checks[key_dic]
-            except KeyError:
+            except (KeyError, TypeError):
                 stat = None
             rows.append([num, key, stat])
 
@@ -1205,14 +1205,15 @@ class OpenMCOutput:
     def _create_dataframes(self, tallies):
         tallydata = {}
         totalbin = {}
-        filter_lookup = {'cell': "Cells-Segments",
-                         'surface' : "Cells-Segments",
+        filter_lookup = {'cell': "Cells",
+                         'surface' : "Segments",
                          'energy high [eV]' : 'Energy',
                          'time' : 'Time',
                          'mean' : 'Value',
                          'std. dev.' : 'Error'}
-        columns = ["Cells-Segments",
+        columns = ["Cells",
                    "User",
+                   "Segments",
                    "Cosine",
                    "Energy",
                    "Time",

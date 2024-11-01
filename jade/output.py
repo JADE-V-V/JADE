@@ -681,7 +681,8 @@ class BenchmarkOutput(AbstractOutput):
                     meshtalfile = os.path.join(results_path, file)
             # Parse output
             mcnp_output = MCNPoutput(mfile, ofile, meshtal_file=meshtalfile)
-            mctal = mcnp_output.mctal
+            tally_numbers = [tally.tallyNumber for tally in mcnp_output.mctal.tallies]
+            tally_comments = [tally.tallyComment[0] for tally in mcnp_output.mctal.tallies]
             # Adjourn raw Data
             self.raw_data = mcnp_output.tallydata
 
@@ -689,9 +690,9 @@ class BenchmarkOutput(AbstractOutput):
 
             for label in ["Value", "Error"]:
                 # keys = {}
-                for tally in mctal.tallies:
-                    num = tally.tallyNumber
-                    key = tally.tallyComment[0]
+                for num, key in zip(tally_numbers, tally_comments):
+                    #num = tally.tallyNumber
+                    #key = tally.tallyComment[0]
                     # keys[num] = key  # Memorize tally descriptions
                     tdata = mcnp_output.tallydata[num].copy()  # Full tally data
                     try:
@@ -830,9 +831,9 @@ class BenchmarkOutput(AbstractOutput):
 
             dic_checks = mcnp_output.out.stat_checks
             rows = []
-            for tally in mctal.tallies:
-                num = tally.tallyNumber
-                key = tally.tallyComment[0]
+            for num, key in zip(tally_numbers, tally_comments):
+                #num = tally.tallyNumber
+                #key = tally.tallyComment[0]
                 key_dic = key + " [" + str(num) + "]"
                 try:
                     stat = dic_checks[key_dic]

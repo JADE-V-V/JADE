@@ -652,19 +652,18 @@ class BenchmarkOutput(AbstractOutput):
         # Open the excel file
         # name = "Generic_single.xlsx"
         # template = os.path.join(os.getcwd(), "templates", name)
-      
+
         outputs = {}
         outpath = os.path.join(
             self.excel_path, self.testname + "_" + self.lib + ".xlsx"
         )
-        
+
         if self.openmc:
             results_path = os.path.join(self.test_path, self.code)
             _, outfile = self._get_output_files(results_path, "openmc")
             sim_output = OpenMCOutput(outfile)
             tally_numbers = sim_output.output.tally_numbers
             tally_comments = sim_output.output.tally_comments
-
 
         if self.mcnp or self.d1s:
             # ex = ExcelOutputSheet(template, outpath)
@@ -684,8 +683,10 @@ class BenchmarkOutput(AbstractOutput):
             # Parse output
             sim_output = MCNPoutput(mfile, ofile, meshtal_file=meshtalfile)
             tally_numbers = [tally.tallyNumber for tally in sim_output.mctal.tallies]
-            tally_comments = [tally.tallyComment[0] for tally in sim_output.mctal.tallies]
-            
+            tally_comments = [
+                tally.tallyComment[0] for tally in sim_output.mctal.tallies
+            ]
+
         # Adjourn raw Data
         self.raw_data = sim_output.tallydata
 
@@ -694,18 +695,14 @@ class BenchmarkOutput(AbstractOutput):
         for label in ["Value", "Error"]:
             # keys = {}
             for num, key in zip(tally_numbers, tally_comments):
-                #num = tally.tallyNumber
-                #key = tally.tallyComment[0]
+                # num = tally.tallyNumber
+                # key = tally.tallyComment[0]
                 # keys[num] = key  # Memorize tally descriptions
                 tdata = sim_output.tallydata[num].copy()  # Full tally data
                 try:
                     tally_settings = ex_cnf.loc[num]
                 except KeyError:
-                    print(
-                        " Warning!: tally n."
-                        + str(num)
-                        + " is not in configuration"
-                    )
+                    print(" Warning!: tally n." + str(num) + " is not in configuration")
                     continue
 
                 # Re-Elaborate tdata Dataframe
@@ -745,9 +742,7 @@ class BenchmarkOutput(AbstractOutput):
                         rows.append(row)
 
                     try:
-                        main_value_df = pd.DataFrame(
-                            rows, columns=y_set, index=x_set
-                        )
+                        main_value_df = pd.DataFrame(rows, columns=y_set, index=x_set)
                         main_value_df.index.name = x_name
                     except ValueError:
                         print(
@@ -835,8 +830,8 @@ The application will now exit """.format(
         dic_checks = sim_output.stat_checks
         rows = []
         for num, key in zip(tally_numbers, tally_comments):
-            #num = tally.tallyNumber
-            #key = tally.tallyComment[0]
+            # num = tally.tallyNumber
+            # key = tally.tallyComment[0]
             key_dic = key + " [" + str(num) + "]"
             try:
                 stat = dic_checks[key_dic]
@@ -1205,37 +1200,43 @@ class OpenMCOutput:
     def _create_dataframes(self, tallies):
         tallydata = {}
         totalbin = {}
-        filter_lookup = {'cell': "Cells",
-                         'surface' : "Segments",
-                         'energy high [eV]' : 'Energy',
-                         'time' : 'Time',
-                         'mean' : 'Value',
-                         'std. dev.' : 'Error'}
-        columns = ["Cells",
-                   "User",
-                   "Segments",
-                   "Cosine",
-                   "Energy",
-                   "Time",
-                   "Cor C",
-                   "Cor B",
-                   "Cor A",
-                   "Value",
-                   "Error"]
+        filter_lookup = {
+            "cell": "Cells",
+            "surface": "Segments",
+            "energy high [eV]": "Energy",
+            "time": "Time",
+            "mean": "Value",
+            "std. dev.": "Error",
+        }
+        columns = [
+            "Cells",
+            "User",
+            "Segments",
+            "Cosine",
+            "Energy",
+            "Time",
+            "Cor C",
+            "Cor B",
+            "Cor A",
+            "Value",
+            "Error",
+        ]
         for id, tally in tallies.items():
             filters = []
             new_columns = {}
-            if 'cell' in tally.columns:
-                filters.append('cell')
-            if 'surface' in tally.columns:
-                filters.append('surface')
-            if 'energy high [eV]' in tally.columns:
-                filters.append('energy high [eV]')         
-            if 'time' in tally.columns:
-                filters.append('time')
-            new_columns = dict((k, filter_lookup[k]) for k in filters if k in filter_lookup)
-            new_columns['mean'] = filter_lookup['mean']
-            new_columns['std. dev.'] = filter_lookup['std. dev.']
+            if "cell" in tally.columns:
+                filters.append("cell")
+            if "surface" in tally.columns:
+                filters.append("surface")
+            if "energy high [eV]" in tally.columns:
+                filters.append("energy high [eV]")
+            if "time" in tally.columns:
+                filters.append("time")
+            new_columns = dict(
+                (k, filter_lookup[k]) for k in filters if k in filter_lookup
+            )
+            new_columns["mean"] = filter_lookup["mean"]
+            new_columns["std. dev."] = filter_lookup["std. dev."]
             sorted_tally = tally.sort_values(filters)
             sorted_tally = sorted_tally.reset_index(drop=True)
             sorted_tally = sorted_tally.rename(columns=new_columns)
@@ -1243,12 +1244,12 @@ class OpenMCOutput:
                 if column not in sorted_tally.columns:
                     sorted_tally[column] = np.nan
             sorted_tally = sorted_tally[columns]
-            #sorted_tally.to_csv('tally_'+str(id)+'_sorted.csv')
+            # sorted_tally.to_csv('tally_'+str(id)+'_sorted.csv')
             tallydata[id] = sorted_tally
             totalbin[id] = None
         return tallydata, totalbin
 
-    def process_tally(self):    
+    def process_tally(self):
         tallies = self.output.tallies_to_dataframes()
         tallydata, totalbin = self._create_dataframes(tallies)
         return tallydata, totalbin

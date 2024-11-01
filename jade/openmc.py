@@ -293,9 +293,9 @@ class OpenMCSimOutput:
             pandas dataframe containing tally data
         """
         df = tally.get_pandas_dataframe()
-        #df.to_csv('tally_'+str(tally.id)+'.csv')
+        # df.to_csv('tally_'+str(tally.id)+'.csv')
         return df
-    
+
     def tallies_to_dataframes(self):
         """Call to extract tally data from statepoint file
 
@@ -306,7 +306,7 @@ class OpenMCSimOutput:
         """
         tallies = {}
         for _, tally in self.statepoint.tallies.items():
-            tallies[tally.id] = self._get_tally_data(tally)        
+            tallies[tally.id] = self._get_tally_data(tally)
         return tallies
 
 

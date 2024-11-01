@@ -256,6 +256,11 @@ class OpenMCSimOutput:
         try:
             # Retrieve the version from the statepoint file (convert from tuple of integers to string)
             self.statepoint = openmc.StatePoint(spfile_path)
+            self.tally_numbers = []
+            self.tally_comments = []
+            for _, tally in self.statepoint.tallies.items():
+                self.tally_numbers.append(tally.id)
+                self.tally_comments.append(tally.name)
         except (FileNotFoundError, KeyError):
             logging.warning(
                 "OpenMC version not found in the statepoint file for %s",

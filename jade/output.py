@@ -1196,96 +1196,54 @@ class OpenMCOutput:
         self.tallydata, self.totalbin = self.process_tally()
         self.stat_checks = None
 
-    def _create_dataframe(self, rows):
-        columns = [
-            "Cells",
-            "User",
-            "Segments",
-            "Cosine",
-            "Energy",
-            "Time",
-            "Cor C",
-            "Cor B",
-            "Cor A",
-            "Value",
-            "Error",
-        ]
-        df = pd.DataFrame(rows, columns=columns)
-        cells = list(df.Cells.unique())
-        total = "Energy"
-        for cell in cells:
-            value = df.loc[df["Cells"] == cell, "Values"].sum()
-            error = np.sqrt(sum(df.loc[df["Cells"] == cell, "Values"] ** 2))
-            row = [
-                cell,
-                False,
-                False,
-                False,
-                total,
-                False,
-                False,
-                False,
-                False,
-                value,
-                error,
-            ]
-            df.loc[len(df)] = row
-        dftotal = df[df[total] == "total"]
-        return df, dftotal
+    def _create_dataframes(self, tallies):
+        tallydata = {}
+        totalbin = {}
+        filter_lookup = {'cell': "Cells-Segments",
+                         'surface' : "Cells-Segments",
+                         'energy high [eV]' : 'Energy',
+                         'time' : 'Time',
+                         'mean' : 'Value',
+                         'std. dev.' : 'Error'}
+        columns = ["Cells-Segments",
+                   "User",
+                   "Cosine",
+                   "Energy",
+                   "Time",
+                   "Cor C",
+                   "Cor B",
+                   "Cor A",
+                   "Value",
+                   "Error"]
+        for id, tally in tallies.items():
+            filters = []
+            new_columns = {}
+            if 'cell' in tally.columns:
+                filters.append('cell')
+            if 'surface' in tally.columns:
+                filters.append('surface')
+            if 'energy high [eV]' in tally.columns:
+                filters.append('energy high [eV]')         
+            if 'time' in tally.columns:
+                filters.append('time')
+            new_columns = dict((k, filter_lookup[k]) for k in filters if k in filter_lookup)
+            new_columns['mean'] = filter_lookup['mean']
+            new_columns['std. dev.'] = filter_lookup['std. dev.']
+            sorted_tally = tally.sort_values(filters)
+            sorted_tally = sorted_tally.reset_index(drop=True)
+            sorted_tally = sorted_tally.rename(columns=new_columns)
+            for column in columns:
+                if column not in sorted_tally.columns:
+                    sorted_tally[column] = np.nan
+            sorted_tally = sorted_tally[columns]
+            #sorted_tally.to_csv('tally_'+str(id)+'_sorted.csv')
+            tallydata[id] = sorted_tally
+            totalbin[id] = None
+        return tallydata, totalbin
 
-    def read(self, output_file):
-        with open(output_file, "r") as f:
-            output_file_data = f.readlines()
-        return output_file_data
-
-    def process_tally(self):
-        #tallydata = {}
-        #totalbin = {}
-        #rows = []
-        #for line in self.output_file_data:
-        #    if "tally" in line.lower():
-        #        if len(rows) > 0:
-        #            tallydata[tallynum], totalbin[tallynum] = self._create_dataframe(
-        #                rows
-        #            )
-        #            rows = []
-        #        parts = line.split()
-        #        tallynum = int(parts[2].replace(":", ""))
-        #        cells = False
-        #        user = False
-        #        segments = False
-        #        cosine = False
-        #        energy = False
-        #        time = False
-        #        cor_c = False
-        #        cor_b = False
-        #        cor_a = False
-        #        value = False
-        #        error = False
-        #    if "incoming energy" in line.lower():
-        #        parts = line.split()
-        #        energy = 1e-6 * float(parts[3].replace(")", ""))
-        #    if "flux" in line.lower():
-        #        parts = line.split()
-        #        value, error = float(parts[1]), float(parts[2])
-        #        rows.append(
-        #            [
-        #                cells,
-        #                user,
-        #                segments,
-        #                cosine,
-        #                energy,
-        #                time,
-        #                cor_c,
-        #                cor_b,
-        #                cor_a,
-        #                value,
-        #                error,
-        #            ]
-        #        )
-        #    
-        rows = self.output.tally_to_rows()
-        tallydata, totalbin = self._create_dataframe(rows)
+    def process_tally(self):    
+        tallies = self.output.tallies_to_dataframes()
+        tallydata, totalbin = self._create_dataframes(tallies)
         return tallydata, totalbin
 
 

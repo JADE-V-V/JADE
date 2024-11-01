@@ -274,57 +274,24 @@ class OpenMCSimOutput:
         version = ".".join(map(str, self.statepoint.version))
         return version
 
-    def _get_filters(self, tally: openmc.Tally) -> list:
-        """
-
-        Args:
-            tally (openmc.Tally): openmc tally object
-
-        Returns:
-            filters (dict): list of contained openmc filters
-        """
-        filters = []
-        if tally.contains_filter(openmc.CellFilter):
-            filters.append(openmc.CellFilter)
-        if tally.contains_filter(openmc.SurfaceFilter):
-            filters.append(openmc.SurfaceFilter)
-        if tally.contains_filter(openmc.EnergyFilter):
-            filters.append(openmc.EnergyFilter)
-        if tally.contains_filter(openmc.TimeFilter):
-            filters.append(openmc.TimeFilter)
-        return filters
-
-
-    def _get_tally_data(self, rows: list, tally: openmc.Tally):
+    def _get_tally_data(self, tally: openmc.Tally):
         """Extract tally data from statepoint file
 
         Parameters
         ----------
-        rows : list
-            list of rows to append tally data to
         tally : openmc.Tally
             openmc tally
 
         Returns
         -------
-        list
-            list of rows with tally data appended
+        df : pd.DataFrame
+            pandas dataframe containing tally data
         """
-        print(tally)
         df = tally.get_pandas_dataframe()
-        print(df)
-        tally_n = tally.id
-        tally_description = tally.name.title()
-        filters = self._get_filters(tally)
-        print(tally_n)
-        print(tally_description)
-        print('Filters:', filters)
-        values = tally.get_values(filters=filters, value='mean')
-        errors = tally.get_values(value='std_dev')
-        print('Values:', values)
-        print('Errors:', errors)
+        #df.to_csv('tally_'+str(tally.id)+'.csv')
+        return df
     
-    def tally_to_rows(self):
+    def tallies_to_dataframes(self):
         """Call to extract tally data from statepoint file
 
         Returns
@@ -332,10 +299,10 @@ class OpenMCSimOutput:
         list
             list of rows with all sphere case tally data
         """
-        rows = []
-        for tally_n in sorted(self.statepoint.tallies.keys()):
-            rows = self._get_tally_data(rows, self.statepoint.tallies[tally_n])        
-        return rows
+        tallies = {}
+        for _, tally in self.statepoint.tallies.items():
+            tallies[tally.id] = self._get_tally_data(tally)        
+        return tallies
 
 
 class OpenMCSphereSimOutput(OpenMCSimOutput):

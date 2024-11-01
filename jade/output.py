@@ -657,6 +657,8 @@ class BenchmarkOutput(AbstractOutput):
             results_path = os.path.join(self.test_path, self.code)
             _, outfile = self._get_output_files(results_path, "openmc")
             openmc_output = OpenMCOutput(outfile)
+            self.raw_data = openmc_output.tallydata
+
 
         if self.mcnp or self.d1s:
             outpath = os.path.join(

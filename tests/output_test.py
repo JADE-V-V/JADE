@@ -136,20 +136,33 @@ class TestBenchmarkOutput:
 
     @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC is not available")
     def test_single_excel_openmc(self, tmpdir):
-        spfile = os.path.join(
-            cp,
-            "TestFiles",
-            "output",
-            "Simulations",
-            "32c",
-            "ITER_1D",
-            "openmc",
-            "statepoint.50.h5",
+        conf = Configuration(
+            os.path.join(cp, "TestFiles", "output", "config_test.xlsx")
         )
-        statepoint = omc.OpenMCSimOutput(spfile)
-        version = statepoint.read_openmc_version()
+        session = MockSession(conf, tmpdir)
+        out = output.BenchmarkOutput("32c", "openmc", "ITER_1D", session)
+        out._generate_single_excel_output()
+        out._print_raw()
 
-        assert version == "0.14.0"
+        assert os.path.exists(
+            os.path.join(
+                session.path_single,
+                "32c",
+                "ITER_1D",
+                "openmc",
+                "Excel",
+                "ITER_1D_32c.xlsx",
+            )
+        )
+        metadata_path = os.path.join(
+            session.path_single, "32c", "ITER_1D", "openmc", "Raw_Data", "metadata.json"
+        )
+        assert os.path.exists(metadata_path)
+        with open(metadata_path, "r", encoding="utf-8") as f:
+            metadata = json.load(f)
+        assert metadata["jade_run_version"] == "0.0.1"
+        assert metadata["jade_version"] == __version__
+        assert metadata["code_version"] == "0.14.0"        
 
     def test_iter_cyl(self, tmpdir):
         conf = Configuration(

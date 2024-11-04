@@ -15,8 +15,8 @@ NPS cut-off,CTME cut-off,Relative Error cut-off,Density [g/cc],Name,Symbol,Let O
 ,,F32-0.0005,8.9,Copper Chromium Zirconium,M302,True
 ,,F32-0.0005,7.8,Eurofer-97,M9001,True
 ,,F32-0.0005,8.2,Inconel-718,M9010,True
-,,F32-0.0005,6.03,NbTi,M900,True
+,,F32-0.0005,6.03,NbTi,M909,True
 ,,F32-0.0005,1.82,Beryllium,M4,True
-,,F32-0.0005,4.43,"Titanium alloy, Grade 5",M902,True
+,,F32-0.0005,4.43,"Titanium alloy, Grade 5",M910,True
 ,,F32-0.0005,7.92,SS660,M125,True
-,,F32-0.0005,0.4,Microtherm,M903,True
+,,F32-0.0005,0.4,Microtherm,M911,True

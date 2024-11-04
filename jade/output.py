@@ -582,6 +582,210 @@ class AbstractOutput(abc.ABC):
         with open(metadata_file, "w", encoding="utf-8") as outfile:
             json.dump(self.metadata, outfile, indent=4)
 
+    def _generate_single_excel_output(self):
+        # Get excel configuration
+        self.outputs = {}
+        self.results = {}
+        self.errors = {}
+        self.stat_checks = {}
+        ex_cnf = pd.read_excel(self.cnf_path, sheet_name="Excel")
+        ex_cnf.set_index("Tally", inplace=True)
+
+        # Open the excel file
+        # name = "Generic_single.xlsx"
+        # template = os.path.join(os.getcwd(), "templates", name)
+
+        outputs = {}
+        outpath = os.path.join(
+            self.excel_path, self.testname + "_" + self.lib + ".xlsx"
+        )
+
+        if self.openmc:
+            results_path = os.path.join(self.test_path, self.code)
+            _, outfile = self._get_output_files(results_path, "openmc")
+            sim_output = OpenMCOutput(outfile)
+            tally_numbers = sim_output.output.tally_numbers
+            tally_comments = sim_output.output.tally_comments
+
+        if self.mcnp or self.d1s:
+            # ex = ExcelOutputSheet(template, outpath)
+            # Get results
+            # results = []
+            # errors = []
+            results_path = os.path.join(self.test_path, self.code)
+            # Get mfile and outfile and possibly meshtal file
+            meshtalfile = None
+            for file in os.listdir(results_path):
+                if file[-1] == "m":
+                    mfile = os.path.join(results_path, file)
+                elif file[-1] == "o":
+                    ofile = os.path.join(results_path, file)
+                elif file[-4:] == "msht":
+                    meshtalfile = os.path.join(results_path, file)
+            # Parse output
+            sim_output = MCNPoutput(mfile, ofile, meshtal_file=meshtalfile)
+            tally_numbers = sim_output.tally_numbers
+            tally_comments = sim_output.tally_comments
+
+        # Adjourn raw Data
+        self.raw_data = sim_output.tallydata
+
+        # res, err = output.get_single_excel_data()
+
+        for label in ["Value", "Error"]:
+            # keys = {}
+            for num, key in zip(tally_numbers, tally_comments):
+                # num = tally.tallyNumber
+                # key = tally.tallyComment[0]
+                # keys[num] = key  # Memorize tally descriptions
+                tdata = sim_output.tallydata[num].copy()  # Full tally data
+                try:
+                    tally_settings = ex_cnf.loc[num]
+                except KeyError:
+                    print(" Warning!: tally n." + str(num) + " is not in configuration")
+                    continue
+
+                # Re-Elaborate tdata Dataframe
+                x_name = tally_settings["x"]
+                x_tag = tally_settings["x name"]
+                y_name = tally_settings["y"]
+                y_tag = tally_settings["y name"]
+                ylim = tally_settings["cut Y"]
+
+                if label == "Value":
+                    outputs[num] = {"title": key, "x_label": x_tag}
+
+                # select the index format
+                if x_name == "Energy":
+                    idx_format = "0.00E+00"
+                    # TODO all possible cases should be addressed
+                else:
+                    idx_format = "0"
+
+                if y_name != "tally":
+                    tdata.set_index(x_name, inplace=True)
+                    x_set = list(set(tdata.index))
+                    y_set = list(set(tdata[y_name].values))
+                    rows = []
+                    for xval in x_set:
+                        try:
+                            row = tdata.loc[xval, label].values
+                            prev_len = len(row)
+                        except AttributeError:
+                            # There is only one total value, fill the rest with
+                            # nan
+                            row = []
+                            for i in range(prev_len - 1):
+                                row.append(np.nan)
+                            row.append(tdata.loc[xval, label])
+
+                        rows.append(row)
+
+                    try:
+                        main_value_df = pd.DataFrame(rows, columns=y_set, index=x_set)
+                        main_value_df.index.name = x_name
+                    except ValueError:
+                        print(
+                            CRED
+                            + """
+    A ValueError was triggered, a probable cause may be that more than 2 binnings
+        are defined in tally {}. This is a fatal exception,  application will now
+    close""".format(
+                                str(num)
+                            )
+                            + CEND
+                        )
+                        # Safely exit from excel and from application
+                        # ex.save()
+                        sys.exit()
+
+                    # reorder index (quick reset of the index)
+                    main_value_df.reset_index(inplace=True)
+                    main_value_df = self._reorder_df(main_value_df, x_name)
+                    main_value_df.set_index(x_name, inplace=True)
+                    # memorize for atlas
+                    outputs[num][label] = main_value_df
+                    # insert the df in pieces
+                    # ex.insert_cutted_df(
+                    #    "B",
+                    #    main_value_df,
+                    #    label + "s",
+                    #    ylim,
+                    #    header=(key, "Tally n." + str(num)),
+                    #    index_name=x_tag,
+                    #    cols_name=y_tag,
+                    #    index_num_format=idx_format,
+                    # )
+                else:
+                    # reorder df
+                    try:
+                        tdata = self._reorder_df(tdata, x_name)
+                    except KeyError:
+                        print(
+                            CRED
+                            + """
+{} is not available in tally {}. Please check the configuration file.
+The application will now exit """.format(
+                                x_name, str(num)
+                            )
+                            + CEND
+                        )
+                        # Safely exit from excel and from application
+                        # ex.save()
+                        sys.exit()
+
+                    if label == "Value":
+                        del tdata["Error"]
+                    elif label == "Error":
+                        del tdata["Value"]
+                    # memorize for atlas and set index
+                    tdata.set_index(x_name, inplace=True)
+                    outputs[num][label] = tdata
+
+                    # Insert DF
+                    # ex.insert_df(
+                    #    "B",
+                    #    tdata,
+                    #    label + "s",
+                    #    print_index=True,
+                    #    header=(key, "Tally n." + str(num)),
+                    # )
+            # memorize data for atlas
+            self.outputs[self.code] = outputs
+            # print(outputs)
+            # Dump them for comparisons
+            raw_outpath = os.path.join(self.raw_path, self.lib + ".pickle")
+            with open(raw_outpath, "wb") as outfile:
+                pickle.dump(outputs, outfile)
+
+            # Compile general infos in the sheet
+            # ws = ex.current_ws
+            # title = self.testname + " RESULTS RECAP: " + label + "s"
+            # ws.range("A3").value = title
+            # ws.range("C1").value = self.lib
+
+        # --- Compile statistical checks sheet ---
+        # ws = ex.wb.sheets["Statistical Checks"]
+
+        dic_checks = sim_output.stat_checks
+        rows = []
+        for num, key in zip(tally_numbers, tally_comments):
+            # num = tally.tallyNumber
+            # key = tally.tallyComment[0]
+            key_dic = key + " [" + str(num) + "]"
+            try:
+                stat = dic_checks[key_dic]
+            except (KeyError, TypeError):
+                stat = None
+            rows.append([num, key, stat])
+
+        stats = pd.DataFrame(rows)
+        stats.columns = ["Tally Number", "Tally Description", "Result"]
+        # ws.range("A9").options(index=False, header=False).value = df
+
+        # ex.save()
+        exsupp.single_excel_writer(outpath, self.lib, self.testname, outputs, stats)
+
 class BenchmarkOutput(AbstractOutput):
     '''
     def __init__(self, lib: str, code: str, testname: str, session: Session):
@@ -771,35 +975,6 @@ class BenchmarkOutput(AbstractOutput):
 
         return None
     '''
-
-    #TODO convert to _read_code_version in MCNPoutput
-    def _read_mcnp_code_version(self, ofile: os.PathLike) -> str | None:
-        """Read MCNP code version from the output file
-
-        Parameters
-        ----------
-        ofile : os.PathLike
-            output file path
-
-        Returns
-        -------
-        str | None
-            version of the MCNP code used to run the benchmark
-        """
-
-        outp = MCNPOutputFile(ofile)
-        try:
-            version = outp.get_code_version()
-            return version
-        except ValueError:
-            logging.warning(
-                "Code version not found in the output file or aux file for %s",
-                ofile,
-            )
-            logging.warning(
-                "Contents of the directory: %s", os.listdir(os.path.dirname(ofile))
-            )
-            return None
 
     '''
     def _read_serpent_code_version(self, ofile: os.PathLike) -> str | None:

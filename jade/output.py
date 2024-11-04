@@ -62,84 +62,6 @@ CEND = "\033[0m"
 
 
 class AbstractOutput(abc.ABC):
-    @abc.abstractmethod
-    def single_postprocess(self):
-        """
-        To be executed when a single pp is requested
-        """
-
-    @abc.abstractmethod
-    def compare(self):
-        """
-        To be executed when a comparison is requested
-        """
-
-    @abc.abstractmethod
-    def _get_output_files(results_path):
-        """
-        To be executed when a comparison is requested
-        """
-    
-    '''
-    @staticmethod
-    def _get_output_files(results_path, code):
-        """
-        Recover the output files from a directory
-
-        Parameters
-        ----------
-        results_path : str or path
-            path where the results are contained.
-        code : str
-            code that generated the output ('mcnp' or 'openmc')
-
-        Raises
-        ------
-        FileNotFoundError
-            if the required files are not found.
-        NotImplementedError
-            if the code is not supported.
-
-        Returns
-        -------
-        file1 : path
-            path to the first file
-        file2 : path
-            path to the second file (only for mcnp)
-
-        """
-        file1 = None
-        file2 = None
-
-        for file_name in os.listdir(results_path):
-            if code in ["mcnp", "d1s"]:
-                if file_name[-1] == "m":
-                    file1 = file_name
-                elif file_name[-1] == "o":
-                    file2 = file_name
-            elif code == "openmc":
-                if file_name.endswith(".out"):
-                    file1 = file_name
-                elif file_name.startswith("statepoint"):
-                    file2 = file_name
-            else:
-                raise NotImplementedError(
-                    f"The code '{code}' is not currently supported."
-                )
-
-        if file1 is None or (code in ["mcnp", "d1s"] and file2 is None):
-            raise FileNotFoundError(
-                f"The following path does not contain the required files for {code} output: {results_path}"
-            )
-
-        file1 = os.path.join(results_path, file1)
-        file2 = os.path.join(results_path, file2) if file2 else None
-
-        return file1, file2
-    '''
-    
-
-class BenchmarkOutput(AbstractOutput):
     def __init__(self, lib: str, code: str, testname: str, session: Session):
         """
         General class for a Benchmark output
@@ -262,7 +184,89 @@ class BenchmarkOutput(AbstractOutput):
 
             # Read the metadata
             results_path = os.path.join(self.test_path, code)
-            self.metadata = self._read_metadata_run(results_path)
+            self.metadata = self._read_metadata_run(results_path)    
+
+    @abc.abstractmethod
+    def single_postprocess(self):
+        """
+        To be executed when a single pp is requested
+        """
+
+    @abc.abstractmethod
+    def compare(self):
+        """
+        To be executed when a comparison is requested
+        """
+
+    @abc.abstractmethod
+    def _get_output_files(results_path):
+        """
+        To be executed when a comparison is requested
+        """
+
+    @abc.abstractmethod    
+    def _read_code_version(self, pathtofile):
+        """
+        To be executed when a comparison is requested
+        """
+    
+    '''
+    @staticmethod
+    def _get_output_files(results_path, code):
+        """
+        Recover the output files from a directory
+
+        Parameters
+        ----------
+        results_path : str or path
+            path where the results are contained.
+        code : str
+            code that generated the output ('mcnp' or 'openmc')
+
+        Raises
+        ------
+        FileNotFoundError
+            if the required files are not found.
+        NotImplementedError
+            if the code is not supported.
+
+        Returns
+        -------
+        file1 : path
+            path to the first file
+        file2 : path
+            path to the second file (only for mcnp)
+
+        """
+        file1 = None
+        file2 = None
+
+        for file_name in os.listdir(results_path):
+            if code in ["mcnp", "d1s"]:
+                if file_name[-1] == "m":
+                    file1 = file_name
+                elif file_name[-1] == "o":
+                    file2 = file_name
+            elif code == "openmc":
+                if file_name.endswith(".out"):
+                    file1 = file_name
+                elif file_name.startswith("statepoint"):
+                    file2 = file_name
+            else:
+                raise NotImplementedError(
+                    f"The code '{code}' is not currently supported."
+                )
+
+        if file1 is None or (code in ["mcnp", "d1s"] and file2 is None):
+            raise FileNotFoundError(
+                f"The following path does not contain the required files for {code} output: {results_path}"
+            )
+
+        file1 = os.path.join(results_path, file1)
+        file2 = os.path.join(results_path, file2) if file2 else None
+
+        return file1, file2
+    '''
 
     def _read_metadata_run(self, pathtofile: os.PathLike) -> dict:
         """Retrieve the metadata from the run
@@ -292,84 +296,6 @@ class BenchmarkOutput(AbstractOutput):
         metadata["code_version"] = self._read_code_version(pathtofile)
 
         return metadata
-
-    def _read_code_version(self, pathtofile: os.PathLike) -> str | None:
-        """Read the code version from the output files or in other ways depending
-        on the used code.
-
-        Parameters
-        ----------
-        pathtofile : os.PathLike
-            path to the folder where results are stored
-
-        Returns
-        -------
-        str | None
-            version of the code used to run the benchmarks
-        """
-        if self.testname in ["Sphere", "SphereSDDR"]:
-            if not os.path.exists(pathtofile):
-                # this can happen the first time
-                return None
-
-        if self.mcnp or self.d1s:
-            _, mcnp_ofile = self._get_output_files(pathtofile, "mcnp")
-            return self._read_mcnp_code_version(mcnp_ofile)
-        elif self.openmc:
-            _, openmc_sfile = self._get_output_files(pathtofile, "openmc")
-            return self._read_openmc_code_version(openmc_sfile)
-        elif self.serpent:
-            pass
-
-        return None
-
-    def _read_mcnp_code_version(self, ofile: os.PathLike) -> str | None:
-        """Read MCNP code version from the output file
-
-        Parameters
-        ----------
-        ofile : os.PathLike
-            output file path
-
-        Returns
-        -------
-        str | None
-            version of the MCNP code used to run the benchmark
-        """
-
-        outp = MCNPOutputFile(ofile)
-        try:
-            version = outp.get_code_version()
-            return version
-        except ValueError:
-            logging.warning(
-                "Code version not found in the output file or aux file for %s",
-                ofile,
-            )
-            logging.warning(
-                "Contents of the directory: %s", os.listdir(os.path.dirname(ofile))
-            )
-            return None
-
-    def _read_openmc_code_version(self, spfile: os.PathLike) -> str | None:
-        """Read OpenMC code version from the statepoint file
-
-        Parameters
-        ----------
-        spfile : os.PathLike
-            statepoint file path
-
-        Returns
-        -------
-        str | None
-            version of the OpenMC code used to run the benchmark
-        """
-        statepoint = omc.OpenMCSimOutput(spfile)
-        version = statepoint.version
-        return version
-
-    def _read_serpent_code_version(self, ofile: os.PathLike) -> str | None:
-        pass
 
     def single_postprocess(self):
         """
@@ -647,6 +573,530 @@ class BenchmarkOutput(AbstractOutput):
 
         return df
 
+class BenchmarkOutput(AbstractOutput):
+    '''
+    def __init__(self, lib: str, code: str, testname: str, session: Session):
+        """
+        General class for a Benchmark output
+
+        Parameters
+        ----------
+        lib : str
+            library to post-process
+        code : str
+            code being post processed
+        testname : str
+            name of the benchmark being postprocessed
+        session : Session
+            Jade Session
+
+        Returns
+        -------
+        None.
+
+        """
+        self.raw_data = {}  # Raw data
+        self.outputs = {}  # outputs linked to the benchmark
+        self.testname = testname  # test name
+        self.code_path = os.getcwd()  # path to code
+        self.state = session.state
+        self.session = session
+        self.path_templates = session.path_templates
+
+        # Read specific configuration
+        cnf_path = os.path.join(session.path_cnf, self.testname + ".xlsx")
+        if os.path.isfile(cnf_path):
+            self.cnf_path = cnf_path
+        # It can be assumed that there is a folder containing multiple files
+        else:
+            self.cnf_path = os.path.join(session.path_cnf, self.testname)
+
+        # Updated to handle multiple codes
+        # initialize them so that intellisense knows they are available
+        self.mcnp = False
+        self.openmc = False
+        self.serpent = False
+        self.d1s = False
+        for available_code in CODES.values():
+            if code == available_code:
+                setattr(self, available_code, True)
+                self.raw_data[code] = {}
+                self.outputs[code] = {}
+            else:
+                setattr(self, available_code, False)
+
+        self.code = code  # this can be handy in a lot of places to avoid if else
+
+        # COMPARISON
+        if isinstance(lib, list) and len(lib) > 1:
+            self.single = False  # Indicator for single or comparison
+            self.lib = lib
+            couples = []
+            tp = os.path.join(session.path_run, lib[0], self.testname)
+            self.test_path = {lib[0]: tp}
+            refname = session.conf.get_lib_name(lib[0])
+            name = refname
+            dirname = lib[0]
+            for library in lib[1:]:
+                libname = session.conf.get_lib_name(library)
+                # name_couple = lib[0]+'_Vs_'+library
+                name_couple = lib[0] + "_Vs_" + library
+                name = name + "_Vs_" + libname
+                dirname = dirname + "_Vs_" + library
+                couples.append((lib[0], library, name_couple))
+                tp = os.path.join(session.path_run, library, self.testname)
+                self.test_path[library] = tp
+
+            self.name = name
+            # Generate library output path
+            out = os.path.join(session.path_comparison, dirname)
+            if not os.path.exists(out):
+                os.mkdir(out)
+
+            out = os.path.join(out, self.testname, code)
+            if os.path.exists(out):
+                shutil.rmtree(out)
+            os.makedirs(out)
+            excel_path = os.path.join(out, "Excel")
+            atlas_path = os.path.join(out, "Atlas")
+            raw_path = os.path.join(out, "Raw_Data")
+            os.makedirs(excel_path)
+            os.makedirs(atlas_path)
+            os.makedirs(raw_path)
+            self.excel_path = excel_path
+            self.raw_path = raw_path
+            self.atlas_path = atlas_path
+            self.couples = couples  # Couples of libraries to post process
+        # SINGLE-LIBRARY
+        else:
+            self.single = True  # Indicator for single or comparison
+            if isinstance(lib, list) and len(lib) == 1:
+                self.lib = lib[0]  # In case of 1-item list
+            else:
+                self.lib = lib
+            self.test_path = os.path.join(session.path_run, lib, self.testname)
+
+            # Generate library output path
+            out = os.path.join(session.path_single, lib)
+            if not os.path.exists(out):
+                os.mkdir(out)
+
+            out = os.path.join(out, self.testname, code)
+            if os.path.exists(out):
+                shutil.rmtree(out)
+            os.makedirs(out)
+            excel_path = os.path.join(out, "Excel")
+            atlas_path = os.path.join(out, "Atlas")
+            raw_path = os.path.join(out, "Raw_Data")
+            os.makedirs(excel_path)
+            os.makedirs(atlas_path)
+            os.makedirs(raw_path)
+            self.excel_path = excel_path
+            self.raw_path = raw_path
+            self.atlas_path = atlas_path
+
+            # Read the metadata
+            results_path = os.path.join(self.test_path, code)
+            self.metadata = self._read_metadata_run(results_path)
+    '''        
+
+    '''
+    def _read_metadata_run(self, pathtofile: os.PathLike) -> dict:
+        """Retrieve the metadata from the run
+
+        Parameters
+        ----------
+        pathtofile : os.PathLike
+            path to metadata file
+
+        Returns
+        -------
+        dict
+            metadata dictionary
+        """
+        try:
+            with open(
+                os.path.join(pathtofile, "metadata.json"),
+                "r",
+                encoding="utf-8",
+            ) as file:
+                metadata = json.load(file)
+        except FileNotFoundError:
+            logging.warning("No metadata file found at %s", pathtofile)
+            metadata = {}
+
+        metadata["jade_version"] = __version__
+        metadata["code_version"] = self._read_code_version(pathtofile)
+
+        return metadata
+    '''    
+
+    '''
+    def _read_code_version(self, pathtofile: os.PathLike) -> str | None:
+        """Read the code version from the output files or in other ways depending
+        on the used code.
+
+        Parameters
+        ----------
+        pathtofile : os.PathLike
+            path to the folder where results are stored
+
+        Returns
+        -------
+        str | None
+            version of the code used to run the benchmarks
+        """
+        if self.testname in ["Sphere", "SphereSDDR"]:
+            if not os.path.exists(pathtofile):
+                # this can happen the first time
+                return None
+
+        if self.mcnp or self.d1s:
+            _, mcnp_ofile = self._get_output_files(pathtofile, "mcnp")
+            return self._read_mcnp_code_version(mcnp_ofile)
+        elif self.openmc:
+            _, openmc_sfile = self._get_output_files(pathtofile, "openmc")
+            return self._read_openmc_code_version(openmc_sfile)
+        elif self.serpent:
+            pass
+
+        return None
+    '''
+
+    #TODO convert to _read_code_version in MCNPoutput
+    def _read_mcnp_code_version(self, ofile: os.PathLike) -> str | None:
+        """Read MCNP code version from the output file
+
+        Parameters
+        ----------
+        ofile : os.PathLike
+            output file path
+
+        Returns
+        -------
+        str | None
+            version of the MCNP code used to run the benchmark
+        """
+
+        outp = MCNPOutputFile(ofile)
+        try:
+            version = outp.get_code_version()
+            return version
+        except ValueError:
+            logging.warning(
+                "Code version not found in the output file or aux file for %s",
+                ofile,
+            )
+            logging.warning(
+                "Contents of the directory: %s", os.listdir(os.path.dirname(ofile))
+            )
+            return None
+
+    #TODO convert to _read_code_version in OpenMCOutput
+    def _read_openmc_code_version(self, spfile: os.PathLike) -> str | None:
+        """Read OpenMC code version from the statepoint file
+
+        Parameters
+        ----------
+        spfile : os.PathLike
+            statepoint file path
+
+        Returns
+        -------
+        str | None
+            version of the OpenMC code used to run the benchmark
+        """
+        statepoint = omc.OpenMCSimOutput(spfile)
+        version = statepoint.version
+        return version
+
+    '''
+    def _read_serpent_code_version(self, ofile: os.PathLike) -> str | None:
+        pass
+    '''
+
+    '''
+    def single_postprocess(self):
+        """
+        Execute the full post-processing of a single library (i.e. excel,
+        raw data and atlas)
+
+        Returns
+        -------
+        None.
+
+        """
+        print(" Generating Excel Recap...")
+        self._generate_single_excel_output()
+        self._print_raw()
+
+        print(" Creating Atlas...")
+        outpath = os.path.join(self.atlas_path, "tmp")
+        os.mkdir(outpath)
+
+        # Get atlas configuration
+        atl_cnf = pd.read_excel(self.cnf_path, sheet_name="Atlas")
+        atl_cnf.set_index("Tally", inplace=True)
+
+        # Printing Atlas
+        template = template = os.path.join(self.path_templates, "AtlasTemplate.docx")
+        atlas = at.Atlas(template, self.testname + "_" + self.lib)
+
+        # Iterate over each type of plot (first one is quantity
+        # and second one the measure unit)
+        for plot_type in list(atl_cnf.columns)[2:]:
+            print(" Plotting : " + plot_type)
+            atlas.doc.add_heading("Plot type: " + plot_type, level=1)
+            # Keep only tallies to plot
+            atl_cnf_plot = atl_cnf[atl_cnf[plot_type]]
+            for tally_num in tqdm(atl_cnf_plot.index, desc="Tallies"):
+                try:
+                    output = self.outputs[self.code][tally_num]
+                except KeyError:
+                    fatal_exception(
+                        "tally n. "
+                        + str(tally_num)
+                        + " is in config but not in the MCNP output"
+                    )
+                vals_df = output["Value"]
+                err_df = output["Error"]
+                quantity = str(atl_cnf_plot["Quantity"].loc[tally_num])
+                unit = str(atl_cnf_plot["Unit"].loc[tally_num])
+                xlabel = output["x_label"]
+                title = output["title"]
+
+                atlas.doc.add_heading("Tally: " + title, level=2)
+
+                columns = vals_df.columns
+                x = np.array(vals_df.index)
+
+                for column in tqdm(columns):
+                    if len(columns) > 1:
+                        try:
+                            txt = str(int(column))
+                        except ValueError:
+                            # it is not convertible to int
+                            txt = str(column)
+
+                        atlas.doc.add_heading(txt, level=3)
+                        newtitle = title + " (" + txt + ")"
+                    else:
+                        newtitle = title
+
+                    # If total is present it has to be deleted
+                    try:
+                        vals_df.drop(["total"], inplace=True)
+                        err_df.drop(["total"], inplace=True)
+                        x = x[:-1]
+                    except KeyError:
+                        pass
+
+                    try:
+                        values = vals_df[column].values
+                        error = err_df[column].values
+                    except KeyError:
+                        # this means that the column is only one and we have
+                        # two distinct DFs for values and errors
+                        # depending on pandas version, these may be series or
+                        # directly arrays
+                        values = vals_df["Value"]
+                        error = err_df["Error"]
+                        if isinstance(values, pd.Series) or isinstance(
+                            values, pd.DataFrame
+                        ):
+                            values = values.values
+                        if isinstance(error, pd.Series) or isinstance(
+                            error, pd.DataFrame
+                        ):
+                            error = error.values
+
+                    lib_name = self.session.conf.get_lib_name(self.lib)
+                    lib = {"x": x, "y": values, "err": error, "ylabel": lib_name}
+                    data = [lib]
+
+                    outname = "tmp"
+                    plot = plotter.Plotter(
+                        data,
+                        newtitle,
+                        outpath,
+                        outname,
+                        quantity,
+                        unit,
+                        xlabel,
+                        self.testname,
+                    )
+                    img_path = plot.plot(plot_type)
+
+                    atlas.insert_img(img_path)
+        atlas.save(self.atlas_path)
+        # Remove tmp images
+        shutil.rmtree(outpath)
+    '''
+
+    '''
+    def compare(self):
+        """
+        Generates the full comparison post-processing (excel and atlas)
+
+        Returns
+        -------
+        None.
+
+        """
+        print(" Generating Excel Recap...")
+        self._generate_comparison_excel_output()
+
+        print(" Creating Atlas...")
+        outpath = os.path.join(self.atlas_path, "tmp")
+        os.mkdir(outpath)
+
+        # Get atlas configuration
+        atl_cnf = pd.read_excel(self.cnf_path, sheet_name="Atlas")
+        atl_cnf.set_index("Tally", inplace=True)
+
+        # Printing Atlas
+        template = os.path.join(self.path_templates, "AtlasTemplate.docx")
+
+        atlas = at.Atlas(template, self.testname + "_" + self.name)
+
+        # Recover data
+        outputs_dic = {}
+        for lib in self.lib:
+            # Recover lib output
+            out_path = os.path.join(
+                self.session.path_single,
+                lib,
+                self.testname,
+                self.code,
+                "Raw_Data",
+                lib + ".pickle",
+            )
+            with open(out_path, "rb") as handle:
+                outputs = pickle.load(handle)
+            outputs_dic[lib] = outputs
+
+        # Iterate over each type of plot (first one is quantity
+        # and second one the measure unit)
+        for plot_type in list(atl_cnf.columns)[2:]:
+            print(" Plotting : " + plot_type)
+            atlas.doc.add_heading("Plot type: " + plot_type, level=1)
+            # Keep only tallies to plot
+            atl_cnf_plot = atl_cnf[atl_cnf[plot_type]]
+            for tally_num in tqdm(atl_cnf_plot.index, desc="Tallies"):
+                # The last 'outputs' can be easily used for common data
+                try:
+                    output = outputs_dic[lib][tally_num]
+                except KeyError:
+                    fatal_exception(
+                        "tally n. "
+                        + str(tally_num)
+                        + " is in config but not in the MCNP output"
+                    )
+                vals_df = output["Value"]
+                err_df = output["Error"]
+                quantity = str(atl_cnf_plot["Quantity"].loc[tally_num])
+                unit = str(atl_cnf_plot["Unit"].loc[tally_num])
+                xlabel = output["x_label"]
+                title = output["title"]
+
+                atlas.doc.add_heading("Tally: " + title, level=2)
+
+                columns = vals_df.columns
+
+                for column in tqdm(columns):
+                    if len(columns) > 1:
+                        try:
+                            txt = str(int(column))
+                        except ValueError:
+                            # it is not convertible to int
+                            txt = str(column)
+
+                        atlas.doc.add_heading(txt, level=3)
+                        newtitle = title + " (" + txt + ")"
+
+                    else:
+                        newtitle = title
+                    data = []
+                    for lib in self.lib:
+                        output = outputs_dic[lib][tally_num]
+
+                        # override values and errors
+                        try:
+                            vals_df = output["Value"]
+                            err_df = output["Error"]
+                            # If total is present it has to be deleted
+                            try:
+                                vals_df.drop(["total"], inplace=True)
+                                err_df.drop(["total"], inplace=True)
+                            except KeyError:
+                                pass
+                            values = vals_df[column].values
+                            error = err_df[column].values
+
+                        except KeyError:
+                            # this means that the column is only one and we
+                            # havetwo distinct DFs for values and errors
+                            values = vals_df["Value"].values
+                            error = err_df["Error"].values
+
+                        x = np.array(vals_df.index)
+
+                        lib_name = self.session.conf.get_lib_name(lib)
+                        lib_data = {
+                            "x": x,
+                            "y": values,
+                            "err": error,
+                            "ylabel": lib_name,
+                        }
+                        data.append(lib_data)
+
+                    outname = "tmp"
+                    plot = plotter.Plotter(
+                        data,
+                        newtitle,
+                        outpath,
+                        outname,
+                        quantity,
+                        unit,
+                        xlabel,
+                        self.testname,
+                    )
+                    img_path = plot.plot(plot_type)
+
+                    atlas.insert_img(img_path)
+        atlas.save(self.atlas_path)
+
+        # Remove tmp images
+        shutil.rmtree(outpath)
+    '''
+
+    '''
+    @staticmethod
+    def _reorder_df(df, x_set):
+        # First of all try order by number
+        df["index"] = pd.to_numeric(df[x_set], errors="coerce")
+
+        # If they are all nan try with a normal sort
+        if df["index"].isnull().values.all():
+            df.sort_values(x_set, inplace=True)
+
+        # Otherwise keep on with the number sorting
+        else:
+            df.sort_values("index", inplace=True)
+
+        del df["index"]
+
+        # Try to reorder the columns
+        try:
+            df = df.reindex(sorted(df.columns), axis=1)
+        except TypeError:
+            # They are a mix of strings and ints, let's ignore it for
+            # the time being
+            pass
+
+        return df
+    '''
+
     def _generate_single_excel_output(self):
         # Get excel configuration
         self.outputs = {}
@@ -856,7 +1306,6 @@ The application will now exit """.format(
     def _print_raw(self):
         for key, data in self.raw_data.items():
             file = os.path.join(self.raw_path, str(key) + ".csv")
-            print(file)
             data.to_csv(file, header=True, index=False)
 
         metadata_file = os.path.join(self.raw_path, "metadata.json")

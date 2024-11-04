@@ -66,6 +66,8 @@ class BenchmarkOutput:
             return MCNPoutput(lib, code, testname, session)
         elif code == 'openmc':
             return OpenMCOutput(lib, code, testname, session)
+        else:
+            raise NotImplementedError
 
 class AbstractOutput(abc.ABC):
     def __init__(self, lib: str, code: str, testname: str, session: Session):
@@ -192,22 +194,6 @@ class AbstractOutput(abc.ABC):
             results_path = os.path.join(self.test_path, code)
             self.metadata = self._read_metadata_run(results_path)    
 
-    '''
-    @abc.abstractmethod
-    def single_postprocess(self):
-        """
-        To be executed when a single pp is requested
-        """
-    '''
-
-    '''
-    @abc.abstractmethod
-    def compare(self):
-        """
-        To be executed when a comparison is requested
-        """
-    '''
-
     @abc.abstractmethod
     def initialise(self, *args):
         """
@@ -225,64 +211,6 @@ class AbstractOutput(abc.ABC):
         """
         To be executed when a comparison is requested
         """
-    
-    '''
-    @staticmethod
-    def _get_output_files(results_path, code):
-        """
-        Recover the output files from a directory
-
-        Parameters
-        ----------
-        results_path : str or path
-            path where the results are contained.
-        code : str
-            code that generated the output ('mcnp' or 'openmc')
-
-        Raises
-        ------
-        FileNotFoundError
-            if the required files are not found.
-        NotImplementedError
-            if the code is not supported.
-
-        Returns
-        -------
-        file1 : path
-            path to the first file
-        file2 : path
-            path to the second file (only for mcnp)
-
-        """
-        file1 = None
-        file2 = None
-
-        for file_name in os.listdir(results_path):
-            if code in ["mcnp", "d1s"]:
-                if file_name[-1] == "m":
-                    file1 = file_name
-                elif file_name[-1] == "o":
-                    file2 = file_name
-            elif code == "openmc":
-                if file_name.endswith(".out"):
-                    file1 = file_name
-                elif file_name.startswith("statepoint"):
-                    file2 = file_name
-            else:
-                raise NotImplementedError(
-                    f"The code '{code}' is not currently supported."
-                )
-
-        if file1 is None or (code in ["mcnp", "d1s"] and file2 is None):
-            raise FileNotFoundError(
-                f"The following path does not contain the required files for {code} output: {results_path}"
-            )
-
-        file1 = os.path.join(results_path, file1)
-        file2 = os.path.join(results_path, file2) if file2 else None
-
-        return file1, file2
-    '''
 
     def _read_metadata_run(self, pathtofile: os.PathLike) -> dict:
         """Retrieve the metadata from the run
@@ -618,7 +546,7 @@ class AbstractOutput(abc.ABC):
 
         if self.openmc:
             results_path = os.path.join(self.test_path, self.code)
-            _, outfile = self._get_output_files(results_path, "openmc")
+            outfiles = self._get_output_files(results_path)
             sim_output = OpenMCOutput(outfile)
             tally_numbers = sim_output.output.tally_numbers
             tally_comments = sim_output.output.tally_comments

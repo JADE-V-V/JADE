@@ -67,7 +67,6 @@ class AbstractOutput(abc.ABC):
         """
         To be executed when a single pp is requested
         """
-        pass
 
     @abc.abstractmethod
     def compare(self):
@@ -75,6 +74,13 @@ class AbstractOutput(abc.ABC):
         To be executed when a comparison is requested
         """
 
+    @abc.abstractmethod
+    def _get_output_files(results_path):
+        """
+        To be executed when a comparison is requested
+        """
+    
+    '''
     @staticmethod
     def _get_output_files(results_path, code):
         """
@@ -130,7 +136,8 @@ class AbstractOutput(abc.ABC):
         file2 = os.path.join(results_path, file2) if file2 else None
 
         return file1, file2
-
+    '''
+    
 
 class BenchmarkOutput(AbstractOutput):
     def __init__(self, lib: str, code: str, testname: str, session: Session):

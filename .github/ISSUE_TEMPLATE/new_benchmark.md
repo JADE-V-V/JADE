@@ -13,6 +13,11 @@ assignees: ''
 - [x] Computational
 - [] Experimental
 
+## Which software are you going to employ?
+- [] MCNP
+- [] OpenMC
+- [] SERPENT
+
 ## Is this a MultiTest or a normal Test?
 Specify here if the benchmark consists of only one transport run or it is a collection of input files that have the same general structure.
 

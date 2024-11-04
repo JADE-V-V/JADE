@@ -572,6 +572,15 @@ class AbstractOutput(abc.ABC):
             pass
 
         return df
+    
+    def _print_raw(self):
+        for key, data in self.raw_data.items():
+            file = os.path.join(self.raw_path, str(key) + ".csv")
+            data.to_csv(file, header=True, index=False)
+
+        metadata_file = os.path.join(self.raw_path, "metadata.json")
+        with open(metadata_file, "w", encoding="utf-8") as outfile:
+            json.dump(self.metadata, outfile, indent=4)
 
 class BenchmarkOutput(AbstractOutput):
     '''
@@ -791,24 +800,6 @@ class BenchmarkOutput(AbstractOutput):
                 "Contents of the directory: %s", os.listdir(os.path.dirname(ofile))
             )
             return None
-
-    #TODO convert to _read_code_version in OpenMCOutput
-    def _read_openmc_code_version(self, spfile: os.PathLike) -> str | None:
-        """Read OpenMC code version from the statepoint file
-
-        Parameters
-        ----------
-        spfile : os.PathLike
-            statepoint file path
-
-        Returns
-        -------
-        str | None
-            version of the OpenMC code used to run the benchmark
-        """
-        statepoint = omc.OpenMCSimOutput(spfile)
-        version = statepoint.version
-        return version
 
     '''
     def _read_serpent_code_version(self, ofile: os.PathLike) -> str | None:
@@ -1139,10 +1130,8 @@ class BenchmarkOutput(AbstractOutput):
                     meshtalfile = os.path.join(results_path, file)
             # Parse output
             sim_output = MCNPoutput(mfile, ofile, meshtal_file=meshtalfile)
-            tally_numbers = [tally.tallyNumber for tally in sim_output.mctal.tallies]
-            tally_comments = [
-                tally.tallyComment[0] for tally in sim_output.mctal.tallies
-            ]
+            tally_numbers = sim_output.tally_numbers
+            tally_comments = sim_output.tally_comments
 
         # Adjourn raw Data
         self.raw_data = sim_output.tallydata
@@ -1303,6 +1292,7 @@ The application will now exit """.format(
         # ex.save()
         exsupp.single_excel_writer(outpath, self.lib, self.testname, outputs, stats)
 
+    '''
     def _print_raw(self):
         for key, data in self.raw_data.items():
             file = os.path.join(self.raw_path, str(key) + ".csv")
@@ -1311,6 +1301,7 @@ The application will now exit """.format(
         metadata_file = os.path.join(self.raw_path, "metadata.json")
         with open(metadata_file, "w", encoding="utf-8") as outfile:
             json.dump(self.metadata, outfile, indent=4)
+    '''
 
     def _generate_comparison_excel_output(self):
         # Get excel configuration
@@ -1552,8 +1543,7 @@ The application will now exit """.format(
                     std_devs,
                 )
 
-
-class MCNPoutput:
+class MCNPoutput(AbstractOutput):
     def __init__(self, mctal_file, output_file, meshtal_file=None):
         """
         Class representing all outputs coming from and MCNP run
@@ -1619,6 +1609,8 @@ class MCNPoutput:
                         pass  # no user column
 
         self.mctal = mctal
+        self.tally_comments = [tally.tallyNumber for tally in self.mctal.tallies]
+        self.tally_numbers = [tally.tallyComment[0] for tally in self.mctal.tallies]
         self.tallydata = tallydata
         self.totalbin = total_bin
         # Read the output file
@@ -1646,12 +1638,57 @@ class MCNPoutput:
                 else:
                     continue
 
+    def _read_code_version(self, ofile: os.PathLike) -> str | None:
+        """Read MCNP code version from the output file
 
-class OpenMCOutput:
+        Parameters
+        ----------
+        ofile : os.PathLike
+            output file path
+
+        Returns
+        -------
+        str | None
+            version of the MCNP code used to run the benchmark
+        """
+
+        outp = MCNPOutputFile(ofile)
+        try:
+            version = outp.get_code_version()
+            return version
+        except ValueError:
+            logging.warning(
+                "Code version not found in the output file or aux file for %s",
+                ofile,
+            )
+            logging.warning(
+                "Contents of the directory: %s", os.listdir(os.path.dirname(ofile))
+            )
+            return None
+
+
+class OpenMCOutput(AbstractOutput):
     def __init__(self, output_path):
         self.output = omc.OpenMCSimOutput(output_path)
         self.tallydata, self.totalbin = self.process_tally()
         self.stat_checks = None
+
+    def _read_code_version(self, spfile: os.PathLike) -> str | None:
+        """Read OpenMC code version from the statepoint file
+
+        Parameters
+        ----------
+        spfile : os.PathLike
+            statepoint file path
+
+        Returns
+        -------
+        str | None
+            version of the OpenMC code used to run the benchmark
+        """
+        statepoint = omc.OpenMCSimOutput(spfile)
+        version = statepoint.version
+        return version    
 
     def _create_dataframes(self, tallies):
         tallydata = {}

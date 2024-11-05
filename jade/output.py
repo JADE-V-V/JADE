@@ -1148,7 +1148,15 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
         return sim_output, tally_numbers, tally_comments
 
 class AbstractSimOutput(abc.ABC):
-    pass
+    @property
+    @abc.abstractmethod
+    def tallydata(self):
+        pass
+
+    @property
+    @abc.abstractmethod
+    def totalbin(self):
+        pass
 
 class MCNPSimOutput(AbstractSimOutput):
     def __init__(

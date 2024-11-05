@@ -42,7 +42,7 @@ from docx.shared import Inches
 import jade.atlas as at
 import jade.excelsupport as exsupp
 import jade.plotter as plotter
-from jade.output import BenchmarkOutput, OpenMCOutput, MCNPoutput
+from jade.output import AbstractBenchmarkOutput, OpenMCSimOutput, MCNPSimOutput
 
 if TYPE_CHECKING:
     from jade.main import Session
@@ -53,7 +53,7 @@ if OMC_AVAIL:
     import jade.openmc as omc
 
 
-class SphereOutput(BenchmarkOutput):
+class SphereOutput(AbstractBenchmarkOutput):
     def __init__(self, lib: str, code: str, testname: str, session: Session):
         """
         Initialises the SphereOutput class from the general BenchmarkOutput
@@ -402,7 +402,7 @@ class SphereOutput(BenchmarkOutput):
                 elif file[-1] == "o":
                     ofile = file
             # Parse output
-            output = SphereMCNPoutput(
+            output = SphereMCNPSimOutput(
                 os.path.join(results_path, mfile), os.path.join(results_path, ofile)
             )
 
@@ -483,7 +483,7 @@ class SphereOutput(BenchmarkOutput):
                 zaidname = pieces[-1]
             # Parse output
             _, outfile = self._get_output_files(results_path, "openmc")
-            output = SphereOpenMCoutput(outfile)
+            output = SphereOpenMCSimOutput(outfile)
             outputs[zaidnum] = output
             # Adjourn raw Data
             self.raw_data["openmc"][zaidnum] = output.tallydata
@@ -675,7 +675,7 @@ class SphereOutput(BenchmarkOutput):
                         # Parse output
                         mfile = os.path.join(results_path, mfile)
                         outfile = os.path.join(results_path, outfile)
-                        output = SphereMCNPoutput(mfile, outfile)
+                        output = SphereMCNPSimOutput(mfile, outfile)
 
                         outputs_lib[zaidnum] = output
                         res, err, columns = output.get_comparison_data(
@@ -877,7 +877,7 @@ class SphereOutput(BenchmarkOutput):
 
                         # Parse output
                         _, outfile = self._get_output_files(results_path, "openmc")
-                        output = SphereOpenMCoutput(outfile)
+                        output = SphereOpenMCSimOutput(outfile)
                         outputs_lib[zaidnum] = output
                         res, err, columns = output.get_comparison_data(
                             ["4", "14"], "openmc"
@@ -1183,7 +1183,7 @@ class SphereTallyOutput:
         return results, errors, columns
 
 
-class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
+class SphereMCNPSimOutput(MCNPSimOutput, SphereTallyOutput):
     def __init__(self, mfile, outfile):
         super().__init__(mfile, outfile)
         self.tallydata, self.totalbin = self._get_tallydata(self.mctal)
@@ -1264,9 +1264,9 @@ class SphereMCNPoutput(MCNPoutput, SphereTallyOutput):
         return df, dftotal
 
 
-class SphereOpenMCoutput(OpenMCOutput, SphereTallyOutput):
+class SphereOpenMCSimOutput(OpenMCSimOutput, SphereTallyOutput):
     def __init__(self, output_path):
-        self.output = omc.OpenMCSphereSimOutput(output_path)
+        self.output = omc.OpenMCSphereStatePoint(output_path)
         self.tallydata, self.totalbin = self.process_tally()
         self.stat_checks = None
 
@@ -2002,7 +2002,7 @@ class SphereSDDRoutput(SphereOutput):
                 elif file[-1] == "o":
                     ofile = file
                 # Parse output
-            output = SphereSDDRMCNPoutput(
+            output = SphereSDDRMCNPOutput(
                 os.path.join(results_path, mfile), os.path.join(results_path, ofile)
             )
 
@@ -2042,7 +2042,7 @@ class SphereSDDRoutput(SphereOutput):
             json.dump(self.metadata, outfile, indent=4)
 
 
-class SphereSDDRMCNPoutput(SphereMCNPoutput):
+class SphereSDDRMCNPOutput(SphereMCNPSimOutput):
 
     def _get_tallydata(self, mctal):
 

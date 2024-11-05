@@ -239,7 +239,7 @@ class TestSphereSDDRoutput:
 
 class TestSphereSDDRMCNPoutput:
 
-    out = sout.SphereSDDRMCNPoutput(
+    out = sout.SphereSDDRMCNPOutput(
         os.path.join(resources, "SphereSDDR_11023_Na-23_102_m"),
         os.path.join(resources, "SphereSDDR_11023_Na-23_102_o"),
     )

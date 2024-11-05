@@ -38,7 +38,7 @@ from jade.expoutput import SpectrumOutput
 import jade.sphereoutput as sout
 from jade.configuration import Configuration
 from jade.__version__ import __version__
-from jade.output import MCNPoutput
+from jade.output import MCNPSimOutput
 from jade.postprocess import compareBenchmark
 from jade.__openmc__ import OMC_AVAIL
 
@@ -54,9 +54,9 @@ OUTM_SDDR = os.path.join(
 )
 
 
-class TestSphereSDDRMCNPoutput:
+class TestSphereSDDRMCNPSimOutput:
 
-    out = sout.SphereSDDRMCNPoutput(OUTM_SDDR, OUTP_SDDR)
+    out = sout.SphereSDDRMCNPOutput(OUTM_SDDR, OUTP_SDDR)
 
     def test_get_single_excel_data(self):
         vals, errors = self.out.get_single_excel_data()
@@ -66,9 +66,9 @@ class TestSphereSDDRMCNPoutput:
         assert len(errors) == 23
 
 
-class TestMCNPoutput:
+class TestMCNPSimOutput:
     def test_mcnpoutput(self):
-        out = MCNPoutput(OUTM_SDDR, OUTP_SDDR)
+        out = MCNPSimOutput(OUTM_SDDR, OUTP_SDDR)
         t4 = out.tallydata[4]
         t2 = out.tallydata[2]
         assert list(t4.columns) == ["Cells", "Segments", "Value", "Error"]
@@ -110,7 +110,7 @@ class TestBenchmarkOutput:
             os.path.join(cp, "TestFiles", "output", "config_test.xlsx")
         )
         session = MockSession(conf, tmpdir)
-        out = output.BenchmarkOutput("32c", "mcnp", "ITER_1D", session)
+        out = output.MCNPBenchmarkOutput("32c", "mcnp", "ITER_1D", session)
         out._generate_single_excel_output()
         out._print_raw()
 
@@ -140,7 +140,7 @@ class TestBenchmarkOutput:
             os.path.join(cp, "TestFiles", "output", "config_test.xlsx")
         )
         session = MockSession(conf, tmpdir)
-        out = output.BenchmarkOutput("32c", "openmc", "ITER_1D", session)
+        out = output.OpenMCBenchmarkOutput("32c", "openmc", "ITER_1D", session)
         out._generate_single_excel_output()
         out._print_raw()
 

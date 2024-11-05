@@ -927,12 +927,12 @@ The application will now exit """.format(
             )
 
 class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
-    def _read_code_version(self, ofile: os.PathLike) -> str | None:
+    def _read_code_version(self, simulation_folder: os.PathLike) -> str | None:
         """Read MCNP code version from the output file
 
         Parameters
         ----------
-        ofile : os.PathLike
+        simulation_folder : os.PathLike
             output file path
 
         Returns
@@ -941,17 +941,18 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
             version of the MCNP code used to run the benchmark
         """
 
-        outp = MCNPOutputFile(ofile)
+        _, outf, _ = self._get_output_files(simulation_folder)
+        outp = MCNPOutputFile(outf)
         try:
             version = outp.get_code_version()
             return version
         except ValueError:
             logging.warning(
                 "Code version not found in the output file or aux file for %s",
-                ofile,
+                simulation_folder,
             )
             logging.warning(
-                "Contents of the directory: %s", os.listdir(os.path.dirname(ofile))
+                "Contents of the directory: %s", os.listdir(os.path.dirname(simulation_folder))
             )
             return None
         
@@ -1000,7 +1001,7 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
         file2 = os.path.join(results_path, file2) if file2 else None
         file3 = os.path.join(results_path, file2) if file3 else None
 
-        return file1, file2
+        return file1, file2, file3
 
     def parse_output_data(self, results_path):
         mfile, ofile, meshtalfile = self._get_output_files(results_path)
@@ -1010,19 +1011,20 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
         return sim_output, tally_numbers, tally_comments
 
 class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
-    def _read_code_version(self, spfile: os.PathLike) -> str | None:
+    def _read_code_version(self, simulation_path: os.PathLike) -> str | None:
         """Read OpenMC code version from the statepoint file
 
         Parameters
         ----------
-        spfile : os.PathLike
-            statepoint file path
+        simulation_path : os.PathLike
+            simulation file path
 
         Returns
         -------
         str | None
             version of the OpenMC code used to run the benchmark
         """
+        _, spfile = self._get_output_files(simulation_path)
         statepoint = omc.OpenMCStatePoint(spfile)
         version = statepoint.version
         return version
@@ -1143,8 +1145,8 @@ class MCNPSimOutput:
                         pass  # no user column
 
         self.mctal = mctal
-        self.tally_comments = [tally.tallyNumber for tally in self.mctal.tallies]
-        self.tally_numbers = [tally.tallyComment[0] for tally in self.mctal.tallies]
+        self.tally_numbers = [tally.tallyNumber for tally in self.mctal.tallies]
+        self.tally_comments = [tally.tallyComment[0] for tally in self.mctal.tallies]
         self.tallydata = tallydata
         self.totalbin = total_bin
         # Read the output file

@@ -36,8 +36,8 @@ from tqdm import tqdm
 
 import jade.atlas as at
 from f4enix.input.MCNPinput import D1S_Input
-from jade.output import BenchmarkOutput
-from jade.output import MCNPoutput
+from jade.output import AbstractBenchmarkOutput
+from jade.output import MCNPSimOutput
 from jade.plotter import Plotter
 from jade.status import EXP_TAG
 
@@ -75,7 +75,7 @@ ACTIVATION_REACTION = {
 }
 
 
-class ExperimentalOutput(BenchmarkOutput):
+class ExperimentalOutput(AbstractBenchmarkOutput):
     def __init__(self, *args, **kwargs):
         """
         This extends the Benchmark Output and creates an abstract class

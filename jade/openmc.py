@@ -310,7 +310,7 @@ class OpenMCStatePoint:
         return tallies
 
 
-class OpenMCSphereSimOutput(OpenMCSimOutput):
+class OpenMCSphereStatePoint(OpenMCStatePoint):
     def __init__(self, spfile_path: str) -> None:
         """Class to handle the data extraction of the Sphere leakage benchmark in OpenMC
 

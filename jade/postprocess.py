@@ -186,6 +186,11 @@ def _get_output(action, code, testname, lib, session):
             return False
 
     else:
-        out = bencho.BenchmarkOutput(lib, code, testname, session)
+        if code in ['mcnp', 'd1s']:
+            return bencho.MCNPOutput(lib, code, testname, session)
+        elif code == 'openmc':
+            return bencho.OpenMCOutput(lib, code, testname, session)
+        else:
+            raise NotImplementedError('Code has not been implemented')
 
     return out

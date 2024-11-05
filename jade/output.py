@@ -60,15 +60,6 @@ if TYPE_CHECKING:
 CRED = "\033[91m"
 CEND = "\033[0m"
 
-class BenchmarkOutput:
-    def __init__(self, lib: str, code: str, testname: str, session: Session):
-        if code in ['mcnp', 'd1s']:
-            return MCNPoutput(lib, code, testname, session)
-        elif code == 'openmc':
-            return OpenMCOutput(lib, code, testname, session)
-        else:
-            raise NotImplementedError
-
 class AbstractOutput(abc.ABC):
     def __init__(self, lib: str, code: str, testname: str, session: Session):
         """
@@ -567,7 +558,7 @@ class AbstractOutput(abc.ABC):
                 elif file[-4:] == "msht":
                     meshtalfile = os.path.join(results_path, file)
             # Parse output
-            sim_output = MCNPoutput(mfile, ofile, meshtal_file=meshtalfile)
+            sim_output = MCNPOutput(mfile, ofile, meshtal_file=meshtalfile)
             tally_numbers = sim_output.tally_numbers
             tally_comments = sim_output.tally_comments
 
@@ -774,7 +765,7 @@ The application will now exit """.format(
                         elif file[-4:] == "msht":
                             meshtalfile = os.path.join(results_path, file)
                     # Parse output
-                    mcnp_output = MCNPoutput(mfile, ofile, meshtal_file=meshtalfile)
+                    mcnp_output = MCNPOutput(mfile, ofile, meshtal_file=meshtalfile)
                     mcnp_outputs[lib] = mcnp_output
                 # Build the comparison
                 for label in ["Value", "Error"]:
@@ -970,7 +961,7 @@ The application will now exit """.format(
                     std_devs,
                 )
 
-class MCNPoutput(AbstractOutput):
+class MCNPOutput(AbstractOutput):
     def __init__(self):
         super().__init__(self)    
 

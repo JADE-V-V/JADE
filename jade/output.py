@@ -1147,8 +1147,10 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
         tally_comments = sim_output.output.tally_comments
         return sim_output, tally_numbers, tally_comments
 
+class AbstractSimOutput(abc.ABC):
+    pass
 
-class MCNPSimOutput:
+class MCNPSimOutput(AbstractSimOutput):
     def __init__(
         self,
         mctal_file: str | os.PathLike,
@@ -1255,7 +1257,7 @@ class MCNPSimOutput:
                 self.tally_comments.append("")
 
 
-class OpenMCSimOutput:
+class OpenMCSimOutput(AbstractSimOutput):
     def __init__(self, output_path: str | os.PathLike) -> None:
         """Class representing all outputs coming from OpenMC run
 

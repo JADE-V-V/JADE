@@ -164,6 +164,75 @@ class TestExpOutput:
         )
         assert len(os.listdir(path2raw)) == 3
 
+        testname = "FNG-SS"
+        self.benchoutput_comp = expoutput.ShieldingOutput(
+            ["32c", "31c", "00c"], code, testname, session_mock, multiplerun=True
+        )
+        self.benchoutput_comp.compare()
+        # check that all the raw data is dumped
+        # check that all the raw data is dumped
+        path2raw = os.path.join(
+            session_mock.path_comparison,
+            "32c_Vs_31c_Vs_00c",
+            testname,
+            "mcnp",
+            "Raw_Data",
+        )
+        assert (
+            self.benchoutput_comp.raw_data["mcnp"][("Al", "31c")][4]["Cells"].iloc[1]
+            == 501
+        )
+        assert (
+            self.benchoutput_comp.raw_data["mcnp"][("Au", "00c")][4]["Error"].iloc[2]
+            == 0.0194
+        )
+
+        testname = "FNG-SiC"
+        self.benchoutput_comp = expoutput.ShieldingOutput(
+            ["32c", "31c", "00c"], code, testname, session_mock, multiplerun=True
+        )
+        self.benchoutput_comp.compare()
+        # check that all the raw data is dumped
+        # check that all the raw data is dumped
+        path2raw = os.path.join(
+            session_mock.path_comparison,
+            "32c_Vs_31c_Vs_00c",
+            testname,
+            "mcnp",
+            "Raw_Data",
+        )
+        assert (
+            self.benchoutput_comp.raw_data["mcnp"][("Al", "31c")][4]["Cells"].iloc[1]
+            == 612
+        )
+        assert (
+            self.benchoutput_comp.raw_data["mcnp"][("TLD", "00c")][16]["Error"].iloc[2]
+            == 0.0089
+        )
+
+        testname = "ASPIS-PCA-Replica_RR"
+        self.benchoutput_comp = expoutput.ShieldingOutput(
+            ["32c", "31c", "00c"], code, testname, session_mock, multiplerun=True
+        )
+        self.benchoutput_comp.compare()
+        # check that all the raw data is dumped
+        # check that all the raw data is dumped
+        path2raw = os.path.join(
+            session_mock.path_comparison,
+            "32c_Vs_31c_Vs_00c",
+            testname,
+            "mcnp",
+            "Raw_Data",
+        )
+        assert (
+            self.benchoutput_comp.raw_data["mcnp"][("In", "31c")][4]["Cells"].iloc[1]
+            == 924
+        )
+        assert (
+            self.benchoutput_comp.raw_data["mcnp"][("Rh", "00c")][4]["Error"].iloc[2]
+            == 0.0049
+        )
+
     def test_tiaraoutput(self, session_mock: MockUpSession):
 
         code = "mcnp"
@@ -235,3 +304,32 @@ class TestExpOutput:
         )
         assert len(os.listdir(path2raw)) == 2
         assert True
+
+    def test_fnghcpboutput(self, session_mock: MockUpSession):
+
+        code = "mcnp"
+        testname = "FNG-HCPB"
+        os.makedirs(session_mock.path_comparison)
+        os.makedirs(session_mock.path_single)
+        self.benchoutput_comp = expoutput.fnghcpboutput(
+            ["32c", "31c", "00c"], code, testname, session_mock, multiplerun=True
+        )
+        self.benchoutput_comp.compare()
+        # check that all the raw data is dumped
+        # check that all the raw data is dumped
+        path2raw = os.path.join(
+            session_mock.path_comparison,
+            "32c_Vs_31c_Vs_00c",
+            testname,
+            "mcnp",
+            "Raw_Data",
+        )
+        assert (
+            self.benchoutput_comp.raw_data["mcnp"][("Al", "31c")][4]["Cells"].iloc[1]
+            == 48002
+        )
+        assert (
+            self.benchoutput_comp.raw_data["mcnp"][("H3", "00c")][84]["Error"].iloc[2]
+            == 0.0165
+        )
+        assert len(os.listdir(path2raw)) == 3

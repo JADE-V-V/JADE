@@ -633,7 +633,7 @@ class FNGOutput(ExperimentalOutput):
             plot = Plotter(
                 data, title, tmp_path, outname, quantity, unit, xlabel, self.testname
             )
-            img_path = plot.plot("Discreet Experimental points")
+            img_path = plot.plot("Discrete Experimental points")
             # Insert the image in the atlas
             atlas.insert_img(img_path)
 
@@ -1859,18 +1859,20 @@ class ShieldingOutput(ExperimentalOutput):
                                 if self.testname == "FNG-SiC":
                                     errs = np.sqrt(
                                         np.square(
-                                            self.raw_data[t][16]["Error"].values[
+                                            self.raw_data[code][t][16]["Error"].values[
                                                 : len(x)
                                             ]
                                         )
                                         + np.square(
-                                            self.raw_data[t][26]["Error"].values[
+                                            self.raw_data[code][t][26]["Error"].values[
                                                 : len(x)
                                             ]
                                         )
                                     )
                                 else:
-                                    errs = self.raw_data[t][6]["Error"].values[: len(x)]
+                                    errs = self.raw_data[code][t][6]["Error"].values[
+                                        : len(x)
+                                    ]
                             vals1 = np.square(errs)
                             vals2 = np.square(
                                 exp_data_df.loc[:, "Error"].to_numpy() / 100
@@ -1880,12 +1882,16 @@ class ShieldingOutput(ExperimentalOutput):
                             df_tab[idx_col] = ce_err
                         else:
                             if mat != "TLD":
-                                vals1 = self.raw_data[t][4]["Value"].values[: len(x)]
+                                vals1 = self.raw_data[code][t][4]["Value"].values[
+                                    : len(x)
+                                ]
                             else:
                                 if self.testname == "FNG-SiC":
                                     # Neutron dose
                                     Dn = (
-                                        self.raw_data[t][16]["Value"].values[: len(x)]
+                                        self.raw_data[code][t][16]["Value"].values[
+                                            : len(x)
+                                        ]
                                     ) * fngsic_norm
                                     Dn_multiplied = [
                                         value * constant
@@ -1893,13 +1899,15 @@ class ShieldingOutput(ExperimentalOutput):
                                     ]
                                     # Photon dose
                                     Dp = (
-                                        self.raw_data[t][26]["Value"].values[: len(x)]
+                                        self.raw_data[code][t][26]["Value"].values[
+                                            : len(x)
+                                        ]
                                     ) * fngsic_norm
                                     # Sum neutron and photon dose with neutron sensitivity as a function of depth
                                     Dt = [sum(pair) for pair in zip(Dn_multiplied, Dp)]
                                     vals1 = Dt
                                 else:
-                                    vals1 = self.raw_data[t][6]["Value"].values[
+                                    vals1 = self.raw_data[code][t][6]["Value"].values[
                                         : len(x)
                                     ]
                             vals2 = exp_data_df.loc[:, "Reaction Rate"].to_numpy()
@@ -1980,19 +1988,25 @@ class ShieldingOutput(ExperimentalOutput):
                     if self.testname == "FNG-SiC":
                         # Neutron dose
                         Dn = (
-                            self.raw_data[(material, lib)][16]["Value"].values[: len(x)]
+                            self.raw_data[code][(material, lib)][16]["Value"].values[
+                                : len(x)
+                            ]
                         ) * fngsic_norm
                         Dn_multiplied = [
                             value * constant for value, constant in zip(Dn, fngsic_k)
                         ]
                         # Photon dose
                         Dp = (
-                            self.raw_data[(material, lib)][26]["Value"].values[: len(x)]
+                            self.raw_data[code][(material, lib)][26]["Value"].values[
+                                : len(x)
+                            ]
                         ) * fngsic_norm
                         # Sum neutron and photon dose with neutron sensitivity as a function of depth
                         v = [sum(pair) for pair in zip(Dn_multiplied, Dp)]
                     else:
-                        v = self.raw_data[(material, lib)][6]["Value"].values[: len(x)]
+                        v = self.raw_data[code][(material, lib)][6]["Value"].values[
+                            : len(x)
+                        ]
                 y.append(v)
                 if material != "TLD":
                     v = self.raw_data[code][(material, lib)][4]["Error"].values[
@@ -2002,18 +2016,20 @@ class ShieldingOutput(ExperimentalOutput):
                     if self.testname == "FNG-SiC":
                         v = np.sqrt(
                             np.square(
-                                self.raw_data[(material, lib)][16]["Error"].values[
-                                    : len(x)
-                                ]
+                                self.raw_data[code][(material, lib)][16][
+                                    "Error"
+                                ].values[: len(x)]
                             )
                             + np.square(
-                                self.raw_data[(material, lib)][26]["Error"].values[
-                                    : len(x)
-                                ]
+                                self.raw_data[code][(material, lib)][26][
+                                    "Error"
+                                ].values[: len(x)]
                             )
                         )
                     else:
-                        v = self.raw_data[(material, lib)][6]["Error"].values[: len(x)]
+                        v = self.raw_data[code][(material, lib)][6]["Error"].values[
+                            : len(x)
+                        ]
                 err.append(v)
                 # Append computational data to data list(to be sent to plotter)
                 data_comp = {"x": x, "y": y, "err": err, "ylabel": ylabel}
@@ -2046,16 +2062,22 @@ class ShieldingOutput(ExperimentalOutput):
             else:
                 if self.testname == "FNG-SiC":
                     v = np.sqrt(
-                        np.square(self.raw_data[(mat, lib)][16]["Error"].values[:size])
+                        np.square(
+                            self.raw_data[code][(mat, lib)][16]["Error"].values[:size]
+                        )
                         + np.square(
-                            self.raw_data[(mat, lib)][26]["Error"].values[:size]
+                            self.raw_data[code][(mat, lib)][26]["Error"].values[:size]
                         )
                     )
                     max = np.max(v)
                     avg = np.mean(v)
                 else:
-                    max = self.raw_data[(mat, lib)][6]["Error"].values[:size].max()
-                    avg = self.raw_data[(mat, lib)][6]["Error"].values[:size].mean()
+                    max = (
+                        self.raw_data[code][(mat, lib)][6]["Error"].values[:size].max()
+                    )
+                    avg = (
+                        self.raw_data[code][(mat, lib)][6]["Error"].values[:size].mean()
+                    )
             library = self.session.conf.get_lib_name(lib)
             conv_df.loc["Max Error", library] = max
             conv_df.loc["Average Error", library] = avg
@@ -2235,97 +2257,113 @@ class fnghcpboutput(ExperimentalOutput):
         names = ["Library", ""]
         column_index = pd.MultiIndex.from_tuples(column_names, names=names)
         filepath = self.excel_path + "\\" + self.testname + "_CE_tables.xlsx"
-        writer = pd.ExcelWriter(filepath, engine="xlsxwriter")
-        for mat in self.inputs:
-            exp_folder = os.path.join(self.path_exp_res, mat)
-            exp_filename = self.testname + "_" + mat + ".csv"
-            exp_filepath = os.path.join(exp_folder, exp_filename)
-            exp_data_df = pd.read_csv(exp_filepath)
+        with pd.ExcelWriter(filepath, engine="xlsxwriter") as writer:
+            code = "mcnp"
+            for mat in self.inputs:
+                exp_folder = os.path.join(self.path_exp_res, mat)
+                exp_filename = self.testname + "_" + mat + ".csv"
+                exp_filepath = os.path.join(exp_folder, exp_filename)
+                exp_data_df = pd.read_csv(exp_filepath)
 
-            # Get experimental data and errors for the selected benchmark case
-            if mat == "H3":
-                x = exp_data_df["Pellet"].values.tolist()
-                indexes = pd.Index(data=x, name="Pellet #")
-            else:
-                x = exp_data_df["Depth"].values.tolist()
-                indexes = pd.Index(data=x, name="Depth [cm]")
-
-            df_tab = pd.DataFrame(index=indexes, columns=column_index)
-            for idx_col in df_tab.columns.values.tolist():
-                if idx_col[0] == "Exp":
-                    if idx_col[1] == "Value":
-                        if mat == "H3":
-                            vals = exp_data_df.loc[:, "Activity"].tolist()
-                        else:
-                            vals = exp_data_df.loc[:, "Reaction Rate"].tolist()
-                        df_tab[idx_col] = vals
-                    else:
-                        vals = exp_data_df.loc[:, "Error"].to_numpy() / 100
-                        vals = vals.tolist()
-                        df_tab[idx_col] = vals
+                # Get experimental data and errors for the selected benchmark case
+                if mat == "H3":
+                    x = exp_data_df["Pellet"].values.tolist()
+                    indexes = pd.Index(data=x, name="Pellet #")
                 else:
-                    t = (mat, lib_names_dict[idx_col[0]])
-                    if idx_col[1] == "Value":
-                        if mat != "H3":
-                            vals = self.raw_data[t][4]["Value"].values[: len(x)]
+                    x = exp_data_df["Depth"].values.tolist()
+                    indexes = pd.Index(data=x, name="Depth [cm]")
+
+                df_tab = pd.DataFrame(index=indexes, columns=column_index)
+                for idx_col in df_tab.columns.values.tolist():
+                    if idx_col[0] == "Exp":
+                        if idx_col[1] == "Value":
+                            if mat == "H3":
+                                vals = exp_data_df.loc[:, "Activity"].tolist()
+                            else:
+                                vals = exp_data_df.loc[:, "Reaction Rate"].tolist()
+                            df_tab[idx_col] = vals
                         else:
-                            # Total activity
-                            vals = []
-                            for i in range(4):
-                                vals.extend(
-                                    (self.raw_data[t][84]["Value"].values[i::4])
-                                )
-
-                        df_tab[idx_col] = vals
-
-                    elif idx_col[1] == "C/E Error":
-                        if mat != "H3":
-                            errs = self.raw_data[t][4]["Error"].values[: len(x)]
-                        else:
-                            errs = []
-                            for i in range(4):
-                                yerr = self.raw_data[t][84]["Error"].values[i::4]
-                                errs.extend(yerr)
-
-                        vals1 = np.square(errs)
-                        vals2 = np.square(exp_data_df.loc[:, "Error"].to_numpy() / 100)
-                        ce_err = np.sqrt(vals1 + vals2)
-                        ce_err = ce_err.tolist()
-                        df_tab[idx_col] = ce_err
-                    # Calculate C/E value
+                            vals = exp_data_df.loc[:, "Error"].to_numpy() / 100
+                            vals = vals.tolist()
+                            df_tab[idx_col] = vals
                     else:
-                        if mat != "H3":
-                            vals1 = self.raw_data[t][4]["Value"].values[: len(x)]
-                        else:
-                            vals1 = []
-                            for i in range(4):
-                                vals1.extend(self.raw_data[t][84]["Value"].values[i::4])
+                        t = (mat, lib_names_dict[idx_col[0]])
+                        if idx_col[1] == "Value":
+                            if mat != "H3":
+                                vals = self.raw_data[code][t][4]["Value"].values[
+                                    : len(x)
+                                ]
+                            else:
+                                # Total activity
+                                vals = []
+                                for i in range(4):
+                                    vals.extend(
+                                        (
+                                            self.raw_data[code][t][84]["Value"].values[
+                                                i::4
+                                            ]
+                                        )
+                                    )
 
-                        if mat == "H3":
-                            vals2 = exp_data_df.loc[:, "Activity"].to_numpy()
-                        else:
-                            vals2 = exp_data_df.loc[:, "Reaction Rate"].to_numpy()
-                        ratio = vals1 / vals2
-                        ratio = ratio.tolist()
-                        df_tab[idx_col] = vals1 / vals2
+                            df_tab[idx_col] = vals
 
-            # Assign worksheet title and put into Excel
-            conv_df = self._get_conv_df(mat, len(x))
-            sheet = self.testname.replace("-", " ")
-            if mat != "H3":
-                sheet_name = sheet + ", Foil {}".format(mat)
-            else:
-                sheet_name = sheet + " H3 activity"
-            df_tab.to_excel(writer, sheet_name=sheet_name)
-            conv_df.to_excel(writer, sheet_name=sheet_name, startrow=55)
-            # Close the Pandas Excel writer object and output the Excel file
-        writer.save()
+                        elif idx_col[1] == "C/E Error":
+                            if mat != "H3":
+                                errs = self.raw_data[code][t][4]["Error"].values[
+                                    : len(x)
+                                ]
+                            else:
+                                errs = []
+                                for i in range(4):
+                                    yerr = self.raw_data[code][t][84]["Error"].values[
+                                        i::4
+                                    ]
+                                    errs.extend(yerr)
+
+                            vals1 = np.square(errs)
+                            vals2 = np.square(
+                                exp_data_df.loc[:, "Error"].to_numpy() / 100
+                            )
+                            ce_err = np.sqrt(vals1 + vals2)
+                            ce_err = ce_err.tolist()
+                            df_tab[idx_col] = ce_err
+                        # Calculate C/E value
+                        else:
+                            if mat != "H3":
+                                vals1 = self.raw_data[code][t][4]["Value"].values[
+                                    : len(x)
+                                ]
+                            else:
+                                vals1 = []
+                                for i in range(4):
+                                    vals1.extend(
+                                        self.raw_data[code][t][84]["Value"].values[i::4]
+                                    )
+
+                            if mat == "H3":
+                                vals2 = exp_data_df.loc[:, "Activity"].to_numpy()
+                            else:
+                                vals2 = exp_data_df.loc[:, "Reaction Rate"].to_numpy()
+                            ratio = vals1 / vals2
+                            ratio = ratio.tolist()
+                            df_tab[idx_col] = vals1 / vals2
+
+                # Assign worksheet title and put into Excel
+                conv_df = self._get_conv_df(mat, len(x))
+                sheet = self.testname.replace("-", " ")
+                if mat != "H3":
+                    sheet_name = sheet + ", Foil {}".format(mat)
+                else:
+                    sheet_name = sheet + " H3 activity"
+                df_tab.to_excel(writer, sheet_name=sheet_name)
+                conv_df.to_excel(writer, sheet_name=sheet_name, startrow=55)
+                # Close the Pandas Excel writer object and output the Excel file
 
     def _build_atlas(self, tmp_path, atlas):
         """
         Build the Atlas (PDF) plots. See ExperimentalOutput documentation
         """
-
+        code = "mcnp"
         for material in tqdm(self.inputs):
             # Tritium Activity
             if material == "H3":
@@ -2354,10 +2392,14 @@ class fnghcpboutput(ExperimentalOutput):
                         # y = []
                         # err = []
                         # Total tritium production Li6 + Li7
-                        ycalc = self.raw_data[(material, lib)][84]["Value"].values[i::4]
+                        ycalc = self.raw_data[code][(material, lib)][84][
+                            "Value"
+                        ].values[i::4]
 
                         yerr = np.square(
-                            self.raw_data[(material, lib)][84]["Error"].values[i::4]
+                            self.raw_data[code][(material, lib)][84]["Error"].values[
+                                i::4
+                            ]
                         )
 
                         y = ycalc
@@ -2412,10 +2454,14 @@ class fnghcpboutput(ExperimentalOutput):
                     y = []
                     err = []
 
-                    ycalc = self.raw_data[(material, lib)][4]["Value"].values[: len(x)]
+                    ycalc = self.raw_data[code][(material, lib)][4]["Value"].values[
+                        : len(x)
+                    ]
                     y.append(ycalc)
 
-                    yerr = self.raw_data[(material, lib)][4]["Error"].values[: len(x)]
+                    yerr = self.raw_data[code][(material, lib)][4]["Error"].values[
+                        : len(x)
+                    ]
                     err.append(yerr)
 
                     # Append computational data to data list(to be sent to plotter)
@@ -2439,13 +2485,14 @@ class fnghcpboutput(ExperimentalOutput):
 
     def _get_conv_df(self, mat, size):
         conv_df = pd.DataFrame()
+        code = "mcnp"
         for lib in self.lib[1:]:
             if mat != "H3":
-                max = self.raw_data[(mat, lib)][4]["Error"].values[:size].max()
-                avg = self.raw_data[(mat, lib)][4]["Error"].values[:size].mean()
+                max = self.raw_data[code][(mat, lib)][4]["Error"].values[:size].max()
+                avg = self.raw_data[code][(mat, lib)][4]["Error"].values[:size].mean()
             else:
-                max = self.raw_data[(mat, lib)][84]["Error"].values[:size].max()
-                avg = self.raw_data[(mat, lib)][84]["Error"].values[:size].mean()
+                max = self.raw_data[code][(mat, lib)][84]["Error"].values[:size].max()
+                avg = self.raw_data[code][(mat, lib)][84]["Error"].values[:size].mean()
             library = self.session.conf.get_lib_name(lib)
             conv_df.loc["Max Error", library] = max
             conv_df.loc["Average Error", library] = avg

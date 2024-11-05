@@ -223,7 +223,7 @@ class Plotter:
         plot_type : str
             plot type. The current available ones are ['Binned graph',
             'Ratio graph', 'Experimental points',
-            'Discreet Experimental points', 'Grouped bars', 'Waves'].
+            'Discrete Experimental points', 'Grouped bars', 'Waves'].
 
         Raises
         ------
@@ -286,7 +286,7 @@ class Plotter:
                 outp = self._exp_points_group_plot_CE(test_name=self.testname)
 
         # --- Experimental Points Plot ---
-        elif plot_type == "Discreet Experimental points":
+        elif plot_type == "Discrete Experimental points":
             outp = self._exp_points_discreet_plot()
 
         # --- Grouped bars chart ---

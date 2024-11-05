@@ -187,15 +187,33 @@ class AbstractBenchmarkOutput(abc.ABC):
             self.metadata = self._read_metadata_run(results_path)
 
     @abc.abstractmethod
-    def _read_code_version(self, pathtofile: str | os.PathLike) -> str | None:
-        """
-        To be executed when a comparison is requested
+    def _read_code_version(self, simulation_folder: str | os.PathLike) -> str | None:
+        """Abstract function to retrieve code version. Implimentation should be added to child classes for each code.
+
+        Parameters
+        ----------
+        simulation_folder : str | os.PathLike
+            Path to simulation results folder.
+
+        Returns
+        -------
+        str | None
+            Returns the code version, except for sphere benchmark, which returns None
         """
 
     @abc.abstractmethod
     def _get_output_files(self, results_path: str | os.PathLike) -> list:
-        """
-        To be executed when a comparison is requested
+        """Abstract function to retrieve code output files. Implimentation should be added to child classes for each code.
+
+        Parameters
+        ----------
+        results_path : str | os.PathLike
+            Path to simulation results folder.
+
+        Returns
+        -------
+        list
+            List of simulation results files.
         """
 
     @abc.abstractmethod
@@ -602,7 +620,9 @@ class AbstractBenchmarkOutput(abc.ABC):
                             + """
     A ValueError was triggered, a probable cause may be that more than 2 binnings
         are defined in tally {}. This is a fatal exception,  application will now
-    close""".format(str(num))
+    close""".format(
+                                str(num)
+                            )
                             + CEND
                         )
                         # Safely exit from excel and from application
@@ -635,7 +655,9 @@ class AbstractBenchmarkOutput(abc.ABC):
                             CRED
                             + """
 {} is not available in tally {}. Please check the configuration file.
-The application will now exit """.format(x_name, str(num))
+The application will now exit """.format(
+                                x_name, str(num)
+                            )
                             + CEND
                         )
                         # Safely exit from excel and from application
@@ -826,7 +848,9 @@ The application will now exit """.format(x_name, str(num))
                                 + """
         A ValueError was triggered, a probable cause may be that more than 2 binnings
             are defined in tally {}. This is a fatal exception,  application will now
-        close""".format(str(num))
+        close""".format(
+                                    str(num)
+                                )
                                 + CEND
                             )
                             # Safely exit from excel and from application
@@ -861,7 +885,9 @@ The application will now exit """.format(x_name, str(num))
                                 CRED
                                 + """
     {} is not available in tally {}. Please check the configuration file.
-    The application will now exit """.format(x_name, str(num))
+    The application will now exit """.format(
+                                    x_name, str(num)
+                                )
                                 + CEND
                             )
                             # Safely exit from excel and from application
@@ -934,7 +960,7 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
             version of the MCNP code used to run the benchmark
         """
 
-        if self.testname in ['Sphere', 'SphereSDDR']:
+        if self.testname in ["Sphere", "SphereSDDR"]:
             if not os.path.exists(simulation_folder):
                 return None
         _, outf, _ = self._get_output_files(simulation_folder)
@@ -1022,7 +1048,7 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
         str | None
             version of the OpenMC code used to run the benchmark
         """
-        if self.testname in ['Sphere', 'SphereSDDR']:
+        if self.testname in ["Sphere", "SphereSDDR"]:
             if not os.path.exists(simulation_path):
                 return None
         _, spfile = self._get_output_files(simulation_path)

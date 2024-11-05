@@ -983,7 +983,7 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
                 file1 = file_name
             elif file_name[-1] == "o":
                 file2 = file_name
-            elif file_name[-4] == "msht":
+            elif file_name[-4:] == "msht":
                 file3 = file_name
 
         if file1 is None or file2 is None:

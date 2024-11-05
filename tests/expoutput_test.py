@@ -69,11 +69,11 @@ class TestExpOutput:
         testname = "ITER_1D"
         os.makedirs(session_mock.path_comparison)
         os.makedirs(session_mock.path_single)
-        self.benchoutput_32c = outp.BenchmarkOutput("32c", code, testname, session_mock)
+        self.benchoutput_32c = outp.MCNPBenchmarkOutput("32c", code, testname, session_mock)
         self.benchoutput_32c.single_postprocess()
-        self.benchoutput_31c = outp.BenchmarkOutput("31c", code, testname, session_mock)
+        self.benchoutput_31c = outp.MCNPBenchmarkOutput("31c", code, testname, session_mock)
         self.benchoutput_31c.single_postprocess()
-        self.benchoutput_comp = outp.BenchmarkOutput(
+        self.benchoutput_comp = outp.MCNPBenchmarkOutput(
             ["32c", "31c"], code, testname, session_mock
         )
         self.benchoutput_comp.compare()
@@ -86,11 +86,11 @@ class TestExpOutput:
         testname = "WCLL_TBM_1D"
         os.makedirs(session_mock.path_comparison)
         os.makedirs(session_mock.path_single)
-        self.benchoutput_32c = outp.BenchmarkOutput("32c", code, testname, session_mock)
+        self.benchoutput_32c = outp.MCNPBenchmarkOutput("32c", code, testname, session_mock)
         self.benchoutput_32c.single_postprocess()
-        self.benchoutput_31c = outp.BenchmarkOutput("31c", code, testname, session_mock)
+        self.benchoutput_31c = outp.MCNPBenchmarkOutput("31c", code, testname, session_mock)
         self.benchoutput_31c.single_postprocess()
-        self.benchoutput_comp = outp.BenchmarkOutput(
+        self.benchoutput_comp = outp.MCNPBenchmarkOutput(
             ["32c", "31c"], code, testname, session_mock
         )
         self.benchoutput_comp.compare()

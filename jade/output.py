@@ -538,7 +538,6 @@ class AbstractBenchmarkOutput(abc.ABC):
         # Parse output
         results_path = os.path.join(self.test_path, self.code)
         sim_output, tally_numbers, tally_comments = self.parse_output_data(results_path)
-        
         # Adjourn raw Data
         self.raw_data = sim_output.tallydata
 
@@ -1147,12 +1146,6 @@ class MCNPSimOutput:
         self.mctal = mctal
         self.tally_numbers = []
         self.tally_comments = []
-        for tally in self.mctal.tallies:
-            self.tally_numbers.append(tally.tallyNumber)
-            if len(tally.tallyComment) > 0:
-                self.tally_comments.append(tally.tallyComment[0])
-            else:
-                self.tally_comments.append('')
         self.tallydata = tallydata
         self.totalbin = total_bin
         # Read the output file
@@ -1179,6 +1172,12 @@ class MCNPSimOutput:
                     self.mctal.tallies.append(dummyTally)
                 else:
                     continue
+        for tally in self.mctal.tallies:
+            self.tally_numbers.append(tally.tallyNumber)
+            if len(tally.tallyComment) > 0:
+                self.tally_comments.append(tally.tallyComment[0])
+            else:
+                self.tally_comments.append('')
 
 class OpenMCSimOutput:    
     def __init__(self, output_path):

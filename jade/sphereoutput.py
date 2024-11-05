@@ -99,6 +99,15 @@ class SphereOutput(AbstractBenchmarkOutput):
             # metadata involved here
             self.metadata = None
 
+    def _get_output_files(self, resuts_path):
+        pass
+
+    def _read_code_version(self, pathtofile):
+        pass
+    
+    def parse_output_data(self, results_path):
+        pass
+    
     def single_postprocess(self):
         """
         Execute the full post-processing of a single library (i.e. excel,

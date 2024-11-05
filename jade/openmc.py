@@ -1,10 +1,11 @@
 from __future__ import annotations
+
 import logging
 import os
 import re
-import openmc
-
 from typing import TYPE_CHECKING
+
+import openmc
 
 if TYPE_CHECKING:
     from f4enix.input.libmanager import LibManager
@@ -234,7 +235,7 @@ class OpenMCInputFiles:
 
 
 class OpenMCStatePoint:
-    def __init__(self, spfile_path: str) -> None:
+    def __init__(self, spfile_path: str | os.PathLike) -> None:
         """Class for handling OpenMC tatepoint file
 
         Parameters

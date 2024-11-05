@@ -24,31 +24,31 @@
 from __future__ import annotations
 
 import abc
+import json
+import logging
 import os
 import pickle
 import shutil
 import string
 import sys
-import json
-import logging
 from typing import TYPE_CHECKING
-from f4enix.output.mctal import Mctal, Tally
-from f4enix.output.meshtal import Meshtal, Fmesh1D
-from f4enix.output.MCNPoutput import Output
+
 import numpy as np
 
 # import xlwings as xw
 import pandas as pd
+from f4enix.output.MCNPoutput import Output
+from f4enix.output.MCNPoutput import Output as MCNPOutputFile
+from f4enix.output.mctal import Mctal, Tally
+from f4enix.output.meshtal import Fmesh1D, Meshtal
 from tqdm import tqdm
 
 import jade.atlas as at
 import jade.excelsupport as exsupp
 import jade.plotter as plotter
-from jade.constants import CODES
-
-from jade.__version__ import __version__
-from f4enix.output.MCNPoutput import Output as MCNPOutputFile
 from jade.__openmc__ import OMC_AVAIL
+from jade.__version__ import __version__
+from jade.constants import CODES
 
 if OMC_AVAIL:
     import jade.openmc as omc
@@ -60,8 +60,9 @@ if TYPE_CHECKING:
 CRED = "\033[91m"
 CEND = "\033[0m"
 
+
 class AbstractBenchmarkOutput(abc.ABC):
-    def __init__(self, lib: str, code: str, testname: str, session: Session):
+    def __init__(self, lib: str, code: str, testname: str, session: Session) -> None:
         """
         General class for a Benchmark output
 
@@ -183,16 +184,16 @@ class AbstractBenchmarkOutput(abc.ABC):
 
             # Read the metadata
             results_path = os.path.join(self.test_path, code)
-            self.metadata = self._read_metadata_run(results_path)         
+            self.metadata = self._read_metadata_run(results_path)
 
-    @abc.abstractmethod    
-    def _read_code_version(self, pathtofile):
+    @abc.abstractmethod
+    def _read_code_version(self, pathtofile: str | os.PathLike) -> str | None:
         """
         To be executed when a comparison is requested
         """
 
     @abc.abstractmethod
-    def _get_output_files(self, results_path):
+    def _get_output_files(self, results_path: str | os.PathLike) -> list:
         """
         To be executed when a comparison is requested
         """
@@ -507,7 +508,7 @@ class AbstractBenchmarkOutput(abc.ABC):
             pass
 
         return df
-    
+
     def _print_raw(self):
         for key, data in self.raw_data.items():
             file = os.path.join(self.raw_path, str(key) + ".csv")
@@ -601,9 +602,7 @@ class AbstractBenchmarkOutput(abc.ABC):
                             + """
     A ValueError was triggered, a probable cause may be that more than 2 binnings
         are defined in tally {}. This is a fatal exception,  application will now
-    close""".format(
-                                str(num)
-                            )
+    close""".format(str(num))
                             + CEND
                         )
                         # Safely exit from excel and from application
@@ -636,9 +635,7 @@ class AbstractBenchmarkOutput(abc.ABC):
                             CRED
                             + """
 {} is not available in tally {}. Please check the configuration file.
-The application will now exit """.format(
-                                x_name, str(num)
-                            )
+The application will now exit """.format(x_name, str(num))
                             + CEND
                         )
                         # Safely exit from excel and from application
@@ -733,7 +730,9 @@ The application will now exit """.format(
                 tarlib: os.path.join(self.test_path[tarlib], self.code),
             }.items():
                 # Parse output
-                sim_outputs[lib], tally_numbers[lib], tally_comments[lib] = self.parse_output_data(results_path)
+                sim_outputs[lib], tally_numbers[lib], tally_comments[lib] = (
+                    self.parse_output_data(results_path)
+                )
             # Build the comparison
             for label in ["Value", "Error"]:
                 for num, key in zip(tally_numbers[reflib], tally_comments[reflib]):
@@ -808,9 +807,7 @@ The application will now exit """.format(
                             rows_abs_diff.append(row_abs_diff)
                             rows_std_dev.append(row_std_dev)
                         try:
-                            final = pd.DataFrame(
-                                rows_fin, columns=y_set, index=x_set
-                            )
+                            final = pd.DataFrame(rows_fin, columns=y_set, index=x_set)
                             abs_diff = pd.DataFrame(
                                 rows_abs_diff, columns=y_set, index=x_set
                             )
@@ -829,9 +826,7 @@ The application will now exit """.format(
                                 + """
         A ValueError was triggered, a probable cause may be that more than 2 binnings
             are defined in tally {}. This is a fatal exception,  application will now
-        close""".format(
-                                    str(num)
-                                )
+        close""".format(str(num))
                                 + CEND
                             )
                             # Safely exit from excel and from application
@@ -866,9 +861,7 @@ The application will now exit """.format(
                                 CRED
                                 + """
     {} is not available in tally {}. Please check the configuration file.
-    The application will now exit """.format(
-                                    x_name, str(num)
-                                )
+    The application will now exit """.format(x_name, str(num))
                                 + CEND
                             )
                             # Safely exit from excel and from application
@@ -925,6 +918,7 @@ The application will now exit """.format(
                 std_devs,
             )
 
+
 class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
     def _read_code_version(self, simulation_folder: os.PathLike) -> str | None:
         """Read MCNP code version from the output file
@@ -951,11 +945,12 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
                 simulation_folder,
             )
             logging.warning(
-                "Contents of the directory: %s", os.listdir(os.path.dirname(simulation_folder))
+                "Contents of the directory: %s",
+                os.listdir(os.path.dirname(simulation_folder)),
             )
             return None
-        
-    def _get_output_files(self, results_path):
+
+    def _get_output_files(self, results_path: str | os.PathLike) -> tuple:
         """
         Recover the output files from a directory
 
@@ -988,7 +983,7 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
                 file1 = file_name
             elif file_name[-1] == "o":
                 file2 = file_name
-            elif file_name[-4] == 'msht':
+            elif file_name[-4] == "msht":
                 file3 = file_name
 
         if file1 is None or file2 is None:
@@ -998,7 +993,7 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
 
         file1 = os.path.join(results_path, file1) if file1 else None
         file2 = os.path.join(results_path, file2) if file2 else None
-        file3 = os.path.join(results_path, file2) if file3 else None
+        file3 = os.path.join(results_path, file3) if file3 else None
 
         return file1, file2, file3
 
@@ -1008,6 +1003,7 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
         tally_numbers = sim_output.tally_numbers
         tally_comments = sim_output.tally_comments
         return sim_output, tally_numbers, tally_comments
+
 
 class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
     def _read_code_version(self, simulation_path: os.PathLike) -> str | None:
@@ -1028,7 +1024,7 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
         version = statepoint.version
         return version
 
-    def _get_output_files(self, results_path):
+    def _get_output_files(self, results_path: str | os.PathLike) -> tuple:
         """
         Recover the output files from a directory
 
@@ -1057,7 +1053,7 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
 
         for file_name in os.listdir(results_path):
             if file_name.endswith(".out"):
-                    file1 = file_name
+                file1 = file_name
             elif file_name.startswith("statepoint"):
                 file2 = file_name
 
@@ -1076,10 +1072,16 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
         sim_output = OpenMCSimOutput(sfile)
         tally_numbers = sim_output.output.tally_numbers
         tally_comments = sim_output.output.tally_comments
-        return sim_output, tally_numbers, tally_comments  
+        return sim_output, tally_numbers, tally_comments
+
 
 class MCNPSimOutput:
-    def __init__(self, mctal_file, output_file, meshtal_file=None):
+    def __init__(
+        self,
+        mctal_file: str | os.PathLike,
+        output_file: str | os.PathLike,
+        meshtal_file: str | os.PathLike | None = None,
+    ):
         """
         Class representing all outputs coming from and MCNP run
 
@@ -1177,17 +1179,20 @@ class MCNPSimOutput:
             if len(tally.tallyComment) > 0:
                 self.tally_comments.append(tally.tallyComment[0])
             else:
-                self.tally_comments.append('')
+                self.tally_comments.append("")
 
-class OpenMCSimOutput:    
-    def __init__(self, output_path):
+
+class OpenMCSimOutput:
+    def __init__(self, output_path: str | os.PathLike) -> None:
         self.output = omc.OpenMCStatePoint(output_path)
         self.tally_numbers = self.output.tally_numbers
         self.tally_comments = self.output.tally_comments
         self.tallydata, self.totalbin = self.process_tally()
-        self.stat_checks = None    
-    
-    def _create_dataframes(self, tallies):
+        self.stat_checks = None
+
+    def _create_dataframes(
+        self, tallies: dict
+    ) -> tuple[dict[int, pd.DataFrame], dict[int, pd.DataFrame]]:
         tallydata = {}
         totalbin = {}
         filter_lookup = {
@@ -1239,7 +1244,7 @@ class OpenMCSimOutput:
             totalbin[id] = None
         return tallydata, totalbin
 
-    def process_tally(self):
+    def process_tally(self) -> tuple[dict[int, pd.DataFrame], dict[int, pd.DataFrame]]:
         tallies = self.output.tallies_to_dataframes()
         tallydata, totalbin = self._create_dataframes(tallies)
         return tallydata, totalbin

@@ -1067,7 +1067,9 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
 
         return file1, file2
 
-    def parse_output_data(self, results_path):
+    def parse_output_data(
+        self, results_path: str | os.PathLike
+    ) -> tuple[OpenMCSimOutput, list, list]:
         _, sfile = self._get_output_files(results_path)
         sim_output = OpenMCSimOutput(sfile)
         tally_numbers = sim_output.output.tally_numbers

@@ -187,10 +187,10 @@ def _get_output(action, code, testname, lib, session):
 
     else:
         if code in ['mcnp', 'd1s']:
-            return bencho.MCNPOutput(lib, code, testname, session)
+            return bencho.MCNPBenchmarkOutput(lib, code, testname, session)
         elif code == 'openmc':
-            return bencho.OpenMCOutput(lib, code, testname, session)
+            return bencho.OpenMCBenchmarkOutput(lib, code, testname, session)
         else:
-            raise NotImplementedError('Code has not been implemented')
+            raise NotImplementedError(f'Code {code} has not been implemented')
 
     return out

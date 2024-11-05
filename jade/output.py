@@ -203,7 +203,7 @@ class AbstractBenchmarkOutput(abc.ABC):
         To be executed when a comparison is requested
         """
 
-    def _read_metadata_run(self, pathtofile: os.PathLike) -> dict:
+    def _read_metadata_run(self, simulation_folder: os.PathLike) -> dict:
         """Retrieve the metadata from the run
 
         Parameters
@@ -218,17 +218,17 @@ class AbstractBenchmarkOutput(abc.ABC):
         """
         try:
             with open(
-                os.path.join(pathtofile, "metadata.json"),
+                os.path.join(simulation_folder, "metadata.json"),
                 "r",
                 encoding="utf-8",
             ) as file:
                 metadata = json.load(file)
         except FileNotFoundError:
-            logging.warning("No metadata file found at %s", pathtofile)
+            logging.warning("No metadata file found at %s", simulation_folder)
             metadata = {}
 
         metadata["jade_version"] = __version__
-        metadata["code_version"] = self._read_code_version(pathtofile)
+        metadata["code_version"] = self._read_code_version(simulation_folder)
 
         return metadata
 
@@ -711,237 +711,222 @@ The application will now exit """.format(
         # name_tag = "Generic_comparison.xlsx"
         # template = os.path.join(os.getcwd(), "templates", name_tag)
 
-        if self.mcnp or self.d1s:
-            mcnp_outputs = {}
-            comps = {}
-            abs_diffs = {}
-            std_devs = {}
-            for reflib, tarlib, name in self.couples:
-                lib_to_comp = name
-                outfolder_path = self.excel_path
-                outpath = os.path.join(
-                    outfolder_path, "Comparison_" + name + f"_{self.code}.xlsx"
-                )
+        sim_outputs = {}
+        tally_numbers = {}
+        tally_comments = {}
+        comps = {}
+        abs_diffs = {}
+        std_devs = {}
+        for reflib, tarlib, name in self.couples:
+            lib_to_comp = name
+            outfolder_path = self.excel_path
+            outpath = os.path.join(
+                outfolder_path, "Comparison_" + name + f"_{self.code}.xlsx"
+            )
 
-                # ex = ExcelOutputSheet(template, outpath)
-                # Get results
+            # ex = ExcelOutputSheet(template, outpath)
+            # Get results
 
-                # for lib in to_read:
-                #    results_path = self.test_path[lib]
-                for lib, results_path in {
-                    reflib: os.path.join(self.test_path[reflib], self.code),
-                    tarlib: os.path.join(self.test_path[tarlib], self.code),
-                }.items():
-                    # Get mfile and outfile and possibly meshtal file
-                    meshtalfile = None
-                    for file in os.listdir(results_path):
-                        if file[-1] == "m":
-                            mfile = os.path.join(results_path, file)
-                        elif file[-1] == "o":
-                            ofile = os.path.join(results_path, file)
-                        elif file[-4:] == "msht":
-                            meshtalfile = os.path.join(results_path, file)
-                    # Parse output
-                    mcnp_output = MCNPOutput(mfile, ofile, meshtal_file=meshtalfile)
-                    mcnp_outputs[lib] = mcnp_output
-                # Build the comparison
-                for label in ["Value", "Error"]:
-                    for tally in mcnp_outputs[reflib].mctal.tallies:
-                        num = tally.tallyNumber
-                        key = tally.tallyComment[0]
+            # for lib in to_read:
+            #    results_path = self.test_path[lib]
+            for lib, results_path in {
+                reflib: os.path.join(self.test_path[reflib], self.code),
+                tarlib: os.path.join(self.test_path[tarlib], self.code),
+            }.items():
+                # Parse output
+                sim_outputs[lib], tally_numbers[lib], tally_comments[lib] = self.parse_output_data(results_path)
+            # Build the comparison
+            for label in ["Value", "Error"]:
+                for num, key in zip(tally_numbers[reflib], tally_comments[reflib]):
+                    # Full tally data
+                    tdata_ref = sim_outputs[reflib].tallydata[num].copy()
+                    tdata_tar = sim_outputs[tarlib].tallydata[num].copy()
+                    try:
+                        tally_settings = ex_cnf.loc[num]
+                    except KeyError:
+                        print(
+                            " Warning!: tally n."
+                            + str(num)
+                            + " is not in configuration"
+                        )
+                        continue
 
-                        # Full tally data
-                        tdata_ref = mcnp_outputs[reflib].tallydata[num].copy()
-                        tdata_tar = mcnp_outputs[tarlib].tallydata[num].copy()
+                    # Re-Elaborate tdata Dataframe
+                    x_name = tally_settings["x"]
+                    x_tag = tally_settings["x name"]
+                    y_name = tally_settings["y"]
+                    # y_tag = tally_settings["y name"]
+                    # ylim = tally_settings["cut Y"]
+                    # select the index format
+                    if label == "Value":
+                        for dic in [comps, abs_diffs, std_devs]:
+                            dic[num] = {"title": key, "x_label": x_tag}
+
+                    # if x_name == "Energy":
+                    #     idx_format = "0.00E+00"
+                    #     # TODO all possible cases should be addressed
+                    # else:
+                    #     idx_format = "0"
+
+                    if y_name != "tally":
+                        tdata_ref.set_index(x_name, inplace=True)
+                        tdata_tar.set_index(x_name, inplace=True)
+                        x_set = list(set(tdata_ref.index))
+                        y_set = list(set(tdata_ref[y_name].values))
+                        rows_fin = []
+                        rows_abs_diff = []
+                        rows_std_dev = []
+                        for xval in x_set:
+                            try:
+                                ref = tdata_ref.loc[xval, "Value"].values
+                                ref_err = tdata_ref.loc[xval, "Error"].values
+                                tar = tdata_tar.loc[xval, "Value"].values
+                                # !!! True divide warnings are suppressed !!!
+                                with np.errstate(divide="ignore", invalid="ignore"):
+                                    row_fin = (ref - tar) / ref
+                                    row_abs_diff = ref - tar
+                                    row_std_dev = row_abs_diff / (ref_err * ref)
+                                prev_len = len(ref)
+                            except AttributeError:
+                                # This is raised when total values are
+                                # collected only for one bin.
+                                # the rest needs to be filled by nan
+                                ref = tdata_ref.loc[xval, "Value"]
+                                ref_err = tdata_ref.loc[xval, "Error"]
+                                tar = tdata_tar.loc[xval, "Value"]
+                                row_fin = []
+                                row_abs_diff = []
+                                row_std_dev = []
+                                for i in range(prev_len - 1):
+                                    row_fin.append(np.nan)
+                                    row_abs_diff.append(np.nan)
+                                    row_std_dev.append(np.nan)
+                                row_fin.append((ref - tar) / ref)
+                                row_abs_diff.append(ref - tar)
+                                row_std_dev.append((ref - tar) / (ref_err * ref))
+
+                            rows_fin.append(row_fin)
+                            rows_abs_diff.append(row_abs_diff)
+                            rows_std_dev.append(row_std_dev)
                         try:
-                            tally_settings = ex_cnf.loc[num]
+                            final = pd.DataFrame(
+                                rows_fin, columns=y_set, index=x_set
+                            )
+                            abs_diff = pd.DataFrame(
+                                rows_abs_diff, columns=y_set, index=x_set
+                            )
+                            std_dev = pd.DataFrame(
+                                rows_std_dev, columns=y_set, index=x_set
+                            )
+                            for df in [final, abs_diff, std_dev]:
+                                df.index.name = x_name
+                                df.replace(np.nan, "Not Available", inplace=True)
+                                df.replace(float(0), "Identical", inplace=True)
+                                df.replace(-np.inf, "Reference = 0", inplace=True)
+                                df.replace(1, "Target = 0", inplace=True)
+                        except ValueError:
+                            print(
+                                CRED
+                                + """
+        A ValueError was triggered, a probable cause may be that more than 2 binnings
+            are defined in tally {}. This is a fatal exception,  application will now
+        close""".format(
+                                    str(num)
+                                )
+                                + CEND
+                            )
+                            # Safely exit from excel and from application
+                            sys.exit()
+
+                        # reorder index and quick index reset
+                        for df in [final, abs_diff, std_dev]:
+                            df.reset_index(inplace=True)
+                            df = self._reorder_df(df, x_name)
+                            df.set_index(x_name, inplace=True)
+                        comps[num][label] = final
+                        abs_diffs[num][label] = abs_diff
+                        std_devs[num][label] = std_dev
+                        # insert the df in pieces
+                        # ex.insert_cutted_df(
+                        #    "B",
+                        #    main_value_df,
+                        #    "Comparison",
+                        #    ylim,
+                        #    header=(key, "Tally n." + str(num)),
+                        #    index_name=x_tag,
+                        #    cols_name=y_tag,
+                        #    index_num_format=idx_format,
+                        #    values_format="0.00%",
+                        # )
+                    else:
+                        # reorder dfs
+                        try:
+                            tdata_ref = self._reorder_df(tdata_ref, x_name)
                         except KeyError:
                             print(
-                                " Warning!: tally n."
-                                + str(num)
-                                + " is not in configuration"
+                                CRED
+                                + """
+    {} is not available in tally {}. Please check the configuration file.
+    The application will now exit """.format(
+                                    x_name, str(num)
+                                )
+                                + CEND
                             )
-                            continue
+                            # Safely exit from excel and from application
+                            sys.exit()
 
-                        # Re-Elaborate tdata Dataframe
-                        x_name = tally_settings["x"]
-                        x_tag = tally_settings["x name"]
-                        y_name = tally_settings["y"]
-                        # y_tag = tally_settings["y name"]
-                        # ylim = tally_settings["cut Y"]
-                        # select the index format
-                        if label == "Value":
-                            for dic in [comps, abs_diffs, std_devs]:
-                                dic[num] = {"title": key, "x_label": x_tag}
+                        del tdata_ref["Error"]
+                        tdata_ref.set_index(x_name, inplace=True)
 
-                        # if x_name == "Energy":
-                        #     idx_format = "0.00E+00"
-                        #     # TODO all possible cases should be addressed
-                        # else:
-                        #     idx_format = "0"
+                        tdata_tar = self._reorder_df(tdata_tar, x_name)
+                        del tdata_tar["Error"]
+                        tdata_tar.set_index(x_name, inplace=True)
 
-                        if y_name != "tally":
-                            tdata_ref.set_index(x_name, inplace=True)
-                            tdata_tar.set_index(x_name, inplace=True)
-                            x_set = list(set(tdata_ref.index))
-                            y_set = list(set(tdata_ref[y_name].values))
-                            rows_fin = []
-                            rows_abs_diff = []
-                            rows_std_dev = []
-                            for xval in x_set:
-                                try:
-                                    ref = tdata_ref.loc[xval, "Value"].values
-                                    ref_err = tdata_ref.loc[xval, "Error"].values
-                                    tar = tdata_tar.loc[xval, "Value"].values
-                                    # !!! True divide warnings are suppressed !!!
-                                    with np.errstate(divide="ignore", invalid="ignore"):
-                                        row_fin = (ref - tar) / ref
-                                        row_abs_diff = ref - tar
-                                        row_std_dev = row_abs_diff / (ref_err * ref)
-                                    prev_len = len(ref)
-                                except AttributeError:
-                                    # This is raised when total values are
-                                    # collected only for one bin.
-                                    # the rest needs to be filled by nan
-                                    ref = tdata_ref.loc[xval, "Value"]
-                                    ref_err = tdata_ref.loc[xval, "Error"]
-                                    tar = tdata_tar.loc[xval, "Value"]
-                                    row_fin = []
-                                    row_abs_diff = []
-                                    row_std_dev = []
-                                    for i in range(prev_len - 1):
-                                        row_fin.append(np.nan)
-                                        row_abs_diff.append(np.nan)
-                                        row_std_dev.append(np.nan)
-                                    row_fin.append((ref - tar) / ref)
-                                    row_abs_diff.append(ref - tar)
-                                    row_std_dev.append((ref - tar) / (ref_err * ref))
+                        # !!! True divide warnings are suppressed !!!
+                        with np.errstate(divide="ignore", invalid="ignore"):
+                            comp_df = (tdata_ref - tdata_tar) / tdata_ref
+                            abs_diff_df = tdata_ref - tdata_tar
+                            std_dev_df = abs_diff_df
+                        comps[num][label] = comp_df
+                        abs_diffs[num][label] = abs_diff_df
+                        std_devs[num][label] = abs_diff_df
+                        # Insert DF
+                        # ex.insert_df(
+                        #    "B",
+                        #    df,
+                        #    "Comparison",
+                        #    print_index=True,
+                        #    header=(key, "Tally n." + str(num)),
+                        #    values_format="0.00%",
+                        # )
 
-                                rows_fin.append(row_fin)
-                                rows_abs_diff.append(row_abs_diff)
-                                rows_std_dev.append(row_std_dev)
-                            try:
-                                final = pd.DataFrame(
-                                    rows_fin, columns=y_set, index=x_set
-                                )
-                                abs_diff = pd.DataFrame(
-                                    rows_abs_diff, columns=y_set, index=x_set
-                                )
-                                std_dev = pd.DataFrame(
-                                    rows_std_dev, columns=y_set, index=x_set
-                                )
-                                for df in [final, abs_diff, std_dev]:
-                                    df.index.name = x_name
-                                    df.replace(np.nan, "Not Available", inplace=True)
-                                    df.replace(float(0), "Identical", inplace=True)
-                                    df.replace(-np.inf, "Reference = 0", inplace=True)
-                                    df.replace(1, "Target = 0", inplace=True)
-                            except ValueError:
-                                print(
-                                    CRED
-                                    + """
-            A ValueError was triggered, a probable cause may be that more than 2 binnings
-             are defined in tally {}. This is a fatal exception,  application will now
-            close""".format(
-                                        str(num)
-                                    )
-                                    + CEND
-                                )
-                                # Safely exit from excel and from application
-                                sys.exit()
+            # Compile general infos in the sheet
+            # ws = ex.current_ws
+            # title = self.testname + " RESULTS RECAP: Comparison"
+            # ws.range("A3").value = title
+            # ws.range("C1").value = tarlib + " Vs " + reflib
 
-                            # reorder index and quick index reset
-                            for df in [final, abs_diff, std_dev]:
-                                df.reset_index(inplace=True)
-                                df = self._reorder_df(df, x_name)
-                                df.set_index(x_name, inplace=True)
-                            comps[num][label] = final
-                            abs_diffs[num][label] = abs_diff
-                            std_devs[num][label] = std_dev
-                            # insert the df in pieces
-                            # ex.insert_cutted_df(
-                            #    "B",
-                            #    main_value_df,
-                            #    "Comparison",
-                            #    ylim,
-                            #    header=(key, "Tally n." + str(num)),
-                            #    index_name=x_tag,
-                            #    cols_name=y_tag,
-                            #    index_num_format=idx_format,
-                            #    values_format="0.00%",
-                            # )
-                        else:
-                            # reorder dfs
-                            try:
-                                tdata_ref = self._reorder_df(tdata_ref, x_name)
-                            except KeyError:
-                                print(
-                                    CRED
-                                    + """
-     {} is not available in tally {}. Please check the configuration file.
-     The application will now exit """.format(
-                                        x_name, str(num)
-                                    )
-                                    + CEND
-                                )
-                                # Safely exit from excel and from application
-                                sys.exit()
+            # Add single pp sheets
+            # for lib in [reflib, tarlib]:
+            #    cp = self.state.get_path(
+            #        "single", [lib, self.testname, "Excel"])
+            #    file = os.listdir(cp)[0]
+            #    cp = os.path.join(cp, file)
+            #    ex.copy_sheets(cp)
 
-                            del tdata_ref["Error"]
-                            tdata_ref.set_index(x_name, inplace=True)
-
-                            tdata_tar = self._reorder_df(tdata_tar, x_name)
-                            del tdata_tar["Error"]
-                            tdata_tar.set_index(x_name, inplace=True)
-
-                            # !!! True divide warnings are suppressed !!!
-                            with np.errstate(divide="ignore", invalid="ignore"):
-                                comp_df = (tdata_ref - tdata_tar) / tdata_ref
-                                abs_diff_df = tdata_ref - tdata_tar
-                                std_dev_df = abs_diff_df
-                            comps[num][label] = comp_df
-                            abs_diffs[num][label] = abs_diff_df
-                            std_devs[num][label] = abs_diff_df
-                            # Insert DF
-                            # ex.insert_df(
-                            #    "B",
-                            #    df,
-                            #    "Comparison",
-                            #    print_index=True,
-                            #    header=(key, "Tally n." + str(num)),
-                            #    values_format="0.00%",
-                            # )
-
-                # Compile general infos in the sheet
-                # ws = ex.current_ws
-                # title = self.testname + " RESULTS RECAP: Comparison"
-                # ws.range("A3").value = title
-                # ws.range("C1").value = tarlib + " Vs " + reflib
-
-                # Add single pp sheets
-                # for lib in [reflib, tarlib]:
-                #    cp = self.state.get_path(
-                #        "single", [lib, self.testname, "Excel"])
-                #    file = os.listdir(cp)[0]
-                #    cp = os.path.join(cp, file)
-                #    ex.copy_sheets(cp)
-
-                # ex.save()
-                self.outputs[self.code] = comps
-                exsupp.comp_excel_writer(
-                    self,
-                    outpath,
-                    lib_to_comp,
-                    self.testname,
-                    comps,
-                    abs_diffs,
-                    std_devs,
-                )
+            # ex.save()
+            self.outputs[self.code] = comps
+            exsupp.comp_excel_writer(
+                self,
+                outpath,
+                lib_to_comp,
+                self.testname,
+                comps,
+                abs_diffs,
+                std_devs,
+            )
 
 class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
-    def __init__(self):
-        super().__init__(self)    
-
     def _read_code_version(self, ofile: os.PathLike) -> str | None:
         """Read MCNP code version from the output file
 
@@ -1025,9 +1010,6 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
         return sim_output, tally_numbers, tally_comments
 
 class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
-    def __init__(self):
-        super().__init__(self)
-    
     def _read_code_version(self, spfile: os.PathLike) -> str | None:
         """Read OpenMC code version from the statepoint file
 
@@ -1089,7 +1071,7 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
         return file1, file2
 
     def parse_output_data(self, results_path):
-        outfile, sfile = self._get_output_files(results_path)
+        _, sfile = self._get_output_files(results_path)
         sim_output = OpenMCSimOutput(sfile)
         tally_numbers = sim_output.output.tally_numbers
         tally_comments = sim_output.output.tally_comments

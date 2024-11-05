@@ -31,6 +31,7 @@ import string
 import sys
 import json
 import logging
+from enum import Enum
 from typing import TYPE_CHECKING
 from f4enix.output.mctal import Mctal, Tally
 from f4enix.output.meshtal import Meshtal, Fmesh1D
@@ -59,6 +60,20 @@ if TYPE_CHECKING:
 # RED color
 CRED = "\033[91m"
 CEND = "\033[0m"
+
+class BinningType(Enum):
+    ENERGY = 'Energy'
+    CELLS = 'Cells'
+    TIME = 'Time'
+    TALLY = 'tally'
+    DIR = 'Dir'
+    USER = 'User'
+    SEGMENTS = 'Segments'
+    MULTIPLIER = 'Multiplier'
+    COSINE = 'Cosine'
+    CORA = 'Cor A'
+    CORB = 'Cor B'
+    CORC = 'Cor C'
 
 
 class AbstractOutput(abc.ABC):

@@ -21,14 +21,21 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
+
+from __future__ import annotations
+
 import datetime
 import logging
 import os
 import sys
+from dataclasses import dataclass
 
 import pandas as pd
+import yaml
 
 from jade.exceptions import fatal_exception
+from jade.output import BinningType
+from jade.plotter import PlotType
 
 
 class Configuration:
@@ -208,3 +215,99 @@ class Configuration:
         except KeyError:
             name = suffix
         return name
+
+
+@dataclass
+class ComputationalConfig:
+    """Configuration for a computational benchmark.
+
+    Attributes
+    ----------
+    excel_options : dict[int, ExcelOptions]
+        Options for the Excel benchmark.
+    atlas_options : dict[int, AtlasOptions]
+        Options for the Atlas benchmark.
+    """
+
+    excel_options: dict[int, ExcelOptions]
+    atlas_options: dict[int, AtlasOptions]
+
+    @classmethod
+    def from_yaml(cls, file: str | os.PathLike) -> ComputationalConfig:
+        """Build the configuration for a computational benchmark from a yaml file.
+
+        Parameters
+        ----------
+        file : str | os.PathLike
+            path to the yaml file.
+
+        Returns
+        -------
+        ComputationalConfig
+            The configuration for the computational benchmark.
+        """
+        with open(file) as f:
+            cfg = yaml.safe_load(f)
+
+        atlas_options = {}
+        for key, value in cfg["Atlas"].items():
+            atlas_options[int(key)] = AtlasOptions(**value)
+
+        excel_options = {}
+        for key, value in cfg["Excel"].items():
+            excel_options[int(key)] = ExcelOptions(**value)
+
+        return cls(excel_options=excel_options, atlas_options=atlas_options)
+
+
+@dataclass
+class ExcelOptions:
+    identifier: int  # identifier of the tally
+    x: BinningType | list[BinningType]  # tally dataframe column name to use for x axis
+    x_name: str  # x label
+    y: BinningType | list[BinningType]  # tally dataframe column name to use for y axis
+    y_name: str  # y label
+    cut_y: int | None = (
+        None  # max number of columns, after that the DF is split and goes to next line
+    )
+
+    def __post_init__(self):
+        # enforce that the binning type is a valid one, try to convert if possible
+        for attribute in [self.x, self.y]:
+            if type(attribute) is str:
+                split = attribute.split("-")
+                if len(split) > 1:
+                    attribute = []
+                    for bintype in split:
+                        try:
+                            attribute.append(BinningType(bintype))
+                        except ValueError:
+                            raise ValueError(f"Invalid binning type: {bintype}")
+                else:
+                    try:
+                        attribute = BinningType(attribute)
+                    except ValueError:
+                        raise ValueError(f"Invalid binning type: {attribute}")
+        # try:
+        #     self.x = BinningType(self.x)
+        # except ValueError:
+        #     raise ValueError(f"Invalid binning type for x: {self.x}")
+        # try:
+        #     self.y = BinningType(self.y)
+        # except ValueError:
+        #     raise ValueError(f"Invalid binning type for y: {self.y}")
+
+
+@dataclass
+class AtlasOptions:
+    identifier: int  # identifier of the tally
+    plot_type: PlotType  # type of plot
+    quantity: str | None = None  # quantity plotted (goes on the y axis of plots)
+    unit: str | None = None  # unit of the quantity
+
+    def __post_init__(self):
+        # enforce that the plot type is a valid one
+        try:
+            self.plot_type = PlotType(self.plot_type)
+        except ValueError:
+            raise ValueError(f"Invalid plot type: {self.plot_type}")

@@ -62,6 +62,10 @@ JADE has now been installed as a command line tool and should now be initialised
   | ``cd ../``
   | ``jade``
 
+If permissions errors are encountered, the user may instead run:
+
+  | ``python -m jade``
+
 The folder strucure should now look like the following:
 ::
       <JADE_root>

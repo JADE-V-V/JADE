@@ -66,6 +66,9 @@ class TestComputationalConfig:
                 assert cfg
 
     def test_allowables(self):
+        cfg = ComputationalConfig.from_yaml(os.path.join(resources, "ITER_1D.yaml"))
+        # ensure that ints are correctly converted
+        assert cfg.excel_options[44]
         # additional keyword not supported by the data class
         with pytest.raises(TypeError):
             cfg = ComputationalConfig.from_yaml(

@@ -934,6 +934,9 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
             version of the MCNP code used to run the benchmark
         """
 
+        if self.testname in ['Sphere', 'SphereSDDR']:
+            if not os.path.exists(simulation_folder):
+                return None
         _, outf, _ = self._get_output_files(simulation_folder)
         outp = MCNPOutputFile(outf)
         try:
@@ -1019,6 +1022,9 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
         str | None
             version of the OpenMC code used to run the benchmark
         """
+        if self.testname in ['Sphere', 'SphereSDDR']:
+            if not os.path.exists(simulation_path):
+                return None
         _, spfile = self._get_output_files(simulation_path)
         statepoint = omc.OpenMCStatePoint(spfile)
         version = statepoint.version

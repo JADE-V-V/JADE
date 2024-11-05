@@ -52,8 +52,7 @@ from jade.__openmc__ import OMC_AVAIL
 if OMC_AVAIL:
     import jade.openmc as omc
 
-
-class SphereOutput(AbstractBenchmarkOutput):
+class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
     def __init__(self, lib: str, code: str, testname: str, session: Session):
         """
         Initialises the SphereOutput class from the general BenchmarkOutput
@@ -98,15 +97,6 @@ class SphereOutput(AbstractBenchmarkOutput):
             # means that self.test_path is a dict, hence a comparison. No
             # metadata involved here
             self.metadata = None
-
-    def _get_output_files(self, resuts_path):
-        pass
-
-    def _read_code_version(self, pathtofile):
-        pass
-    
-    def parse_output_data(self, results_path):
-        pass
     
     def single_postprocess(self):
         """

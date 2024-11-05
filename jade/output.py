@@ -184,15 +184,21 @@ class AbstractBenchmarkOutput(abc.ABC):
             # Read the metadata
             results_path = os.path.join(self.test_path, code)
             self.metadata = self._read_metadata_run(results_path)         
-    
+
+    @abc.abstractmethod    
+    def _read_code_version(self, pathtofile):
+        """
+        To be executed when a comparison is requested
+        """
+
     @abc.abstractmethod
     def _get_output_files(self, results_path):
         """
         To be executed when a comparison is requested
         """
 
-    @abc.abstractmethod    
-    def _read_code_version(self, pathtofile):
+    @abc.abstractmethod
+    def parse_output_data(self, results_path):
         """
         To be executed when a comparison is requested
         """
@@ -529,33 +535,10 @@ class AbstractBenchmarkOutput(abc.ABC):
             self.excel_path, self.testname + "_" + self.lib + ".xlsx"
         )
 
-        if self.openmc:
-            results_path = os.path.join(self.test_path, self.code)
-            outfile = self._get_output_files(results_path)
-            sim_output = OpenMCOutput(outfile)
-            tally_numbers = sim_output.output.tally_numbers
-            tally_comments = sim_output.output.tally_comments
-
-        if self.mcnp or self.d1s:
-            # ex = ExcelOutputSheet(template, outpath)
-            # Get results
-            # results = []
-            # errors = []
-            results_path = os.path.join(self.test_path, self.code)
-            # Get mfile and outfile and possibly meshtal file
-            meshtalfile = None
-            for file in os.listdir(results_path):
-                if file[-1] == "m":
-                    mfile = os.path.join(results_path, file)
-                elif file[-1] == "o":
-                    ofile = os.path.join(results_path, file)
-                elif file[-4:] == "msht":
-                    meshtalfile = os.path.join(results_path, file)
-            # Parse output
-            sim_output = MCNPOutput(mfile, ofile, meshtal_file=meshtalfile)
-            tally_numbers = sim_output.tally_numbers
-            tally_comments = sim_output.tally_comments
-
+        # Parse output
+        results_path = os.path.join(self.test_path, self.code)
+        sim_output, tally_numbers, tally_comments = self.parse_output_data(results_path)
+        
         # Adjourn raw Data
         self.raw_data = sim_output.tallydata
 
@@ -1013,12 +996,15 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
         """
         file1 = None
         file2 = None
+        file3 = None
 
         for file_name in os.listdir(results_path):
             if file_name[-1] == "m":
                 file1 = file_name
             elif file_name[-1] == "o":
                 file2 = file_name
+            elif file_name[-4] == 'msht':
+                file3 = file_name
 
         if file1 is None or file2 is None:
             raise FileNotFoundError(
@@ -1027,8 +1013,16 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
 
         file1 = os.path.join(results_path, file1) if file1 else None
         file2 = os.path.join(results_path, file2) if file2 else None
+        file3 = os.path.join(results_path, file2) if file3 else None
 
         return file1, file2
+
+    def parse_output_data(self, results_path):
+        mfile, ofile, meshtalfile = self._get_output_files(results_path)
+        sim_output = MCNPSimOutput(mfile, ofile, meshtal_file=meshtalfile)
+        tally_numbers = sim_output.tally_numbers
+        tally_comments = sim_output.tally_comments
+        return sim_output, tally_numbers, tally_comments
 
 class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
     def __init__(self):
@@ -1090,11 +1084,18 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
             )
 
         file1 = os.path.join(results_path, file1) if file1 else None
-        file2 = os.path.join(results_path, file2) if file1 else None
+        file2 = os.path.join(results_path, file2) if file2 else None
 
-        return file1, file2    
+        return file1, file2
 
-class OpenMCSimOutput:
+    def parse_output_data(self, results_path):
+        outfile, sfile = self._get_output_files(results_path)
+        sim_output = OpenMCSimOutput(sfile)
+        tally_numbers = sim_output.output.tally_numbers
+        tally_comments = sim_output.output.tally_comments
+        return sim_output, tally_numbers, tally_comments  
+
+class MCNPSimOutput:
     def __init__(self, mctal_file, output_file, meshtal_file=None):
         """
         Class representing all outputs coming from and MCNP run

@@ -134,7 +134,7 @@ def _get_output(action, code, testname, lib, session):
     elif testname == "SphereSDDR":
         out = spho.SphereSDDRoutput(lib, code, testname, session)
 
-    elif testname in ["Oktavian"]:
+    elif testname in ["Oktavian", "ASPIS-PCA-Replica_flux"]:
         if action == "compare":
             out = expo.SpectrumOutput(lib, code, testname, session, multiplerun=True)
         elif action == "pp":
@@ -171,9 +171,23 @@ def _get_output(action, code, testname, lib, session):
             print(exp_pp_message)
             return False
 
-    elif testname in ["FNG-BKT", "FNG-W", "ASPIS-Fe88"]:
+    elif testname in [
+        "FNG-BKT",
+        "FNG-W",
+        "ASPIS-Fe88",
+        "FNG-SiC",
+        "ASPIS-PCA-Replica_RR",
+        "FNG-SS",
+    ]:
         if action == "compare":
             out = expo.ShieldingOutput(lib, code, testname, session, multiplerun=True)
+        elif action == "pp":
+            print(exp_pp_message)
+            return False
+
+    elif testname == "FNG-HCPB":
+        if action == "compare":
+            out = expo.fnghcpboutput(lib, testname, session, multiplerun=True)
         elif action == "pp":
             print(exp_pp_message)
             return False

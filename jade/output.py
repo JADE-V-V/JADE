@@ -60,7 +60,7 @@ if TYPE_CHECKING:
 CRED = "\033[91m"
 CEND = "\033[0m"
 
-class AbstractOutput(abc.ABC):
+class AbstractBenchmarkOutput(abc.ABC):
     def __init__(self, lib: str, code: str, testname: str, session: Session):
         """
         General class for a Benchmark output
@@ -183,13 +183,7 @@ class AbstractOutput(abc.ABC):
 
             # Read the metadata
             results_path = os.path.join(self.test_path, code)
-            self.metadata = self._read_metadata_run(results_path)    
-
-    @abc.abstractmethod
-    def initialise(self, *args):
-        """
-        To be executed when a comparison is requested
-        """        
+            self.metadata = self._read_metadata_run(results_path)         
     
     @abc.abstractmethod
     def _get_output_files(self, results_path):
@@ -537,7 +531,7 @@ class AbstractOutput(abc.ABC):
 
         if self.openmc:
             results_path = os.path.join(self.test_path, self.code)
-            outfiles = self._get_output_files(results_path)
+            outfile = self._get_output_files(results_path)
             sim_output = OpenMCOutput(outfile)
             tally_numbers = sim_output.output.tally_numbers
             tally_comments = sim_output.output.tally_comments
@@ -961,11 +955,147 @@ The application will now exit """.format(
                     std_devs,
                 )
 
-class MCNPOutput(AbstractOutput):
+class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
     def __init__(self):
         super().__init__(self)    
 
-    def initialise(self, mctal_file, output_file, meshtal_file=None):
+    def _read_code_version(self, ofile: os.PathLike) -> str | None:
+        """Read MCNP code version from the output file
+
+        Parameters
+        ----------
+        ofile : os.PathLike
+            output file path
+
+        Returns
+        -------
+        str | None
+            version of the MCNP code used to run the benchmark
+        """
+
+        outp = MCNPOutputFile(ofile)
+        try:
+            version = outp.get_code_version()
+            return version
+        except ValueError:
+            logging.warning(
+                "Code version not found in the output file or aux file for %s",
+                ofile,
+            )
+            logging.warning(
+                "Contents of the directory: %s", os.listdir(os.path.dirname(ofile))
+            )
+            return None
+        
+    def _get_output_files(self, results_path):
+        """
+        Recover the output files from a directory
+
+        Parameters
+        ----------
+        results_path : str or path
+            path where the results are contained.
+        code : str
+            code that generated the output ('mcnp' or 'openmc')
+
+        Raises
+        ------
+        FileNotFoundError
+            if the required files are not found.
+
+        Returns
+        -------
+        file1 : path
+            path to the first file
+        file2 : path
+            path to the second file (only for mcnp)
+
+        """
+        file1 = None
+        file2 = None
+
+        for file_name in os.listdir(results_path):
+            if file_name[-1] == "m":
+                file1 = file_name
+            elif file_name[-1] == "o":
+                file2 = file_name
+
+        if file1 is None or file2 is None:
+            raise FileNotFoundError(
+                f"The following path does not contain the required files for {self.code} output: {results_path}"
+            )
+
+        file1 = os.path.join(results_path, file1) if file1 else None
+        file2 = os.path.join(results_path, file2) if file2 else None
+
+        return file1, file2
+
+class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
+    def __init__(self):
+        super().__init__(self)
+    
+    def _read_code_version(self, spfile: os.PathLike) -> str | None:
+        """Read OpenMC code version from the statepoint file
+
+        Parameters
+        ----------
+        spfile : os.PathLike
+            statepoint file path
+
+        Returns
+        -------
+        str | None
+            version of the OpenMC code used to run the benchmark
+        """
+        statepoint = omc.OpenMCStatePoint(spfile)
+        version = statepoint.version
+        return version
+
+    def _get_output_files(self, results_path):
+        """
+        Recover the output files from a directory
+
+        Parameters
+        ----------
+        results_path : str or path
+            path where the results are contained.
+        code : str
+            code that generated the output ('mcnp' or 'openmc')
+
+        Raises
+        ------
+        FileNotFoundError
+            if the required files are not found.
+
+        Returns
+        -------
+        file1 : path
+            path to the first file
+        file2 : path
+            path to the second file (only for mcnp)
+
+        """
+        file1 = None
+        file2 = None
+
+        for file_name in os.listdir(results_path):
+            if file_name.endswith(".out"):
+                    file1 = file_name
+            elif file_name.startswith("statepoint"):
+                file2 = file_name
+
+        if file1 is None or file2 is None:
+            raise FileNotFoundError(
+                f"The following path does not contain the required files for {self.code} output: {results_path}"
+            )
+
+        file1 = os.path.join(results_path, file1) if file1 else None
+        file2 = os.path.join(results_path, file2) if file1 else None
+
+        return file1, file2    
+
+class OpenMCSimOutput:
+    def __init__(self, mctal_file, output_file, meshtal_file=None):
         """
         Class representing all outputs coming from and MCNP run
 
@@ -1059,148 +1189,14 @@ class MCNPOutput(AbstractOutput):
                 else:
                     continue
 
-    def _read_code_version(self, ofile: os.PathLike) -> str | None:
-        """Read MCNP code version from the output file
-
-        Parameters
-        ----------
-        ofile : os.PathLike
-            output file path
-
-        Returns
-        -------
-        str | None
-            version of the MCNP code used to run the benchmark
-        """
-
-        outp = MCNPOutputFile(ofile)
-        try:
-            version = outp.get_code_version()
-            return version
-        except ValueError:
-            logging.warning(
-                "Code version not found in the output file or aux file for %s",
-                ofile,
-            )
-            logging.warning(
-                "Contents of the directory: %s", os.listdir(os.path.dirname(ofile))
-            )
-            return None
-        
-    def _get_output_files(self, results_path):
-        """
-        Recover the output files from a directory
-
-        Parameters
-        ----------
-        results_path : str or path
-            path where the results are contained.
-        code : str
-            code that generated the output ('mcnp' or 'openmc')
-
-        Raises
-        ------
-        FileNotFoundError
-            if the required files are not found.
-
-        Returns
-        -------
-        file1 : path
-            path to the first file
-        file2 : path
-            path to the second file (only for mcnp)
-
-        """
-        file1 = None
-        file2 = None
-
-        for file_name in os.listdir(results_path):
-            if file_name[-1] == "m":
-                file1 = file_name
-            elif file_name[-1] == "o":
-                file2 = file_name
-
-        if file1 is None or file2 is None:
-            raise FileNotFoundError(
-                f"The following path does not contain the required files for {self.code} output: {results_path}"
-            )
-
-        file1 = os.path.join(results_path, file1) if file1 else None
-        file2 = os.path.join(results_path, file2) if file2 else None
-
-        return file1, file2
-
-class OpenMCOutput(AbstractOutput):
-    def __init__(self):
-        super().__init__(self)
-    
-    def initialise(self, output_path):
-        self.output = omc.OpenMCSimOutput(output_path)
+class OpenMCSimOutput:    
+    def __init__(self, output_path):
+        self.output = omc.OpenMCStatePoint(output_path)
         self.tally_numbers = self.output.tally_numbers
         self.tally_comments = self.output.tally_comments
         self.tallydata, self.totalbin = self.process_tally()
-        self.stat_checks = None
-
-    def _read_code_version(self, spfile: os.PathLike) -> str | None:
-        """Read OpenMC code version from the statepoint file
-
-        Parameters
-        ----------
-        spfile : os.PathLike
-            statepoint file path
-
-        Returns
-        -------
-        str | None
-            version of the OpenMC code used to run the benchmark
-        """
-        statepoint = omc.OpenMCSimOutput(spfile)
-        version = statepoint.version
-        return version
-
-    def _get_output_files(self, results_path):
-        """
-        Recover the output files from a directory
-
-        Parameters
-        ----------
-        results_path : str or path
-            path where the results are contained.
-        code : str
-            code that generated the output ('mcnp' or 'openmc')
-
-        Raises
-        ------
-        FileNotFoundError
-            if the required files are not found.
-
-        Returns
-        -------
-        file1 : path
-            path to the first file
-        file2 : path
-            path to the second file (only for mcnp)
-
-        """
-        file1 = None
-        file2 = None
-
-        for file_name in os.listdir(results_path):
-            if file_name.endswith(".out"):
-                    file1 = file_name
-            elif file_name.startswith("statepoint"):
-                file2 = file_name
-
-        if file1 is None or file2 is None:
-            raise FileNotFoundError(
-                f"The following path does not contain the required files for {self.code} output: {results_path}"
-            )
-
-        file1 = os.path.join(results_path, file1) if file1 else None
-        file2 = os.path.join(results_path, file2) if file1 else None
-
-        return file1, file2    
-
+        self.stat_checks = None    
+    
     def _create_dataframes(self, tallies):
         tallydata = {}
         totalbin = {}

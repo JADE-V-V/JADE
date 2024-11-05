@@ -233,7 +233,7 @@ class OpenMCInputFiles:
         self.materials.export_to_xml(os.path.join(path, "materials.xml"))
 
 
-class OpenMCSimOutput:
+class OpenMCStatePoint:
     def __init__(self, spfile_path: str) -> None:
         """Class for handling OpenMC tatepoint file
 

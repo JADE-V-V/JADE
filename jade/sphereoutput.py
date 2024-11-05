@@ -1340,7 +1340,7 @@ class SphereOpenMCSimOutput(OpenMCSimOutput, SphereTallyOutput):
         return tallydata, totalbin
 
 
-class SphereSDDRoutput(SphereOutput):
+class SphereSDDROutput(SphereOutput):
     times = ["0s", "2.7h", "24h", "11.6d", "30d", "10y"]
     timecols = {
         "0s": "1.0",

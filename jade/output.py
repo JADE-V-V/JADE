@@ -1145,8 +1145,14 @@ class MCNPSimOutput:
                         pass  # no user column
 
         self.mctal = mctal
-        self.tally_numbers = [tally.tallyNumber for tally in self.mctal.tallies]
-        self.tally_comments = [tally.tallyComment[0] for tally in self.mctal.tallies]
+        self.tally_numbers = []
+        self.tally_comments = []
+        for tally in self.mctal.tallies:
+            self.tally_numbers.append(tally.tallyNumber)
+            if len(tally.tallyComment) > 0:
+                self.tally_comments.append(tally.tallyComment[0])
+            else:
+                self.tally_comments.append('')
         self.tallydata = tallydata
         self.totalbin = total_bin
         # Read the output file

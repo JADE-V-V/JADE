@@ -169,9 +169,9 @@ class TestBenchmarkOutput:
             os.path.join(cp, "TestFiles", "output", "config_itercyl.xlsx")
         )
         session = MockSession(conf, tmpdir)
-        out = output.BenchmarkOutput("99c", "d1s", "ITER_Cyl_SDDR", session)
+        out = output.MCNPBenchmarkOutput("99c", "d1s", "ITER_Cyl_SDDR", session)
         out.single_postprocess()
-        out = output.BenchmarkOutput("93c", "d1s", "ITER_Cyl_SDDR", session)
+        out = output.MCNPBenchmarkOutput("93c", "d1s", "ITER_Cyl_SDDR", session)
         out.single_postprocess()
         compareBenchmark(session, "99c-93c", "d1s", ["ITER_Cyl_SDDR"], exp=False)
 

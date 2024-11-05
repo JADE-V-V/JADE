@@ -132,7 +132,7 @@ def _get_output(action, code, testname, lib, session):
         out = spho.SphereOutput(lib, code, testname, session)
 
     elif testname == "SphereSDDR":
-        out = spho.SphereSDDRoutput(lib, code, testname, session)
+        out = spho.SphereSDDROutput(lib, code, testname, session)
 
     elif testname in ["Oktavian"]:
         if action == "compare":

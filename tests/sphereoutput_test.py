@@ -42,7 +42,7 @@ from jade.configuration import Configuration
 from f4enix.input.libmanager import LibManager
 from jade.status import Status
 from jade.__version__ import __version__
-from jade.output import MCNPoutput
+from jade.output import MCNPSimOutput
 import jade.sphereoutput as sout
 
 
@@ -150,7 +150,7 @@ class TestSphereOutput:
         assert "M10" == results[1]["Zaid"]
 
 
-class MockSphereSDDRoutput(sout.SphereSDDRoutput):
+class MockSphereSDDROutput(sout.SphereSDDROutput):
     def __init__(self):
         self.lib = "99c"
         self.testname = "SphereSDDR"
@@ -167,8 +167,8 @@ class MockSphereSDDRoutput(sout.SphereSDDRoutput):
         self.d1s = True
 
 
-class TestSphereSDDRoutput:
-    mockoutput = MockSphereSDDRoutput()
+class TestSphereSDDROutput:
+    mockoutput = MockSphereSDDROutput()
 
     @pytest.fixture
     def lm(self):
@@ -228,16 +228,16 @@ class TestSphereSDDRoutput:
         session.conf = Configuration(os.path.join(resources, "config_SphereSDDR.xlsx"))
         # do the single pp first
         for lib in ["99c", "98c", "93c"]:
-            output = sout.SphereSDDRoutput(lib, "d1s", "SphereSDDR", session)
+            output = sout.SphereSDDROutput(lib, "d1s", "SphereSDDR", session)
             output.single_postprocess()
-        output = sout.SphereSDDRoutput(
+        output = sout.SphereSDDROutput(
             ["98c", "99c", "93c"], "d1s", "SphereSDDR", session
         )
         output.compare()
         assert True
 
 
-class TestSphereSDDRMCNPoutput:
+class TestSphereSDDRMCNPOutput:
 
     out = sout.SphereSDDRMCNPOutput(
         os.path.join(resources, "SphereSDDR_11023_Na-23_102_m"),

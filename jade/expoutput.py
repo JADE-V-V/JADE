@@ -36,7 +36,7 @@ from tqdm import tqdm
 
 import jade.atlas as at
 from f4enix.input.MCNPinput import D1S_Input
-from jade.output import AbstractBenchmarkOutput
+from jade.output import MCNPBenchmarkOutput
 from jade.output import MCNPSimOutput
 from jade.plotter import Plotter
 from jade.status import EXP_TAG
@@ -75,7 +75,7 @@ ACTIVATION_REACTION = {
 }
 
 
-class ExperimentalOutput(AbstractBenchmarkOutput):
+class ExperimentalOutput(MCNPBenchmarkOutput):
     def __init__(self, *args, **kwargs):
         """
         This extends the Benchmark Output and creates an abstract class
@@ -213,9 +213,9 @@ class ExperimentalOutput(AbstractBenchmarkOutput):
     def _extract_single_output(
         self, results_path: os.PathLike, folder: str, lib: str
     ) -> tuple[pd.DataFrame, str]:
-        mfile, ofile = self._get_output_files(results_path, "mcnp")
+        mfile, ofile, meshtalfile = self._get_output_files(results_path)
         # Parse output
-        output = MCNPoutput(mfile, ofile)
+        output = MCNPSimOutput(mfile, ofile, meshtalfile)
 
         # need to extract the input in case of multi
         if self.multiplerun:

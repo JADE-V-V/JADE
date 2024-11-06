@@ -1,22 +1,22 @@
 Atlas:
   14:
     identifier: 14
-    plot_type: Grouped bars
+    plot_type: Binned graph
     quantity: Gamma Flux
     unit: '#/cm^2/s'
   34:
     identifier: 34
-    plot_type: Grouped bars
+    plot_type: Binned graph
     quantity: Gamma Flux
     unit: '#/cm^2/s'
   44:
     identifier: 44
-    plot_type: Grouped bars
+    plot_type: Binned graph
     quantity: Gamma Flux
     unit: '#/cm^2/s'
   54:
     identifier: 54
-    plot_type: Grouped bars
+    plot_type: Binned graph
     quantity: Gamma Flux
     unit: '#/cm^2/s'
   74:
@@ -31,7 +31,7 @@ Atlas:
     unit: Sv/h
   202:
     identifier: 202
-    plot_type: Grouped bars
+    plot_type: Binned graph
     quantity: Neutron Flux
     unit: '#/cm^2/s'
   242:

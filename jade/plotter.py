@@ -21,6 +21,7 @@
 # You should have received a copy of the GNU General Public License
 # along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import annotations
+
 import math
 import os
 from enum import Enum
@@ -28,6 +29,8 @@ from enum import Enum
 import matplotlib.pyplot as plt
 
 plt.switch_backend("agg")
+import warnings
+
 import numpy as np
 import pandas as pd
 from matplotlib.lines import Line2D
@@ -35,7 +38,6 @@ from matplotlib.markers import CARETDOWNBASE, CARETUPBASE
 from matplotlib.patches import Patch, Rectangle
 from matplotlib.ticker import AutoLocator, AutoMinorLocator, LogLocator, MultipleLocator
 from scipy.interpolate import interp1d
-import warnings
 
 warnings.filterwarnings("ignore")
 
@@ -60,15 +62,18 @@ plt.rc("legend", fontsize=SMALL_SIZE)  # legend fontsize
 plt.rc("figure", titlesize=BIGGER_SIZE)  # fontsize of the figure title
 plt.rc("lines", markersize=12)  # Marker default size
 
+
 class PlotType(Enum):
-    BINNED = 'Binned graph'
-    RATIO = 'Ratio graph'
-    EXP = 'Experimental points'
-    EXP_GROUP = 'Experimental points group'
-    CE_EXP_GROUP = 'Experimental points group CE'
-    DISCRETE_EXP = 'Discreete Experimental points'
-    GROUPED_BARS = 'Grouped bars'
-    WAVES = 'Waves'
+    BINNED = "Binned graph"
+    RATIO = "Ratio graph"
+    EXP = "Experimental points"
+    EXP_GROUP = "Experimental points group"
+    CE_EXP_GROUP = "Experimental points group CE"
+    DISCRETE_EXP = "Discrete Experimental points"
+    GROUPED_BARS = "Grouped bars"
+    WAVES = "Waves"
+
+
 # ============================================================================
 #                   Specific data for benchmarks plots
 # ============================================================================
@@ -246,6 +251,9 @@ class Plotter:
             path to the saved image.
 
         """
+        # force the plot type to be a PlotType
+        if type(plot_type) is str:
+            plot_type = PlotType(plot_type)
         # --- Binned Plot ---
         if plot_type == PlotType.BINNED:
             outp = self._binned_plot()
@@ -863,7 +871,6 @@ class Plotter:
             axes = np.array([axes])
 
         for key, val in enumerate(list(self.data.values())):
-
             ref = val[0]
             # Adjounrn ylabel
             ylabel = "C/E"

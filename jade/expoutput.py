@@ -626,7 +626,7 @@ class FNGOutput(ExperimentalOutput):
             plot = Plotter(
                 data, title, tmp_path, outname, quantity, unit, xlabel, self.testname
             )
-            img_path = plot.plot("Discreet Experimental points")
+            img_path = plot.plot("Discrete Experimental points")
             # Insert the image in the atlas
             atlas.insert_img(img_path)
 

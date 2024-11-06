@@ -29,13 +29,28 @@ import logging
 import os
 import sys
 from dataclasses import dataclass
+from enum import Enum
 
 import pandas as pd
 import yaml
 
 from jade.exceptions import fatal_exception
-from jade.output import BinningType
 from jade.plotter import PlotType
+
+
+class BinningType(Enum):
+    ENERGY = "Energy"
+    CELLS = "Cells"
+    TIME = "Time"
+    TALLY = "tally"
+    DIR = "Dir"
+    USER = "User"
+    SEGMENTS = "Segments"
+    MULTIPLIER = "Multiplier"
+    COSINE = "Cosine"
+    CORA = "Cor A"
+    CORB = "Cor B"
+    CORC = "Cor C"
 
 
 class Configuration:

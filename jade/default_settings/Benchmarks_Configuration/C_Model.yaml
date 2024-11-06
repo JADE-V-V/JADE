@@ -41,7 +41,6 @@ Atlas:
     unit: '#/cm^2/s'
   36:
     identifier: 36
-    plot_type: Grouped bars
     quantity: Nuclear Heating
     unit: W
   41:
@@ -56,7 +55,6 @@ Atlas:
     unit: '#/cm^2/s'
   46:
     identifier: 46
-    plot_type: Grouped bars
     quantity: Nuclear Heating
     unit: W
   51:
@@ -116,7 +114,6 @@ Atlas:
     unit: '#/cm^2/s'
   86:
     identifier: 86
-    plot_type: Grouped bars
     quantity: Nuclear Heating
     unit: W
   91:
@@ -131,7 +128,6 @@ Atlas:
     unit: '#/cm^2/s'
   96:
     identifier: 96
-    plot_type: Grouped bars
     quantity: Nuclear Heating
     unit: W
   101:

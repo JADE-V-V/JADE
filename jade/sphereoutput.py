@@ -43,6 +43,7 @@ import jade.atlas as at
 import jade.excelsupport as exsupp
 import jade.plotter as plotter
 from jade.output import AbstractBenchmarkOutput, MCNPSimOutput, OpenMCSimOutput
+from f4enix.output.mctal import Mctal
 
 if TYPE_CHECKING:
     from jade.main import Session
@@ -827,22 +828,22 @@ class MCNPSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
         output = SphereMCNPSimOutput(mfile, outfile)
         return output
 
-    def _read_output(self):
+    def _read_output(self) -> tuple[dict, dict, dict, dict]:
         """Reads all MCNP outputs from a library
 
         Returns
         -------
-            outputs : dic
-                Dictionary of MCNP sphere output objects used in plotting, keys are material name or ZAID number
-            results : dic
-                Dictionary of overview of Tally values for each material/ZAID, returns either all values > 0 for
-                tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding
-                tally bin if it finds any negative values. Contents of the "Values" worksheet.
-            errors : dic
-                Dictionary of average errors for each tally for each material/Zaid. Contents of the "Errors" worksheet.
-            stat_checks : dic
-                Dictionary the MCNP statistical check results for each material/ZAID. Contents of the "Statistical
-                Checks" Worksheet.
+        outputs : dic
+            Dictionary of MCNP sphere output objects used in plotting, keys are material name or ZAID number
+        results : dic
+            Dictionary of overview of Tally values for each material/ZAID, returns either all values > 0 for
+            tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding
+            tally bin if it finds any negative values. Contents of the "Values" worksheet.
+        errors : dic
+            Dictionary of average errors for each tally for each material/Zaid. Contents of the "Errors" worksheet.
+        stat_checks : dic
+            Dictionary the MCNP statistical check results for each material/ZAID. Contents of the "Statistical
+            Checks" Worksheet.
         """
         # Get results
         results = []
@@ -889,7 +890,7 @@ class MCNPSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
             stat_checks.append(st_ck)
         return outputs, results, errors, stat_checks
 
-    def _get_output_files(self, results_path: str | os.PathLike) -> tuple:
+    def _get_output_files(self, results_path: str | os.PathLike) -> tuple[str | os.PathLike, str | os.PathLike, str | os.PathLike]:
         """
         Recover the output files from a directory
 
@@ -897,8 +898,6 @@ class MCNPSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
         ----------
         results_path : str or path
             path where the results are contained.
-        code : str
-            code that generated the output ('mcnp' or 'openmc')
 
         Raises
         ------
@@ -907,10 +906,11 @@ class MCNPSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
 
         Returns
         -------
-        file1 : path
+        file1 : str or os.PathLike
             path to the first file
-        file2 : path
-            path to the second file (only for mcnp)
+        file2 : str or os.PathLike
+            path to the second file
+        file3 : str or os.PathLike 
 
         """
         file1 = None
@@ -939,13 +939,38 @@ class MCNPSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
 
 class OpenMCSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
     def _read_code_version(self, simulation_path: str | os.PathLike) -> str | None:
+        """
+        Read OpenMC code version from the output file
+
+        Parameters
+        ----------
+        simulation_path : str | os.PathLike
+            Path to OpenMC simulations
+
+        Returns
+        -------
+        str | None
+            OpenMC code version
+        """
         _, spfile = self._get_output_files(simulation_path)
         statepoint = omc.OpenMCStatePoint(spfile)
         version = statepoint.version
         return version
 
     def _get_output(self, results_path: str) -> SphereOpenMCSimOutput:
-        # Get mfile
+        """
+        Returns SphereOpenMCSimOutput object conating OpenMC simulation output data
+
+        Parameters
+        ----------
+        results_path : str
+            Path to OpenMC simulation ouputs
+
+        Returns
+        -------
+        output : SphereOpenMCSimOutput
+            OpenMC simulation data object
+        """
         for file in os.listdir(results_path):
             if "tallies.out" in file:
                 outfile = file
@@ -998,19 +1023,20 @@ class OpenMCSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
 
         return file1, file2
 
-    def _read_output(self):
-        """Reads all OpenMC outputs from a library
+    def _read_output(self) -> tuple[dict, dict, dict]:
+        """
+        Reads all OpenMC outputs from a library
 
         Returns
         -------
-            outputs : dic
-                Dictionary of OpenMC sphere output objects used for plotting, keys are material name or ZAID number
-            results : dic
-                Dictionary of overview of Tally values for each material/ZAID, returns either all values > 0 for
-                tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding
-                tally bin if it finds any negative values. Contents of the "Values" worksheet.
-            errors : dic
-                Dictionary of average errors for each tally for each material/Zaid. Contents of the "Errors" worksheet.
+        outputs : dic
+            Dictionary of OpenMC sphere output objects used for plotting, keys are material name or ZAID number
+        results : dic
+            Dictionary of overview of Tally values for each material/ZAID, returns either all values > 0 for
+            tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding
+            tally bin if it finds any negative values. Contents of the "Values" worksheet.
+        errors : dic
+            Dictionary of average errors for each tally for each material/Zaid. Contents of the "Errors" worksheet.
         """
         # Get results
         results = []
@@ -1049,21 +1075,22 @@ class OpenMCSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
 
 
 class SerpentSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
-    def _read_output(self):
-        """Reads all Serpent outputs from a library
+    def _read_output(self) -> tuple[dict, dict, dict]:
+        """
+        Reads all Serpent outputs from a library
 
         NOT YET IMPLEMENTED
 
         Returns
         -------
-            outputs : dic
-                Dictionary of Serpent sphere output objects used in plotting, keys are material name or ZAID number
-            results : dic
-                Dictionary of overview of Tally values for each material/ZAID, returns either all values > 0 for
-                tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding
-                tally bin if it finds any negative values. Contents of the "Values" worksheet.
-            errors : dic
-                Dictionary of average errors for each tally for each material/Zaid. Contents of the "Errors" worksheet.
+        outputs : dic
+            Dictionary of Serpent sphere output objects used in plotting, keys are material name or ZAID number
+        results : dic
+            Dictionary of overview of Tally values for each material/ZAID, returns either all values > 0 for
+            tallies with postiive values only, all Values = 0 for empty tallies, and returns the corresponding
+            tally bin if it finds any negative values. Contents of the "Values" worksheet.
+        errors : dic
+            Dictionary of average errors for each tally for each material/Zaid. Contents of the "Errors" worksheet.
         """
         # Get results
         results = []
@@ -1078,22 +1105,31 @@ class SerpentSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
 
 
 class SphereTallyOutput:
-    def __init__(self):
+    def __init__(self) -> None:
+        """_summary_
+
+        Raises
+        ------
+        RuntimeError
+            If SphereTallyObject is initialised
+        """
         raise RuntimeError("SphereTallyOutput cannot be instantiated")
 
-    def get_single_excel_data(self, tallies2pp):
+    def get_single_excel_data(self, tallies2pp : list) -> tuple[dict, dict]:
         """
         Get the excel data of a single MCNP output
 
+        Parameters
+        ----------
+        tallies2pp : list
+            list of tally numbers to post proccess
+
         Returns
         -------
-        results : dic
-            Excel result for different tallies
-        errors : dic
-            Error average in all tallies
-
+        tuple[dict, dict]
+            _description_
         """
-
+        #TODO this doesn't seem like it will work now...
         data = self.tallydata.set_index(["Energy"])
         results = {}  # Store excel results of different tallies
         errors = {}  # Store average error in different tallies
@@ -1151,9 +1187,16 @@ class SphereTallyOutput:
 
         return results, errors
 
-    def get_comparison_data(self, tallies2pp, code):
+    def get_comparison_data(self, tallies2pp : list, code : str) -> tuple[list, list]:
         """
         Get Data for single zaid to be used in comparison.
+
+        Parameters
+        ----------
+        talies2pp : list
+            List of tally numbers to postproccess
+        code : str
+            Either 'mcnp' or 'openmc' to select which tally numbers to use
 
         Returns
         -------
@@ -1215,16 +1258,37 @@ class SphereTallyOutput:
 
 
 class SphereMCNPSimOutput(MCNPSimOutput, SphereTallyOutput):
-    def __init__(self, mfile, outfile):
+    def __init__(self, mfile : str | os.PathLike, outfile : str | os.PathLike) -> None:
+        """
+        Initialisation function for SphereMCNPSimOutput to create tallydata and totalbin dictionaries.
+
+        Parameters
+        ----------
+        mfile : str | os.PathLike
+            path to mctal file
+        outfile : str | os.PathLike
+            path to output file
+        """
         super().__init__(mfile, outfile)
         self.tallydata, self.totalbin = self._get_tallydata(self.mctal)
 
-    def _get_tallydata(self, mctal):
+    def _get_tallydata(self, mctal : Mctal) -> tuple[pd.DataFrame, pd.DataFrame]:
         """
         Retrieve and organize mctal data. Simplified for sphere leakage case
 
-        Returns: DataFrame containing the organized data
+        Parameters
+        ----------
+        mctal : Mctal
+            F4Eninx Mctal object
+
+        Returns
+        -------
+        tallydata : pd.DataFrame
+            Pandas dataframe containing organised tally data
+        totalbin : pd.DataFrame
+            Pandas dataframe containing total tally data
         """
+
         # Extract data
         rows = []
         rowstotal = []
@@ -1296,26 +1360,41 @@ class SphereMCNPSimOutput(MCNPSimOutput, SphereTallyOutput):
 
 
 class SphereOpenMCSimOutput(OpenMCSimOutput, SphereTallyOutput):
-    def __init__(self, output_path):
+    def __init__(self, output_path : str | os.PathLike) -> None:
+        """
+        Initialisation function for SphereOpenMCSimOutput class
+
+        Parameters
+        ----------
+        output_path : str | os.PathLike
+            Path to OpenC simulation output files
+        
+        Returns
+        -------
+        None
+        """
         self.output = omc.OpenMCSphereStatePoint(output_path)
         self.tallydata, self.totalbin = self.process_tally()
         self.stat_checks = None
 
-    def _create_dataframe(self, rows):
-        """Creates dataframe from the data in each output passed through as
+    def _create_dataframe(self, rows : list) -> tuple[pd.DataFrame, pd.DataFrame]:
+        """
+        Creates dataframe from the data in each output passed through as
         a list of lists from the process_tally function
 
-        Args:
-        rows: list
-        list of list containing the rows of information from an output file
+        Parameters
+        ----------
+        rows : list
+            list of list containing the rows of information from an output file
 
-        Returns:
-        df: DataFrame
-        dataframe containing the information from each output
-
-        dftotal: DataFrame
-        dataframe containing the sum of all values and errors for each output
+        Returns
+        -------
+        df : pd.DataFrame
+            dataframe containing the information from each output
+        dftotal : pd.DataFrame
+            dataframe containing the sum of all values and errors for each output        
         """
+
         df = pd.DataFrame(
             rows, columns=["Tally N.", "Tally Description", "Energy", "Value", "Error"]
         )
@@ -1336,35 +1415,17 @@ class SphereOpenMCSimOutput(OpenMCSimOutput, SphereTallyOutput):
         )
         return df, dftotal
 
-    def process_tally(self):
+    def process_tally(self) -> tuple[pd.DataFrame, pd.DataFrame]:
         """
-        Reads data from output file and stores it as a list of lists
-        to be turned into a dataframe
+        Creates dataframe from the data in each output passed through as
+        a list of lists from the process_tally function
 
-        Returns:
-            tallydata: Dataframe
-            see df in _create_dataframe()
-
-            totalbin: Dataframe
-            see dftotal in _create_dataframe()
-        """
-        """
-        rows = []
-        for line in self.output_file_data:
-            if "tally" in line.lower():
-                parts = line.split()
-                tally_n = int(parts[2].replace(":", ""))
-                tally_description = " ".join([parts[3].title(), parts[4].title()])
-            if "incoming energy" in line.lower():
-                parts = line.split()
-                energy = 1e-6 * float(parts[3].replace(")", ""))
-            if "flux" in line.lower():
-                if ":" in line:
-                    continue
-                else:
-                    parts = line.split()
-                    value, error = float(parts[1]), float(parts[3])
-                    rows.append([tally_n, tally_description, energy, value, error])
+        Returns
+        -------
+        df : pd.DataFrame
+            dataframe containing the information from each output
+        dftotal : pd.DataFrame
+            dataframe containing the sum of all values and errors for each output        
         """
         rows = self.output.tally_to_rows()
         tallydata, totalbin = self._create_dataframe(rows)
@@ -1382,7 +1443,7 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
         "10y": "6.0",
     }
 
-    def pp_excel_single(self):
+    def pp_excel_single(self) -> None:
         """
         Generate the single library results excel
 
@@ -1420,7 +1481,7 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
                 outpath, lib_name, results, errors, stat_checks
             )
 
-    def pp_excel_comparison(self):
+    def pp_excel_comparison(self) -> None:
         """
         Generate the excel comparison output
 
@@ -1468,9 +1529,18 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
                     outpath, name, final, absdiff, std_dev, single_pp_files
                 )
 
-    def _get_organized_output(self):
+    def _get_organized_output(self) -> tuple[list, list, list]:
         """
         Simply recover a list of the zaids and libraries involved
+
+        Returns
+        -------
+        libs : list
+            list of libraries
+        zaids : list
+            list of zaids
+        outputs : list
+            list of outputs
         """
         zaids = []
 
@@ -1483,12 +1553,19 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
 
         return libs, zaids, outputs
 
-    def _generate_single_plots(self):
+    def _generate_single_plots(self) -> None:
+        """
+        Method to generate single plots
+
+        Returns
+        -------
+        None
+        """
         libs, allzaids, outputs = self._get_organized_output()
         globalname = self.lib
         self._generate_plots(allzaids, globalname)
 
-    def _generate_plots(self, allzaids, globalname):
+    def _generate_plots(self, allzaids : list, globalname : str) -> None:
         """
         Generate all the plots requested by the Sphere SDDR benchmark
 
@@ -1795,19 +1872,29 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
         # Remove tmp images
         shutil.rmtree(outpath)
 
-    def _extract_data4plots(self, zaid, mt, lib, time):
-        """_summary_
+    def _extract_data4plots(self, zaid : str, mt : str, lib : str, time : float) -> tuple[float, float, float]:
+        """
+        Method to extract data for plots
 
-        Args:
-            zaid (str): zaid of output
-            mt (str): mt
-            lib (str): library being postprocessed
-            time (float): timestep
+        Parameters
+        ----------
+        zaid : str
+            zaid
+        mt : str
+            mt reaction number
+        lib : str
+            library
+        time : float
+            timestep
 
-        Returns:
-            nflux (float): neutron flux
-            pflux (float): proton flux
-            sddr (float): shut down dose rate
+        Returns
+        -------
+        nflux : float
+            neutron flux
+        pflux : float
+            proton flux
+        sddr : float
+            shut down dose rate
         """
         tallies = self.outputs[zaid, mt, lib].tallydata
         # Extract values
@@ -1876,7 +1963,7 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
 
         return outputs, results, errors, stat_checks
 
-    def _compute_compare_result(self, reflib, tarlib):
+    def _compute_compare_result(self, reflib : str, tarlib : str) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """
         Given a reference lib and a target lib, both absolute and relative
         comparison are computed
@@ -1894,7 +1981,7 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
             relative comparison table.
         absdiff : pd.DataFrame
             absolute comparison table.
-        std_dev:
+        std_dev: pd.DataFrame
             comparison in std. dev. from mean table
 
         """
@@ -1948,13 +2035,15 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
         return final, absdiff, std_dev
 
     @staticmethod
-    def _sort_df(df):
+    def _sort_df(df : pd.DataFrame) -> None:
         """
         Sorts the values in the passed dataframe by the Parent column,
         then sets 3 index columns
 
-        Args:
-            df (DataFrame): Dataframe containing output data
+        Parameters
+        ----------
+        df : pd.DataFrame
+            Dataframe containing output data
         """
         df["index"] = pd.to_numeric(df["Parent"].values, errors="coerce")
         df.sort_values("index", inplace=True)
@@ -1964,7 +2053,20 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
         df.reset_index(inplace=True)
 
     @staticmethod
-    def _sortfunc_zaidMTcouples(item):
+    def _sortfunc_zaidMTcouples(item : tuple | list) -> tuple[bool, str | int, str | int]:
+        """
+        Function to sort zaid couples
+
+        Parameters
+        ----------
+        item : tuple | list
+            list of zaid couples
+
+        Returns
+        -------
+        tuple[bool, str | int, str | int]
+            (flag, zaid, mt)
+        """
         try:
             zaid = int(item[0])
         except ValueError:
@@ -1981,7 +2083,7 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
 
         return (flag, zaid, mt)
 
-    def _parserunmcnp(self, test_path, lib):
+    def _parserunmcnp(self, test_path : str | os.PathLike, lib : str) -> tuple[dict, list, list, list]:
         """
         given a MCNP run folder the parsing of the different outputs is
         performed
@@ -1990,8 +2092,6 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
         ----------
         test_path : path or str
             path to the test.
-        folder : str
-            name of the folder to parse inside test_path.
         lib : str
             library.
 
@@ -2054,9 +2154,13 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
 
         return outputs, results, errors, stat_checks
 
-    def print_raw(self):
+    def print_raw(self) -> None:
         """
         Assigns a path and prints the post processing data as a .csv
+
+        Returns
+        -------
+        None
 
         """
         for key, data in self.raw_data.items():
@@ -2073,11 +2177,28 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
 
 
 class SphereSDDRMCNPOutput(SphereMCNPSimOutput):
-    def _get_tallydata(self, mctal):
+    def _get_tallydata(self) -> tuple[dict, dict]:
+        """_summary_
+
+        Returns
+        -------
+        self.tallydata : dict
+            dictionary of pandas dataframes containing tally data
+        self.totalbin : dict
+            dictionary of pandas dataframes containing tally total data
+        """
         return self.tallydata, self.totalbin
 
     @staticmethod
-    def _drop_total_rows(df: pd.DataFrame):
+    def _drop_total_rows(df: pd.DataFrame) -> None:
+        """
+        Method to drop total rows fro dataframes
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            Dataframe to be sorted
+        """
         # drop all total rows
         for key in ["User", "Time", "Energy"]:
             try:
@@ -2085,7 +2206,7 @@ class SphereSDDRMCNPOutput(SphereMCNPSimOutput):
             except KeyError:
                 pass
 
-    def get_single_excel_data(self):
+    def get_single_excel_data(self) -> tuple[pd.Series, pd.Series]:
         """
         Return the data that will be used in the single
         post-processing excel output for a single reaction

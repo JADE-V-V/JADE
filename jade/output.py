@@ -995,7 +995,8 @@ The application will now exit """.format(
 
 class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
     def _read_code_version(self, simulation_folder: os.PathLike) -> str | None:
-        """Read MCNP code version from the output file
+        """
+        Read MCNP code version from the output file
 
         Parameters
         ----------

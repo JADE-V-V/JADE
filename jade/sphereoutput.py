@@ -86,18 +86,18 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
         zaid_path = os.path.join(self.cnf_path, "ZaidSettings.csv")
         self.zaid_settings = pd.read_csv(zaid_path, sep=",").set_index("Z")
 
-        # The metadata needs to be re-read since no multitest is foreseen in the
-        # normal BenchmarkOutput class
-        # Read the metadata, they should be all equal
-        try:
-            results_path = os.path.join(
-                self.test_path, os.listdir(self.test_path)[0], code
-            )
-            self.metadata = self._read_metadata_run(results_path)
-        except TypeError:
-            # means that self.test_path is a dict, hence a comparison. No
-            # metadata involved here
-            self.metadata = None
+        # # The metadata needs to be re-read since no multitest is foreseen in the
+        # # normal BenchmarkOutput class
+        # # Read the metadata, they should be all equal
+        # try:
+        #     results_path = os.path.join(
+        #         self.test_path, os.listdir(self.test_path)[0], code
+        #     )
+        #     self.metadata = self._read_metadata_run(results_path)
+        # except TypeError:
+        #     # means that self.test_path is a dict, hence a comparison. No
+        #     # metadata involved here
+        #     self.metadata = None
 
     def _read_get_output_files(self, results_path: str, code: str):
         pass
@@ -374,11 +374,11 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
         libraries = []
         outputs = []
         zaids = []
-        for code, library_outputs in self.outputs.items():
-            for libname, outputslib in library_outputs.items():
-                libraries.append(libname)
-                outputs.append(outputslib)
-                zaids.append(list(outputslib.keys()))
+
+        for libname, outputslib in self.outputs.items():
+            libraries.append(libname)
+            outputs.append(outputslib)
+            zaids.append(list(outputslib.keys()))
         # Extend list to all zaids
         allzaids = zaids[0]
         for zaidlist in zaids[1:]:
@@ -712,13 +712,35 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
         with open(metadata_file, "w", encoding="utf-8") as outfile:
             json.dump(self.metadata, outfile, indent=4)
 
+    def _read_metadata_run(self, simulation_folder: os.PathLike) -> dict:
+        """Retrieve the metadata from the run
+
+        Parameters
+        ----------
+        pathtofile : os.PathLike
+            path to metadata file
+
+        Returns
+        -------
+        dict
+            metadata dictionary
+        """
+        # the super can be used, just changing the expected path
+        dirname = os.path.dirname(simulation_folder)
+        folder = os.path.join(
+            dirname,
+            os.listdir(dirname)[0],
+            self.code,
+        )
+
+        metadata = super()._read_metadata_run(folder)
+
+        return metadata
+
 
 class MCNPSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
     def _read_code_version(self, simulation_folder: str | os.PathLike) -> str | None:
-        # correct the path
-        lvl1 = os.path.dirname(simulation_folder)
-        path = os.path.join(lvl1, os.listdir(lvl1)[0])
-        output = self._get_output(path)
+        output = self._get_output(simulation_folder)
         try:
             version = output.out.get_code_version()
             return version
@@ -859,10 +881,7 @@ class MCNPSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
 
 class OpenMCSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
     def _read_code_version(self, simulation_path: str | os.PathLike) -> str | None:
-        # correct the path
-        lvl1 = os.path.dirname(simulation_path)
-        path = os.path.join(lvl1, os.listdir(lvl1)[0])
-        _, spfile = self._get_output_files(path, "openmc")
+        _, spfile = self._get_output_files(simulation_path)
         statepoint = omc.OpenMCStatePoint(spfile)
         version = statepoint.version
         return version

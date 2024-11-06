@@ -135,6 +135,33 @@ class TestExpOutput:
         )
         assert len(os.listdir(path2raw)) == 3
 
+        testname = "ASPIS-PCA-Replica_flux"
+        self.benchoutput_comp = expoutput.SpectrumOutput(
+            ["32c", "31c", "00c"], code, testname, session_mock, multiplerun=True
+        )
+        self.benchoutput_comp.compare()
+        # check that all the raw data is dumped
+        path2raw = os.path.join(
+            session_mock.path_comparison,
+            "32c_Vs_31c_Vs_00c",
+            testname,
+            "mcnp",
+            "Raw_Data",
+        )
+        assert (
+            self.benchoutput_comp.raw_data["mcnp"][("spectra", "32c")][914][
+                "Energy"
+            ].iloc[10]
+            == 1.83000e-01
+        )
+        assert (
+            self.benchoutput_comp.raw_data["mcnp"][("spectra", "00c")][924][
+                "Error"
+            ].iloc[0]
+            == 0.3742
+        )
+        assert len(os.listdir(path2raw)) == 3
+
     def test_shieldingoutput(self, session_mock: MockUpSession):
 
         code = "mcnp"

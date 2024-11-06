@@ -394,8 +394,8 @@ class Plotter:
             ax.tick_params(which="major", width=1.00, length=5)
             ax.tick_params(which="minor", width=0.75, length=2.50)
             # Grid stylying
-            ax.grid("True", which="major", linewidth=0.75, axis="y")
-            ax.grid("True", which="minor", linewidth=0.30, axis="y")
+            ax.grid("True", which="major", linewidth=1.2, axis="y")
+            ax.grid("True", which="minor", linewidth=0.6, axis="y")
             # limits
             toadd = (upperlimit - lowerlimit) / 8
             ax.set_ylim(lowerlimit - toadd, upperlimit + toadd)
@@ -558,8 +558,8 @@ class Plotter:
             ax.set_xticklabels(labels, rotation=60)
 
             # Grid
-            ax.grid("True", which="major", linewidth=0.75, axis="y")
-            ax.grid("True", which="minor", linewidth=0.30, axis="y")
+            ax.grid("True", which="major", linewidth=1.2, axis="y")
+            ax.grid("True", which="minor", linewidth=0.6, axis="y")
 
         return self._save()
 
@@ -694,7 +694,7 @@ class Plotter:
             ax.tick_params(which="minor", width=0.75, length=2.50)
             # Grid
             ax.grid("True", which="major", linewidth=1.2)
-            ax.grid("True", which="minor", linewidth=1.2)
+            ax.grid("True", which="minor", linewidth=0.6)
 
         return self._save()
 
@@ -1029,7 +1029,7 @@ class Plotter:
 
             # Grid
             ax.grid("True", which="major", linewidth=1.2)
-            ax.grid("True", which="minor", linewidth=1.2)
+            ax.grid("True", which="minor", linewidth=0.6)
 
         return self._save()
 
@@ -1132,7 +1132,7 @@ class Plotter:
 
         # Grid
         ax.grid("True", which="major", linewidth=1.2)
-        ax.grid("True", which="minor", linewidth=1.2)
+        ax.grid("True", which="minor", linewidth=0.6)
 
         # Add additional labels if requested
         if additional_labels is not None:
@@ -1383,7 +1383,7 @@ class Plotter:
         for ax in axes:
             # Grid control
             ax.grid()
-            ax.grid("True", which="minor", linewidth=0.25)
+            ax.grid("True", which="minor", linewidth=0.6)
             # Ticks
             ax.tick_params(which="major", width=1.00, length=5)
             ax.tick_params(which="minor", width=0.75, length=2.50)

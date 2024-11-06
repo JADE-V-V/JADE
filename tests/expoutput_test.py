@@ -149,13 +149,13 @@ class TestExpOutput:
             "Raw_Data",
         )
         assert (
-            self.benchoutput_comp.raw_data["mcnp"][("spectra", "32c")][914][
+            self.benchoutput_comp.raw_data[("spectra", "32c")][914][
                 "Energy"
             ].iloc[10]
             == 1.83000e-01
         )
         assert (
-            self.benchoutput_comp.raw_data["mcnp"][("spectra", "00c")][924][
+            self.benchoutput_comp.raw_data[("spectra", "00c")][924][
                 "Error"
             ].iloc[0]
             == 0.3742
@@ -206,11 +206,11 @@ class TestExpOutput:
             "Raw_Data",
         )
         assert (
-            self.benchoutput_comp.raw_data["mcnp"][("Al", "31c")][4]["Cells"].iloc[1]
+            self.benchoutput_comp.raw_data[("Al", "31c")][4]["Cells"].iloc[1]
             == 501
         )
         assert (
-            self.benchoutput_comp.raw_data["mcnp"][("Au", "00c")][4]["Error"].iloc[2]
+            self.benchoutput_comp.raw_data[("Au", "00c")][4]["Error"].iloc[2]
             == 0.0194
         )
 
@@ -229,11 +229,11 @@ class TestExpOutput:
             "Raw_Data",
         )
         assert (
-            self.benchoutput_comp.raw_data["mcnp"][("Al", "31c")][4]["Cells"].iloc[1]
+            self.benchoutput_comp.raw_data[("Al", "31c")][4]["Cells"].iloc[1]
             == 612
         )
         assert (
-            self.benchoutput_comp.raw_data["mcnp"][("TLD", "00c")][16]["Error"].iloc[2]
+            self.benchoutput_comp.raw_data[("TLD", "00c")][16]["Error"].iloc[2]
             == 0.0089
         )
 
@@ -252,11 +252,11 @@ class TestExpOutput:
             "Raw_Data",
         )
         assert (
-            self.benchoutput_comp.raw_data["mcnp"][("In", "31c")][4]["Cells"].iloc[1]
+            self.benchoutput_comp.raw_data[("In", "31c")][4]["Cells"].iloc[1]
             == 924
         )
         assert (
-            self.benchoutput_comp.raw_data["mcnp"][("Rh", "00c")][4]["Error"].iloc[2]
+            self.benchoutput_comp.raw_data[("Rh", "00c")][4]["Error"].iloc[2]
             == 0.0049
         )
 
@@ -352,11 +352,11 @@ class TestExpOutput:
             "Raw_Data",
         )
         assert (
-            self.benchoutput_comp.raw_data["mcnp"][("Al", "31c")][4]["Cells"].iloc[1]
+            self.benchoutput_comp.raw_data[("Al", "31c")][4]["Cells"].iloc[1]
             == 48002
         )
         assert (
-            self.benchoutput_comp.raw_data["mcnp"][("H3", "00c")][84]["Error"].iloc[2]
+            self.benchoutput_comp.raw_data[("H3", "00c")][84]["Error"].iloc[2]
             == 0.0165
         )
         assert len(os.listdir(path2raw)) == 3

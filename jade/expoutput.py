@@ -33,6 +33,7 @@ import numpy as np
 import pandas as pd
 from docx.shared import Inches
 from f4enix.input.MCNPinput import D1S_Input
+from f4enix.output.mctal import Tally
 from scipy.interpolate import interp1d
 from tqdm import tqdm
 
@@ -395,7 +396,7 @@ class ExperimentalOutput(MCNPBenchmarkOutput):
                 data.to_csv(file, header=True, index=False)
 
     @abstractmethod
-    def _processMCNPdata(self, output : MCNPSimOutput) -> dict:
+    def _processMCNPdata(self, output : MCNPSimOutput):
         """
         Given an mctal file object return the meaningful data extracted. Some
         post-processing on the data may be foreseen at this stage.
@@ -469,7 +470,7 @@ class FNGOutput(ExperimentalOutput):
         ],
     }
 
-    def _processMCNPdata(self, output: MCNPSimOutput):
+    def _processMCNPdata(self, output: MCNPSimOutput) -> pd.DataFrame:
         """
         Read All tallies and return them as a dictionary of DataFrames. This
         aslo needs to ovveride the raw data since unfortunately it appears
@@ -537,6 +538,10 @@ class FNGOutput(ExperimentalOutput):
     def _pp_excel_comparison(self) -> None:
         """
         Responsible for producing excel outputs
+
+        Returns
+        -------
+        None.
         """
         # Dump the global C/E table
         ex_outpath = os.path.join(self.excel_path, self.testname + "_CE_tables.xlsx")
@@ -570,7 +575,7 @@ class FNGOutput(ExperimentalOutput):
                 ws = writer.sheets[folder]
                 ws.write_string(0, 0, '"C/E (mean +/- σ)"')
 
-    def _get_collected_data(self, folder):
+    def _get_collected_data(self, folder : str) -> pd.DataFrame:
         """
         Given a campaign it builds a single table containing all experimental
         and computational data available for the total SDDR tally.
@@ -597,13 +602,13 @@ class FNGOutput(ExperimentalOutput):
 
         return df
 
-    def _build_atlas(self, tmp_path, atlas):
+    def _build_atlas(self, tmp_path : str | os.PathLike, atlas : at.Atlas) -> at.Atlas:
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
         Parameters
         ----------
-        tmp_path : path
+        tmp_path : str or os.PathLike
             path to the temporary folder where to dump images.
         atlas : Atlas
             Object representing the plot Atlas.
@@ -718,33 +723,42 @@ class FNGOutput(ExperimentalOutput):
 
         return atlas
 
-    def _read_exp_file(self, filepath):
+    def _read_exp_file(self, filepath : str | os.PathLike) -> pd.DataFrame:
         """
         Override parent method since the separator for these experimental
         files is ";"
+
         Parameters
         ----------
-        filepath : str
-            string containing the path to the experimental file to be read
+        filepath : str | os.PathLike
+            string or os.PathLike containing the path to the experimental file to be read
             for comparison
 
+        Returns
+        -------
+        pd.DataFrame
+            Pandas data frame containing experimental data
         """
         return pd.read_csv(filepath, sep=";")
 
 
 class SpectrumOutput(ExperimentalOutput):
-    def _build_atlas(self, tmp_path, atlas):
+    def _build_atlas(self, tmp_path : str | os.PathLike, atlas : at.Atlas) -> at.Atlas:
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
 
         Parameters
         ----------
-        tmp_path : str
+        tmp_path : str | os.PathLike
             path to the temporary folder containing the plots for the atlas
-        atlas : Atlas
+        atlas : at.Atlas
             Object representing the plot Atlas.
 
+        Returns
+        -------
+        atlas : at.Atlas
+            Object representing the plot Atlas.
         """
         self.tables = []
         self.bench_conf = pd.read_excel(self.cnf_path)
@@ -794,19 +808,24 @@ class SpectrumOutput(ExperimentalOutput):
 
         return atlas
 
-    def _get_tally_info(self, tally):
+    def _get_tally_info(self, tally : Tally) -> tuple[int, str, str]:
         """
         Extracts and assigns information from the tally object, as well as
         information from the benchmark config variable
 
-        Args:
-            tally (Tally): JADE tally object
+        Parameters
+        ----------
+        tally : Tally
+            F4Enix tally object
 
-        Returns:
-            tallynum (int): Tally number of the tally being plotted
-            particle (str): Type of quantity being plotted on the X axis
-            quant + unit (str): Unit of quantity being plotted on the X axis
-
+        Returns
+        -------
+        tallynum : int
+            Tally number of the tally being plotted
+        particle : str
+            Type of quantity being plotted on the X axis
+        quant + unit : str
+            Unit of quantity being plotted on the X axis
         """
         tallynum = tally.tallyNumber
         particle = tally.particleList[np.where(tally.tallyParticles == 1)[0][0]]
@@ -814,7 +833,7 @@ class SpectrumOutput(ExperimentalOutput):
         unit = self.bench_conf.loc[tallynum, "X Unit"]
         return tallynum, particle, quant + " [" + unit + "]"
 
-    def _define_title(self, input, quantity_CE):
+    def _define_title(self, input : str, quantity_CE : str) -> str:
         """Assigns the title for atlas plot
 
         Parameters
@@ -837,9 +856,13 @@ class SpectrumOutput(ExperimentalOutput):
             title = self.testname + " " + input + ", " + quantity_CE
         return title
 
-    def _dump_ce_table(self):
+    def _dump_ce_table(self) -> None:
         """
         Generates the C/E table and dumps them as an .xlsx file
+
+        Returns
+        -------
+        None
         """
         final_table = pd.concat(self.tables)
         skipcol_global = 0
@@ -930,7 +953,7 @@ class SpectrumOutput(ExperimentalOutput):
 
         return
 
-    def _data_collect(self, input, tallynum, quantity_CE, e_intervals):
+    def _data_collect(self, input : str, tallynum : str, quantity_CE : str, e_intervals : list) -> tuple[list, str]:
         """Collect data for C/E tables
 
         Parameters
@@ -999,26 +1022,32 @@ class SpectrumOutput(ExperimentalOutput):
                 pass
         return data, x_lab
 
-    def _pp_excel_comparison(self):
+    def _pp_excel_comparison(self) -> None:
+        """
+        Excel is actually printed by the build atlas in this case
+
+        Returns
+        -------
+        None
+        """
         # Excel is actually printed by the build atlas in this case
         pass
 
-    def _processMCNPdata(self, output):
+    def _processMCNPdata(self, output : MCNPSimOutput) -> dict:
         """
         given the mctal file the lethargy flux and energies are returned
         both for the neutron and photon tally
 
         Parameters
         ----------
-        output : MCNPoutput
+        output : MCNPSimOutput
             object representing the MCNP output.
-
         Returns
         -------
-        res : dic
+        res : dict
             contains the extracted lethargy flux and energies.
-
         """
+        
         res = {}
         # Read tally energy binned fluxes
         for tallynum, data in output.tallydata.items():

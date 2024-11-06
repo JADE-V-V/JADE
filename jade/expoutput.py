@@ -76,7 +76,7 @@ ACTIVATION_REACTION = {
 
 
 class ExperimentalOutput(MCNPBenchmarkOutput):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         """
         This extends the Benchmark Output and creates an abstract class
         for all experimental outputs.
@@ -131,7 +131,7 @@ class ExperimentalOutput(MCNPBenchmarkOutput):
             metadata[lib] = metadata_lib
         self.metadata = metadata
 
-    def single_postprocess(self):
+    def single_postprocess(self) -> None:
         """
         Always raise an Attribute Error since no single post-processing is
         foreseen for experimental benchmarks
@@ -145,7 +145,7 @@ class ExperimentalOutput(MCNPBenchmarkOutput):
         """
         raise AttributeError("\n No single pp is foreseen for exp benchmark")
 
-    def compare(self):
+    def compare(self) -> None:
         """
         Complete the routines that perform the comparison of one or more
         libraries results with the experimental ones.
@@ -168,7 +168,7 @@ class ExperimentalOutput(MCNPBenchmarkOutput):
         print(" Creating Atlas...")
         self.build_atlas()
 
-    def pp_excel_comparison(self):
+    def pp_excel_comparison(self) -> None:
         """
         At the moment everything is handled by _pp_excel_comparison that needs
         to be implemented in each child class. Some standard procedures may be
@@ -180,7 +180,7 @@ class ExperimentalOutput(MCNPBenchmarkOutput):
         """
         self._pp_excel_comparison()
 
-    def build_atlas(self):
+    def build_atlas(self) -> None:
         """
         Creation and saving of the atlas are handled by this function while
         the actual filling of the atlas is left to _build_atlas which needs
@@ -211,8 +211,26 @@ class ExperimentalOutput(MCNPBenchmarkOutput):
         shutil.rmtree(tmp_path)
 
     def _extract_single_output(
-        self, results_path: os.PathLike, folder: str, lib: str
+        self, results_path: str | os.PathLike, folder: str, lib: str
     ) -> tuple[pd.DataFrame, str]:
+        """Method to extract single output data from MCNP files
+
+        Parameters
+        ----------
+        results_path : str | os.PathLike
+            Path to simulations results.
+        folder : str
+            Sub-folder for multiple run case. 
+        lib : str
+            Test library.
+
+        Returns
+        -------
+        tallydata : pd.DataFrame
+            Pandas dataframe containing tally data.
+        input : str
+            Test name.
+        """
         mfile, ofile, meshtalfile = self._get_output_files(results_path)
         # Parse output
         output = MCNPSimOutput(mfile, ofile, meshtalfile)
@@ -290,7 +308,7 @@ class ExperimentalOutput(MCNPBenchmarkOutput):
                 # self.raw_data[code_tag].update(code_raw_data)
                 self.raw_data.update(code_raw_data)
 
-    def _read_exp_results(self):
+    def _read_exp_results(self) -> None:
         """
         Read all experimental results and organize it in the self.exp_results
         dictionary.
@@ -333,7 +351,7 @@ class ExperimentalOutput(MCNPBenchmarkOutput):
         self.exp_results = exp_results
 
     @staticmethod
-    def _read_exp_file(filepath):
+    def _read_exp_file(filepath : str | os.PathLike) -> pd.DataFrame:
         """
         Default way of reading a csv file
         Parameters
@@ -347,7 +365,7 @@ class ExperimentalOutput(MCNPBenchmarkOutput):
         """
         return pd.read_csv(filepath)
 
-    def _print_raw(self):
+    def _print_raw(self) -> None:
         """
         Dump all the raw data
         Returns
@@ -376,7 +394,7 @@ class ExperimentalOutput(MCNPBenchmarkOutput):
                 data.to_csv(file, header=True, index=False)
 
     @abstractmethod
-    def _processMCNPdata(self, output):
+    def _processMCNPdata(self, output : MCNPSimOutput) -> dict[int, pd.DataFrame]:
         """
         Given an mctal file object return the meaningful data extracted. Some
         post-processing on the data may be foreseen at this stage.
@@ -395,7 +413,7 @@ class ExperimentalOutput(MCNPBenchmarkOutput):
         return item
 
     @abstractmethod
-    def _pp_excel_comparison(self):
+    def _pp_excel_comparison(self) -> None:
         """
         Responsible for producing excel outputs
         Returns
@@ -404,7 +422,7 @@ class ExperimentalOutput(MCNPBenchmarkOutput):
         pass
 
     @abstractmethod
-    def _build_atlas(self, tmp_path, atlas):
+    def _build_atlas(self, tmp_path : str | os.PathLike, atlas : at.Atlas) -> at.Atlas:
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.

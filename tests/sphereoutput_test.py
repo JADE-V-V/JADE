@@ -179,7 +179,7 @@ class MockSphereSDDROutput(sout.SphereSDDROutput):
             {"num": "dummy", "Name": "dummy", "dummy": 1},
         ]
         self.mat_settings = pd.DataFrame(mat_settings).set_index("num")
-        self.raw_data = {"d1s": {}}
+        self.raw_data = {}
         self.outputs = {}
         self.d1s = True
 

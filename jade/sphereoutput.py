@@ -1344,10 +1344,10 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
             )
             # compute the results
             outputs, results, errors, stat_checks = self._compute_single_results()
-            self.outputs["d1s"] = outputs
-            self.results["d1s"] = results
-            self.errors["d1s"] = errors
-            self.stat_checks["d1s"] = stat_checks
+            self.outputs = outputs
+            self.results = results
+            self.errors = errors
+            self.stat_checks = stat_checks
             lib_name = self.session.conf.get_lib_name(self.lib)
             # Write excel
             # ex = SphereExcelOutputSheet(template, outpath)
@@ -1415,9 +1415,9 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
         Simply recover a list of the zaids and libraries involved
         """
         zaids = []
-        for code, library_outputs in self.outputs.items():
-            for (zaidnum, mt, lib), outputslib in library_outputs.items():
-                zaids.append((zaidnum, mt))
+
+        for (zaidnum, mt, lib), outputslib in self.outputs.items():
+            zaids.append((zaidnum, mt))
 
         zaids = list(set(zaids))
         libs = []  # Not used
@@ -1490,7 +1490,7 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
             if material:
                 for lib in libraries:
                     try:  # Zaid could not be common to the libraries
-                        outp = self.outputs["d1s"][zaidnum, mt, lib]
+                        outp = self.outputs[zaidnum, mt, lib]
                     except KeyError:
                         # It is ok, simply nothing to plot here since zaid was
                         # not in library
@@ -1548,7 +1548,7 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
                 data = []
                 for lib in libraries:
                     try:  # Zaid could not be common to the libraries
-                        outp = self.outputs["d1s"][zaidnum, mt, lib]
+                        outp = self.outputs[zaidnum, mt, lib]
                     except KeyError:
                         # It is ok, simply nothing to plot here since zaid was
                         # not in library
@@ -1597,7 +1597,7 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
             #    that appears on the reference + at least one lib
             # Build a df will all possible zaid, mt, lib combination
             if self.d1s:
-                allkeys = list(self.outputs["d1s"].keys())
+                allkeys = list(self.outputs.keys())
             else:
                 raise NotImplementedError("Only d1s is implemented")
             df = pd.DataFrame(allkeys)
@@ -1751,7 +1751,7 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
             pflux (float): proton flux
             sddr (float): shut down dose rate
         """
-        tallies = self.outputs["d1s"][zaid, mt, lib].tallydata
+        tallies = self.outputs[zaid, mt, lib].tallydata
         # Extract values
         nflux = tallies[12].set_index("Energy")  # .drop("total")
         nflux = nflux.sum().loc["Value"]
@@ -1801,7 +1801,7 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
                 self.test_path, self.lib
             )
 
-            self.outputs["d1s"] = outputs
+            self.outputs = outputs
 
         # Generate DataFrames
         results = pd.concat(results, axis=1).T
@@ -1864,7 +1864,7 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
             lib_dics.append(outputs)
         for dic in lib_dics:
             code_outputs.update(dic)
-        self.outputs["d1s"].update(code_outputs)
+        self.outputs.update(code_outputs)
         # Consider only common zaids
         idx1 = comp_dfs[0].index
         idx2 = comp_dfs[1].index

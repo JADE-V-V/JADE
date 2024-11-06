@@ -107,8 +107,6 @@ class AbstractBenchmarkOutput(abc.ABC):
         for available_code in CODES.values():
             if code == available_code:
                 setattr(self, available_code, True)
-                self.raw_data[code] = {}
-                self.outputs[code] = {}
             else:
                 setattr(self, available_code, False)
 
@@ -934,7 +932,7 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
             version of the MCNP code used to run the benchmark
         """
 
-        if self.testname in ['Sphere', 'SphereSDDR']:
+        if self.testname in ["Sphere", "SphereSDDR"]:
             if not os.path.exists(simulation_folder):
                 return None
         _, outf, _ = self._get_output_files(simulation_folder)
@@ -1022,7 +1020,7 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
         str | None
             version of the OpenMC code used to run the benchmark
         """
-        if self.testname in ['Sphere', 'SphereSDDR']:
+        if self.testname in ["Sphere", "SphereSDDR"]:
             if not os.path.exists(simulation_path):
                 return None
         _, spfile = self._get_output_files(simulation_path)

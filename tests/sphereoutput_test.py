@@ -21,11 +21,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 """
-import sys
+
+import json
 import os
+import sys
+
 import pandas as pd
 import pytest
-import json
+
 from jade.__openmc__ import OMC_AVAIL
 
 cp = os.path.dirname(os.path.abspath(__file__))
@@ -37,13 +40,19 @@ CONFIG_FILE = os.path.join(resources, "mainconfig.xlsx")
 root = os.path.dirname(cp)
 ISOTOPES_FILE = os.path.join(root, "jade", "resources", "Isotopes.txt")
 
-from jade.main import Session
-from jade.configuration import Configuration
 from f4enix.input.libmanager import LibManager
-from jade.status import Status
-from jade.__version__ import __version__
-from jade.output import MCNPSimOutput
+
 import jade.sphereoutput as sout
+from jade.__version__ import __version__
+from jade.configuration import Configuration
+from jade.main import Session
+from jade.output import MCNPSimOutput
+from jade.sphereoutput import (
+    MCNPSphereBenchmarkOutput,
+    OpenMCSphereBenchmarkOutput,
+    SerpentSphereBenchmarkOutput,
+)
+from jade.status import Status
 
 
 class MockUpSession(Session):
@@ -69,7 +78,7 @@ class MockUpSession(Session):
         self.state = Status(self)
 
 
-class TestSphereOutput:
+class TestSphereBenchamarkOutput:
     @pytest.fixture()
     def session_mock(self, tmpdir, lm: LibManager):
         session = MockUpSession(tmpdir, lm)
@@ -87,7 +96,7 @@ class TestSphereOutput:
         return LibManager(df_lib, isotopes_file=ISOTOPES_FILE)
 
     def test_sphereoutput_mcnp(self, session_mock: MockUpSession):
-        sphere_00c = sout.SphereOutput("00c", "mcnp", "Sphere", session_mock)
+        sphere_00c = MCNPSphereBenchmarkOutput("00c", "mcnp", "Sphere", session_mock)
         sphere_00c.single_postprocess()
 
         sphere_00c.print_raw()
@@ -105,27 +114,33 @@ class TestSphereOutput:
         assert metadata["jade_version"] == __version__
         assert metadata["code_version"] == "6.2"
 
-        sphere_31c = sout.SphereOutput("31c", "mcnp", "Sphere", session_mock)
+        sphere_31c = MCNPSphereBenchmarkOutput("31c", "mcnp", "Sphere", session_mock)
         sphere_31c.single_postprocess()
-        sphere_comp = sout.SphereOutput(["31c", "00c"], "mcnp", "Sphere", session_mock)
+        sphere_comp = MCNPSphereBenchmarkOutput(
+            ["31c", "00c"], "mcnp", "Sphere", session_mock
+        )
         sphere_comp.compare()
         assert True
 
     @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC is not available")
     def test_sphereoutput_openmc(self, session_mock: MockUpSession):
-        sphere_00c = sout.SphereOutput("00c", "openmc", "Sphere", session_mock)
+        sphere_00c = OpenMCSphereBenchmarkOutput(
+            "00c", "openmc", "Sphere", session_mock
+        )
         sphere_00c.single_postprocess()
-        sphere_31c = sout.SphereOutput("31c", "openmc", "Sphere", session_mock)
+        sphere_31c = OpenMCSphereBenchmarkOutput(
+            "31c", "openmc", "Sphere", session_mock
+        )
         sphere_31c.single_postprocess()
-        sphere_comp = sout.SphereOutput(
+        sphere_comp = OpenMCSphereBenchmarkOutput(
             ["31c", "00c"], "openmc", "Sphere", session_mock
         )
         sphere_comp.compare()
         assert True
 
     def test_read_mcnp_output(self, session_mock: MockUpSession):
-        sphere_00c = sout.SphereOutput("00c", "mcnp", "Sphere", session_mock)
-        outputs, results, errors, stat_checks = sphere_00c._read_mcnp_output()
+        sphere_00c = MCNPSphereBenchmarkOutput("00c", "mcnp", "Sphere", session_mock)
+        outputs, results, errors, stat_checks = sphere_00c._read_output()
         tally_values = outputs["M10"].tallydata["Value"]
         tally_errors = outputs["M10"].tallydata["Error"]
         assert 3.80420e-07 == pytest.approx(tally_values[10])
@@ -140,8 +155,10 @@ class TestSphereOutput:
 
     @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC is not available")
     def test_read_openmc_output(self, session_mock: MockUpSession):
-        sphere_00c = sout.SphereOutput("00c", "openmc", "Sphere", session_mock)
-        outputs, results, errors = sphere_00c._read_openmc_output()
+        sphere_00c = OpenMCSphereBenchmarkOutput(
+            "00c", "openmc", "Sphere", session_mock
+        )
+        outputs, results, errors = sphere_00c._read_output()
         tally_values = outputs["M10"].tallydata["Value"]
         tally_errors = outputs["M10"].tallydata["Error"]
         assert 0.8271037652370498 == pytest.approx(tally_values[10])
@@ -184,7 +201,6 @@ class TestSphereSDDROutput:
         return LibManager(df_lib, isotopes_file=ISOTOPES_FILE)
 
     def test_compute_single_results(self):
-
         cols = [
             "Parent",
             "Parent Name",
@@ -238,7 +254,6 @@ class TestSphereSDDROutput:
 
 
 class TestSphereSDDRMCNPOutput:
-
     out = sout.SphereSDDRMCNPOutput(
         os.path.join(resources, "SphereSDDR_11023_Na-23_102_m"),
         os.path.join(resources, "SphereSDDR_11023_Na-23_102_o"),

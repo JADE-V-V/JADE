@@ -1,10 +1,11 @@
 from __future__ import annotations
+
 import logging
 import os
 import re
-import openmc
-
 from typing import TYPE_CHECKING
+
+import openmc
 
 if TYPE_CHECKING:
     from f4enix.input.libmanager import LibManager
@@ -233,8 +234,8 @@ class OpenMCInputFiles:
         self.materials.export_to_xml(os.path.join(path, "materials.xml"))
 
 
-class OpenMCSimOutput:
-    def __init__(self, spfile_path: str) -> None:
+class OpenMCStatePoint:
+    def __init__(self, spfile_path: str | os.PathLike) -> None:
         """Class for handling OpenMC tatepoint file
 
         Parameters
@@ -256,6 +257,11 @@ class OpenMCSimOutput:
         try:
             # Retrieve the version from the statepoint file (convert from tuple of integers to string)
             self.statepoint = openmc.StatePoint(spfile_path)
+            self.tally_numbers = []
+            self.tally_comments = []
+            for _, tally in self.statepoint.tallies.items():
+                self.tally_numbers.append(tally.id)
+                self.tally_comments.append(tally.name)
         except (FileNotFoundError, KeyError):
             logging.warning(
                 "OpenMC version not found in the statepoint file for %s",
@@ -274,8 +280,38 @@ class OpenMCSimOutput:
         version = ".".join(map(str, self.statepoint.version))
         return version
 
+    def _get_tally_data(self, tally: openmc.Tally):
+        """Extract tally data from statepoint file
 
-class OpenMCSphereSimOutput(OpenMCSimOutput):
+        Parameters
+        ----------
+        tally : openmc.Tally
+            openmc tally
+
+        Returns
+        -------
+        df : pd.DataFrame
+            pandas dataframe containing tally data
+        """
+        df = tally.get_pandas_dataframe()
+        # df.to_csv('tally_'+str(tally.id)+'.csv')
+        return df
+
+    def tallies_to_dataframes(self):
+        """Call to extract tally data from statepoint file
+
+        Returns
+        -------
+        list
+            list of rows with all sphere case tally data
+        """
+        tallies = {}
+        for _, tally in self.statepoint.tallies.items():
+            tallies[tally.id] = self._get_tally_data(tally)
+        return tallies
+
+
+class OpenMCSphereStatePoint(OpenMCStatePoint):
     def __init__(self, spfile_path: str) -> None:
         """Class to handle the data extraction of the Sphere leakage benchmark in OpenMC
 

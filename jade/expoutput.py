@@ -21,23 +21,23 @@
 # along with JADE.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import annotations
+
+import json
 import math
 import os
 import re
 import shutil
-import json
 from abc import abstractmethod
 
 import numpy as np
 import pandas as pd
 from docx.shared import Inches
+from f4enix.input.MCNPinput import D1S_Input
 from scipy.interpolate import interp1d
 from tqdm import tqdm
 
 import jade.atlas as at
-from f4enix.input.MCNPinput import D1S_Input
-from jade.output import BenchmarkOutput
-from jade.output import MCNPoutput
+from jade.output import MCNPBenchmarkOutput, MCNPSimOutput
 from jade.plotter import Plotter
 from jade.status import EXP_TAG
 
@@ -75,7 +75,7 @@ ACTIVATION_REACTION = {
 }
 
 
-class ExperimentalOutput(BenchmarkOutput):
+class ExperimentalOutput(MCNPBenchmarkOutput):
     def __init__(self, *args, **kwargs):
         """
         This extends the Benchmark Output and creates an abstract class
@@ -213,9 +213,9 @@ class ExperimentalOutput(BenchmarkOutput):
     def _extract_single_output(
         self, results_path: os.PathLike, folder: str, lib: str
     ) -> tuple[pd.DataFrame, str]:
-        mfile, ofile = self._get_output_files(results_path, "mcnp")
+        mfile, ofile, meshtalfile = self._get_output_files(results_path)
         # Parse output
-        output = MCNPoutput(mfile, ofile)
+        output = MCNPSimOutput(mfile, ofile, meshtalfile)
 
         # need to extract the input in case of multi
         if self.multiplerun:
@@ -287,7 +287,8 @@ class ExperimentalOutput(BenchmarkOutput):
                     code_raw_data = {(self.testname, lib): tallydata}
 
                 # Adjourn raw Data
-                self.raw_data[code_tag].update(code_raw_data)
+                # self.raw_data[code_tag].update(code_raw_data)
+                self.raw_data.update(code_raw_data)
 
     def _read_exp_results(self):
         """
@@ -353,14 +354,7 @@ class ExperimentalOutput(BenchmarkOutput):
         -------
         None.
         """
-        if self.mcnp:
-            raw_to_print = self.raw_data["mcnp"].items()
-        if self.openmc:
-            pass
-        if self.serpent:
-            pass
-        if self.d1s:
-            raw_to_print = self.raw_data["d1s"].items()
+        raw_to_print = self.raw_data.items()
 
         for (folder, lib), item in raw_to_print:
             # Create the lib directory if it is not there
@@ -456,7 +450,7 @@ class FNGOutput(ExperimentalOutput):
         ],
     }
 
-    def _processMCNPdata(self, output):
+    def _processMCNPdata(self, output: MCNPSimOutput):
         """
         Read All tallies and return them as a dictionary of DataFrames. This
         aslo needs to ovveride the raw data since unfortunately it appears
@@ -513,8 +507,8 @@ class FNGOutput(ExperimentalOutput):
 
         # --- Override the raw data ---
         # Get the folder and lib
-        path = mctal.mctalFileName
-        folderpath = os.path.dirname(path)
+        path = output.mctal_file
+        folderpath = os.path.dirname(os.path.dirname(path))
         folder = os.path.basename(folderpath)
         lib = os.path.basename(os.path.dirname(os.path.dirname(folderpath)))
         self.raw_data[folder, lib] = res
@@ -720,7 +714,6 @@ class FNGOutput(ExperimentalOutput):
 
 
 class SpectrumOutput(ExperimentalOutput):
-
     def _build_atlas(self, tmp_path, atlas):
         """
         Fill the atlas with the customized plots. Creation and saving of the
@@ -833,7 +826,6 @@ class SpectrumOutput(ExperimentalOutput):
         skipcol_global = 0
         binning_list = ["Energy", "Time"]
         for x_ax in binning_list:  # to update if other binning will be used
-
             x_lab = x_ax[0]
             col_check = "Max " + x_lab
             ft = final_table.set_index(["Input"])
@@ -1141,9 +1133,7 @@ def _get_tablevalues(
 
 
 class TiaraOutput(ExperimentalOutput):
-
     def _processMCNPdata(self, output):
-
         return None
 
     def _case_tree_df_build(self):
@@ -1175,7 +1165,7 @@ class TiaraOutput(ExperimentalOutput):
                 case_tree.loc[cont, "Library"] = self.session.conf.get_lib_name(lib)
                 # Put tally values in dataframe
                 for tally in self.outputs[(case, lib)].mctal.tallies:
-                    temp = (self.raw_data["mcnp"])[(case, lib)]
+                    temp = (self.raw_data)[(case, lib)]
                     val = temp[tally.tallyNumber].iloc[-1]["Value"]
                     err = temp[tally.tallyNumber].iloc[-1]["Error"]
                     case_tree.loc[cont, tally.tallyComment] = val
@@ -1241,7 +1231,6 @@ class TiaraOutput(ExperimentalOutput):
 
 
 class TiaraFCOutput(TiaraOutput):
-
     def _pp_excel_comparison(self):
         """
         Builds dataframe from computational output comparable to experimental
@@ -1290,7 +1279,6 @@ class TiaraFCOutput(TiaraOutput):
         # Build ExcelWriter object
         filepath = os.path.join(self.excel_path, "Tiara_Fission_Cells_CE_tables.xlsx")
         with pd.ExcelWriter(filepath, engine="xlsxwriter") as writer:
-
             # Create 1 worksheet for each energy/material combination
             mats = self.case_tree_df.index.unique(level="Shield Material").tolist()
             ens = self.case_tree_df.index.unique(level="Energy").tolist()
@@ -1567,7 +1555,6 @@ class TiaraFCOutput(TiaraOutput):
 
 
 class TiaraBSOutput(TiaraOutput):
-
     def _pp_excel_comparison(self):
         """
         This method prints Tiara C/E tables for Bonner Spheres detectors
@@ -1767,9 +1754,7 @@ class TiaraBSOutput(TiaraOutput):
 
 
 class ShieldingOutput(ExperimentalOutput):
-
     def _processMCNPdata(self, output):
-
         return None
 
     def _pp_excel_comparison(self):
@@ -1816,23 +1801,15 @@ class ShieldingOutput(ExperimentalOutput):
                         t = (mat, lib_names_dict[idx_col[0]])
                         if idx_col[1] == "Value":
                             if mat != "TLD":
-                                vals = self.raw_data[code][t][4]["Value"].values[
-                                    : len(x)
-                                ]
+                                vals = self.raw_data[t][4]["Value"].values[: len(x)]
                             else:
-                                vals = self.raw_data[code][t][6]["Value"].values[
-                                    : len(x)
-                                ]
+                                vals = self.raw_data[t][6]["Value"].values[: len(x)]
                             df_tab[idx_col] = vals
                         elif idx_col[1] == "C/E Error":
                             if mat != "TLD":
-                                errs = self.raw_data[code][t][4]["Error"].values[
-                                    : len(x)
-                                ]
+                                errs = self.raw_data[t][4]["Error"].values[: len(x)]
                             else:
-                                errs = self.raw_data[code][t][6]["Error"].values[
-                                    : len(x)
-                                ]
+                                errs = self.raw_data[t][6]["Error"].values[: len(x)]
                             vals1 = np.square(errs)
                             vals2 = np.square(
                                 exp_data_df.loc[:, "Error"].to_numpy() / 100
@@ -1842,13 +1819,9 @@ class ShieldingOutput(ExperimentalOutput):
                             df_tab[idx_col] = ce_err
                         else:
                             if mat != "TLD":
-                                vals1 = self.raw_data[code][t][4]["Value"].values[
-                                    : len(x)
-                                ]
+                                vals1 = self.raw_data[t][4]["Value"].values[: len(x)]
                             else:
-                                vals1 = self.raw_data[code][t][6]["Value"].values[
-                                    : len(x)
-                                ]
+                                vals1 = self.raw_data[t][6]["Value"].values[: len(x)]
                             vals2 = exp_data_df.loc[:, "Reaction Rate"].to_numpy()
                             ratio = vals1 / vals2
                             ratio = ratio.tolist()
@@ -1910,22 +1883,14 @@ class ShieldingOutput(ExperimentalOutput):
                 y = []
                 err = []
                 if material != "TLD":
-                    v = self.raw_data[code][(material, lib)][4]["Value"].values[
-                        : len(x)
-                    ]
+                    v = self.raw_data[(material, lib)][4]["Value"].values[: len(x)]
                 else:
-                    v = self.raw_data[code][(material, lib)][6]["Value"].values[
-                        : len(x)
-                    ]
+                    v = self.raw_data[(material, lib)][6]["Value"].values[: len(x)]
                 y.append(v)
                 if material != "TLD":
-                    v = self.raw_data[code][(material, lib)][4]["Error"].values[
-                        : len(x)
-                    ]
+                    v = self.raw_data[(material, lib)][4]["Error"].values[: len(x)]
                 else:
-                    v = self.raw_data[code][(material, lib)][6]["Error"].values[
-                        : len(x)
-                    ]
+                    v = self.raw_data[(material, lib)][6]["Error"].values[: len(x)]
                 err.append(v)
                 # Append computational data to data list(to be sent to plotter)
                 data_comp = {"x": x, "y": y, "err": err, "ylabel": ylabel}
@@ -1953,11 +1918,11 @@ class ShieldingOutput(ExperimentalOutput):
         conv_df = pd.DataFrame()
         for lib in self.lib[1:]:
             if mat != "TLD":
-                max = self.raw_data[code][(mat, lib)][4]["Error"].values[:size].max()
-                avg = self.raw_data[code][(mat, lib)][4]["Error"].values[:size].mean()
+                max = self.raw_data[(mat, lib)][4]["Error"].values[:size].max()
+                avg = self.raw_data[(mat, lib)][4]["Error"].values[:size].mean()
             else:
-                max = self.raw_data[code][(mat, lib)][6]["Error"].values[:size].max()
-                avg = self.raw_data[code][(mat, lib)][6]["Error"].values[:size].mean()
+                max = self.raw_data[(mat, lib)][6]["Error"].values[:size].max()
+                avg = self.raw_data[(mat, lib)][6]["Error"].values[:size].mean()
             library = self.session.conf.get_lib_name(lib)
             conv_df.loc["Max Error", library] = max
             conv_df.loc["Average Error", library] = avg
@@ -1965,7 +1930,6 @@ class ShieldingOutput(ExperimentalOutput):
 
 
 class MultipleSpectrumOutput(SpectrumOutput):
-
     def _build_atlas(self, tmp_path, atlas):
         """
         Fill the atlas with the customized plots. Creation and saving of the

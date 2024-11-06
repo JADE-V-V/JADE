@@ -69,11 +69,11 @@ class TestExpOutput:
         testname = "ITER_1D"
         os.makedirs(session_mock.path_comparison)
         os.makedirs(session_mock.path_single)
-        self.benchoutput_32c = outp.BenchmarkOutput("32c", code, testname, session_mock)
+        self.benchoutput_32c = outp.MCNPBenchmarkOutput("32c", code, testname, session_mock)
         self.benchoutput_32c.single_postprocess()
-        self.benchoutput_31c = outp.BenchmarkOutput("31c", code, testname, session_mock)
+        self.benchoutput_31c = outp.MCNPBenchmarkOutput("31c", code, testname, session_mock)
         self.benchoutput_31c.single_postprocess()
-        self.benchoutput_comp = outp.BenchmarkOutput(
+        self.benchoutput_comp = outp.MCNPBenchmarkOutput(
             ["32c", "31c"], code, testname, session_mock
         )
         self.benchoutput_comp.compare()
@@ -86,11 +86,11 @@ class TestExpOutput:
         testname = "WCLL_TBM_1D"
         os.makedirs(session_mock.path_comparison)
         os.makedirs(session_mock.path_single)
-        self.benchoutput_32c = outp.BenchmarkOutput("32c", code, testname, session_mock)
+        self.benchoutput_32c = outp.MCNPBenchmarkOutput("32c", code, testname, session_mock)
         self.benchoutput_32c.single_postprocess()
-        self.benchoutput_31c = outp.BenchmarkOutput("31c", code, testname, session_mock)
+        self.benchoutput_31c = outp.MCNPBenchmarkOutput("31c", code, testname, session_mock)
         self.benchoutput_31c.single_postprocess()
-        self.benchoutput_comp = outp.BenchmarkOutput(
+        self.benchoutput_comp = outp.MCNPBenchmarkOutput(
             ["32c", "31c"], code, testname, session_mock
         )
         self.benchoutput_comp.compare()
@@ -122,13 +122,13 @@ class TestExpOutput:
             "Raw_Data",
         )
         assert (
-            self.benchoutput_comp.raw_data["mcnp"][("Be-15", "32c")][5]["Energy"].iloc[
+            self.benchoutput_comp.raw_data[("Be-15", "32c")][5]["Energy"].iloc[
                 10
             ]
             == 0.0196645
         )
         assert (
-            self.benchoutput_comp.raw_data["mcnp"][("Be-15", "32c")][5]["Value"].iloc[
+            self.benchoutput_comp.raw_data[("Be-15", "32c")][5]["Value"].iloc[
                 14
             ]
             == 3.93654e-08
@@ -155,11 +155,11 @@ class TestExpOutput:
             "Raw_Data",
         )
         assert (
-            self.benchoutput_comp.raw_data["mcnp"][("Au", "31c")][4]["Cells"].iloc[1]
+            self.benchoutput_comp.raw_data[("Au", "31c")][4]["Cells"].iloc[1]
             == 643
         )
         assert (
-            self.benchoutput_comp.raw_data["mcnp"][("Au", "31c")][4]["Error"].iloc[2]
+            self.benchoutput_comp.raw_data[("Au", "31c")][4]["Error"].iloc[2]
             == 0.6207
         )
         assert len(os.listdir(path2raw)) == 3
@@ -176,13 +176,13 @@ class TestExpOutput:
         self.benchoutput_comp.compare()
         # conf = config.iloc[4]
         assert (
-            self.benchoutput_comp.raw_data["mcnp"][("cc-43-25-40", "32c")][14][
+            self.benchoutput_comp.raw_data[("cc-43-25-40", "32c")][14][
                 "Value"
             ].iloc[0]
             == 448.291
         )
         assert (
-            self.benchoutput_comp.raw_data["mcnp"][("cc-43-25-40", "32c")][24][
+            self.benchoutput_comp.raw_data[("cc-43-25-40", "32c")][24][
                 "Error"
             ].iloc[0]
             == 0.5933
@@ -201,13 +201,13 @@ class TestExpOutput:
             "Raw_Data",
         )
         assert (
-            self.benchoutput_comp.raw_data["mcnp"][("cc-43-25-00", "32c")][24][
+            self.benchoutput_comp.raw_data[("cc-43-25-00", "32c")][24][
                 "Value"
             ].iloc[0]
             == 6.02648e03
         )
         assert (
-            self.benchoutput_comp.raw_data["mcnp"][("cc-43-25-00", "32c")][44][
+            self.benchoutput_comp.raw_data[("cc-43-25-00", "32c")][44][
                 "Value"
             ].iloc[0]
             == 4.59843e02

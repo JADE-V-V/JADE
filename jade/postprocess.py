@@ -132,7 +132,7 @@ def _get_output(action, code, testname, lib, session):
         out = spho.SphereOutput(lib, code, testname, session)
 
     elif testname == "SphereSDDR":
-        out = spho.SphereSDDRoutput(lib, code, testname, session)
+        out = spho.SphereSDDROutput(lib, code, testname, session)
 
     elif testname in ["Oktavian"]:
         if action == "compare":
@@ -186,6 +186,11 @@ def _get_output(action, code, testname, lib, session):
             return False
 
     else:
-        out = bencho.BenchmarkOutput(lib, code, testname, session)
+        if code in ['mcnp', 'd1s']:
+            return bencho.MCNPBenchmarkOutput(lib, code, testname, session)
+        elif code == 'openmc':
+            return bencho.OpenMCBenchmarkOutput(lib, code, testname, session)
+        else:
+            raise NotImplementedError(f'Code {code} has not been implemented')
 
     return out

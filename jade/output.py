@@ -1147,16 +1147,14 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
         tally_comments = sim_output.output.tally_comments
         return sim_output, tally_numbers, tally_comments
 
-class AbstractSimOutput(abc.ABC):
-    @property
-    @abc.abstractmethod
-    def tallydata(self):
-        pass
-
-    @property
-    @abc.abstractmethod
-    def totalbin(self):
-        pass
+class AbstractSimOutput:
+    tallydata = None
+    totalbin = None
+    def __init__(self):
+        if not isinstance(self.tallydata, dict):
+            raise NotImplementedError
+        if not isinstance(self.totalbin, dict):
+            raise NotImplementedError
 
 class MCNPSimOutput(AbstractSimOutput):
     def __init__(

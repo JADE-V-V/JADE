@@ -664,7 +664,12 @@ class Plotter:
         ax1.set_title(self.title)
         ax1.set_ylabel(ylabel)
         ax1.legend(loc="best")
-
+        ax1.tick_params(axis="y", which="minor")
+        # Set minor ticks on the y-axis
+        if y_scale == "log":
+            ax1.yaxis.set_minor_locator(LogLocator(base=10.0, subs="auto", numticks=10))
+        else:
+            ax1.yaxis.set_minor_locator(AutoMinorLocator())
         # limit the ax 2 to [0, 2]
         ax2.set_ylim(bottom=0, top=2)
         ax2.set_ylabel("C/E")
@@ -687,7 +692,6 @@ class Plotter:
 
             ax.tick_params(which="major", width=1.00, length=5)
             ax.tick_params(which="minor", width=0.75, length=2.50)
-
             # Grid
             ax.grid("True", which="major", linewidth=0.50)
             ax.grid("True", which="minor", linewidth=0.20)
@@ -812,14 +816,18 @@ class Plotter:
         ax1.set_xlabel(self.xlabel)
         # # Draw the exp error
         ax1.set_xscale(x_scale)
-
         ax1.tick_params(which="major", width=1.00, length=5)
         ax1.tick_params(which="minor", width=0.75, length=2.50)
 
         # Grid
         ax1.grid("True", which="major", linewidth=0.50)
         ax1.grid("True", which="minor", linewidth=0.20)
-
+        ax1.tick_params(axis="y", which="minor")
+        # Set minor ticks on the y-axis
+        if y_scale == "log":
+            ax1.yaxis.set_minor_locator(LogLocator(base=10.0, subs="auto", numticks=10))
+        else:
+            ax1.yaxis.set_minor_locator(AutoMinorLocator())
         return self._save()
 
     def _exp_points_group_plot_CE(

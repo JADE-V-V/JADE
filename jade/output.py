@@ -214,15 +214,29 @@ class AbstractBenchmarkOutput(abc.ABC):
             List of simulation results files.
         """
 
-    #TODO Output types
     @abc.abstractmethod
-    def parse_output_data(self, results_path : str | os.PathLike):
+    def parse_output_data(self, results_path : str | os.PathLike) -> tuple[AbstractSimOutput, list, list]:
         """
-        To be executed when a comparison is requested
+        Abstract function for retrieving simulation output data, tally numbers and tally comments.
+
+        Parameters
+        ----------
+        results_path : str | os.PathLike
+            Path to simulation results
+
+        Returns
+        -------
+        sim_output : AbstractSimOutput
+            Simulation output object, specific to the code being proccessed. This should inherit from AbstractSimOutput.
+        tally_numbers : list
+            List containing all tally numbers in the simulation.
+        tally_comments: list
+            List containing all tally comments in the simulation.
         """
 
     def _read_metadata_run(self, simulation_folder: os.PathLike) -> dict:
-        """Retrieve the metadata from the run
+        """
+        Retrieve the metadata from the run
 
         Parameters
         ----------
@@ -250,7 +264,7 @@ class AbstractBenchmarkOutput(abc.ABC):
 
         return metadata
 
-    def single_postprocess(self):
+    def single_postprocess(self) -> None:
         """
         Execute the full post-processing of a single library (i.e. excel,
         raw data and atlas)
@@ -541,7 +555,8 @@ class AbstractBenchmarkOutput(abc.ABC):
         return df
 
     def _print_raw(self) -> None:
-        """Method to print raw data to json.
+        """
+        Method to print raw data to json.
 
         Returns
         -------
@@ -556,7 +571,13 @@ class AbstractBenchmarkOutput(abc.ABC):
             json.dump(self.metadata, outfile, indent=4)
 
     def _generate_single_excel_output(self) -> None:
-        # Get excel configuration
+        """
+        Generation of single Excel sheets
+
+        Returns
+        -------
+        None
+        """        
         self.outputs = {}
         self.results = {}
         self.errors = {}
@@ -736,7 +757,13 @@ The application will now exit """.format(
         exsupp.single_excel_writer(outpath, self.lib, self.testname, outputs, stats)
 
     def _generate_comparison_excel_output(self) -> None:
-        # Get excel configuration
+        """
+        Generation of comparsion Excel sheets
+
+        Returns
+        -------
+        None
+        """
         self.outputs = {}
         self.results = {}
         self.errors = {}
@@ -998,7 +1025,7 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
             )
             return None
 
-    def _get_output_files(self, results_path: str | os.PathLike) -> tuple:
+    def _get_output_files(self, results_path: str | os.PathLike) -> tuple[str | os.PathLike, str | os.PathLike, str | os.PathLike]:
         """
         Recover the output files from a directory
 
@@ -1006,8 +1033,6 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
         ----------
         results_path : str or path
             path where the results are contained.
-        code : str
-            code that generated the output ('mcnp' or 'openmc')
 
         Raises
         ------
@@ -1020,7 +1045,7 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
             path to the first file
         file2 : path
             path to the second file
-        file2 : path
+        file3 : path
             path to the third file (only for mcnp meshtal)
 
         """
@@ -1047,7 +1072,24 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
 
         return file1, file2, file3
 
-    def parse_output_data(self, results_path):
+    def parse_output_data(self, results_path : str | os.PathLike) -> tuple[MCNPSimOutput, list, list]:
+        """
+        Function for retrieving MCNP simulation output data, tally numbers and tally comments.
+
+        Parameters
+        ----------
+        results_path : str | os.PathLike
+            Path to simulation results
+
+        Returns
+        -------
+        sim_output : MCNPSimOutput
+            Simulation output object, specific to the code being proccessed. This should inherit from AbstractSimOutput.
+        tally_numbers : list
+            List containing all tally numbers in the simulation.
+        tally_comments: list
+            List containing all tally comments in the simulation.
+        """
         mfile, ofile, meshtalfile = self._get_output_files(results_path)
         sim_output = MCNPSimOutput(mfile, ofile, meshtal_file=meshtalfile)
         tally_numbers = sim_output.tally_numbers
@@ -1077,7 +1119,7 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
         version = statepoint.version
         return version
 
-    def _get_output_files(self, results_path: str | os.PathLike) -> tuple:
+    def _get_output_files(self, results_path: str | os.PathLike) -> tuple[str | os.PathLike, str | os.PathLike]:
         """
         Recover the output files from a directory
 
@@ -1096,9 +1138,9 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
         Returns
         -------
         file1 : path
-            path to the first file
+            path to the output file
         file2 : path
-            path to the second file (only for mcnp)
+            path to the StatePoint file
 
         """
         file1 = None
@@ -1148,7 +1190,17 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
 class AbstractSimOutput:
     tallydata = None
     totalbin = None
-    def __init__(self):
+    def __init__(self) -> None:
+        """
+        Abstract class to enforce inclusion of tallydata and totalbin dictionaries in children simulation output classes
+
+        Raises
+        ------
+        NotImplementedError
+            if tallydata dictionary is not set in child class
+        NotImplementedError
+            if totalbin dictionary is not set in child class
+        """
         if not isinstance(self.tallydata, dict):
             raise NotImplementedError
         if not isinstance(self.totalbin, dict):
@@ -1160,7 +1212,7 @@ class MCNPSimOutput(AbstractSimOutput):
         mctal_file: str | os.PathLike,
         output_file: str | os.PathLike,
         meshtal_file: str | os.PathLike | None = None,
-    ):
+    ) -> None:
         """
         Class representing all outputs coming from MCNP run
 
@@ -1263,7 +1315,8 @@ class MCNPSimOutput(AbstractSimOutput):
 
 class OpenMCSimOutput(AbstractSimOutput):
     def __init__(self, output_path: str | os.PathLike) -> None:
-        """Class representing all outputs coming from OpenMC run
+        """
+        Class representing all outputs coming from OpenMC run
 
         Parameters
         ----------
@@ -1284,7 +1337,8 @@ class OpenMCSimOutput(AbstractSimOutput):
     def _create_dataframes(
         self, tallies: dict
     ) -> tuple[dict[int, pd.DataFrame], dict[int, pd.DataFrame]]:
-        """Function to create dataframes in JADE format from OpenMC dataframes.
+        """
+        Function to create dataframes in JADE format from OpenMC dataframes.
 
         Parameters
         ----------
@@ -1350,7 +1404,8 @@ class OpenMCSimOutput(AbstractSimOutput):
         return tallydata, totalbin
 
     def process_tally(self) -> tuple[dict[int, pd.DataFrame], dict[int, pd.DataFrame]]:
-        """Function to retrieve OpenMC tally dataframes, and re-format for JADE.
+        """
+        Function to retrieve OpenMC tally dataframes, and re-format for JADE.
 
         Returns
         -------
@@ -1363,327 +1418,7 @@ class OpenMCSimOutput(AbstractSimOutput):
         tallydata, totalbin = self._create_dataframes(tallies)
         return tallydata, totalbin
 
-
-class ExcelOutputSheet:
-    # Common variables
-    _starting_free_row = 10
-
-    def __init__(self, template, outpath):
-        """
-        Excel workbook containing the post-processed results
-
-        Parameters
-        ----------
-        template : path like object
-            path to the sheet template.
-        outpath : path like object
-            dump path for the excel.
-
-        Returns
-        -------
-        None.
-
-        """
-        self.outpath = outpath  # Path to the excel file
-        # Open template
-        shutil.copy(template, outpath)
-        # self.app = xw.App(visible=False)
-        self.wb = self.app.books.open(outpath)
-        # The first open row in current ws
-        self.free_row = self._starting_free_row
-        self.ws_free_rows = {}
-        self.current_ws = None
-
-    def _switch_ws(self, ws_name):
-        """
-        Change active worksheet without loosing parameters informations.
-
-        Parameters
-        ----------
-        ws_name : str
-            Worksheet name.
-
-        Returns
-        -------
-        ws : xlwings.Sheet
-            Excel worksheet.
-
-        """
-        # Adjourn free row sheet
-        if self.current_ws is not None:
-            self.ws_free_rows[self.current_ws.name] = self.free_row
-
-        # Select new sheet
-        ws = self.wb.sheets[ws_name]
-        self.current_ws = ws
-        try:
-            self.free_row = self.ws_free_rows[ws_name]
-        except KeyError:
-            self.free_row = self._starting_free_row
-
-        return ws
-
-    def insert_df(
-        self,
-        startcolumn,
-        df,
-        ws,
-        startrow=None,
-        header=None,
-        print_index=True,
-        idx_format="0",
-        cols_head_size=12,
-        values_format=None,
-    ):
-        """
-        Insert a DataFrame (df) into a Worksheet (ws) using xlwings.
-
-        Parameters
-        ----------
-        startcolumn : int or str
-            Starting column where to insert the DataFrame. It can be expressed
-            both as an integer as a letter in Excel fashion.
-        df : pandas.DataFrame
-            DataFrame to insert in the excel sheet
-        ws : str
-            name of the Excel worksheet where to put the DataFrame.
-        startrow : int
-            starting row where to put the DataFrame. Default is None that
-            triggers the use of the memorized first free row in the excel sheet
-        header : tuple (str, value)
-            contains the tag of the header and the header value. DEAFAULT is
-            None
-        print_index : bool
-            if True the DataFrame index is printed. DEAFAULT is True.
-        idx_format : str
-            how to format the index values. DEAFAULT is '0' (integer)
-        cols_head_size : int
-            Font size for columns header. DEAFAULT is 12
-        values_format : str
-            how to format the values. DEAFAULT is None
-
-        Returns
-        -------
-        None
-
-        """
-        # Select the worksheet as first thing in order to have the correct
-        # Free rows computed
-        ws = self._switch_ws(ws)
-
-        if startrow is None:
-            startrow = self.free_row
-            # adjourn free row
-            add_space = 3  # Includes header
-            self.free_row = self.free_row + len(df) + add_space
-
-        # Start column can be provided as a letter or number (up to Z)
-        if isinstance(startcolumn, str):
-            startcolumn = ord(startcolumn.lower()) - 96
-
-        anchor = (startrow, startcolumn)
-        header_anchor_tag = (startrow, 1)
-        header_anchor = (startrow + 1, 1)
-
-        try:
-            ws.range(anchor).options(index=print_index, header=True).value = df
-            rng = ((startrow + 1, startcolumn), (startrow + 1 + len(df), startcolumn))
-            # Format values if requested
-            if values_format is not None:
-                rng_values = (
-                    (startrow + 1, startcolumn + 1),
-                    (startrow + 1 + len(df), startcolumn + 1 + len(df.columns)),
-                )
-                ws.range(*rng_values).number_format = values_format
-
-            # Formatting
-            ws.range(*rng).number_format = idx_format  # idx formatting
-            # Columns headers
-            anchor_columns = (anchor, (startrow, startcolumn + len(df.columns)))
-            ws.range(*anchor_columns).api.Font.Size = cols_head_size
-            ws.range(*anchor_columns).api.Font.Bold = True
-            ws.range(*anchor_columns).color = (236, 236, 236)
-
-            if header is not None:
-                ws.range(header_anchor_tag).value = header[0]
-                ws.range(header_anchor_tag).api.Font.Size = cols_head_size
-                ws.range(header_anchor_tag).api.Font.Bold = True
-                ws.range(header_anchor_tag).color = (236, 236, 236)
-
-                ws.range(header_anchor).value = header[1]
-                ws.range(header_anchor).api.Font.Size = cols_head_size
-                ws.range(header_anchor_tag).api.Font.Bold = True
-                ws.range(header_anchor_tag).color = (236, 236, 236)
-
-        except Exception as e:
-            print(vars(e))
-            print(header)
-            print(df)
-
-    def insert_cutted_df(
-        self,
-        startcolumn,
-        df,
-        ws,
-        ylim,
-        startrow=None,
-        header=None,
-        index_name=None,
-        cols_name=None,
-        index_num_format="0",
-        values_format=None,
-    ):
-        """
-        Insert a DataFrame in the excel cutting its columns
-
-        Parameters
-        ----------
-        startcolumn : str/int
-            Excel column where to put the first DF column.
-        df : pd.DataFrame
-            global DF to insert.
-        ws : str
-            Excel worksheet where to insert the DF.
-        ylim : int
-            limit of columns to use to cut the DF.
-        startrow : int, optional
-            initial Excel row. The default is None,
-            the first available is used.
-        header : tuple (str, value)
-            contains the tag of the header and the header value. DEAFAULT is
-            None
-        index_name : str
-            Name of the Index. DEAFAULT is None
-        cols_name : str
-            Name of the columns. DEFAULT is None
-        index_num_format: str
-            format of index numbers
-        values_format : str
-            how to format the values. DEAFAULT is None
-
-        Returns
-        -------
-        None.
-
-        """
-        # First of all we need to switch ws or all calculation of free row
-        # will be wrongly affected
-        self._switch_ws(ws)
-
-        res_len = len(df.columns)
-        start_col = 0
-        ylim = int(ylim)
-        # ws = self.wb.sheets[ws]
-        # Decode columns for index and columns names
-        if isinstance(startcolumn, int):
-            index_col = string.ascii_uppercase[startcolumn]
-            columns_col = string.ascii_uppercase[startcolumn + 1]
-        elif isinstance(startcolumn, str):
-            index_col = startcolumn
-            columns_col = chr(ord(startcolumn) + 1)
-
-        # Add each DataFrame piece
-        new_ylim = ylim
-        while res_len > ylim:
-            curr_df = df.iloc[:, start_col:new_ylim]
-            # Memorize anchors for headers name
-            anchor_index = index_col + str(self.free_row)
-            anchor_cols = columns_col + str(self.free_row - 1)
-            end_anchor_cols = chr(ord(columns_col) + len(curr_df.columns) - 1) + str(
-                self.free_row - 1
-            )
-            # Insert cutted df
-            self.insert_df(
-                startcolumn,
-                curr_df,
-                ws,
-                header=header,
-                idx_format=index_num_format,
-                values_format=values_format,
-            )
-            # Insert columns name and index name
-            self.current_ws.range(anchor_index).value = index_name
-            self.current_ws.range(anchor_index).api.Font.Size = 12
-            self.current_ws.range(anchor_index).api.Font.Bold = True
-            self.current_ws.range(anchor_index).color = (236, 236, 236)
-
-            self.current_ws.range(anchor_cols).value = cols_name
-            self.current_ws.range(anchor_cols).api.Font.Size = 12
-            self.current_ws.range(anchor_cols).api.Font.Bold = True
-            self.current_ws.range(anchor_cols).color = (236, 236, 236)
-            self.current_ws.range(anchor_cols + ":" + end_anchor_cols).merge()
-            # Adjourn parameters
-            start_col = start_col + ylim
-            new_ylim = new_ylim + ylim
-            res_len = res_len - ylim
-
-        # Add the remaining piece
-        if res_len != 0:
-            curr_df = df.iloc[:, -res_len:]
-            # Memorize anchors for headers name
-            anchor_index = index_col + str(self.free_row)
-            anchor_cols = columns_col + str(self.free_row - 1)
-            end_anchor_cols = chr(ord(columns_col) + len(curr_df.columns) - 1) + str(
-                self.free_row - 1
-            )
-
-            self.insert_df(
-                startcolumn,
-                curr_df,
-                ws,
-                header=header,
-                idx_format=index_num_format,
-                values_format=values_format,
-            )
-            # Insert columns name and index name
-            self.current_ws.range(anchor_index).value = index_name
-            self.current_ws.range(anchor_cols).value = cols_name
-            # Merge the cols name
-            self.current_ws.range(anchor_cols + ":" + end_anchor_cols).merge()
-
-        # Adjust lenght
-        self.current_ws.range(index_col + ":AAA").autofit()
-
-    def copy_sheets(self, wb_origin_path):
-        """
-        Copy all sheets of the selected excel file into the current one
-
-        Parameters
-        ----------
-        wb_origin_path : str/path
-            Path to excel file containing sheets to add.
-
-        Returns
-        -------
-        None.
-
-        """
-        wb = self.app.books.open(wb_origin_path)
-        for sheet in wb.sheets:
-            # copy to a new workbook
-            sheet.api.Copy()
-
-            # copy to an existing workbook by putting it in front of a
-            # worksheet object
-            sheet.api.Copy(Before=self.wb.sheets[0].api)
-
-    def save(self):
-        """
-        Save Excel
-        """
-        self.app.calculate()
-        try:
-            self.wb.save()
-        except FileNotFoundError as e:
-            print(" The following is the original exception:")
-            print(e)
-            print("\n it may be due to invalid characters in the file name")
-
-        self.wb.close()
-        self.app.quit()
-
-
-def fatal_exception(message=None):
+def fatal_exception(message : str | None = None) -> None:
     """
     Use this function to exit with a code error from a handled exception
 

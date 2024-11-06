@@ -158,7 +158,7 @@ class TestSphereBenchamarkOutput:
         sphere_00c = OpenMCSphereBenchmarkOutput(
             "00c", "openmc", "Sphere", session_mock
         )
-        outputs, results, errors = sphere_00c._read_output()
+        outputs, results, errors, stat_checks = sphere_00c._read_output()
         tally_values = outputs["M10"].tallydata["Value"]
         tally_errors = outputs["M10"].tallydata["Error"]
         assert 0.8271037652370498 == pytest.approx(tally_values[10])

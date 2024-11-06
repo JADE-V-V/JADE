@@ -394,7 +394,7 @@ class ExperimentalOutput(MCNPBenchmarkOutput):
                 data.to_csv(file, header=True, index=False)
 
     @abstractmethod
-    def _processMCNPdata(self, output : MCNPSimOutput) -> dict[int, pd.DataFrame]:
+    def _processMCNPdata(self, output : MCNPSimOutput) -> dict:
         """
         Given an mctal file object return the meaningful data extracted. Some
         post-processing on the data may be foreseen at this stage.
@@ -533,7 +533,7 @@ class FNGOutput(ExperimentalOutput):
 
         return res
 
-    def _pp_excel_comparison(self):
+    def _pp_excel_comparison(self) -> None:
         """
         Responsible for producing excel outputs
         """

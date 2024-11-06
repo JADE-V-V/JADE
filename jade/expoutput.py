@@ -1169,7 +1169,7 @@ class TiaraOutput(ExperimentalOutput):
                 case_tree.loc[cont, "Library"] = self.session.conf.get_lib_name(lib)
                 # Put tally values in dataframe
                 for tally in self.outputs[(case, lib)].mctal.tallies:
-                    temp = (self.raw_data["mcnp"])[(case, lib)]
+                    temp = (self.raw_data)[(case, lib)]
                     val = temp[tally.tallyNumber].iloc[-1]["Value"]
                     err = temp[tally.tallyNumber].iloc[-1]["Error"]
                     case_tree.loc[cont, tally.tallyComment] = val
@@ -1810,21 +1810,21 @@ class ShieldingOutput(ExperimentalOutput):
                         t = (mat, lib_names_dict[idx_col[0]])
                         if idx_col[1] == "Value":
                             if mat != "TLD":
-                                vals = self.raw_data[code][t][4]["Value"].values[
+                                vals = self.raw_data[t][4]["Value"].values[
                                     : len(x)
                                 ]
                             else:
-                                vals = self.raw_data[code][t][6]["Value"].values[
+                                vals = self.raw_data[t][6]["Value"].values[
                                     : len(x)
                                 ]
                             df_tab[idx_col] = vals
                         elif idx_col[1] == "C/E Error":
                             if mat != "TLD":
-                                errs = self.raw_data[code][t][4]["Error"].values[
+                                errs = self.raw_data[t][4]["Error"].values[
                                     : len(x)
                                 ]
                             else:
-                                errs = self.raw_data[code][t][6]["Error"].values[
+                                errs = self.raw_data[t][6]["Error"].values[
                                     : len(x)
                                 ]
                             vals1 = np.square(errs)
@@ -1836,11 +1836,11 @@ class ShieldingOutput(ExperimentalOutput):
                             df_tab[idx_col] = ce_err
                         else:
                             if mat != "TLD":
-                                vals1 = self.raw_data[code][t][4]["Value"].values[
+                                vals1 = self.raw_data[t][4]["Value"].values[
                                     : len(x)
                                 ]
                             else:
-                                vals1 = self.raw_data[code][t][6]["Value"].values[
+                                vals1 = self.raw_data[t][6]["Value"].values[
                                     : len(x)
                                 ]
                             vals2 = exp_data_df.loc[:, "Reaction Rate"].to_numpy()
@@ -1904,20 +1904,20 @@ class ShieldingOutput(ExperimentalOutput):
                 y = []
                 err = []
                 if material != "TLD":
-                    v = self.raw_data[code][(material, lib)][4]["Value"].values[
+                    v = self.raw_data[(material, lib)][4]["Value"].values[
                         : len(x)
                     ]
                 else:
-                    v = self.raw_data[code][(material, lib)][6]["Value"].values[
+                    v = self.raw_data[(material, lib)][6]["Value"].values[
                         : len(x)
                     ]
                 y.append(v)
                 if material != "TLD":
-                    v = self.raw_data[code][(material, lib)][4]["Error"].values[
+                    v = self.raw_data[(material, lib)][4]["Error"].values[
                         : len(x)
                     ]
                 else:
-                    v = self.raw_data[code][(material, lib)][6]["Error"].values[
+                    v = self.raw_data[(material, lib)][6]["Error"].values[
                         : len(x)
                     ]
                 err.append(v)
@@ -1947,11 +1947,11 @@ class ShieldingOutput(ExperimentalOutput):
         conv_df = pd.DataFrame()
         for lib in self.lib[1:]:
             if mat != "TLD":
-                max = self.raw_data[code][(mat, lib)][4]["Error"].values[:size].max()
-                avg = self.raw_data[code][(mat, lib)][4]["Error"].values[:size].mean()
+                max = self.raw_data[(mat, lib)][4]["Error"].values[:size].max()
+                avg = self.raw_data[(mat, lib)][4]["Error"].values[:size].mean()
             else:
-                max = self.raw_data[code][(mat, lib)][6]["Error"].values[:size].max()
-                avg = self.raw_data[code][(mat, lib)][6]["Error"].values[:size].mean()
+                max = self.raw_data[(mat, lib)][6]["Error"].values[:size].max()
+                avg = self.raw_data[(mat, lib)][6]["Error"].values[:size].mean()
             library = self.session.conf.get_lib_name(lib)
             conv_df.loc["Max Error", library] = max
             conv_df.loc["Average Error", library] = avg

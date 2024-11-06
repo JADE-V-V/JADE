@@ -693,8 +693,8 @@ class Plotter:
             ax.tick_params(which="major", width=1.00, length=5)
             ax.tick_params(which="minor", width=0.75, length=2.50)
             # Grid
-            ax.grid("True", which="major", linewidth=0.50)
-            ax.grid("True", which="minor", linewidth=0.20)
+            ax.grid("True", which="major", linewidth=1.2)
+            ax.grid("True", which="minor", linewidth=1.2)
 
         return self._save()
 
@@ -820,8 +820,8 @@ class Plotter:
         ax1.tick_params(which="minor", width=0.75, length=2.50)
 
         # Grid
-        ax1.grid("True", which="major", linewidth=0.50)
-        ax1.grid("True", which="minor", linewidth=0.20)
+        ax1.grid("True", which="major", linewidth=1.2)
+        ax1.grid("True", which="minor", linewidth=1.2)
         ax1.tick_params(axis="y", which="minor")
         # Set minor ticks on the y-axis
         if y_scale == "log":
@@ -906,8 +906,8 @@ class Plotter:
             axes[key].tick_params(which="minor", width=0.75, length=2.50)
 
             # Grid
-            axes[key].grid("True", which="major", linewidth=0.50)
-            axes[key].grid("True", which="minor", linewidth=0.20)
+            axes[key].grid("True", which="major", linewidth=1.2)
+            axes[key].grid("True", which="minor", linewidth=1.2)
 
         axes[0].legend(
             loc="upper center", bbox_to_anchor=(1.07, 1.3), fancybox=True, shadow=True
@@ -1028,8 +1028,8 @@ class Plotter:
             ax.tick_params(which="minor", width=0.75, length=2.50)
 
             # Grid
-            ax.grid("True", which="major", linewidth=0.50)
-            ax.grid("True", which="minor", linewidth=0.20)
+            ax.grid("True", which="major", linewidth=1.2)
+            ax.grid("True", which="minor", linewidth=1.2)
 
         return self._save()
 
@@ -1131,8 +1131,8 @@ class Plotter:
         ax.tick_params(which="minor", width=0.75, length=2.50)
 
         # Grid
-        ax.grid("True", which="major", linewidth=0.50)
-        ax.grid("True", which="minor", linewidth=0.20)
+        ax.grid("True", which="major", linewidth=1.2)
+        ax.grid("True", which="minor", linewidth=1.2)
 
         # Add additional labels if requested
         if additional_labels is not None:

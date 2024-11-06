@@ -74,7 +74,7 @@ AVAILABLE_PLOTS = [
     "Binned graph",
     "Ratio graph",
     "Experimental points",
-    "Discreet Experimental points",
+    "Discrete Experimental points",
     "Grouped bars",
 ]
 

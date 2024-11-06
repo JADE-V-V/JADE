@@ -217,7 +217,9 @@ class AbstractBenchmarkOutput(abc.ABC):
         """
 
     @abc.abstractmethod
-    def parse_output_data(self, results_path : str | os.PathLike) -> tuple[AbstractSimOutput, list, list]:
+    def parse_output_data(
+        self, results_path: str | os.PathLike
+    ) -> tuple[AbstractSimOutput, list, list]:
         """
         Abstract function for retrieving simulation output data, tally numbers and tally comments.
 
@@ -518,7 +520,7 @@ class AbstractBenchmarkOutput(abc.ABC):
         shutil.rmtree(outpath)
 
     @staticmethod
-    def _reorder_df(df : pd.DataFrame, x_set : list) -> pd.DataFrame:
+    def _reorder_df(df: pd.DataFrame, x_set: list) -> pd.DataFrame:
         """Method to re-organise pandas data frame.
 
         Parameters
@@ -579,7 +581,7 @@ class AbstractBenchmarkOutput(abc.ABC):
         Returns
         -------
         None
-        """        
+        """
         self.outputs = {}
         self.results = {}
         self.errors = {}
@@ -1028,7 +1030,9 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
             )
             return None
 
-    def _get_output_files(self, results_path: str | os.PathLike) -> tuple[str | os.PathLike, str | os.PathLike, str | os.PathLike]:
+    def _get_output_files(
+        self, results_path: str | os.PathLike
+    ) -> tuple[str | os.PathLike, str | os.PathLike, str | os.PathLike]:
         """
         Recover the output files from a directory
 
@@ -1075,7 +1079,9 @@ class MCNPBenchmarkOutput(AbstractBenchmarkOutput):
 
         return file1, file2, file3
 
-    def parse_output_data(self, results_path : str | os.PathLike) -> tuple[MCNPSimOutput, list, list]:
+    def parse_output_data(
+        self, results_path: str | os.PathLike
+    ) -> tuple[MCNPSimOutput, list, list]:
         """
         Function for retrieving MCNP simulation output data, tally numbers and tally comments.
 
@@ -1122,7 +1128,9 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
         version = statepoint.version
         return version
 
-    def _get_output_files(self, results_path: str | os.PathLike) -> tuple[str | os.PathLike, str | os.PathLike]:
+    def _get_output_files(
+        self, results_path: str | os.PathLike
+    ) -> tuple[str | os.PathLike, str | os.PathLike]:
         """
         Recover the output files from a directory
 
@@ -1190,9 +1198,11 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
         tally_comments = sim_output.output.tally_comments
         return sim_output, tally_numbers, tally_comments
 
+
 class AbstractSimOutput:
     tallydata = None
     totalbin = None
+
     def __init__(self) -> None:
         """
         Abstract class to enforce inclusion of tallydata and totalbin dictionaries in children simulation output classes
@@ -1208,6 +1218,7 @@ class AbstractSimOutput:
             raise NotImplementedError
         if not isinstance(self.totalbin, dict):
             raise NotImplementedError
+
 
 class MCNPSimOutput(AbstractSimOutput):
     def __init__(
@@ -1421,7 +1432,8 @@ class OpenMCSimOutput(AbstractSimOutput):
         tallydata, totalbin = self._create_dataframes(tallies)
         return tallydata, totalbin
 
-def fatal_exception(message : str | None = None) -> None:
+
+def fatal_exception(message: str | None = None) -> None:
     """
     Use this function to exit with a code error from a handled exception
 

@@ -116,7 +116,7 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
         """
         pass
 
-    def parse_output_data(self, results_path : str | os.PathLike):
+    def parse_output_data(self, results_path: str | os.PathLike):
         """
         Abstract function for retrieving simulation output data, tally numbers and tally comments.
         Not used in Sphere.
@@ -234,7 +234,7 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
 
         self._build_atlas(outpath)
 
-    def _build_atlas(self, outpath : str | os.PathLike) -> None:
+    def _build_atlas(self, outpath: str | os.PathLike) -> None:
         """
         Build the atlas using all plots contained in directory
 
@@ -290,7 +290,7 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
         print(" Generating Plots Atlas...")
         self._generate_plots(allzaids, globalname)
 
-    def _generate_plots(self, allzaids : list, globalname :str) -> None:
+    def _generate_plots(self, allzaids: list, globalname: str) -> None:
         """
         Generate all the plots requested by the Sphere leakage benchmark
 
@@ -408,7 +408,9 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
 
         return libraries, allzaids, outputs
 
-    def _generate_dataframe(self, results : dict, errors : dict, stat_checks : dict | None = None) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    def _generate_dataframe(
+        self, results: dict, errors: dict, stat_checks: dict | None = None
+    ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """
         Function to turn the output of the read_{code}_output functions into DataFrames
         for use with xlsxwriter
@@ -419,7 +421,7 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
             dictionary of tally summaries for each material/ZAID.
         errors : dict
             dictionaty of average tally errors across all energy bins.
-        stat_checks : dict or None 
+        stat_checks : dict or None
             dictionary containing results of MCNP statistical checks
             (MCNP only). Defaults to None.
 
@@ -802,7 +804,7 @@ class MCNPSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
             )
             return None
 
-    def _get_output(self, results_path : str | os.PathLike) -> SphereMCNPSimOutput:
+    def _get_output(self, results_path: str | os.PathLike) -> SphereMCNPSimOutput:
         """
         Method to retrieve output data from MCNP as a SphereMCNPSimOutput
 
@@ -814,7 +816,7 @@ class MCNPSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
         Returns
         -------
         output : SphereMCNPSimOutput
-            SphereMCNPSimOutput output object 
+            SphereMCNPSimOutput output object
         """
         for file in os.listdir(results_path):
             if file[-1] == "m":
@@ -890,7 +892,9 @@ class MCNPSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
             stat_checks.append(st_ck)
         return outputs, results, errors, stat_checks
 
-    def _get_output_files(self, results_path: str | os.PathLike) -> tuple[str | os.PathLike, str | os.PathLike, str | os.PathLike]:
+    def _get_output_files(
+        self, results_path: str | os.PathLike
+    ) -> tuple[str | os.PathLike, str | os.PathLike, str | os.PathLike]:
         """
         Recover the output files from a directory
 
@@ -910,7 +914,7 @@ class MCNPSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
             path to the first file
         file2 : str or os.PathLike
             path to the second file
-        file3 : str or os.PathLike 
+        file3 : str or os.PathLike
 
         """
         file1 = None
@@ -1115,7 +1119,7 @@ class SphereTallyOutput:
         """
         raise RuntimeError("SphereTallyOutput cannot be instantiated")
 
-    def get_single_excel_data(self, tallies2pp : list) -> tuple[dict, dict]:
+    def get_single_excel_data(self, tallies2pp: list) -> tuple[dict, dict]:
         """
         Get the excel data of a single MCNP output
 
@@ -1129,7 +1133,7 @@ class SphereTallyOutput:
         tuple[dict, dict]
             _description_
         """
-        #TODO this doesn't seem like it will work now...
+        # TODO this doesn't seem like it will work now...
         data = self.tallydata.set_index(["Energy"])
         results = {}  # Store excel results of different tallies
         errors = {}  # Store average error in different tallies
@@ -1187,7 +1191,7 @@ class SphereTallyOutput:
 
         return results, errors
 
-    def get_comparison_data(self, tallies2pp : list, code : str) -> tuple[list, list]:
+    def get_comparison_data(self, tallies2pp: list, code: str) -> tuple[list, list]:
         """
         Get Data for single zaid to be used in comparison.
 
@@ -1258,7 +1262,7 @@ class SphereTallyOutput:
 
 
 class SphereMCNPSimOutput(MCNPSimOutput, SphereTallyOutput):
-    def __init__(self, mfile : str | os.PathLike, outfile : str | os.PathLike) -> None:
+    def __init__(self, mfile: str | os.PathLike, outfile: str | os.PathLike) -> None:
         """
         Initialisation function for SphereMCNPSimOutput to create tallydata and totalbin dictionaries.
 
@@ -1272,7 +1276,7 @@ class SphereMCNPSimOutput(MCNPSimOutput, SphereTallyOutput):
         super().__init__(mfile, outfile)
         self.tallydata, self.totalbin = self._get_tallydata(self.mctal)
 
-    def _get_tallydata(self, mctal : Mctal) -> tuple[pd.DataFrame, pd.DataFrame]:
+    def _get_tallydata(self, mctal: Mctal) -> tuple[pd.DataFrame, pd.DataFrame]:
         """
         Retrieve and organize mctal data. Simplified for sphere leakage case
 
@@ -1360,7 +1364,7 @@ class SphereMCNPSimOutput(MCNPSimOutput, SphereTallyOutput):
 
 
 class SphereOpenMCSimOutput(OpenMCSimOutput, SphereTallyOutput):
-    def __init__(self, output_path : str | os.PathLike) -> None:
+    def __init__(self, output_path: str | os.PathLike) -> None:
         """
         Initialisation function for SphereOpenMCSimOutput class
 
@@ -1368,7 +1372,7 @@ class SphereOpenMCSimOutput(OpenMCSimOutput, SphereTallyOutput):
         ----------
         output_path : str | os.PathLike
             Path to OpenC simulation output files
-        
+
         Returns
         -------
         None
@@ -1377,7 +1381,7 @@ class SphereOpenMCSimOutput(OpenMCSimOutput, SphereTallyOutput):
         self.tallydata, self.totalbin = self.process_tally()
         self.stat_checks = None
 
-    def _create_dataframe(self, rows : list) -> tuple[pd.DataFrame, pd.DataFrame]:
+    def _create_dataframe(self, rows: list) -> tuple[pd.DataFrame, pd.DataFrame]:
         """
         Creates dataframe from the data in each output passed through as
         a list of lists from the process_tally function
@@ -1392,7 +1396,7 @@ class SphereOpenMCSimOutput(OpenMCSimOutput, SphereTallyOutput):
         df : pd.DataFrame
             dataframe containing the information from each output
         dftotal : pd.DataFrame
-            dataframe containing the sum of all values and errors for each output        
+            dataframe containing the sum of all values and errors for each output
         """
 
         df = pd.DataFrame(
@@ -1425,7 +1429,7 @@ class SphereOpenMCSimOutput(OpenMCSimOutput, SphereTallyOutput):
         df : pd.DataFrame
             dataframe containing the information from each output
         dftotal : pd.DataFrame
-            dataframe containing the sum of all values and errors for each output        
+            dataframe containing the sum of all values and errors for each output
         """
         rows = self.output.tally_to_rows()
         tallydata, totalbin = self._create_dataframe(rows)
@@ -1565,7 +1569,7 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
         globalname = self.lib
         self._generate_plots(allzaids, globalname)
 
-    def _generate_plots(self, allzaids : list, globalname : str) -> None:
+    def _generate_plots(self, allzaids: list, globalname: str) -> None:
         """
         Generate all the plots requested by the Sphere SDDR benchmark
 
@@ -1872,7 +1876,9 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
         # Remove tmp images
         shutil.rmtree(outpath)
 
-    def _extract_data4plots(self, zaid : str, mt : str, lib : str, time : float) -> tuple[float, float, float]:
+    def _extract_data4plots(
+        self, zaid: str, mt: str, lib: str, time: float
+    ) -> tuple[float, float, float]:
         """
         Method to extract data for plots
 
@@ -1963,7 +1969,9 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
 
         return outputs, results, errors, stat_checks
 
-    def _compute_compare_result(self, reflib : str, tarlib : str) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    def _compute_compare_result(
+        self, reflib: str, tarlib: str
+    ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """
         Given a reference lib and a target lib, both absolute and relative
         comparison are computed
@@ -2035,7 +2043,7 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
         return final, absdiff, std_dev
 
     @staticmethod
-    def _sort_df(df : pd.DataFrame) -> None:
+    def _sort_df(df: pd.DataFrame) -> None:
         """
         Sorts the values in the passed dataframe by the Parent column,
         then sets 3 index columns
@@ -2053,7 +2061,9 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
         df.reset_index(inplace=True)
 
     @staticmethod
-    def _sortfunc_zaidMTcouples(item : tuple | list) -> tuple[bool, str | int, str | int]:
+    def _sortfunc_zaidMTcouples(
+        item: tuple | list,
+    ) -> tuple[bool, str | int, str | int]:
         """
         Function to sort zaid couples
 
@@ -2083,7 +2093,9 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
 
         return (flag, zaid, mt)
 
-    def _parserunmcnp(self, test_path : str | os.PathLike, lib : str) -> tuple[dict, list, list, list]:
+    def _parserunmcnp(
+        self, test_path: str | os.PathLike, lib: str
+    ) -> tuple[dict, list, list, list]:
         """
         given a MCNP run folder the parsing of the different outputs is
         performed

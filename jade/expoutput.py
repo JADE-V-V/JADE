@@ -222,7 +222,7 @@ class ExperimentalOutput(MCNPBenchmarkOutput):
         results_path : str | os.PathLike
             Path to simulations results.
         folder : str
-            Sub-folder for multiple run case. 
+            Sub-folder for multiple run case.
         lib : str
             Test library.
 
@@ -353,7 +353,7 @@ class ExperimentalOutput(MCNPBenchmarkOutput):
         self.exp_results = exp_results
 
     @staticmethod
-    def _read_exp_file(filepath : str | os.PathLike) -> pd.DataFrame:
+    def _read_exp_file(filepath: str | os.PathLike) -> pd.DataFrame:
         """
         Default way of reading a csv file
         Parameters
@@ -396,7 +396,7 @@ class ExperimentalOutput(MCNPBenchmarkOutput):
                 data.to_csv(file, header=True, index=False)
 
     @abstractmethod
-    def _processMCNPdata(self, output : MCNPSimOutput):
+    def _processMCNPdata(self, output: MCNPSimOutput):
         """
         Given an mctal file object return the meaningful data extracted. Some
         post-processing on the data may be foreseen at this stage.
@@ -424,7 +424,7 @@ class ExperimentalOutput(MCNPBenchmarkOutput):
         pass
 
     @abstractmethod
-    def _build_atlas(self, tmp_path : str | os.PathLike, atlas : at.Atlas) -> at.Atlas:
+    def _build_atlas(self, tmp_path: str | os.PathLike, atlas: at.Atlas) -> at.Atlas:
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
@@ -575,7 +575,7 @@ class FNGOutput(ExperimentalOutput):
                 ws = writer.sheets[folder]
                 ws.write_string(0, 0, '"C/E (mean +/- σ)"')
 
-    def _get_collected_data(self, folder : str) -> pd.DataFrame:
+    def _get_collected_data(self, folder: str) -> pd.DataFrame:
         """
         Given a campaign it builds a single table containing all experimental
         and computational data available for the total SDDR tally.
@@ -602,7 +602,7 @@ class FNGOutput(ExperimentalOutput):
 
         return df
 
-    def _build_atlas(self, tmp_path : str | os.PathLike, atlas : at.Atlas) -> at.Atlas:
+    def _build_atlas(self, tmp_path: str | os.PathLike, atlas: at.Atlas) -> at.Atlas:
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
@@ -723,7 +723,7 @@ class FNGOutput(ExperimentalOutput):
 
         return atlas
 
-    def _read_exp_file(self, filepath : str | os.PathLike) -> pd.DataFrame:
+    def _read_exp_file(self, filepath: str | os.PathLike) -> pd.DataFrame:
         """
         Override parent method since the separator for these experimental
         files is ";"
@@ -743,7 +743,7 @@ class FNGOutput(ExperimentalOutput):
 
 
 class SpectrumOutput(ExperimentalOutput):
-    def _build_atlas(self, tmp_path : str | os.PathLike, atlas : at.Atlas) -> at.Atlas:
+    def _build_atlas(self, tmp_path: str | os.PathLike, atlas: at.Atlas) -> at.Atlas:
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
@@ -808,7 +808,7 @@ class SpectrumOutput(ExperimentalOutput):
 
         return atlas
 
-    def _get_tally_info(self, tally : Tally) -> tuple[int, str, str]:
+    def _get_tally_info(self, tally: Tally) -> tuple[int, str, str]:
         """
         Extracts and assigns information from the tally object, as well as
         information from the benchmark config variable
@@ -833,7 +833,7 @@ class SpectrumOutput(ExperimentalOutput):
         unit = self.bench_conf.loc[tallynum, "X Unit"]
         return tallynum, particle, quant + " [" + unit + "]"
 
-    def _define_title(self, input : str, quantity_CE : str) -> str:
+    def _define_title(self, input: str, quantity_CE: str) -> str:
         """Assigns the title for atlas plot
 
         Parameters
@@ -953,7 +953,9 @@ class SpectrumOutput(ExperimentalOutput):
 
         return
 
-    def _data_collect(self, input : str, tallynum : str, quantity_CE : str, e_intervals : list) -> tuple[list, str]:
+    def _data_collect(
+        self, input: str, tallynum: str, quantity_CE: str, e_intervals: list
+    ) -> tuple[list, str]:
         """Collect data for C/E tables
 
         Parameters
@@ -1033,7 +1035,7 @@ class SpectrumOutput(ExperimentalOutput):
         # Excel is actually printed by the build atlas in this case
         pass
 
-    def _processMCNPdata(self, output : MCNPSimOutput) -> dict:
+    def _processMCNPdata(self, output: MCNPSimOutput) -> dict:
         """
         given the mctal file the lethargy flux and energies are returned
         both for the neutron and photon tally
@@ -1067,7 +1069,9 @@ class SpectrumOutput(ExperimentalOutput):
 
         return res
 
-    def _parse_data_df(self, data : pd.DataFrame, output : MCNPSimOutput, x_axis : str, tallynum : str) -> tuple[list, list, list]:
+    def _parse_data_df(
+        self, data: pd.DataFrame, output: MCNPSimOutput, x_axis: str, tallynum: str
+    ) -> tuple[list, list, list]:
         """
         Read information from data DataFrame
 
@@ -1128,7 +1132,11 @@ class SpectrumOutput(ExperimentalOutput):
 
 
 def _get_tablevalues(
-    df : pd.DataFrame, interpolator : function, x : str = "Energy [MeV]", y : str = "C", e_intervals : list = [0.1, 1, 5, 10, 20]
+    df: pd.DataFrame,
+    interpolator: function,
+    x: str = "Energy [MeV]",
+    y: str = "C",
+    e_intervals: list = [0.1, 1, 5, 10, 20],
 ):
     """
     Given the benchmark and experimental results returns a df to compile the
@@ -1182,7 +1190,7 @@ def _get_tablevalues(
 
 
 class TiaraOutput(ExperimentalOutput):
-    def _processMCNPdata(self, output : MCNPSimOutput) -> None:
+    def _processMCNPdata(self, output: MCNPSimOutput) -> None:
         """
         Used to override parent function as this is not required.
 
@@ -1241,7 +1249,7 @@ class TiaraOutput(ExperimentalOutput):
         # Return complete dataframe
         return pd.concat(to_concat)
 
-    def _exp_comp_case_check(self, indexes : list) -> None:
+    def _exp_comp_case_check(self, indexes: list) -> None:
         """
         Removes from mcnp case dataframe experimental data which don't have
         correspondent mcnp outputs and removes mcnp outputs without
@@ -1262,7 +1270,7 @@ class TiaraOutput(ExperimentalOutput):
         self.case_tree_df = self.case_tree_df.set_index(indexes)
         return
 
-    def _get_conv_df(self, df : pd.DataFrame) -> pd.DataFrame:
+    def _get_conv_df(self, df: pd.DataFrame) -> pd.DataFrame:
         """
         Adds extra columns to the dataframe containing the maximum and
         average errors of the tallies
@@ -1483,10 +1491,10 @@ class TiaraFCOutput(TiaraOutput):
         # Assign exp data variable
         self.exp_data = exp_data
 
-    def _build_atlas(self, tmp_path : str | os.PathLike, atlas : at.Atlas) -> at.Atlas:
+    def _build_atlas(self, tmp_path: str | os.PathLike, atlas: at.Atlas) -> at.Atlas:
         """
         Fill the atlas with the customized plots. Creation and saving of the
-        atlas are handled elsewhere.        
+        atlas are handled elsewhere.
 
         Parameters
         ----------
@@ -1767,16 +1775,21 @@ class TiaraBSOutput(TiaraOutput):
         # Save experimental data
         self.exp_data = exp_data
 
-    def _build_atlas(self, tmp_path : str | os.PathLike, atlas : at.Atlas) -> at.Atlas:
+    def _build_atlas(self, tmp_path: str | os.PathLike, atlas: at.Atlas) -> at.Atlas:
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
 
         Parameters
         ----------
-        tmp_path : str
+        tmp_path : str | os.PathLike
             path to the temporary folder containing the plots for the atlas
-        atlas : Atlas
+        atlas : at.Atlas
+            Object representing the plot Atlas.
+
+        Returns
+        -------
+        atlas : at.Atlas
             Object representing the plot Atlas.
         """
         # Set plot axes
@@ -1836,12 +1849,28 @@ class TiaraBSOutput(TiaraOutput):
 
 
 class ShieldingOutput(ExperimentalOutput):
-    def _processMCNPdata(self, output):
+    def _processMCNPdata(self, output: MCNPSimOutput) -> None:
+        """
+        Used to override parent function as this is not required.
+
+        Parameters
+        ----------
+        output : MCNPSimOutput
+            MCNP simulation output object
+
+        Returns
+        -------
+        None
+        """
         return None
 
-    def _pp_excel_comparison(self):
+    def _pp_excel_comparison(self) -> None:
         """
         This method prints C/E tables for shielding benchmark comparisons
+
+        Returns
+        -------
+        None.
         """
         # FNG SiC specific corrections/normalisations
         fngsic_k = [0.212, 0.204, 0.202, 0.202]  # Neutron sensitivity of TL detectors
@@ -1892,9 +1921,7 @@ class ShieldingOutput(ExperimentalOutput):
                                 if self.testname == "FNG-SiC":
                                     # Neutron dose
                                     Dn = (
-                                        self.raw_data[t][16]["Value"].values[
-                                            : len(x)
-                                        ]
+                                        self.raw_data[t][16]["Value"].values[: len(x)]
                                     ) * fngsic_norm
                                     Dn_multiplied = [
                                         value * constant
@@ -1902,17 +1929,13 @@ class ShieldingOutput(ExperimentalOutput):
                                     ]
                                     # Photon dose
                                     Dp = (
-                                        self.raw_data[t][26]["Value"].values[
-                                            : len(x)
-                                        ]
+                                        self.raw_data[t][26]["Value"].values[: len(x)]
                                     ) * fngsic_norm
                                     # Sum neutron and photon dose with neutron sensitivity as a function of depth
                                     Dt = [sum(pair) for pair in zip(Dn_multiplied, Dp)]
                                     vals = Dt
                                 else:
-                                    vals = self.raw_data[t][6]["Value"].values[
-                                        : len(x)
-                                    ]
+                                    vals = self.raw_data[t][6]["Value"].values[: len(x)]
                             df_tab[idx_col] = vals
                         elif idx_col[1] == "C/E Error":
                             if mat != "TLD":
@@ -1932,9 +1955,7 @@ class ShieldingOutput(ExperimentalOutput):
                                         )
                                     )
                                 else:
-                                    errs = self.raw_data[t][6]["Error"].values[
-                                        : len(x)
-                                    ]
+                                    errs = self.raw_data[t][6]["Error"].values[: len(x)]
                             vals1 = np.square(errs)
                             vals2 = np.square(
                                 exp_data_df.loc[:, "Error"].to_numpy() / 100
@@ -1949,9 +1970,7 @@ class ShieldingOutput(ExperimentalOutput):
                                 if self.testname == "FNG-SiC":
                                     # Neutron dose
                                     Dn = (
-                                        self.raw_data[t][16]["Value"].values[
-                                            : len(x)
-                                        ]
+                                        self.raw_data[t][16]["Value"].values[: len(x)]
                                     ) * fngsic_norm
                                     Dn_multiplied = [
                                         value * constant
@@ -1959,9 +1978,7 @@ class ShieldingOutput(ExperimentalOutput):
                                     ]
                                     # Photon dose
                                     Dp = (
-                                        self.raw_data[t][26]["Value"].values[
-                                            : len(x)
-                                        ]
+                                        self.raw_data[t][26]["Value"].values[: len(x)]
                                     ) * fngsic_norm
                                     # Sum neutron and photon dose with neutron sensitivity as a function of depth
                                     Dt = [sum(pair) for pair in zip(Dn_multiplied, Dp)]
@@ -1982,16 +1999,21 @@ class ShieldingOutput(ExperimentalOutput):
                 df_tab.to_excel(writer, sheet_name=sheet_name)
                 conv_df.to_excel(writer, sheet_name=sheet_name, startrow=18)
 
-    def _build_atlas(self, tmp_path, atlas):
+    def _build_atlas(self, tmp_path: str | os.PathLike, atlas: at.Atlas) -> at.Atlas:
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
 
         Parameters
         ----------
-        tmp_path : str
+        tmp_path : str | os.PathLike
             path to the temporary folder containing the plots for the atlas
-        atlas : Atlas
+        atlas : at.Atlas
+            Object representing the plot Atlas.
+
+        Returns
+        -------
+        atlas : at.Atlas
             Object representing the plot Atlas.
         """
         # FNG SiC specific corrections/normalisations
@@ -2046,25 +2068,19 @@ class ShieldingOutput(ExperimentalOutput):
                     if self.testname == "FNG-SiC":
                         # Neutron dose
                         Dn = (
-                            self.raw_data[(material, lib)][16]["Value"].values[
-                                : len(x)
-                            ]
+                            self.raw_data[(material, lib)][16]["Value"].values[: len(x)]
                         ) * fngsic_norm
                         Dn_multiplied = [
                             value * constant for value, constant in zip(Dn, fngsic_k)
                         ]
                         # Photon dose
                         Dp = (
-                            self.raw_data[(material, lib)][26]["Value"].values[
-                                : len(x)
-                            ]
+                            self.raw_data[(material, lib)][26]["Value"].values[: len(x)]
                         ) * fngsic_norm
                         # Sum neutron and photon dose with neutron sensitivity as a function of depth
                         v = [sum(pair) for pair in zip(Dn_multiplied, Dp)]
                     else:
-                        v = self.raw_data[(material, lib)][6]["Value"].values[
-                            : len(x)
-                        ]
+                        v = self.raw_data[(material, lib)][6]["Value"].values[: len(x)]
                 y.append(v)
                 if material != "TLD":
                     v = self.raw_data[(material, lib)][4]["Error"].values[: len(x)]
@@ -2072,20 +2088,18 @@ class ShieldingOutput(ExperimentalOutput):
                     if self.testname == "FNG-SiC":
                         v = np.sqrt(
                             np.square(
-                                self.raw_data[(material, lib)][16][
-                                    "Error"
-                                ].values[: len(x)]
+                                self.raw_data[(material, lib)][16]["Error"].values[
+                                    : len(x)
+                                ]
                             )
                             + np.square(
-                                self.raw_data[(material, lib)][26][
-                                    "Error"
-                                ].values[: len(x)]
+                                self.raw_data[(material, lib)][26]["Error"].values[
+                                    : len(x)
+                                ]
                             )
                         )
                     else:
-                        v = self.raw_data[(material, lib)][6]["Error"].values[
-                            : len(x)
-                        ]
+                        v = self.raw_data[(material, lib)][6]["Error"].values[: len(x)]
                 err.append(v)
                 # Append computational data to data list(to be sent to plotter)
                 data_comp = {"x": x, "y": y, "err": err, "ylabel": ylabel}
@@ -2107,9 +2121,22 @@ class ShieldingOutput(ExperimentalOutput):
 
         return atlas
 
-    def _get_conv_df(self, mat, size):
-        # TODO Replace when other transport codes implemented.
-        code = "mcnp"
+    def _get_conv_df(self, mat: str, size: int) -> pd.DataFrame:
+        """
+        Method to calculate average and maximum uncertainties
+
+        Parameters
+        ----------
+        mat : str
+            String denoting material
+        size : int
+            Integer denoting size of array
+
+        Returns
+        -------
+        conv_df : pd.DataFrame
+            Dataframe containing Max Error and Average Error columns
+        """
         conv_df = pd.DataFrame()
         for lib in self.lib[1:]:
             if mat != "TLD":
@@ -2118,9 +2145,7 @@ class ShieldingOutput(ExperimentalOutput):
             else:
                 if self.testname == "FNG-SiC":
                     v = np.sqrt(
-                        np.square(
-                            self.raw_data[(mat, lib)][16]["Error"].values[:size]
-                        )
+                        np.square(self.raw_data[(mat, lib)][16]["Error"].values[:size])
                         + np.square(
                             self.raw_data[(mat, lib)][26]["Error"].values[:size]
                         )
@@ -2128,12 +2153,8 @@ class ShieldingOutput(ExperimentalOutput):
                     max = np.max(v)
                     avg = np.mean(v)
                 else:
-                    max = (
-                        self.raw_data[(mat, lib)][6]["Error"].values[:size].max()
-                    )
-                    avg = (
-                        self.raw_data[(mat, lib)][6]["Error"].values[:size].mean()
-                    )
+                    max = self.raw_data[(mat, lib)][6]["Error"].values[:size].max()
+                    avg = self.raw_data[(mat, lib)][6]["Error"].values[:size].mean()
             library = self.session.conf.get_lib_name(lib)
             conv_df.loc["Max Error", library] = max
             conv_df.loc["Average Error", library] = avg
@@ -2141,18 +2162,22 @@ class ShieldingOutput(ExperimentalOutput):
 
 
 class MultipleSpectrumOutput(SpectrumOutput):
-    def _build_atlas(self, tmp_path, atlas):
+    def _build_atlas(self, tmp_path: str | os.PathLike, atlas: at.Atlas) -> at.Atlas:
         """
         Fill the atlas with the customized plots. Creation and saving of the
         atlas are handled elsewhere.
 
         Parameters
         ----------
-        tmp_path : str
+        tmp_path : str | os.PathLike
             path to the temporary folder containing the plots for the atlas
-        atlas : Atlas
+        atlas : at.Atlas
             Object representing the plot Atlas.
 
+        Returns
+        -------
+        atlas : at.Atlas
+            Object representing the plot Atlas.
         """
         self.tables = []
         self.groups = pd.read_excel(self.cnf_path)
@@ -2166,7 +2191,9 @@ class MultipleSpectrumOutput(SpectrumOutput):
 
         return atlas
 
-    def _plot_tally_group(self, group, tmp_path, atlas):
+    def _plot_tally_group(
+        self, group: list, tmp_path: str | os.PathLike, atlas: at.Atlas
+    ) -> at.Atlas:
         """
         Plots tallies for a given group of outputs and add to Atlas object
 
@@ -2175,7 +2202,7 @@ class MultipleSpectrumOutput(SpectrumOutput):
         group : list
             list of groups in the experimental benchmark object, outputs are
             grouped by material, several tallies for each material/group
-        tmp_path : str
+        tmp_path : str or os.PathLike
             path to temporary atlas plot folder
         atlas : JADE Atlas
             Atlas object
@@ -2237,9 +2264,9 @@ class MultipleSpectrumOutput(SpectrumOutput):
         atlas.insert_img(img_path, width=Inches(9))
         return atlas
 
-    def _define_title(self, input, particle, quantity):
+    def _define_title(self, input: str, particle: str, quantity: str) -> str:
         """
-        determines which benchmark is being compared and assigns title
+        Determines which benchmark is being compared and assigns title
         accordinly
 
         Parameters
@@ -2289,14 +2316,30 @@ class MultipleSpectrumOutput(SpectrumOutput):
         return title
 
 
-class fnghcpboutput(ExperimentalOutput):
+class FNGCPBOutput(ExperimentalOutput):
+    def _processMCNPdata(self, output: MCNPSimOutput) -> None:
+        """
+        Used to override parent function as this is not required.
 
-    def _processMCNPdata(self, output):
+        Parameters
+        ----------
+        output : MCNPSimOutput
+            MCNP simulation output object
 
+        Returns
+        -------
+        None
+        """
         return None
 
-    def _pp_excel_comparison(self):
-        """Produces the Excel document for comparison to experiment."""
+    def _pp_excel_comparison(self) -> None:
+        """
+        This method prints C/E tables for shielding benchmark comparisons
+
+        Returns
+        -------
+        None.
+        """
 
         lib_names_dict = {}
         column_names = []
@@ -2345,34 +2388,24 @@ class fnghcpboutput(ExperimentalOutput):
                         t = (mat, lib_names_dict[idx_col[0]])
                         if idx_col[1] == "Value":
                             if mat != "H3":
-                                vals = self.raw_data[t][4]["Value"].values[
-                                    : len(x)
-                                ]
+                                vals = self.raw_data[t][4]["Value"].values[: len(x)]
                             else:
                                 # Total activity
                                 vals = []
                                 for i in range(4):
                                     vals.extend(
-                                        (
-                                            self.raw_data[t][84]["Value"].values[
-                                                i::4
-                                            ]
-                                        )
+                                        (self.raw_data[t][84]["Value"].values[i::4])
                                     )
 
                             df_tab[idx_col] = vals
 
                         elif idx_col[1] == "C/E Error":
                             if mat != "H3":
-                                errs = self.raw_data[t][4]["Error"].values[
-                                    : len(x)
-                                ]
+                                errs = self.raw_data[t][4]["Error"].values[: len(x)]
                             else:
                                 errs = []
                                 for i in range(4):
-                                    yerr = self.raw_data[t][84]["Error"].values[
-                                        i::4
-                                    ]
+                                    yerr = self.raw_data[t][84]["Error"].values[i::4]
                                     errs.extend(yerr)
 
                             vals1 = np.square(errs)
@@ -2385,9 +2418,7 @@ class fnghcpboutput(ExperimentalOutput):
                         # Calculate C/E value
                         else:
                             if mat != "H3":
-                                vals1 = self.raw_data[t][4]["Value"].values[
-                                    : len(x)
-                                ]
+                                vals1 = self.raw_data[t][4]["Value"].values[: len(x)]
                             else:
                                 vals1 = []
                                 for i in range(4):
@@ -2414,11 +2445,23 @@ class fnghcpboutput(ExperimentalOutput):
                 conv_df.to_excel(writer, sheet_name=sheet_name, startrow=55)
                 # Close the Pandas Excel writer object and output the Excel file
 
-    def _build_atlas(self, tmp_path, atlas):
+    def _build_atlas(self, tmp_path: str | os.PathLike, atlas: at.Atlas) -> at.Atlas:
         """
-        Build the Atlas (PDF) plots. See ExperimentalOutput documentation
+        Fill the atlas with the customized plots. Creation and saving of the
+        atlas are handled elsewhere.
+
+        Parameters
+        ----------
+        tmp_path : str | os.PathLike
+            path to the temporary folder containing the plots for the atlas
+        atlas : at.Atlas
+            Object representing the plot Atlas.
+
+        Returns
+        -------
+        atlas : at.Atlas
+            Object representing the plot Atlas.
         """
-        code = "mcnp"
         for material in tqdm(self.inputs):
             # Tritium Activity
             if material == "H3":
@@ -2447,14 +2490,10 @@ class fnghcpboutput(ExperimentalOutput):
                         # y = []
                         # err = []
                         # Total tritium production Li6 + Li7
-                        ycalc = self.raw_data[(material, lib)][84][
-                            "Value"
-                        ].values[i::4]
+                        ycalc = self.raw_data[(material, lib)][84]["Value"].values[i::4]
 
                         yerr = np.square(
-                            self.raw_data[(material, lib)][84]["Error"].values[
-                                i::4
-                            ]
+                            self.raw_data[(material, lib)][84]["Error"].values[i::4]
                         )
 
                         y = ycalc
@@ -2509,14 +2548,10 @@ class fnghcpboutput(ExperimentalOutput):
                     y = []
                     err = []
 
-                    ycalc = self.raw_data[(material, lib)][4]["Value"].values[
-                        : len(x)
-                    ]
+                    ycalc = self.raw_data[(material, lib)][4]["Value"].values[: len(x)]
                     y.append(ycalc)
 
-                    yerr = self.raw_data[(material, lib)][4]["Error"].values[
-                        : len(x)
-                    ]
+                    yerr = self.raw_data[(material, lib)][4]["Error"].values[: len(x)]
                     err.append(yerr)
 
                     # Append computational data to data list(to be sent to plotter)
@@ -2538,9 +2573,23 @@ class fnghcpboutput(ExperimentalOutput):
                 atlas.insert_img(img_path)
         return atlas
 
-    def _get_conv_df(self, mat, size):
+    def _get_conv_df(self, mat: str, size: int) -> pd.DataFrame:
+        """
+        Method to calculate average and maximum uncertainties
+
+        Parameters
+        ----------
+        mat : str
+            String denoting material
+        size : int
+            Integer denoting size of array
+
+        Returns
+        -------
+        conv_df : pd.DataFrame
+            Dataframe containing Max Error and Average Error columns
+        """
         conv_df = pd.DataFrame()
-        code = "mcnp"
         for lib in self.lib[1:]:
             if mat != "H3":
                 max = self.raw_data[(mat, lib)][4]["Error"].values[:size].max()

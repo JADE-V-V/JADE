@@ -338,7 +338,7 @@ class TestExpOutput:
         testname = "FNG-HCPB"
         os.makedirs(session_mock.path_comparison)
         os.makedirs(session_mock.path_single)
-        self.benchoutput_comp = expoutput.fnghcpboutput(
+        self.benchoutput_comp = expoutput.FNGCPBOutput(
             ["32c", "31c", "00c"], code, testname, session_mock, multiplerun=True
         )
         self.benchoutput_comp.compare()

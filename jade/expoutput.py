@@ -287,7 +287,8 @@ class ExperimentalOutput(MCNPBenchmarkOutput):
                     code_raw_data = {(self.testname, lib): tallydata}
 
                 # Adjourn raw Data
-                self.raw_data[code_tag].update(code_raw_data)
+                #self.raw_data[code_tag].update(code_raw_data)
+                self.raw_data.update(code_raw_data)
 
     def _read_exp_results(self):
         """
@@ -353,14 +354,7 @@ class ExperimentalOutput(MCNPBenchmarkOutput):
         -------
         None.
         """
-        if self.mcnp:
-            raw_to_print = self.raw_data["mcnp"].items()
-        if self.openmc:
-            pass
-        if self.serpent:
-            pass
-        if self.d1s:
-            raw_to_print = self.raw_data["d1s"].items()
+        raw_to_print = self.raw_data.items()
 
         for (folder, lib), item in raw_to_print:
             # Create the lib directory if it is not there

@@ -54,7 +54,7 @@ if OMC_AVAIL:
 
 
 class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
-    def __init__(self, lib: str, code: str, testname: str, session: Session):
+    def __init__(self, lib: str, code: str, testname: str, session: Session) -> None:
         """
         Initialises the SphereOutput class from the general BenchmarkOutput
         class, see output.py for details on how self variables are assigned
@@ -99,13 +99,38 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
         #     # metadata involved here
         #     self.metadata = None
 
-    def _read_get_output_files(self, results_path: str, code: str):
+    def _get_output_files(self, results_path: str | os.PathLike, code: str) -> list:
+        """
+        Enforced method from inheritance of AbstractBenchmarkOutput, not used in Sphere.
+
+        Parameters
+        ----------
+        results_path : str | os.PathLike
+            Path to simulation results folder.
+
+        Returns
+        -------
+        list
+            List of simulation results files.
+        """
         pass
 
-    def parse_output_data(self, results_path: str):
-        pass
+    def parse_output_data(self, results_path : str | os.PathLike):
+        """
+        Abstract function for retrieving simulation output data, tally numbers and tally comments.
+        Not used in Sphere.
 
-    def single_postprocess(self):
+        Parameters
+        ----------
+        results_path : str | os.PathLike
+            Path to simulation results
+
+        Returns
+        -------
+        None
+        """
+
+    def single_postprocess(self) -> None:
         """
         Execute the full post-processing of a single library (i.e. excel,
         raw data and atlas)
@@ -124,25 +149,26 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
 
     @abc.abstractmethod
     def _read_output(self) -> tuple[dict, list, list, list | None]:
-        """Reads all outputs for a library. To be implemented for each different code.
+        """
+        Reads all outputs for a library. To be implemented for each different code.
 
         Returns
         -------
-            outputs : dic
-                Dictionary of sphere output objects used in plotting, keys are material name or ZAID number
-            results : dic
-                Dictionary of overview of Tally values for each material/ZAID, returns either all values > 0 for
-                tallies with postive values only, all Values = 0 for empty tallies, and returns the corresponding
-                tally bin if it finds any negative values. Contents of the "Values" worksheet.
-            errors : dic
-                Dictionary of average errors for each tally for each material/Zaid. Contents of the "Errors" worksheet.
-            stat_checks : dic
-                Dictionary the MCNP statistical check results for each material/ZAID. Contents of the "Statistical
-                Checks" Worksheet.
+        outputs : dic
+            Dictionary of sphere output objects used in plotting, keys are material name or ZAID number
+        results : dic
+            Dictionary of overview of Tally values for each material/ZAID, returns either all values > 0 for
+            tallies with postive values only, all Values = 0 for empty tallies, and returns the corresponding
+            tally bin if it finds any negative values. Contents of the "Values" worksheet.
+        errors : dic
+            Dictionary of average errors for each tally for each material/Zaid. Contents of the "Errors" worksheet.
+        stat_checks : dic
+            Dictionary the MCNP statistical check results for each material/ZAID. Contents of the "Statistical
+            Checks" Worksheet.
         """
         pass
 
-    def _generate_single_plots(self):
+    def _generate_single_plots(self) -> None:
         """
         Generate all the requested plots in a temporary folder
 
@@ -207,7 +233,7 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
 
         self._build_atlas(outpath)
 
-    def _build_atlas(self, outpath):
+    def _build_atlas(self, outpath : str | os.PathLike) -> None:
         """
         Build the atlas using all plots contained in directory
 
@@ -235,7 +261,7 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
         # Remove tmp images
         shutil.rmtree(outpath)
 
-    def compare(self):
+    def compare(self) -> None:
         """
         Execute the full post-processing of a comparison of libraries
         (i.e. excel, and atlas)
@@ -263,7 +289,7 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
         print(" Generating Plots Atlas...")
         self._generate_plots(allzaids, globalname)
 
-    def _generate_plots(self, allzaids, globalname):
+    def _generate_plots(self, allzaids : list, globalname :str) -> None:
         """
         Generate all the plots requested by the Sphere leakage benchmark
 
@@ -272,13 +298,6 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
         allzaids : list
             list of all zaids resulting from the union of the results from
             both libraries.
-        outputs : dic
-            dictionary containing the outputs for each library, for each code
-            format: {
-                    code1:{library1:[outputs], library2:[outputs], ...},
-                    code2:{library1:[outputs], library2:[outputs], ...},
-                    ...
-                    }
         globalname : str
             name for the output.
 
@@ -357,12 +376,13 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
 
         self._build_atlas(outpath)
 
-    def _get_organized_output(self):
+    def _get_organized_output(self) -> tuple[list, list, list]:
         """
         Organizes the outputs for each library in each code in the
         outputs object
 
         Returns:
+        --------
         libraries: list
             list of all libraries to be post processed
         allzaids: list
@@ -387,22 +407,29 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
 
         return libraries, allzaids, outputs
 
-    def _generate_dataframe(self, results, errors, stat_checks=None):
-        """Function to turn the output of the read_{code}_output functions into DataFrames
-           for use with xlsxwriter
+    def _generate_dataframe(self, results : dict, errors : dict, stat_checks : dict | None = None) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+        """
+        Function to turn the output of the read_{code}_output functions into DataFrames
+        for use with xlsxwriter
 
-        Arguments
-        ------
-            results (dic): dictionary of tally summaries for each material/ZAID.
-            errors (dic): dictionaty of average tally errors across all energy bins.
-            stat_checks (dic, optional): dictionary containing results of MCNP statistical checks
+        Parameters
+        ----------
+        results : dict
+            dictionary of tally summaries for each material/ZAID.
+        errors : dict
+            dictionaty of average tally errors across all energy bins.
+        stat_checks : dict or None 
+            dictionary containing results of MCNP statistical checks
             (MCNP only). Defaults to None.
 
         Returns
         -------
-            results (DataFrame): previous dictionary but in DataFrame form
-            errors (DataFrame): previous dictionary but in DataFrame form
-            stat_checks (DataFrame): previous dictionary but in DataFrame form
+        results : pd.DataFrame
+            previous dictionary but in DataFrame form
+        errors : pd.DataFrame
+            previous dictionary but in DataFrame form
+        stat_checks : pd.DataFrame
+            previous dictionary but in DataFrame form
         """
         # Generate DataFrames
         results = pd.DataFrame(results)
@@ -430,7 +457,7 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
             stat_checks.reset_index(inplace=True)
         return results, errors, stat_checks
 
-    def pp_excel_single(self):
+    def pp_excel_single(self) -> None:
         """
         Generate the single library results excel
 
@@ -474,7 +501,8 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
 
     @abc.abstractmethod
     def _get_output(self, results_path: str) -> SphereTallyOutput:
-        """Get the output files for the code being post-processed.
+        """
+        Get the output files for the code being post-processed.
 
         Returns
         -------
@@ -482,7 +510,7 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
         """
         pass
 
-    def pp_excel_comparison(self):
+    def pp_excel_comparison(self) -> None:
         """
         Compute the data and create the excel for all libraries comparisons.
         In the meantime, additional data is stored for future plots.
@@ -699,9 +727,13 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
             # ex.save()
             # ""
 
-    def print_raw(self):
+    def print_raw(self) -> None:
         """
         Assigns a path and prints the post processing data as a .csv
+
+        Returns
+        -------
+        None
 
         """
         for key, data in self.raw_data.items():
@@ -713,7 +745,8 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
             json.dump(self.metadata, outfile, indent=4)
 
     def _read_metadata_run(self, simulation_folder: os.PathLike) -> dict:
-        """Retrieve the metadata from the run
+        """
+        Retrieve the metadata from the run
 
         Parameters
         ----------
@@ -722,7 +755,7 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
 
         Returns
         -------
-        dict
+        metadata : dict
             metadata dictionary
         """
         # the super can be used, just changing the expected path
@@ -740,6 +773,19 @@ class AbstractSphereBenchmarkOutput(AbstractBenchmarkOutput):
 
 class MCNPSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
     def _read_code_version(self, simulation_folder: str | os.PathLike) -> str | None:
+        """
+        Function to retrieve MCNP code version. Implimentation should be added to child classes for each code.
+
+        Parameters
+        ----------
+        simulation_folder : str | os.PathLike
+            Path to simulation results folder.
+
+        Returns
+        -------
+        str | None
+            Returns the code version, except for sphere benchmark, which returns None
+        """
         output = self._get_output(simulation_folder)
         try:
             version = output.out.get_code_version()
@@ -755,8 +801,20 @@ class MCNPSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
             )
             return None
 
-    def _get_output(self, results_path) -> SphereMCNPSimOutput:
-        # Get mfile
+    def _get_output(self, results_path : str | os.PathLike) -> SphereMCNPSimOutput:
+        """
+        Method to retrieve output data from MCNP as a SphereMCNPSimOutput
+
+        Parameters
+        ----------
+        results_path : str | os.PathLike
+            Path to simulation results
+
+        Returns
+        -------
+        output : SphereMCNPSimOutput
+            SphereMCNPSimOutput output object 
+        """
         for file in os.listdir(results_path):
             if file[-1] == "m":
                 mfile = file

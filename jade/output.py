@@ -186,7 +186,8 @@ class AbstractBenchmarkOutput(abc.ABC):
 
     @abc.abstractmethod
     def _read_code_version(self, simulation_folder: str | os.PathLike) -> str | None:
-        """Abstract function to retrieve code version. Implimentation should be added to child classes for each code.
+        """
+        Abstract function to retrieve code version. Implimentation should be added to child classes for each code.
 
         Parameters
         ----------
@@ -201,7 +202,8 @@ class AbstractBenchmarkOutput(abc.ABC):
 
     @abc.abstractmethod
     def _get_output_files(self, results_path: str | os.PathLike) -> list:
-        """Abstract function to retrieve code output files. Implimentation should be added to child classes for each code.
+        """
+        Abstract function to retrieve code output files. Implimentation should be added to child classes for each code.
 
         Parameters
         ----------

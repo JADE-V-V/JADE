@@ -893,7 +893,7 @@ class OpenMCSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
                 outfile = file
 
         # Parse output
-        _, outfile = self._get_output_files(results_path, "openmc")
+        _, outfile = self._get_output_files(results_path)
         output = SphereOpenMCSimOutput(outfile)
         return output
 
@@ -972,7 +972,7 @@ class OpenMCSphereBenchmarkOutput(AbstractSphereBenchmarkOutput):
             else:
                 zaidname = pieces[-1]
             # Parse output
-            _, outfile = self._get_output_files(results_path, "openmc")
+            _, outfile = self._get_output_files(results_path)
             output = SphereOpenMCSimOutput(outfile)
             outputs[zaidnum] = output
             # Adjourn raw Data

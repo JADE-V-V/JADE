@@ -238,7 +238,7 @@ class Plotter:
         plot_type : str
             plot type. The current available ones are ['Binned graph',
             'Ratio graph', 'Experimental points',
-            'Discreet Experimental points', 'Grouped bars', 'Waves'].
+            'Discrete Experimental points', 'Grouped bars', 'Waves'].
 
         Raises
         ------

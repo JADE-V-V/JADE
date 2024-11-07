@@ -319,6 +319,9 @@ class AbstractBenchmarkOutput(abc.ABC):
             print(" Plotting : " + plot_type.value)
             atlas.doc.add_heading("Plot type: " + plot_type.value, level=1)
             for tally_num, options in tqdm(atl_cnf.items(), desc="Tallies"):
+                # Check if the tally needs to be potted
+                if options.plot_type != plot_type:
+                    continue
                 try:
                     output = self.outputs[tally_num]
                 except KeyError:
@@ -458,6 +461,9 @@ class AbstractBenchmarkOutput(abc.ABC):
             atlas.doc.add_heading("Plot type: " + plot_type.value, level=1)
             # Keep only tallies to plot
             for tally_num, options in tqdm(atl_cnf.items(), desc="Tallies"):
+                # Check if the tally needs to be potted
+                if options.plot_type != plot_type:
+                    continue
                 # The last 'outputs' can be easily used for common data
                 try:
                     output = outputs_dic[lib][tally_num]

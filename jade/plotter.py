@@ -229,7 +229,7 @@ class Plotter:
             "#dede00",
         ] * 50
 
-    def plot(self, plot_type: PlotType):
+    def plot(self, plot_type: PlotType | str):
         """
         Function to be called to actually perform the plot
 

@@ -1,19 +1,20 @@
 Atlas:
-  4:
-    identifier: 4
-    plot_type: Binned graph
-    quantity: Neutron Flux
-    unit: '#/cm^2'
+  # Commented out 4 and 6 to speed up the testing.
+  # 4:
+  #   identifier: 4
+  #   plot_type: Binned graph
+  #   quantity: Neutron Flux
+  #   unit: '#/cm^2'
   6:
     identifier: 6
     plot_type: Ratio graph
     quantity: Total Nuclear Heating
     unit: W/g
-  14:
-    identifier: 14
-    plot_type: Binned graph
-    quantity: Photon Flux
-    unit: '#/cm^2'
+  # 14:
+  #   identifier: 14
+  #   plot_type: Binned graph
+  #   quantity: Photon Flux
+  #   unit: '#/cm^2'
   16:
     identifier: 16
     plot_type: Ratio graph

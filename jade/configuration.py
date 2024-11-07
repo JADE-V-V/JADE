@@ -277,6 +277,31 @@ class ComputationalConfig:
 
 @dataclass
 class ExcelOptions:
+    """Dataclass storing options for the Excel benchmark.
+
+    Attributes
+    ----------
+    identifier : int
+        Identifier of the tally.
+    x : BinningType | list[BinningType]
+        Tally dataframe column name to use for x axis. If a list, two binnings are
+        combined together to form a single binning. The only valid combination is
+        Cells-Segments for the moment.
+    x_name : str
+        X axis label.
+    y : BinningType | list[BinningType]
+        Tally dataframe column name to use for y axis. If a list, two binnings are
+        combined together to form a single binning. The only valid combination is
+        Cells-Segments for the moment.
+    y_name : str
+        Y axis label.
+
+    Raises
+    ------
+    ValueError
+        If an invalid BinningType is provided.
+    """
+
     identifier: int  # identifier of the tally
     x: BinningType | list[BinningType]  # tally dataframe column name to use for x axis
     x_name: str  # x label
@@ -315,6 +340,27 @@ class ExcelOptions:
 
 @dataclass
 class AtlasOptions:
+    """
+    AtlasOptions is a configuration data class for specifying options related to plotting
+    in the Atlas application.
+
+    Attributes
+    ----------
+    identifier : int
+        Identifier of the tally.
+    plot_type : PlotType
+        Type of plot.
+    quantity : str, optional
+        Quantity plotted (goes on the y axis of plots). Default is None.
+    unit : str, optional
+        Unit of the quantity. Default is None.
+
+    Raises
+    ------
+    ValueError
+        if an invalid PlotType is provided.
+    """
+
     identifier: int  # identifier of the tally
     plot_type: PlotType  # type of plot
     quantity: str | None = None  # quantity plotted (goes on the y axis of plots)

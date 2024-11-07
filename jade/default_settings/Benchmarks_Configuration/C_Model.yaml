@@ -40,6 +40,7 @@ Atlas:
     quantity: Neutron flux
     unit: '#/cm^2/s'
   36:
+    plot_type: Grouped bars
     identifier: 36
     quantity: Nuclear Heating
     unit: W
@@ -54,6 +55,7 @@ Atlas:
     quantity: Neutron flux
     unit: '#/cm^2/s'
   46:
+    plot_type: Grouped bars
     identifier: 46
     quantity: Nuclear Heating
     unit: W
@@ -114,6 +116,7 @@ Atlas:
     unit: '#/cm^2/s'
   86:
     identifier: 86
+    plot_type: Grouped bars
     quantity: Nuclear Heating
     unit: W
   91:
@@ -128,6 +131,7 @@ Atlas:
     unit: '#/cm^2/s'
   96:
     identifier: 96
+    plot_type: Grouped bars
     quantity: Nuclear Heating
     unit: W
   101:

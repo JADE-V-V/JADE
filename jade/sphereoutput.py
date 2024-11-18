@@ -2189,8 +2189,8 @@ class SphereSDDROutput(MCNPSphereBenchmarkOutput):
 
 
 class SphereSDDRMCNPOutput(SphereMCNPSimOutput):
-    '''
-    def _get_tallydata(self) -> tuple[dict, dict]:
+
+    def _get_tallydata(self, mctal: Mctal) -> tuple[dict, dict]:
         """_summary_
 
         Returns
@@ -2201,7 +2201,6 @@ class SphereSDDRMCNPOutput(SphereMCNPSimOutput):
             dictionary of pandas dataframes containing tally total data
         """
         return self.tallydata, self.totalbin
-    '''
 
     @staticmethod
     def _drop_total_rows(df: pd.DataFrame) -> None:

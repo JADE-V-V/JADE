@@ -187,7 +187,7 @@ def _get_output(action, code, testname, lib, session):
 
     elif testname == "FNG-HCPB":
         if action == "compare":
-            out = expo.FNGCPBOutput(lib, testname, session, multiplerun=True)
+            out = expo.FNGHCPBOutput(lib, testname, session, multiplerun=True)
         elif action == "pp":
             print(exp_pp_message)
             return False

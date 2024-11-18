@@ -2316,7 +2316,7 @@ class MultipleSpectrumOutput(SpectrumOutput):
         return title
 
 
-class FNGCPBOutput(ExperimentalOutput):
+class FNGHCPBOutput(ExperimentalOutput):
     def _processMCNPdata(self, output: MCNPSimOutput) -> None:
         """
         Used to override parent function as this is not required.

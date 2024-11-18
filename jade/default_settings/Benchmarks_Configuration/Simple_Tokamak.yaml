@@ -1,4 +1,24 @@
 Atlas:
+  64:
+    identifier: 64
+    plot_type: Binned graph
+    quantity: Neutron Flux
+    unit: '#/cm^2'
+  74:
+    identifier: 74
+    plot_type: Binned graph
+    quantity: Photon Flux
+    unit: '#/cm^2'
+  84:
+    identifier: 84
+    plot_type: Binned graph
+    quantity: Neutron Flux
+    unit: '#/cm^2'
+  94:
+    identifier: 94
+    plot_type: Binned graph
+    quantity: Photon Flux
+    unit: '#/cm^2'       
   6:
     identifier: 6
     plot_type: Ratio graph

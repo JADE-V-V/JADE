@@ -193,9 +193,10 @@ Computational benchmark post-processing configuration
 It is possible to control (to some extent) the post-processing of each benchmark via its 
 specific configuration file. These files are located in the ``<JADE_root>\Configuration\Benchmarks_Configuration``
 folder and their name must be identical to the one used in the ``File Name`` field in the main configuration file
-(using the .yaml extension instead of the .i). These files are available only for computational benchmarks,
-since the high degree of customization needed for an experimental benchmark makes quite difficult to 
-standardize them. While computational benchmarks can be added to the JADE suite without the need for additional
+(using the .yaml extension instead of the .i). Computational benchmark configuration files must be in YAML format, while
+experimental benchmark configuration files are in Excel format due to the high degreee of customisation required. 
+
+While computational benchmarks can be added to the JADE suite without the need for additional
 coding, this is not true also for experimental one.
 
 The files contain two main sections, that respectively regulate the Excel and the Word/PDF (i.e., Atlas) post-processing output.

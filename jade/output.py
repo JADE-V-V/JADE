@@ -31,6 +31,7 @@ import pickle
 import shutil
 import string
 import sys
+from enum import Enum
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -48,6 +49,7 @@ import jade.excelsupport as exsupp
 import jade.plotter as plotter
 from jade.__openmc__ import OMC_AVAIL
 from jade.__version__ import __version__
+from jade.configuration import ComputationalConfig
 from jade.constants import CODES
 
 if OMC_AVAIL:
@@ -91,12 +93,21 @@ class AbstractBenchmarkOutput(abc.ABC):
         self.path_templates = session.path_templates
 
         # Read specific configuration
-        cnf_path = os.path.join(session.path_cnf, self.testname + ".xlsx")
-        if os.path.isfile(cnf_path):
+        # TODO for the moment allow both legacy xlsx and yaml. In the future,
+        # everything should be moved to yaml
+        try:
+            cnf_path = os.path.join(session.path_cnf, self.testname + ".yaml")
             self.cnf_path = cnf_path
-        # It can be assumed that there is a folder containing multiple files
-        else:
-            self.cnf_path = os.path.join(session.path_cnf, self.testname)
+            self.cfg = ComputationalConfig.from_yaml(cnf_path)
+        except FileNotFoundError:
+            # legacy excel(s)
+            self.cfg = False
+            cnf_path = os.path.join(session.path_cnf, self.testname + ".xlsx")
+            if os.path.isfile(cnf_path):
+                self.cnf_path = cnf_path
+            # It can be assumed that there is a folder containing multiple files
+            else:
+                self.cnf_path = os.path.join(session.path_cnf, self.testname)
 
         # Updated to handle multiple codes
         # initialize them so that intellisense knows they are available
@@ -287,8 +298,16 @@ class AbstractBenchmarkOutput(abc.ABC):
         os.mkdir(outpath)
 
         # Get atlas configuration
-        atl_cnf = pd.read_excel(self.cnf_path, sheet_name="Atlas")
-        atl_cnf.set_index("Tally", inplace=True)
+        if not self.cfg:
+            raise FileNotFoundError("No yaml configuration file found")
+
+        atl_cnf = self.cfg.atlas_options
+        # recover the different possible plot types
+        plot_types = []
+        for _, options in atl_cnf.items():
+            plot_type = options.plot_type
+            if plot_type not in plot_types:
+                plot_types.append(plot_type)
 
         # Printing Atlas
         template = template = os.path.join(self.path_templates, "AtlasTemplate.docx")
@@ -296,14 +315,15 @@ class AbstractBenchmarkOutput(abc.ABC):
 
         # Iterate over each type of plot (first one is quantity
         # and second one the measure unit)
-        for plot_type in list(atl_cnf.columns)[2:]:
-            print(" Plotting : " + plot_type)
-            atlas.doc.add_heading("Plot type: " + plot_type, level=1)
-            # Keep only tallies to plot
-            atl_cnf_plot = atl_cnf[atl_cnf[plot_type]]
-            for tally_num in tqdm(atl_cnf_plot.index, desc="Tallies"):
+        for plot_type in plot_types:
+            print(" Plotting : " + plot_type.value)
+            atlas.doc.add_heading("Plot type: " + plot_type.value, level=1)
+            for tally_num, options in tqdm(atl_cnf.items(), desc="Tallies"):
+                # Check if the tally needs to be potted
+                if options.plot_type != plot_type:
+                    continue
                 try:
-                    output = self.outputs[self.code][tally_num]
+                    output = self.outputs[tally_num]
                 except KeyError:
                     fatal_exception(
                         "tally n. "
@@ -312,8 +332,8 @@ class AbstractBenchmarkOutput(abc.ABC):
                     )
                 vals_df = output["Value"]
                 err_df = output["Error"]
-                quantity = str(atl_cnf_plot["Quantity"].loc[tally_num])
-                unit = str(atl_cnf_plot["Unit"].loc[tally_num])
+                quantity = options.quantity
+                unit = options.unit
                 xlabel = output["x_label"]
                 title = output["title"]
 
@@ -401,8 +421,17 @@ class AbstractBenchmarkOutput(abc.ABC):
         os.mkdir(outpath)
 
         # Get atlas configuration
-        atl_cnf = pd.read_excel(self.cnf_path, sheet_name="Atlas")
-        atl_cnf.set_index("Tally", inplace=True)
+        # Get atlas configuration
+        if not self.cfg:
+            raise FileNotFoundError("No yaml configuration file found")
+
+        atl_cnf = self.cfg.atlas_options
+        # recover the different possible plot types
+        plot_types = []
+        for _, options in atl_cnf.items():
+            plot_type = options.plot_type
+            if plot_type not in plot_types:
+                plot_types.append(plot_type)
 
         # Printing Atlas
         template = os.path.join(self.path_templates, "AtlasTemplate.docx")
@@ -427,12 +456,14 @@ class AbstractBenchmarkOutput(abc.ABC):
 
         # Iterate over each type of plot (first one is quantity
         # and second one the measure unit)
-        for plot_type in list(atl_cnf.columns)[2:]:
-            print(" Plotting : " + plot_type)
-            atlas.doc.add_heading("Plot type: " + plot_type, level=1)
+        for plot_type in plot_types:
+            print(" Plotting : " + plot_type.value)
+            atlas.doc.add_heading("Plot type: " + plot_type.value, level=1)
             # Keep only tallies to plot
-            atl_cnf_plot = atl_cnf[atl_cnf[plot_type]]
-            for tally_num in tqdm(atl_cnf_plot.index, desc="Tallies"):
+            for tally_num, options in tqdm(atl_cnf.items(), desc="Tallies"):
+                # Check if the tally needs to be potted
+                if options.plot_type != plot_type:
+                    continue
                 # The last 'outputs' can be easily used for common data
                 try:
                     output = outputs_dic[lib][tally_num]
@@ -444,8 +475,8 @@ class AbstractBenchmarkOutput(abc.ABC):
                     )
                 vals_df = output["Value"]
                 err_df = output["Error"]
-                quantity = str(atl_cnf_plot["Quantity"].loc[tally_num])
-                unit = str(atl_cnf_plot["Unit"].loc[tally_num])
+                quantity = options.quantity
+                unit = options.unit
                 xlabel = output["x_label"]
                 title = output["title"]
 
@@ -586,8 +617,9 @@ class AbstractBenchmarkOutput(abc.ABC):
         self.results = {}
         self.errors = {}
         self.stat_checks = {}
-        ex_cnf = pd.read_excel(self.cnf_path, sheet_name="Excel")
-        ex_cnf.set_index("Tally", inplace=True)
+        if not self.cfg:
+            raise FileNotFoundError("No yaml configuration file found")
+        ex_cnf = self.cfg.excel_options
 
         # Open the excel file
         # name = "Generic_single.xlsx"
@@ -614,17 +646,17 @@ class AbstractBenchmarkOutput(abc.ABC):
                 # keys[num] = key  # Memorize tally descriptions
                 tdata = sim_output.tallydata[num].copy()  # Full tally data
                 try:
-                    tally_settings = ex_cnf.loc[num]
+                    tally_settings = ex_cnf[num]
                 except KeyError:
                     print(" Warning!: tally n." + str(num) + " is not in configuration")
                     continue
 
                 # Re-Elaborate tdata Dataframe
-                x_name = tally_settings["x"]
-                x_tag = tally_settings["x name"]
-                y_name = tally_settings["y"]
-                y_tag = tally_settings["y name"]
-                ylim = tally_settings["cut Y"]
+                x_name = tally_settings.x
+                x_tag = tally_settings.x_name
+                y_name = tally_settings.y
+                y_tag = tally_settings.y_name
+                ylim = tally_settings.cut_y
 
                 if label == "Value":
                     outputs[num] = {"title": key, "x_label": x_tag}
@@ -664,9 +696,7 @@ class AbstractBenchmarkOutput(abc.ABC):
                             + """
     A ValueError was triggered, a probable cause may be that more than 2 binnings
         are defined in tally {}. This is a fatal exception,  application will now
-    close""".format(
-                                str(num)
-                            )
+    close""".format(str(num))
                             + CEND
                         )
                         # Safely exit from excel and from application
@@ -699,9 +729,7 @@ class AbstractBenchmarkOutput(abc.ABC):
                             CRED
                             + """
 {} is not available in tally {}. Please check the configuration file.
-The application will now exit """.format(
-                                x_name, str(num)
-                            )
+The application will now exit """.format(x_name, str(num))
                             + CEND
                         )
                         # Safely exit from excel and from application
@@ -725,7 +753,7 @@ The application will now exit """.format(
                     #    header=(key, "Tally n." + str(num)),
                     # )
             # memorize data for atlas
-            self.outputs[self.code] = outputs
+            self.outputs = outputs
             # print(outputs)
             # Dump them for comparisons
             raw_outpath = os.path.join(self.raw_path, self.lib + ".pickle")
@@ -772,8 +800,9 @@ The application will now exit """.format(
         self.results = {}
         self.errors = {}
         self.stat_checks = {}
-        ex_cnf = pd.read_excel(self.cnf_path, sheet_name="Excel")
-        ex_cnf.set_index("Tally", inplace=True)
+        if not self.cfg:
+            raise FileNotFoundError("No yaml configuration file found")
+        ex_cnf = self.cfg.excel_options
 
         # Open the excel file
         # name_tag = "Generic_comparison.xlsx"
@@ -812,7 +841,7 @@ The application will now exit """.format(
                     tdata_ref = sim_outputs[reflib].tallydata[num].copy()
                     tdata_tar = sim_outputs[tarlib].tallydata[num].copy()
                     try:
-                        tally_settings = ex_cnf.loc[num]
+                        tally_settings = ex_cnf[num]
                     except KeyError:
                         print(
                             " Warning!: tally n."
@@ -822,9 +851,9 @@ The application will now exit """.format(
                         continue
 
                     # Re-Elaborate tdata Dataframe
-                    x_name = tally_settings["x"]
-                    x_tag = tally_settings["x name"]
-                    y_name = tally_settings["y"]
+                    x_name = tally_settings.x
+                    x_tag = tally_settings.x_name
+                    y_name = tally_settings.y
                     # y_tag = tally_settings["y name"]
                     # ylim = tally_settings["cut Y"]
                     # select the index format
@@ -898,9 +927,7 @@ The application will now exit """.format(
                                 + """
         A ValueError was triggered, a probable cause may be that more than 2 binnings
             are defined in tally {}. This is a fatal exception,  application will now
-        close""".format(
-                                    str(num)
-                                )
+        close""".format(str(num))
                                 + CEND
                             )
                             # Safely exit from excel and from application
@@ -935,9 +962,7 @@ The application will now exit """.format(
                                 CRED
                                 + """
     {} is not available in tally {}. Please check the configuration file.
-    The application will now exit """.format(
-                                    x_name, str(num)
-                                )
+    The application will now exit """.format(x_name, str(num))
                                 + CEND
                             )
                             # Safely exit from excel and from application
@@ -983,7 +1008,7 @@ The application will now exit """.format(
             #    ex.copy_sheets(cp)
 
             # ex.save()
-            self.outputs[self.code] = comps
+            self.outputs = comps
             exsupp.comp_excel_writer(
                 self,
                 outpath,

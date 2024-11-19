@@ -6,6 +6,7 @@ import re
 from typing import TYPE_CHECKING
 
 import openmc
+import pandas as pd
 
 if TYPE_CHECKING:
     from f4enix.input.libmanager import LibManager
@@ -296,18 +297,53 @@ class OpenMCStatePoint:
         df = tally.get_pandas_dataframe()
         # df.to_csv('tally_'+str(tally.id)+'.csv')
         return df
+    
+    def _combine_heating_tallies(self, heating_tallies : dict) -> pd.DataFrame:
+        """Extract tally data from statepoint file
 
-    def tallies_to_dataframes(self):
+        Parameters
+        ----------
+        tallies : dict
+            Dictionary containing all OpenMC heating tallies
+
+        Returns
+        -------
+        heating_tallies_df : dict
+            dictionary of pandas dataframes containing combined tally data
+        """
+        photon_tallies = {}
+        for id, tally in heating_tallies.items():
+            if tally.contains_filter(openmc.ParticleFilter(["photon"])):
+                photon_tallies[id] = tally
+        for id, photon_tally in photon_tallies.items():
+            for _, tally in heating_tallies.items():
+                if not tally.contains_filter(openmc.ParticleFilter(["photon"])):
+                    if photon_tally.can_merge(tally):
+                        photon_tallies[id].merge(tally)
+        heating_tallies_df = {}
+        for id, photon_tally in photon_tallies.items():
+            heating_tallies_df[id] = photon_tally.get_pandas_dataframe()
+        return heating_tallies_df
+
+    def tallies_to_dataframes(self) -> dict:
         """Call to extract tally data from statepoint file
 
         Returns
         -------
-        list
-            list of rows with all sphere case tally data
+        tallies : dict
+            dictionary of dataframes containing all tally data
         """
         tallies = {}
+        heating_tallies = {}
         for _, tally in self.statepoint.tallies.items():
-            tallies[tally.id] = self._get_tally_data(tally)
+            if 'heating' in tally.scores:
+                heating_tallies[tally.id] = tally
+            else:
+                tallies[tally.id] = self._get_tally_data(tally)
+        heating_tallies_df = self._combine_heating_tallies(heating_tallies)
+        if len(heating_tallies_df) > 0:
+            for id, tally_df in heating_tallies_df.items():
+                tallies[id] = tally_df
         return tallies
 
 

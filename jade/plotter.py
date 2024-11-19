@@ -412,8 +412,8 @@ class Plotter:
             ax.tick_params(which="major", width=1.00, length=5)
             ax.tick_params(which="minor", width=0.75, length=2.50)
             # Grid stylying
-            ax.grid("True", which="major", linewidth=0.75, axis="y")
-            ax.grid("True", which="minor", linewidth=0.30, axis="y")
+            ax.grid("True", which="major", linewidth=1.2, axis="y")
+            ax.grid("True", which="minor", linewidth=0.6, axis="y")
             # limits
             toadd = (upperlimit - lowerlimit) / 8
             ax.set_ylim(lowerlimit - toadd, upperlimit + toadd)
@@ -576,8 +576,8 @@ class Plotter:
             ax.set_xticklabels(labels, rotation=60)
 
             # Grid
-            ax.grid("True", which="major", linewidth=0.75, axis="y")
-            ax.grid("True", which="minor", linewidth=0.30, axis="y")
+            ax.grid("True", which="major", linewidth=1.2, axis="y")
+            ax.grid("True", which="minor", linewidth=0.6, axis="y")
 
         return self._save()
 
@@ -682,7 +682,12 @@ class Plotter:
         ax1.set_title(self.title)
         ax1.set_ylabel(ylabel)
         ax1.legend(loc="best")
-
+        ax1.tick_params(axis="y", which="minor")
+        # Set minor ticks on the y-axis
+        if y_scale == "log":
+            ax1.yaxis.set_minor_locator(LogLocator(base=10.0, subs="auto", numticks=10))
+        else:
+            ax1.yaxis.set_minor_locator(AutoMinorLocator())
         # limit the ax 2 to [0, 2]
         ax2.set_ylim(bottom=0, top=2)
         ax2.set_ylabel("C/E")
@@ -705,10 +710,9 @@ class Plotter:
 
             ax.tick_params(which="major", width=1.00, length=5)
             ax.tick_params(which="minor", width=0.75, length=2.50)
-
             # Grid
-            ax.grid("True", which="major", linewidth=0.50)
-            ax.grid("True", which="minor", linewidth=0.20)
+            ax.grid("True", which="major", linewidth=1.2)
+            ax.grid("True", which="minor", linewidth=0.6)
 
         return self._save()
 
@@ -830,14 +834,18 @@ class Plotter:
         ax1.set_xlabel(self.xlabel)
         # # Draw the exp error
         ax1.set_xscale(x_scale)
-
         ax1.tick_params(which="major", width=1.00, length=5)
         ax1.tick_params(which="minor", width=0.75, length=2.50)
 
         # Grid
-        ax1.grid("True", which="major", linewidth=0.50)
-        ax1.grid("True", which="minor", linewidth=0.20)
-
+        ax1.grid("True", which="major", linewidth=1.2)
+        ax1.grid("True", which="minor", linewidth=1.2)
+        ax1.tick_params(axis="y", which="minor")
+        # Set minor ticks on the y-axis
+        if y_scale == "log":
+            ax1.yaxis.set_minor_locator(LogLocator(base=10.0, subs="auto", numticks=10))
+        else:
+            ax1.yaxis.set_minor_locator(AutoMinorLocator())
         return self._save()
 
     def _exp_points_group_plot_CE(
@@ -915,8 +923,8 @@ class Plotter:
             axes[key].tick_params(which="minor", width=0.75, length=2.50)
 
             # Grid
-            axes[key].grid("True", which="major", linewidth=0.50)
-            axes[key].grid("True", which="minor", linewidth=0.20)
+            axes[key].grid("True", which="major", linewidth=1.2)
+            axes[key].grid("True", which="minor", linewidth=1.2)
 
         axes[0].legend(
             loc="upper center", bbox_to_anchor=(1.07, 1.3), fancybox=True, shadow=True
@@ -1037,8 +1045,8 @@ class Plotter:
             ax.tick_params(which="minor", width=0.75, length=2.50)
 
             # Grid
-            ax.grid("True", which="major", linewidth=0.50)
-            ax.grid("True", which="minor", linewidth=0.20)
+            ax.grid("True", which="major", linewidth=1.2)
+            ax.grid("True", which="minor", linewidth=0.6)
 
         return self._save()
 
@@ -1140,8 +1148,8 @@ class Plotter:
         ax.tick_params(which="minor", width=0.75, length=2.50)
 
         # Grid
-        ax.grid("True", which="major", linewidth=0.50)
-        ax.grid("True", which="minor", linewidth=0.20)
+        ax.grid("True", which="major", linewidth=1.2)
+        ax.grid("True", which="minor", linewidth=0.6)
 
         # Add additional labels if requested
         if additional_labels is not None:
@@ -1392,7 +1400,7 @@ class Plotter:
         for ax in axes:
             # Grid control
             ax.grid()
-            ax.grid("True", which="minor", linewidth=0.25)
+            ax.grid("True", which="minor", linewidth=0.6)
             # Ticks
             ax.tick_params(which="major", width=1.00, length=5)
             ax.tick_params(which="minor", width=0.75, length=2.50)

@@ -313,13 +313,17 @@ class OpenMCStatePoint:
         """
         photon_tallies = {}
         for id, tally in heating_tallies.items():
-            if tally.contains_filter(openmc.ParticleFilter(["photon"])):
+            particle_filter = tally.find_filter(openmc.ParticleFilter)
+            if 'photon' in particle_filter.bins:
                 photon_tallies[id] = tally
         for id, photon_tally in photon_tallies.items():
             for _, tally in heating_tallies.items():
-                if not tally.contains_filter(openmc.ParticleFilter(["photon"])):
+                particle_filter = tally.find_filter(openmc.ParticleFilter)
+                if ('electron' in particle_filter.bins) or ('positron' in particle_filter.bins):
                     if photon_tally.can_merge(tally):
-                        photon_tallies[id].merge(tally)
+                        print(photon_tallies[id])
+                        print(tally)
+                        #photon_tallies[id] += tally
         heating_tallies_df = {}
         for id, photon_tally in photon_tallies.items():
             heating_tallies_df[id] = photon_tally.get_pandas_dataframe()

@@ -298,7 +298,7 @@ class OpenMCStatePoint:
         # df.to_csv('tally_'+str(tally.id)+'.csv')
         return df
     
-    def _combine_heating_tallies(self, heating_tallies : dict) -> pd.DataFrame:
+    def _combine_heating_tallies(self, heating_tallies : dict) -> dict:
         """Extract tally data from statepoint file
 
         Parameters
@@ -312,21 +312,22 @@ class OpenMCStatePoint:
             dictionary of pandas dataframes containing combined tally data
         """
         photon_tallies = {}
+        heating_tallies_df = {}
         for id, tally in heating_tallies.items():
             particle_filter = tally.find_filter(openmc.ParticleFilter)
             if 'photon' in particle_filter.bins:
                 photon_tallies[id] = tally
+                heating_tallies_df[id] = tally.get_pandas_dataframe()
         for id, photon_tally in photon_tallies.items():
+            photon_cell_filter = photon_tally.find_filter(openmc.CellFilter)
             for _, tally in heating_tallies.items():
                 particle_filter = tally.find_filter(openmc.ParticleFilter)
-                if ('electron' in particle_filter.bins) or ('positron' in particle_filter.bins):
+                cell_filter = tally.find_filter(openmc.CellFilter)
+                if (('electron' in particle_filter.bins) or ('positron' in particle_filter.bins)) and (photon_cell_filter == cell_filter):
                     if photon_tally.can_merge(tally):
-                        print(photon_tallies[id])
-                        print(tally)
-                        #photon_tallies[id] += tally
-        heating_tallies_df = {}
-        for id, photon_tally in photon_tallies.items():
-            heating_tallies_df[id] = photon_tally.get_pandas_dataframe()
+                        tally_df = tally.get_pandas_dataframe()
+                        heating_tallies_df[id]['mean'] += tally_df['mean']
+                        heating_tallies_df[id]['std. dev.'] = (heating_tallies_df[id]['std. dev.'].pow(2) + tally_df['std. dev.'].pow(2)).pow(0.5)
         return heating_tallies_df
 
     def tallies_to_dataframes(self) -> dict:

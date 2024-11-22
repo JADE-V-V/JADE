@@ -6,6 +6,7 @@ import re
 from typing import TYPE_CHECKING
 
 import openmc
+import numpy as np
 import pandas as pd
 
 if TYPE_CHECKING:
@@ -295,6 +296,27 @@ class OpenMCStatePoint:
                 del self.tally_comments[idx]
                 del self.tally_numbers[idx]
         
+    def _normalise_df(self, df : pd.DataFrame) -> pd.DataFrame:
+        """_summary_
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            Input data frame to be normalised
+
+        Returns
+        -------
+        df : pd.DataFrame
+            Input data frame, all eV quantities scaled to MeV
+        """
+        for column in df.columns:
+            if '[eV]' in column:
+                df[column] *= 1e-6
+        if ('heating' or 'damage-energy') in df['score'].values:
+            df['mean'] = np.where((df['score'] == 'heating') | (df['score'] == 'damage-energy'), 1e-6*df['mean'], df['mean'])
+            df['std. dev.'] = np.where((df['score'] == 'heating') | (df['score'] == 'damage-energy'), 1e-6*df['std. dev.'], df['std. dev.'])
+        return df
+    
     def _get_tally_data(self, tally: openmc.Tally):
         """Extract tally data from statepoint file
 
@@ -306,10 +328,10 @@ class OpenMCStatePoint:
         Returns
         -------
         df : pd.DataFrame
-            pandas dataframe containing tally data
+            pandas dataframe containing tally data re-normlaised to MCNP default units
         """
         df = tally.get_pandas_dataframe()
-        # df.to_csv('tally_'+str(tally.id)+'.csv')
+        df = self._normalise_df(df)
         return df
     
     def _combine_heating_tallies(self, heating_tallies : dict) -> dict:

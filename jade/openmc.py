@@ -317,7 +317,7 @@ class OpenMCStatePoint:
             particle_filter = tally.find_filter(openmc.ParticleFilter)
             if 'photon' in particle_filter.bins:
                 photon_tallies[id] = tally
-                heating_tallies_df[id] = tally.get_pandas_dataframe()
+                heating_tallies_df[id] = self._get_tally_data(tally)
         for id, photon_tally in photon_tallies.items():
             photon_cell_filter = photon_tally.find_filter(openmc.CellFilter)
             for _, tally in heating_tallies.items():
@@ -325,7 +325,7 @@ class OpenMCStatePoint:
                 cell_filter = tally.find_filter(openmc.CellFilter)
                 if (('electron' in particle_filter.bins) or ('positron' in particle_filter.bins)) and (photon_cell_filter == cell_filter):
                     if photon_tally.can_merge(tally):
-                        tally_df = tally.get_pandas_dataframe()
+                        tally_df = self._get_tally_data(tally)
                         heating_tallies_df[id]['mean'] += tally_df['mean']
                         heating_tallies_df[id]['std. dev.'] = (heating_tallies_df[id]['std. dev.'].pow(2) + tally_df['std. dev.'].pow(2)).pow(0.5)
         return heating_tallies_df

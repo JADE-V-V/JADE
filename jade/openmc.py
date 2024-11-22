@@ -281,6 +281,20 @@ class OpenMCStatePoint:
         version = ".".join(map(str, self.statepoint.version))
         return version
 
+    def _update_tally_numbers(self, tally_numbers : list) -> None:
+        """Update tally numbers
+
+        Parameters
+        ----------
+        tally_numbers : list
+            List of remaining tally numbers
+        """
+        for tally_number in self.tally_numbers:
+            if tally_number not in tally_numbers:
+                idx = self.tally_numbers.index(tally_number)
+                del self.tally_comments[idx]
+                del self.tally_numbers[idx]
+        
     def _get_tally_data(self, tally: openmc.Tally):
         """Extract tally data from statepoint file
 
@@ -324,10 +338,9 @@ class OpenMCStatePoint:
                 particle_filter = tally.find_filter(openmc.ParticleFilter)
                 cell_filter = tally.find_filter(openmc.CellFilter)
                 if (('electron' in particle_filter.bins) or ('positron' in particle_filter.bins)) and (photon_cell_filter == cell_filter):
-                    if photon_tally.can_merge(tally):
-                        tally_df = self._get_tally_data(tally)
-                        heating_tallies_df[id]['mean'] += tally_df['mean']
-                        heating_tallies_df[id]['std. dev.'] = (heating_tallies_df[id]['std. dev.'].pow(2) + tally_df['std. dev.'].pow(2)).pow(0.5)
+                    tally_df = self._get_tally_data(tally)
+                    heating_tallies_df[id]['mean'] += tally_df['mean']
+                    heating_tallies_df[id]['std. dev.'] = (heating_tallies_df[id]['std. dev.'].pow(2) + tally_df['std. dev.'].pow(2)).pow(0.5)
         return heating_tallies_df
 
     def tallies_to_dataframes(self) -> dict:
@@ -349,6 +362,7 @@ class OpenMCStatePoint:
         if len(heating_tallies_df) > 0:
             for id, tally_df in heating_tallies_df.items():
                 tallies[id] = tally_df
+        self._update_tally_numbers(tallies.keys())
         return tallies
 
 

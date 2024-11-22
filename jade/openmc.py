@@ -282,7 +282,7 @@ class OpenMCStatePoint:
         version = ".".join(map(str, self.statepoint.version))
         return version
 
-    def _update_tally_numbers(self, tally_numbers : list) -> None:
+    def _update_tally_numbers(self, tally_numbers: list) -> None:
         """Update tally numbers
 
         Parameters
@@ -295,8 +295,8 @@ class OpenMCStatePoint:
                 idx = self.tally_numbers.index(tally_number)
                 del self.tally_comments[idx]
                 del self.tally_numbers[idx]
-        
-    def _normalise_df(self, df : pd.DataFrame) -> pd.DataFrame:
+
+    def _normalise_df(self, df: pd.DataFrame) -> pd.DataFrame:
         """_summary_
 
         Parameters
@@ -310,13 +310,21 @@ class OpenMCStatePoint:
             Input data frame, all eV quantities scaled to MeV
         """
         for column in df.columns:
-            if '[eV]' in column:
+            if "[eV]" in column:
                 df[column] *= 1e-6
-        if ('heating' or 'damage-energy') in df['score'].values:
-            df['mean'] = np.where((df['score'] == 'heating') | (df['score'] == 'damage-energy'), 1e-6*df['mean'], df['mean'])
-            df['std. dev.'] = np.where((df['score'] == 'heating') | (df['score'] == 'damage-energy'), 1e-6*df['std. dev.'], df['std. dev.'])
+        if ("heating" or "damage-energy") in df["score"].values:
+            df["mean"] = np.where(
+                (df["score"] == "heating") | (df["score"] == "damage-energy"),
+                1e-6 * df["mean"],
+                df["mean"],
+            )
+            df["std. dev."] = np.where(
+                (df["score"] == "heating") | (df["score"] == "damage-energy"),
+                1e-6 * df["std. dev."],
+                df["std. dev."],
+            )
         return df
-    
+
     def _get_tally_data(self, tally: openmc.Tally):
         """Extract tally data from statepoint file
 
@@ -333,8 +341,8 @@ class OpenMCStatePoint:
         df = tally.get_pandas_dataframe()
         df = self._normalise_df(df)
         return df
-    
-    def _combine_heating_tallies(self, heating_tallies : dict) -> dict:
+
+    def _combine_heating_tallies(self, heating_tallies: dict) -> dict:
         """Extract tally data from statepoint file
 
         Parameters
@@ -351,7 +359,7 @@ class OpenMCStatePoint:
         heating_tallies_df = {}
         for id, tally in heating_tallies.items():
             particle_filter = tally.find_filter(openmc.ParticleFilter)
-            if 'photon' in particle_filter.bins:
+            if "photon" in particle_filter.bins:
                 photon_tallies[id] = tally
                 heating_tallies_df[id] = self._get_tally_data(tally)
         for id, photon_tally in photon_tallies.items():
@@ -359,10 +367,16 @@ class OpenMCStatePoint:
             for _, tally in heating_tallies.items():
                 particle_filter = tally.find_filter(openmc.ParticleFilter)
                 cell_filter = tally.find_filter(openmc.CellFilter)
-                if (('electron' in particle_filter.bins) or ('positron' in particle_filter.bins)) and (photon_cell_filter == cell_filter):
+                if (
+                    ("electron" in particle_filter.bins)
+                    or ("positron" in particle_filter.bins)
+                ) and (photon_cell_filter == cell_filter):
                     tally_df = self._get_tally_data(tally)
-                    heating_tallies_df[id]['mean'] += tally_df['mean']
-                    heating_tallies_df[id]['std. dev.'] = (heating_tallies_df[id]['std. dev.'].pow(2) + tally_df['std. dev.'].pow(2)).pow(0.5)
+                    heating_tallies_df[id]["mean"] += tally_df["mean"]
+                    heating_tallies_df[id]["std. dev."] = (
+                        heating_tallies_df[id]["std. dev."].pow(2)
+                        + tally_df["std. dev."].pow(2)
+                    ).pow(0.5)
         return heating_tallies_df
 
     def tallies_to_dataframes(self) -> dict:
@@ -376,7 +390,7 @@ class OpenMCStatePoint:
         tallies = {}
         heating_tallies = {}
         for _, tally in self.statepoint.tallies.items():
-            if 'heating' in tally.scores:
+            if "heating" in tally.scores:
                 heating_tallies[tally.id] = tally
             else:
                 tallies[tally.id] = self._get_tally_data(tally)

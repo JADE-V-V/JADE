@@ -4,15 +4,70 @@ import logging
 import os
 import re
 from typing import TYPE_CHECKING
+from dataclasses import dataclass
 
 import openmc
 import numpy as np
 import pandas as pd
+import yaml
 
 if TYPE_CHECKING:
     from f4enix.input.libmanager import LibManager
     from f4enix.input.materials import Material, SubMaterial, Zaid
 
+
+@dataclass
+class OpenMCTallyFactors:
+    """Configuration for a computational benchmark.
+
+    Attributes
+    ----------
+    tally_factors : dict[int, TallyFactors]
+        Options for the Excel benchmark.
+    """
+    tally_factors : dict[int, TallyFactors]
+
+    @classmethod
+    def from_yaml(cls, file: str | os.PathLike) -> OpenMCTallyFactors:
+        """Build the configuration for a computational benchmark from a yaml file.
+
+        Parameters
+        ----------
+        file : str | os.PathLike
+            path to the yaml file.
+
+        Returns
+        -------
+        OpenMCTallyFactors
+            The tally factors for the OpenMC benchmark.
+        """
+        with open(file) as f:
+            cfg = yaml.safe_load(f)
+
+        tally_factors = {}
+        for key, value in cfg.items():
+            tally_factors[int(key)] = TallyFactors(**value)
+        return cls(tally_factors=tally_factors)
+
+@dataclass
+class TallyFactors:
+    """Data class storing tally factors
+
+    Attributes
+    ----------
+    identifier : int
+        Identifier of the tally.
+    normalisation : float
+        Nomrlaisation factor for the tally.
+    volume : bool
+        True if volume divisor is needed, False if not.
+    mass : BinningType | list[BinningType]
+        True if mass divisor is needed, False if not.
+    """
+    identifier : int
+    normalisation : float
+    volume : bool
+    mass : bool
 
 class OpenMCInputFiles:
     def __init__(self, path: str, name=None) -> None:

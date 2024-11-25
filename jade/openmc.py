@@ -6,6 +6,8 @@ import re
 from typing import TYPE_CHECKING
 
 import openmc
+import numpy as np
+import pandas as pd
 
 if TYPE_CHECKING:
     from f4enix.input.libmanager import LibManager
@@ -280,6 +282,49 @@ class OpenMCStatePoint:
         version = ".".join(map(str, self.statepoint.version))
         return version
 
+    def _update_tally_numbers(self, tally_numbers: list) -> None:
+        """Update tally numbers
+
+        Parameters
+        ----------
+        tally_numbers : list
+            List of remaining tally numbers
+        """
+        for tally_number in self.tally_numbers:
+            if tally_number not in tally_numbers:
+                idx = self.tally_numbers.index(tally_number)
+                del self.tally_comments[idx]
+                del self.tally_numbers[idx]
+
+    def _normalise_df(self, df: pd.DataFrame) -> pd.DataFrame:
+        """_summary_
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            Input data frame to be normalised
+
+        Returns
+        -------
+        df : pd.DataFrame
+            Input data frame, all eV quantities scaled to MeV
+        """
+        for column in df.columns:
+            if "[eV]" in column:
+                df[column] *= 1e-6
+        if ("heating" or "damage-energy") in df["score"].values:
+            df["mean"] = np.where(
+                (df["score"] == "heating") | (df["score"] == "damage-energy"),
+                1e-6 * df["mean"],
+                df["mean"],
+            )
+            df["std. dev."] = np.where(
+                (df["score"] == "heating") | (df["score"] == "damage-energy"),
+                1e-6 * df["std. dev."],
+                df["std. dev."],
+            )
+        return df
+
     def _get_tally_data(self, tally: openmc.Tally):
         """Extract tally data from statepoint file
 
@@ -291,23 +336,69 @@ class OpenMCStatePoint:
         Returns
         -------
         df : pd.DataFrame
-            pandas dataframe containing tally data
+            pandas dataframe containing tally data re-normlaised to MCNP default units
         """
         df = tally.get_pandas_dataframe()
-        # df.to_csv('tally_'+str(tally.id)+'.csv')
+        df = self._normalise_df(df)
         return df
 
-    def tallies_to_dataframes(self):
+    def _combine_heating_tallies(self, heating_tallies: dict) -> dict:
+        """Extract tally data from statepoint file
+
+        Parameters
+        ----------
+        tallies : dict
+            Dictionary containing all OpenMC heating tallies
+
+        Returns
+        -------
+        heating_tallies_df : dict
+            dictionary of pandas dataframes containing combined tally data
+        """
+        photon_tallies = {}
+        heating_tallies_df = {}
+        for id, tally in heating_tallies.items():
+            particle_filter = tally.find_filter(openmc.ParticleFilter)
+            if "photon" in particle_filter.bins:
+                photon_tallies[id] = tally
+                heating_tallies_df[id] = self._get_tally_data(tally)
+        for id, photon_tally in photon_tallies.items():
+            photon_cell_filter = photon_tally.find_filter(openmc.CellFilter)
+            for _, tally in heating_tallies.items():
+                particle_filter = tally.find_filter(openmc.ParticleFilter)
+                cell_filter = tally.find_filter(openmc.CellFilter)
+                if (
+                    ("electron" in particle_filter.bins)
+                    or ("positron" in particle_filter.bins)
+                ) and (photon_cell_filter == cell_filter):
+                    tally_df = self._get_tally_data(tally)
+                    heating_tallies_df[id]["mean"] += tally_df["mean"]
+                    heating_tallies_df[id]["std. dev."] = (
+                        heating_tallies_df[id]["std. dev."].pow(2)
+                        + tally_df["std. dev."].pow(2)
+                    ).pow(0.5)
+        return heating_tallies_df
+
+    def tallies_to_dataframes(self) -> dict:
         """Call to extract tally data from statepoint file
 
         Returns
         -------
-        list
-            list of rows with all sphere case tally data
+        tallies : dict
+            dictionary of dataframes containing all tally data
         """
         tallies = {}
+        heating_tallies = {}
         for _, tally in self.statepoint.tallies.items():
-            tallies[tally.id] = self._get_tally_data(tally)
+            if "heating" in tally.scores:
+                heating_tallies[tally.id] = tally
+            else:
+                tallies[tally.id] = self._get_tally_data(tally)
+        heating_tallies_df = self._combine_heating_tallies(heating_tallies)
+        if len(heating_tallies_df) > 0:
+            for id, tally_df in heating_tallies_df.items():
+                tallies[id] = tally_df
+        self._update_tally_numbers(tallies.keys())
         return tallies
 
 

@@ -28,6 +28,17 @@ if OMC_AVAIL:
 
 cp = os.path.dirname(os.path.abspath(__file__))
 STATEPOINT = os.path.join(cp, 'TestFiles', 'openmc', 'statepoint.10.h5')
+TALLY_FACTORS = os.path.join(cp, 'TestFiles', 'openmc', 'tally_factors.yaml')
+
+class TestOpenMCTallyFactors:
+    
+    @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC is not available")
+    def test_from_yaml(self):
+        omc_tally_factors = omc.OpenMCTallyFactors.from_yaml(TALLY_FACTORS)
+        assert omc_tally_factors.tally_factors[24].volume == True
+        assert omc_tally_factors.tally_factors[56].mass == True
+        assert omc_tally_factors.tally_factors[114].identifier == 114
+
 
 class TestOpenMCStatePoint:
 

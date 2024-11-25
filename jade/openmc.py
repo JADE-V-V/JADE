@@ -10,6 +10,7 @@ import openmc
 import numpy as np
 import pandas as pd
 import yaml
+import json
 
 if TYPE_CHECKING:
     from f4enix.input.libmanager import LibManager
@@ -68,6 +69,39 @@ class TallyFactors:
     normalisation : float
     volume : bool
     mass : bool
+
+@dataclass
+class OpenMCCellVolumes:
+    """Configuration for a computational benchmark.
+
+    Attributes
+    ----------
+    cell_volumes : dict[int, float]
+        Dictionary of cell volumes
+    """
+    cell_volumes : dict[int, float]
+
+    @classmethod
+    def from_json(cls, file: str | os.PathLike) -> OpenMCCellVolumes:
+        """Load in cell volumes from a json file.
+
+        Parameters
+        ----------
+        file : str | os.PathLike
+            path to the yaml file.
+
+        Returns
+        -------
+        OpenMCCellVolumes
+            The cell volumes for the OpenMC benchmark.
+        """
+        with open(file) as f:
+            cfg = json.load(f)
+
+        cell_volumes = {}
+        for key, value in cfg['cells'].items():
+            cell_volumes[int(key)] = float(value)
+        return cls(cell_volumes=cell_volumes)    
 
 class OpenMCInputFiles:
     def __init__(self, path: str, name=None) -> None:

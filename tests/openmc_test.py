@@ -29,6 +29,7 @@ if OMC_AVAIL:
 cp = os.path.dirname(os.path.abspath(__file__))
 STATEPOINT = os.path.join(cp, 'TestFiles', 'openmc', 'statepoint.10.h5')
 TALLY_FACTORS = os.path.join(cp, 'TestFiles', 'openmc', 'tally_factors.yaml')
+CELL_VOLUMES = os.path.join(cp, 'TestFiles', 'openmc', 'volumes.json')
 
 class TestOpenMCTallyFactors:
     
@@ -38,6 +39,15 @@ class TestOpenMCTallyFactors:
         assert omc_tally_factors.tally_factors[24].volume == True
         assert omc_tally_factors.tally_factors[56].mass == True
         assert omc_tally_factors.tally_factors[114].identifier == 114
+
+class TestOpenMCCellVolumes:
+    
+    @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC is not available")
+    def test_from_json(self):
+        omc_cell_volumes = omc.OpenMCCellVolumes.from_json(CELL_VOLUMES)
+        assert omc_cell_volumes.cell_volumes[84] == 396061.0
+        assert omc_cell_volumes.cell_volumes[106] == 225997.0
+        assert omc_cell_volumes.cell_volumes[73] == 758884.0
 
 
 class TestOpenMCStatePoint:

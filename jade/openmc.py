@@ -115,6 +115,54 @@ class OpenMCCellVolumes:
         volumes = dict((k, self.cell_volumes[k]) for k in cells
            if k in self.cell_volumes)
         return volumes
+    
+@dataclass
+class OpenMCCellDensities:
+    """Configuration for a computational benchmark.
+
+    Attributes
+    ----------
+    cell_volumes : dict[int, float]
+        Dictionary of cell volumes
+    """
+    cell_densities : dict[int, float]
+
+    @classmethod
+    def from_xml(cls, xml_path: str | os.PathLike) -> OpenMCCellDensities:
+        """Load in cell volumes from a json file.
+
+        Parameters
+        ----------
+        xml_path : str | os.PathLike
+            path to the xml input files
+
+        Returns
+        -------
+        OpenMCCellDensities
+            The cell desnities for the OpenMC benchmark.
+        """
+        omc_input_files = OpenMCInputFiles(xml_path)
+        cells = omc_input_files.geometry.get_all_cells()
+        cell_densities = {}
+        for cell_number, cell in cells.items():
+            materials = cell.get_all_materials()
+            if len(materials) == 1:
+                for material in materials.values():
+                    cell_densities[int(cell_number)] = material.get_mass_density()
+        return cls(cell_densities=cell_densities)
+
+    def densities(self, cells: iter | None = None) -> dict[int : float]:
+        """
+        Returns dictionary of densities for a cell list
+
+        Returns
+        -------
+        densities : dict
+            Dictionary of densities in g/cm3, indexed by cell number
+        """
+        densities = dict((k, self.cell_densities[k]) for k in cells
+           if k in self.cell_densities)
+        return densities
 
 class OpenMCInputFiles:
     def __init__(self, path: str, name=None) -> None:
@@ -360,6 +408,7 @@ class OpenMCStatePoint:
         """
         try:
             # Retrieve the version from the statepoint file (convert from tuple of integers to string)
+            self.results_path = os.path.dirname(spfile_path)
             self.statepoint = openmc.StatePoint(spfile_path)
             self.tally_numbers = []
             self.tally_comments = []
@@ -380,13 +429,22 @@ class OpenMCStatePoint:
             )
             self.tally_factors = None
         try:
-            self.cell_volmes = OpenMCCellVolumes.from_json(volfile_path)
+            self.cell_volumes = OpenMCCellVolumes.from_json(volfile_path)
         except (FileNotFoundError, TypeError):
             logging.warning(
             "OpenMC volume file not found for %s",
             volfile_path,
             )
-            self.cell_volmes = None
+            self.cell_volumes = None
+        try:
+            self.cell_densities = OpenMCCellDensities.from_xml(self.results_path)
+        except FileNotFoundError:
+            logging.warning(
+            "OpenMC xml files not found for %s",
+            self.results_path,
+            )
+            self.cell_densities = None            
+        
 
     def read_openmc_version(self) -> str:
         """Get OpenMC version from statepoint file
@@ -476,6 +534,8 @@ class OpenMCStatePoint:
         heating_tallies_df = {}
         for id, tally in heating_tallies.items():
             particle_filter = tally.find_filter(openmc.ParticleFilter)
+            if 'neutron' in particle_filter.bins:
+                heating_tallies_df[id] = self._get_tally_data(tally)
             if "photon" in particle_filter.bins:
                 photon_tallies[id] = tally
                 heating_tallies_df[id] = self._get_tally_data(tally)
@@ -495,24 +555,7 @@ class OpenMCStatePoint:
                         + tally_df["std. dev."].pow(2)
                     ).pow(0.5)
         return heating_tallies_df
-      
-    def _get_density(cell : int) -> float:
-        """
-        Function to extract cell density from StatePoint file
-
-        Parameters
-        ----------
-        cell : int
-            Cell number
-
-        Returns
-        -------
-        density : float
-            Cell density in g/cm3
-        """
-        density = 1.0
-        return density
-    
+         
     def _get_volumes(self, tally_df : pd.DataFrame) -> dict[int, float]:
         """
         Function to extract unique cell volumes from tally dataframe
@@ -528,7 +571,7 @@ class OpenMCStatePoint:
             Dictionary of cell volumes, indeced by cell
         """
         cells = tally_df.cell.unique()
-        volumes = self.cell_volmes.volumes(cells)
+        volumes = self.cell_volumes.volumes(cells)
         return volumes
     
     def _get_masses(self, tally_df : pd.DataFrame) -> dict[int, float]:
@@ -548,10 +591,9 @@ class OpenMCStatePoint:
         volumes = self._get_volumes(tally_df)
         masses = {}
         for cell, volume in volumes.items():
-            density = self._get_density(cell)
+            density = self.cell_densities.cell_densities[cell]
             masses[cell] = density * volume
         return masses
-
     
     def _apply_tally_factors(self, tallies : dict) -> dict:
         """
@@ -575,13 +617,15 @@ class OpenMCStatePoint:
                 if self.tally_factors.tally_factors[tally_number].volume:
                     volumes = self._get_volumes(tally_df)
                     for cell, volume in volumes.items():
-                        tally_df["mean"] = np.where(tally_df["cell"] == cell, tally_df["mean"] / volume, tally_df["mean"])
-                        tally_df["std. dev."] = np.where(tally_df["std. dev."] == cell, tally_df["std. dev."] / volume, tally_df["std. dev."])
+                        tally_df["mean"] = np.where((tally_df["cell"] == cell), tally_df["mean"] / volume, tally_df["mean"])
+                        tally_df["std. dev."] = np.where((tally_df["std. dev."] == cell), tally_df["std. dev."] / volume, tally_df["std. dev."])
                 if self.tally_factors.tally_factors[tally_number].mass:
                     masses = self._get_masses(tally_df)
+                    #print(tally_number, tally_df)
                     for cell, mass in masses.items():
-                        tally_df["mean"] = np.where(tally_df["cell"] == cell, tally_df["mean"] / mass, tally_df["mean"])
+                        tally_df["mean"] = np.where((tally_df["cell"] == cell), tally_df["mean"] / mass, tally_df["mean"])
                         tally_df["std. dev."] = np.where(tally_df["std. dev."] == cell, tally_df["std. dev."] / mass, tally_df["std. dev."])
+                    #print(tally_number, tally_df)
             tallies[tally_number] = tally_df
         return tallies
 

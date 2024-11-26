@@ -38,6 +38,11 @@
   normalisation : 1.0
   volume : True
   mass : False
+6:
+  identifier : 6
+  normalisation : 1.0
+  volume : False
+  mass : True
 16:
   identifier : 16
   normalisation : 1.0

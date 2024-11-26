@@ -54,7 +54,7 @@ class TestOpenMCStatePoint:
 
     @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC is not available")
     def test_tallies_to_dataframes(self):
-        out = omc.OpenMCStatePoint(STATEPOINT)
+        out = omc.OpenMCStatePoint(STATEPOINT, TALLY_FACTORS, CELL_VOLUMES)
         tallies = out.tallies_to_dataframes()
         assert 'photon' == tallies[56]['particle'][5]
         assert 11 == tallies[56]['cell'][2]

@@ -618,14 +618,12 @@ class OpenMCStatePoint:
                     volumes = self._get_volumes(tally_df)
                     for cell, volume in volumes.items():
                         tally_df["mean"] = np.where((tally_df["cell"] == cell), tally_df["mean"] / volume, tally_df["mean"])
-                        tally_df["std. dev."] = np.where((tally_df["std. dev."] == cell), tally_df["std. dev."] / volume, tally_df["std. dev."])
+                        tally_df["std. dev."] = np.where((tally_df["cell"] == cell), tally_df["std. dev."] / volume, tally_df["std. dev."])
                 if self.tally_factors.tally_factors[tally_number].mass:
                     masses = self._get_masses(tally_df)
-                    #print(tally_number, tally_df)
                     for cell, mass in masses.items():
                         tally_df["mean"] = np.where((tally_df["cell"] == cell), tally_df["mean"] / mass, tally_df["mean"])
-                        tally_df["std. dev."] = np.where(tally_df["std. dev."] == cell, tally_df["std. dev."] / mass, tally_df["std. dev."])
-                    #print(tally_number, tally_df)
+                        tally_df["std. dev."] = np.where((tally_df["cell"] == cell), tally_df["std. dev."] / mass, tally_df["std. dev."])
             tallies[tally_number] = tally_df
         return tallies
 

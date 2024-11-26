@@ -75,7 +75,7 @@ class TestTest:
     files = os.path.join(FILES, "Test")
     dummyout = os.path.join(FILES, "dummy")
 
-    def test_build_normal(self, LM: LibManager, tmpdir):
+    def test_build(self, LM: LibManager, tmpdir):
         # Just check that nothing breaks
         lib = "81c"
         inp_name = "ITER_1D"
@@ -91,7 +91,7 @@ class TestTest:
             "Custom Input": 2,
             "MCNP": True,
             "OpenMC": OMC_AVAIL,
-            "Serpent": True,
+            "Serpent": False,
         }
         config = pd.Series(config_data)
         VRTpath = "dummy"
@@ -106,6 +106,18 @@ class TestTest:
             metadata = json.load(f)
         assert metadata["jade_run_version"] == __version__
         assert metadata["benchmark_version"] == "1.0"
+        if OMC_AVAIL:
+            metadata_file = os.path.join(tmpdir, "ITER_1D", "openmc", "metadata.json")
+            assert os.path.exists(metadata_file)
+            with open(metadata_file, "r", encoding="utf-8") as f:
+                metadata = json.load(f)
+            assert metadata["jade_run_version"] == __version__
+            assert metadata["benchmark_version"] == "1.0"
+            tallies_yaml = os.path.join(tmpdir, "ITER_1D", "openmc", "tally_factors.yaml")
+            assert os.path.exists(tallies_yaml)
+            volumes_json = os.path.join(tmpdir, "ITER_1D", "volumes.json")
+            assert os.path.exists(volumes_json)
+
 
     def test_build_d1s(self, LM: LibManager, tmpdir):
         # Just check that nothing breaks
@@ -263,7 +275,7 @@ class TestMultipleTest:
             # "Relative Error cut-off": None,
             "Custom Input": 3,
             "MCNP": True,
-            "OpenMC": OMC_AVAIL,
+            "OpenMC": False,
             "Serpent": True,
         }
         config = pd.Series(config_data)

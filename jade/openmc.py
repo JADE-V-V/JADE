@@ -211,7 +211,7 @@ class OpenMCInputFiles:
         else:
             self.tallies = openmc.Tallies()
 
-    def load_geometry(self, geometry: str, materials: str) -> None:
+    def load_geometry(self, geometry: str | os.PathLike, materials: openmc.Materials | str | os.PathLike) -> None:
         """Initialise OpenMC geometry from xml
 
         Parameters
@@ -226,6 +226,8 @@ class OpenMCInputFiles:
         None
         """
         self.geometry = openmc.Geometry.from_xml(geometry, materials)
+        if type(materials) is not openmc.Materials:
+            self.materials = openmc.Materials.from_xml(materials)
 
     def load_settings(self, settings: str) -> None:
         """Initialise OpenMC settings from xml

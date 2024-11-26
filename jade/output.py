@@ -1190,7 +1190,7 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
             elif file_name.startswith("statepoint"):
                 file2 = file_name
             elif file_name.endswith('.yaml'):
-                file_3 = file_name
+                file3 = file_name
 
         if file1 is None or file2 is None:
             raise FileNotFoundError(

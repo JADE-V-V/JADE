@@ -359,7 +359,9 @@ class Test:
             os.mkdir(outpath)
             self.openmc_inp.write(outpath)
             # Copy tally_factors.yaml if present
-            tallies_yaml = os.path.join(self.original_inp, "openmc", "tally_factors.yaml")
+            tallies_yaml = os.path.join(
+                self.original_inp, "openmc", "tally_factors.yaml"
+            )
             if os.path.exists(tallies_yaml):
                 outfile = os.path.join(outpath, "tally_factors.yaml")
                 shutil.copyfile(tallies_yaml, outfile)

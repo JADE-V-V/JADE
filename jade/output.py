@@ -696,7 +696,9 @@ class AbstractBenchmarkOutput(abc.ABC):
                             + """
     A ValueError was triggered, a probable cause may be that more than 2 binnings
         are defined in tally {}. This is a fatal exception,  application will now
-    close""".format(str(num))
+    close""".format(
+                                str(num)
+                            )
                             + CEND
                         )
                         # Safely exit from excel and from application
@@ -729,7 +731,9 @@ class AbstractBenchmarkOutput(abc.ABC):
                             CRED
                             + """
 {} is not available in tally {}. Please check the configuration file.
-The application will now exit """.format(x_name, str(num))
+The application will now exit """.format(
+                                x_name, str(num)
+                            )
                             + CEND
                         )
                         # Safely exit from excel and from application
@@ -927,7 +931,9 @@ The application will now exit """.format(x_name, str(num))
                                 + """
         A ValueError was triggered, a probable cause may be that more than 2 binnings
             are defined in tally {}. This is a fatal exception,  application will now
-        close""".format(str(num))
+        close""".format(
+                                    str(num)
+                                )
                                 + CEND
                             )
                             # Safely exit from excel and from application
@@ -962,7 +968,9 @@ The application will now exit """.format(x_name, str(num))
                                 CRED
                                 + """
     {} is not available in tally {}. Please check the configuration file.
-    The application will now exit """.format(x_name, str(num))
+    The application will now exit """.format(
+                                    x_name, str(num)
+                                )
                                 + CEND
                             )
                             # Safely exit from excel and from application
@@ -1189,7 +1197,7 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
                 file1 = file_name
             elif file_name.startswith("statepoint"):
                 file2 = file_name
-            elif file_name.endswith('.yaml'):
+            elif file_name.endswith(".yaml"):
                 file3 = file_name
 
         if file1 is None or file2 is None:
@@ -1201,8 +1209,8 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
         file2 = os.path.join(results_path, file2) if file2 else None
         file3 = os.path.join(results_path, file3) if file3 else None
 
-        if 'volumes.json' in os.path.dirname(results_path):
-            file4 = os.path.join(os.path.dirname(results_path), 'volumes.json')
+        if "volumes.json" in os.path.dirname(results_path):
+            file4 = os.path.join(os.path.dirname(results_path), "volumes.json")
 
         return file1, file2, file3, file4
 
@@ -1361,7 +1369,12 @@ class MCNPSimOutput(AbstractSimOutput):
 
 
 class OpenMCSimOutput(AbstractSimOutput):
-    def __init__(self, output_path: str | os.PathLike, tffile: str | os.PathLike | None = None, volfile: str | os.PathLike | None = None) -> None:
+    def __init__(
+        self,
+        output_path: str | os.PathLike,
+        tffile: str | os.PathLike | None = None,
+        volfile: str | os.PathLike | None = None,
+    ) -> None:
         """
         Class representing all outputs coming from OpenMC run
 

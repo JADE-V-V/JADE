@@ -26,7 +26,8 @@ class OpenMCTallyFactors:
     tally_factors : dict[int, TallyFactors]
         Options for the Excel benchmark.
     """
-    tally_factors : dict[int, TallyFactors]
+
+    tally_factors: dict[int, TallyFactors]
 
     @classmethod
     def from_yaml(cls, file: str | os.PathLike) -> OpenMCTallyFactors:
@@ -50,6 +51,7 @@ class OpenMCTallyFactors:
             tally_factors[int(key)] = TallyFactors(**value)
         return cls(tally_factors=tally_factors)
 
+
 @dataclass
 class TallyFactors:
     """Data class storing tally factors
@@ -65,10 +67,12 @@ class TallyFactors:
     mass : BinningType | list[BinningType]
         True if mass divisor is needed, False if not.
     """
-    identifier : int
-    normalisation : float
-    volume : bool
-    mass : bool
+
+    identifier: int
+    normalisation: float
+    volume: bool
+    mass: bool
+
 
 @dataclass
 class OpenMCCellVolumes:
@@ -79,7 +83,8 @@ class OpenMCCellVolumes:
     cell_volumes : dict[int, float]
         Dictionary of cell volumes
     """
-    cell_volumes : dict[int, float]
+
+    cell_volumes: dict[int, float]
 
     @classmethod
     def from_json(cls, file: str | os.PathLike) -> OpenMCCellVolumes:
@@ -99,11 +104,11 @@ class OpenMCCellVolumes:
             cfg = json.load(f)
 
         cell_volumes = {}
-        for key, value in cfg['cells'].items():
+        for key, value in cfg["cells"].items():
             cell_volumes[int(key)] = float(value)
         return cls(cell_volumes=cell_volumes)
 
-    def volumes(self, cells: iter | None = None) -> dict[int : float]:
+    def volumes(self, cells: iter | None = None) -> dict[int:float]:
         """
         Returns dictionary of volumes for a cell list
 
@@ -112,10 +117,12 @@ class OpenMCCellVolumes:
         volumes : dict
             Dictionary of volumes, indexed by cell number
         """
-        volumes = dict((k, self.cell_volumes[k]) for k in cells
-           if k in self.cell_volumes)
+        volumes = dict(
+            (k, self.cell_volumes[k]) for k in cells if k in self.cell_volumes
+        )
         return volumes
-    
+
+
 @dataclass
 class OpenMCCellDensities:
     """Configuration for a computational benchmark.
@@ -125,7 +132,8 @@ class OpenMCCellDensities:
     cell_volumes : dict[int, float]
         Dictionary of cell volumes
     """
-    cell_densities : dict[int, float]
+
+    cell_densities: dict[int, float]
 
     @classmethod
     def from_xml(cls, xml_path: str | os.PathLike) -> OpenMCCellDensities:
@@ -151,7 +159,7 @@ class OpenMCCellDensities:
                     cell_densities[int(cell_number)] = material.get_mass_density()
         return cls(cell_densities=cell_densities)
 
-    def densities(self, cells: iter | None = None) -> dict[int : float]:
+    def densities(self, cells: iter | None = None) -> dict[int:float]:
         """
         Returns dictionary of densities for a cell list
 
@@ -160,9 +168,11 @@ class OpenMCCellDensities:
         densities : dict
             Dictionary of densities in g/cm3, indexed by cell number
         """
-        densities = dict((k, self.cell_densities[k]) for k in cells
-           if k in self.cell_densities)
+        densities = dict(
+            (k, self.cell_densities[k]) for k in cells if k in self.cell_densities
+        )
         return densities
+
 
 class OpenMCInputFiles:
     def __init__(self, path: str, name=None) -> None:
@@ -211,7 +221,11 @@ class OpenMCInputFiles:
         else:
             self.tallies = openmc.Tallies()
 
-    def load_geometry(self, geometry: str | os.PathLike, materials: openmc.Materials | str | os.PathLike) -> None:
+    def load_geometry(
+        self,
+        geometry: str | os.PathLike,
+        materials: openmc.Materials | str | os.PathLike,
+    ) -> None:
         """Initialise OpenMC geometry from xml
 
         Parameters
@@ -389,7 +403,12 @@ class OpenMCInputFiles:
 
 
 class OpenMCStatePoint:
-    def __init__(self, spfile_path: str | os.PathLike, tffile_path : str | os.PathLike | None = None, volfile_path : str | os.PathLike | None = None) -> None:
+    def __init__(
+        self,
+        spfile_path: str | os.PathLike,
+        tffile_path: str | os.PathLike | None = None,
+        volfile_path: str | os.PathLike | None = None,
+    ) -> None:
         """Class for handling OpenMC tatepoint file
 
         Parameters
@@ -400,7 +419,12 @@ class OpenMCStatePoint:
         self.initialise(spfile_path, tffile_path, volfile_path)
         self.version = self.read_openmc_version()
 
-    def initialise(self, spfile_path: str | os.PathLike, tffile_path: str | os.PathLike | None, volfile_path: str | os.PathLike | None) -> None:
+    def initialise(
+        self,
+        spfile_path: str | os.PathLike,
+        tffile_path: str | os.PathLike | None,
+        volfile_path: str | os.PathLike | None,
+    ) -> None:
         """Read in statepoint file
 
         Parameters
@@ -426,27 +450,26 @@ class OpenMCStatePoint:
             self.tally_factors = OpenMCTallyFactors.from_yaml(tffile_path)
         except (FileNotFoundError, TypeError):
             logging.warning(
-            "OpenMC tally factor file not found for %s",
-            tffile_path,
+                "OpenMC tally factor file not found for %s",
+                tffile_path,
             )
             self.tally_factors = None
         try:
             self.cell_volumes = OpenMCCellVolumes.from_json(volfile_path)
         except (FileNotFoundError, TypeError):
             logging.warning(
-            "OpenMC volume file not found for %s",
-            volfile_path,
+                "OpenMC volume file not found for %s",
+                volfile_path,
             )
             self.cell_volumes = None
         try:
             self.cell_densities = OpenMCCellDensities.from_xml(self.results_path)
         except FileNotFoundError:
             logging.warning(
-            "OpenMC xml files not found for %s",
-            self.results_path,
+                "OpenMC xml files not found for %s",
+                self.results_path,
             )
-            self.cell_densities = None            
-        
+            self.cell_densities = None
 
     def read_openmc_version(self) -> str:
         """Get OpenMC version from statepoint file
@@ -536,7 +559,7 @@ class OpenMCStatePoint:
         heating_tallies_df = {}
         for id, tally in heating_tallies.items():
             particle_filter = tally.find_filter(openmc.ParticleFilter)
-            if 'neutron' in particle_filter.bins:
+            if "neutron" in particle_filter.bins:
                 heating_tallies_df[id] = self._get_tally_data(tally)
             if "photon" in particle_filter.bins:
                 photon_tallies[id] = tally
@@ -557,8 +580,8 @@ class OpenMCStatePoint:
                         + tally_df["std. dev."].pow(2)
                     ).pow(0.5)
         return heating_tallies_df
-         
-    def _get_volumes(self, tally_df : pd.DataFrame) -> dict[int, float]:
+
+    def _get_volumes(self, tally_df: pd.DataFrame) -> dict[int, float]:
         """
         Function to extract unique cell volumes from tally dataframe
 
@@ -575,8 +598,8 @@ class OpenMCStatePoint:
         cells = tally_df.cell.unique()
         volumes = self.cell_volumes.volumes(cells)
         return volumes
-    
-    def _get_masses(self, tally_df : pd.DataFrame) -> dict[int, float]:
+
+    def _get_masses(self, tally_df: pd.DataFrame) -> dict[int, float]:
         """
         Function to extract unique cell masses from tally dataframe
 
@@ -596,8 +619,8 @@ class OpenMCStatePoint:
             density = self.cell_densities.cell_densities[cell]
             masses[cell] = density * volume
         return masses
-    
-    def _apply_tally_factors(self, tallies : dict) -> dict:
+
+    def _apply_tally_factors(self, tallies: dict) -> dict:
         """
         Function to apply tally factor and volume corrections to tally data
 
@@ -613,19 +636,37 @@ class OpenMCStatePoint:
         """
         for tally_number, tally_df in tallies.items():
             if tally_number in self.tally_factors.tally_factors:
-                normalisation = self.tally_factors.tally_factors[tally_number].normalisation
+                normalisation = self.tally_factors.tally_factors[
+                    tally_number
+                ].normalisation
                 tally_df["mean"] *= normalisation
                 tally_df["std. dev."] *= normalisation
                 if self.tally_factors.tally_factors[tally_number].volume:
                     volumes = self._get_volumes(tally_df)
                     for cell, volume in volumes.items():
-                        tally_df["mean"] = np.where((tally_df["cell"] == cell), tally_df["mean"] / volume, tally_df["mean"])
-                        tally_df["std. dev."] = np.where((tally_df["cell"] == cell), tally_df["std. dev."] / volume, tally_df["std. dev."])
+                        tally_df["mean"] = np.where(
+                            (tally_df["cell"] == cell),
+                            tally_df["mean"] / volume,
+                            tally_df["mean"],
+                        )
+                        tally_df["std. dev."] = np.where(
+                            (tally_df["cell"] == cell),
+                            tally_df["std. dev."] / volume,
+                            tally_df["std. dev."],
+                        )
                 if self.tally_factors.tally_factors[tally_number].mass:
                     masses = self._get_masses(tally_df)
                     for cell, mass in masses.items():
-                        tally_df["mean"] = np.where((tally_df["cell"] == cell), tally_df["mean"] / mass, tally_df["mean"])
-                        tally_df["std. dev."] = np.where((tally_df["cell"] == cell), tally_df["std. dev."] / mass, tally_df["std. dev."])
+                        tally_df["mean"] = np.where(
+                            (tally_df["cell"] == cell),
+                            tally_df["mean"] / mass,
+                            tally_df["mean"],
+                        )
+                        tally_df["std. dev."] = np.where(
+                            (tally_df["cell"] == cell),
+                            tally_df["std. dev."] / mass,
+                            tally_df["std. dev."],
+                        )
             tallies[tally_number] = tally_df
         return tallies
 

@@ -696,7 +696,9 @@ class AbstractBenchmarkOutput(abc.ABC):
                             + """
     A ValueError was triggered, a probable cause may be that more than 2 binnings
         are defined in tally {}. This is a fatal exception,  application will now
-    close""".format(str(num))
+    close""".format(
+                                str(num)
+                            )
                             + CEND
                         )
                         # Safely exit from excel and from application
@@ -729,7 +731,9 @@ class AbstractBenchmarkOutput(abc.ABC):
                             CRED
                             + """
 {} is not available in tally {}. Please check the configuration file.
-The application will now exit """.format(x_name, str(num))
+The application will now exit """.format(
+                                x_name, str(num)
+                            )
                             + CEND
                         )
                         # Safely exit from excel and from application
@@ -927,7 +931,9 @@ The application will now exit """.format(x_name, str(num))
                                 + """
         A ValueError was triggered, a probable cause may be that more than 2 binnings
             are defined in tally {}. This is a fatal exception,  application will now
-        close""".format(str(num))
+        close""".format(
+                                    str(num)
+                                )
                                 + CEND
                             )
                             # Safely exit from excel and from application
@@ -962,7 +968,9 @@ The application will now exit """.format(x_name, str(num))
                                 CRED
                                 + """
     {} is not available in tally {}. Please check the configuration file.
-    The application will now exit """.format(x_name, str(num))
+    The application will now exit """.format(
+                                    x_name, str(num)
+                                )
                                 + CEND
                             )
                             # Safely exit from excel and from application
@@ -1148,7 +1156,7 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
         if self.testname in ["Sphere", "SphereSDDR"]:
             if not os.path.exists(simulation_path):
                 return None
-        _, spfile = self._get_output_files(simulation_path)
+        _, spfile, _, _ = self._get_output_files(simulation_path)
         statepoint = omc.OpenMCStatePoint(spfile)
         version = statepoint.version
         return version
@@ -1181,12 +1189,16 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
         """
         file1 = None
         file2 = None
+        file3 = None
+        file4 = None
 
         for file_name in os.listdir(results_path):
             if file_name.endswith(".out"):
                 file1 = file_name
             elif file_name.startswith("statepoint"):
                 file2 = file_name
+            elif file_name.endswith(".yaml"):
+                file3 = file_name
 
         if file1 is None or file2 is None:
             raise FileNotFoundError(
@@ -1195,8 +1207,12 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
 
         file1 = os.path.join(results_path, file1) if file1 else None
         file2 = os.path.join(results_path, file2) if file2 else None
+        file3 = os.path.join(results_path, file3) if file3 else None
 
-        return file1, file2
+        if "volumes.json" in os.path.dirname(results_path):
+            file4 = os.path.join(os.path.dirname(results_path), "volumes.json")
+
+        return file1, file2, file3, file4
 
     def parse_output_data(
         self, results_path: str | os.PathLike
@@ -1217,8 +1233,8 @@ class OpenMCBenchmarkOutput(AbstractBenchmarkOutput):
         tally_comments : list
             List of tally comments in simulation output
         """
-        _, sfile = self._get_output_files(results_path)
-        sim_output = OpenMCSimOutput(sfile)
+        _, sfile, tffile, volfile = self._get_output_files(results_path)
+        sim_output = OpenMCSimOutput(sfile, tffile, volfile)
         tally_numbers = sim_output.output.tally_numbers
         tally_comments = sim_output.output.tally_comments
         return sim_output, tally_numbers, tally_comments
@@ -1353,7 +1369,12 @@ class MCNPSimOutput(AbstractSimOutput):
 
 
 class OpenMCSimOutput(AbstractSimOutput):
-    def __init__(self, output_path: str | os.PathLike) -> None:
+    def __init__(
+        self,
+        output_path: str | os.PathLike,
+        tffile: str | os.PathLike | None = None,
+        volfile: str | os.PathLike | None = None,
+    ) -> None:
         """
         Class representing all outputs coming from OpenMC run
 
@@ -1367,7 +1388,7 @@ class OpenMCSimOutput(AbstractSimOutput):
         None.
 
         """
-        self.output = omc.OpenMCStatePoint(output_path)
+        self.output = omc.OpenMCStatePoint(output_path, tffile, volfile)
         self.tally_numbers = self.output.tally_numbers
         self.tally_comments = self.output.tally_comments
         self.tallydata, self.totalbin = self.process_tally()

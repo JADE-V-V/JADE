@@ -314,6 +314,12 @@ class Test:
             shutil.rmtree(motherdir)
         os.mkdir(motherdir)
 
+        # Make copy of volumes.json if it exists
+        volumes_json = os.path.join(self.original_inp, "volumes.json")
+        if os.path.exists(volumes_json):
+            outfile = os.path.join(motherdir, "volumes.json")
+            shutil.copyfile(volumes_json, outfile)
+
         # Allow space for personalization getting additional modification
         self.custom_inp_modifications()
 
@@ -349,8 +355,16 @@ class Test:
             pass
 
         if self.openmc:
-            # Implement openmc outputfile generation here
-            pass
+            outpath = os.path.join(motherdir, "openmc")
+            os.mkdir(outpath)
+            self.openmc_inp.write(outpath)
+            # Copy tally_factors.yaml if present
+            tallies_yaml = os.path.join(
+                self.original_inp, "openmc", "tally_factors.yaml"
+            )
+            if os.path.exists(tallies_yaml):
+                outfile = os.path.join(outpath, "tally_factors.yaml")
+                shutil.copyfile(tallies_yaml, outfile)
 
         # Print metadata
         self._print_metadata(motherdir)

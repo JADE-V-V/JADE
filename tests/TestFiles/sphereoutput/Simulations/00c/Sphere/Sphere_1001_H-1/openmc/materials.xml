@@ -1,6 +1,0 @@
-<materials>
-  <material id="1" name="m1">
-    <density units="g/cc" value="0.0708" />
-    <nuclide ao="1.0" name="H1" />
-  </material>
-</materials>

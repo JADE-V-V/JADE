@@ -1,33 +1,32 @@
-[![Testing](https://github.com/JADE-V-V/JADE/actions/workflows/pytest.yml/badge.svg?branch=master)](https://github.com/JADE-V-V/JADE/actions/workflows/pytest.yml)
-[![Documentation Status](https://readthedocs.org/projects/jade-a-nuclear-data-libraries-vv-tool/badge/?version=latest)](https://jade-a-nuclear-data-libraries-vv-tool.readthedocs.io/en/latest/?badge=latest)
-[![codecov](https://codecov.io/gh/JADE-V-V/JADE/graph/badge.svg?token=C0Q75M9FVH)](https://codecov.io/gh/JADE-V-V/JADE)
+[![Testing windows](https://github.com/Radiation-Transport/F4Enix/actions/workflows/AutomatedTests_win.yml/badge.svg?branch=main)](https://github.com/Radiation-Transport/F4Enix/actions/workflows/AutomatedTests_win.yml)
+[![Testing linux](https://github.com/Radiation-Transport/F4Enix/actions/workflows/AutomatedTests_linux.yml/badge.svg?branch=main)](https://github.com/Radiation-Transport/F4Enix/actions/workflows/AutomatedTests_linux.yml)
+[![PyPi version](https://badgen.net/pypi/v/f4enix/)](https://pypi.org/project/f4enix)
+[![Documentation Status](https://readthedocs.org/projects/f4enix/badge/?version=latest)](https://f4enix.readthedocs.io/en/latest/?badge=latest)
+[![codecov](https://codecov.io/gh/Fusion4Energy/F4Enix/graph/badge.svg?token=P4A85K0ACG)](https://codecov.io/gh/Fusion4Energy/F4Enix)
 
-<img src="https://user-images.githubusercontent.com/25747626/118662537-5f124900-b7f0-11eb-8d69-282305f795c4.png" width="300" />
+# F4Enix
+Parser for Monte Carlo simulations input and output files
 
-# JADE
-The JADE tool provides an automated framework to perform validation and verification of nuclear data libraries and particle transport codes.
-JADE is brought to you by NIER, University of Bologna (UNIBO), Fusion For Energy (F4E) and the United Kingdom Atomic Energy Authority (UKAEA).
+**Python >3.9!**
 
-Detailed documentation on the usage of JADE can be found on the Read the Docs for the [latest](https://jade-a-nuclear-data-libraries-vv-tool.readthedocs.io/en/latest/) version.
+Both Windows and Linux supported.
 
-For additional information contact: davide.laghi01@gmail.com
+Go to [F4Enix official documentation](https://f4enix.readthedocs.io/en/latest/) to get
+more information on the library capabilities, examples and much more.
 
-## Requirements
-- Linux or Windows operative system;
-- Python 3 installation;
+## Install
+The easiest way to install F4Enix is using pip:
 
-## Installation
-See [installation instructions](https://jade-a-nuclear-data-libraries-vv-tool.readthedocs.io/en/stable/usage/installation.html) in the user guide.
+```
+pip install f4enix
+```
+See the [relevant section of the documentation](https://f4enix.readthedocs.io/en/stable/usage/installation.html#developer-mode-install) for developer mode installation
 
-## Issues and Troubleshooting
-Users are encouraged to raise [issues](https://github.com/JADE-V-V/JADE/issues) in the JADE git repository. This can include ideas for new features. For general troubleshooting, the user should consult the [troubleshooting](https://jade-a-nuclear-data-libraries-vv-tool.readthedocs.io/en/latest/usage/troubleshooting.html) section of the documentation or if still unable to resolve the problem contact the above email.
-
-## Citing
-When using JADE for scientific publications you are kindly encouraged to cite the following papers:
-
-D. Laghi et al, 2020, “JADE, a new software tool for nuclear fusion data libraries verification & validation”, Fusion Engineering and Design, 161 112075, doi: (https://doi.org/10.1016/j.fusengdes.2020.112075).
-
-D.Laghi, M. Fabbri, S. La Rovere, L. Isolan, R. Pampin, A. Portone and M. Sumini, 2022, “Status of JADE, an open-source software for nuclear data libraries V&V”, Fusion Engineering and Design, 187 113380, doi: https://doi.org/10.1016/j.fusengdes.2022.113380
-
-## License
-JADE is an open-source software licensed under the [GNU GPLv3](./LICENSE) license.
+### Troubleshooting
+If any unexpected issue is encountered during installation, the first step for
+its resolution would be to create a new fresh virtual environment.
+In conda this would be done with:
+```
+conda create -n <env_name> python=3.9
+```
+Please remember that python versions lower than 3.9 are not supported.

@@ -1,0 +1,91 @@
+from __future__ import annotations
+
+import numpy as np
+import pandas as pd
+
+from jade.config.pp_config import TallyConcatOption, TallyModOption
+
+
+# --- functions to modify tallies ---
+def by_lethargy(tally: pd.DataFrame) -> pd.DataFrame:
+    """Convert values by energy into values by unit lethargy."""
+    # Energies for lethargy computation
+    energies = tally["Energy"].values
+    flux = tally["Value"].values
+
+    ergs = [1e-10]  # Additional "zero" energy for lethargy computation
+    ergs.extend(energies.tolist())
+    ergs = np.array(ergs)
+
+    flux = flux / np.log(ergs[1:] / ergs[:-1])
+
+    tally["Value"] = flux
+    return tally
+
+
+def by_energy(tally: pd.DataFrame) -> pd.DataFrame:
+    """Convert values by energy into values by unit energy."""
+    # Energies for lethargy computation
+    energies = tally["Energy"].values
+    flux = tally["Value"].values
+
+    ergs = [1e-10]  # Additional "zero" energy for lethargy computation
+    ergs.extend(energies.tolist())
+    ergs = np.array(ergs)
+
+    flux = flux / (ergs[1:] - ergs[:-1])
+    tally["Value"] = flux
+    return tally
+
+
+def scale(tally: pd.DataFrame, factor: int | float) -> pd.DataFrame:
+    """Scale the tally values."""
+    tally["Value"] = tally["Value"] * factor
+    return tally
+
+
+def no_action(tally: pd.DataFrame) -> pd.DataFrame:
+    """Do nothing to the tally."""
+    return tally
+
+
+MOD_FUNCTIONS = {
+    TallyModOption.LETHARGY: by_lethargy,
+    TallyModOption.SCALE: scale,
+    TallyModOption.NO_ACTION: no_action,
+    TallyModOption.BY_ENERGY: by_energy,
+}
+
+
+# --- functions to combine tallies ---
+def sum_tallies(tallies: list[pd.DataFrame]) -> pd.DataFrame:
+    """Sum all tallies. Value is sum, rel error is recomputed"""
+    value = tallies[0]["Value"]
+    tot_err = tallies[0]["Error"] * value
+    for tally in tallies[1:]:
+        value = value + tally["Value"]
+        tot_err = tot_err + tally["Error"] * tally["Value"]
+
+    df = tallies[0].copy()
+    df["Value"] = value
+    df["Error"] = tot_err / value
+
+    return df
+
+
+def concat_tallies(tallies: list[pd.DataFrame]) -> pd.DataFrame:
+    """Concatenate all tallies."""
+    return pd.concat(tallies)
+
+
+def no_concat(tallies: list[pd.DataFrame]) -> pd.DataFrame:
+    """Do nothing to the tallies."""
+    assert len(tallies) == 1
+    return tallies[0]
+
+
+CONCAT_FUNCTIONS = {
+    TallyConcatOption.SUM: sum_tallies,
+    TallyConcatOption.CONCAT: concat_tallies,
+    TallyConcatOption.NO_ACTION: no_concat,
+}

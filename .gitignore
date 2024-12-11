@@ -1,3 +1,5 @@
+# do not track the _version
+_version.py
 
 # this files are not useful
 *.pyc
@@ -7,7 +9,7 @@ Untitled.ipynb
 
 # These are generated folders for cache
 .ipynb_checkpoints/
-__pycache__/
+**/__pycache__/
 *.pyc
 docs/build/
 docs/source/_build/
@@ -18,7 +20,7 @@ jade.egg-info/
 build/
 
 venv/*
-.vscode/*.json
+.vscode/
 
 # secret file for local testing
 tests/secrets.json

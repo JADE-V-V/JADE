@@ -6,6 +6,7 @@ from src.jade.post.manipulate_tally import (
     by_energy,
     by_lethargy,
     concat_tallies,
+    condense_groups,
     no_action,
     no_concat,
     scale,
@@ -73,3 +74,16 @@ def test_no_concat():
     df = pd.DataFrame(data)
     result = no_concat([df])
     assert result.equals(df)
+
+
+def test_condense_groups():
+    data = {
+        "Energy": [1, 2, 3, 4],
+        "Value": [10, 20, 30, 40],
+        "Error": [0.1, 0.1, 0.2, 0.1],
+    }
+    df = pd.DataFrame(data)
+    result = condense_groups(df.copy(), bins=[0, 3.1, 10])
+    assert (result["Energy"] == ["0 - 3.1", "3.1 - 10"]).all()
+    assert (result["Value"] == [60, 40]).all()
+    assert (result["Error"] == [0.15, 0.1]).all()

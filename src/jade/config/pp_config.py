@@ -6,6 +6,38 @@ from enum import Enum
 import yaml
 
 from jade.helper.aux_functions import PathLike
+from jade.helper.constants import CODE
+from jade.post.excel_routines import ComparisonType, TableType
+from jade.post.plotter import PlotType
+
+
+class ConfigExcelProcessor:
+    benchmark: str
+    libcodes: list[tuple[CODE, str]]
+    tables: list[TableConfig]
+
+
+class ConfigAtlasProcessor:
+    libcodes: list[tuple[CODE, str]]
+    plots: list[PlotConfig]
+
+
+@dataclass
+class PlotConfig:
+    results: list[int | str]
+    plot_type: PlotType
+
+
+@dataclass
+class TableConfig:
+    name: str
+    results: list[int | str]
+    table_type: TableType
+    comparison_type: ComparisonType
+    x: list[str]
+    y: list[str]
+    value: str | None = None  # used for pivot tables
+    add_error: bool = False  # add single error sheets to the tables
 
 
 class ConfigRawProcessor:
@@ -77,6 +109,7 @@ class TallyModOption(Enum):
     SCALE = "scale"
     NO_ACTION = "no_action"
     BY_ENERGY = "by_energy"
+    CONDENSE_GROUPS = "condense_groups"
 
 
 class TallyConcatOption(Enum):

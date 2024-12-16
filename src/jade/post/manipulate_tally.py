@@ -38,6 +38,40 @@ def by_energy(tally: pd.DataFrame) -> pd.DataFrame:
     return tally
 
 
+def condense_groups(
+    tally: pd.DataFrame, bins: list[float], group_column: str = "Energy"
+) -> pd.DataFrame:
+    """Condense the tally into groups. Mostly used to obtain coarser energy groups.
+
+    Parameters
+    ----------
+    tally : pd.DataFrame
+        tally dataframe to modify
+    bins : list[float]
+        bin values of the groups
+    group_column : str, optional
+        the column onto which perform the grouping, by default "Energy"
+
+    Returns
+    -------
+    pd.DataFrame
+        _description_
+    """
+    tally["abs err"] = tally["Error"] * tally["Value"]
+    rows = []
+    min_e = bins[0]
+    for max_e in bins[1:]:
+        # get the rows that have Energy between min_e and max_e
+        df = tally[(tally[group_column] >= min_e) & (tally[group_column] < max_e)]
+        df = df.sum()
+        df["Error"] = df["abs err"] / df["Value"]
+        del df["abs err"]
+        df[group_column] = f"{min_e} - {max_e}"
+        rows.append(df)
+        min_e = max_e
+    return pd.DataFrame(rows)
+
+
 def scale(tally: pd.DataFrame, factor: int | float) -> pd.DataFrame:
     """Scale the tally values."""
     tally["Value"] = tally["Value"] * factor
@@ -54,6 +88,7 @@ MOD_FUNCTIONS = {
     TallyModOption.SCALE: scale,
     TallyModOption.NO_ACTION: no_action,
     TallyModOption.BY_ENERGY: by_energy,
+    TallyModOption.CONDENSE_GROUPS: condense_groups,
 }
 
 

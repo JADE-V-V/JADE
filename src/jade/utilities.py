@@ -12,6 +12,7 @@ def main():
     args = parser.parse_args()
 
     app = JadeApp()
+    app.initialize_log()
 
     if args.fetch:
         app.update_inputs()

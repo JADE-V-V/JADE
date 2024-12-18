@@ -54,12 +54,12 @@ class JadeApp:
             self.tree.logs, "Log " + time.ctime().replace(":", "-") + ".txt"
         )
         logger = logging.getLogger()
-        logger.setLevel(logging.INFO)
+        logger.setLevel(logging.DEBUG)
 
         # set the logging to a file and keep warnings to video
         # Create a file handler for logging INFO level messages
         file_handler = logging.FileHandler(log, encoding="utf-8")
-        file_handler.setLevel(logging.INFO)
+        file_handler.setLevel(logging.DEBUG)
         file_handler.setFormatter(
             logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         )
@@ -72,8 +72,8 @@ class JadeApp:
             if isinstance(handler, logging.StreamHandler):
                 handler.setLevel(logging.INFO)
         logger.addHandler(file_handler)
-        # logger.addHandler(console_handler)
-        logging.info(JADE_TITLE)
+        logger.addHandler(console_handler)
+        logging.debug(JADE_TITLE)
 
     def update_inputs(self):
         """Update the benchmark inputs for the simulations.
@@ -104,6 +104,7 @@ class JadeApp:
                     for file in os.listdir(pathroot):
                         if file.endswith(".r"):
                             os.remove(os.path.join(pathroot, file))
+        logging.info("Runtpe files were removed successfully")
 
     def run_benchmarks(self):
         """Run the benchmarks according to the configuration."""

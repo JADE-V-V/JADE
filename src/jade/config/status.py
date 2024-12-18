@@ -94,7 +94,7 @@ class GlobalStatus:
             if not codelib_path.is_dir():
                 continue
             code, lib = get_code_lib(code_lib)
-            for benchmark in os.listdir():
+            for benchmark in os.listdir(codelib_path):
                 bench_path = Path(codelib_path, benchmark)
                 if not bench_path.is_dir():
                     continue

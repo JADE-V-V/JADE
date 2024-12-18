@@ -29,7 +29,7 @@ class PathsTree:
         self.postprocessing = Path(root, "post_processing")
 
         # if the experimental data folder is not available, create it
-        exp_data = Path(self.simulations, "_exp_-_exp_")
+        exp_data = Path(self.raw, "_exp_-_exp_")
 
         self.exp_data = exp_data
 

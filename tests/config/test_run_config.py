@@ -114,5 +114,4 @@ class TestRunConfig:
             run_cfg_file,
             lib_cfg_file,
             additional_settings_root,
-            paths_tree,
         )

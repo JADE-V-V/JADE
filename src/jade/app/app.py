@@ -12,6 +12,7 @@ from tqdm import tqdm
 
 import jade.resources as res
 from jade.app.fetch import fetch_iaea_inputs
+from jade.config.paths_tree import PathsTree
 from jade.config.pp_config import ConfigRawProcessor
 from jade.config.run_config import RunConfig
 from jade.config.status import GlobalStatus
@@ -30,14 +31,15 @@ class JadeApp:
             root = os.getcwd()
 
         # Initialize the local installation if it was never done
+        self.tree = PathsTree(root)
         if len(os.listdir(root)) == 0 and not skip_init:
+            self.tree.init_tree()
             self.restore_default_cfg(FIRST_INITIALIZATION)
             self.update_inputs()
-            sys.exit()
+            return
 
         # parse the config files
-        self.run_cfg = RunConfig.from_root(root)
-        self.tree = self.run_cfg.paths_tree
+        self.run_cfg = RunConfig.from_root(self.tree)
         # TODO read here also the post-processing config
 
         # Compute the global status

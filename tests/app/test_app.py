@@ -37,3 +37,8 @@ class TestJadeApp:
         app.restore_default_cfg()
 
         assert len(os.listdir(tmpdir)) > 0
+
+    def test_installation(self, tmpdir):
+        app = JadeApp(root=tmpdir)
+
+        assert len(os.listdir(tmpdir)) > 0

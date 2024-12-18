@@ -30,9 +30,22 @@ class PathsTree:
 
         # if the experimental data folder is not available, create it
         exp_data = Path(self.simulations, "_exp_-_exp_")
-        if not exp_data.exists():
-            os.makedirs(exp_data)
+
         self.exp_data = exp_data
+
+    def init_tree(self) -> None:
+        """Initialize the JADE project tree."""
+        # create the folders if they don't exist
+        for folder in [
+            self.benchmark_input_templates,
+            Path(self.root, "cfg"),
+            self.logs,
+            self.raw,
+            self.simulations,
+            self.postprocessing,
+            self.exp_data,
+        ]:
+            os.makedirs(folder, exist_ok=True)
 
     def get_bench_sim_folders(
         self, code: CODE, lib: str | Library, bench: str

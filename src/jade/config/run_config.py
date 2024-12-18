@@ -22,7 +22,6 @@ class RunConfig:
         self,
         env_vars: EnvironmentVariables,
         benchmarks: dict[str, BenchmarkRunConfig],
-        paths_tree: PathsTree,
     ):
         """Stores the configuration option for a session of JADE run.
 
@@ -32,28 +31,24 @@ class RunConfig:
             environment variables for the session.
         benchmarks : dict[str, BenchmarkRunConfig]
             options of execution for the different benchmarks.
-        paths_tree : PathsTree
-            paths to the different folders used in the session.
         """
         self.env_vars = env_vars
         self.benchmarks = benchmarks
-        self.paths_tree = paths_tree
 
     @classmethod
-    def from_root(cls, root: PathLike) -> RunConfig:
+    def from_root(cls, paths_tree: PathsTree) -> RunConfig:
         """Create a RunConfig object from the root path of the configuration files.
 
         Parameters
         ----------
-        root : PathLike
-            path to the root of the configuration files.
+        paths_tree: PathsTree
+            tree of paths in JADE.
 
         Returns
         -------
         RunConfig
             configuration object for the JADE run.
         """
-        paths_tree = PathsTree(root)
         env_vars_file = paths_tree.cfg.env_vars_file
         run_cfg_file = paths_tree.cfg.run_cfg
         lib_cfg_file = paths_tree.cfg.libs_cfg
@@ -64,7 +59,6 @@ class RunConfig:
             run_cfg_file,
             lib_cfg_file,
             additional_settings_root,
-            paths_tree,
         )
 
     @classmethod
@@ -74,7 +68,6 @@ class RunConfig:
         run_cfg_file: PathLike,
         lib_cfg_file: PathLike,
         additional_settings_root: PathLike,
-        paths_tree: PathsTree,
     ) -> RunConfig:
         """Create a RunConfig object from single configuration files.
 
@@ -88,8 +81,6 @@ class RunConfig:
             path to the library configuration file
         additional_settings_root : PathLike
             path to the additional settings for benchmarks inputs
-        paths_tree : PathsTree
-            paths to the different folders used in the session.
 
         Returns
         -------
@@ -111,7 +102,7 @@ class RunConfig:
                 # add only benchmarks on which some operations are needed
                 run_cfg[name] = benchmark
 
-        return cls(env_vars, run_cfg, paths_tree)
+        return cls(env_vars, run_cfg)
 
 
 def _cast_to_code(dict: dict) -> dict[CODE, Any]:

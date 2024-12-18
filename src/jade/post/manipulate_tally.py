@@ -108,6 +108,21 @@ def sum_tallies(tallies: list[pd.DataFrame]) -> pd.DataFrame:
     return df
 
 
+def subtract_tallies(tallies: list[pd.DataFrame]) -> pd.DataFrame:
+    """Subtract all tallies."""
+    value = tallies[0]["Value"]
+    tot_err = tallies[0]["Error"] ** 2
+    for tally in tallies[1:]:
+        value = value - tally["Value"]
+        tot_err = tot_err + tally["Error"] ** 2
+
+    df = tallies[0].copy()
+    df["Value"] = value
+    df["Error"] = np.sqrt(tot_err)  # This may be wrong
+
+    return df
+
+
 def concat_tallies(tallies: list[pd.DataFrame]) -> pd.DataFrame:
     """Concatenate all tallies."""
     return pd.concat(tallies)
@@ -119,8 +134,27 @@ def no_concat(tallies: list[pd.DataFrame]) -> pd.DataFrame:
     return tallies[0]
 
 
+def ratio(tallies: list[pd.DataFrame]) -> pd.DataFrame:
+    """Ratio of the tallies."""
+    if len(tallies) != 2:
+        raise ValueError("Only two tallies can be used for ratio")
+    value = tallies[0]["Value"]
+    tot_err = tallies[0]["Error"] ** 2
+    for tally in tallies[1:]:
+        value = value / tally["Value"]
+        tot_err = tot_err + (tally["Error"] / tally["Value"]) ** 2
+
+    df = tallies[0].copy()
+    df["Value"] = value
+    df["Error"] = np.sqrt(tot_err)  # This may be wrong
+
+    return df
+
+
 CONCAT_FUNCTIONS = {
     TallyConcatOption.SUM: sum_tallies,
     TallyConcatOption.CONCAT: concat_tallies,
     TallyConcatOption.NO_ACTION: no_concat,
+    TallyConcatOption.SUBTRACT: subtract_tallies,
+    TallyConcatOption.RATIO: ratio,
 }

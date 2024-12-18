@@ -2,23 +2,47 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-
+from pathlib import Path
 import yaml
-
+import os
 from jade.helper.aux_functions import PathLike
-from jade.helper.constants import CODE
 from jade.post.excel_routines import ComparisonType, TableType
 from jade.post.plotter import PlotType
 
 
+class PostProcessConfig:
+    def __init__(self, root_cfg_pp: PathLike):
+        # get all available config excel processors
+        excel_cfgs = {}
+        for file in os.listdir(Path(root_cfg_pp, "excel")):
+            if file.endswith(".yaml") or file.endswith(".yml"):
+                cfg = ConfigExcelProcessor.from_yaml(Path(root_cfg_pp, file))
+                excel_cfgs[cfg.benchmark] = cfg
+        self.excel_cfgs = excel_cfgs
+        # TODO get all available config atlas processors
+
+
+@dataclass
 class ConfigExcelProcessor:
     benchmark: str
-    libcodes: list[tuple[CODE, str]]
     tables: list[TableConfig]
 
+    @classmethod
+    def from_yaml(cls, config_file: PathLike) -> ConfigExcelProcessor:
+        with open(config_file) as f:
+            cfg = yaml.safe_load(f)
 
+        benchmark = Path(config_file).name.split(".")[0]
+
+        tables = []
+        for table_name, dict in cfg.items():
+            tables.append(TableConfig.from_dict(dict, table_name))
+
+        return cls(benchmark=benchmark, tables=tables)
+
+
+@dataclass
 class ConfigAtlasProcessor:
-    libcodes: list[tuple[CODE, str]]
     plots: list[PlotConfig]
 
 
@@ -38,6 +62,19 @@ class TableConfig:
     y: list[str]
     value: str | None = None  # used for pivot tables
     add_error: bool = False  # add single error sheets to the tables
+
+    @classmethod
+    def from_dict(cls, dictionary: dict, name) -> TableConfig:
+        return cls(
+            name=name,
+            results=dictionary["results"],
+            table_type=TableType(dictionary["table_type"]),
+            comparison_type=ComparisonType(dictionary["comparison_type"]),
+            x=dictionary["x"],
+            y=dictionary["y"],
+            value=dictionary.get("value"),
+            add_error=dictionary.get("add_error", False),
+        )
 
 
 class ConfigRawProcessor:
@@ -118,3 +155,5 @@ class TallyConcatOption(Enum):
     SUM = "sum"
     CONCAT = "concat"
     NO_ACTION = "no_action"
+    SUBTRACT = "subtract"
+    RATIO = "ratio"

@@ -3,17 +3,16 @@ from __future__ import annotations
 import logging
 import os
 import shutil
-import sys
 import time
 from importlib.resources import files
 from pathlib import Path
-
+import yaml
 from tqdm import tqdm
 
 import jade.resources as res
 from jade.app.fetch import fetch_iaea_inputs
 from jade.config.paths_tree import PathsTree
-from jade.config.pp_config import ConfigRawProcessor
+from jade.config.pp_config import ConfigRawProcessor, PostProcessConfig
 from jade.config.run_config import RunConfig
 from jade.config.status import GlobalStatus
 from jade.gui.config_gui import ConfigGUI
@@ -65,7 +64,7 @@ class JadeApp:
         )
         # Create a console handler for logging WARNING and ERROR level messages
         console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.INFO)
+        console_handler.setLevel(logging.WARNING)
 
         for handler in logger.handlers:
             # there should already be a streamhandler
@@ -73,6 +72,7 @@ class JadeApp:
                 handler.setLevel(logging.INFO)
         logger.addHandler(file_handler)
         logger.addHandler(console_handler)
+
         logging.debug(JADE_TITLE)
 
     def update_inputs(self):
@@ -167,12 +167,25 @@ class JadeApp:
 
         logging.info("Raw data processing completed.")
 
+    def post_process(self):
+        """Post-process the data."""
+        logging.info("Post-processing data")
+        # recover the post-processing benchmark configurations
+        bench_cfg = PostProcessConfig(self.tree.cfg.bench_pp)
+        # load the pp code-lib requests
+        with open(self.tree.cfg.pp_cfg) as f:
+            pp_cfg = yaml.safe_load(f)
+        for benchmark, options in pp_cfg.items():
+            if options["process"] == True:
+                for codelib in options["codelibs"]:
+                    code, lib = get_code_lib(codelib)
+                    # get the correspondent benchmark configuration
+                    cfg = bench_cfg.excel_cfgs[benchmark]
+                    # process the data
+                    pass
+
     def start_config_gui(self):
         """Start the configuration GUI."""
         logging.info("Starting the configuration GUI")
         app = ConfigGUI(self.tree.cfg.run_cfg, self.tree.cfg.libs_cfg)
         app.window.mainloop()
-
-    def post_process(self):
-        """Post-process the data."""
-        pass

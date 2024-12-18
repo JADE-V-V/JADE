@@ -94,3 +94,4 @@ class CfgTree:
         self.env_vars_file = Path(root, "env_vars_cfg.yml")
         self.libs_cfg = Path(root, "libs_cfg.yml")
         self.run_cfg = Path(root, "run_cfg.yml")
+        self.pp_cfg = Path(root, "pp_cfg.yml")

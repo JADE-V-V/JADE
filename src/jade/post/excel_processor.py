@@ -81,7 +81,10 @@ class ExcelProcessor:
         single runs)"""
         dfs = []
         for file in os.listdir(folder):
-            result, run_name = file.split(" ")
+            splits = file.split(" ")
+            # ASSUMPTION: run name is continous, result name can have spaces
+            run_name = splits[0]
+            result = " ".join(splits[1:])
             if result == target_result:
                 df = pd.read_csv(Path(folder, file))
                 df["Case"] = run_name

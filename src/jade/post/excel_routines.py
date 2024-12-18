@@ -2,10 +2,12 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from enum import Enum
+from typing import TYPE_CHECKING
 
 import pandas as pd
 
-from jade.config.pp_config import TableConfig
+if TYPE_CHECKING:
+    from jade.config.pp_config import TableConfig
 from jade.helper.errors import PostProcessConfigError
 
 

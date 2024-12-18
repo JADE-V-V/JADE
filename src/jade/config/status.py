@@ -33,8 +33,14 @@ class GlobalStatus:
             dictionary with the list of benchmarks for which the raw results where
             processed. keys are tuples with the code, library and benchmark name.
         """
-        self.simulations = self._parse_simulations_folder(simulations_path)
-        self.raw_data = self._parse_raw_results_folder(raw_results_path)
+        self.simulations_path = simulations_path
+        self.raw_results_path = raw_results_path
+        self.update()
+
+    def update(self):
+        """Update the status of the simulations and raw results"""
+        self.simulations = self._parse_simulations_folder(self.simulations_path)
+        self.raw_data = self._parse_raw_results_folder(self.raw_results_path)
 
     def _parse_simulations_folder(
         self, simulations_path: PathLike
@@ -98,7 +104,9 @@ class GlobalStatus:
                 bench_path = Path(codelib_path, benchmark)
                 if not bench_path.is_dir():
                     continue
-                available_raw_data[(code, lib, benchmark)] = os.listdir(bench_path)
+                available_raw_data[(CODE(code), lib, benchmark)] = os.listdir(
+                    bench_path
+                )
         return available_raw_data
 
     def was_simulated(self, code: CODE, lib: str, benchmark: str) -> bool:

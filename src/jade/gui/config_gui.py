@@ -266,7 +266,7 @@ class ConfigGUI:
 
         # Ask the user for a file path to save the settings
         file_path = filedialog.asksaveasfilename(
-            defaultextension=".yaml", filetypes=[("YAML files", "*.yaml")]
+            defaultextension=".yaml", filetypes=[("YAML files", "*.yml")]
         )
         if file_path:
             with open(file_path, "w") as file:

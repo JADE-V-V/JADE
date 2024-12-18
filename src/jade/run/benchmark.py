@@ -268,7 +268,7 @@ class SingleRunMCNP(SingleRun):
 
         # Build the command
         executable = config.executables[self.code]
-        inputstring = f"i={self.input.name}."
+        inputstring = f"i={self.input.name}.i"
         outputstring = f"n={self.input.name}."
         if omp_threads is not None and omp_threads > 1:
             tasks = "tasks " + str(omp_threads)

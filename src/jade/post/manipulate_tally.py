@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from jade.config.pp_config import TallyConcatOption, TallyModOption
+from jade.config.raw_config import TallyConcatOption, TallyModOption
 
 
 # --- functions to modify tallies ---

@@ -5,7 +5,7 @@ import logging
 import os
 from pathlib import Path
 
-from jade.config.pp_config import ConfigRawProcessor
+from jade.config.raw_config import ConfigRawProcessor
 from jade.helper.aux_functions import PathLike, get_jade_version
 from jade.helper.constants import CODE
 from jade.post.manipulate_tally import CONCAT_FUNCTIONS, MOD_FUNCTIONS

@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 
 import tests.dummy_structure as dummy_struct
-from jade.config.pp_config import (
+from jade.config.raw_config import (
     ConfigRawProcessor,
     ResultConfig,
     TallyConcatOption,

@@ -6,8 +6,9 @@ from pathlib import Path
 
 import pandas as pd
 
-from jade.config.pp_config import ConfigExcelProcessor
+from jade.config.excel_config import ConfigExcelProcessor
 from jade.helper.aux_functions import PathLike, print_code_lib
+from jade.helper.constants import CODE
 from jade.post.excel_routines import TableFactory
 
 TITLE = "{}-{} Vs {}-{}. Result: {}"
@@ -20,13 +21,16 @@ class ExcelProcessor:
         raw_root: PathLike,
         excel_folder_path: PathLike,
         cfg: ConfigExcelProcessor,
+        codelibs: list[tuple[str, str]],
     ) -> None:
         self.excel_folder_path = excel_folder_path
         self.raw_root = raw_root
         self.cfg = cfg
+        self.codelibs = codelibs
 
     def process(self) -> None:
-        for i, (code, lib) in enumerate(self.cfg.libcodes):
+        for i, (code_tag, lib) in enumerate(self.codelibs):
+            code = CODE(code_tag)
             codelib = print_code_lib(code, lib)
             logging.info("Parsing reference data")
             raw_folder = Path(self.raw_root, codelib, self.cfg.benchmark)

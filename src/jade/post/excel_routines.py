@@ -1,24 +1,11 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from enum import Enum
-from typing import TYPE_CHECKING
 
 import pandas as pd
 
-if TYPE_CHECKING:
-    from jade.config.pp_config import TableConfig
+from jade.config.excel_config import ComparisonType, TableConfig, TableType
 from jade.helper.errors import PostProcessConfigError
-
-
-class TableType(Enum):
-    PIVOT = "pivot"
-
-
-class ComparisonType(Enum):
-    ABSOLUTE = "absolute"
-    PERCENTAGE = "percentage"
-    RATIO = "ratio"
 
 
 class Table(ABC):

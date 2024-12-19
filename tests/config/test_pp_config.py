@@ -5,7 +5,7 @@ from importlib.resources import files
 from pathlib import Path
 
 import jade.resources.default_cfg.benchmarks_pp as res
-from jade.config.pp_config import (
+from jade.config.raw_config import (
     ConfigRawProcessor,
     ResultConfig,
     TallyConcatOption,

@@ -6,18 +6,21 @@ import shutil
 import time
 from importlib.resources import files
 from pathlib import Path
+
 import yaml
 from tqdm import tqdm
 
 import jade.resources as res
 from jade.app.fetch import fetch_iaea_inputs
 from jade.config.paths_tree import PathsTree
-from jade.config.pp_config import ConfigRawProcessor, PostProcessConfig
+from jade.config.pp_config import PostProcessConfig
+from jade.config.raw_config import ConfigRawProcessor
 from jade.config.run_config import RunConfig
 from jade.config.status import GlobalStatus
 from jade.gui.config_gui import ConfigGUI
 from jade.helper.aux_functions import PathLike, get_code_lib, print_code_lib
 from jade.helper.constants import CODE, FIRST_INITIALIZATION, JADE_TITLE
+from jade.post.excel_processor import ExcelProcessor
 from jade.post.raw_processor import RawProcessor
 from jade.run.benchmark import BenchmarkRunFactory
 
@@ -176,13 +179,21 @@ class JadeApp:
         with open(self.tree.cfg.pp_cfg) as f:
             pp_cfg = yaml.safe_load(f)
         for benchmark, options in pp_cfg.items():
-            if options["process"] == True:
-                for codelib in options["codelibs"]:
-                    code, lib = get_code_lib(codelib)
-                    # get the correspondent benchmark configuration
-                    cfg = bench_cfg.excel_cfgs[benchmark]
-                    # process the data
-                    pass
+            if options["process"]:
+                # prepare the new paths
+                pp_path = self.tree.get_new_post_bench_path(benchmark)
+                excel_folder = Path(pp_path, "excel")
+                os.mkdir(excel_folder)
+                # perform the excel processing
+                excel_cfg = bench_cfg.excel_cfgs[benchmark]
+                options["codelibs"]
+                processor = ExcelProcessor(
+                    self.tree.raw,
+                    excel_folder,
+                    excel_cfg,
+                    options["codelibs"],
+                )
+                processor.process()
 
     def start_config_gui(self):
         """Start the configuration GUI."""

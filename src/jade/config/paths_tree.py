@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -74,6 +75,25 @@ class PathsTree:
                 folders.append((simfolder, folder))
 
         return folders
+
+    def get_new_post_bench_path(self, bench: str) -> Path:
+        """A new folder (date based) is provided for the postprocessing of
+        a specific benchamrk.
+
+        Parameters
+        ----------
+        bench : str
+            benchmark name
+
+        Returns
+        -------
+        Path
+            path to the postprocessing folder
+        """
+        time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        path = Path(self.postprocessing, bench, time)
+        os.makedirs(path, exist_ok=True)
+        return path
 
 
 class CfgTree:

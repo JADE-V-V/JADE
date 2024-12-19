@@ -2,10 +2,13 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
+import numpy as np
 import pandas as pd
 
 from jade.config.excel_config import ComparisonType, TableConfig, TableType
 from jade.helper.errors import PostProcessConfigError
+
+MAX_SHEET_NAME_LEN = 31
 
 
 class Table(ABC):
@@ -26,23 +29,49 @@ class Table(ABC):
 
     @staticmethod
     def _compare(df1: pd.DataFrame, df2: pd.DataFrame, comparison_type: ComparisonType):
+        index_cols = []
+        # everything that is not Value or Error should be an index
+        for col in df1.columns:
+            if col not in ["Value", "Error"]:
+                index_cols.append(col)
+        df1 = df1.set_index(index_cols)
+        df2 = df2.set_index(index_cols)
+        # we want only the intersection of the two indices
+        common_index = df1.index.intersection(df2.index)
+        df = df1.loc[common_index].copy()
+
+        val1 = df1.loc[common_index]["Value"]
+        val2 = df2.loc[common_index]["Value"]
+        err1 = df1.loc[common_index]["Error"]
+        err2 = df2.loc[common_index]["Error"]
+
+        error = np.sqrt(err1**2 + err2**2)
+
         if comparison_type == ComparisonType.ABSOLUTE:
-            return df1 - df2
+            value = val1 - val2
         elif comparison_type == ComparisonType.PERCENTAGE:
-            return (df1 - df2) / df1 * 100
+            value = (val1 - val2) / val1 * 100
         elif comparison_type == ComparisonType.RATIO:
-            return df1 / df2
+            value = val1 / val2
+
+        df["Value"] = value
+        df["Error"] = error
+        return df.reset_index()
 
     def add_sheets(self):
         sheet_df = self._get_sheet()
-        sheet_df.to_excel(
-            self.writer, sheet_name=f"{self.cfg.name} {self.cfg.comparison_type}"
-        )
+        sheet_name = f"{self.cfg.comparison_type.value} {self.cfg.name}"
+        if len(sheet_name) > MAX_SHEET_NAME_LEN:
+            sheet_name = sheet_name[:31]
+        sheet_df.to_excel(self.writer, sheet_name=sheet_name)
         # TODO do other operations on the sheets here
 
         if self.cfg.add_error:
             for df, val in zip([self.ref_df, self.target_df], ["ref", "target"]):
-                df.to_excel(self.writer, sheet_name=f"{self.cfg.name} {val} error")
+                sheet_name = f"{val} err {self.cfg.name}"
+                if len(sheet_name) > MAX_SHEET_NAME_LEN:
+                    sheet_name = sheet_name[:31]
+                df.to_excel(self.writer, sheet_name=sheet_name)
                 # TODO apply formatting for the error sheet
 
     @abstractmethod

@@ -29,6 +29,7 @@ class ExcelProcessor:
         self.codelibs = codelibs
 
     def process(self) -> None:
+        reference_dfs = {}
         for i, (code_tag, lib) in enumerate(self.codelibs):
             code = CODE(code_tag)
             codelib = print_code_lib(code, lib)
@@ -36,7 +37,6 @@ class ExcelProcessor:
             raw_folder = Path(self.raw_root, codelib, self.cfg.benchmark)
 
             # First store all reference dfs
-            reference_dfs = {}
             if i == 0:
                 ref_code = code
                 ref_lib = lib
@@ -48,10 +48,12 @@ class ExcelProcessor:
             else:
                 outfile = Path(
                     self.excel_folder_path,
-                    FILE_NAME.format(self.cfg.benchmark, ref_code, ref_lib, code, lib),
+                    FILE_NAME.format(
+                        self.cfg.benchmark, ref_code.value, ref_lib, code.value, lib
+                    ),
                 )
                 logging.info(f"Writing the resulting excel file {outfile}")
-                with pd.ExcelWriter(self.excel_folder_path) as writer:
+                with pd.ExcelWriter(outfile) as writer:
                     for table_cfg in self.cfg.tables:
                         # this get a concatenated dataframe with all results that needs to be
                         # in the table
@@ -85,10 +87,12 @@ class ExcelProcessor:
         single runs)"""
         dfs = []
         for file in os.listdir(folder):
+            if not file.endswith(".csv"):
+                continue
             splits = file.split(" ")
             # ASSUMPTION: run name is continous, result name can have spaces
             run_name = splits[0]
-            result = " ".join(splits[1:])
+            result = " ".join(splits[1:]).split(".")[0]  # remove the .csv
             if result == target_result:
                 df = pd.read_csv(Path(folder, file))
                 df["Case"] = run_name

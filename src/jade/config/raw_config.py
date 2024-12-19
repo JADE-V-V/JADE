@@ -2,12 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from pathlib import Path
 
 import yaml
 
 from jade.helper.aux_functions import PathLike
-from jade.post.excel_routines import ComparisonType, TableType
 
 
 class ConfigRawProcessor:

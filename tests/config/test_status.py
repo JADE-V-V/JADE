@@ -15,7 +15,7 @@ class TestGlobalStatus:
     def test_init(self):
         status = GlobalStatus(DUMMY_SIMULATIONS, DUMMY_RAW_RESULTS)
         assert len(status.simulations) == 2
-        assert len(status.raw_data) == 1
+        assert len(status.raw_data) == 3
 
     def test_was_simulated(self):
         status = GlobalStatus(DUMMY_SIMULATIONS, DUMMY_RAW_RESULTS)

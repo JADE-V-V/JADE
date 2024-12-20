@@ -23,12 +23,31 @@ class ExcelProcessor:
         cfg: ConfigExcelProcessor,
         codelibs: list[tuple[str, str]],
     ) -> None:
+        """Object responsible to produce the excel comparison results for a given
+        benchmark.
+
+        Parameters
+        ----------
+        raw_root : PathLike
+            path to the raw data folder root
+        excel_folder_path : PathLike
+            path to the excel folder where the results will be stored
+        cfg : ConfigExcelProcessor
+            configuration options for the excel processor
+        codelibs : list[tuple[str, str]]
+            list of code-lib results that should be compared. The first one is
+            interpreted as the reference data.
+        """
         self.excel_folder_path = excel_folder_path
         self.raw_root = raw_root
         self.cfg = cfg
         self.codelibs = codelibs
 
     def process(self) -> None:
+        """Process the excel comparison for the given benchmark. It will produce one
+        excel file comparing the reference data with the other codelibs provided in
+        the configuration file. Each excel file will contain all the rewuested tables.
+        """
         reference_dfs = {}
         for i, (code_tag, lib) in enumerate(self.codelibs):
             code = CODE(code_tag)

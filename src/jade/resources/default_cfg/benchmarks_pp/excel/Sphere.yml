@@ -10,6 +10,7 @@ comparison %:
   y: [Result, Energy]
   value: Value
   add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
 #
 # heating consistency:
 #   results:

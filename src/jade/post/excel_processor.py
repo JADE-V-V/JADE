@@ -46,7 +46,7 @@ class ExcelProcessor:
     def process(self) -> None:
         """Process the excel comparison for the given benchmark. It will produce one
         excel file comparing the reference data with the other codelibs provided in
-        the configuration file. Each excel file will contain all the rewuested tables.
+        the configuration file. Each excel file will contain all the requested tables.
         """
         reference_dfs = {}
         for i, (code_tag, lib) in enumerate(self.codelibs):
@@ -74,8 +74,8 @@ class ExcelProcessor:
                 logging.info(f"Writing the resulting excel file {outfile}")
                 with pd.ExcelWriter(outfile) as writer:
                     for table_cfg in self.cfg.tables:
-                        # this get a concatenated dataframe with all results that needs to be
-                        # in the table
+                        # this gets a concatenated dataframe with all results that needs
+                        # to be in the table
                         target_df = self._get_table_df(table_cfg.results, raw_folder)
                         title = TITLE.format(
                             ref_code.value, ref_lib, code.value, lib, table_cfg.name

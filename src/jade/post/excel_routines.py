@@ -101,7 +101,10 @@ class Table(ABC):
         self.formatter.apply_scientific_formatting(
             ws, df.columns.nlevels + DF_START_ROW, df.index.nlevels
         )
-        ws.autofit()
+        # autofit the columns
+        # ws.autofit()
+        self.formatter.autofit_columns(ws, df)
+        # freeze the panes
         ws.freeze_panes(DF_START_ROW + df.columns.nlevels, df.columns.nlevels - 1)
 
     def add_sheets(self):
@@ -124,6 +127,8 @@ class Table(ABC):
 
     @abstractmethod
     def _get_sheet(self) -> list[pd.DataFrame]:
+        """this is the core of the table, its data. It should return a list of
+        dataframes that will be added to the workbook (one per sheet)."""
         pass
 
 
@@ -136,14 +141,30 @@ class PivotTable(Table):
         value_df = self.data.pivot(
             index=self.cfg.x, columns=self.cfg.y, values=self.cfg.value
         )
+        # this is needed to avoid NaN in the multiindex which would cause incorrect dump
+        value_df.columns = pd.MultiIndex.from_frame(
+            value_df.columns.to_frame().fillna("")
+        )
 
         if self.cfg.add_error:
             ref_err = self.ref_df.pivot(
                 index=self.cfg.x, columns=self.cfg.y, values="Error"
             )
+            # this is needed to avoid NaN in the multiindex which would cause incorrect
+            # dump
+            ref_err.columns = pd.MultiIndex.from_frame(
+                ref_err.columns.to_frame().fillna("")
+            )
+
             target_err = self.target_df.pivot(
                 index=self.cfg.x, columns=self.cfg.y, values="Error"
             )
+            # this is needed to avoid NaN in the multiindex which would cause incorrect
+            # dump
+            target_err.columns = pd.MultiIndex.from_frame(
+                target_err.columns.to_frame().fillna("")
+            )
+
             return [value_df, ref_err, target_err]
         return [value_df]
 
@@ -418,3 +439,51 @@ class Formatter:
                 "format": self.green,
             },
         )
+
+    def autofit_columns(
+        self, worksheet: Worksheet, df: pd.DataFrame, scientific=True
+    ) -> None:
+        """Autofit the columns of the worksheet to the content of the DataFrame.
+
+        Parameters
+        ----------
+        worksheet : Worksheet
+            worksheet to be formatted
+        df : pd.DataFrame
+            content of the worksheet
+        scientific : bool
+            if True it means that the scientific notation will be applied to the
+            content. Default is True. If set to False, the max length of the (raw) data
+            is checked.
+        """
+        for idx, col in enumerate(df.columns):
+            # find max in the header
+            if isinstance(col, tuple):
+                # to_check = [str(c) for c in col]
+                # better to consider the 2nd layer as the first will have more space
+                max_header = len(str(col[1]))
+                # if the second header is empty, take the first
+                if max_header == 0:
+                    max_header = len(str(col[0]))
+            else:
+                max_header = len(str(col))
+
+            # Find the maximum length of the column content
+            # if the scientific notation is used I already now that everything
+            # has been formatted to 8 charachters
+            if scientific:
+                max_content = 8
+            else:
+                max_content = df[col].astype(str).map(len).max()
+
+            # find the max between the header and the content and add some padding
+            max_len = max(max_content, max_header) + 1
+
+            # Set the column width
+            # TODO asssume only 1 column indices for the moment
+            worksheet.set_column(idx + 1, idx + 1, max_len)
+
+        # set the index column
+        # TODO asssume only 1 column indices for the moment
+        max_index = df.index.astype(str).map(len).max()
+        worksheet.set_column(0, 0, max_index + 1)

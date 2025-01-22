@@ -36,7 +36,7 @@ jobs:
       # set up an headless display
       - name: Setup headless display
         if: runner.os == 'Linux'
-        uses: pyvista/setup-headless-display-action@v2
+        uses: pyvista/setup-headless-display-action@v3
 
       # Install module
       - name: Install module

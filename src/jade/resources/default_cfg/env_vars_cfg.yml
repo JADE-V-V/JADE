@@ -1,20 +1,23 @@
 # parameters related to parallel run
-mpi_tasks: 0
-openmp_threads: 0
-# paths to the code executables
+mpi_tasks: 0  # this controls the number of MPI tasks to be used on a cluster
+openmp_threads: 8  # this controls the number of OpenMP threads to be used during execution
+
+# paths to the code executables. If the codes are not installed, just leave the field empty.
 executables:
-  mcnp:
-  openmc:
-  serpent:
-  d1s:
+  - mcnp: path/to/mcnp6/executable  # it can also be just 'mcnp6' if the executable is in the PATH
+  - openmc:  path/to/openmc/executable  # it can also be just 'openmc' if the executable is in the PATH
+  - serpent: path/to/serpent/executable  # it can also be just 'sss2' if the executable is in the PATH
+  - d1s: path/to/d1s/executable  # it can also be just 'd1s' if the executable is in the PATH
+
 # run mode is either "serial" to run locally or "job" to submit to a cluster
 run_mode: serial
-# You can either modify the files at these (relative) paths or provide your own
-code_configurations:
-  mcnp: exe_config/mcnp_config.sh
-  openmc: exe_config/openmc_config.sh
-  serpent: exe_config/serpent_config.sh
-  d1s: exe_config/d1s_config.sh
-batch_template: batch_template/Slurmtemplate.sh
-batch_system: null
-mpi_prefix: null
+
+# These need to be non-empty only if submitting a job to a cluster
+batch_template: batch_template/Slurmtemplate.sh  # batch template. Both relative and absolute paths should work.
+batch_system: sbatch  # the command to submit a job to the cluster (e.g. llsubmit, sbatch, etc.)
+mpi_prefix: srun  # the command to run jobs, it prepends your executable (e.g. mpirun, srun, etc.)
+code_configurations: # You can either modify the files at these (relative) paths that already exist or provide your own
+  - mcnp: exe_config/mcnp_config.sh
+  - openmc: exe_config/openmc_config.sh
+  - serpent: exe_config/serpent_config.sh
+  - d1s: exe_config/d1s_config.sh

@@ -1,33 +1,35 @@
-2:
+Leakage neutron flux Vitamin-J 175:
   concat_option: no_action
   2: [[no_action, {}]]
-22:
+Leakage photon flux:
   concat_option: no_action
   22: [[no_action, {}]]
-32:
+Leakage photon flux 24 groups:
   concat_option: no_action
   32: [[no_action, {}]]
-4:
-  concat_option: no_action
+Neutron heating consistency:
+  concat_option: ratio
   4: [[no_action, {}]]
-44:
-  concat_option: no_action
+  6: [[no_action, {}]]
+Photon heating consistency:
+  concat_option: ratio
   44: [[no_action, {}]]
-6:
+  46: [[no_action, {}]]
+Neutron heating:
   concat_option: no_action
   6: [[no_action, {}]]
-46:
+Photon heating:
   concat_option: no_action
   46: [[no_action, {}]]
-12:
+Leakage neutron flux:
   concat_option: no_action
   12: [[no_action, {}]]
-24:
+T production:
   concat_option: no_action
   24: [[no_action, {}]]
-14:
+He ppm production:
   concat_option: no_action
   14: [[no_action, {}]]
-34:
+DPA production:
   concat_option: no_action
   34: [[no_action, {}]]

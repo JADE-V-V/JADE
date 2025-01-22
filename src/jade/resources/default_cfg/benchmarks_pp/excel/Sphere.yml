@@ -4,6 +4,9 @@ comparison %:
     - Leakage photon flux
     - Neutron heating
     - Photon heating
+    - T production
+    - He ppm production
+    - DPA production
   comparison_type: percentage
   table_type: pivot
   x: Case

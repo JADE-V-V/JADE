@@ -10,10 +10,14 @@ from jade.helper.aux_functions import PathLike
 
 
 class TableType(Enum):
+    """Type of table to be created"""
+
     PIVOT = "pivot"
 
 
 class ComparisonType(Enum):
+    """Comparison type for the tables"""
+
     ABSOLUTE = "absolute"
     PERCENTAGE = "percentage"
     RATIO = "ratio"
@@ -21,11 +25,33 @@ class ComparisonType(Enum):
 
 @dataclass
 class ConfigExcelProcessor:
+    """Configuration for the excel processor.
+
+    Parameters
+    ----------
+    benchmark : str
+        Name of the benchmark
+    tables : list[TableConfig]
+        List of tables configurations
+    """
+
     benchmark: str
     tables: list[TableConfig]
 
     @classmethod
     def from_yaml(cls, config_file: PathLike) -> ConfigExcelProcessor:
+        """Create a ConfigExcelProcessor object from a yaml file.
+
+        Parameters
+        ----------
+        config_file : PathLike
+            path to the configuration file
+
+        Returns
+        -------
+        ConfigExcelProcessor
+            The configuration object
+        """
         with open(config_file) as f:
             cfg = yaml.safe_load(f)
 
@@ -40,6 +66,30 @@ class ConfigExcelProcessor:
 
 @dataclass
 class TableConfig:
+    """Configuration for a table.
+
+    Parameters
+    ----------
+    name : str
+        Name of the table
+    results : list[int | str]
+        List of results to compare
+    table_type : TableType
+        Type of table to be created
+    comparison_type : ComparisonType
+        Comparison type for the tables
+    x : list[str]
+        List of x-axis labels
+    y : list[str]
+        List of y-axis labels
+    value : str | None, optional
+        Value to pivot the table (used only for pivot tables), by default None
+    add_error : bool, optional
+        Add single error sheets to the tables, by default False
+    conditional_formatting : dict[str, float] | None, optional
+        Conditional formatting dictionary, by default None
+    """
+
     name: str
     results: list[int | str]
     table_type: TableType

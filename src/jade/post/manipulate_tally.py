@@ -39,7 +39,7 @@ def by_energy(tally: pd.DataFrame) -> pd.DataFrame:
 
 
 def condense_groups(
-    tally: pd.DataFrame, bins: list[float], group_column: str = "Energy"
+    tally: pd.DataFrame, bins: list[float] | None = None, group_column: str = "Energy"
 ) -> pd.DataFrame:
     """Condense the tally into groups. Mostly used to obtain coarser energy groups.
 
@@ -47,8 +47,8 @@ def condense_groups(
     ----------
     tally : pd.DataFrame
         tally dataframe to modify
-    bins : list[float]
-        bin values of the groups
+    bins : list[float], optional
+        bin values of the groups. By default None
     group_column : str, optional
         the column onto which perform the grouping, by default "Energy"
 
@@ -72,7 +72,7 @@ def condense_groups(
     return pd.DataFrame(rows)
 
 
-def scale(tally: pd.DataFrame, factor: int | float) -> pd.DataFrame:
+def scale(tally: pd.DataFrame, factor: int | float = 1) -> pd.DataFrame:
     """Scale the tally values."""
     tally["Value"] = tally["Value"] * factor
     return tally

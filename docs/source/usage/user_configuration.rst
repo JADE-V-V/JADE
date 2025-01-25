@@ -50,11 +50,42 @@ By default these files should exist already in the ``cfg/exe_config`` folder.
 
 Configure the libraries
 =======================
-TODO
+Another mandatory configuration is the one of nuclear data libraries. The user should provide the path to
+libraries he intends to use in the ``<JADE_root>/cfg/libs_cfg.yml`` file. Two different kind of libraries
+are supported for the moment, normal transport libraries and D1S libraries.
+The following is an example of the settings of a transport library:
+
+.. code-block:: yaml
+    FENDL 3.2c:  # this is the name of the library. It will be used in all outputs
+        mcnp:
+            path: /path/to/xsdir  # path to the xsdir file
+            suffix: 32c  # correspondent suffix in the xsdir file
+        openmc:
+            path: pathtolib  # path to the library file
+        serpent:  # TODO
+            path: pathtolib
+
+There is no need to provide paths for the codes that the user does not intend to use.
+
+Finally, an example of a D1S library settings:
+
+.. code-block:: yaml
+    D1SUNED (FENDL 3.1d+EAF2007):
+        d1s:
+            path: /path/to/xsdir  # path to the xsdir file for the D1SUNED lib
+            suffix: 99c  # correspondent suffix in the xsdir file for the D1SUNED lib
+            # To run simulations, also a normal transport library is needed as not all
+            # isotopes will be set to be activated (i.e. will use the D1S library)
+            transport_library_path: /path/to/xsdir  # path to the xsdir file for the transport lib
+            transport_suffix: 32c  # correspondent suffix in the xsdir file for the transport lib
 
 Configure the simulations
 ==========================
-TODO
+Now that JADE environmental variables are set up, the user can configure wich benchmarks he would like
+to run, with which codes and which libraries.
+Theoretically, such a configuration can be done manually using the ``<JADE_root>/cfg/run_cfg.yml``
+but it is highly recommended to use the GUI provided by JADE to do so instead. (TODO add link here to the GUI)
+
 
 Configure the post-processing
 =============================
@@ -66,77 +97,6 @@ TODO
 .. note::
     Every time a new D1S library is added to the user xsdir, in order to use it in JADE a specific
     sheet must be added in the :ref:`activationfile`.
-
-.. _mainconfig:
-
-Main Configuration
-==================
-The most important configuration file is ``<JADE_root>\Configuration\Config.xlsx``.
-This is **the only configuration file that the user must modify** before operating with JADE.
-Herafter, a description of the different sheets included in the file is given.
-
-MAIN Config.
-------------
-
-The parameters here relate to the running of simulations in JADE. More detail is given in :ref:`parallelrunning`. 
-
-.. image:: ../img/conf/main_config.JPG
-    :width: 600
-
-This sheet contains the JADE *ambient variables*:
-
-MCNP executable 
-   Path to the MCNP executable.
-
-MCNP config
-   Name of the config shell script containing environment variables required for running MCNP on UNIX. 
-   By default this file should exist already in the same folder as the *Config.xlsx* named *mcnp_config.sh*.
-   The main purpose of this file is to allow for switching modules and environment variables at runtime
-   when performing multi-code runs, as it may be the case a different compiler is required for a specific
-   code. If running either single or multiple codes with a correctly configured enviroment, or if running
-   on windows, this file can be left empty.
-
-Serpent executable
-   Path to Serpent executable.
-
-Serpent config
-   Name of the config shell script containing environment variables required for running Serpent on UNIX.
-   see MCNP_config above for more information.
-
-OpenMC executable
-   Path to OpenMC executable.
-
-OpenMC config
-   Name of the config shell script containing environment variables required for running OpenMC on UNIX.
-   see MCNP_config above for more information.
-
-D1S executable
-   Path to D1S executable.
-
-D1S config
-   Name of the config shell script containing environment variables required for running D1S on UNIX.
-   see MCNP_config above for more information.
-
-OpenMP threads
-    Specifies the number of threads to use when running OpenMP. If the user is running MCNP in the command line
-    this is used to specify the number of tasks. 
-
-MPI tasks
-    Specifies the number of MPI tasks to use with OpenMPI. 
-
-MCNP executable prefix
-    This is the command which is used to launch parallel jobs and prepends your executable. The most common example of 
-    this is 'mpirun' which would be entered in this field. 
-
-Batch system
-    The command used to launch a batch job on the current system, for example *llsubmit* for LoadLeveler or *sbatch*
-    for SLURM workload managers.
-
-Batch file
-    Template of the job submission script to be utilised on the users chosen system. This should match the 
-    command provided for the batch system variable. Several default job submission scripts are provided in
-    the Job_Script_Template folder in the Configuration folder. Examples of the layout of these templates
-    are detailed below.
 
 
 .. _compsheet:
@@ -199,31 +159,6 @@ Custom input
         moment, this is used only in the *Sphere Leakage* and *Sphere SDDR* benchmarks where,
         if a number *n* is specified, this will limit the test to the first *n* isotope and 
         material simulations (useful for testing).
-
-Experimental benchmarks
------------------------
-
-.. image:: ../img/conf/exp.jpg
-    :width: 650
-
-The structure of the sheet is exactly the same as the :ref:`compsheet` one. Nevertheless,
-in this table are indicated the settings for the experimental benchmarks.
-
-Libraries
----------
-
-.. image:: ../img/conf/lib.png
-    :width: 450
-
-This sheet contains the paths of nuclear data library index files for the various codes.
-It is the users responsibility to ensure these are configured correctly, and that in 
-the case of comparisons between codes that the xsdir files are equivalent. For a more 
-detailed description of these files, refer to the appropriate documentation for each
-code
-
-.. warning::
-    Do not use invalid filename characters (e.g. ``"\"``) in the names assigned to the
-    libraries!
 
 .. _activationfile:
 

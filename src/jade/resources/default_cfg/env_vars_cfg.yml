@@ -5,9 +5,9 @@ openmp_threads: 8  # this controls the number of OpenMP threads to be used durin
 # paths to the code executables. If the codes are not installed, just leave the field empty.
 executables:
   - mcnp: path/to/mcnp6/executable  # it can also be just 'mcnp6' if the executable is in the PATH
-  - openmc:  path/to/openmc/executable  # it can also be just 'openmc' if the executable is in the PATH
-  - serpent: path/to/serpent/executable  # it can also be just 'sss2' if the executable is in the PATH
-  - d1s: path/to/d1s/executable  # it can also be just 'd1s' if the executable is in the PATH
+  - openmc:  path/to/openmc/executable  # idem
+  - serpent: path/to/serpent/executable  # idem
+  - d1s: path/to/d1s/executable  # idem
 
 # run mode is either "serial" to run locally or "job" to submit to a cluster
 run_mode: serial

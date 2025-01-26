@@ -1,0 +1,20 @@
+Neutron Leakage flux:
+  results:
+    - Leakage neutron flux
+  plot_type: binned
+  tile: Neutron Leakage by unit lethargy
+  x_label: Neutron flux by unit lethargy [n/cm^2/s/MeV]
+  y_label: Energy [MeV]
+  x: Energy
+  y: Value
+#
+Photon Leakage flux:
+  results:
+    - Leakage neutron flux
+  plot_type: binned
+  tile: Neutron Leakage by unit lethargy
+  x_label: Neutron flux by unit lethargy [n/cm^2/s/MeV]
+  y_label: Energy [MeV]
+  x: Energy
+  y: Value
+  

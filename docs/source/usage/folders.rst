@@ -22,8 +22,12 @@ The following is a scheme of the JADE folder structure:
         |        |        |        |----- serpent
         |        |        |        |        |----- <inputfile>.i
         |        |        |        |----- benchmark_metadata.json
+        |        |        |        
         |        |        |-----<Benchmark run 2>
-        |        |                 |----- ...
+        |        |        |         |----- ...
+        |        |        |
+        |        |        |----- metadata.json
+        |        |   
         |        |----- ...
         |        |----- TypicalMaterials
         |

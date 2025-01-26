@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from importlib.resources import files
+from importlib.resources import as_file, files
 from pathlib import Path
 
 import pandas as pd
@@ -14,8 +14,10 @@ from jade.config.raw_config import (
     TallyModOption,
 )
 from jade.post.raw_processor import RawProcessor
+from jade.resources import default_cfg
 
 SIMULATION_FOLDER = files(dummy_struct).joinpath("simulations")
+RAW_CFG_FILES = files(default_cfg).joinpath("benchmarks_pp/raw/mcnp")
 
 
 class TestRawProcessor:
@@ -51,3 +53,12 @@ class TestRawProcessor:
         df2 = pd.read_csv(res2path)
         assert df2.iloc[0]["Value"] == pytest.approx(2 * 10 * 1.12099e-01, 1e-3)
         assert len(df1) == 191
+
+
+def test_oktavian_raw(tmpdir):
+    with as_file(RAW_CFG_FILES.joinpath("Oktavian.yaml")) as f:
+        cfg = ConfigRawProcessor.from_yaml(f)
+
+    folder = Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "Oktavian", "Oktavian_Al")
+    processor = RawProcessor(cfg, folder, tmpdir)
+    processor.process_raw_data()

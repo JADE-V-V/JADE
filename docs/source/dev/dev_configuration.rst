@@ -95,6 +95,7 @@ The mandatory options to include in a *table* configurations are:
         * ``percentage``: the percentage difference between the two simulations.
         * ``ratio``: the ratio between the two simulations.
 * ``table_type``: the type of table that is produced. The currently supported types are:
+        * ``simple``: The starting data is simply the dataframe itself.
         * ``pivot``: a pivot table is produced. This requires to specify also the ``value`` option.
 * ``x``: the name of the column that will be used as the x-axis in the table.
 * ``y``: the name of the column that will be used as the y-axis in the table.
@@ -107,6 +108,8 @@ The optional configurations that can be included in a *table* are:
         for the conditional color formatting. As an example, if ``{"red": 20, "orange": 10, "yellow": 5}`` is
         provided, the table cells will be colored in red if the difference between the two simulations is greater than 20,
         in orange if it is greater than 10 and in yellow if it is greater than 5 and green otherwise.
+* ``change_col_names``: a dictionary that specifies the new names for the columns. The keys are the original column names
+        and the values are the new names. This will be applied as a last operation before dumping the df.
 
 An example of a *table* configuration is shown below:
 

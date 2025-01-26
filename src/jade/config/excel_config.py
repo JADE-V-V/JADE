@@ -13,6 +13,7 @@ class TableType(Enum):
     """Type of table to be created"""
 
     PIVOT = "pivot"
+    SIMPLE = "simple"
 
 
 class ComparisonType(Enum):
@@ -88,6 +89,9 @@ class TableConfig:
         Add single error sheets to the tables, by default False
     conditional_formatting : dict[str, float] | None, optional
         Conditional formatting dictionary, by default None
+    change_col_names : dict[str, str] | None, optional
+        Change the column names, by default None. The key is the old name and the value
+        is the new name.
     """
 
     name: str
@@ -99,6 +103,7 @@ class TableConfig:
     value: str | None = None  # used for pivot tables
     add_error: bool = False  # add single error sheets to the tables
     conditional_formatting: dict[str, float] | None = None
+    change_col_names: dict[str, str] | None = None
 
     def __post_init__(self):
         # the conditional formatting dictionary has a fixed structure
@@ -119,4 +124,5 @@ class TableConfig:
             value=dictionary.get("value"),
             add_error=dictionary.get("add_error", False),
             conditional_formatting=dictionary.get("conditional_formatting"),
+            change_col_names=dictionary.get("change_col_names"),
         )

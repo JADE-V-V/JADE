@@ -87,6 +87,9 @@ class Table(ABC):
 
         ws = self.writer.book.add_worksheet(sheet_name)
         self.formatter.add_title(ws, sheet_name)
+        # as a last operation, change the df columns if requested
+        if self.cfg.change_col_names:
+            self._rename_columns(df, self.cfg.change_col_names)
         df.to_excel(self.writer, sheet_name=sheet_name, startrow=DF_START_ROW)
 
         # additional operation on the sheet
@@ -131,6 +134,25 @@ class Table(ABC):
         dataframes that will be added to the workbook (one per sheet)."""
         pass
 
+    @staticmethod
+    def _rename_columns(df: pd.DataFrame, names: dict[str, str]) -> None:
+        """Rename the columns of the dataframe according to the change_col_names dict."""
+        # Apply changes to the index
+        if isinstance(df.index, pd.MultiIndex):
+            # remove the keys that are not present in the index or it will complain
+            index_names = {k: v for k, v in names.items() if k in df.index.names}
+            df.index = df.index.rename(index_names)
+        else:
+            df.rename(index=names, inplace=True)
+
+        # Apply changes to the columns
+        if isinstance(df.columns, pd.MultiIndex):
+            # remove the keys that are not present in the index or it will complain
+            col_names = {k: v for k, v in names.items() if k in df.columns.names}
+            df.columns = df.columns.rename(col_names)
+        else:
+            df.rename(columns=names, inplace=True)
+
 
 class PivotTable(Table):
     """multi level pivot table"""
@@ -169,6 +191,15 @@ class PivotTable(Table):
         return [value_df]
 
 
+class SimpleTable(Table):
+    """Simply dump the data using cfg.x as index and cfg.y as columns to be retained"""
+
+    def _get_sheet(self) -> list[pd.DataFrame]:
+        value_df = self.data.set_index(self.cfg.x)
+        value_df = value_df[self.cfg.y]
+        return [value_df]
+
+
 class TableFactory:
     """Factory class for creating Table objects according to the TableType."""
 
@@ -195,6 +226,8 @@ class TableFactory:
         """
         if table_type == TableType.PIVOT:
             return PivotTable(*args)
+        elif table_type == TableType.SIMPLE:
+            return SimpleTable(*args)
         else:
             raise NotImplementedError(f"Table type {table_type} not supported")
 
@@ -456,6 +489,12 @@ class Formatter:
             content. Default is True. If set to False, the max length of the (raw) data
             is checked.
         """
+        # get the amount of index layers
+        if isinstance(df.index, pd.MultiIndex):
+            index_layers = df.index.nlevels
+        else:
+            index_layers = 1
+
         for idx, col in enumerate(df.columns):
             # find max in the header
             if isinstance(col, tuple):
@@ -480,10 +519,13 @@ class Formatter:
             max_len = max(max_content, max_header) + 1
 
             # Set the column width
-            # TODO asssume only 1 column indices for the moment
-            worksheet.set_column(idx + 1, idx + 1, max_len)
+            worksheet.set_column(idx + index_layers, idx + index_layers, max_len)
 
-        # set the index column
-        # TODO asssume only 1 column indices for the moment
-        max_index = df.index.astype(str).map(len).max()
-        worksheet.set_column(0, 0, max_index + 1)
+        # set the index column(s)
+        if index_layers == 1:
+            max_index = df.index.astype(str).map(len).max()
+            worksheet.set_column(0, 0, max_index + 1)
+        else:
+            for layer in range(index_layers):
+                max_index = df.index.get_level_values(layer).astype(str).map(len).max()
+                worksheet.set_column(layer, layer, max_index + 1)

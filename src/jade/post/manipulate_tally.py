@@ -66,6 +66,7 @@ def condense_groups(
         df = df.sum()
         df["Error"] = df["abs err"] / df["Value"]
         del df["abs err"]
+        del df[group_column]  # avoid warning
         df[group_column] = f"{min_e} - {max_e}"
         rows.append(df)
         min_e = max_e

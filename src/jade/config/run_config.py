@@ -105,7 +105,13 @@ class RunConfig:
         return cls(env_vars, run_cfg)
 
 
-def _cast_to_code(dict: dict) -> dict[CODE, Any]:
+def _cast_to_code(dict: dict | list) -> dict[CODE, Any]:
+    # depending on how the yaml is written instead of a unique dict we can have a list
+    # of one value dictionaries
+    if isinstance(dict, list):
+        # merge all dictionaries in the list
+        dict = {k: v for d in dict for k, v in d.items()}
+
     new_dict = {}
     for key, value in dict.items():
         if isinstance(key, str):

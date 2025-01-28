@@ -37,7 +37,7 @@ def get_code_lib(string) -> tuple[str, str]:
     return code, lib
 
 
-def print_code_lib(code: CODE, lib: Library | str) -> str:
+def print_code_lib(code: CODE, lib: Library | str, pretty: bool = False) -> str:
     """Prints the code and library names in a code-lib format.
 
     Parameters
@@ -46,6 +46,9 @@ def print_code_lib(code: CODE, lib: Library | str) -> str:
         The code
     lib : Library | str
         The library
+    pretty : bool, optional
+        If True, the '_' are removed, by default False. When pretty is True, the
+        code-lib string cannot be used in get_code_lib().
 
     Returns
     -------
@@ -56,7 +59,11 @@ def print_code_lib(code: CODE, lib: Library | str) -> str:
         lib_name = lib
     else:
         lib_name = lib.name
-    return f"_{code.value}_-_{lib_name}_"
+
+    if pretty:
+        return f"{code.value} - {lib_name}"
+    else:
+        return f"_{code.value}_-_{lib_name}_"
 
 
 def check_run_mcnp(folder: PathLike) -> bool:

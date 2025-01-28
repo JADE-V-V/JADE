@@ -1,3 +1,4 @@
+import io
 import logging
 import os
 
@@ -10,6 +11,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement, parse_xml
 from docx.oxml.ns import nsdecls, qn
 from docx.shared import Inches
+from matplotlib.figure import Figure
 
 from jade.helper.aux_functions import PathLike
 
@@ -38,17 +40,22 @@ class Atlas:
         self.outname = "atlas_" + name  # Name for the outfile
         self.doc = doc  # Word Document
 
-    def insert_img(self, img, width=Inches(7.5)):
+    def insert_img(self, figure: Figure, width=Inches(7.5)):
         """Insert an image in the word document
 
         Parameters
         ----------
-        img : _type_
-            _description_
-        width : _type_, optional
-            _description_, by default Inches(7.5)
+        figure : Figure
+            matplotlib figure to insert.
+        width : Inches, optional
+            width in docx Inches, by default Inches(7.5)
         """
-        self.doc.add_picture(img, width=width)
+        # Convert the figure to an in-memory binary stream
+        img_stream = io.BytesIO()
+        figure.savefig(img_stream, format="png", dpi=200)
+        img_stream.seek(0)
+
+        self.doc.add_picture(img_stream, width=width)
         last_paragraph = self.doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
@@ -176,41 +183,41 @@ class Atlas:
         if pdfprint:
             pass
 
-    @staticmethod
-    def _wrapper(paragraph, ptype):
-        """
-        Wrap a paragraph in order to add cross reference
+    # @staticmethod
+    # def _wrapper(paragraph, ptype):
+    #     """
+    #     Wrap a paragraph in order to add cross reference
 
-        Parameters
-        ----------
-        paragraph : docx.Paragraph
-            image to wrap.
-        ptype : str
-            type of paragraph to wrap
+    #     Parameters
+    #     ----------
+    #     paragraph : docx.Paragraph
+    #         image to wrap.
+    #     ptype : str
+    #         type of paragraph to wrap
 
-        Returns
-        -------
-        None.
+    #     Returns
+    #     -------
+    #     None.
 
-        """
-        if ptype == "table":
-            instruction = " SEQ Table \\* ARABIC"
-        elif ptype == "figure":
-            instruction = " SEQ Figure \\* ARABIC"
-        else:
-            raise ValueError(ptype + " is not a supported paragraph type")
+    #     """
+    #     if ptype == "table":
+    #         instruction = " SEQ Table \\* ARABIC"
+    #     elif ptype == "figure":
+    #         instruction = " SEQ Figure \\* ARABIC"
+    #     else:
+    #         raise ValueError(ptype + " is not a supported paragraph type")
 
-        run = run = paragraph.add_run()
-        r = run._r
-        fldChar = OxmlElement("w:fldChar")
-        fldChar.set(qn("w:fldCharType"), "begin")
-        r.append(fldChar)
-        instrText = OxmlElement("w:instrText")
-        instrText.text = instruction
-        r.append(instrText)
-        fldChar = OxmlElement("w:fldChar")
-        fldChar.set(qn("w:fldCharType"), "end")
-        r.append(fldChar)
+    #     run = run = paragraph.add_run()
+    #     r = run._r
+    #     fldChar = OxmlElement("w:fldChar")
+    #     fldChar.set(qn("w:fldCharType"), "begin")
+    #     r.append(fldChar)
+    #     instrText = OxmlElement("w:instrText")
+    #     instrText.text = instruction
+    #     r.append(instrText)
+    #     fldChar = OxmlElement("w:fldChar")
+    #     fldChar.set(qn("w:fldCharType"), "end")
+    #     r.append(fldChar)
 
     # @staticmethod
     # def _highlightCell(cell, color="FBD4B4"):

@@ -51,6 +51,7 @@ class Plot(ABC):
 
 class BinnedPlot(Plot):
     def _get_figure(self) -> tuple[Figure, Axes]:
+        linewidth = 0.7
         # Set properties for the plot spacing
         gridspec_kw = {"height_ratios": [4, 1, 1], "hspace": 0.13}
         # Initiate plot
@@ -112,7 +113,14 @@ class BinnedPlot(Plot):
                 tag = "T" + str(idx) + ": "
             else:
                 tag = "R: "
-            ax1.step(x, y, label=tag + codelib, color=COLORS[idx], linestyle="--")
+            ax1.step(
+                x,
+                y,
+                label=tag + codelib,
+                color=COLORS[idx],
+                linestyle="--",
+                linewidth=linewidth,
+            )
             ax1.errorbar(
                 newX,
                 y[1:],

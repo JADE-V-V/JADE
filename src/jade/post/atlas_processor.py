@@ -19,6 +19,7 @@ class AtlasProcessor:
         atlas_folder_path: PathLike,
         cfg: ConfigAtlasProcessor,
         codelibs: list[tuple[str, str]],
+        word_templatee_path: PathLike,
     ) -> None:
         """Object responsible to produce the excel comparison results for a given
         benchmark.
@@ -34,44 +35,62 @@ class AtlasProcessor:
         codelibs : list[tuple[str, str]]
             list of code-lib results that should be compared. The first one is
             interpreted as the reference data.
+        word_templatee_path : PathLike
+            path to the word template to be used in the atlas generation.
         """
         self.atlas_folder_path = atlas_folder_path
         self.raw_root = raw_root
         self.cfg = cfg
         self.codelibs = codelibs
+        self.word_template_path = word_templatee_path
 
     def process(self) -> None:
         """Process the atlas comparison for the given benchmark. It will produce one
         atlas file comparing all requested code-lib results in each plot.
         """
         # instantiate the atlas
-        # atlas = Atlas(self.atlas_folder_path, self.cfg.benchmark)
+        atlas = Atlas(self.word_template_path, self.cfg.benchmark)
 
         for plot_cfg in self.cfg.plots:
+            # Add a chapter for each plo type
+            atlas.doc.add_heading(plot_cfg.name, level=1)
+
             dfs = []
+            cases = {}
             # get global df results for each code-lib
             for code_tag, lib in self.codelibs:
                 code = CODE(code_tag)
+                codelib_pretty = print_code_lib(code, lib, pretty=True)
                 codelib = print_code_lib(code, lib)
                 logging.info("Parsing reference data")
                 raw_folder = Path(self.raw_root, codelib, self.cfg.benchmark)
 
                 df = ExcelProcessor._get_table_df(plot_cfg.results, raw_folder)
                 if plot_cfg.expand_runs:
-                    run_dfs = []
                     df = df.reset_index()
                     for run in df["Case"].unique():
                         run_df = df[df["Case"] == run]
-                        run_dfs.append((run, run_df))
-                    dfs.append((plot_cfg.name, run_dfs))
+                        if run in cases:
+                            cases[run].append((codelib_pretty, run_df))
+                        else:
+                            cases[run] = [(codelib_pretty, run_df)]
                 else:
-                    dfs.append((plot_cfg.name, df.reset_index()))
+                    dfs.append((codelib_pretty, df.reset_index()))
 
             # create the plot
             if plot_cfg.expand_runs:  # one plot for each case/run
-                for case, df in dfs:
+                for case, data in cases.items():
+                    atlas.doc.add_heading(case, level=2)
                     cfg = deepcopy(plot_cfg)
                     cfg.name = f"{cfg.name} {case}"
-                    plot = PlotFactory.create_plot(plot_cfg, df)
+                    cfg.title = f"{cfg.title} - {case}"
+                    plot = PlotFactory.create_plot(cfg, data)
+                    fig, _ = plot.plot()
+                    atlas.insert_img(fig)
             else:
                 plot = PlotFactory.create_plot(plot_cfg, dfs)
+                fig, _ = plot.plot()
+                atlas.insert_img(fig)
+
+        # Save the atlas
+        atlas.save(self.atlas_folder_path)

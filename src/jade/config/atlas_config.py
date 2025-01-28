@@ -67,6 +67,11 @@ class PlotConfig:
             expand_runs=dictionary.get("expand_runs", True),
         )
 
+    def __post_init__(self):
+        # Ensure that y labels are always a list
+        if not isinstance(self.y_labels, list):
+            self.y_labels = [self.y_labels]
+
 
 class PlotType(Enum):
     BINNED = "binned"

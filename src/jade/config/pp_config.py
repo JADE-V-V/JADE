@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+from jade.config.atlas_config import ConfigAtlasProcessor
 from jade.config.excel_config import ConfigExcelProcessor
 from jade.helper.aux_functions import PathLike
 
@@ -16,4 +17,10 @@ class PostProcessConfig:
                 cfg = ConfigExcelProcessor.from_yaml(Path(root_cfg_pp, file))
                 excel_cfgs[cfg.benchmark] = cfg
         self.excel_cfgs = excel_cfgs
-        # TODO get all available config atlas processors
+        # Get all available config atlas processors
+        atlas_cfgs = {}
+        for file in os.listdir(Path(root_cfg_pp, "atlas")):
+            if file.endswith(".yaml") or file.endswith(".yml"):
+                cfg = ConfigAtlasProcessor.from_yaml(Path(root_cfg_pp, file))
+                atlas_cfgs[cfg.benchmark] = cfg
+        self.atlas_cfgs = atlas_cfgs

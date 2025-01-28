@@ -11,15 +11,17 @@ import yaml
 from tqdm import tqdm
 
 import jade.resources as res
+from jade import resources
 from jade.app.fetch import fetch_iaea_inputs
 from jade.config.paths_tree import PathsTree
 from jade.config.pp_config import PostProcessConfig
 from jade.config.raw_config import ConfigRawProcessor
 from jade.config.run_config import RunConfig
 from jade.config.status import GlobalStatus
-from jade.gui.config_gui import ConfigGUI
+from jade.gui.run_config_gui import ConfigGUI
 from jade.helper.aux_functions import PathLike, get_code_lib, print_code_lib
-from jade.helper.constants import CODE, FIRST_INITIALIZATION, JADE_TITLE
+from jade.helper.constants import CODE, EXP_TAG, FIRST_INITIALIZATION, JADE_TITLE
+from jade.post.atlas_processor import AtlasProcessor
 from jade.post.excel_processor import ExcelProcessor
 from jade.post.raw_processor import RawProcessor
 from jade.run.benchmark import BenchmarkRunFactory
@@ -42,7 +44,8 @@ class JadeApp:
 
         # parse the config files
         self.run_cfg = RunConfig.from_root(self.tree)
-        # TODO read here also the post-processing config
+        # parse the post-processing config
+        self.pp_cfg = PostProcessConfig(self.tree.cfg.bench_pp)
 
         # Compute the global status
         self.status = GlobalStatus(
@@ -173,27 +176,65 @@ class JadeApp:
     def post_process(self):
         """Post-process the data."""
         logging.info("Post-processing data")
-        # recover the post-processing benchmark configurations
-        bench_cfg = PostProcessConfig(self.tree.cfg.bench_pp)
         # load the pp code-lib requests
         with open(self.tree.cfg.pp_cfg) as f:
-            pp_cfg = yaml.safe_load(f)
-        for benchmark, options in pp_cfg.items():
-            if options["process"]:
-                # prepare the new paths
-                pp_path = self.tree.get_new_post_bench_path(benchmark)
-                excel_folder = Path(pp_path, "excel")
-                os.mkdir(excel_folder)
-                # perform the excel processing
-                excel_cfg = bench_cfg.excel_cfgs[benchmark]
-                options["codelibs"]
-                processor = ExcelProcessor(
-                    self.tree.raw,
-                    excel_folder,
-                    excel_cfg,
-                    options["codelibs"],
+            to_pp = yaml.safe_load(f)
+        codelibs_tags = to_pp["code_libs"]
+        benchmarks = to_pp["benchmarks"]
+
+        for benchmark in benchmarks:
+            logging.info(f"Post-processing {benchmark}")
+            # get the benchmark configurations
+            excel_cfg = self.pp_cfg.excel_cfgs[benchmark]
+            atlas_cfg = self.pp_cfg.atlas_cfgs[benchmark]
+
+            code_libs = []
+            # if exp is in the libraries, put it always first
+            if EXP_TAG in codelibs_tags:
+                code_libs.remove(EXP_TAG)
+                code_libs.insert(0, EXP_TAG)
+
+            for codelib in code_libs:
+                # Check if the code-lib is available in this benchmark
+                # if yes, append it to the list
+                code, lib = get_code_lib(codelib)
+                if self.status.is_raw_available(codelib, benchmark):
+                    code_libs.append((code, lib))
+                else:
+                    logging.info(f"{codelib} is not available for {benchmark}")
+
+            # in case there are less than two code-libs skip the comparison
+            if len(code_libs) < 2:
+                logging.warning(
+                    f"Less than two code-libs available for {benchmark}, skipped"
                 )
-                processor.process()
+                continue
+
+            # prepare the new paths
+            pp_path = self.tree.get_new_post_bench_path(benchmark)
+            excel_folder = Path(pp_path, "excel")
+            atlas_folder = Path(pp_path, "atlas")
+            os.mkdir(excel_folder)
+            os.mkdir(atlas_folder)
+
+            # perform the excel processing
+            excel_processor = ExcelProcessor(
+                self.tree.raw,
+                excel_folder,
+                excel_cfg,
+                code_libs,
+            )
+            excel_processor.process()
+
+            # perform the atlas processing
+            atlas_processor = AtlasProcessor(
+                self.tree.raw,
+                atlas_folder,
+                atlas_cfg,
+                code_libs,
+                files(resources).joinpath("atlas_template.docx"),
+            )
+            atlas_processor.process()
 
     def start_config_gui(self):
         """Start the configuration GUI."""

@@ -9,6 +9,8 @@ class CODE(Enum):
     EXPERIMENT = "exp"
 
 
+EXP_TAG = "_exp_-_exp_"  # tag for the experiment folder
+
 # get all possile code tags in a list
 CODE_TAGS = [code.value for code in CODE]
 

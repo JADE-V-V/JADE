@@ -9,6 +9,7 @@ from jade.helper.aux_functions import (
     CODE_CHECKERS,
     PathLike,
     get_code_lib,
+    print_code_lib,
 )
 from jade.helper.constants import CODE
 
@@ -124,7 +125,7 @@ class GlobalStatus:
         Returns
         -------
         bool
-            Treu if the simulation was performed and successful, False otherwise.
+            True if the simulation was performed and successful, False otherwise.
         """
         try:
             result = self.simulations[(code, lib, benchmark)]
@@ -148,6 +149,86 @@ class GlobalStatus:
                 successful_simulations[key] = result
 
         return successful_simulations
+
+    def get_all_raw(self) -> tuple[set[str], set[str]]:
+        """Get all the code-libraries and benchmarks for which the
+        at least one raw data is available.
+
+        Returns
+        -------
+        set[str]
+            list of code-libraries for which the raw data was processed.
+        set[str]
+            list of benchmarks for which the raw data was processed.
+        """
+        code_libs = []
+        benchmarks = []
+        for code, lib, benchmark in self.raw_data.keys():
+            code_libs.append(print_code_lib(code, lib))
+            benchmarks.append(benchmark)
+        return set(code_libs), set(benchmarks)
+
+    def get_codelibs_from_raw_benchmark(self, benchmarks: str | list[str]) -> set[str]:
+        """Get the list of codelib for which the raw data of the requested benchmark
+        is available.
+
+        Parameters
+        ----------
+        benchmark : str | list[str]
+            benchmark name.
+
+        Returns
+        -------
+        set[str]
+            list of codelib for which the raw data of the requested benchmark is available.
+        """
+        if isinstance(benchmarks, str):
+            benchmarks = [benchmarks]
+
+        codelibs = []
+        for code, lib, bench in self.raw_data.keys():
+            if bench in benchmarks:
+                codelibs.append(print_code_lib(code, lib))
+        return set(codelibs)
+
+    def get_benchmark_from_raw_codelib(self, codelibs: str | list[str]) -> set[str]:
+        """Get the list of benchmarks for which the raw data of the requested codelib
+        is available.
+
+        Parameters
+        ----------
+        codelib : str | list[str]
+            codelib name.
+
+        Returns
+        -------
+        set[str]
+            list of benchmarks for which the raw data of the requested codelib is available.
+        """
+        benchmarks = []
+        for code, lib, bench in self.raw_data.keys():
+            if print_code_lib(code, lib) in codelibs:
+                benchmarks.append(bench)
+        return set(benchmarks)
+
+    def is_raw_available(self, codelib: str, benchmark: str) -> bool:
+        """Check if the raw data is available for the given codelib and benchmark.
+
+        Parameters
+        ----------
+        codelib : str
+            codelib string.
+        benchmark : str
+            benchmark name.
+
+        Returns
+        -------
+        bool
+            True if the raw data is available, False otherwise.
+        """
+        if codelib in self.get_codelibs_from_raw_benchmark(benchmark):
+            return True
+        return False
 
 
 @dataclass

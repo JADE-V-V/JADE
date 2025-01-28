@@ -22,3 +22,19 @@ class TestGlobalStatus:
         assert status.was_simulated(CODE("mcnp"), "FENDL 3.2c", "Oktavian")
         assert not status.was_simulated(CODE("openmc"), "FENDL 3.2c", "Oktavian")
         assert not status.was_simulated(CODE("mcnp"), "FENDL 3.2c", "Sphere")
+
+    def test_get_all_raw(self):
+        status = GlobalStatus(DUMMY_SIMULATIONS, DUMMY_RAW_RESULTS)
+        codelibs, benchmarks = status.get_all_raw()
+        assert len(codelibs) == 3
+        assert len(benchmarks) == 2
+
+    def test_get_codelibs_from_raw_benchmark(self):
+        status = GlobalStatus(DUMMY_SIMULATIONS, DUMMY_RAW_RESULTS)
+        codelibs = status.get_codelibs_from_raw_benchmark("Oktavian")
+        assert len(codelibs) == 3
+
+    def test_get_benchmark_from_raw_codelib(self):
+        status = GlobalStatus(DUMMY_SIMULATIONS, DUMMY_RAW_RESULTS)
+        benchmarks = status.get_benchmark_from_raw_codelib("mcnp - FENDL 3.2c")
+        assert len(benchmarks) == 2

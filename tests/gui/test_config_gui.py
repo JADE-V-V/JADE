@@ -8,7 +8,7 @@ import pytest
 from ttkthemes import ThemedTk
 
 import jade.resources
-from jade.gui.config_gui import ConfigGUI
+from jade.gui.run_config_gui import ConfigGUI
 
 DEFAULT_CFG = files(jade.resources).joinpath("default_cfg")
 

@@ -44,6 +44,24 @@ class TestJadeApp:
         app.raw_process()
         assert os.path.getmtime(filepath) == initial_mod_time
 
+    def test_post_process(self, tmpdir):
+        app = JadeApp(root=DUMMY_ROOT, skip_init=True)
+        # override the post processor folder
+        app.tree.postprocessing = tmpdir
+        app.status.update()
+
+        app.post_process()
+        # # manually update the status
+        # app.status.update()
+        # filepath = Path(
+        #     tmpdir,
+        #     "_mcnp_-_FENDL 3.2c_/Oktavian/Oktavian_Al 21.csv",
+        # )
+        # # now run again and test that nothing was overridden
+        # initial_mod_time = os.path.getmtime(filepath)
+        # app.post_process()
+        # assert os.path.getmtime(filepath) == initial_mod_time
+
     def test_restore_default_cfg(self, tmpdir):
         app = JadeApp(root=DUMMY_ROOT, skip_init=True)
         # override the config folder

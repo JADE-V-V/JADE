@@ -14,13 +14,13 @@ class PostProcessConfig:
         excel_cfgs = {}
         for file in os.listdir(Path(root_cfg_pp, "excel")):
             if file.endswith(".yaml") or file.endswith(".yml"):
-                cfg = ConfigExcelProcessor.from_yaml(Path(root_cfg_pp, file))
+                cfg = ConfigExcelProcessor.from_yaml(Path(root_cfg_pp, "excel", file))
                 excel_cfgs[cfg.benchmark] = cfg
         self.excel_cfgs = excel_cfgs
         # Get all available config atlas processors
         atlas_cfgs = {}
         for file in os.listdir(Path(root_cfg_pp, "atlas")):
             if file.endswith(".yaml") or file.endswith(".yml"):
-                cfg = ConfigAtlasProcessor.from_yaml(Path(root_cfg_pp, file))
+                cfg = ConfigAtlasProcessor.from_yaml(Path(root_cfg_pp, "atlas", file))
                 atlas_cfgs[cfg.benchmark] = cfg
         self.atlas_cfgs = atlas_cfgs

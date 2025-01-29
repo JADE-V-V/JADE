@@ -191,10 +191,10 @@ class JadeApp:
             code_libs = []
             # if exp is in the libraries, put it always first
             if EXP_TAG in codelibs_tags:
-                code_libs.remove(EXP_TAG)
-                code_libs.insert(0, EXP_TAG)
+                codelibs_tags.remove(EXP_TAG)
+                codelibs_tags.insert(0, EXP_TAG)
 
-            for codelib in code_libs:
+            for codelib in codelibs_tags:
                 # Check if the code-lib is available in this benchmark
                 # if yes, append it to the list
                 code, lib = get_code_lib(codelib)

@@ -108,7 +108,7 @@ class CfgTree:
         self.path = root
         self.batch_templates = Path(root, "batch_templates")
         self.bench_additional_files = Path(root, "benchmarks")
-        self.bench_pp = Path(root, "benchmarks_pp/jade_pp")
+        self.bench_pp = Path(root, "benchmarks_pp")
         self.bench_raw = Path(root, "benchmarks_pp/raw")
         self.exe_cfg = Path(root, "exe_cfg")
         self.env_vars_file = Path(root, "env_vars_cfg.yml")

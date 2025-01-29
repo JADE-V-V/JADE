@@ -36,5 +36,5 @@ class TestGlobalStatus:
 
     def test_get_benchmark_from_raw_codelib(self):
         status = GlobalStatus(DUMMY_SIMULATIONS, DUMMY_RAW_RESULTS)
-        benchmarks = status.get_benchmark_from_raw_codelib("mcnp - FENDL 3.2c")
+        benchmarks = status.get_benchmark_from_raw_codelib("_mcnp_-_FENDL 3.2c_")
         assert len(benchmarks) == 2

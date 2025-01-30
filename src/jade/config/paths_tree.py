@@ -34,6 +34,33 @@ class PathsTree:
 
         self.exp_data = exp_data
 
+    def check_not_installed_folders(self, path: PathLike) -> bool:
+        """Checks that none of the layer 1 folders exist in the the specified path.
+
+        Parameters
+        ----------
+        path : PathLike
+            path to check
+
+        Raises
+        ------
+        bool
+            If True, none of the layer 1 folder is present in the path and jade can
+            be installed.
+        """
+        to_check = [
+            "simulations",
+            "raw_data",
+            "logs",
+            "post_processing",
+            "benchmark_templates",
+            "cfg",
+        ]
+        for item in os.listdir(path):
+            if item in to_check:
+                return False
+        return True
+
     def init_tree(self) -> None:
         """Initialize the JADE project tree."""
         # create the folders if they don't exist

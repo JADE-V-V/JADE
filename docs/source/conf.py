@@ -13,9 +13,10 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("../../jade"))
+sys.path.insert(0, os.path.abspath("../.."))
+import importlib.metadata
 
-from __version__ import __version__
+import jade
 
 # -- Project information -----------------------------------------------------
 
@@ -24,7 +25,7 @@ copyright = "2023, JADE team"
 author = "JADE Team"
 
 # The full version, including alpha/beta/rc tags
-release = __version__
+release = importlib.metadata.version("jade")
 
 
 # -- General configuration ---------------------------------------------------
@@ -54,8 +55,11 @@ autoclass_content = "init"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
+html_theme = "pydata_sphinx_theme"
 html_logo = "./img/Jade_white.jpg"
+html_theme_options = {
+    "github_url": "https://github.com/JADE-V-V/JADE",
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

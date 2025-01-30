@@ -7,12 +7,17 @@ Welcome to JADE's documentation!
 ================================
 Version: |release|
 
-JADE is a tool for nuclear libraries V&V.
-Development was initially started by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E),
+JADE is a Verification & Validation (V&V) framework for nuclear data libraries and transport codes.
+Use JADE to automatically generate, run and post-process benchmarks and compare the results obtained
+using different nuclear data libraries and transport codes combinations.
+
+JADE is an open-source software licensed under the :ref:`gnulicense`. And is hosted on GitHub
+`here <https://github.com/JADE-V-V/JADE>_`
+
+Development was initially started in 2019 by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E),
 and it is today carried out mainly by F4E and the United Kingdom Atomic Energy Authority (UKAEA).
 You can find an up to date and detailed list of contributors in the :ref:`contributor_list` section.
 
-JADE is an open-source software licensed under the :ref:`gnulicense`.
 When using JADE for scientific publications you are kindly encouraged to cite the following papers:
 
 * Davide Laghi et al, 2020, "JADE, a new software tool for nuclear fusion data libraries verification & validation",
@@ -21,52 +26,19 @@ When using JADE for scientific publications you are kindly encouraged to cite th
   "Application Of JADE V&V Capabilities To The New FENDL v3.2 Beta Release",
   *Nuclear Fusion*, **61** 116073. doi: https://doi.org/10.1088/1741-4326/ac121a
 
-For additional information contact: davide.laghi01@gmail.com
+For additional information contact: davide.laghi@f4e.europa.eu
 
 For additional information on future developments please check the `issues list on the
 GitHub repository <https://github.com/JADE-V-V/JADE/issues>`_.
 
 .. toctree::
-   :maxdepth: 2
-   :caption: JADE User Guide:
+   :maxdepth: 3
+   :caption: JADE:
    
-   nutshell
-   usage/installation
-   usage/folders
-   usage/configuration
-   usage/menu
-   usage/benchmarks
-   usage/postprocessing
+   usage/usage_idx
+   dev/dev_idx
    usage/utilities
-   usage/tipstricks
-   usage/troubleshooting
-
-.. toctree::
-   :maxdepth: 2
-   :caption: JADE Developer Guide:
-
-   dev/workflow
-   dev/insertbenchmarks
-   dev/testing
-
-.. toctree::
-   :maxdepth: 2
-   :caption: JADE API
-
-   api/general
-.. API not generated anymore for the moment
-   api/initobjects
-   api/inputgeneration
-   api/postprocessing
-
-.. toctree::
-   :maxdepth: 2
-   :caption: More on JADE:
-
-   futuredev
-   LICENSE
-   contributors
-   publications
+   documentation/docu_idx.rst
 
 
 Indices and tables

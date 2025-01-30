@@ -18,6 +18,7 @@ from jade.config.pp_config import PostProcessConfig
 from jade.config.raw_config import ConfigRawProcessor
 from jade.config.run_config import RunConfig
 from jade.config.status import GlobalStatus
+from jade.gui.post_config_gui import PostConfigGUI
 from jade.gui.run_config_gui import ConfigGUI
 from jade.helper.aux_functions import PathLike, get_code_lib, print_code_lib
 from jade.helper.constants import CODE, EXP_TAG, FIRST_INITIALIZATION, JADE_TITLE
@@ -36,7 +37,7 @@ class JadeApp:
 
         # Initialize the local installation if it was never done
         self.tree = PathsTree(root)
-        if len(os.listdir(root)) == 0 and not skip_init:
+        if self.tree.check_not_installed_folders(root) and not skip_init:
             self.tree.init_tree()
             self.restore_default_cfg(FIRST_INITIALIZATION)
             self.update_inputs()
@@ -236,8 +237,14 @@ class JadeApp:
             )
             atlas_processor.process()
 
-    def start_config_gui(self):
+    def start_run_config_gui(self):
         """Start the configuration GUI."""
         logging.info("Starting the configuration GUI")
         app = ConfigGUI(self.tree.cfg.run_cfg, self.tree.cfg.libs_cfg)
         app.window.mainloop()
+
+    def start_pp_config_gui(self):
+        """Start the post-processing configuration GUI."""
+        logging.info("Starting the post-processing configuration GUI")
+        app = PostConfigGUI(self.status)
+        app.mainloop()

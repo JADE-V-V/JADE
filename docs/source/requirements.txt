@@ -14,5 +14,5 @@ f4enix >= 0.8.1
 sphinx
 esbonio
 myst-parser
-sphinx_rtd_theme
+pydata-sphinx-theme
 pyyaml

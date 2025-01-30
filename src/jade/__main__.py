@@ -11,7 +11,10 @@ def main():
         "--pp", help="perform complete post-process of the results", action="store_true"
     )
     parser.add_argument(
-        "--gui", help="open the run configuration GUI", action="store_true"
+        "--rungui", help="open the run configuration GUI", action="store_true"
+    )
+    parser.add_argument(
+        "--ppgui", help="open the post-process configuration GUI", action="store_true"
     )
 
     args = parser.parse_args()
@@ -19,8 +22,10 @@ def main():
     app = JadeApp()
     app.initialize_log()
 
-    if args.gui:
-        app.start_config_gui()
+    if args.rungui:
+        app.start_run_config_gui()
+    if args.ppgui:
+        app.start_pp_config_gui()
     if args.run:
         app.run_benchmarks()
     if args.raw:

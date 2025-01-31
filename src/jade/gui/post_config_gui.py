@@ -67,6 +67,14 @@ class PostConfigGUI(tk.Tk):
         selected_benchmarks = list(self.displayed_benchmarks)
         selected_code_libs = list(self.displayed_code_libs)
 
+        # At least two libraries should be selected
+        if len(selected_code_libs) < 2:
+            messagebox.showerror(
+                "Error", "Please select at least two code-libraries to proceed."
+            )
+            self._reset_selections()
+            return
+
         data = {
             "benchmarks": selected_benchmarks,
             "code_libs": selected_code_libs,

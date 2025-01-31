@@ -18,9 +18,8 @@ class PostConfigGUI(tk.Tk):
         self.geometry("600x600")
         self.status = status
 
-        with as_file(files(res).joinpath("Jade.png")) as file:
-            iconphoto = tk.PhotoImage(file=file)
-        self.iconphoto(False, iconphoto)
+        with as_file(files(res).joinpath("Jade.ico")) as file:
+            self.iconbitmap(False, file)
 
         self.create_widgets()
 

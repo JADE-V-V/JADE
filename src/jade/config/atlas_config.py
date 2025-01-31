@@ -11,6 +11,17 @@ from jade.helper.aux_functions import PathLike
 
 @dataclass
 class ConfigAtlasProcessor:
+    """Contains the configuration options for the atlas processor.
+
+    Parameters
+    -------
+    benchmark : str
+        Name of the benchmark.
+    plots : list[PlotConfig]
+        List of the plots to be generated for the benchmark. Each plot is defined by a
+        PlotConfig object.
+    """
+
     benchmark: str
     plots: list[PlotConfig]
 
@@ -42,6 +53,37 @@ class ConfigAtlasProcessor:
 
 @dataclass
 class PlotConfig:
+    """Contains the configuration options for a plot.
+
+    Parameters
+    ----------
+    name : str
+        Name of the plot (for word text)
+    results : list[int | str]
+        List of the results to be plotted. These names should be the same as the ones
+        used in the raw data files.
+    plot_type : PlotType
+        Type of the plot to be created.
+    title : str
+        Title of the plot. (Superior title in the figure)
+    x_label : str
+        Label for the x-axis.
+    y_labels : list[str]
+        Label(s) for the y-axis. If the plot has multiple y-axes, more than one label
+        can be provided.
+    x : str
+        Name of the column to be used as x-axis.
+    y : str
+        Name of the column to be used as y-axis.
+    expand_runs : bool, optional
+        During the reading of the raw data, all results from different runs are
+        concatenated in the same dataframe. If expand_runs is se to True (default)
+        a different plot will be generated for each single run.
+    plot_args : dict, optional
+        Additional arguments to be passed to the plot function. These arguments are
+        specific to each plot type.
+    """
+
     name: str
     results: list[int | str]
     plot_type: PlotType
@@ -52,6 +94,7 @@ class PlotConfig:
     y: str
     # optionals
     expand_runs: bool = True
+    plot_args: dict | None = None
 
     @classmethod
     def from_dict(cls, dictionary: dict, name: str) -> PlotConfig:
@@ -65,6 +108,7 @@ class PlotConfig:
             x=dictionary["x"],
             y=dictionary["y"],
             expand_runs=dictionary.get("expand_runs", True),
+            plot_args=dictionary.get("plot_args", None),
         )
 
     def __post_init__(self):
@@ -74,11 +118,13 @@ class PlotConfig:
 
 
 class PlotType(Enum):
+    """Available plot types"""
+
     BINNED = "binned"
-    RATIO = "ratio"
-    EXP = "exp points"
-    EXP_GROUP = "exp points group"
-    CE_EXP_GROUP = "exp points group CE"
-    DISCRETE_EXP = "discrete exp points"
-    GROUPED_BARS = "grouped bars"
-    WAVES = "waves"
+    # RATIO = "ratio"
+    # EXP = "exp points"
+    # EXP_GROUP = "exp points group"
+    # CE_EXP_GROUP = "exp points group CE"
+    # DISCRETE_EXP = "discrete exp points"
+    # GROUPED_BARS = "grouped bars"
+    # WAVES = "waves"

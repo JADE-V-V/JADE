@@ -26,6 +26,9 @@ COLORS = [
     "#dede00",
 ] * 50
 
+# --- linestyles ---
+LINESTYLES = ["--", "-.", ":"] * 50
+
 
 class Plot(ABC):
     def __init__(
@@ -52,11 +55,23 @@ class Plot(ABC):
 class BinnedPlot(Plot):
     def _get_figure(self) -> tuple[Figure, Axes]:
         linewidth = 0.7
+        # Check if the error needs to be plotted
+        if self.cfg.plot_args is not None:
+            plot_error = self.cfg.plot_args.get("error", False)
+        else:
+            plot_error = False
+
         # Set properties for the plot spacing
-        gridspec_kw = {"height_ratios": [4, 1, 1], "hspace": 0.13}
+        if not plot_error:
+            gridspec_kw = {"height_ratios": [3, 1], "hspace": 0.13}
+            nrows = 2
+        else:
+            gridspec_kw = {"height_ratios": [4, 1, 1], "hspace": 0.13}
+            nrows = 3
+
         # Initiate plot
         fig, axes = plt.subplots(
-            nrows=3,
+            nrows=nrows,
             ncols=1,
             sharex=True,
             # figsize=(18, 13.5),
@@ -76,23 +91,27 @@ class BinnedPlot(Plot):
         ax1.yaxis.set_minor_locator(LogLocator(base=10.0, subs=subs, numticks=12))
 
         # --- Error Plot ---
-        ax2 = axes[1]
-        ax2.axhline(y=10, linestyle="--", color="black")
-        ax2.set_ylabel("1σ [%]")
-        ax2.set_yscale("log")
-        ax2.set_ylim(bottom=1, top=100)
-        ax2.yaxis.set_major_locator(LogLocator(base=10, numticks=15))
-        ax2.yaxis.set_minor_locator(LogLocator(base=10.0, subs=subs, numticks=12))
+        if plot_error:
+            ax2 = axes[1]
+            ax2.axhline(y=10, linestyle="--", color="black")
+            ax2.set_ylabel("1σ [%]")
+            ax2.set_yscale("log")
+            ax2.set_ylim(bottom=1, top=100)
+            ax2.yaxis.set_major_locator(LogLocator(base=10, numticks=15))
+            ax2.yaxis.set_minor_locator(LogLocator(base=10.0, subs=subs, numticks=12))
+
+            CE_ax = axes[2]
+        else:
+            CE_ax = axes[1]
 
         # --- Comparison Plot ---
-        ax3 = axes[2]
-        ax3.axhline(y=1, linestyle="--", color="black")
-        ax3.set_ylabel("$T_i/R$")
-        ax3.yaxis.set_major_locator(MultipleLocator(0.5))
-        ax3.yaxis.set_minor_locator(AutoMinorLocator(5))
-        ax3.axhline(y=2, linestyle="--", color="red", linewidth=0.5)
-        ax3.axhline(y=0.5, linestyle="--", color="red", linewidth=0.5)
-        ax3.set_ylim(bottom=0.3, top=2.2)
+        CE_ax.axhline(y=1, linestyle="--", color="black")
+        CE_ax.set_ylabel("$T_i/R$")
+        CE_ax.yaxis.set_major_locator(MultipleLocator(0.5))
+        CE_ax.yaxis.set_minor_locator(AutoMinorLocator(5))
+        CE_ax.axhline(y=2, linestyle="--", color="red", linewidth=0.5)
+        CE_ax.axhline(y=0.5, linestyle="--", color="red", linewidth=0.5)
+        CE_ax.set_ylim(bottom=0.3, top=2.2)
 
         # Generate X axis for bin properties
         oldX = np.array([0] + list(self.data[0][1][self.cfg.x]))
@@ -111,14 +130,17 @@ class BinnedPlot(Plot):
             # Main plot
             if idx > 0:
                 tag = "T" + str(idx) + ": "
+                linestyle = LINESTYLES[idx - 1]
             else:
                 tag = "R: "
+                linestyle = "-"
+
             ax1.step(
                 x,
                 y,
                 label=tag + codelib,
                 color=COLORS[idx],
-                linestyle="--",
+                linestyle=linestyle,
                 linewidth=linewidth,
             )
             ax1.errorbar(
@@ -131,24 +153,27 @@ class BinnedPlot(Plot):
             )
 
             # Error Plot
-            ax2.plot(
-                newX,
-                np.array(df["Error"]) * 100,
-                "o",
-                label=codelib,
-                markersize=2,
-                color=COLORS[idx],
-            )
+            if plot_error:
+                ax2.plot(
+                    newX,
+                    np.array(df["Error"]) * 100,
+                    "o",
+                    label=codelib,
+                    markersize=2,
+                    color=COLORS[idx],
+                )
 
             # Comparison
             if idx > 0:
-                ratio = df[self.cfg.y] / self.data[0][1][self.cfg.y]
+                ratio = df[self.cfg.y].values / self.data[0][1][self.cfg.y].values
                 # Uniform plots actions
                 norm, upper, lower = _get_limits(0.5, 2, ratio, newX)
 
-                ax3.plot(norm[0], norm[1], "o", markersize=2, color=COLORS[idx])
-                ax3.scatter(upper[0], upper[1], marker=CARETUPBASE, s=50, c=COLORS[idx])
-                ax3.scatter(
+                CE_ax.plot(norm[0], norm[1], "o", markersize=2, color=COLORS[idx])
+                CE_ax.scatter(
+                    upper[0], upper[1], marker=CARETUPBASE, s=50, c=COLORS[idx]
+                )
+                CE_ax.scatter(
                     lower[0],
                     lower[1],
                     marker=CARETDOWNBASE,
@@ -179,7 +204,7 @@ class BinnedPlot(Plot):
                 lw=0,
             ),
         ]
-        ax3.legend(handles=leg, loc="best")
+        CE_ax.legend(handles=leg, loc="best")
 
         # Final operations
         ax1.legend(loc="best")

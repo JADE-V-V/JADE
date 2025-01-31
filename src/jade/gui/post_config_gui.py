@@ -19,7 +19,7 @@ class PostConfigGUI(tk.Tk):
         self.status = status
 
         with as_file(files(res).joinpath("Jade.ico")) as file:
-            self.iconbitmap(False, file)
+            self.wm_iconbitmap(False, file)
 
         self.create_widgets()
 

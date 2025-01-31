@@ -17,7 +17,7 @@ class ConfigGUI:
 
         self.window = ThemedTk(theme="radiance")
         with as_file(files(res).joinpath("Jade.ico")) as file:
-            self.window.iconbitmap(False, file)
+            self.window.wm_iconbitmap(False, file)
         self.window.title("Configuration GUI")
         self.window.geometry("1200x600")
 

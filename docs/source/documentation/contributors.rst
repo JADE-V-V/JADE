@@ -13,9 +13,9 @@ Currently, new development is largely undertaken by `Fusion For Energy (F4E) <ht
 
 This activity was partially funded by Fusion For Energy under F4E-OPE-1128 contract.
 
-.. image:: ../img/contrib/nier.png
+.. image:: /img/contrib/nier.png
     :width: 300
-.. image:: ../img/contrib/unibo.jpg
+.. image:: source/img/contrib/unibo.jpg
     :width: 300
 .. image:: ../img/contrib/f4e.jpg
     :width: 300

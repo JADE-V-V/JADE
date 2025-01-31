@@ -11,8 +11,8 @@ JADE is a Verification & Validation (V&V) framework for nuclear data libraries a
 Use JADE to automatically generate, run and post-process benchmarks and compare the results obtained
 using different nuclear data libraries and transport codes combinations.
 
-JADE is an open-source software licensed under the :ref:`gnulicense`. And is hosted on GitHub
-`here <https://github.com/JADE-V-V/JADE>`_.
+JADE is an open-source software licensed under the :ref:`gnulicense` and it is
+hosted on GitHub `here <https://github.com/JADE-V-V/JADE>`_.
 
 Development was initially started in 2019 by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E),
 and it is today carried out mainly by F4E and the United Kingdom Atomic Energy Authority (UKAEA).

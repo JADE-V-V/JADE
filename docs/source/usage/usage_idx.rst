@@ -8,9 +8,9 @@ Install and Configure
    :maxdepth: 2
    :caption: Installation and Configuration
 
-   installation
-   user_configuraion
-   folders
+   ./installation
+   ./user_configuraion
+   ./folders
 
 JADE execution
 ==============

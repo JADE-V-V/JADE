@@ -16,3 +16,4 @@ esbonio
 myst-parser
 pydata-sphinx-theme
 pyyaml
+pygments

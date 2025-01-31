@@ -48,6 +48,8 @@ exclude_patterns = []
 # Option for autodoc
 autodoc_default_options = {"show-inheritance": True, "exclude-members": "__weakref__"}
 autoclass_content = "init"
+
+pygments_style = "sphinx"
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for

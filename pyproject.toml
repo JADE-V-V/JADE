@@ -62,5 +62,5 @@ package-dir = {"" = "src"}
 packages = ["jade"]
 
 [tool.setuptools.package-data]
-"*" = ["*.txt", '*.csv', '*.sh', '*.cmd']
+"*" = ["*.txt", '*.csv', '*.sh', '*.cmd', '*.docx', '*.png']
 

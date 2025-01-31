@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import tkinter as tk
+from importlib.resources import as_file, files
 from tkinter import filedialog, messagebox, ttk
 
 import yaml
 
+import jade.resources as res
 from jade.config.status import GlobalStatus
 from jade.helper.aux_functions import VerboseSafeDumper
 
@@ -15,6 +17,10 @@ class PostConfigGUI(tk.Tk):
         self.title("Post-Processing Configuration")
         self.geometry("600x600")
         self.status = status
+
+        with as_file(files(res).joinpath("Jade.png")) as file:
+            iconphoto = tk.PhotoImage(file=file)
+        self.iconphoto(False, iconphoto)
 
         self.create_widgets()
 

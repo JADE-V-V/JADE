@@ -1,9 +1,11 @@
 import tkinter as tk
+from importlib.resources import as_file, files
 from tkinter import filedialog, messagebox, ttk
 
 import yaml
 from ttkthemes import ThemedTk
 
+import jade.resources as res
 from jade.helper.aux_functions import PathLike, VerboseSafeDumper
 from jade.helper.constants import CODE_TAGS
 
@@ -14,6 +16,9 @@ class ConfigGUI:
         self.yaml_libs = yaml_libs
 
         self.window = ThemedTk(theme="radiance")
+        with as_file(files(res).joinpath("Jade.png")) as file:
+            iconphoto = tk.PhotoImage(file=file)
+        self.window.iconphoto(False, iconphoto)
         self.window.title("Configuration GUI")
         self.window.geometry("1200x600")
 

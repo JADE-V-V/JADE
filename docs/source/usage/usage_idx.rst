@@ -8,9 +8,9 @@ Install and Configure
    :maxdepth: 2
    :caption: Installation and Configuration
 
-   usage/installation
-   usage/user_configuraion
-   usage/folders
+   installation
+   user_configuraion
+   folders
 
 JADE execution
 ==============
@@ -18,7 +18,7 @@ JADE execution
    :maxdepth: 2
    :caption: JADE execution
 
-   usage/run
-   usage/post-process
-   usage/tipstricks
-   usage/troubleshooting
+   run
+   post-process
+   tipstricks
+   troubleshooting

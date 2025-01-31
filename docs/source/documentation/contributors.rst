@@ -13,13 +13,13 @@ Currently, new development is largely undertaken by `Fusion For Energy (F4E) <ht
 
 This activity was partially funded by Fusion For Energy under F4E-OPE-1128 contract.
 
-.. image:: img/contrib/nier.png
+.. image:: ../img/contrib/nier.png
     :width: 300
-.. image:: img/contrib/unibo.jpg
+.. image:: ../img/contrib/unibo.jpg
     :width: 300
-.. image:: img/contrib/f4e.jpg
+.. image:: ../img/contrib/f4e.jpg
     :width: 300
-.. image:: img/contrib/UKAEA.png
+.. image:: ../img/contrib/UKAEA.png
     :width: 150
 
 **JADE contributors:**
@@ -62,7 +62,7 @@ This activity was partially funded by Fusion For Energy under F4E-OPE-1128 contr
       - Davide
       - Approver
       - F4E (prev. NIER/UNIBO)
-      - davide.laghi@ext.f4e.europa.eu
+      - davide.laghi@f4e.europa.eu
     * - Sumini
       - Marco
       - Expert

@@ -54,7 +54,7 @@ autoclass_content = "init"
 # a list of builtin themes.
 #
 html_theme = "pydata_sphinx_theme"
-html_logo = "./img/Jade_white.jpg"
+html_logo = "./img/Jade.jpg"
 html_theme_options = {
     "github_url": "https://github.com/JADE-V-V/JADE",
 }

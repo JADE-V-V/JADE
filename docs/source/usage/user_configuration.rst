@@ -15,6 +15,7 @@ This file contains the environmental variables that are used by JADE to run the 
 Here is an example:
 
 .. code-block:: yaml
+
     # parameters related to parallel run
     mpi_tasks: 0  # this controls the number of MPI tasks to be used on a cluster
     openmp_threads: 8  # this controls the number of OpenMP threads to be used during execution

@@ -56,7 +56,7 @@ pygments_style = "sphinx"
 # a list of builtin themes.
 #
 html_theme = "pydata_sphinx_theme"
-html_logo = "./img/Jade.jpg"
+html_logo = "./img/Jade.png"
 html_theme_options = {
     "github_url": "https://github.com/JADE-V-V/JADE",
 }

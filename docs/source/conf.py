@@ -16,8 +16,6 @@ import sys
 sys.path.insert(0, os.path.abspath("../.."))
 import importlib.metadata
 
-import jade
-
 # -- Project information -----------------------------------------------------
 
 project = "JADE"
@@ -25,7 +23,7 @@ copyright = "2023, JADE team"
 author = "JADE Team"
 
 # The full version, including alpha/beta/rc tags
-release = importlib.metadata.version("jade")
+release = "v4.0.0"  # TODO
 
 
 # -- General configuration ---------------------------------------------------

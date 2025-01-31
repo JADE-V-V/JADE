@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import tkinter as tk
 from importlib.resources import as_file, files
-from tkinter import filedialog, messagebox, ttk
+from tkinter import TclError, filedialog, messagebox, ttk
 
 import yaml
 
@@ -19,7 +19,10 @@ class PostConfigGUI(tk.Tk):
         self.status = status
 
         with as_file(files(res).joinpath("Jade.ico")) as file:
-            self.wm_iconbitmap(False, file)
+            try:
+                self.wm_iconbitmap(False, file)
+            except TclError:
+                pass  # seems like it does not work on linux
 
         self.create_widgets()
 

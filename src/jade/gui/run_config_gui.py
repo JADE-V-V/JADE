@@ -1,6 +1,6 @@
 import tkinter as tk
 from importlib.resources import as_file, files
-from tkinter import filedialog, messagebox, ttk
+from tkinter import TclError, filedialog, messagebox, ttk
 
 import yaml
 from ttkthemes import ThemedTk
@@ -17,7 +17,10 @@ class ConfigGUI:
 
         self.window = ThemedTk(theme="radiance")
         with as_file(files(res).joinpath("Jade.ico")) as file:
-            self.window.wm_iconbitmap(False, file)
+            try:
+                self.window.wm_iconbitmap(False, file)
+            except TclError:
+                pass  # it seems it does not work on linux
         self.window.title("Configuration GUI")
         self.window.geometry("1200x600")
 

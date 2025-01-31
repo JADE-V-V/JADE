@@ -56,6 +56,7 @@ are supported for the moment, normal transport libraries and D1S libraries.
 The following is an example of the settings of a transport library:
 
 .. code-block:: yaml
+
     FENDL 3.2c:  # this is the name of the library. It will be used in all outputs
         mcnp:
             path: /path/to/xsdir  # path to the xsdir file
@@ -70,6 +71,7 @@ There is no need to provide paths for the codes that the user does not intend to
 Finally, an example of a D1S library settings:
 
 .. code-block:: yaml
+
     D1SUNED (FENDL 3.1d+EAF2007):
         d1s:
             path: /path/to/xsdir  # path to the xsdir file for the D1SUNED lib

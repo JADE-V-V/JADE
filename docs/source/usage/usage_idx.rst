@@ -19,6 +19,6 @@ JADE execution
    :caption: JADE execution
 
    run
-   post-process
+   postprocessing
    tipstricks
    troubleshooting

@@ -3,7 +3,7 @@ Run
 ###
 
 Before being able to run JADE, the instructions contained in :ref:`install` and
-:ref:`user_configuration` must be followed.
+:ref:`config` must be followed.
 
 Configure the run
 =================
@@ -12,20 +12,18 @@ properly configured the user can select through the GUI which cases to run.
 
 To open the run configuration GUI the user can move to the JADE root directory
 and run from the command line:
-```
-jade --rungui
-```
 
-or 
+    | ``jade --rungui``
 
-```
-python -m jade --rungui
-```
+    or 
+
+    | ``python -m jade --rungui``
+
 
 A window like the one below should open:
 
 .. figure:: ../img/rungui/rungui_bench.PNG
-    :width: 600
+    :width: 800
     :align: center
 
     Benchmark selection TAB
@@ -66,17 +64,16 @@ NPS cut-off
     sufficient statistical convergence but users are free to increase them.
 
 Custom input
-    .. versionadded:: v1.3.0
-        This columns allows to provide custom inputs to the different benchmarks. For the
-        moment, this is used only in the *Sphere Leakage* and *Sphere SDDR* benchmarks where,
-        if a number *n* is specified, this will limit the test to the first *n* isotope and 
-        material simulations (useful for testing).
+    This columns allows to provide custom inputs to the different benchmarks. For the
+    moment, this is used only in the *Sphere Leakage* and *Sphere SDDR* benchmarks where,
+    if a number *n* is specified, this will limit the test to the first *n* isotope and 
+    material simulations (useful for testing).
 
 Each benchmark that has at least one code (or the Only Input flag) selected will appear in the
 "Libraries" tab:
 
 .. figure:: ../img/rungui/lib_tab.PNG
-    :width: 600
+    :width: 800
     :align: center
 
     Libraries selection TAB
@@ -99,12 +96,8 @@ Run the benchmarks
 To run the selected benchmarks with the indicated transport code-library couples the user can
 simply run in the root directory from the command line:
 
-```
-jade --run
-```
+    | ``jade --run``
 
 or 
 
-```
-python -m jade --run
-```
+    | ``python -m jade --run``

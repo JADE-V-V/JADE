@@ -9,7 +9,7 @@ Install and Configure
    :caption: Installation and Configuration
 
    ./installation
-   ./user_configuraion
+   ./user_configuration
    ./folders
 
 JADE execution

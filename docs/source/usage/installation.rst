@@ -60,8 +60,8 @@ Create a jade folder tree
 
 JADE has now been installed as a command line tool.
 To complete the installation, create a new folder where you prefer. This is going to to be the
- <JADE_root> folder. You can have as many JADE tree as you prefer in your machine.
- Now Move into the root directory and run the following command: 
+<JADE_root> folder. You can have as many JADE tree as you prefer in your machine.
+Now Move into the root directory and run the following command: 
 
   | ``jade``
 

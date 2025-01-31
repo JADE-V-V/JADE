@@ -15,11 +15,11 @@ This activity was partially funded by Fusion For Energy under F4E-OPE-1128 contr
 
 .. image:: /img/contrib/nier.png
     :width: 300
-.. image:: source/img/contrib/unibo.jpg
+.. image:: /img/contrib/unibo.jpg
     :width: 300
-.. image:: ../img/contrib/f4e.jpg
+.. image:: /img/contrib/f4e.jpg
     :width: 300
-.. image:: ../img/contrib/UKAEA.png
+.. image:: /img/contrib/UKAEA.png
     :width: 150
 
 **JADE contributors:**

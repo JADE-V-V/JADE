@@ -1,0 +1,179 @@
+# Define anchors to be used in the file.
+# Use _ prefix to avoid confusing the jade parser.
+_cell_id_x: &radii
+  2: 291.97
+  3: 296.44
+  4: 300.91
+  5: 305.38
+  6: 309.85
+  7: 314.32
+  8: 318.79
+  9: 323.26
+  10: 327.73
+  11: 332.2
+  12: 336.67
+  13: 341.14
+  14: 345.61
+  15: 350.08
+  16: 354.55
+  17: 359.02
+  18: 363.49
+  19: 367.96
+  20: 372.43
+  21: 376.9
+  22: 377
+  23: 390.5
+  24: 395.5
+  25: 400.5
+  26: 406.6
+  27: 412.7
+  28: 418.8
+  29: 424.9
+  30: 431
+  31: 436
+  32: 441
+  33: 447.9
+  34: 451
+  35: 455.2
+  36: 458.2
+  37: 465.2
+  38: 468.2
+  39: 473.7
+  40: 476.7
+  41: 481.7
+  42: 484.7
+  43: 487
+  44: 489
+  45: 490
+  46: 493.6
+  47: 493.7
+  48: 494.2
+  49: 495
+  50: 506.6
+  51: 1115
+  52: 1131.3
+  53: 1132.1
+  54: 1132.6
+  55: 1132.7
+  56: 1136.3
+  57: 1137.3
+  58: 1139.3
+  59: 1141.6
+  60: 1144.6
+  61: 1149.6
+  62: 1152.6
+  63: 1158.1
+  64: 1161.1
+  65: 1168.1
+  66: 1171.1
+  67: 1175.3
+  68: 1178.4
+  69: 1185.3
+  70: 1222.8
+  71: 1227.8
+  72: 1232.49
+  73: 1237.18
+  74: 1241.87
+  75: 1246.56
+  76: 1251.25
+  77: 1255.94
+  78: 1260.63
+  79: 1265.32
+  80: 1270.01
+  81: 1274.7
+  82: 1279.7
+  83: 1284.7
+  84: 1300
+  85: 1300.1
+  86: 1304.57
+  87: 1309.04
+  88: 1313.51
+  89: 1317.98
+  90: 1322.45
+  91: 1326.92
+  92: 1331.39
+  93: 1335.86
+  94: 1340.33
+  95: 1344.8
+  96: 1349.27
+  97: 1353.74
+  98: 1358.21
+  99: 1362.68
+  100: 1367.15
+  101: 1371.62
+  102: 1376.09
+  103: 1380.56
+  104: 1385.03
+  105: 1389.5
+# Fluxes
+Neutron flux Vitamin-J 175:
+  concat_option: no_action
+  4: [[replace, {'column': 'Cells', 'values': *radii}]]
+Photon flux (E binned):
+  concat_option: no_action
+  14: [[replace, {'column': 'Cells', 'values': *radii}]]
+Total nuclear heating:
+  concat_option: no_action
+  6: [[replace, {'column': 'Cells', 'values': *radii}]]
+Neutron heating:
+  concat_option: no_action
+  16: [[replace, {'column': 'Cells', 'values': *radii}]]
+Photon heating:
+  concat_option: no_action
+  26: [[replace, {'column': 'Cells', 'values': *radii}]]
+Fast fluence at magnets:
+  concat_option: no_action
+  174: [[replace, {'column': 'Cells', 'values': *radii}]]
+Total neutron flux:
+  concat_option: no_action
+  204: [[replace, {'column': 'Cells', 'values': *radii}]]
+Total photon flux:
+  concat_option: no_action
+  214: [[replace, {'column': 'Cells', 'values': *radii}]]
+# DPA
+DPA in Fe:
+  concat_option: no_action
+  24: [[no_action, {}]]
+DPA in Cu:
+  concat_option: no_action
+  64: [[no_action, {}]]
+DPA in Ni:
+  concat_option: no_action
+  104: [[no_action, {}]]
+# Gas production
+He production in SS316:
+  concat_option: no_action
+  34: [[no_action, {}]]
+H production in SS316:
+  concat_option: no_action
+  44: [[no_action, {}]]
+Tritium production in SS316:
+  concat_option: no_action
+  54: [[no_action, {}]]
+He in CuBeNi:
+  concat_option: no_action
+  74: [[no_action, {}]]
+H in CuBeNi:
+  concat_option: no_action
+  84: [[no_action, {}]]
+T in CuBeNi:
+  concat_option: no_action
+  94: [[no_action, {}]]
+He in Inconel:
+  concat_option: no_action
+  114: [[no_action, {}]]
+H in Inconel:
+  concat_option: no_action
+  124: [[no_action, {}]]
+T in Inconel:
+  concat_option: no_action
+  134: [[no_action, {}]]
+He in Be:
+  concat_option: no_action
+  144: [[no_action, {}]]
+H in Be:
+  concat_option: no_action
+  154: [[no_action, {}]]
+T in Be:
+  concat_option: no_action
+  164: [[no_action, {}]]

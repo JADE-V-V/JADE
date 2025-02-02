@@ -14,8 +14,8 @@ DUMMY_RAW_RESULTS = DUMMY_STRUCT.joinpath("raw_data")
 class TestGlobalStatus:
     def test_init(self):
         status = GlobalStatus(DUMMY_SIMULATIONS, DUMMY_RAW_RESULTS)
-        assert len(status.simulations) == 2
-        assert len(status.raw_data) == 5
+        assert len(status.simulations) == 4
+        assert len(status.raw_data) == 7
 
     def test_was_simulated(self):
         status = GlobalStatus(DUMMY_SIMULATIONS, DUMMY_RAW_RESULTS)
@@ -27,7 +27,7 @@ class TestGlobalStatus:
         status = GlobalStatus(DUMMY_SIMULATIONS, DUMMY_RAW_RESULTS)
         codelibs, benchmarks = status.get_all_raw()
         assert len(codelibs) == 3
-        assert len(benchmarks) == 2
+        assert len(benchmarks) == 3
 
     def test_get_codelibs_from_raw_benchmark(self):
         status = GlobalStatus(DUMMY_SIMULATIONS, DUMMY_RAW_RESULTS)
@@ -37,4 +37,4 @@ class TestGlobalStatus:
     def test_get_benchmark_from_raw_codelib(self):
         status = GlobalStatus(DUMMY_SIMULATIONS, DUMMY_RAW_RESULTS)
         benchmarks = status.get_benchmark_from_raw_codelib("_mcnp_-_FENDL 3.2c_")
-        assert len(benchmarks) == 2
+        assert len(benchmarks) == 3

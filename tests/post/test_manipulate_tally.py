@@ -9,6 +9,7 @@ from src.jade.post.manipulate_tally import (
     condense_groups,
     no_action,
     no_concat,
+    replace_column,
     scale,
     sum_tallies,
 )
@@ -34,6 +35,14 @@ def test_scale():
     df = pd.DataFrame(data)
     result = scale(df.copy(), 2)
     expected_values = [20, 40, 60]
+    assert result["Value"].tolist() == expected_values
+
+
+def test_replace_column():
+    data = {"Energy": [1, 2, 3], "Value": [10, 20, 30]}
+    df = pd.DataFrame(data)
+    result = replace_column(df.copy(), "Value", {10: 5, 20: 15, 30: 25})
+    expected_values = [5, 15, 25]
     assert result["Value"].tolist() == expected_values
 
 

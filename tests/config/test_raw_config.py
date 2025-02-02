@@ -36,3 +36,9 @@ class TestConfigRawProcessor:
             code_folder = Path(CFG_ROOT, code)
             for file in os.listdir(code_folder):
                 cfg = ConfigRawProcessor.from_yaml(Path(code_folder, file))
+
+    def test_aliases(self):
+        file = Path(CFG_ROOT, "mcnp", "ITER_1D.yaml")
+        cfg = ConfigRawProcessor.from_yaml(file)
+        assert len(cfg.results) == 23
+        assert len(cfg.results[0].modify[4][0][1]["values"]) == 104

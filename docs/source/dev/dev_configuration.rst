@@ -44,6 +44,10 @@ tallies themselves can be modified through the use of *modifiers*. The currently
 * ``condense_groups``: takes a binned tallies and condenses into a coarser binning. Two keyargs needs to be passed:
      * *bins*: a list of floats representing the new bin edges.
      * *group_column*: the name of the binning column (e.g. 'Energy').
+* ``replace``: replaces a column values based on a dictionary. Two keyargs needs to be passed:
+     * *column*: the name of the column to be replaced.
+     * *values*: a dictionary where the keys are the values to be replaced and the values are
+       the new values.
 
 More than one modifiers can be applied in series to a single tally.
 If your benchmark requires a new modifier, please refer to :ref:`add_tally_mod`.

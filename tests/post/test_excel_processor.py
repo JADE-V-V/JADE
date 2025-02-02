@@ -37,3 +37,12 @@ class TestExcelProcessor:
         df = pd.read_excel(path_to_file, skiprows=3)
         assert df["C/E"].max() < 1.2
         assert df["C/E"].min() > 0.9
+
+    def test_ITER1D(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/ITER_1D.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("mcnp", "FENDL 3.2c"), ("mcnp", "ENDFB-VIII.0")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()

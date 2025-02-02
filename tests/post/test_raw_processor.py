@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from importlib.resources import as_file, files
 from pathlib import Path
 
@@ -62,3 +63,17 @@ def test_oktavian_raw(tmpdir):
     folder = Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "Oktavian", "Oktavian_Al")
     processor = RawProcessor(cfg, folder, tmpdir)
     processor.process_raw_data()
+
+
+def test_ITER1D_raw(tmpdir):
+    with as_file(RAW_CFG_FILES.joinpath("ITER_1D.yaml")) as f:
+        cfg = ConfigRawProcessor.from_yaml(f)
+    folders = [
+        Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "ITER_1D", "ITER_1D"),
+        Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 2.1c_", "ITER_1D", "ITER_1D"),
+    ]
+    for i, folder in enumerate(folders):
+        path = tmpdir.join(str(i))
+        os.makedirs(path)
+        processor = RawProcessor(cfg, folder, path)
+        processor.process_raw_data()

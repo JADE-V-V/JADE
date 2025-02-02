@@ -143,7 +143,7 @@ class Table(ABC):
             index_names = {k: v for k, v in names.items() if k in df.index.names}
             df.index = df.index.rename(index_names)
         else:
-            df.rename(index=names, inplace=True)
+            df.index.names = [names[df.index.names[0]]]
 
         # Apply changes to the columns
         if isinstance(df.columns, pd.MultiIndex):
@@ -500,7 +500,10 @@ class Formatter:
             if isinstance(col, tuple):
                 # to_check = [str(c) for c in col]
                 # better to consider the 2nd layer as the first will have more space
-                max_header = len(str(col[1]))
+                try:
+                    max_header = len(str(col[1]))
+                except IndexError:
+                    max_header = 0
                 # if the second header is empty, take the first
                 if max_header == 0:
                     max_header = len(str(col[0]))

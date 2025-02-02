@@ -26,6 +26,9 @@ class ConfigRawProcessor:
 
         results = []
         for res_name, dict in cfg.items():
+            # discard keys that start with _, they are aliases
+            if isinstance(res_name, str) and res_name.startswith("_"):
+                continue
             results.append(ResultConfig.from_dict(dict, res_name))
 
         return ConfigRawProcessor(results)
@@ -78,6 +81,7 @@ class TallyModOption(Enum):
     NO_ACTION = "no_action"
     BY_ENERGY = "by_energy"
     CONDENSE_GROUPS = "condense_groups"
+    REPLACE = "replace"
 
 
 class TallyConcatOption(Enum):

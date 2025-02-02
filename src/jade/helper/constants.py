@@ -43,3 +43,18 @@ DEFAULT_SETTINGS_RESTORATION = """
  The application will be now closed. Before restarting the application, please
  follow the instructions in the documentation on how to configure JADE.
 """
+
+ALLOWED_COLUMN_NAMES = [
+    "Energy",
+    "Cells",
+    "time",
+    "tally",
+    "Dir",
+    "User",
+    "Segments",
+    "Multiplier",
+    "Cosine",
+    "Cor A",
+    "Cor B",
+    "Cor C",
+]

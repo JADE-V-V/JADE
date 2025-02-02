@@ -84,12 +84,21 @@ def no_action(tally: pd.DataFrame) -> pd.DataFrame:
     return tally
 
 
+def replace_column(
+    tally: pd.DataFrame, column: str | None = None, values: dict | None = None
+) -> pd.DataFrame:
+    """Replace the values of a column based on the provided dictionary."""
+    tally[column] = tally[column].replace(values)
+    return tally
+
+
 MOD_FUNCTIONS = {
     TallyModOption.LETHARGY: by_lethargy,
     TallyModOption.SCALE: scale,
     TallyModOption.NO_ACTION: no_action,
     TallyModOption.BY_ENERGY: by_energy,
     TallyModOption.CONDENSE_GROUPS: condense_groups,
+    TallyModOption.REPLACE: replace_column,
 }
 
 

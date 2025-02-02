@@ -1,0 +1,87 @@
+Neutron flux:
+  results:
+    - Neutron flux Vitamin-J 175
+  comparison_type: percentage
+  table_type: pivot
+  x: 'Energy'
+  y: 'Cells'
+  value: Value
+  change_col_names: {'Energy': 'Energy [MeV]', 'Cells': 'Radial Position [cm]'}
+  conditional_formatting: {"red": 50, "orange": 20, "yellow": 10}
+#
+Photon flux:
+  results:
+    - Photon flux (E binned)
+  comparison_type: percentage
+  table_type: pivot
+  x: 'Energy'
+  y: 'Cells'
+  value: Value
+  change_col_names: {'Energy': 'Energy [MeV]', 'Cells': 'Radial Position [cm]'}
+  conditional_formatting: {"red": 50, "orange": 20, "yellow": 10}
+#
+Fast fluence magnets:
+  results:
+    - Fast fluence at magnets
+  comparison_type: percentage
+  table_type: pivot
+  x: 'Energy'
+  y: 'Cells'
+  value: Value
+  change_col_names: {'Energy': 'Energy [MeV]', 'Cells': 'Radial Position [cm]'}
+  conditional_formatting: {"red": 50, "orange": 20, "yellow": 10}
+#
+SS316:
+  results:
+    - He production in SS316
+    - H production in SS316
+    - Tritium production in SS316
+    - DPA in Fe
+  comparison_type: percentage
+  table_type: pivot
+  x: 'Cells'
+  y: 'Result'
+  value: Value
+  change_col_names: {'Cells': 'Radial Position [cm]'}
+  conditional_formatting: {"red": 50, "orange": 20, "yellow": 10}
+#
+CuBeNi:
+  results:
+    - He in CuBeNi
+    - H in CuBeNi
+    - T in CuBeNi
+    - DPA in Cu
+  comparison_type: percentage
+  table_type: pivot
+  x: 'Cells'
+  y: 'Result'
+  value: Value
+  change_col_names: {'Cells': 'Radial Position [cm]'}
+  conditional_formatting: {"red": 50, "orange": 20, "yellow": 10}
+#
+Inconel:
+  results:
+    - He in Inconel
+    - H in Inconel
+    - T in Inconel
+    - DPA in Ni
+  comparison_type: percentage
+  table_type: pivot
+  x: 'Cells'
+  y: 'Result'
+  value: Value
+  change_col_names: {'Cells': 'Radial Position [cm]'}
+  conditional_formatting: {"red": 50, "orange": 20, "yellow": 10}
+#
+Beryllium:
+  results:
+    - He in Be
+    - H in Be
+    - T in Be
+  comparison_type: percentage
+  table_type: pivot
+  x: 'Cells'
+  y: 'Result'
+  value: Value
+  change_col_names: {'Cells': 'Radial Position [cm]'}
+  conditional_formatting: {"red": 50, "orange": 20, "yellow": 10}

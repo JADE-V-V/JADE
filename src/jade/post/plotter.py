@@ -206,6 +206,7 @@ class RatioPlot(Plot):
                     drawstyle="steps-pre",
                     label=codelib,
                     marker=marker,
+                    linestyle=LINESTYLES[i],
                 )
                 axes[1].plot(
                     df[mask_right][self.cfg.x],
@@ -214,6 +215,7 @@ class RatioPlot(Plot):
                     drawstyle="steps-pre",
                     label=codelib,
                     marker=marker,
+                    linestyle=LINESTYLES[i],
                 )
                 fig.subplots_adjust(wspace=0.05)
                 # x axis label needs to be specified also for the left plot
@@ -226,6 +228,7 @@ class RatioPlot(Plot):
                     drawstyle="steps-pre",
                     label=codelib,
                     marker=marker,
+                    linestyle=LINESTYLES[i],
                 )
 
         # Plot details

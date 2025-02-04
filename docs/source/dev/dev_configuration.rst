@@ -135,3 +135,52 @@ An example of a *table* configuration is shown below:
     value: Value
     add_error: true
     conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+Plot configuration
+------------------
+mandatory:
+
+* ``results``
+* ``plot_type``
+* ``title``
+* ``x_label``
+* ``y_labels``
+* ``x``
+* ``y``
+
+Optional:
+* ``expand_runs``
+* ``additional_labels``: a dictionary that specifies additional text boxes to be superimposed to the plot.
+        It is a dictionary that can accept only two keys: 'major' and 'minor'. Major labels are bigger and placed
+        inside a box. Major labels appear above the minor labels. The item associated to each key is a list of 
+        tuples that have two elements. The first element is the text to be displayed and the second is the x position
+        of the left corner of the text. Units are the ones of the x-axis of the plot.
+* ``v_lines``: allows to add vertical lines to the plot. It is a dictionary that accepts only two keys:
+        'major' and 'minor'. Major lines are thicker. The item associated to each key is a list of floats that
+         indicate the x position of the line. Units are the ones of the x-axis of the plot.
+* ``plot_args``: a dictionary that specifies the arguments to be passed to a specific plot type. The keys are the arguments
+        names and the values are the arguments values. The list of plot_args parameters available in each plot
+        are described in the plot gallery.
+* ``rectangles``: TODO
+
+-------
+gallery
+-------
+
+Binned
+------
+
+plot_args:
+
+* ``show_error``: if True, an additional subplot is added that includes the statistical error associated to
+    the plotted values.
+
+ratio
+-----
+
+plot_args
+
+* ``split_x``: if True, the x-axis is split in two parts. This is useful if a portion of the x-axis results
+     are not interesting and need to be omitted. It is a tuple/list of two values. The first value is
+     interpreted as the x max limit of the left subplot while the second value is interpreted as the x min limit of the
+     right subplot.

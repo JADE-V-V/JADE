@@ -195,6 +195,15 @@ class RatioPlot(Plot):
             if markers:
                 marker = MARKERS[i]
 
+            keyargs = {
+                "color": COLORS[i],
+                "drawstyle": "steps-pre",
+                "label": codelib,
+                "marker": marker,
+                "linestyle": LINESTYLES[i],
+                "linewidth": 0.7,
+            }
+
             if split_x is not None:
                 x_left, x_right = split_x
                 mask_left = df[self.cfg.x] < x_left
@@ -202,20 +211,12 @@ class RatioPlot(Plot):
                 axes[0].plot(
                     df[mask_left][self.cfg.x],
                     y[mask_left],
-                    color=COLORS[i],
-                    drawstyle="steps-pre",
-                    label=codelib,
-                    marker=marker,
-                    linestyle=LINESTYLES[i],
+                    **keyargs,
                 )
                 axes[1].plot(
                     df[mask_right][self.cfg.x],
                     y[mask_right],
-                    color=COLORS[i],
-                    drawstyle="steps-pre",
-                    label=codelib,
-                    marker=marker,
-                    linestyle=LINESTYLES[i],
+                    **keyargs,
                 )
                 fig.subplots_adjust(wspace=0.05)
                 # x axis label needs to be specified also for the left plot
@@ -224,11 +225,7 @@ class RatioPlot(Plot):
                 axes[0].plot(
                     df[self.cfg.x],
                     y,
-                    color=COLORS[i],
-                    drawstyle="steps-pre",
-                    label=codelib,
-                    marker=marker,
-                    linestyle=LINESTYLES[i],
+                    **keyargs,
                 )
 
         # Plot details

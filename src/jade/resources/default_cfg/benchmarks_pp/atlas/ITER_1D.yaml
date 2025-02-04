@@ -1,0 +1,92 @@
+# Some aliases as they are used in all the plots
+_additional_labels: &lables
+  # the x coordinate indicates the left start of the label
+  major: [["INBOARD", 360], ["OUTBOARD", 1210]]
+  minor: [
+      ["TF Coil", 310],
+      ["VV", 400],
+      ["FW/B/S", 450],
+      ["FW/B/S", 1125],
+      ["VV", 1220],
+      ["TF Coil", 1325]
+  ]
+_v_lines: &lines
+  minor: [377, 436, 506.6, 1115, 1185, 1285]
+_split_x: &split_x
+  - 526
+  - 1095
+#
+Total Neutron flux:
+  results:
+    - Total neutron flux
+  plot_type: ratio
+  title: Total neutron flux in ITER 1D
+  x_label: Radial position [cm]
+  y_labels: neutron flux
+  x: Cells
+  y: Value
+  expand_runs: false
+  additional_labels: *lables
+  v_lines: *lines
+  plot_args:
+    split_x: *split_x
+#
+Total Photon flux:
+  results:
+    - Total photon flux
+  plot_type: ratio
+  title: Total photon flux in ITER 1D
+  x_label: Radial position [cm]
+  y_labels: photon flux
+  x: Cells
+  y: Value
+  expand_runs: false
+  additional_labels: *lables
+  v_lines: *lines
+  plot_args:
+    split_x: *split_x
+#
+Total nuclear heating:
+  results:
+    - Total nuclear heating
+  plot_type: ratio
+  title: Total nuclear heating in ITER 1D
+  x_label: Radial position [cm]
+  y_labels: nuclear heating
+  x: Cells
+  y: Value
+  expand_runs: false
+  additional_labels: *lables
+  v_lines: *lines
+  plot_args:
+    split_x: *split_x
+#
+Neutron heating:
+  results:
+    - Neutron heating
+  plot_type: ratio
+  title: Neutron heating in ITER 1D
+  x_label: Radial position [cm]
+  y_labels: neutron heating
+  x: Cells
+  y: Value
+  expand_runs: false
+  additional_labels: *lables
+  v_lines: *lines
+  plot_args:
+    split_x: *split_x
+#
+Photon heating:
+  results:
+    - Photon heating
+  plot_type: ratio
+  title: Photon heating in ITER 1D
+  x_label: Radial position [cm]
+  y_labels: photon heating
+  x: Cells
+  y: Value
+  expand_runs: false
+  additional_labels: *lables
+  v_lines: *lines
+  plot_args:
+    split_x: *split_x

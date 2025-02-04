@@ -9,7 +9,8 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
 from matplotlib.markers import CARETDOWNBASE, CARETUPBASE
-from matplotlib.ticker import AutoMinorLocator, LogLocator, MultipleLocator
+from matplotlib.patches import Patch, Rectangle
+from matplotlib.ticker import AutoLocator, AutoMinorLocator, LogLocator, MultipleLocator
 
 from jade.config.atlas_config import PlotConfig, PlotType
 
@@ -28,6 +29,7 @@ COLORS = [
 
 # --- linestyles ---
 LINESTYLES = ["--", "-.", ":"] * 50
+MARKERS = ["o", "s", "D", "^", "X", "p", "d", "*"] * 50
 
 
 class Plot(ABC):
@@ -42,14 +44,213 @@ class Plot(ABC):
         if isinstance(axes, Axes):
             axes = [axes]
 
-        axes[0].set_title(self.cfg.title)
+        fig.suptitle(self.cfg.title, y=0.93)
         axes[-1].set_xlabel(self.cfg.x_label)
+
+        # additional common extra features that may be requested
+        if self.cfg.recs:
+            self._build_rectangles(axes[0])
+        if self.cfg.v_lines:
+            for ax in axes:
+                self._add_vlines(ax)
+        if self.cfg.additional_labels:
+            for ax in axes:
+                self._add_labels(ax)
 
         return fig, axes
 
     @abstractmethod
     def _get_figure(self) -> tuple[Figure, Axes]:
         pass
+
+    def _build_rectangles(self, ax: Axes) -> None:
+        options = self.cfg.recs
+        y_min, y_max = ax.get_ylim()
+        # Plot the rects
+        height = y_max - y_min
+
+        df_options = pd.DataFrame(options)
+        df_options.columns = ["name", "color", "xmin", "xmax"]
+
+        for _, rec in df_options.iterrows():
+            # Create the rectangle
+            width = rec["xmax"] - rec["xmin"]
+            origin = (rec["xmin"], y_min)
+            color = rec["color"]
+
+            rectangle = Rectangle(
+                origin, width=width, height=height, color=color, alpha=0.2
+            )
+            ax.add_patch(rectangle)
+
+        # Build the additional legend
+        # Drop duplicates
+        df = df_options[["color", "name"]].drop_duplicates()
+        legend_elements = []
+        for _, row in df.iterrows():
+            patch = Patch(
+                facecolor=row["color"],
+                edgecolor="black",
+                label=row["name"],
+                alpha=0.2,
+            )
+            legend_elements.append(patch)
+
+        additional_legend = ax.legend(
+            handles=legend_elements,
+            loc="upper center",
+            bbox_to_anchor=(0.5, -0.1),
+            fancybox=True,
+            ncol=5,
+            shadow=True,
+        )
+        # Normal legend needs to be reprinted
+        ax.legend(loc="best")
+        # And now the custom one
+        ax.add_artist(additional_legend)
+
+    def _add_vlines(self, ax: Axes) -> None:
+        # major lines
+        if self.cfg.v_lines is None:
+            return
+
+        if "major" in self.cfg.v_lines.keys():
+            lines = self.cfg.v_lines["major"]
+            for line in lines:
+                # Check first if the value is in the axis limits
+                if ax.get_xlim()[0] < line < ax.get_xlim()[1]:
+                    ax.axvline(line, color="black")
+
+        # minor lines
+        if "minor" in self.cfg.v_lines.keys():
+            lines = self.cfg.v_lines["minor"]
+            for line in lines:
+                # Check first if the value is in the axis limits
+                if ax.get_xlim()[0] < line < ax.get_xlim()[1]:
+                    ax.axvline(
+                        line,
+                        color="black",
+                        ymin=0.10,
+                        ymax=0.90,
+                        linestyle="--",
+                        linewidth=1,
+                    )
+
+    def _add_labels(self, ax: Axes) -> None:
+        # major labels
+        if self.cfg.additional_labels is None:
+            return
+
+        if "major" in self.cfg.additional_labels.keys():
+            labels = self.cfg.additional_labels["major"]
+            for label, xpos in labels:
+                bbox_dic = {
+                    "boxstyle": "round,pad=0.5",
+                    "facecolor": "white",
+                    "alpha": 1,
+                }
+                xmin, xmax = ax.get_xlim()
+                xpos_perc = (xpos - xmin) / (xmax - xmin)
+                ax.text(xpos_perc, 0.95, label, bbox=bbox_dic, transform=ax.transAxes)
+
+        if "minor" in self.cfg.additional_labels.keys():
+            # minor labels
+            labels = self.cfg.additional_labels["minor"]
+            for label, xpos in labels:
+                xmin, xmax = ax.get_xlim()
+                xpos_perc = (xpos - xmin) / (xmax - xmin)
+                ax.text(xpos_perc, 0.87, label, transform=ax.transAxes)
+
+
+class RatioPlot(Plot):
+    def _get_figure(self) -> tuple[Figure, Axes]:
+        # get some optional data
+        if self.cfg.plot_args is not None:
+            markers = self.cfg.plot_args.get("markers", False)
+            split_x = self.cfg.plot_args.get("split_x", None)
+        else:
+            markers = False
+            split_x = None
+
+        # split the x axis if requested
+        if split_x is not None:
+            ncols = 2
+            sharey = True
+        else:
+            ncols = 1
+            sharey = False
+        # Initialize plot
+        fig, axes = plt.subplots(ncols=ncols, sharey=sharey)
+
+        if isinstance(axes, Axes):
+            axes = [axes]
+
+        # Plot all data
+        ref_y = self.data[0][1][self.cfg.y]
+
+        for i, (codelib, df) in enumerate(self.data[1:]):
+            y = df[self.cfg.y] / ref_y
+            # Plot
+            marker = None
+            if markers:
+                marker = MARKERS[i]
+
+            if split_x is not None:
+                x_left, x_right = split_x
+                mask_left = df[self.cfg.x] < x_left
+                mask_right = df[self.cfg.x] >= x_right
+                axes[0].plot(
+                    df[mask_left][self.cfg.x],
+                    y[mask_left],
+                    color=COLORS[i],
+                    drawstyle="steps-pre",
+                    label=codelib,
+                    marker=marker,
+                )
+                axes[1].plot(
+                    df[mask_right][self.cfg.x],
+                    y[mask_right],
+                    color=COLORS[i],
+                    drawstyle="steps-pre",
+                    label=codelib,
+                    marker=marker,
+                )
+                fig.subplots_adjust(wspace=0.05)
+                # x axis label needs to be specified also for the left plot
+                axes[0].set_xlabel(self.cfg.x_label)
+            else:
+                axes[0].plot(
+                    df[self.cfg.x],
+                    y,
+                    color=COLORS[i],
+                    drawstyle="steps-pre",
+                    label=codelib,
+                    marker=marker,
+                )
+
+        # Plot details
+        axes[0].legend(loc="best")
+        axes[0].set_ylabel(f"Ratio of {self.cfg.y} - (vs {self.data[0][0]})")
+
+        for ax in axes:
+            # Tiks positioning and dimensions
+            ax.xaxis.set_major_locator(AutoLocator())
+            ax.yaxis.set_major_locator(AutoLocator())
+            ax.xaxis.set_minor_locator(AutoMinorLocator())
+            ax.yaxis.set_minor_locator(AutoMinorLocator())
+
+            ax.tick_params(which="major", width=1.00, length=5)
+            ax.tick_params(which="minor", width=0.75, length=2.50)
+
+            # Grid
+            ax.grid(True, which="major", linewidth=0.50)
+            ax.grid(True, which="minor", linewidth=0.20)
+
+        # # Limit the x-axis if needed
+        # if xlimits is not None:
+        #     ax.set_xlim(xlimits[0], xlimits[1])
+
+        return fig, axes
 
 
 class BinnedPlot(Plot):
@@ -221,10 +422,6 @@ class BinnedPlot(Plot):
         return fig, axes
 
 
-class RatioPlot(Plot):
-    pass
-
-
 class ExpPlot(Plot):
     pass
 
@@ -256,6 +453,8 @@ class PlotFactory:
     ) -> Plot:
         if plot_config.plot_type == PlotType.BINNED:
             return BinnedPlot(plot_config, data)
+        elif plot_config.plot_type == PlotType.RATIO:
+            return RatioPlot(plot_config, data)
         else:
             raise NotImplementedError(
                 f"Plot type {plot_config.plot_type} not implemented"

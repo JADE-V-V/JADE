@@ -9,7 +9,7 @@ from jade.resources import default_cfg
 EXCEL_ROOT = files(default_cfg).joinpath("benchmarks_pp/atlas")
 
 
-class TestConfigExcelProcessor:
+class TestConfigAtlasProcessor:
     def test_all_default_files(self):
         for path in os.listdir(EXCEL_ROOT):
             if path.endswith(".yml") or path.endswith(".yaml"):

@@ -1,199 +1,262 @@
-########################
-Insert Custom Benchmarks
-########################
+###################
+Add a new benchmark
+###################
 
 The easiest way to contribute to JADE is to widen its benchmarks suite.
 
-This section of the guide describes how to add custom benchmarks to the JADE suite. The procedures
-necessary to implement new computational and experimental benchmarks are different and are
-described respectively in :ref:`customcompbench` and :ref:`customexpbench`.
+This section of the guide describes how to add custom benchmarks to the JADE suite.
 
-.. _customcompbench:
+Where should I put the benchmarks input files?
+==============================================
 
-Insert Custom Computational Benchmark
-=====================================
-Implementing a new computational benchmark is relatively easy and, theoretically, no additional
-code is required. The procedure is the following:
+The input files for the benchmarks do not reside in JADE repository. If your benchmark can be freely
+distributed please upload it to the the IAEA open-source repository 
+`here https://github.com/IAEA-NDS/open-benchmarks/tree/main/jade_open_benchmarks`_. You will find 
+more detailed instructions on where to position the files directly in the repository.
+In case your benchmark is SINBAD derived and you are a SINBAD user, consider adding it to the
+new SINBAD GitLab repository (coming soon).
+If none of the above cases apply but you still would like to have some form of version
+control on your benchmark (strongly recommended), you can upload your input files to the
+privatly hosted GitLab of Fusion For Energy.
+For any doubt regarding the upload of benchmark inputs please contact davide.laghi@f4e.europa.eu.
 
-#. Once the benchmark input has been finalised, save it as ``<JADE_root>\Benchmark_Inputs\<benchmark_name>\<code>\<benchmark_name>.i``. 
-   Codes currently supported are MCNP, OpenMC and Serpent
-#. Add the benchmark to the main configuration file in the computational sheet. See :ref:`compsheet`
-   for additional information on this. The folder name in the path above should reflect the 'Folder Name' entered in
-   the configuration file. 
-#. [OPTIONAL] If external weight windows (WW) are used, the WW file must be named *wwinp* and inserted in
-   the same folder as the input file above. 
-#. Create a custom post-processing configuration file as described in :ref:`ppconf` and save it in
-   ``<JADE_root>\Configuration\Benchmarks_Configuration\<name>.xlsx``
+Different transport codes have different needs. Hereafter, the main requirements for each type
+of inputs are specified.
 
-.. note::
-    The benchmark input should not contain any STOP paramaters or NPS card (this is regulated by the
-    main configuration file).
-.. warning::
-    Benchmark input file name cannot end with 'o' or 'm'.
+MCNP
+----
 
-.. _customexpbench:
+- The input name shall be '<benchmark_name>.i'
+- weight windows file (if present) should be named 'wwinp'
 
-Insert Custom Experimental Benchmark
-====================================
-Inserting a custom experimental benchmark is slightly more complex, but a significant higher order
-of customization is guaranteed.
-Steps 1) and 2) of the computational benchmarks procedure still need to be followed but then some
-additional coding needs to be performed, specifically, a new child of the :ref:`expoutputclass`
-class needs to be defined inside ``<JADE_root>\Code\jade\expoutput.py``.
-In order to do that, at least the three abstract methods ``_processMCNPdata()``, ``_pp_excel_comparison()``
-and ``_build_atlas()`` need to be implemented in the new class.
-Once this has been done, a few other adjustments need to be done to the code.
+D1SUNED
+-------
 
-.. _calloutput:
+- MCNP requirements apply
+- A '<benchmark_name>_irrad' and '<benchmark_name>_react' files should also be provided.
+  If the reac file is not provided, the code will generate one automatically. All the isotopes
+  contained in the input will be translated to the activation library if there is at least
+  one decay pathway that can result into one of the daughters listed in the irrad file.
+- The benchmark input should not contain any STOP paramaters or NPS card.
 
-Call the right Output class
----------------------------
-In ``<JADE_root>\Code\jade\postprocess.py``, the function ``_get_output()`` controls the creation of the
-benchmark object during post-processing depending on the benchmark. Here an *elif* statement needs
-to be added to ensure that the newly created custom class is called when generating the output for
-the custom added experimental benchmark. Here is an example of how the FNG benchmark was added:
+OpenMC
+------
+TODO
 
-.. code-block:: python
+Serpent
+-------
+TODO
 
-    ...
+Experimental Data
+-----------------
+Experimental data needs to be provided in the form of .csv files. These files should be named
+exactly like the ones produced by the raw data processing and have the same structure.
 
-    elif testname == 'FNG':
-        if action == 'compare':
-            out = expo.FNGOutput(lib, testname, session, multiplerun=True)
-        elif action == 'pp':
-            print(exp_pp_message)
-            return False
-    
-    ...
+Add the raw config file
+=======================
 
-The user should just substitute ``FNG`` with the name of the benchmark input and ``FNGOutput`` with
-the newly created class. Attention should be paid also to the ``multiplerun`` keyword, set True if
-the benchmark is actually composed by more than one input (i.e. multiple MCNP/D1S runs).
+The raw processing configuration file contains the instructions to transition from a transport-code
+dependent and tally-based output to a .csv *result* which will be completely transport-code independent.
+The objective of the processed raw data is to be a strong interface 
+towards JADE post-processing but also towards other post-processing tools such as the
+JAD web-app or, possibly, third-party apps. 
 
-Additional actions for multi-run benchmarks
--------------------------------------------
-.. warning::
-    these next actions need to be performed **only** if the benchmark is composed by more than one input.
+The starting point for the processing of the raw data is a number of parsed tallies. JADE processes the
+different codes outputs and produces a pandas DataFrame for each tally of the simulation.
+Only a fixed number of possible binnings are accepted and their name has been standardadized
+across the different transport codes. The binnings are the following:
 
-In ``<JADE_root>\Code\jade\status.py`` the name of the benchmark input needs to be added to the MULTI_TEST
+.. _allowed_binnings:
 
-.. code-block:: python
+.. list-table:: Allowed binnings
+        :widths: 50
+        :header-rows: 1
 
-    MULTI_TEST = ['Sphere', 'Oktavian', 'SphereSDDR', 'FNG']
+        * - **Admissible column names**
+        * - Energy
+        * - Cells
+        * - time
+        * - tally
+        * - Dir
+        * - User
+        * - Segments
+        * - Cosine
+        * - Cor A (not fully supported)
+        * - Cor B (not fully supported)
+        * - Cor C (not fully supported)
 
-In ``<JADE_root>\Code\jade\computational.py`` the function ``executeBenchmarksRoutines`` is responsible for
-the generation and run of the benchmarks during a JADE session. The modification here is to be performed
-in the part that is responsible for choosing the Test object to be used depending on the benchmark.
-Here is the code snippet of interest: 
+Raw data processing can be different depending on the transport code that is used. The files are located
+at ``<JADE_root>/cfg/benchmarks_pp/raw``. When contributing to the JADE codebase, developers should
+add their files in ``jade/resources/default_cfg/benchmarks_pp/raw``.
+The raw data processing configuration files are written in YAML format. The name of the file must be the 
+same name of the benchmark.
 
-.. code-block:: python
+A *result* can be obtained from the concatenation of one or more tallies (i.e. DataFrames)
+and the tallies themselves can be modified through the use of *modifiers*.
+The currently supported modifiers are:
 
-    ...
+* ``no_action``: no action is taken on the tally. No arguments are expected.
+* ``scale``: the tally is scaled by a factor. The *factor* is expected as key argument. 
+* ``lethargy``: a neutron flux tally is expected and converted to a neutron flux per unit lethargy.
+     No arguments are expected.
+* ``by_energy``: a flux tally is expected and converted to a flux per unit energy.
+     No arguments are expected.
+* ``condense_groups``: takes a binned tallies and condenses into a coarser binning. Two keyargs needs to be passed:
+     * *bins*: a list of floats representing the new bin edges.
+     * *group_column*: the name of the binning column (e.g. 'Energy').
+* ``replace``: replaces a column values based on a dictionary. Two keyargs needs to be passed:
+     * *column*: the name of the column to be replaced.
+     * *values*: a dictionary where the keys are the values to be replaced and the values are
+       the new values.
 
-    # Handle special cases
-    if testname == 'Sphere Leakage Test':
-        test = testrun.SphereTest(*args)
+More than one modifiers can be applied in series to a single tally.
+If your benchmark requires a new modifier, please refer to :ref:`add_tally_mod`.
 
-    elif testname == 'Sphere SDDR':
-        test = testrun.SphereTestSDDR(*args)
+Once the modifiers have been applied, if the *result** is composed by more than one tally,
+a concatenation option needs to be provided. The currently supported concatenation options are:
 
-    elif fname == 'Oktavian':
-        test = testrun.MultipleTest(*args)
+* ``no_action``: perform no concatenation operation. (used when only one tally is present)
+* ``sum``: the tallies are summed.
+* ``concat``: simple pd.concat() operation where the rows of one tally are added to the other.
+* ``subtract``: the tallies are substracted (in the order they are provided).
+* ``ratio``: only two tallies are expected. The first is divided by the second.
 
-    elif fname == 'FNG':
-        test = testrun.MultipleTest(*args, TestOb=testrun.FNGTest)
+If your benchmark requires a new way to combine tallies, please refer to :ref:`add_tally_concat`.
 
-    else:
-        test = testrun.Test(*args)
-    
-    ...
+An example of a *result* configuration is shown below:
 
-The default option is to simply create a ``Test`` object. Clearly, if a children was defined
-specifically for the new experimental benchmark, an option would need to be added here.
-If the benchmark is a multirun one, an additional *elif* statement needs to be added similarly
-to what has been done for the FNG benchmark.
+.. code-block:: yaml
 
-.. _insbin:
+  # Result configuration. the result name can contain spaces.
+  result name:
+    concat_option: sum  # The concatenation option 'sum' is used.
+    44: [[no_action, {}]]  # Example of tally that is left untouched. 44 is the tally identifier used in the transport code.
+    46: [[scale, {"factor": 1e5}], [lethargy, {}]]  # Example of tally that is scaled and converted to flux per unit lethargy.
 
-Insert binned-value plot experimental benchmarks
-------------------------------------------------
-Experimental results often come as quantities like spectra, leakage fluxes, etc.
-binned in energy or time. For this reason, a standard way of post-processing this kind
-of data has been introduced in JADE, to speed-up the insertion process and to remove the need 
-of adding code. The idea is to organize the benchmark by means of an Excel configuration file,
-which is more user-friendly than writing new code. The main steps to follow to
-introduce a binned-value data benchmark are the following:
 
-* All steps mentioned above for the insertion of a generic benchmark are still valid
-  and should be followed also in this case. Also the folder structure is the usual one.
-* As a general rule, to each tally of each in put file it corresponds a *.csv* file in Experimental Results
-  data folder.
-* Benchmark input filepath should be ``<JADE_root>\Benchmark_Inputs\<benchmark_name>\<code>\<benchmark_name>.i``.
-* For multiple run benchmarks, the filepath should be ``<JADE_root>\Benchmarks_Inputs\<benchmark_name>\<benchmark_name_input_name>\<code>\<benchmark_name>_<input_name>.i``.
-* The name of the experimental data file corresponding to a given tally in a given benchmark
-  is supposed to be: *BenchmarkName_TallyNumber.csv*, and it must be put in
-  ``<JADE_root>\Experimental_Results\<benchmark_name>\``.
-* If the benchmark foresees multiple runs, the filename must be set as: BenchmarkName_InputName_TallyNumber.csv
-  and must be put in ``<JADE_root>\Experimental_Results\<benchmark_name>\<input_name>\``
-* Tallies in MCNP input should be binned only on one variable, e.g. only energy or
-  only time (JADE doesn't foresee dependency on more than one independent variable)
-  and should not include total bins (they are eventually ignored by JADE).
-* In ``expoutput.py`` there is the global variable (dictionary) ``TALLY_NORMALIZATION`` which
-  is used to select the normalization type of the MCNP results (e.g. in terms of
-  lethargy or energy bins width).
-* Data in .csv experimental data files should follow some standard rules:
-    #. The name of the first column should be equal to: ``X Quantity [unit]``, where 
-       ``X Quantity`` can be both ``Energy`` or ``Time``. The code could be easily
-       updated to include also other binnings, e.g. Cosine bins. ``unit`` should correspond
-       to the MCNP standard unit of the binned quantity.
-    #. Data in first column should correspond to the upper values of the bins of the quantity
-       and should be in ascending order.
-    #. The second column name should be ``Y Quantity [unit]``, e.g. ``Fluence``, ``Leakage flux``, etc.
-    #. Data in the second column should be the final data which is to be printed
-       in the plot. No further processing and normalizations are foreseen by the code.
-    #. The last column should be named ``Relative error [-]`` and should contain 
-       the values of the total relative experimental error of that bin, not in percentage.
-* Do the things explained in :ref:`calloutput` by using the ``SpectrumOutput`` class.
-* Setup the benchmark configuration file in ``<JADE_root>\Configuration\Benchmarks_Configuration`` folder
-  as explained in :ref:`spectrumconfig`.
-* In case of multiple runs, the same tally number should be used for the same quantity in all
-  MCNP input files, e.g. tally number 14 in :ref:`tiara` benchmark should correspond
-  for the sake of simplicity to the on-axis neutron flux in all MCNP inputs.
+.. _add_tally_mod:
 
-Here an example of a .csv experimental data file structure is reported:
+Implement new tally modifier
+----------------------------
 
-.. figure:: /img/dev_guide/Example_exp_data.PNG
-    :width: 600
-    :align: center
-    
-    Example of .csv experimental file for SpectrumOutput class
+It may be that your new benchmark requires a new tally modifier. Adding a new modifier to JADE is pretty simple.
 
-.. _insbinmul:
+#. Go to ``jade/config/raw_config.py`` and add your new modifier option to the ``TallyModOption`` enum class.
+#. Add a function to modify the tally in ``jade/post/manipulate_tally.py``. This function should take as
+    the only positional argument a dataframe (the tally). Keyword arguments can be added if needed. return type
+    must be a pandas dataframe.
+#. Link the function to the enum adding it to the ``MOD_FUNCTIONS`` dictionary that can be found in the same file.
+#. Add a test for your new modifier in ``jade/tests/post/test_manipulate_tally.py``.
+#. Add your new option to the available modifiers in the documentation.
 
-Insert multiple tallies in plot
-------------------------------------------------
-In order to visualize data in a more compact way and to have a direct comparison of
-the differences between different cases, it is often useful to show more than one 
-plot in the same figure. For instance, the following picture is taken from :ref:`fnstof` ``Atlas``
-and shows how the spectra acquired in the 5 different detectors' locations are grouped
-in the same plot: 
+.. _add_tally_concat:
 
-.. figure:: /img/dev_guide/FNS-TOF_atlas.jpg
-    :width: 600
-    :align: center
+Implement new tallies combinator
+--------------------------------
+If instead you need to add a new way to combine tallies, you should:
 
-    Leakage lethargy fluxes from 5 different detetors' locations in FNS-TOF experiment
+#. Go to ``jade/config/raw_config.py`` and add your new concat option to the ``TallyConcatOption`` enum class.
+#. Add a function to concat the tallies in ``jade/post/manipulate_tally.py``. This function should take as
+    the only positional argument a list of dataframes (the tallies). Return type must be a pandas dataframe.
+#. Link the new function to the enum adding it to the ``CONCAT_FUNCTIONS`` dictionary that can be found in the same file.
+#. Add a test for your new modifier in ``jade/tests/post/test_manipulate_tally.py``.
+#. Add your new option to the available concat options in the documentation.
 
-To avoid the overlapping of the plots, both the tally results and experimental data
-can also be multiplied by a factor. C/E comparisons are then printed for each tally
-in the following page of the ``Atlas``.
+Add the excel config file
+=========================
 
-To get this kind of plots is enough to follow the same steps mentioned in :ref:`insbin`,
-but the class ``MultipleSpectrumOutput`` must be used. All the other parameters are set in
-the related configuration file (see :ref:`multspectrumconfig`)
+The excel configuration files are located at ``<JADE_root>/cfg/benchmarks_pp/excel``. When contributing to the JADE codebase,
+developers should add their files in ``jade/resources/default_cfg/benchmarks_pp/excel``.
+These files are transport code independent and they act on the processed raw data. The configuration is written in YAML format.
+The name of the file must be the same name of the benchmark. 
+The excel configuration files are used to produce the excel file that will contain post-processed comparisons
+between different code-lib simulation results.
 
-In the configuration files, the user can also set the factor by which the experimental data
-and the MCNP results are multiplied. The factor is set in the ``<JADE_root>\Configuration\Benchmarks_Configuration\<benchmark_name>.xlsx``
-configuration file; the factor is set in the ``Multiplying factor`` column, for
-each individual tally. This is useful to avoid superposition of the plots from different
-tallies, and to have a direct comparison of the differences between different cases.
+The minimum unit for excel post-processing is the *table*. A table can be a single raw *result* or some kind of
+combinations of them. In the configuration of each *table* the dev has to specify the *results* that are used
+in the table, a type of comparisons (e.g. absolute difference), and then a number of options which will control
+how the compared data is presented in the excel file.
+When more than one *result* is used in a table, they all are combined in a single pandas dataframe and an 
+extra column called "Result" is added to the dataframe to distinguish the different results.
+
+The mandatory options to include in a *table* configurations are:
+
+* ``results``: a list of *results* that are used in the table. These names must be the same as the ones used in
+     the raw data configuration.
+* ``comparison_type``: the type of comparison that is done between the *results* coming from two different lib-code couples.
+     The currently supported comparisons are:
+        * ``absolute``: the absolute difference between the two simulations.
+        * ``percentage``: the percentage difference between the two simulations.
+        * ``ratio``: the ratio between the two simulations.
+* ``table_type``: the type of table that is produced. The currently supported types are:
+        * ``simple``: The starting data is simply the dataframe itself.
+        * ``pivot``: a pivot table is produced. This requires to specify also the ``value`` option.
+* ``x``: the name of the column that will be used as the x-axis in the table.
+* ``y``: the name of the column that will be used as the y-axis in the table.
+
+The optional configurations that can be included in a *table* are:
+
+* ``value``: to be provided only for pivot tables. This is the columns name that will be used for the pivot.
+* ``add_error``: if True, the errors of both simulations will be added to the table.
+* ``conditional_formatting``: a dictionary that specifies the values to be used as thresholds 
+        for the conditional color formatting. As an example, if ``{"red": 20, "orange": 10, "yellow": 5}`` is
+        provided, the table cells will be colored in red if the difference between the two simulations is greater than 20,
+        in orange if it is greater than 10 and in yellow if it is greater than 5 and green otherwise.
+* ``change_col_names``: a dictionary that specifies the new names for the columns. The keys are the original column names
+        and the values are the new names. This will be applied as a last operation before dumping the df.
+
+An example of a *table* configuration is shown below:
+
+.. code-block:: yaml
+
+  comparison %:  # name that will appear in the excel sheet
+    results:  # the list of raw *results* that are used in the table
+        - Leakage neutron flux
+        - Leakage photon flux
+        - Neutron heating
+        - Photon heating
+        - T production
+        - He ppm production
+        - DPA production
+    comparison_type: percentage
+    table_type: pivot
+    x: Case  # this is the column identify the different cases/runs in a multi-run benchmark
+    y: [Result, Energy]  # note that also multi-index y axis are supported for pivot tables
+    value: Value
+    add_error: true
+    conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+
+Add the atlas config file
+=========================
+
+mandatory:
+
+* ``results``: a list of *results* that are used in the table.
+    These names must be the same as the ones used in the raw data configuration.
+    The effect of selection more than one results is that all *result* dataframe are combined thanks
+    to an extra column called "Result" that is added to the global dataframe.
+* ``plot_type``: the type of plot to be produced. You can check which type of plots are
+    available in JADE in the :ref:`plot_types` section.
+* ``title``: title of the plot.
+* ``x_label``: label of the x-axis.
+* ``y_labels``: label of the y-axis (in some cases more than one label can be provided).
+* ``x``: column name that will be used as the x-axis in the plot. Accepted names are listed in :ref:`allowed_binnings`.
+* ``y``: column name that will be used as the y-axis in the plot. Accepted names are listed in :ref:`allowed_binnings`.
+
+Optional:
+* ``expand_runs``: By default true. If the benchmark consisted of more than one run, the results have been combined in the
+       global results dataframe adding a 'Case' column. If expand_runs is set to true, the plot will be produced for each
+       case/run separately.
+* ``additional_labels``: a dictionary that specifies additional text boxes to be superimposed to the plot.
+        It is a dictionary that can accept only two keys: 'major' and 'minor'. Major labels are bigger and placed
+        inside a box. Major labels appear above the minor labels. The item associated to each key is a list of 
+        tuples that have two elements. The first element is the text to be displayed and the second is the x position
+        of the left corner of the text. Units are the ones of the x-axis of the plot.
+* ``v_lines``: allows to add vertical lines to the plot. It is a dictionary that accepts only two keys:
+        'major' and 'minor'. Major lines are thicker. The item associated to each key is a list of floats that
+         indicate the x position of the line. Units are the ones of the x-axis of the plot.
+* ``plot_args``: a dictionary that specifies the arguments to be passed to a specific plot type. The keys are the arguments
+        names and the values are the arguments values. The list of plot_args parameters available in each plot
+        are described in the plot gallery.
+* ``rectangles``: TODO

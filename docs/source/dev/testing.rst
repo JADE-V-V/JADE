@@ -58,20 +58,6 @@ Testing in JADE
 Unit testing in JADE is defined and run with the help of the ``pytest`` module
 while the code test coverage is monitored through the ``coverage`` one.
 
-The automatic testing is performed each time there is a merge operation on the
-main JADE branch on GitHub although, at any time, the user may test the code throgh the
-following steps:
-
-#. Open an Anaconda prompt and activate jade environment;
-#. Change directory to ``<JADE_root>\Code``;
-#. run:
-   
-   ``pytest --cov=. --cov-report html -cov-config="jade.coveragerc"``
-
-This will automatically collect and run all tests contained in 
-``<JADE_root>\Code\tests`` while also providing an html index with detailed
-information about the code coverage that can be found in
-``<JADE_root>\Code\htmlcov\index.html``.
-
-The routine for continuous integration in GitHub are specified in
-``<JADE_root>\Code\.github\workflows``.
+The automatic testing and coverage reporting is performed automatically to pull requests and public
+branches but developers are strongly recommended to run the tests locally
+before issuing a pull request.

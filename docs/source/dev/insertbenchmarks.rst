@@ -26,18 +26,18 @@ of inputs are specified.
 MCNP
 ----
 
-- The input name shall be '<benchmark_name>.i'
-- weight windows file (if present) should be named 'wwinp'
+- The input name shall be ``<benchmark_name>.i``
+- weight windows file (if present) should be named ``wwinp``
 
 D1SUNED
 -------
 
 - MCNP requirements apply
-- A '<benchmark_name>_irrad' and '<benchmark_name>_react' files should also be provided.
+- A ``<benchmark_name>_irrad`` and ``<benchmark_name>_react`` files should also be provided.
   If the reac file is not provided, the code will generate one automatically. All the isotopes
   contained in the input will be translated to the activation library if there is at least
   one decay pathway that can result into one of the daughters listed in the irrad file.
-- The benchmark input should not contain any STOP paramaters or NPS card.
+- The benchmark input should not contain any ``STOP`` paramaters or ``NPS`` card.
 
 OpenMC
 ------
@@ -98,16 +98,16 @@ The currently supported modifiers are:
 * ``no_action``: no action is taken on the tally. No arguments are expected.
 * ``scale``: the tally is scaled by a factor. The *factor* is expected as key argument. 
 * ``lethargy``: a neutron flux tally is expected and converted to a neutron flux per unit lethargy.
-     No arguments are expected.
+  No arguments are expected.
 * ``by_energy``: a flux tally is expected and converted to a flux per unit energy.
-     No arguments are expected.
+  No arguments are expected.
 * ``condense_groups``: takes a binned tallies and condenses into a coarser binning. Two keyargs needs to be passed:
-     * *bins*: a list of floats representing the new bin edges.
-     * *group_column*: the name of the binning column (e.g. 'Energy').
+  * *bins*: a list of floats representing the new bin edges.
+  * *group_column*: the name of the binning column (e.g. 'Energy').
 * ``replace``: replaces a column values based on a dictionary. Two keyargs needs to be passed:
-     * *column*: the name of the column to be replaced.
-     * *values*: a dictionary where the keys are the values to be replaced and the values are
-       the new values.
+  * *column*: the name of the column to be replaced.
+  * *values*: a dictionary where the keys are the values to be replaced and the values are
+    the new values.
 
 More than one modifiers can be applied in series to a single tally.
 If your benchmark requires a new modifier, please refer to :ref:`add_tally_mod`.
@@ -245,18 +245,19 @@ mandatory:
 * ``y``: column name that will be used as the y-axis in the plot. Accepted names are listed in :ref:`allowed_binnings`.
 
 Optional:
+
 * ``expand_runs``: By default true. If the benchmark consisted of more than one run, the results have been combined in the
-       global results dataframe adding a 'Case' column. If expand_runs is set to true, the plot will be produced for each
-       case/run separately.
+  global results dataframe adding a 'Case' column. If expand_runs is set to true, the plot will be produced for each
+  case/run separately.
 * ``additional_labels``: a dictionary that specifies additional text boxes to be superimposed to the plot.
-        It is a dictionary that can accept only two keys: 'major' and 'minor'. Major labels are bigger and placed
-        inside a box. Major labels appear above the minor labels. The item associated to each key is a list of 
-        tuples that have two elements. The first element is the text to be displayed and the second is the x position
-        of the left corner of the text. Units are the ones of the x-axis of the plot.
+  It is a dictionary that can accept only two keys: 'major' and 'minor'. Major labels are bigger and placed
+  inside a box. Major labels appear above the minor labels. The item associated to each key is a list of 
+  tuples that have two elements. The first element is the text to be displayed and the second is the x position
+  of the left corner of the text. Units are the ones of the x-axis of the plot.
 * ``v_lines``: allows to add vertical lines to the plot. It is a dictionary that accepts only two keys:
-        'major' and 'minor'. Major lines are thicker. The item associated to each key is a list of floats that
-         indicate the x position of the line. Units are the ones of the x-axis of the plot.
+  'major' and 'minor'. Major lines are thicker. The item associated to each key is a list of floats that
+  indicate the x position of the line. Units are the ones of the x-axis of the plot.
 * ``plot_args``: a dictionary that specifies the arguments to be passed to a specific plot type. The keys are the arguments
-        names and the values are the arguments values. The list of plot_args parameters available in each plot
-        are described in the plot gallery.
+  names and the values are the arguments values. The list of plot_args parameters available in each plot
+  are described in the plot gallery.
 * ``rectangles``: TODO

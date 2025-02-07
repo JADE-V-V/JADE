@@ -11,7 +11,7 @@ Where should I put the benchmarks input files?
 
 The input files for the benchmarks do not reside in JADE repository. If your benchmark can be freely
 distributed please upload it to the the IAEA open-source repository 
-`here https://github.com/IAEA-NDS/open-benchmarks/tree/main/jade_open_benchmarks`_. You will find 
+`here <https://github.com/IAEA-NDS/open-benchmarks/tree/main/jade_open_benchmarks>`_. You will find 
 more detailed instructions on where to position the files directly in the repository.
 In case your benchmark is SINBAD derived and you are a SINBAD user, consider adding it to the
 new SINBAD GitLab repository (coming soon).
@@ -102,12 +102,13 @@ The currently supported modifiers are:
 * ``by_energy``: a flux tally is expected and converted to a flux per unit energy.
   No arguments are expected.
 * ``condense_groups``: takes a binned tallies and condenses into a coarser binning. Two keyargs needs to be passed:
+  
   * *bins*: a list of floats representing the new bin edges.
   * *group_column*: the name of the binning column (e.g. 'Energy').
 * ``replace``: replaces a column values based on a dictionary. Two keyargs needs to be passed:
+
   * *column*: the name of the column to be replaced.
-  * *values*: a dictionary where the keys are the values to be replaced and the values are
-    the new values.
+  * *values*: a dictionary where the keys are the values to be replaced and the values are the new values.
 
 More than one modifiers can be applied in series to a single tally.
 If your benchmark requires a new modifier, please refer to :ref:`add_tally_mod`.
@@ -133,35 +134,6 @@ An example of a *result* configuration is shown below:
     44: [[no_action, {}]]  # Example of tally that is left untouched. 44 is the tally identifier used in the transport code.
     46: [[scale, {"factor": 1e5}], [lethargy, {}]]  # Example of tally that is scaled and converted to flux per unit lethargy.
 
-
-.. _add_tally_mod:
-
-Implement new tally modifier
-----------------------------
-
-It may be that your new benchmark requires a new tally modifier. Adding a new modifier to JADE is pretty simple.
-
-#. Go to ``jade/config/raw_config.py`` and add your new modifier option to the ``TallyModOption`` enum class.
-#. Add a function to modify the tally in ``jade/post/manipulate_tally.py``. This function should take as
-    the only positional argument a dataframe (the tally). Keyword arguments can be added if needed. return type
-    must be a pandas dataframe.
-#. Link the function to the enum adding it to the ``MOD_FUNCTIONS`` dictionary that can be found in the same file.
-#. Add a test for your new modifier in ``jade/tests/post/test_manipulate_tally.py``.
-#. Add your new option to the available modifiers in the documentation.
-
-.. _add_tally_concat:
-
-Implement new tallies combinator
---------------------------------
-If instead you need to add a new way to combine tallies, you should:
-
-#. Go to ``jade/config/raw_config.py`` and add your new concat option to the ``TallyConcatOption`` enum class.
-#. Add a function to concat the tallies in ``jade/post/manipulate_tally.py``. This function should take as
-    the only positional argument a list of dataframes (the tallies). Return type must be a pandas dataframe.
-#. Link the new function to the enum adding it to the ``CONCAT_FUNCTIONS`` dictionary that can be found in the same file.
-#. Add a test for your new modifier in ``jade/tests/post/test_manipulate_tally.py``.
-#. Add your new option to the available concat options in the documentation.
-
 Add the excel config file
 =========================
 
@@ -182,15 +154,19 @@ extra column called "Result" is added to the dataframe to distinguish the differ
 The mandatory options to include in a *table* configurations are:
 
 * ``results``: a list of *results* that are used in the table. These names must be the same as the ones used in
-     the raw data configuration.
+  the raw data configuration.
 * ``comparison_type``: the type of comparison that is done between the *results* coming from two different lib-code couples.
-     The currently supported comparisons are:
-        * ``absolute``: the absolute difference between the two simulations.
-        * ``percentage``: the percentage difference between the two simulations.
-        * ``ratio``: the ratio between the two simulations.
+  The currently supported comparisons are:
+  
+  * ``absolute``: the absolute difference between the two simulations.
+  * ``percentage``: the percentage difference between the two simulations.
+  * ``ratio``: the ratio between the two simulations.
 * ``table_type``: the type of table that is produced. The currently supported types are:
-        * ``simple``: The starting data is simply the dataframe itself.
-        * ``pivot``: a pivot table is produced. This requires to specify also the ``value`` option.
+  
+  * ``simple``: The starting data is simply the dataframe itself.
+  * ``pivot``: a pivot table is produced. This requires to specify also the ``value`` option.
+  
+  In case a new table type was needed, please refer to :ref:`add_table_type`.
 * ``x``: the name of the column that will be used as the x-axis in the table.
 * ``y``: the name of the column that will be used as the y-axis in the table.
 
@@ -199,11 +175,11 @@ The optional configurations that can be included in a *table* are:
 * ``value``: to be provided only for pivot tables. This is the columns name that will be used for the pivot.
 * ``add_error``: if True, the errors of both simulations will be added to the table.
 * ``conditional_formatting``: a dictionary that specifies the values to be used as thresholds 
-        for the conditional color formatting. As an example, if ``{"red": 20, "orange": 10, "yellow": 5}`` is
-        provided, the table cells will be colored in red if the difference between the two simulations is greater than 20,
-        in orange if it is greater than 10 and in yellow if it is greater than 5 and green otherwise.
+  for the conditional color formatting. As an example, if ``{"red": 20, "orange": 10, "yellow": 5}`` is
+  provided, the table cells will be colored in red if the difference between the two simulations is greater than 20,
+  in orange if it is greater than 10 and in yellow if it is greater than 5 and green otherwise.
 * ``change_col_names``: a dictionary that specifies the new names for the columns. The keys are the original column names
-        and the values are the new names. This will be applied as a last operation before dumping the df.
+  and the values are the new names. This will be applied as a last operation before dumping the df.
 
 An example of a *table* configuration is shown below:
 
@@ -226,25 +202,34 @@ An example of a *table* configuration is shown below:
     add_error: true
     conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
 
-
 Add the atlas config file
 =========================
+The atlas configuration files are located at ``<JADE_root>/cfg/benchmarks_pp/atlas``. When contributing to the JADE codebase,
+developers should add their files in ``jade/resources/default_cfg/benchmarks_pp/atlas``.
+These files are transport code independent and they act on the processed raw data. The configuration is written in YAML format.
+The name of the file must be the same name of the benchmark. 
+The excel configuration files are used to produce the excel file that will contain post-processed comparisons
+between different code-lib simulation results.
 
-mandatory:
+The minimum unit for atlas post-processing is the *plot*. A plot can be produced from a single raw *result* or some kind of
+combinations of them.
+
+The mandatory options for the *plot* configuration are:
 
 * ``results``: a list of *results* that are used in the table.
-    These names must be the same as the ones used in the raw data configuration.
-    The effect of selection more than one results is that all *result* dataframe are combined thanks
-    to an extra column called "Result" that is added to the global dataframe.
+  These names must be the same as the ones used in the raw data configuration.
+  The effect of selection more than one results is that all *result* dataframe are combined thanks
+  to an extra column called "Result" that is added to the global dataframe.
 * ``plot_type``: the type of plot to be produced. You can check which type of plots are
-    available in JADE in the :ref:`plot_types` section.
+  available in JADE in the :ref:`plot_types` section. In case a new plot is needed, please
+  refer to :ref:`add_plot_type`.
 * ``title``: title of the plot.
 * ``x_label``: label of the x-axis.
 * ``y_labels``: label of the y-axis (in some cases more than one label can be provided).
 * ``x``: column name that will be used as the x-axis in the plot. Accepted names are listed in :ref:`allowed_binnings`.
 * ``y``: column name that will be used as the y-axis in the plot. Accepted names are listed in :ref:`allowed_binnings`.
 
-Optional:
+Optional configuration options are:
 
 * ``expand_runs``: By default true. If the benchmark consisted of more than one run, the results have been combined in the
   global results dataframe adding a 'Case' column. If expand_runs is set to true, the plot will be produced for each
@@ -261,3 +246,75 @@ Optional:
   names and the values are the arguments values. The list of plot_args parameters available in each plot
   are described in the plot gallery.
 * ``rectangles``: TODO
+
+
+Implement new functionalities
+=============================
+
+In the (hopefully) rare case that your new benchmarks requires either new modifiers, new concatenation options,
+new table types or new plot types, you will need to implement new functionalities in the JADE codebase.
+The bits of code to be added are well isolated from the rest of the framework. The following sections
+describe how to implement these new features in JADE.
+
+.. _add_tally_mod:
+
+Implement new tally modifier
+----------------------------
+
+It may be that your new benchmark requires a new tally modifier. Adding a new modifier to JADE is pretty simple.
+
+#. Go to ``jade/config/raw_config.py`` and add your new modifier option to the ``TallyModOption`` enum class.
+#. Add a function to modify the tally in ``jade/post/manipulate_tally.py``. This function should take as
+   the only positional argument a dataframe (the tally). Keyword arguments can be added if needed. return type
+   must be a pandas dataframe.
+#. Link the function to the enum adding it to the ``MOD_FUNCTIONS`` dictionary that can be found in the same file.
+#. Add a test for your new modifier in ``jade/tests/post/test_manipulate_tally.py``.
+#. Add your new option to the available modifiers in the documentation.
+
+.. _add_tally_concat:
+
+Implement new tallies combinator
+--------------------------------
+If instead you need to add a new way to combine tallies, you should:
+
+#. Go to ``jade/config/raw_config.py`` and add your new concat option to the ``TallyConcatOption`` enum class.
+#. Add a function to concat the tallies in ``jade/post/manipulate_tally.py``. This function should take as
+   the only positional argument a list of dataframes (the tallies). Return type must be a pandas dataframe.
+#. Link the new function to the enum adding it to the ``CONCAT_FUNCTIONS`` dictionary that can be found in the same file.
+#. Add a test for your new modifier in ``jade/tests/post/test_manipulate_tally.py``.
+#. Add your new option to the available concat options in the documentation.
+
+.. _add_table_type:
+
+Implement a new table type
+--------------------------
+
+The following are the steps to add a new table type to JADE:
+
+#. Go to ``jade/config/excel_config.py`` and add your new table type to the ``TableType`` enum class.
+#. Extend the abstract ``Table`` class that can be found in ``jade/post/excel_routines.py``. The only method
+   that needs to be re-implemented is the ``_get_sheet()`` one, which returns a list of pands dataframes.
+   to be added to the excel. Have a look to the other table classes in the same file for inspirations and
+   best practices.
+#. Connect your new table class with the corresponded table type enum in the ``TableFactory`` class that
+   can be found in the same file.
+#. Add a test for your new table in ``jade/tests/post/test_excel_routines.py``.
+#. Add your new table type to the available table types in the documentation.
+
+.. _add_plot_type:
+
+Implement a new plot type
+-------------------------
+
+The following are the steps to add a new plot type to JADE:
+
+#. Go to ``jade/config/atlas_config.py`` and add your new plot type to the ``PlotType`` enum class.
+   In case your new plot type requires specific plots arguments these can be passed to the plot
+   through the ``plot_args`` dictionary.
+#. Extend the abstract ``Plot`` class that can be found in ``jade/post/plotter.py``. The only method
+   that needs to be re-implemented is the ``_get_figure()`` one, which returns the matplotlib figure.
+   Have a look to the other plot classes in the same file for inspirations and best practices.
+#. Connect your new plot class with the corresponded plot type enum in the ``PlotFactory`` class that
+   can be found in the same file.
+#. Add a test for your new plot in ``jade/tests/post/test_plotter.py``.
+#. Add your new plot type to the available plot types in the documentation. 

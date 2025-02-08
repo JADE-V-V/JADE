@@ -320,7 +320,7 @@ class BinnedPlot(Plot):
         # --- Error Plot ---
         if plot_error:
             ax2 = axes[1]
-            ax2.axhline(y=10, linestyle="--", color="black")
+            ax2.axhline(y=10, linestyle="--", color="black", linewidth=0.5)
             ax2.set_ylabel("1σ [%]")
             ax2.set_yscale("log")
             ax2.set_ylim(bottom=1, top=100)
@@ -334,13 +334,11 @@ class BinnedPlot(Plot):
 
         # --- Comparison Plot ---
         if plot_CE:
-            CE_ax.axhline(y=1, linestyle="--", color="black")
+            CE_ax.axhline(y=1, linestyle="--", color="black", linewidth=0.5)
             CE_ax.set_ylabel("$T_i/R$")
             CE_ax.yaxis.set_major_locator(MultipleLocator(0.5))
             CE_ax.yaxis.set_minor_locator(AutoMinorLocator(5))
-            CE_ax.axhline(y=2, linestyle="--", color="red", linewidth=0.5)
-            CE_ax.axhline(y=0.5, linestyle="--", color="red", linewidth=0.5)
-            CE_ax.set_ylim(bottom=0.3, top=2.2)
+            CE_ax.set_ylim(bottom=0.3, top=1.7)
 
         # Generate X axis for bin properties
 
@@ -410,45 +408,14 @@ class BinnedPlot(Plot):
             if idx > 0 and plot_CE:
                 ratio = df[self.cfg.y].values / self.data[0][1][self.cfg.y].values
                 # Uniform plots actions
-                norm, upper, lower = _get_limits(0.5, 2, ratio, newX)
-
-                CE_ax.plot(norm[0], norm[1], "o", markersize=2, color=COLORS[idx])
-                CE_ax.scatter(
-                    upper[0], upper[1], marker=CARETUPBASE, s=50, c=COLORS[idx]
+                CE_ax.step(
+                    df[self.cfg.x].values,
+                    ratio,
+                    color=COLORS[idx],
+                    linestyle=linestyle,
+                    linewidth=linewidth,
+                    where="pre",
                 )
-                CE_ax.scatter(
-                    lower[0],
-                    lower[1],
-                    marker=CARETDOWNBASE,
-                    s=50,
-                    c=COLORS[idx],
-                )
-
-        # Build ax3 legend
-        if plot_CE:
-            leg = [
-                Line2D(
-                    [0],
-                    [0],
-                    marker=CARETUPBASE,
-                    color="black",
-                    label="> 2",
-                    markerfacecolor="black",
-                    markersize=8,
-                    lw=0,
-                ),
-                Line2D(
-                    [0],
-                    [0],
-                    marker=CARETDOWNBASE,
-                    color="black",
-                    label="< 0.5",
-                    markerfacecolor="black",
-                    markersize=8,
-                    lw=0,
-                ),
-            ]
-            CE_ax.legend(handles=leg, loc="best")
 
         # Final operations
         ax1.legend(loc="best")
@@ -473,8 +440,15 @@ class CEPlot(Plot):
         # Get optional data
         if self.cfg.plot_args is not None:
             subcases = self.cfg.plot_args.get("subcases", False)
+            style = self.cfg.plot_args.get("style", "step")
+            ce_limits = self.cfg.plot_args.get("ce_limits", None)
         else:
             subcases = False
+            style = "step"
+            ce_limits = None
+
+        if style not in ["step", "point"]:
+            raise ValueError(f"Style {style} not recognized")
 
         # compute the ratios
         if subcases:
@@ -537,21 +511,46 @@ class CEPlot(Plot):
                     axes[i].grid("True", which="minor", linewidth=0.20, alpha=0.5)
                     # limit the ax 2 to [0, 2]
                     axes[i].set_ylim(bottom=0, top=2)
-                    yticks = np.arange(0, 2.5, 0.5)
-                    axes[i].set_yticks(yticks)
+                    # redo the ticks if there are more than one subcases
+                    if len(dfs) > 1:
+                        yticks = np.arange(0, 2.5, 0.5)
+                        axes[i].set_yticks(yticks)
 
-                axes[i].step(
-                    df1.index,
-                    df1.values,
-                    label=label,
-                    color=COLORS[idx],
-                    linestyle=LINESTYLES[idx],
-                    linewidth=0.7,
-                    where="pre",
-                )
+                if style == "step":
+                    axes[i].step(
+                        df1.index,
+                        df1.values,
+                        label=label,
+                        color=COLORS[idx],
+                        linestyle=LINESTYLES[idx],
+                        linewidth=0.7,
+                        where="pre",
+                    )
+                elif style == "point":
+                    if ce_limits:
+                        _apply_CE_limits(
+                            ce_limits[0],
+                            ce_limits[1],
+                            df1.values,
+                            df1.index,
+                            axes[i],
+                            idx,
+                            label,
+                        )
+                    else:
+                        ax.scatter(
+                            df1.index,
+                            df1.values,
+                            label=label,
+                            color=COLORS[idx],
+                            marker=MARKERS[idx],
+                            # the marker should be not filled
+                            facecolors="none",
+                        )
 
         # put the legend in the top right corner
-        axes[0].legend()
+        if not ce_limits:
+            axes[0].legend()
 
         return fig, axes
 
@@ -630,3 +629,69 @@ def _get_error_x_pos(x_array: np.ndarray) -> np.ndarray:
     newX = np.exp((base + shifted) / 2)
     newX[0] = (oldX[1] + oldX[0]) / 2
     return newX
+
+
+def _apply_CE_limits(
+    min: float | int,
+    max: float | int,
+    ydata: np.ndarray,
+    xdata: np.ndarray,
+    ax: Axes,
+    idx: int,
+    label: str | None,
+):
+    norm, upper, lower = _get_limits(min, max, ydata, xdata)
+    ax.set_ylim(bottom=min - 0.1, top=max + 0.1)
+    ax.axhline(y=max, linestyle="--", color="black", linewidth=0.5)
+    ax.axhline(y=min, linestyle="--", color="black", linewidth=0.5)
+
+    # first plot empty data to avoid changes in the x axis labels order
+    ax.scatter(
+        xdata,
+        np.ones(len(xdata)),
+        alpha=0,
+    )
+
+    # normal points
+    ax.scatter(
+        norm[0],
+        norm[1],
+        label=label,
+        color=COLORS[idx],
+        marker=MARKERS[idx],
+        # the marker should be not filled
+        facecolors="none",
+    )
+    # upper and lower limits
+    ax.scatter(upper[0], upper[1], marker=CARETUPBASE, c=COLORS[idx], facecolors="none")
+    ax.scatter(
+        lower[0], lower[1], marker=CARETDOWNBASE, c=COLORS[idx], facecolors="none"
+    )
+    # additional legend
+    leg = [
+        Line2D(
+            [0],
+            [0],
+            marker=CARETUPBASE,
+            color="black",
+            label=f"> {max}",
+            markerfacecolor="black",
+            markersize=8,
+            lw=0,
+        ),
+        Line2D(
+            [0],
+            [0],
+            marker=CARETDOWNBASE,
+            color="black",
+            label=f"< {min}",
+            markerfacecolor="black",
+            markersize=8,
+            lw=0,
+        ),
+    ]
+    handles, _ = ax.get_legend_handles_labels()
+    combined = handles + leg
+
+    if label is not None:
+        ax.legend(handles=combined, loc="best")

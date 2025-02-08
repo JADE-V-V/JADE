@@ -1,0 +1,9 @@
+Bonner Sphere:
+  results:
+    - Bonner sphere detector
+  comparison_type: ratio
+  table_type: pivot
+  x: 'Case'
+  y: 'Radius'
+  value: 'Value'
+  add_error: true

@@ -83,6 +83,7 @@ class TallyModOption(Enum):
     CONDENSE_GROUPS = "condense_groups"
     REPLACE = "replace"
     ADD_COLUMN = "add_column"
+    KEEP_LAST_ROW = "keep_last_row"
 
 
 class TallyConcatOption(Enum):

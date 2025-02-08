@@ -8,6 +8,9 @@ Neutron Leakage flux:
   x: Energy
   y: Value
   expand_runs: true
+  plot_args:
+    show_error: true
+    show_CE: true
 #
 Photon Leakage flux:
   results:
@@ -19,4 +22,7 @@ Photon Leakage flux:
   x: Energy
   y: Value
   expand_runs: true
+  plot_args:
+    show_error: true
+    show_CE: true
   

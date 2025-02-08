@@ -99,6 +99,11 @@ def add_column(tally: pd.DataFrame, column: str, values: list) -> pd.DataFrame:
     return tally
 
 
+def keep_last_row(tally: pd.DataFrame) -> pd.DataFrame:
+    """Keep only the last row of the tally."""
+    return tally.iloc[-1:]
+
+
 MOD_FUNCTIONS = {
     TallyModOption.LETHARGY: by_lethargy,
     TallyModOption.SCALE: scale,
@@ -107,6 +112,7 @@ MOD_FUNCTIONS = {
     TallyModOption.CONDENSE_GROUPS: condense_groups,
     TallyModOption.REPLACE: replace_column,
     TallyModOption.ADD_COLUMN: add_column,
+    TallyModOption.KEEP_LAST_ROW: keep_last_row,
 }
 
 

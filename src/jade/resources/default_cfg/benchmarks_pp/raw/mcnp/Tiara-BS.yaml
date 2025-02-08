@@ -1,0 +1,7 @@
+Bonner sphere detector:
+  concat_option: concat
+  14: [[keep_last_row, {}], [add_column, {"column": "Radius", "values": ["Bare"]}]]
+  24: [[keep_last_row, {}], [add_column, {"column": "Radius", "values": ["15 mm"]}]]
+  34: [[keep_last_row, {}], [add_column, {"column": "Radius", "values": ["30 mm"]}]]
+  44: [[keep_last_row, {}], [add_column, {"column": "Radius", "values": ["50 mm"]}]]
+  54: [[keep_last_row, {}], [add_column, {"column": "Radius", "values": ["90 mm"]}]]

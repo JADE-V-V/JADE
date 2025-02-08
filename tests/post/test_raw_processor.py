@@ -55,34 +55,45 @@ class TestRawProcessor:
         assert df2.iloc[0]["Value"] == pytest.approx(2 * 10 * 1.12099e-01, 1e-3)
         assert len(df1) == 191
 
+    def test_oktavian_raw(self, tmpdir):
+        with as_file(RAW_CFG_FILES.joinpath("Oktavian.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
 
-def test_oktavian_raw(tmpdir):
-    with as_file(RAW_CFG_FILES.joinpath("Oktavian.yaml")) as f:
-        cfg = ConfigRawProcessor.from_yaml(f)
-
-    folder = Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "Oktavian", "Oktavian_Al")
-    processor = RawProcessor(cfg, folder, tmpdir)
-    processor.process_raw_data()
-
-
-def test_ITER1D_raw(tmpdir):
-    with as_file(RAW_CFG_FILES.joinpath("ITER_1D.yaml")) as f:
-        cfg = ConfigRawProcessor.from_yaml(f)
-    folders = [
-        Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "ITER_1D", "ITER_1D"),
-        Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 2.1c_", "ITER_1D", "ITER_1D"),
-    ]
-    for i, folder in enumerate(folders):
-        path = tmpdir.join(str(i))
-        os.makedirs(path)
-        processor = RawProcessor(cfg, folder, path)
-        processor.process_raw_data()
-
-
-def test_TiaraBC(tmpdir):
-    with as_file(RAW_CFG_FILES.joinpath("Tiara-BC.yaml")) as f:
-        cfg = ConfigRawProcessor.from_yaml(f)
-
-    for folder in Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "Tiara-BC").iterdir():
+        folder = Path(
+            SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "Oktavian", "Oktavian_Al"
+        )
         processor = RawProcessor(cfg, folder, tmpdir)
         processor.process_raw_data()
+
+    def test_ITER1D_raw(self, tmpdir):
+        with as_file(RAW_CFG_FILES.joinpath("ITER_1D.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+        folders = [
+            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "ITER_1D", "ITER_1D"),
+            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 2.1c_", "ITER_1D", "ITER_1D"),
+        ]
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            processor = RawProcessor(cfg, folder, path)
+            processor.process_raw_data()
+
+    def test_TiaraBC(self, tmpdir):
+        with as_file(RAW_CFG_FILES.joinpath("Tiara-BC.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        for folder in Path(
+            SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "Tiara-BC"
+        ).iterdir():
+            processor = RawProcessor(cfg, folder, tmpdir)
+            processor.process_raw_data()
+
+    def test_TiaraBS(self, tmpdir):
+        with as_file(RAW_CFG_FILES.joinpath("Tiara-BS.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        for folder in Path(
+            SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "Tiara-BS"
+        ).iterdir():
+            processor = RawProcessor(cfg, folder, tmpdir)
+            processor.process_raw_data()

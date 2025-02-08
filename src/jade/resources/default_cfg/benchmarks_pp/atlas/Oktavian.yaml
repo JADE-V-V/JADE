@@ -10,6 +10,7 @@ Neutron Leakage flux:
   expand_runs: true
   plot_args:
     show_error: false
+    show_CE: true
 #
 Photon Leakage flux:
   results:
@@ -23,3 +24,4 @@ Photon Leakage flux:
   expand_runs: true
   plot_args:
     show_error: false
+    show_CE: true

@@ -1,0 +1,9 @@
+{
+    "benchmark_name": "Sphere",
+    "benchmark_version": "1.0",
+    "jade_run_version": null,
+    "library": "FENDL 3.2c",
+    "code": "mcnp",
+    "jade_version": "3.1.1.dev180+g2fc4816.d20241216",
+    "code_version": null
+}

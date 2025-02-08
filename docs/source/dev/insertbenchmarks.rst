@@ -110,6 +110,11 @@ The currently supported modifiers are:
   * *column*: the name of the column to be replaced.
   * *values*: a dictionary where the keys are the values to be replaced and the values are the new values.
 
+* ``add_column``: adds a new column to the tally. Two keyargs needs to be passed:
+
+  * *column*: the name of the new column.
+  * *values*: a list of values to be added to the column. A single value can also be provided.
+
 More than one modifiers can be applied in series to a single tally.
 If your benchmark requires a new modifier, please refer to :ref:`add_tally_mod`.
 

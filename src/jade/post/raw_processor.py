@@ -69,7 +69,12 @@ class RawProcessor:
             mod_tallies = []
             # first apply the modifications to the requested tallies
             for tallyid, modifications in result.modify.items():
-                tally = self.sim_output.tallydata[tallyid].copy()
+                try:
+                    tally = self.sim_output.tallydata[tallyid].copy()
+                except KeyError:
+                    # for some benchmarks it may happen that the tally is not found
+                    logging.warning("Tally %s not found", tallyid)
+                    continue
                 for mod_option, keyargs in modifications:
                     tally = MOD_FUNCTIONS[mod_option](tally, **keyargs)
                 mod_tallies.append(tally)

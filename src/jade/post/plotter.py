@@ -44,7 +44,12 @@ class Plot(ABC):
         if isinstance(axes, Axes):
             axes = [axes]
 
-        fig.suptitle(self.cfg.title, y=0.93)
+        # check if the first ax has a title
+        if axes[0].get_title() == "":
+            fig.suptitle(self.cfg.title, y=0.93)
+        else:
+            fig.suptitle(self.cfg.title)
+
         axes[-1].set_xlabel(self.cfg.x_label)
 
         # additional common extra features that may be requested
@@ -60,7 +65,7 @@ class Plot(ABC):
         return fig, axes
 
     @abstractmethod
-    def _get_figure(self) -> tuple[Figure, Axes]:
+    def _get_figure(self) -> tuple[Figure, Axes | list[Axes]]:
         pass
 
     def _build_rectangles(self, ax: Axes) -> None:
@@ -163,7 +168,7 @@ class Plot(ABC):
 
 
 class RatioPlot(Plot):
-    def _get_figure(self) -> tuple[Figure, Axes]:
+    def _get_figure(self) -> tuple[Figure, list[Axes]]:
         # get some optional data
         if self.cfg.plot_args is not None:
             markers = self.cfg.plot_args.get("markers", False)
@@ -243,8 +248,8 @@ class RatioPlot(Plot):
             ax.tick_params(which="minor", width=0.75, length=2.50)
 
             # Grid
-            ax.grid(True, which="major", linewidth=0.50)
-            ax.grid(True, which="minor", linewidth=0.20)
+            ax.grid(True, which="major", linewidth=0.50, alpha=0.5)
+            ax.grid(True, which="minor", linewidth=0.20, alpha=0.5)
 
         # # Limit the x-axis if needed
         # if xlimits is not None:
@@ -254,21 +259,38 @@ class RatioPlot(Plot):
 
 
 class BinnedPlot(Plot):
-    def _get_figure(self) -> tuple[Figure, Axes]:
+    def _get_figure(self) -> tuple[Figure, list[Axes]]:
         linewidth = 0.7
-        # Check if the error needs to be plotted
+        # Check for additional keyargs
         if self.cfg.plot_args is not None:
-            plot_error = self.cfg.plot_args.get("error", False)
+            plot_error = self.cfg.plot_args.get("show_error", False)
+            plot_CE = self.cfg.plot_args.get("show_CE", False)
+            subcases = self.cfg.plot_args.get("subcases", False)
+            xscale = self.cfg.plot_args.get("xscale", "log")
         else:
             plot_error = False
+            plot_CE = False
+            subcases = False
+            xscale = "log"
+
+        # if subcases is used, nrows must be 1
+        if subcases and (plot_CE or plot_error):
+            raise ValueError("Subcases cannot be used with CE or error plots")
 
         # Set properties for the plot spacing
-        if not plot_error:
-            gridspec_kw = {"height_ratios": [3, 1], "hspace": 0.13}
-            nrows = 2
-        else:
+        if not plot_error and not plot_CE:
+            gridspec_kw = {}
+            nrows = 1
+        elif plot_error and plot_CE:
             gridspec_kw = {"height_ratios": [4, 1, 1], "hspace": 0.13}
             nrows = 3
+        elif plot_error and not plot_CE:
+            raise NotImplementedError(
+                "Plot without CE but with error is not implemented"
+            )
+        else:
+            gridspec_kw = {"height_ratios": [3, 1], "hspace": 0.13}
+            nrows = 2
 
         # Initiate plot
         fig, axes = plt.subplots(
@@ -280,16 +302,20 @@ class BinnedPlot(Plot):
         )
 
         # --- Main plot ---
-        ax1 = axes[0]
+        if nrows == 1:
+            ax1 = axes
+        else:
+            ax1 = axes[0]
         # Ticks
         subs = (0.2, 0.4, 0.6, 0.8)
-        ax1.set_xscale("log")
+        ax1.set_xscale(xscale)
         ax1.set_yscale("log")
         ax1.set_ylabel(self.cfg.y_labels[0])
-        ax1.xaxis.set_major_locator(LogLocator(base=10, numticks=15))
-        ax1.yaxis.set_major_locator(LogLocator(base=10, numticks=15))
-        ax1.xaxis.set_minor_locator(LogLocator(base=10.0, subs=subs, numticks=12))
-        ax1.yaxis.set_minor_locator(LogLocator(base=10.0, subs=subs, numticks=12))
+        if xscale == "log":
+            ax1.xaxis.set_major_locator(LogLocator(base=10, numticks=15))
+            ax1.yaxis.set_major_locator(LogLocator(base=10, numticks=15))
+            ax1.xaxis.set_minor_locator(LogLocator(base=10.0, subs=subs, numticks=12))
+            ax1.yaxis.set_minor_locator(LogLocator(base=10.0, subs=subs, numticks=12))
 
         # --- Error Plot ---
         if plot_error:
@@ -301,57 +327,73 @@ class BinnedPlot(Plot):
             ax2.yaxis.set_major_locator(LogLocator(base=10, numticks=15))
             ax2.yaxis.set_minor_locator(LogLocator(base=10.0, subs=subs, numticks=12))
 
-            CE_ax = axes[2]
-        else:
+            if plot_CE:
+                CE_ax = axes[2]
+        elif plot_CE:
             CE_ax = axes[1]
 
         # --- Comparison Plot ---
-        CE_ax.axhline(y=1, linestyle="--", color="black")
-        CE_ax.set_ylabel("$T_i/R$")
-        CE_ax.yaxis.set_major_locator(MultipleLocator(0.5))
-        CE_ax.yaxis.set_minor_locator(AutoMinorLocator(5))
-        CE_ax.axhline(y=2, linestyle="--", color="red", linewidth=0.5)
-        CE_ax.axhline(y=0.5, linestyle="--", color="red", linewidth=0.5)
-        CE_ax.set_ylim(bottom=0.3, top=2.2)
+        if plot_CE:
+            CE_ax.axhline(y=1, linestyle="--", color="black")
+            CE_ax.set_ylabel("$T_i/R$")
+            CE_ax.yaxis.set_major_locator(MultipleLocator(0.5))
+            CE_ax.yaxis.set_minor_locator(AutoMinorLocator(5))
+            CE_ax.axhline(y=2, linestyle="--", color="red", linewidth=0.5)
+            CE_ax.axhline(y=0.5, linestyle="--", color="red", linewidth=0.5)
+            CE_ax.set_ylim(bottom=0.3, top=2.2)
 
         # Generate X axis for bin properties
-        oldX = np.array([0] + list(self.data[0][1][self.cfg.x]))
-        base = np.log(oldX[:-1])
-        shifted = np.log(oldX[1:])
-        newX = np.exp((base + shifted) / 2)
-        newX[0] = (oldX[1] + oldX[0]) / 2
+
         # --- Plot Data ---
         for idx, (codelib, df) in enumerate(self.data):
-            x = np.array([0] + list(df[self.cfg.x]))
-            y = np.array([0] + list(df[self.cfg.y]))
-
-            err = np.array(df["Error"])
-            err_multi = np.array(y[1:]) * np.abs(err)
-
-            # Main plot
-            if idx > 0:
-                tag = "T" + str(idx) + ": "
-                linestyle = LINESTYLES[idx - 1]
+            if subcases:
+                dfs = []
+                for subcase in subcases[1]:
+                    subset = df[df[subcases[0]] == subcase]
+                    if len(subset) == 0:
+                        continue
+                    dfs.append(subset)
             else:
-                tag = "R: "
-                linestyle = "-"
+                dfs = [df]
 
-            ax1.step(
-                x,
-                y,
-                label=tag + codelib,
-                color=COLORS[idx],
-                linestyle=linestyle,
-                linewidth=linewidth,
-            )
-            ax1.errorbar(
-                newX,
-                y[1:],
-                linewidth=0,
-                yerr=err_multi,
-                elinewidth=0.5,
-                color=COLORS[idx],
-            )
+            for i, df1 in enumerate(dfs):
+                x = np.array([0] + list(df1[self.cfg.x]))
+                y = np.array([0] + list(df1[self.cfg.y]))
+
+                err = np.array(df1["Error"])
+                err_multi = np.array(y[1:]) * np.abs(err)
+
+                # Main plot
+                if idx > 0:
+                    tag = "T" + str(idx) + ": "
+                    linestyle = LINESTYLES[idx - 1]
+                else:
+                    tag = "R: "
+                    linestyle = "-"
+
+                if i == 0:
+                    label = tag + codelib
+                else:
+                    label = None
+
+                ax1.step(
+                    x,
+                    y,
+                    label=label,
+                    color=COLORS[idx],
+                    linestyle=linestyle,
+                    linewidth=linewidth,
+                    where="pre",
+                )
+                newX = _get_error_x_pos(x)
+                ax1.errorbar(
+                    newX,
+                    y[1:],
+                    linewidth=0,
+                    yerr=err_multi,
+                    elinewidth=0.5,
+                    color=COLORS[idx],
+                )
 
             # Error Plot
             if plot_error:
@@ -365,7 +407,7 @@ class BinnedPlot(Plot):
                 )
 
             # Comparison
-            if idx > 0:
+            if idx > 0 and plot_CE:
                 ratio = df[self.cfg.y].values / self.data[0][1][self.cfg.y].values
                 # Uniform plots actions
                 norm, upper, lower = _get_limits(0.5, 2, ratio, newX)
@@ -383,38 +425,42 @@ class BinnedPlot(Plot):
                 )
 
         # Build ax3 legend
-        leg = [
-            Line2D(
-                [0],
-                [0],
-                marker=CARETUPBASE,
-                color="black",
-                label="> 2",
-                markerfacecolor="black",
-                markersize=8,
-                lw=0,
-            ),
-            Line2D(
-                [0],
-                [0],
-                marker=CARETDOWNBASE,
-                color="black",
-                label="< 0.5",
-                markerfacecolor="black",
-                markersize=8,
-                lw=0,
-            ),
-        ]
-        CE_ax.legend(handles=leg, loc="best")
+        if plot_CE:
+            leg = [
+                Line2D(
+                    [0],
+                    [0],
+                    marker=CARETUPBASE,
+                    color="black",
+                    label="> 2",
+                    markerfacecolor="black",
+                    markersize=8,
+                    lw=0,
+                ),
+                Line2D(
+                    [0],
+                    [0],
+                    marker=CARETDOWNBASE,
+                    color="black",
+                    label="< 0.5",
+                    markerfacecolor="black",
+                    markersize=8,
+                    lw=0,
+                ),
+            ]
+            CE_ax.legend(handles=leg, loc="best")
 
         # Final operations
         ax1.legend(loc="best")
 
         # --- Common Features ---
+        if nrows == 1:
+            axes = [ax1]
+
         for ax in axes:
             # Grid control
-            ax.grid()
-            ax.grid("True", which="minor", linewidth=0.25)
+            ax.grid(alpha=0.5)
+            ax.grid("True", which="minor", linewidth=0.25, alpha=0.5)
             # Ticks
             ax.tick_params(which="major", width=1.00, length=5)
             ax.tick_params(which="minor", width=0.75, length=2.50)
@@ -422,28 +468,92 @@ class BinnedPlot(Plot):
         return fig, axes
 
 
-class ExpPlot(Plot):
-    pass
+class CEPlot(Plot):
+    def _get_figure(self) -> tuple[Figure, list[Axes]]:
+        # Get optional data
+        if self.cfg.plot_args is not None:
+            subcases = self.cfg.plot_args.get("subcases", False)
+        else:
+            subcases = False
 
+        # compute the ratios
+        if subcases:
+            to_plot = []
+            for codelib, df in self.data[1:]:
+                to_plot.append(
+                    (
+                        codelib,
+                        df.set_index([subcases[0], self.cfg.x])[self.cfg.y]
+                        / self.data[0][1].set_index([subcases[0], self.cfg.x])[
+                            self.cfg.y
+                        ],
+                    )
+                )
+        else:
+            to_plot = [
+                (
+                    codelib,
+                    df.set_index(self.cfg.x)[self.cfg.y]
+                    / self.data[0][1].set_index(self.cfg.x)[self.cfg.y],
+                )
+                for (codelib, df) in self.data[1:]
+            ]
 
-class ExpGroupPlot(Plot):
-    pass
+        # Plot the data
+        for idx, (codelib, df) in enumerate(to_plot):
+            # Split the dfs into the subcases if needed
+            if subcases:
+                dfs = []
+                for value in subcases[1]:
+                    try:
+                        subset = df.loc[value]
+                    except KeyError:
+                        continue
+                    dfs.append((value, subset))
+            else:
+                dfs = [(None, df)]
 
+            if idx == 0:
+                gridspec_kw = {"hspace": 0.25}
+                fig, ax = plt.subplots(
+                    nrows=len(dfs), sharex=True, gridspec_kw=gridspec_kw
+                )
+                if len(dfs) == 1:
+                    axes = [ax]
+                else:
+                    axes = ax
 
-class CeExpGroupPlot(Plot):
-    pass
+            for i, (case, df1) in enumerate(dfs):
+                if i == 0:
+                    label = codelib
+                else:
+                    label = None
 
+                if idx == 0:  # operations to be performed only once per plot
+                    axes[i].set_ylabel("C/E")
+                    axes[i].set_title(case)
+                    axes[i].axhline(y=1, linestyle="--", color="black")
+                    axes[i].grid("True", which="major", linewidth=0.50, alpha=0.5)
+                    axes[i].grid("True", which="minor", linewidth=0.20, alpha=0.5)
+                    # limit the ax 2 to [0, 2]
+                    axes[i].set_ylim(bottom=0, top=2)
+                    yticks = np.arange(0, 2.5, 0.5)
+                    axes[i].set_yticks(yticks)
 
-class DiscreteExpPlot(Plot):
-    pass
+                axes[i].step(
+                    df1.index,
+                    df1.values,
+                    label=label,
+                    color=COLORS[idx],
+                    linestyle=LINESTYLES[idx],
+                    linewidth=0.7,
+                    where="pre",
+                )
 
+        # put the legend in the top right corner
+        axes[0].legend()
 
-class GroupedBarsPlot(Plot):
-    pass
-
-
-class WavesPlot(Plot):
-    pass
+        return fig, axes
 
 
 class PlotFactory:
@@ -455,6 +565,8 @@ class PlotFactory:
             return BinnedPlot(plot_config, data)
         elif plot_config.plot_type == PlotType.RATIO:
             return RatioPlot(plot_config, data)
+        elif plot_config.plot_type == PlotType.CE:
+            return CEPlot(plot_config, data)
         else:
             raise NotImplementedError(
                 f"Plot type {plot_config.plot_type} not implemented"
@@ -509,3 +621,12 @@ def _get_limits(lowerlimit, upperlimit, ydata, xdata):
     lowerY = np.full(len(lowerX), lowerlimit)
 
     return (normalX, normalY), (upperX, upperY), (lowerX, lowerY)
+
+
+def _get_error_x_pos(x_array: np.ndarray) -> np.ndarray:
+    oldX = x_array
+    base = np.log(oldX[:-1])
+    shifted = np.log(oldX[1:])
+    newX = np.exp((base + shifted) / 2)
+    newX[0] = (oldX[1] + oldX[0]) / 2
+    return newX

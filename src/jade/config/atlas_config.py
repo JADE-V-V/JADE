@@ -177,6 +177,7 @@ class PlotType(Enum):
 
     BINNED = "binned"
     RATIO = "ratio"
+    CE = "ce"
     # EXP = "exp points"
     # EXP_GROUP = "exp points group"
     # CE_EXP_GROUP = "exp points group CE"

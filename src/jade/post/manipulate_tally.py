@@ -42,6 +42,7 @@ def condense_groups(
     tally: pd.DataFrame, bins: list[float] | None = None, group_column: str = "Energy"
 ) -> pd.DataFrame:
     """Condense the tally into groups. Mostly used to obtain coarser energy groups.
+    If no values are ancountered in a group the group is not included in the output.
 
     Parameters
     ----------
@@ -55,7 +56,7 @@ def condense_groups(
     Returns
     -------
     pd.DataFrame
-        _description_
+        modified tally
     """
     tally["abs err"] = tally["Error"] * tally["Value"]
     rows = []
@@ -70,7 +71,7 @@ def condense_groups(
         df[group_column] = f"{min_e} - {max_e}"
         rows.append(df)
         min_e = max_e
-    return pd.DataFrame(rows)
+    return pd.DataFrame(rows).dropna()
 
 
 def scale(tally: pd.DataFrame, factor: int | float = 1) -> pd.DataFrame:
@@ -92,6 +93,12 @@ def replace_column(
     return tally
 
 
+def add_column(tally: pd.DataFrame, column: str, values: list) -> pd.DataFrame:
+    """Add a new column to the tally with the provided values."""
+    tally[column] = values
+    return tally
+
+
 MOD_FUNCTIONS = {
     TallyModOption.LETHARGY: by_lethargy,
     TallyModOption.SCALE: scale,
@@ -99,6 +106,7 @@ MOD_FUNCTIONS = {
     TallyModOption.BY_ENERGY: by_energy,
     TallyModOption.CONDENSE_GROUPS: condense_groups,
     TallyModOption.REPLACE: replace_column,
+    TallyModOption.ADD_COLUMN: add_column,
 }
 
 

@@ -82,6 +82,7 @@ class TallyModOption(Enum):
     BY_ENERGY = "by_energy"
     CONDENSE_GROUPS = "condense_groups"
     REPLACE = "replace"
+    ADD_COLUMN = "add_column"
 
 
 class TallyConcatOption(Enum):

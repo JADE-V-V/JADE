@@ -32,7 +32,7 @@ class TestJadeApp:
         app.status.raw_results_path = tmpdir
         app.status.update()
 
-        app.raw_process()
+        app.raw_process(subset=["Oktavian"])
         # manually update the status
         app.status.update()
         filepath = Path(
@@ -41,7 +41,7 @@ class TestJadeApp:
         )
         # now run again and test that nothing was overridden
         initial_mod_time = os.path.getmtime(filepath)
-        app.raw_process()
+        app.raw_process(subset=["Oktavian"])
         assert os.path.getmtime(filepath) == initial_mod_time
 
     def test_post_process(self, tmpdir):

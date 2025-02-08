@@ -145,7 +145,7 @@ class JadeApp:
                 benchmark.run()
         logging.info("Benchmarks run completed.")
 
-    def raw_process(self):
+    def raw_process(self, subset: list[str] | None = None):
         """Process the raw data from the simulations."""
         logging.info("Processing raw data")
         # first identify all simulations that were successful but were not processed
@@ -154,6 +154,8 @@ class JadeApp:
         to_process = {}
         for code, lib, bench in successful:
             if (code, lib, bench) not in self.status.raw_data:
+                if subset is not None and bench not in subset:
+                    continue
                 # get the correspondent raw processor configuration
                 cfg_file = Path(root_cfg, f"{code.value}/{bench}.yaml")
                 raw_cfg = ConfigRawProcessor.from_yaml(cfg_file)

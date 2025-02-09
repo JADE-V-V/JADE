@@ -60,7 +60,9 @@ class ExcelProcessor:
                 ref_code = code
                 ref_lib = lib
                 for table_cfg in self.cfg.tables:
-                    target_df = self._get_table_df(table_cfg.results, raw_folder)
+                    target_df = self._get_table_df(
+                        table_cfg.results, raw_folder, subsets=table_cfg.subsets
+                    )
                     reference_dfs[table_cfg.name] = target_df
 
             # then we can produce one excel comparison file for each target
@@ -76,31 +78,50 @@ class ExcelProcessor:
                     for table_cfg in self.cfg.tables:
                         # this gets a concatenated dataframe with all results that needs
                         # to be in the table
-                        target_df = self._get_table_df(table_cfg.results, raw_folder)
+                        target_df = self._get_table_df(
+                            table_cfg.results, raw_folder, subsets=table_cfg.subsets
+                        )
                         title = TITLE.format(
                             ref_code.value, ref_lib, code.value, lib, table_cfg.name
                         )
                         ref_df = reference_dfs[table_cfg.name]
+                        ref_pretty = print_code_lib(ref_code, ref_lib, pretty=True)
+                        target_pretty = print_code_lib(code, lib, pretty=True)
                         table = TableFactory.create_table(
                             table_cfg.table_type,
-                            [title, writer, ref_df, target_df, table_cfg],
+                            [
+                                title,
+                                writer,
+                                ref_df,
+                                target_df,
+                                table_cfg,
+                                ref_pretty,
+                                target_pretty,
+                            ],
                         )
                         table.add_sheets()
 
     @staticmethod
-    def _get_table_df(results: list[int | str], raw_folder: PathLike) -> pd.DataFrame:
+    def _get_table_df(
+        results: list[int | str],
+        raw_folder: PathLike,
+        subsets: list[dict] | None = None,
+    ) -> pd.DataFrame:
         """given a list of results, get the concatenated dataframe"""
         dfs = []
         for result in results:
             # this gets a concatenated dataframe for each result for different runs
-            df = ExcelProcessor._get_concat_df_results(result, raw_folder)
+            subset = _check_for_subsets(subsets, result)
+            df = ExcelProcessor._get_concat_df_results(
+                result, raw_folder, subset=subset
+            )
             df["Result"] = result
             dfs.append(df)
         return pd.concat(dfs)
 
     @staticmethod
     def _get_concat_df_results(
-        target_result: int | str, folder: PathLike
+        target_result: int | str, folder: PathLike, subset: dict | None = None
     ) -> pd.DataFrame:
         """given a result ID, locate, read the dataframes and concat them (from different
         single runs)"""
@@ -114,9 +135,27 @@ class ExcelProcessor:
             result = " ".join(splits[1:]).split(".")[0]  # remove the .csv
             if result == target_result:
                 df = pd.read_csv(Path(folder, file))
+                # check here if only a subset of the dataframe is needed
+                if subset:
+                    try:
+                        df = (
+                            df.set_index(subset["column"])
+                            .loc[subset["values"]]
+                            .reset_index()
+                        )
+                    except KeyError:
+                        pass  # accept that in some tallies the column may not be present
                 df["Case"] = run_name
                 dfs.append(df)
         if len(dfs) == 0:
             logging.warning(f"No data found for {target_result}")
             return pd.DataFrame()
         return pd.concat(dfs)
+
+
+def _check_for_subsets(subsets: list[dict] | None, curr_res) -> None | dict:
+    if subsets:
+        for subset in subsets:
+            if curr_res == subset["result"]:
+                return subset
+    return None

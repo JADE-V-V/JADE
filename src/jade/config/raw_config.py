@@ -84,6 +84,8 @@ class TallyModOption(Enum):
     REPLACE = "replace"
     ADD_COLUMN = "add_column"
     KEEP_LAST_ROW = "keep_last_row"
+    GROUPBY = "groupby"
+    DELETE_COLS = "delete_cols"
 
 
 class TallyConcatOption(Enum):

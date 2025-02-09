@@ -23,6 +23,8 @@ class Table(ABC):
         ref_df: pd.DataFrame,
         target_df: pd.DataFrame,
         table_cfg: TableConfig,
+        ref_tag: str,
+        target_tag: str,
     ):
         """Create a Table object that is responsible for comparing two dataframes and
         adding the comparison to the workbook.
@@ -39,6 +41,10 @@ class Table(ABC):
             dataframe of the target data
         table_cfg : TableConfig
             configuration options of the table
+        ref_tag : str
+            tag of the reference data
+        target_tag : str
+            tag of the target data
         """
         self.writer = writer
         self.data = self._compare(ref_df, target_df, table_cfg.comparison_type)
@@ -46,6 +52,8 @@ class Table(ABC):
         self.target_df = target_df
         self.title = title
         self.cfg = table_cfg
+        self.ref_tag = ref_tag
+        self.target_tag = target_tag
         self.formatter = Formatter(writer.book)
 
     @staticmethod
@@ -80,13 +88,19 @@ class Table(ABC):
         return df.reset_index()
 
     def _add_sheet(
-        self, sheet_name: str, df: pd.DataFrame, apply_conditional: bool = True
+        self,
+        sheet_name: str,
+        df: pd.DataFrame,
+        apply_conditional: bool = True,
+        title: str | None = None,
     ):
         if len(sheet_name) > MAX_SHEET_NAME_LEN:
             sheet_name = sheet_name[:31]
 
         ws = self.writer.book.add_worksheet(sheet_name)
-        self.formatter.add_title(ws, sheet_name)
+        if title is None:
+            title = sheet_name
+        self.formatter.add_title(ws, title)
         # as a last operation, change the df columns if requested
         if self.cfg.change_col_names:
             self._rename_columns(df, self.cfg.change_col_names)
@@ -114,12 +128,16 @@ class Table(ABC):
         """Add the comparison sheets to the workbook."""
         dfs = self._get_sheet()
         sheet_name = f"{self.cfg.comparison_type.value} {self.cfg.name}"
-        self._add_sheet(sheet_name, dfs[0], apply_conditional=True)
+        title = f"{sheet_name} - {self.ref_tag} vs {self.target_tag}"
+        self._add_sheet(sheet_name, dfs[0], apply_conditional=True, title=title)
 
         if self.cfg.add_error:
-            for df, val in zip([dfs[1], dfs[2]], ["ref", "target"]):
+            for df, val, tag in zip(
+                [dfs[1], dfs[2]], ["ref", "target"], [self.ref_tag, self.target_tag]
+            ):
                 sheet_name = f"{val} rel. err."
-                self._add_sheet(sheet_name, df)
+                title = f"{tag} Relative Error for {self.cfg.name}"
+                self._add_sheet(sheet_name, df, title=title)
                 # apply standard formatting for error sheets
                 self.formatter.apply_conditional_formatting(
                     self.writer.book.get_worksheet_by_name(sheet_name),
@@ -339,7 +357,7 @@ class Formatter:
         title : str
             title to be added
         """
-        sheet.merge_range(0, 0, 0, 5, title, cell_format=self.title)
+        sheet.merge_range(0, 0, 0, 10, title, cell_format=self.title)
 
     def apply_scientific_formatting(
         self, sheet: Worksheet, head_row_end: int, index_col_end: int
@@ -501,7 +519,8 @@ class Formatter:
                 # to_check = [str(c) for c in col]
                 # better to consider the 2nd layer as the first will have more space
                 try:
-                    max_header = len(str(col[1]))
+                    # there may be more than one layer
+                    max_header = max(len(str(c)) for c in col[1:])
                 except IndexError:
                     max_header = 0
                 # if the second header is empty, take the first

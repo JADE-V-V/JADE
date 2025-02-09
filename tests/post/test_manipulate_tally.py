@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 import pandas as pd
 
 from src.jade.post.manipulate_tally import (
@@ -8,6 +10,8 @@ from src.jade.post.manipulate_tally import (
     by_lethargy,
     concat_tallies,
     condense_groups,
+    delete_cols,
+    groupby,
     no_action,
     no_concat,
     replace_column,
@@ -109,3 +113,36 @@ def test_add_column():
     assert (result["New"] == [1, 2, 3]).all()
     result = add_column(df.copy(), "another", 1)
     assert (result["another"] == [1, 1, 1]).all()
+
+
+def test_groupby():
+    data = {
+        "Energy": [1, 1, 2, 2],
+        "Value": [1, 2, 3, 4],
+        "Error": [0.1, 0.2, 0.1, 0.1],
+    }
+    df = pd.DataFrame(data)
+    result = groupby(df.copy(), "Energy", "sum")
+    assert (result["Value"] == [3, 7]).all()
+    assert result["Error"].iloc[0] == math.sqrt(0.1**2 + 0.2**2)
+    result = groupby(df.copy(), "Energy", "mean")
+    assert (result["Value"] == [1.5, 3.5]).all()
+    result = groupby(df.copy(), "Energy", "max")
+    assert (result["Value"] == [2, 4]).all()
+    result = groupby(df.copy(), "Energy", "min")
+    assert (result["Value"] == [1, 3]).all()
+
+
+def test_delete_cols():
+    data = {
+        "Energy": [1, 2, 3],
+        "Value": [10, 20, 30],
+        "Error": [0.1, 0.2, 0.3],
+        "Another": [1, 2, 3],
+    }
+    df = pd.DataFrame(data)
+    result = delete_cols(df.copy(), ["Error", "Another"])
+    assert "Error" not in result.columns
+    assert "Another" not in result.columns
+    assert "Value" in result.columns
+    assert "Energy" in result.columns

@@ -104,6 +104,37 @@ def keep_last_row(tally: pd.DataFrame) -> pd.DataFrame:
     return tally.iloc[-1:]
 
 
+def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
+    """Group the tally by the group_column."""
+    # Exclude the error column from the manipulation. The errror needs to be recomputed
+    # as the squared root of the sum of the squared errors.
+    error_df = tally.set_index(by)["Error"]
+    rows = {}
+    for idx_val in error_df.index.unique():
+        subset = error_df.loc[idx_val]
+        error = np.sqrt(np.sum(subset**2))
+        rows[idx_val] = error
+    error_series = pd.Series(rows, name="Error")
+
+    if action == "sum":
+        df = tally.groupby(by).sum()
+    elif action == "mean":
+        df = tally.groupby(by).mean()
+    elif action == "max":
+        df = tally.groupby(by).max()
+    elif action == "min":
+        df = tally.groupby(by).min()
+
+    df["Error"] = error_series
+
+    return df.reset_index()
+
+
+def delete_cols(tally: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
+    """Delete the columns from the tally."""
+    return tally.drop(columns=cols)
+
+
 MOD_FUNCTIONS = {
     TallyModOption.LETHARGY: by_lethargy,
     TallyModOption.SCALE: scale,
@@ -113,6 +144,8 @@ MOD_FUNCTIONS = {
     TallyModOption.REPLACE: replace_column,
     TallyModOption.ADD_COLUMN: add_column,
     TallyModOption.KEEP_LAST_ROW: keep_last_row,
+    TallyModOption.GROUPBY: groupby,
+    TallyModOption.DELETE_COLS: delete_cols,
 }
 
 

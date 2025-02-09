@@ -18,7 +18,8 @@ from jade.post.raw_processor import RawProcessor
 from jade.resources import default_cfg
 
 SIMULATION_FOLDER = files(dummy_struct).joinpath("simulations")
-RAW_CFG_FILES = files(default_cfg).joinpath("benchmarks_pp/raw/mcnp")
+RAW_CFG_FILES_MCNP = files(default_cfg).joinpath("benchmarks_pp/raw/mcnp")
+RAW_CFG_FILES_D1S = files(default_cfg).joinpath("benchmarks_pp/raw/d1s")
 
 
 class TestRawProcessor:
@@ -56,7 +57,7 @@ class TestRawProcessor:
         assert len(df1) == 191
 
     def test_oktavian_raw(self, tmpdir):
-        with as_file(RAW_CFG_FILES.joinpath("Oktavian.yaml")) as f:
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("Oktavian.yaml")) as f:
             cfg = ConfigRawProcessor.from_yaml(f)
 
         folder = Path(
@@ -66,7 +67,7 @@ class TestRawProcessor:
         processor.process_raw_data()
 
     def test_ITER1D_raw(self, tmpdir):
-        with as_file(RAW_CFG_FILES.joinpath("ITER_1D.yaml")) as f:
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("ITER_1D.yaml")) as f:
             cfg = ConfigRawProcessor.from_yaml(f)
         folders = [
             Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "ITER_1D", "ITER_1D"),
@@ -79,7 +80,7 @@ class TestRawProcessor:
             processor.process_raw_data()
 
     def test_TiaraBC(self, tmpdir):
-        with as_file(RAW_CFG_FILES.joinpath("Tiara-BC.yaml")) as f:
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("Tiara-BC.yaml")) as f:
             cfg = ConfigRawProcessor.from_yaml(f)
 
         for folder in Path(
@@ -89,11 +90,19 @@ class TestRawProcessor:
             processor.process_raw_data()
 
     def test_TiaraBS(self, tmpdir):
-        with as_file(RAW_CFG_FILES.joinpath("Tiara-BS.yaml")) as f:
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("Tiara-BS.yaml")) as f:
             cfg = ConfigRawProcessor.from_yaml(f)
 
         for folder in Path(
             SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "Tiara-BS"
         ).iterdir():
+            processor = RawProcessor(cfg, folder, tmpdir)
+            processor.process_raw_data()
+
+    def test_SphereSDDR(self, tmpdir):
+        with as_file(RAW_CFG_FILES_D1S.joinpath("SphereSDDR.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        for folder in Path(SIMULATION_FOLDER, "_d1s_-_lib 1_", "SphereSDDR").iterdir():
             processor = RawProcessor(cfg, folder, tmpdir)
             processor.process_raw_data()

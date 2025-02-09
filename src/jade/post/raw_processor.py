@@ -43,7 +43,7 @@ class RawProcessor:
         self.code = CODE(self.metadata["code"])
 
         # decide the proper simulation parser depending on codes
-        if self.code == CODE.MCNP:
+        if self.code in (CODE.MCNP, CODE.D1S):
             self.sim_output = MCNPSimOutput(sim_folder)
         elif self.code == CODE.OPENMC:
             self.sim_output = OpenMCSimOutput(sim_folder)

@@ -116,6 +116,10 @@ The currently supported modifiers are:
   * *values*: a list of values to be added to the column. A single value can also be provided.
 
 * ``keep_last_row``: keeps only the last row of the tally. No arguments are expected. 
+* ``groupby``: this implements the pandas groupby method. The keyargs to provide are:
+  
+  * *by*: the name of the column to group by.
+  * *action*: the aggregation function to be applied. The currently supported aggregations are 'sum', 'mean', 'max', 'min'.
 
 More than one modifiers can be applied in series to a single tally.
 If your benchmark requires a new modifier, please refer to :ref:`add_tally_mod`.

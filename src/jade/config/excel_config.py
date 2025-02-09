@@ -104,6 +104,7 @@ class TableConfig:
     add_error: bool = False  # add single error sheets to the tables
     conditional_formatting: dict[str, float] | None = None
     change_col_names: dict[str, str] | None = None
+    subsets: list[dict] | None = None
 
     def __post_init__(self):
         # the conditional formatting dictionary has a fixed structure
@@ -125,4 +126,5 @@ class TableConfig:
             add_error=dictionary.get("add_error", False),
             conditional_formatting=dictionary.get("conditional_formatting"),
             change_col_names=dictionary.get("change_col_names"),
+            subsets=dictionary.get("subsets"),
         )

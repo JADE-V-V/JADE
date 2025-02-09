@@ -65,10 +65,19 @@ class AtlasProcessor:
                 logging.info("Parsing reference data")
                 raw_folder = Path(self.raw_root, codelib, self.cfg.benchmark)
 
-                df = ExcelProcessor._get_table_df(plot_cfg.results, raw_folder)
+                df = ExcelProcessor._get_table_df(
+                    plot_cfg.results, raw_folder, subsets=plot_cfg.subsets
+                )
                 if plot_cfg.expand_runs:
                     df = df.reset_index()
                     for run in df["Case"].unique():
+                        # skip the cases that are not in select_runs
+                        if (
+                            plot_cfg.select_runs
+                            and plot_cfg.select_runs.search(run) is None
+                        ):
+                            continue
+
                         run_df = df[df["Case"] == run]
                         if run in cases:
                             cases[run].append((codelib_pretty, run_df))

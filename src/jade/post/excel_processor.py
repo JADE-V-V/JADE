@@ -137,14 +137,11 @@ class ExcelProcessor:
                 df = pd.read_csv(Path(folder, file))
                 # check here if only a subset of the dataframe is needed
                 if subset:
-                    try:
-                        df = (
-                            df.set_index(subset["column"])
-                            .loc[subset["values"]]
-                            .reset_index()
-                        )
-                    except KeyError:
-                        pass  # accept that in some tallies the column may not be present
+                    for value, items in subset["values"].items():
+                        try:
+                            df = df.set_index(value).loc[items].reset_index()
+                        except KeyError:
+                            pass  # accept that in some tallies the column may not be present
                 df["Case"] = run_name
                 dfs.append(df)
         if len(dfs) == 0:

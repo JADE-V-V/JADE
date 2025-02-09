@@ -13,5 +13,5 @@ comparison %:
   conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
   subsets:
     - result: SDDR
-      column: User
-      values: [0]
+      values:
+        User: [0]

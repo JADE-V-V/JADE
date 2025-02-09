@@ -121,6 +121,9 @@ The currently supported modifiers are:
   * *by*: the name of the column to group by.
   * *action*: the aggregation function to be applied. The currently supported aggregations are 'sum', 'mean', 'max', 'min'.
 
+* ``delete_cols``: deletes columns from the tally. The keyarg to provide is *cols* which expects a list
+  of column names to be deleted.
+
 More than one modifiers can be applied in series to a single tally.
 If your benchmark requires a new modifier, please refer to :ref:`add_tally_mod`.
 
@@ -191,6 +194,13 @@ The optional configurations that can be included in a *table* are:
   in orange if it is greater than 10 and in yellow if it is greater than 5 and green otherwise.
 * ``change_col_names``: a dictionary that specifies the new names for the columns. The keys are the original column names
   and the values are the new names. This will be applied as a last operation before dumping the df.
+* ``subsets``: it is used to select only certain results. It is a list of dictionary. One dictionary
+  needs to be provided for each *result* for which only a subset needs to be selected. The keys
+  of each dictionary are:
+
+  * *result*: the name of the *result* for which the subset is selected.
+  * *values*: a dictionary that will be used to select the subset. Keys are the colum names and items are
+    the values that will be used to select the subset in that specific column.
 
 An example of a *table* configuration is shown below:
 
@@ -257,6 +267,16 @@ Optional configuration options are:
   names and the values are the arguments values. The list of plot_args parameters available in each plot
   are described in the plot gallery.
 * ``rectangles``: TODO
+* ``subsets``: it is used to select only certain results. It is a list of dictionary. One dictionary
+  needs to be provided for each *result* for which only a subset needs to be selected. The keys
+  of each dictionary are:
+
+  * *result*: the name of the *result* for which the subset is selected.
+  * *values*: a dictionary that will be used to select the subset. Keys are the colum names and items are
+    the values that will be used to select the subset in that specific column.
+
+* ``select_runs``: This option is effective only one ``expand_runs`` is set to True. This option allows
+  to specify a regex pattern (in string format). Only the cases/runs that match the pattern will be plotted.
 
 
 Implement new functionalities

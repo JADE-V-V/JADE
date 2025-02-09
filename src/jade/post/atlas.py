@@ -52,7 +52,7 @@ class Atlas:
         """
         # Convert the figure to an in-memory binary stream
         img_stream = io.BytesIO()
-        figure.savefig(img_stream, format="png", dpi=200)
+        figure.savefig(img_stream, format="png", dpi=200, bbox_inches="tight")
         img_stream.seek(0)
 
         self.doc.add_picture(img_stream, width=width)

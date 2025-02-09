@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -96,6 +97,11 @@ class PlotConfig:
     recs : list[tuple[str, str, float, float]], optional
         Rectangles to be added to the plot. Each tuple contains the label, the color,
         the xmin position and the xmax position of the rectangle.
+    subsets : list[dict], optional
+        List of dictionaries with the column and values to be used as a subset of a
+        specific result. Each dictionary should have the keys "result", "column" and "values".
+    select_runs : re.Pattern, optional
+        Regular expression to select only the runs that match the pattern.
     """
 
     name: str
@@ -112,9 +118,14 @@ class PlotConfig:
     additional_labels: dict[str, list[tuple[str, float]]] | None = None
     v_lines: dict[str, list[float]] | None = None
     recs: list[tuple[str, str, float, float]] | None = None
+    subsets: list[dict] | None = None
+    select_runs: re.Pattern | None = None
 
     @classmethod
     def from_dict(cls, dictionary: dict, name: str) -> PlotConfig:
+        select_runs = dictionary.get("select_runs", None)
+        if select_runs is not None:
+            select_runs = re.compile(select_runs)
         return cls(
             name=name,
             results=dictionary["results"],
@@ -129,6 +140,8 @@ class PlotConfig:
             additional_labels=dictionary.get("additional_labels", None),
             v_lines=dictionary.get("v_lines", None),
             recs=dictionary.get("recs", None),
+            subsets=dictionary.get("subsets", None),
+            select_runs=select_runs,
         )
 
     def __post_init__(self):
@@ -178,6 +191,7 @@ class PlotType(Enum):
     BINNED = "binned"
     RATIO = "ratio"
     CE = "ce"
+    DOSE_CONTRIBUTION = "dose contribution"
     # EXP = "exp points"
     # EXP_GROUP = "exp points group"
     # CE_EXP_GROUP = "exp points group CE"

@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from f4enix.input.libmanager import LibManager
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
@@ -14,6 +15,7 @@ from matplotlib.ticker import AutoLocator, AutoMinorLocator, LogLocator, Multipl
 
 from jade.config.atlas_config import PlotConfig, PlotType
 
+LM = LibManager()
 # Color-blind saver palette
 COLORS = [
     "#377eb8",
@@ -61,6 +63,8 @@ class Plot(ABC):
         if self.cfg.additional_labels:
             for ax in axes:
                 self._add_labels(ax)
+
+        fig.tight_layout()  # Adjust padding
 
         return fig, axes
 
@@ -392,6 +396,16 @@ class BinnedPlot(Plot):
                     elinewidth=0.5,
                     color=COLORS[idx],
                 )
+                # add a label if needed (only one per group)
+                if subcases and idx == 0:
+                    ax1.text(
+                        x[-1],
+                        y[-1],
+                        subcases[1][i],
+                        fontsize=8,
+                        verticalalignment="center",
+                        horizontalalignment="right",
+                    )
 
             # Error Plot
             if plot_error:
@@ -555,6 +569,73 @@ class CEPlot(Plot):
         return fig, axes
 
 
+class DoseContributionPlot(Plot):
+    def _get_figure(self) -> tuple[Figure, Axes]:
+        nrows = len(self.data)
+        gridspec_kw = {"hspace": 0.25}
+        fig, axes = plt.subplots(
+            nrows=nrows, ncols=1, gridspec_kw=gridspec_kw, sharex=True
+        )
+
+        indices = []
+        for idx, (codelib, df) in enumerate(self.data):
+            df.set_index("User", inplace=True)
+            indices.extend(df.index.to_list())
+
+        # build a common index of isotopes so that the colors are the same for all
+        # subplots
+        isotopes = list(set(indices))
+        isotopes.sort()
+
+        for idx, isotope in enumerate(isotopes):
+            if int(isotope) == 0:
+                continue
+            for i, (codelib, df) in enumerate(self.data):
+                if i == 0:
+                    _, label = LM.get_zaidname(str(abs(isotope)))
+                else:
+                    label = None
+
+                tot_dose = df.groupby("Time", sort=False).sum()["Value"]
+                try:
+                    y = df.loc[isotope].set_index("Time")["Value"] / tot_dose * 100
+                    times = y.index
+                except KeyError:
+                    continue  # not all libs have the same pathways
+
+                axes[i].plot(
+                    times,
+                    y,
+                    color=COLORS[idx],
+                    marker=MARKERS[idx],
+                    label=label,
+                    linewidth=0.5,
+                )
+
+        for i, ax in enumerate(axes):
+            # --- Plot details ---
+            # ax details
+            ax.set_title(codelib)
+            ax.set_ylabel("SDDR [%]")
+            ax.tick_params(which="major", width=1.00, length=5)
+            ax.tick_params(axis="y", which="minor", width=0.75, length=2.50)
+            # Grid
+            ax.grid("True", axis="y", which="major", linewidth=0.50)
+            ax.grid("True", axis="y", which="minor", linewidth=0.20)
+
+        # Adjust legend to have multiple columns
+        handles, labels = axes[0].get_legend_handles_labels()
+        ncol = len(labels) // 20 + 1
+        axes[0].legend(handles, labels, bbox_to_anchor=(1, 1), ncol=ncol)
+        # plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
+        for label in axes[-1].get_xticklabels():
+            label.set_rotation(45)
+            label.set_ha("right")
+            label.set_rotation_mode("anchor")
+
+        return fig, axes
+
+
 class PlotFactory:
     @staticmethod
     def create_plot(
@@ -566,6 +647,8 @@ class PlotFactory:
             return RatioPlot(plot_config, data)
         elif plot_config.plot_type == PlotType.CE:
             return CEPlot(plot_config, data)
+        elif plot_config.plot_type == PlotType.DOSE_CONTRIBUTION:
+            return DoseContributionPlot(plot_config, data)
         else:
             raise NotImplementedError(
                 f"Plot type {plot_config.plot_type} not implemented"

@@ -41,35 +41,51 @@ class Plot(ABC):
         self.cfg = plot_config
         self.data = data
 
-    def plot(self) -> tuple[Figure, Axes | list[Axes]]:
-        fig, axes = self._get_figure()
-        if isinstance(axes, Axes):
-            axes = [axes]
+    def plot(self) -> list[tuple[Figure, Axes | list[Axes]]]:
+        """Plot the data according to the configuration. More than one plot can be
+        produced in case overpopulation needs to be avoided.
 
-        # check if the first ax has a title
-        if axes[0].get_title() == "":
-            fig.suptitle(self.cfg.title, y=0.93)
-        else:
-            fig.suptitle(self.cfg.title)
+        Returns
+        -------
+        list[tuple[Figure, Axes | list[Axes]]]
+            list of matplotlib fig, ax couples produced
+        """
+        output = self._get_figure()
+        if isinstance(output, tuple):
+            output = [output]
 
-        axes[-1].set_xlabel(self.cfg.x_label)
+        # it is rare than more than one figure is returned but it can happen to avoid
+        # overpopulation
+        newoutput = []
+        for fig, axes in output:
+            if isinstance(axes, Axes):
+                axes = [axes]
 
-        # additional common extra features that may be requested
-        if self.cfg.recs:
-            self._build_rectangles(axes[0])
-        if self.cfg.v_lines:
-            for ax in axes:
-                self._add_vlines(ax)
-        if self.cfg.additional_labels:
-            for ax in axes:
-                self._add_labels(ax)
+            # check if the first ax has a title
+            if axes[0].get_title() == "":
+                fig.suptitle(self.cfg.title, y=0.93)
+            else:
+                fig.suptitle(self.cfg.title)
 
-        fig.tight_layout()  # Adjust padding
+            axes[-1].set_xlabel(self.cfg.x_label)
 
-        return fig, axes
+            # additional common extra features that may be requested
+            if self.cfg.recs:
+                self._build_rectangles(axes[0])
+            if self.cfg.v_lines:
+                for ax in axes:
+                    self._add_vlines(ax)
+            if self.cfg.additional_labels:
+                for ax in axes:
+                    self._add_labels(ax)
+
+            newoutput.append((fig, axes))
+        return newoutput
 
     @abstractmethod
-    def _get_figure(self) -> tuple[Figure, Axes | list[Axes]]:
+    def _get_figure(
+        self,
+    ) -> tuple[Figure, Axes | list[Axes]] | list[tuple[Figure, Axes | list[Axes]]]:
         pass
 
     def _build_rectangles(self, ax: Axes) -> None:
@@ -636,6 +652,109 @@ class DoseContributionPlot(Plot):
         return fig, axes
 
 
+class WavesPlot(Plot):
+    def _get_figure(
+        self,
+    ) -> list[tuple[Figure, Axes | list[Axes]]]:
+        # Get optional data
+        if self.cfg.plot_args is not None:
+            limits = self.cfg.plot_args.get("limits", [0, 1.5])
+            shorten_x_name = self.cfg.plot_args.get("shorten_x_name", False)
+        else:
+            limits = [0, 1.5]
+            shorten_x_name = False
+
+        nrows = len(self.cfg.results)
+        gridspec_kw = {"hspace": 0.25}
+
+        # Since ratios are not defined if the ref lib is not available there will
+        # be a unique common index
+        common_index = self.data[0][1][self.cfg.x].unique()
+
+        # split the coommon index into pieces of max 20 elements each
+        common_index_chunks = []
+        for i in range(0, len(common_index), 20):
+            common_index_chunks.append(common_index[i : i + 20])
+
+        output = []
+        for index_chunk in common_index_chunks:
+            fig, axes = plt.subplots(nrows=nrows, sharex=True, gridspec_kw=gridspec_kw)
+            for idx_ax, result in enumerate(self.cfg.results):
+                ax = axes[idx_ax]
+                # This Should ensure that the x labels order is kept fixed
+                ax.scatter(index_chunk, np.ones(len(index_chunk)), alpha=0)
+
+                # ref value
+                y_ref = (
+                    self.data[0][1]
+                    .set_index(["Result", self.cfg.x])
+                    .loc[result][self.cfg.y]
+                )
+                ref_codelib = self.data[0][0]
+
+                # actual plot of values
+                for idx_tlib, (codelib, df) in enumerate(self.data[1:]):
+                    if idx_ax == 0:
+                        label = codelib
+                    else:
+                        label = None
+
+                    tary = (
+                        df.set_index(["Result", self.cfg.x]).loc[result][self.cfg.y]
+                        / y_ref
+                    )
+                    # keep only the values that are in the index_chunk
+                    tary = tary[tary.index.isin(index_chunk)]
+                    # Plot everything
+                    _apply_CE_limits(
+                        limits[0],
+                        limits[1],
+                        tary.values,
+                        tary.index,
+                        ax,
+                        idx_tlib,
+                        label,
+                    )
+
+            for idx_ax, result in enumerate(self.cfg.results):
+                ax = axes[idx_ax]
+                # Write title
+                ax.set_title(result)
+                # Draw the ratio line
+                ax.axhline(1, color="black", linestyle="--", linewidth=0.5)
+                # Get minor ticks on the y axis
+                ax.yaxis.set_minor_locator(AutoMinorLocator())
+                # Ticks style
+                ax.tick_params(which="major", width=1.00, length=5)
+                ax.tick_params(which="minor", width=0.75, length=2.50)
+                # Grid stylying
+                ax.grid("True", which="major", linewidth=0.75, axis="y")
+                ax.grid("True", which="minor", linewidth=0.30, axis="y")
+
+            # put the label only in the middle y ax
+            axes[len(axes) // 2].set_ylabel(f"Ratio vs {ref_codelib}")
+
+            # Add the legend
+            axes[0].legend(bbox_to_anchor=(1, 1), fancybox=True, shadow=True)
+
+            # change the label text
+            if shorten_x_name:
+                new_labels = []
+                for label in axes[-1].get_xticklabels():
+                    split = label.get_text().split("_")
+                    new_labels.append(" ".join(split[-shorten_x_name:]))
+                axes[-1].set_xticklabels(new_labels)
+            # Handle x and y global axes
+            for label in axes[-1].get_xticklabels():
+                label.set_rotation(45)
+                label.set_ha("right")
+                label.set_rotation_mode("anchor")
+
+            output.append((fig, axes))
+
+        return output
+
+
 class PlotFactory:
     @staticmethod
     def create_plot(
@@ -649,6 +768,8 @@ class PlotFactory:
             return CEPlot(plot_config, data)
         elif plot_config.plot_type == PlotType.DOSE_CONTRIBUTION:
             return DoseContributionPlot(plot_config, data)
+        elif plot_config.plot_type == PlotType.WAVES:
+            return WavesPlot(plot_config, data)
         else:
             raise NotImplementedError(
                 f"Plot type {plot_config.plot_type} not implemented"
@@ -656,7 +777,12 @@ class PlotFactory:
 
 
 # Aux functions
-def _get_limits(lowerlimit, upperlimit, ydata, xdata):
+def _get_limits(
+    lowerlimit: float | int,
+    upperlimit: float | int,
+    ydata: list | np.ndarray,
+    xdata: list | np.ndarray,
+):
     """
     Given an X, Y dataset and bounding y limits it returns three datasets
     couples containing the sets to be normally plotted and the upper and

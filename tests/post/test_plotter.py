@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 from jade.config.atlas_config import PlotConfig
-from jade.post.plotter import BinnedPlot
+from jade.post.plotter import BinnedPlot, WavesPlot
 
 
 class TestBinnedPlot:
@@ -49,3 +49,40 @@ class TestBinnedPlot:
         plot = BinnedPlot(cfg, data)
         fig, ax = plot.plot()
         fig.savefig(tmpdir.join("test.png"))
+
+
+class TestWavesPlot:
+    def test_plot(self, tmpdir):
+        cfg = PlotConfig(
+            name="test",
+            results=["a", "b", "c"],
+            plot_type=None,  # dummy value
+            title="test",
+            x_label="Case",
+            y_labels=["dummy"],
+            x="Case",
+            y="Value",
+            plot_args={"limits": [0.5, 1.5], "shorten_x_name": 2},
+        )
+        n_libs = 3
+        n_cases = 50
+        data = []
+        for i in range(n_libs):
+            cases = [f"Very_long_case_name_{i}" for i in range(n_cases)]
+            dfs = []
+            for result in cfg.results:
+                df = pd.DataFrame(
+                    {
+                        "Case": cases,
+                        "Value": np.random.rand(n_cases),
+                        "Error": np.random.rand(n_cases) * 0.1,
+                    }
+                )
+                df["Result"] = result
+                dfs.append(df)
+            data.append((f"lib{i}", pd.concat(dfs)))
+
+        plot = WavesPlot(cfg, data)
+        output = plot.plot()
+        for i, (fig, _) in enumerate(output):
+            fig.savefig(tmpdir.join(f"test{i}.png"))

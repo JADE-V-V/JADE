@@ -192,6 +192,7 @@ class PlotType(Enum):
     RATIO = "ratio"
     CE = "ce"
     DOSE_CONTRIBUTION = "dose contribution"
+    WAVES = "waves"
     # EXP = "exp points"
     # EXP_GROUP = "exp points group"
     # CE_EXP_GROUP = "exp points group CE"

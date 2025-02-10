@@ -520,7 +520,11 @@ class Formatter:
                 # better to consider the 2nd layer as the first will have more space
                 try:
                     # there may be more than one layer
-                    max_header = max(len(str(c)) for c in col[1:])
+                    head_values = [len(str(c)) for c in col[1:]]
+                    if len(head_values) > 0:
+                        max_header = max(head_values)
+                    else:
+                        max_header = 0
                 except IndexError:
                     max_header = 0
                 # if the second header is empty, take the first

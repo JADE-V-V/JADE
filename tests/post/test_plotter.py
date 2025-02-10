@@ -47,8 +47,8 @@ class TestBinnedPlot:
         data = [("data1", data1), ("data2", data2), ("data3", data3)]
 
         plot = BinnedPlot(cfg, data)
-        fig, ax = plot.plot()
-        fig.savefig(tmpdir.join("test.png"))
+        output = plot.plot()
+        output[0][0].savefig(tmpdir.join("test.png"))
 
 
 class TestWavesPlot:

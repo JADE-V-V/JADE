@@ -94,12 +94,14 @@ class AtlasProcessor:
                     cfg.name = f"{cfg.name} {case}"
                     cfg.title = f"{cfg.title} - {case}"
                     plot = PlotFactory.create_plot(cfg, data)
-                    fig, _ = plot.plot()
-                    atlas.insert_img(fig)
+                    item = plot.plot()
+                    for fig, _ in item:
+                        atlas.insert_img(fig)
             else:
                 plot = PlotFactory.create_plot(plot_cfg, dfs)
-                fig, _ = plot.plot()
-                atlas.insert_img(fig)
+                item = plot.plot()
+                for fig, _ in item:
+                    atlas.insert_img(fig)
 
         # Save the atlas
         atlas.save(self.atlas_folder_path)

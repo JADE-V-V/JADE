@@ -64,7 +64,10 @@ The following is a scheme of the JADE folder structure:
         |-----logs
         |
         |----- post_processing
-        |        |----- TODO
+        |        |----- <date>
+        |                 |----- <Benchmark name>
+        |                              |----- atlas
+        |                              |----- excel
         |        
         |----- raw_data
         |        |----- _<code>_-_<library>_

@@ -1,3 +1,5 @@
+.. _add_benchmark:
+
 ###################
 Add a new benchmark
 ###################
@@ -282,6 +284,26 @@ Optional configuration options are:
 * ``select_runs``: This option allows
   to specify a regex pattern (in string format). Only the cases/runs that match the pattern will be plotted.
 
+An example of plot configuration is shown below:
+
+.. code-block:: yaml
+
+  Wave plots (Isotopes):
+    results:  
+      - Leakage neutron flux (total)
+      - Leakage photon flux
+      - SDDR
+    plot_type: waves
+    title: Ratio wave plots
+    x_label: Zaid and MT value
+    y_labels: ''
+    x: Case
+    y: Value
+    expand_runs: false
+    plot_args:
+      limits: [0.5, 1.5]
+      shorten_x_name: 2
+    select_runs: SphereSDDR_\d+_[A-Za-z]+-\d+_
 
 Implement new functionalities
 =============================

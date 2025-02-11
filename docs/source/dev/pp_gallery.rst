@@ -50,3 +50,15 @@ plot_args
 * ``subcases``: a list of subcases to be plotted. The first value is the name of the column that identify the
   subcasese while the second value is a list of the subcases to be plotted. This will cause the plot to be split
   in as many rows as the number of subcases.
+
+Waves
+-----
+
+plot_args
+
+* ``limits``: a tuple of two values that define the limits of the plot. The first value is the y min limit while the
+  second value is the y max limit.
+* ``shorten_x_name``: this type of plots are often categorical. In the event of using the 
+  cases as x axis, the long names of the benchmark runs can become problematic. This option
+  will split the name of the benchmark run on the '_' symbols and retain only the last N chunks
+  where N is the specified *shorten_x_name* value.

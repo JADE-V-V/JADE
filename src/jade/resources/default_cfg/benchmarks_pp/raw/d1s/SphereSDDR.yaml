@@ -38,6 +38,9 @@ Photon heating:
 Leakage neutron flux:
   concat_option: no_action
   12: [[no_action, {}]]
+Leakage neutron flux (total):
+  concat_option: no_action
+  12: [[groupby, {'by': 'all', 'action': 'sum'}]]
 # T production:
 #   concat_option: no_action
 #   24: [[no_action, {}]]
@@ -49,4 +52,10 @@ Leakage neutron flux:
 #   34: [[no_action, {}]]
 SDDR:
   concat_option: no_action
-  104: [[replace, {'column': 'Time', 'values': *times}]]
+  104:
+    - [replace, {'column': 'Time', 'values': *times}]
+SDDR totals:
+  concat_option: no_action
+  104:
+    - [groupby, {'by': 'Time', 'action': 'sum'}]
+    - [replace, {'column': 'Time', 'values': *times}]

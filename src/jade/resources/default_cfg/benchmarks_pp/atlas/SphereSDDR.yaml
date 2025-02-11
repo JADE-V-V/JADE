@@ -152,7 +152,7 @@ Parent isotope contribution to SDDR (Materials):
 #
 Wave plots (Isotopes):
   results:
-    - Leakage neutron flux
+    - Leakage neutron flux (total)
     - Leakage photon flux
     - SDDR
   plot_type: waves
@@ -163,6 +163,23 @@ Wave plots (Isotopes):
   y: Value
   expand_runs: false
   plot_args:
-    limits: [0, 1.5]
+    limits: [0.5, 1.5]
     shorten_x_name: 2
   select_runs: SphereSDDR_\d+_[A-Za-z]+-\d+_
+#
+Wave plots (Materials):
+  results:
+    - Leakage neutron flux (total)
+    - Leakage photon flux
+    - SDDR totals
+  plot_type: waves
+  title: Ratio wave plots
+  x_label: Zaid and MT value
+  y_labels: ''
+  x: Time
+  y: Value
+  expand_runs: true
+  plot_args:
+    limits: [0.5, 1.5]
+    shorten_x_name: 2
+  select_runs: SphereSDDR_M\d+

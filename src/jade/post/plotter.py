@@ -89,6 +89,7 @@ class Plot(ABC):
         pass
 
     def _build_rectangles(self, ax: Axes) -> None:
+        """Build background rectangles on the plot according to the configuration"""
         options = self.cfg.recs
         y_min, y_max = ax.get_ylim()
         # Plot the rects
@@ -135,6 +136,7 @@ class Plot(ABC):
         ax.add_artist(additional_legend)
 
     def _add_vlines(self, ax: Axes) -> None:
+        """Add vertical lines to the plot according to the configuration"""
         # major lines
         if self.cfg.v_lines is None:
             return
@@ -162,29 +164,39 @@ class Plot(ABC):
                     )
 
     def _add_labels(self, ax: Axes) -> None:
+        """Add text labels to the plot according to the configuration"""
         # major labels
         if self.cfg.additional_labels is None:
             return
 
         if "major" in self.cfg.additional_labels.keys():
             labels = self.cfg.additional_labels["major"]
-            for label, xpos in labels:
-                bbox_dic = {
-                    "boxstyle": "round,pad=0.5",
-                    "facecolor": "white",
-                    "alpha": 1,
-                }
-                xmin, xmax = ax.get_xlim()
-                xpos_perc = (xpos - xmin) / (xmax - xmin)
-                ax.text(xpos_perc, 0.95, label, bbox=bbox_dic, transform=ax.transAxes)
+            bbox_dic = {
+                "boxstyle": "round,pad=0.5",
+                "facecolor": "white",
+                "alpha": 1,
+            }
+            _place_labels(labels, ax, 0.93, bbox=bbox_dic)
 
         if "minor" in self.cfg.additional_labels.keys():
             # minor labels
             labels = self.cfg.additional_labels["minor"]
-            for label, xpos in labels:
-                xmin, xmax = ax.get_xlim()
-                xpos_perc = (xpos - xmin) / (xmax - xmin)
-                ax.text(xpos_perc, 0.87, label, transform=ax.transAxes)
+            _place_labels(labels, ax, 0.87)
+
+
+def _place_labels(
+    labels: list[tuple[str, float | int]],
+    ax: Axes,
+    ypos_perc: float | int,
+    bbox: dict | None = None,
+) -> None:
+    """Helper function to place labels on the correct position in the plot"""
+    for label, xpos in labels:
+        xmin, xmax = ax.get_xlim()
+        if xpos < xmin or xpos > xmax:  # skip the label if not inside the x axis
+            continue
+        xpos_perc = (xpos - xmin) / (xmax - xmin)
+        ax.text(xpos_perc, ypos_perc, label, transform=ax.transAxes, bbox=bbox)
 
 
 class RatioPlot(Plot):
@@ -665,11 +677,11 @@ class WavesPlot(Plot):
             shorten_x_name = False
 
         nrows = len(self.cfg.results)
-        gridspec_kw = {"hspace": 0.25}
+        gridspec_kw = {"hspace": 0.30}
 
         # Since ratios are not defined if the ref lib is not available there will
-        # be a unique common index
-        common_index = self.data[0][1][self.cfg.x].unique()
+        # be a unique common index. Exclude nan values
+        common_index = self.data[0][1][self.cfg.x].dropna().unique()
 
         # split the coommon index into pieces of max 20 elements each
         common_index_chunks = []
@@ -703,8 +715,12 @@ class WavesPlot(Plot):
                         df.set_index(["Result", self.cfg.x]).loc[result][self.cfg.y]
                         / y_ref
                     )
-                    # keep only the values that are in the index_chunk
-                    tary = tary[tary.index.isin(index_chunk)]
+                    if len(tary) == 1:  # constant value across the x axis
+                        tary = pd.Series(tary.values * np.ones(len(index_chunk)))
+                        tary.index = index_chunk
+                    else:
+                        # keep only the values that are in the index_chunk
+                        tary = tary[tary.index.isin(index_chunk)]
                     # Plot everything
                     _apply_CE_limits(
                         limits[0],

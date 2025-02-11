@@ -118,8 +118,12 @@ The currently supported modifiers are:
 * ``keep_last_row``: keeps only the last row of the tally. No arguments are expected. 
 * ``groupby``: this implements the pandas groupby method. The keyargs to provide are:
   
-  * *by*: the name of the column to group by.
+  * *by*: the name of the column to group by. If 'all' the operation is performed on the
+    whole dataframe.
   * *action*: the aggregation function to be applied. The currently supported aggregations are 'sum', 'mean', 'max', 'min'.
+  
+  If the column *by* is not present in the tally, the modifier will not act and a logging.debug() message is
+  registered.
 
 * ``delete_cols``: deletes columns from the tally. The keyarg to provide is *cols* which expects a list
   of column names to be deleted.
@@ -275,7 +279,7 @@ Optional configuration options are:
   * *values*: a dictionary that will be used to select the subset. Keys are the colum names and items are
     the values that will be used to select the subset in that specific column.
 
-* ``select_runs``: This option is effective only one ``expand_runs`` is set to True. This option allows
+* ``select_runs``: This option allows
   to specify a regex pattern (in string format). Only the cases/runs that match the pattern will be plotted.
 
 

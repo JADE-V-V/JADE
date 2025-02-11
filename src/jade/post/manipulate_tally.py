@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import logging
+
 import numpy as np
 import pandas as pd
 
@@ -108,26 +110,41 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
     """Group the tally by the group_column."""
     # Exclude the error column from the manipulation. The errror needs to be recomputed
     # as the squared root of the sum of the squared errors.
-    error_df = tally.set_index(by)["Error"]
-    rows = {}
-    for idx_val in error_df.index.unique():
-        subset = error_df.loc[idx_val]
-        error = np.sqrt(np.sum(subset**2))
-        rows[idx_val] = error
-    error_series = pd.Series(rows, name="Error")
+    if by not in tally.columns and by != "all":
+        logging.debug(f"Groupby column {by} not found in the tally")
+        return tally
+
+    if by == "all":
+        grouped = tally
+        error_series = tally["Error"]
+    else:
+        error_df = tally.set_index(by)["Error"]
+        rows = {}
+        for idx_val in error_df.index.unique():
+            subset = error_df.loc[idx_val]
+            error = np.sqrt(np.sum(subset**2))
+            rows[idx_val] = error
+        error_series = pd.Series(rows, name="Error")
+        grouped = tally.groupby(by, sort=False)
 
     if action == "sum":
-        df = tally.groupby(by).sum()
+        df = grouped.sum()
     elif action == "mean":
-        df = tally.groupby(by).mean()
+        df = grouped.mean()
     elif action == "max":
-        df = tally.groupby(by).max()
+        df = grouped.max()
     elif action == "min":
-        df = tally.groupby(by).min()
+        df = grouped.min()
+
+    if isinstance(df, pd.Series):
+        # a series has been created but we want a df
+        df = df.to_frame().T
+    else:
+        df.reset_index(inplace=True)
 
     df["Error"] = error_series
 
-    return df.reset_index()
+    return df
 
 
 def delete_cols(tally: pd.DataFrame, cols: list[str]) -> pd.DataFrame:

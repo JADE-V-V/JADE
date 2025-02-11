@@ -4,7 +4,9 @@ import logging
 from copy import deepcopy
 from pathlib import Path
 
-from jade.config.atlas_config import ConfigAtlasProcessor
+import pandas as pd
+
+from jade.config.atlas_config import ConfigAtlasProcessor, PlotConfig
 from jade.helper.aux_functions import PathLike, print_code_lib
 from jade.helper.constants import CODE
 from jade.post.atlas import Atlas
@@ -68,40 +70,74 @@ class AtlasProcessor:
                 df = ExcelProcessor._get_table_df(
                     plot_cfg.results, raw_folder, subsets=plot_cfg.subsets
                 )
-                if plot_cfg.expand_runs:
-                    df = df.reset_index()
-                    for run in df["Case"].unique():
-                        # skip the cases that are not in select_runs
-                        if (
-                            plot_cfg.select_runs
-                            and plot_cfg.select_runs.search(run) is None
-                        ):
-                            continue
-
-                        run_df = df[df["Case"] == run]
-                        if run in cases:
-                            cases[run].append((codelib_pretty, run_df))
-                        else:
-                            cases[run] = [(codelib_pretty, run_df)]
-                else:
-                    dfs.append((codelib_pretty, df.reset_index()))
+                _dfs, _cases = self._select_runs(plot_cfg, df, codelib_pretty)
+                dfs.extend(_dfs)
+                for case in _cases:
+                    if case in cases:
+                        cases[case].extend(_cases[case])
+                    else:
+                        cases[case] = _cases[case]
 
             # create the plot
             if plot_cfg.expand_runs:  # one plot for each case/run
-                for case, data in cases.items():
-                    atlas.doc.add_heading(case, level=2)
-                    cfg = deepcopy(plot_cfg)
-                    cfg.name = f"{cfg.name} {case}"
-                    cfg.title = f"{cfg.title} - {case}"
-                    plot = PlotFactory.create_plot(cfg, data)
-                    item = plot.plot()
-                    for fig, _ in item:
-                        atlas.insert_img(fig)
+                self._generate_expanded_plots(plot_cfg, cases, atlas)
             else:
-                plot = PlotFactory.create_plot(plot_cfg, dfs)
-                item = plot.plot()
-                for fig, _ in item:
-                    atlas.insert_img(fig)
+                self._generate_plot(plot_cfg, dfs, atlas)
 
         # Save the atlas
         atlas.save(self.atlas_folder_path)
+
+    def _generate_expanded_plots(
+        self,
+        plot_cfg: PlotConfig,
+        cases: dict[str, list[tuple[str, pd.DataFrame]]],
+        atlas: Atlas,
+    ):
+        """Generate a plot for each case/run"""
+        for case, data in cases.items():
+            atlas.doc.add_heading(case, level=2)
+            cfg = deepcopy(plot_cfg)
+            cfg.name = f"{cfg.name} {case}"
+            cfg.title = f"{cfg.title} - {case}"
+            self._generate_plot(cfg, data, atlas)
+
+    @staticmethod
+    def _generate_plot(
+        plot_cfg: PlotConfig, dfs: list[tuple[str, pd.DataFrame]], atlas: Atlas
+    ):
+        """Generate a single plot (that can be composed by more figures)"""
+        plot = PlotFactory.create_plot(plot_cfg, dfs)
+        item = plot.plot()
+        for fig, _ in item:
+            atlas.insert_img(fig)
+
+    @staticmethod
+    def _select_runs(
+        plot_cfg: PlotConfig, df: pd.DataFrame, codelib_pretty: str
+    ) -> tuple[
+        list[tuple[str, pd.DataFrame]], dict[str, list[tuple[str, pd.DataFrame]]]
+    ]:
+        """Select the runs to be plotted depending on the configuration. The logic
+        differs if the runs should be expanded or not."""
+        cases = {}
+        dfs = []
+        if plot_cfg.expand_runs:
+            for run in df["Case"].unique():
+                # skip the cases that are not in select_runs
+                if plot_cfg.select_runs and plot_cfg.select_runs.search(run) is None:
+                    continue
+
+                run_df = df[df["Case"] == run]
+                if run in cases:
+                    cases[run].append((codelib_pretty, run_df))
+                else:
+                    cases[run] = [(codelib_pretty, run_df)]
+        else:
+            # skip the cases that are not in select_runs
+            to_drop = []
+            for case in df["Case"].unique():
+                if plot_cfg.select_runs and plot_cfg.select_runs.search(case) is None:
+                    to_drop.append(case)
+            df = df[~df["Case"].isin(to_drop)]
+            dfs.append((codelib_pretty, df))
+        return dfs, cases

@@ -132,6 +132,11 @@ def test_groupby():
     result = groupby(df.copy(), "Energy", "min")
     assert (result["Value"] == [1, 3]).all()
 
+    result = groupby(df.copy(), "all", "sum")
+    assert result["Value"].iloc[0] == 10
+    assert result["Error"].iloc[0] == math.sqrt(0.1**2 + 0.2**2 + 0.1**2 + 0.1**2)
+    assert len(result) == 1
+
 
 def test_delete_cols():
     data = {

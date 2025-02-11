@@ -116,15 +116,15 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
 
     if by == "all":
         grouped = tally
-        error_series = tally["Error"]
+        error = np.sqrt((tally["Error"] ** 2).sum())
     else:
         error_df = tally.set_index(by)["Error"]
-        rows = {}
+        rows = []
         for idx_val in error_df.index.unique():
             subset = error_df.loc[idx_val]
-            error = np.sqrt(np.sum(subset**2))
-            rows[idx_val] = error
-        error_series = pd.Series(rows, name="Error")
+            err = np.sqrt(np.sum(subset**2))
+            rows.append(err)
+        error = pd.Series(rows, name="Error")
         grouped = tally.groupby(by, sort=False)
 
     if action == "sum":
@@ -142,7 +142,7 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
     else:
         df.reset_index(inplace=True)
 
-    df["Error"] = error_series
+    df["Error"] = error
 
     return df
 

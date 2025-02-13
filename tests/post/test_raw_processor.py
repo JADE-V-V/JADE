@@ -106,3 +106,13 @@ class TestRawProcessor:
         for folder in Path(SIMULATION_FOLDER, "_d1s_-_lib 1_", "SphereSDDR").iterdir():
             processor = RawProcessor(cfg, folder, tmpdir)
             processor.process_raw_data()
+
+    def test_TiaraFC(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("Tiara-FC.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        for folder in Path(
+            SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "Tiara-FC"
+        ).iterdir():
+            processor = RawProcessor(cfg, folder, tmpdir)
+            processor.process_raw_data()

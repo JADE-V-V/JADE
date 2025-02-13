@@ -1,0 +1,151 @@
+Concrete, 43 MeV, U-238:
+  results:
+    - On-axis U-238 FC
+    - 20 cm U-238 FC
+  plot_type: ce
+  title: Tiara U-238 FC detector. Concrete shielding, 43 MeV. 
+  x_label: Shield thickness
+  y_labels: 'dummy' # C/E is put automatically
+  x: Case
+  y: Value
+  expand_runs: false
+  plot_args:
+    style: 'point'
+    ce_limits: [0.5, 1.5]
+    subcases: ["Offset", ['on-axis', '20 cm']]
+    shorten_x_name: 1
+    rotate_ticks: true
+  select_runs: 'Tiara-FC_cc-43'
+#
+Concrete, 68 MeV, U-238:
+  results:
+    - On-axis U-238 FC
+    - 20 cm U-238 FC
+  plot_type: ce
+  title: Tiara U-238 FC detector. Concrete shielding, 68 MeV. 
+  x_label: Shield thickness
+  y_labels: 'dummy' # C/E is put automatically
+  x: Case
+  y: Value
+  expand_runs: false
+  plot_args:
+    style: 'point'
+    ce_limits: [0.5, 1.5]
+    subcases: ["Offset", ['on-axis', '20 cm']]
+    shorten_x_name: 1
+    rotate_ticks: true
+  select_runs: 'Tiara-FC_cc-68'
+#
+Iron, 43 MeV, U-238:
+  results:
+    - On-axis U-238 FC
+    - 20 cm U-238 FC
+  plot_type: ce
+  title: Tiara U-238 FC detector. Iron shielding, 43 MeV. 
+  x_label: Shield thickness
+  y_labels: 'dummy' # C/E is put automatically
+  x: Case
+  y: Value
+  expand_runs: false
+  plot_args:
+    style: 'point'
+    ce_limits: [0.5, 1.5]
+    subcases: ["Offset", ['on-axis', '20 cm']]
+    shorten_x_name: 1
+    rotate_ticks: true
+  select_runs: 'Tiara-FC_fe-43'
+#
+Iron, 68 MeV, U-238:
+  results:
+    - On-axis U-238 FC
+    - 20 cm U-238 FC
+  plot_type: ce
+  title: Tiara U-238 FC detector. Iron shielding, 68 MeV. 
+  x_label: Shield thickness
+  y_labels: 'dummy' # C/E is put automatically
+  x: Case
+  y: Value
+  expand_runs: false
+  plot_args:
+    style: 'point'
+    ce_limits: [0.5, 1.5]
+    subcases: ["Offset", ['on-axis', '20 cm']]
+    shorten_x_name: 1
+    rotate_ticks: true
+  select_runs: 'Tiara-FC_fe-68'
+#
+Concrete, 43 MeV, Th-232:
+  results:
+    - On-axis Th-232 FC
+    - 20 cm Th-232 FC
+  plot_type: ce
+  title: Tiara Th-232 FC detector. Concrete shielding, 43 MeV. 
+  x_label: Shield thickness
+  y_labels: 'dummy' # C/E is put automatically
+  x: Case
+  y: Value
+  expand_runs: false
+  plot_args:
+    style: 'point'
+    ce_limits: [0.5, 1.5]
+    subcases: ["Offset", ['on-axis', '20 cm']]
+    shorten_x_name: 1
+    rotate_ticks: true
+  select_runs: 'Tiara-FC_cc-43'
+#
+Concrete, 68 MeV, Th-232:
+  results:
+    - On-axis Th-232 FC
+    - 20 cm Th-232 FC
+  plot_type: ce
+  title: Tiara Th-232 FC detector. Concrete shielding, 68 MeV. 
+  x_label: Shield thickness
+  y_labels: 'dummy' # C/E is put automatically
+  x: Case
+  y: Value
+  expand_runs: false
+  plot_args:
+    style: 'point'
+    ce_limits: [0.5, 1.5]
+    subcases: ["Offset", ['on-axis', '20 cm']]
+    shorten_x_name: 1
+    rotate_ticks: true
+  select_runs: 'Tiara-FC_cc-68'
+#
+Iron, 43 MeV, Th-232:
+  results:
+    - On-axis Th-232 FC
+    - 20 cm Th-232 FC
+  plot_type: ce
+  title: Tiara Th-232 FC detector. Iron shielding, 43 MeV. 
+  x_label: Shield thickness
+  y_labels: 'dummy' # C/E is put automatically
+  x: Case
+  y: Value
+  expand_runs: false
+  plot_args:
+    style: 'point'
+    ce_limits: [0.5, 1.5]
+    subcases: ["Offset", ['on-axis', '20 cm']]
+    shorten_x_name: 1
+    rotate_ticks: true
+  select_runs: 'Tiara-FC_fe-43'
+#
+Iron, 68 MeV, Th-232:
+  results:
+    - On-axis Th-232 FC
+    - 20 cm Th-232 FC
+  plot_type: ce
+  title: Tiara Th-232 FC detector. Iron shielding, 68 MeV. 
+  x_label: Shield thickness
+  y_labels: 'dummy' # C/E is put automatically
+  x: Case
+  y: Value
+  expand_runs: false
+  plot_args:
+    style: 'point'
+    ce_limits: [0.5, 1.5]
+    subcases: ["Offset", ['on-axis', '20 cm']]
+    shorten_x_name: 1
+    rotate_ticks: true
+  select_runs: 'Tiara-FC_fe-68'

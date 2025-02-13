@@ -81,7 +81,7 @@ class Table(ABC):
         elif comparison_type == ComparisonType.PERCENTAGE:
             value = (val1 - val2) / val1 * 100
         elif comparison_type == ComparisonType.RATIO:
-            value = val1 / val2
+            value = val2 / val1  # reference / target
 
         df["Value"] = value
         df["Error"] = error

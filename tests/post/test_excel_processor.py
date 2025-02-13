@@ -35,8 +35,8 @@ class TestExcelProcessor:
         assert len(os.listdir(tmpdir)) == 2
         path_to_file = Path(tmpdir, "Oktavian_exp-exp_Vs_mcnp-FENDL 3.2c.xlsx")
         df = pd.read_excel(path_to_file, skiprows=3)
-        assert df["C/E"].max() < 1.2
-        assert df["C/E"].min() > 0.9
+        assert df["C/E"].max() < 1.07
+        assert df["C/E"].min() > 0.877
 
     def test_ITER1D(self, tmpdir):
         with as_file(
@@ -73,3 +73,17 @@ class TestExcelProcessor:
         codelibs = [("d1s", "lib 1"), ("d1s", "lib 2")]
         processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
         processor.process()
+
+    def test_TiaraFC(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/Tiara-FC.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()
+
+        file = Path(tmpdir, "Tiara-FC_exp-exp_Vs_mcnp-FENDL 3.2c.xlsx")
+        assert file.exists()
+        df = pd.read_excel(file, skiprows=3)
+        assert len(df) == 5

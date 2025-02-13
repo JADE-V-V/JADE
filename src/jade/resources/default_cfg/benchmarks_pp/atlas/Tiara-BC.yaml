@@ -26,3 +26,5 @@ C/E plots:
   expand_runs: true
   plot_args:
     subcases: ["Offset", ['on-axis', '20 cm', '40 cm']]
+    style: 'step'
+    ce_limits: [0.5, 1.5]

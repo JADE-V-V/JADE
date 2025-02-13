@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -63,6 +64,11 @@ class ExcelProcessor:
                     target_df = self._get_table_df(
                         table_cfg.results, raw_folder, subsets=table_cfg.subsets
                     )
+                    # If requested, select only a subsets of the runs
+                    if table_cfg.select_runs:
+                        target_df = self._apply_select_runs(
+                            re.compile(table_cfg.select_runs), target_df
+                        )
                     reference_dfs[table_cfg.name] = target_df
 
             # then we can produce one excel comparison file for each target
@@ -81,6 +87,12 @@ class ExcelProcessor:
                         target_df = self._get_table_df(
                             table_cfg.results, raw_folder, subsets=table_cfg.subsets
                         )
+                        # If requested, select only a subsets of the runs
+                        if table_cfg.select_runs:
+                            target_df = self._apply_select_runs(
+                                re.compile(table_cfg.select_runs), target_df
+                            )
+
                         title = TITLE.format(
                             ref_code.value, ref_lib, code.value, lib, table_cfg.name
                         )
@@ -148,6 +160,15 @@ class ExcelProcessor:
             logging.warning(f"No data found for {target_result}")
             return pd.DataFrame()
         return pd.concat(dfs)
+
+    @staticmethod
+    def _apply_select_runs(pattern: re.Pattern, df: pd.DataFrame) -> pd.DataFrame:
+        to_drop = []
+        for case in df["Case"].unique():
+            if pattern.search(case) is None:
+                to_drop.append(case)
+        df = df[~df["Case"].isin(to_drop)]
+        return df
 
 
 def _check_for_subsets(subsets: list[dict] | None, curr_res) -> None | dict:

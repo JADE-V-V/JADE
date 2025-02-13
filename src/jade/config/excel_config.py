@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -105,6 +106,7 @@ class TableConfig:
     conditional_formatting: dict[str, float] | None = None
     change_col_names: dict[str, str] | None = None
     subsets: list[dict] | None = None
+    select_runs: re.Pattern | None = None
 
     def __post_init__(self):
         # the conditional formatting dictionary has a fixed structure
@@ -115,6 +117,10 @@ class TableConfig:
 
     @classmethod
     def from_dict(cls, dictionary: dict, name) -> TableConfig:
+        select_runs = dictionary.get("select_runs", None)
+        if select_runs is not None:
+            select_runs = re.compile(select_runs)
+
         return cls(
             name=name,
             results=dictionary["results"],
@@ -127,4 +133,5 @@ class TableConfig:
             conditional_formatting=dictionary.get("conditional_formatting"),
             change_col_names=dictionary.get("change_col_names"),
             subsets=dictionary.get("subsets"),
+            select_runs=select_runs,
         )

@@ -484,10 +484,14 @@ class CEPlot(Plot):
             subcases = self.cfg.plot_args.get("subcases", False)
             style = self.cfg.plot_args.get("style", "step")
             ce_limits = self.cfg.plot_args.get("ce_limits", None)
+            shorten_x_name = self.cfg.plot_args.get("shorten_x_name", False)
+            rotate_ticks = self.cfg.plot_args.get("rotate_ticks", False)
         else:
             subcases = False
             style = "step"
             ce_limits = None
+            shorten_x_name = False
+            rotate_ticks = False
 
         if style not in ["step", "point"]:
             raise ValueError(f"Style {style} not recognized")
@@ -554,9 +558,8 @@ class CEPlot(Plot):
                     # limit the ax 2 to [0, 2]
                     axes[i].set_ylim(bottom=0, top=2)
                     # redo the ticks if there are more than one subcases
-                    if len(dfs) > 1:
-                        yticks = np.arange(0, 2.5, 0.5)
-                        axes[i].set_yticks(yticks)
+                    axes[i].yaxis.set_major_locator(MultipleLocator(0.25))
+                    axes[i].yaxis.set_minor_locator(AutoMinorLocator(2))
 
                 if style == "step":
                     axes[i].step(
@@ -593,6 +596,12 @@ class CEPlot(Plot):
         # put the legend in the top right corner
         if not ce_limits:
             axes[0].legend()
+
+        # rotate ticks if requested
+        if rotate_ticks:
+            _rotate_ticks(axes[-1])
+        if shorten_x_name:
+            _shorten_x_name(axes[-1], shorten_x_name)
 
         return fig, axes
 
@@ -656,10 +665,7 @@ class DoseContributionPlot(Plot):
         ncol = len(labels) // 20 + 1
         axes[0].legend(handles, labels, bbox_to_anchor=(1, 1), ncol=ncol)
         # plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
-        for label in axes[-1].get_xticklabels():
-            label.set_rotation(45)
-            label.set_ha("right")
-            label.set_rotation_mode("anchor")
+        _rotate_ticks(axes[-1])
 
         return fig, axes
 
@@ -755,16 +761,9 @@ class WavesPlot(Plot):
 
             # change the label text
             if shorten_x_name:
-                new_labels = []
-                for label in axes[-1].get_xticklabels():
-                    split = label.get_text().split("_")
-                    new_labels.append(" ".join(split[-shorten_x_name:]))
-                axes[-1].set_xticklabels(new_labels)
+                _shorten_x_name(axes[-1], shorten_x_name)
             # Handle x and y global axes
-            for label in axes[-1].get_xticklabels():
-                label.set_rotation(45)
-                label.set_ha("right")
-                label.set_rotation_mode("anchor")
+            _rotate_ticks(axes[-1])
 
             output.append((fig, axes))
 
@@ -920,3 +919,19 @@ def _apply_CE_limits(
 
     if label is not None:
         ax.legend(handles=combined, loc="best")
+
+
+def _rotate_ticks(ax: Axes) -> None:
+    # Handle x and y global axes
+    for label in ax.get_xticklabels():
+        label.set_rotation(45)
+        label.set_ha("right")
+        label.set_rotation_mode("anchor")
+
+
+def _shorten_x_name(ax: Axes, shorten_x_name: int) -> None:
+    new_labels = []
+    for label in ax.get_xticklabels():
+        split = label.get_text().split("_")
+        new_labels.append(" ".join(split[-shorten_x_name:]))
+    ax.set_xticklabels(new_labels)

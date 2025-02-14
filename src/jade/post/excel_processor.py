@@ -127,6 +127,9 @@ class ExcelProcessor:
             df = ExcelProcessor._get_concat_df_results(
                 result, raw_folder, subset=subset
             )
+            # it may happen that a dataframe is empty since this result is not in the run
+            if df.empty:
+                continue
             df["Result"] = result
             dfs.append(df)
         return pd.concat(dfs)
@@ -144,7 +147,7 @@ class ExcelProcessor:
             splits = file.split(" ")
             # ASSUMPTION: run name is continous, result name can have spaces
             run_name = splits[0]
-            result = " ".join(splits[1:]).split(".")[0]  # remove the .csv
+            result = " ".join(splits[1:])[:-4]  # remove the .csv
             if result == target_result:
                 df = pd.read_csv(Path(folder, file))
                 # check here if only a subset of the dataframe is needed

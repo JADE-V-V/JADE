@@ -78,6 +78,9 @@ class RawProcessor:
                 for mod_option, keyargs in modifications:
                     tally = MOD_FUNCTIONS[mod_option](tally, **keyargs)
                 mod_tallies.append(tally)
+            # in case the number of found tallies is zero skip the df printing
+            if len(mod_tallies) == 0:
+                continue
             # then combine them as requested and dump them
             df = CONCAT_FUNCTIONS[result.concat_option](mod_tallies)
             outfile = Path(self.out_folder, f"{self.single_run_name} {result.name}.csv")

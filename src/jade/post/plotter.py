@@ -299,11 +299,13 @@ class BinnedPlot(Plot):
             plot_CE = self.cfg.plot_args.get("show_CE", False)
             subcases = self.cfg.plot_args.get("subcases", False)
             xscale = self.cfg.plot_args.get("xscale", "log")
+            scale_subcases = self.cfg.plot_args.get("scale_subcases", False)
         else:
             plot_error = False
             plot_CE = False
             subcases = False
             xscale = "log"
+            scale_subcases = False
 
         # if subcases is used, nrows must be 1
         if subcases and (plot_CE or plot_error):
@@ -386,9 +388,12 @@ class BinnedPlot(Plot):
             else:
                 dfs = [df]
 
+            scale_factor = 1
             for i, df1 in enumerate(dfs):
                 x = np.array([0] + list(df1[self.cfg.x]))
                 y = np.array([0] + list(df1[self.cfg.y]))
+                if scale_subcases:
+                    y = y * scale_factor
 
                 err = np.array(df1["Error"])
                 err_multi = np.array(y[1:]) * np.abs(err)
@@ -426,14 +431,19 @@ class BinnedPlot(Plot):
                 )
                 # add a label if needed (only one per group)
                 if subcases and idx == 0:
+                    lbl = subcases[1][i]
+                    if scale_factor != 1 and scale_subcases:
+                        lbl += f" x{scale_factor:.0e}"
                     ax1.text(
-                        x[-1],
-                        y[-1],
-                        subcases[1][i],
+                        x[int(len(x) / 2)],
+                        y[int(len(y) / 2)],
+                        lbl,
                         fontsize=8,
                         verticalalignment="center",
                         horizontalalignment="right",
                     )
+                # Adjourn the scale factor
+                scale_factor = scale_factor * 1e-1
 
             # Error Plot
             if plot_error:
@@ -486,12 +496,14 @@ class CEPlot(Plot):
             ce_limits = self.cfg.plot_args.get("ce_limits", None)
             shorten_x_name = self.cfg.plot_args.get("shorten_x_name", False)
             rotate_ticks = self.cfg.plot_args.get("rotate_ticks", False)
+            xscale = self.cfg.plot_args.get("xscale", "linear")
         else:
             subcases = False
             style = "step"
             ce_limits = None
             shorten_x_name = False
             rotate_ticks = False
+            xscale = "linear"
 
         if style not in ["step", "point"]:
             raise ValueError(f"Style {style} not recognized")
@@ -533,6 +545,7 @@ class CEPlot(Plot):
             else:
                 dfs = [(None, df)]
 
+            # If this is the first lib, create the plot
             if idx == 0:
                 gridspec_kw = {"hspace": 0.25}
                 fig, ax = plt.subplots(
@@ -543,6 +556,7 @@ class CEPlot(Plot):
                 else:
                     axes = ax
 
+            # plot all subcases
             for i, (case, df1) in enumerate(dfs):
                 if i == 0:
                     label = codelib
@@ -551,15 +565,17 @@ class CEPlot(Plot):
 
                 if idx == 0:  # operations to be performed only once per plot
                     axes[i].set_ylabel("C/E")
-                    axes[i].set_title(case)
+                    axes[i].set_title(case, fontdict={"fontsize": "medium"})
                     axes[i].axhline(y=1, linestyle="--", color="black")
                     axes[i].grid("True", which="major", linewidth=0.50, alpha=0.5)
                     axes[i].grid("True", which="minor", linewidth=0.20, alpha=0.5)
+                    axes[i].set_xscale(xscale)
                     # limit the ax 2 to [0, 2]
-                    axes[i].set_ylim(bottom=0, top=2)
-                    # redo the ticks if there are more than one subcases
-                    axes[i].yaxis.set_major_locator(MultipleLocator(0.25))
-                    axes[i].yaxis.set_minor_locator(AutoMinorLocator(2))
+                    if ce_limits:
+                        axes[i].set_ylim(bottom=ce_limits[0], top=ce_limits[1])
+                        # redo the ticks if there are more than one subcases
+                        axes[i].yaxis.set_major_locator(MultipleLocator(0.25))
+                        axes[i].yaxis.set_minor_locator(AutoMinorLocator(2))
 
                 if style == "step":
                     axes[i].step(
@@ -593,9 +609,9 @@ class CEPlot(Plot):
                             facecolors="none",
                         )
 
-        # put the legend in the top right corner
-        if not ce_limits:
-            axes[0].legend()
+        # put the legend in the top right corner if it was not already placed
+        if not axes[0].get_legend():
+            axes[0].legend(bbox_to_anchor=(1, 1))
 
         # rotate ticks if requested
         if rotate_ticks:

@@ -87,3 +87,18 @@ class TestExcelProcessor:
         assert file.exists()
         df = pd.read_excel(file, skiprows=3)
         assert len(df) == 5
+
+    def test_FNS_TOF(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/FNS-TOF.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()
+        # file = Path(tmpdir, "FNS_TOF_mcnp-FENDL 3.2c.xlsx")
+        # assert file.exists()
+        # df = pd.read_excel(file, skiprows=3)
+        # assert len(df) == 5
+        # assert df["C/E"].max() < 1.07
+        # assert df["C/E"].min() > 0.877

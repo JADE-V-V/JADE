@@ -25,6 +25,8 @@ plot_args:
 * ``subcases``: a list of subcases to be plotted. The first value is the name of the column that identify the
   subcasese while the second value is a list of the subcases to be plotted. The different cases will be plotted
   all in the same subplot.
+* ``scale_subcases``: if true and subcases are present, it scale each subsequent subcase bu 1e-1 to fit them all
+  in the same subplot. Default is false.
 * ``xscale``: The scale of the x-axis. Every argument that could be passed to the matplotlib function
   ``set_xscale()`` is accepted. Common ones are 'linear' or 'log'. Default is 'log'.
 
@@ -55,6 +57,8 @@ plot_args
   will split the name of the benchmark run on the '_' symbols and retain only the last N chunks
   where N is the specified *shorten_x_name* value.
 * ``rotate_ticks`` if set to True, the x-axis ticks are rotated by 45 degrees. default is False.
+* ``xscale``: The scale of the x-axis. Every argument that could be passed to the matplotlib function
+  ``set_xscale()`` is accepted. Common ones are 'linear' or 'log'. Default is 'linear'.
 
 Waves
 -----

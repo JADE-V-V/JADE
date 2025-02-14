@@ -154,6 +154,10 @@ An example of a *result* configuration is shown below:
     44: [[no_action, {}]]  # Example of tally that is left untouched. 44 is the tally identifier used in the transport code.
     46: [[scale, {"factor": 1e5}], [lethargy, {}]]  # Example of tally that is scaled and converted to flux per unit lethargy.
 
+.. note:: 
+  The *results* do not have to be present in all benchmark cases/runs. When they are not
+  found, they are simply skipped.
+
 Add the excel config file
 =========================
 

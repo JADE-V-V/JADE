@@ -116,3 +116,13 @@ class TestRawProcessor:
         ).iterdir():
             processor = RawProcessor(cfg, folder, tmpdir)
             processor.process_raw_data()
+
+    def test_FNS_TOF(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("FNS-TOF.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        for folder in Path(
+            SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "FNS-TOF"
+        ).iterdir():
+            processor = RawProcessor(cfg, folder, tmpdir)
+            processor.process_raw_data()

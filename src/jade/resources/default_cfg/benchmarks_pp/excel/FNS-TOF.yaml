@@ -1,0 +1,12 @@
+CE table:
+  results:
+    - Coarse leakage flux at 0 deg
+    - Coarse leakage flux at 12.2 deg
+    - Coarse leakage flux at 24.9 deg
+    - Coarse leakage flux at 41.8 deg
+    - Coarse leakage flux at 66.8 deg
+  comparison_type: ratio
+  table_type: simple
+  x: ['Case', 'Angle', 'Energy']
+  y: ['Value', 'Error']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'C/E'}

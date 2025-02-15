@@ -245,14 +245,57 @@ class InputOpenMC(Input):
             shutil.copyfile(tallies_yaml, outfile)
 
 
-class InputOpenMcSphere(InputOpenMC, InputMCNPSphere):
+class InputOpenMcSphere(InputOpenMC):
+    def __init__(
+        self,
+        template_folder: PathLike,
+        lib: Library,
+        zaid: str | Material,
+        density: str,
+    ):
+        """Subclass of the OpenMC Input to deal with the sphere benchmark. The main
+        difference is the dynamic creation of the different inputs for all zaids/materials.
+
+        Parameters
+        ----------
+        template_folder : PathLike
+            path to the folder containing the template input file.
+        lib : Library
+            library to be used for the input file.
+        zaid : str | Material
+            zaid or the material to be used in the sphere.
+        density : str
+            density of the material/isotope in the sphere.
+        """
+        super().__init__(template_folder, lib)
+        self._assign_zaid_material(zaid, density)
+        self.lm = LibManager()
+
     def _assign_zaid_material(self, zaid: str | Material, density: str):
-        lm = LibManager()
         material = self._get_material(zaid)
         material.density = -float(density)
         materials = MatCardsList([material])
         # Assign material
-        self.inp.matlist_to_openmc(materials, lm)
+        self.inp.matlist_to_openmc(materials, self.lm)
+
+    def _get_material(self, zaid: str | Material) -> Material:
+        if isinstance(zaid, Material):
+            material = deepcopy(zaid)  # just to be sure not to mess with something
+            truename = material.name
+            material.header = f"{material.header}C\nC True name:{truename}"
+            material.name = "M1"
+            # override the input name
+            self._name = f"{self.name}_{truename}"
+        else:
+            # zaid suffix used here is irrelevant, as it is not used in the OpenMC
+            zaidob = Zaid(1, zaid[:-3], zaid[-3:], "00c")
+            name, formula = self.lm.get_zaidname(zaid)
+            submat = SubMaterial("M1", [zaidob], header="C " + name + " " + formula)
+            material = Material([zaidob], None, "M1", submaterials=[submat])
+            # override the input name
+            self._name = f"{self.name}_{zaid}_{formula}"
+
+        return material
 
 
 class InputSerpent(Input):

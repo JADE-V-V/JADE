@@ -34,6 +34,7 @@ from jade.run.input import (
     InputMCNP,
     InputMCNPSphere,
     InputOpenMC,
+    InputOpenMcSphere,
     InputSerpent,
 )
 
@@ -328,6 +329,49 @@ class SingleRunD1S(SingleRunMCNP):
         return CODE.D1S
 
 
+class SingleRunFactory:
+    @staticmethod
+    def create(
+        code: CODE,
+        template_folder: PathLike,
+        lib: Library,
+        nps: int,
+    ) -> SingleRun:
+        """Factory method to create a SingleRun object.
+
+        Parameters
+        ----------
+        code : CODE
+            code for the simulation.
+        template_folder : PathLike
+            path to the folder containing the input template of the benchmark.
+        library : Library
+            library to be used in the run.
+        nps : int
+            number of particle histories to simulate.
+        """
+        if code == CODE.MCNP:
+            single_run_class = SingleRunMCNP
+            if not isinstance(lib, LibraryMCNP):
+                raise ConfigError("An MCNP library needs to be provided for MCNP runs")
+            inp = InputMCNP(template_folder, lib)
+        elif code == CODE.OPENMC:
+            single_run_class = SingleRunOpenMC
+            inp = InputOpenMC(template_folder, lib)
+        elif code == CODE.SERPENT:
+            single_run_class = SingleRunSerpent
+            inp = InputSerpent(template_folder, lib)
+        elif code == CODE.D1S:
+            single_run_class = SingleRunD1S
+            if not isinstance(lib, LibraryD1S):
+                raise ConfigError("A D1S library needs to be provided for D1S runs")
+            inp = InputD1S(template_folder, lib)
+        else:
+            raise ValueError(f"Code {code} not supported")
+
+        return single_run_class(inp, lib, nps)
+
+
 class BenchmarkRun:
     def __init__(
         self,
@@ -405,28 +449,9 @@ class BenchmarkRun:
                 self.benchmark_templates_root, sub_bench, code.value
             )
             # create the single run
-            if code == CODE.MCNP:
-                single_run_class = SingleRunMCNP
-                if not isinstance(lib, LibraryMCNP):
-                    raise ConfigError(
-                        "An MCNP library needs to be provided for MCNP runs"
-                    )
-                inp = InputMCNP(template_folder, lib)
-            elif code == CODE.OPENMC:
-                single_run_class = SingleRunOpenMC
-                inp = InputOpenMC(template_folder, lib)
-            elif code == CODE.SERPENT:
-                single_run_class = SingleRunSerpent
-                inp = InputSerpent(template_folder, lib)
-            elif code == CODE.D1S:
-                single_run_class = SingleRunD1S
-                if not isinstance(lib, LibraryD1S):
-                    raise ConfigError("A D1S library needs to be provided for D1S runs")
-                inp = InputD1S(template_folder, lib)
-            else:
-                raise ValueError(f"Code {code} not supported")
-
-            single_run = single_run_class(inp, lib, self.config.nps)
+            single_run = SingleRunFactory.create(
+                code, template_folder, lib, int(self.config.nps)
+            )
             self._run_single_run(
                 sub_bench_folder, self.benchmark_templates_root, single_run
             )
@@ -502,6 +527,9 @@ class SphereBenchmarkRun(BenchmarkRun):
                     template_folder, lib, material, str(-1 * float(density))
                 )
                 single_run = SingleRunMCNP(inp, lib, int(self.config.nps))
+            elif code == CODE.OPENMC:
+                inp = InputOpenMcSphere(template_folder, lib)
+                single_run = SingleRunOpenMC(inp, lib, int(self.config.nps))
             else:
                 raise NotImplementedError(f"Code {code} not supported for Sphere")
             self._run_single_run(

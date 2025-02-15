@@ -84,11 +84,64 @@ in more detail.
 Benchmark execution architecture
 ================================
 
+.. image:: /img/dev_guide/run_architecture.png
+    :width: 800
+    :align: center
+
+The core object controlling one benchmark execution is the :class:`BenchmarkRun` class
+(``src/jade/run/benchmark.py``). This object receives information about which benchmarks and
+which code-library combinations should be run and it generate the inputs and runs them
+sepending on the transport code that needs to be used. Indeed, the two main interface for
+the :class:`BenchmarkRun` are the abstact classes :class:`Input` and :class:`SingleRun`.
+Children for these classes need to be implemented for each transport code that JADE
+supports. Chilldrens of :class:`Input` are responsible for generating the input files,
+while children of :class:`SingleRun` are responsible for running one simulation (i.e.
+a single case of the benchmark).
+
+The following is the architecture behind the run configuration. Note that a subclass of the
+:class:`Library` needs to be implemented for each supported transport code.
+
+.. image:: /img/dev_guide/run_config_architecture.png
+    :width: 600
+    :align: center
+
 Raw processing architecture
 ===========================
+
+The main class of the raw processing branch is the :class:`RawProcessor`
+(``src/jade/post/raw_processor.py``). This class receives informatino on which benchmarks
+have been simulated but not processed yet, parses such results and creates the 
+general .csv raw data files which have the same structure independently from the 
+transport code used. The actual parsing of the output files is handled by transport code
+specific implementations of the abstract class :class:`AbstractSimOutput`.`
+
+.. image:: /img/dev_guide/raw_processing_architecture.png
+    :width: 800
+    :align: center
 
 Excel processing architecture
 =============================
 
+The main class to the excel processing branch is the :class:`ExcelProcessor`
+(``src/jade/post/excel_processor.py``). This class receives information on which code-lib
+results should be compared and produces the comparison excel files.
+The minimal unit of an excel comparison is a :class:`Table` which is responsible of taking
+a reference and target DataFrame results and compare them according to the information
+stored in the corresponding :class:`TableConfig` object in order to produce an Excel sheet.
+The :class:`Table` is abstract.
+
+.. image:: /img/dev_guide/excel_processing_architecture.png
+    :width: 800
+    :align: center
+
 Atlas processing architecture
 =============================
+
+The main class to the atlas processing branch is the :class:`AtlasProcessor`
+(``src/jade/post/atlas_processor.py``). As it can be seen, the structure is very similar to the
+one of the excel processing branch. The main difference is that the minimal unit of an atlas
+is a :class:`Plot` instead of a :class:`Table`. The :class:`Plot` is abstract.
+
+.. image:: /img/dev_guide/atlas_processing_architecture.png
+    :width: 800
+    :align: center

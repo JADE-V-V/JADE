@@ -27,5 +27,5 @@ The following steps are required to add a new transport code to JADE:
    This new class can be connected with its ENUM tag in the ``__init__()`` method of the
    :class:`RawProcessor` class at  ``src/jade/post/raw_processor.py``.
 
-Clearl, suitable tests should also be added to ensure the correct functioning of the newly implemented
+Clearly, suitable tests should also be added to ensure the correct functioning of the newly implemented
 classes.

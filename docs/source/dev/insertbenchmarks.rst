@@ -175,7 +175,7 @@ how the compared data is presented in the excel file.
 When more than one *result* is used in a table, they all are combined in a single pandas dataframe and an 
 extra column called "Result" is added to the dataframe to distinguish the different results.
 
-The mandatory options to include in a *table* configurations are:
+The **mandatory options** to include in a *table* configurations are:
 
 * ``results``: a list of *results* that are used in the table. These names must be the same as the ones used in
   the raw data configuration.
@@ -194,7 +194,7 @@ The mandatory options to include in a *table* configurations are:
 * ``x``: the name of the column that will be used as the x-axis in the table.
 * ``y``: the name of the column that will be used as the y-axis in the table.
 
-The optional configurations that can be included in a *table* are:
+The **optional configurations** that can be included in a *table* are:
 
 * ``value``: to be provided only for pivot tables. This is the columns name that will be used for the pivot.
 * ``add_error``: if True, the errors of both simulations will be added to the table.
@@ -245,7 +245,7 @@ between different code-lib simulation results.
 The minimum unit for atlas post-processing is the *plot*. A plot can be produced from a single raw *result* or some kind of
 combinations of them.
 
-The mandatory options for the *plot* configuration are:
+The **mandatory options** for the *plot* configuration are:
 
 * ``results``: a list of *results* that are used in the table.
   These names must be the same as the ones used in the raw data configuration.
@@ -260,7 +260,7 @@ The mandatory options for the *plot* configuration are:
 * ``x``: column name that will be used as the x-axis in the plot. Accepted names are listed in :ref:`allowed_binnings`.
 * ``y``: column name that will be used as the y-axis in the plot. Accepted names are listed in :ref:`allowed_binnings`.
 
-Optional configuration options are:
+**Optional configuration** options are:
 
 * ``expand_runs``: By default true. If the benchmark consisted of more than one run, the results have been combined in the
   global results dataframe adding a 'Case' column. If expand_runs is set to true, the plot will be produced for each

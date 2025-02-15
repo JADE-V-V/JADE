@@ -13,11 +13,11 @@ JADE and their licenses needs to be propagated:
 GNU GPLv3 License
 =================
 
-.. literalinclude:: ../../../../LICENSE
+.. literalinclude:: ../../../LICENSE
 
 .. _pynelicense:
 
 Pyne License
 ============
 
-.. literalinclude:: ../../../../LICENSE_PYNE
+.. literalinclude:: ../../../LICENSE_PYNE

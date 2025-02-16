@@ -1,0 +1,33 @@
+Neutron heating:
+  concat_option: no_action
+  204: [['no_action', {}]]
+Photon heating:
+  concat_option: no_action
+  214: [['no_action', {}]]
+Tritium Production:
+  concat_option: no_action
+  224: [['no_action', {}]]
+Neutron flux:
+  concat_option: no_action
+  234: [['no_action', {}]]
+Photon flux:
+  concat_option: no_action
+  244: [['no_action', {}]]
+T in SS316:
+  concat_option: no_action
+  54: [['groupby', {'by': 'all', 'action': 'sum'}]]
+T in CuBeNi:
+  concat_option: no_action
+  94: [['groupby', {'by': 'all', 'action': 'sum'}]]
+T in Inconel:
+  concat_option: no_action
+  134: [['groupby', {'by': 'all', 'action': 'sum'}]]
+T in Be:
+  concat_option: no_action
+  164: [['groupby', {'by': 'all', 'action': 'sum'}]]
+T in Li pt1:
+  concat_option: no_action
+  184: [['groupby', {'by': 'all', 'action': 'sum'}]]
+T in Li pt2:
+  concat_option: no_action
+  194: [['groupby', {'by': 'all', 'action': 'sum'}]]

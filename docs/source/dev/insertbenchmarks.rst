@@ -276,7 +276,9 @@ The **mandatory options** for the *plot* configuration are:
 * ``plot_args``: a dictionary that specifies the arguments to be passed to a specific plot type. The keys are the arguments
   names and the values are the arguments values. The list of plot_args parameters available in each plot
   are described in the plot gallery.
-* ``rectangles``: TODO
+* ``recs``: This option allows to color part of the plot with rectangles. A list of rectangles options 
+  should be provided. Rectangle oprions must be a list/tuple of (in order), the name of the region (will
+  appear in an additional legend), the color of the rectangle, the x_min and x_max delimiting the region.
 * ``subsets``: it is used to select only certain results. It is a list of dictionary. One dictionary
   needs to be provided for each *result* for which only a subset needs to be selected. The keys
   of each dictionary are:

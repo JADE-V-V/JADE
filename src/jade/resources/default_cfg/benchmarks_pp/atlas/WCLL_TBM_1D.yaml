@@ -1,0 +1,72 @@
+# Name, color, xmin, xmax
+_TBM_WCLL_RECT: &recs_options
+  - ["Void", "White", 840, 850.3]
+  - ["Eurofer97", "#377eb8", 850.3, 850.6]
+  - ["Water cooled Eurofer97", "#ff7f00", 850.6, 851.3]
+  - ["Eurofer97", "#377eb8", 851.3, 853.3]
+  - ["Breeding Area pt1", "#4daf4a", 853.3, 854.3]
+  - ["Breeding Area pt2", "#f781bf", 854.3, 862.5]
+  - ["Breeding Area pt3", "#a65628", 862.5, 903.4]
+  - ["Breeding Unit Pipework", "#984ea3", 903.4, 918.8]
+  - ["Gap", "#999999", 918.8, 946.3]
+  - ["SS316L(N)-IG/Water", "#e41a1c", 946.3, 1084.2]
+#
+Neutron heating:
+  results:
+    - Neutron heating
+  plot_type: ratio
+  title: Neutron heating
+  x_label: Radial position [cm]
+  y_labels: neutron heating
+  x: Cor A
+  y: Value
+  expand_runs: false
+  recs: *recs_options
+#
+Photon heating:
+  results:
+    - Photon heating
+  plot_type: ratio
+  title: Photon heating
+  x_label: Radial position [cm]
+  y_labels: photon heating
+  x: Cor A
+  y: Value
+  expand_runs: false
+  recs: *recs_options
+#
+Neutron flux:
+  results:
+    - Neutron flux
+  plot_type: ratio
+  title: Neutron flux
+  x_label: Radial position [cm]
+  y_labels: neutron flux
+  x: Cor A
+  y: Value
+  expand_runs: false
+  recs: *recs_options
+#
+Photon flux:
+  results:
+    - Photon flux
+  plot_type: ratio
+  title: Photon flux
+  x_label: Radial position [cm]
+  y_labels: photon flux
+  x: Cor A
+  y: Value
+  expand_runs: false
+  recs: *recs_options
+#
+Tritium production:
+  results:
+    - Tritium Production
+  plot_type: ratio
+  title: Tritium production
+  x_label: Radial position [cm]
+  y_labels: tritium production
+  x: Cor A
+  y: Value
+  expand_runs: false
+  recs: *recs_options

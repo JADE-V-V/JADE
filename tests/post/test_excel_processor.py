@@ -96,9 +96,12 @@ class TestExcelProcessor:
         codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c")]
         processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
         processor.process()
-        # file = Path(tmpdir, "FNS_TOF_mcnp-FENDL 3.2c.xlsx")
-        # assert file.exists()
-        # df = pd.read_excel(file, skiprows=3)
-        # assert len(df) == 5
-        # assert df["C/E"].max() < 1.07
-        # assert df["C/E"].min() > 0.877
+
+    def test_WCLL(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/WCLL_TBM_1D.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("mcnp", "FENDL 3.2c"), ("mcnp", "ENDFB-VIII.0")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()

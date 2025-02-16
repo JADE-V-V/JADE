@@ -125,9 +125,9 @@ class Plot(ABC):
         additional_legend = ax.legend(
             handles=legend_elements,
             loc="upper center",
-            bbox_to_anchor=(0.5, -0.1),
+            bbox_to_anchor=(0.5, -0.15),
             fancybox=True,
-            ncol=5,
+            ncol=3,
             shadow=True,
         )
         # Normal legend needs to be reprinted
@@ -267,7 +267,7 @@ class RatioPlot(Plot):
 
         # Plot details
         axes[0].legend(loc="best")
-        axes[0].set_ylabel(f"Ratio of {self.cfg.y} - (vs {self.data[0][0]})")
+        axes[0].set_ylabel(f"Ratio of {self.cfg.y_labels[0]} - (vs {self.data[0][0]})")
 
         for ax in axes:
             # Tiks positioning and dimensions

@@ -126,3 +126,21 @@ class TestRawProcessor:
         ).iterdir():
             processor = RawProcessor(cfg, folder, tmpdir)
             processor.process_raw_data()
+
+    def test_WCLL(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("WCLL_TBM_1D.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(
+                SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "WCLL_TBM_1D", "WCLL_TBM_1D"
+            ),
+            Path(
+                SIMULATION_FOLDER, "_mcnp_-_FENDL 2.1c_", "WCLL_TBM_1D", "WCLL_TBM_1D"
+            ),
+        ]
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            processor = RawProcessor(cfg, folder, path)
+            processor.process_raw_data()

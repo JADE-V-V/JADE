@@ -52,7 +52,17 @@ class Atlas:
         """
         # Convert the figure to an in-memory binary stream
         img_stream = io.BytesIO()
-        figure.savefig(img_stream, format="png", dpi=200, bbox_inches="tight")
+        # Be sure to include extra artists if present
+        extra_artists = figure.get_default_bbox_extra_artists()
+        for ax in figure.get_axes():
+            extra_artists.extend(ax.get_children())
+        figure.savefig(
+            img_stream,
+            format="png",
+            dpi=200,
+            bbox_inches="tight",
+            bbox_extra_artists=extra_artists,
+        )
         img_stream.seek(0)
 
         self.doc.add_picture(img_stream, width=width)

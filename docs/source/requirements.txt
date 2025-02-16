@@ -10,6 +10,7 @@ python-docx
 aspose-words
 requests
 f4enix >= 0.8.1
+seaborn
 # DOC reqs
 sphinx
 esbonio

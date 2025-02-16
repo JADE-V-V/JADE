@@ -83,6 +83,7 @@ across the different transport codes. The binnings are the following:
         * - User
         * - Segments
         * - Cosine
+        * - Cells-Segments
         * - Cor A (not fully supported)
         * - Cor B (not fully supported)
         * - Cor C (not fully supported)

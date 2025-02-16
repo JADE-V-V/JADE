@@ -144,3 +144,17 @@ class TestRawProcessor:
             os.makedirs(path)
             processor = RawProcessor(cfg, folder, path)
             processor.process_raw_data()
+
+    def test_ITER_Cyl_SDDR(self, tmpdir):
+        with as_file(RAW_CFG_FILES_D1S.joinpath("ITER_Cyl_SDDR.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(SIMULATION_FOLDER, "_d1s_-_lib 1_", "ITER_Cyl_SDDR", "ITER_Cyl_SDDR"),
+            Path(SIMULATION_FOLDER, "_d1s_-_lib 2_", "ITER_Cyl_SDDR", "ITER_Cyl_SDDR"),
+        ]
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            processor = RawProcessor(cfg, folder, path)
+            processor.process_raw_data()

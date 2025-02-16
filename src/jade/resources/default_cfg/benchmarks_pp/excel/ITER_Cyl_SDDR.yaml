@@ -1,0 +1,32 @@
+Neutron flux:
+  results:
+    - Neutron flux
+  comparison_type: percentage
+  table_type: pivot
+  x: Cells-Segments
+  y: Energy
+  value: Value
+  add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+#
+Gamma flux:
+  results:
+    - Gamma flux
+  comparison_type: percentage
+  table_type: pivot
+  x: [Time, Location]
+  y: Energy
+  value: Value
+  add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+#
+SDDR:
+  results:
+    - SDDR
+  comparison_type: percentage
+  table_type: pivot
+  x: Cells
+  y: Time
+  value: Value
+  add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}

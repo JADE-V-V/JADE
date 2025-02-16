@@ -34,6 +34,7 @@ dependencies = [
 #    openmc @ git+https://github.com/openmc-dev/openmc.git@v0.14.0#egg=openmc
     "pyyaml",
     "ttkthemes",
+    "seaborn"
 ]
 [project.optional-dependencies]
 dev = [

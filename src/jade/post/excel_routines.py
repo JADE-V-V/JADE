@@ -135,7 +135,7 @@ class Table(ABC):
             for df, val, tag in zip(
                 [dfs[1], dfs[2]], ["ref", "target"], [self.ref_tag, self.target_tag]
             ):
-                sheet_name = f"{val} rel. err."
+                sheet_name = f"{val} rel. err. {self.cfg.name}"
                 title = f"{tag} Relative Error for {self.cfg.name}"
                 self._add_sheet(sheet_name, df, title=title)
                 # apply standard formatting for error sheets

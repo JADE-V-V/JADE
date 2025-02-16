@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import math
 from abc import ABC, abstractmethod
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sns
 from f4enix.input.libmanager import LibManager
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
@@ -786,6 +788,84 @@ class WavesPlot(Plot):
         return output
 
 
+class BarPlot(Plot):
+    def _get_figure(self) -> tuple[Figure, list[Axes]]:
+        # Get optional data
+        if self.cfg.plot_args is not None:
+            log = self.cfg.plot_args.get("log", False)
+            maxgroups = self.cfg.plot_args.get("max_groups", 20)
+        else:
+            log = False
+            maxgroups = 20
+
+        # Override log parameter if variation is low on y axis
+        if log:
+            spread = _checkYspread(self.data, self.cfg.y)
+            if spread <= 2:  # less than 2 orders of magnitude
+                log = False
+
+        # # Assuming nobody will never print 20 libraries, will introduce a
+        # # check though
+        # single_width = 1 / len(self.data) - 0.05  # the width of the bars
+
+        # Check if the data is higher than max
+        labels = self.data[0][1][self.cfg.x].values
+        nrows = len(labels) // maxgroups + 1
+        if nrows == 1:
+            nlabels = len(labels)
+        else:
+            nlabels = maxgroups
+
+        # Concat all datasets
+        to_concat = []
+        for codelib, df in self.data:
+            df["code-lib"] = codelib
+            to_concat.append(df)
+        global_df = pd.concat(to_concat)
+
+        fig, axes = plt.subplots(nrows=nrows, sharex=True)
+        if isinstance(axes, Axes):
+            axes = [axes]
+        # Compute the position of the labels in the different rows
+        # and the datasets
+        added_labels = 0
+        for i in range(nrows):
+            ax = axes[i]
+            idx_chunk = labels[added_labels : added_labels + nlabels]
+            df = global_df[global_df[self.cfg.x].isin(idx_chunk)]
+
+            # Adjourn nlabels
+            added_labels += nlabels
+            if len(labels) - added_labels > maxgroups:
+                nlabels = maxgroups
+            else:
+                nlabels = len(labels) - added_labels
+
+            # plot
+            sns.barplot(
+                data=df,
+                x=self.cfg.x,
+                y=self.cfg.y,
+                hue="code-lib",
+                palette="dark",
+                alpha=0.6,
+                ax=ax,
+            )
+            if log:
+                ax.set_yscale("log")
+            ax.grid(True, which="major", linewidth=0.75, axis="y", alpha=0.5)
+            ax.grid(True, which="minor", linewidth=0.30, axis="y", alpha=0.5)
+
+        # Since it may be multiple rows, the y label should only be in the middle one
+        axes[len(axes) // 2].set_ylabel(self.cfg.y_labels[0])
+
+        axes[-1].set_xlabel(self.cfg.x)
+        # rotate ticks if needed
+        _rotate_ticks(axes[-1])
+
+        return fig, axes
+
+
 class PlotFactory:
     @staticmethod
     def create_plot(
@@ -801,6 +881,8 @@ class PlotFactory:
             return DoseContributionPlot(plot_config, data)
         elif plot_config.plot_type == PlotType.WAVES:
             return WavesPlot(plot_config, data)
+        elif plot_config.plot_type == PlotType.BARPLOT:
+            return BarPlot(plot_config, data)
         else:
             raise NotImplementedError(
                 f"Plot type {plot_config.plot_type} not implemented"
@@ -951,3 +1033,40 @@ def _shorten_x_name(ax: Axes, shorten_x_name: int) -> None:
         split = label.get_text().split("_")
         new_labels.append(" ".join(split[-shorten_x_name:]))
     ax.set_xticklabels(new_labels)
+
+
+def _checkYspread(data: list[tuple[str, pd.DataFrame]], value_col: str):
+    """
+    Compute the min and max values across all datasets and return the spread
+
+    """
+
+    maxval = 0
+    minval = 1e36
+
+    for _, df in data:
+        ymin = df[value_col].min()
+        ymax = df[value_col].max()
+
+        # If min is a negative value, spread computation loses meaning.
+        if ymin < 0:
+            return 1e36
+
+        # adjourn max and min val across dataset
+        minval = min(minval, ymin)
+        maxval = max(maxval, ymax)
+
+    # min val or max val could be 0 -> ValueError
+    try:
+        up = math.log10(ymax)
+    except ValueError:
+        up = 0
+
+    try:
+        down = math.log10(ymin)
+    except ValueError:
+        down = 0
+
+    spread = up - down
+
+    return spread

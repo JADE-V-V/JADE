@@ -1,0 +1,49 @@
+_cells_segments_inverted: &locations
+  22-1: front cyl - hole
+  22-2: front cyl - cyl
+  22-3: front cyl - gap
+  22-4: front cyl - SS
+  23-1: end cyl - hole
+  23-2: end cyl - cyl
+  23-3: end cyl - gap
+  23-4: end cyl - SS
+  24-1: front plate - hole
+  24-2: front plate - cyl
+  24-3: front plate - gap
+  24-4: front plate - SS
+  25-1: end plate - hole
+  25-2: end plate - cyl
+  25-3: end plate - gap
+  25-4: end plate - SS
+_times: &times
+  1: '0s'
+  2: '1e6s'
+#
+Neutron flux:
+  concat_option: no_action
+  202: [['replace', {'column': 'Cells-Segments', 'values': *locations}]]
+Total neutron flux:
+  concat_option: no_action
+  242: [['replace', {'column': 'Cells-Segments', 'values': *locations}]]
+Gamma flux:
+  concat_option: concat
+  14:
+    - ['replace', {'column': 'Time', 'values': *times}]
+    - [add_column, {"column": "Location", "values": 10}]
+  34:
+    - ['replace', {'column': 'Time', 'values': *times}]
+    - [add_column, {"column": "Location", "values": 11}]
+  44:
+    - ['replace', {'column': 'Time', 'values': *times}]
+    - [add_column, {"column": "Location", "values": 12}]
+  54:
+    - ['replace', {'column': 'Time', 'values': *times}]
+    - [add_column, {"column": "Location", "values": 13}]
+Total gamma flux:
+  concat_option: no_action
+  74: [['replace', {'column': 'Time', 'values': *times}]]
+SDDR:
+  concat_option: no_action
+  124:
+    - ['replace', {'column': 'Time', 'values': *times}]
+  

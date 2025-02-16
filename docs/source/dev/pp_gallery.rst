@@ -71,3 +71,13 @@ plot_args
   cases as x axis, the long names of the benchmark runs can become problematic. This option
   will split the name of the benchmark run on the '_' symbols and retain only the last N chunks
   where N is the specified *shorten_x_name* value.
+
+Barplot
+-------
+
+plot_args
+
+* ``maxgroups``: indicates the maximum number of values that are plotted in a single row (to avoid overcrowding).
+  by default it is set to 20.
+* ``log``: if True, the y-axis is set to log scale. Default is False. The code also analyses the data to be plotted
+  and if the values span in less than 2 order of magnitude the log scale is not applied.

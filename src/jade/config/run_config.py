@@ -259,7 +259,10 @@ class LibraryOpenMC(Library):
         for filename in os.listdir(self.path):
             if filename.endswith(".h5"):
                 zaid = filename.split(".")[0]
-                zaidnum = lm.get_zaidnum(zaid)
+                try:
+                    zaidnum = lm.get_zaidnum(zaid)
+                except ValueError:
+                    continue  # ignore the files that we cannot understand for the moment
                 self._available_zaids.append(zaidnum)
 
     def get_lib_zaids(self) -> list[str]:

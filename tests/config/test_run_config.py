@@ -10,13 +10,16 @@ from jade.config.run_config import (
     BenchmarkRunConfig,
     EnvironmentVariables,
     LibraryMCNP,
+    LibraryOpenMC,
     RunConfig,
     RunMode,
 )
 from jade.helper.constants import CODE
 from jade.helper.errors import ConfigError
+from tests.config import resources as conf_res
 
 ROOT_DEFAULT_CFG = files(res).joinpath("default_cfg")
+OPENMC_LIBS = files(conf_res).joinpath("openmclib")
 
 
 class TestEnvironmentVariables:
@@ -115,3 +118,11 @@ class TestRunConfig:
             lib_cfg_file,
             additional_settings_root,
         )
+
+
+class TestLibraryOpenMC:
+    def test_post(self):
+        with OPENMC_LIBS as path:
+            lib = LibraryOpenMC("dummy", path)
+
+        assert lib.get_lib_zaids() == ["1001", "2004"]

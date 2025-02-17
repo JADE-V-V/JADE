@@ -1,10 +1,6 @@
 from __future__ import annotations
 
-import os
 from importlib.resources import as_file, files
-from pathlib import Path
-
-import pandas as pd
 
 import tests.dummy_structure
 from jade import resources

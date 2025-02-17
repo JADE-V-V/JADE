@@ -249,8 +249,21 @@ class LibraryOpenMC(Library):
         path to the libraries or to the xsdir containing it.
     """
 
+    def __post_init__(self):
+        # in OpenMC the path points to a folder where a number of hdf files are stored.
+        # I am assuming here that the format is always something like Cd116.h5
+        # If this is not the case, we will be forced in the future to parse each single
+        # table to get the correct zaid name. This could be expensive.
+        lm = LibManager(defaultlib="00c")  # Just for name conversions
+        self._available_zaids = []
+        for filename in os.listdir(self.path):
+            if filename.endswith(".h5"):
+                zaid = filename.split(".")[0]
+                zaidnum = lm.get_zaidnum(zaid)
+                self._available_zaids.append(zaidnum)
+
     def get_lib_zaids(self) -> list[str]:
-        raise NotImplementedError("OpenMC library not implemented yet")
+        return self._available_zaids
 
 
 @dataclass
@@ -328,6 +341,10 @@ class LibraryFactory:
         """
         with open(lib_cfg) as f:
             self.cfg = yaml.safe_load(f)
+        # The ace.Library object in MCNP is a full parser of the ace file
+        # if we are not careful, spamming the creation of libraries could create
+        # some performance issues. Better store already parsed libraries.
+        self._openmc_libs = {}
 
     def create(self, code: CODE, name: str) -> Library:
         """generate a Library object from the configuration file.
@@ -360,7 +377,9 @@ class LibraryFactory:
         if code == CODE.MCNP:
             return LibraryMCNP(name, **kwargs)
         elif code == CODE.OPENMC:
-            return LibraryOpenMC(name, **kwargs)
+            if name not in self._openmc_libs:
+                self._openmc_libs[name] = LibraryOpenMC(name, **kwargs)
+            return self._openmc_libs[name]
         elif code == CODE.SERPENT:
             return LibrarySerpent(name, **kwargs)
         elif code == CODE.D1S:

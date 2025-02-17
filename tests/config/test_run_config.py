@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from importlib.resources import files
+from importlib.resources import as_file, files
 
 import pytest
 
@@ -19,7 +19,7 @@ from jade.helper.errors import ConfigError
 from tests.config import resources as conf_res
 
 ROOT_DEFAULT_CFG = files(res).joinpath("default_cfg")
-OPENMC_LIBS = files(conf_res).joinpath("openmclib")
+CONF_RES = files(conf_res)
 
 
 class TestEnvironmentVariables:
@@ -122,9 +122,8 @@ class TestRunConfig:
 
 class TestLibraryOpenMC:
     def test_post(self):
-        with OPENMC_LIBS as path:
-            lib = LibraryOpenMC("dummy", path)
+        with as_file(CONF_RES.joinpath("cross_sections.xml")) as file:
+            lib = LibraryOpenMC("dummy", file)
 
-        for name in lib.get_lib_zaids():
-            assert name in ["1001", "2004"]
-        assert len(lib.get_lib_zaids()) == 2
+        assert "1001" in lib.get_lib_zaids()
+        assert "1000" in lib.get_lib_zaids()

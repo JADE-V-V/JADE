@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import xml.etree.ElementTree as ET
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -256,14 +257,16 @@ class LibraryOpenMC(Library):
         # table to get the correct zaid name. This could be expensive.
         lm = LibManager(defaultlib="00c")  # Just for name conversions
         self._available_zaids = []
-        for filename in os.listdir(self.path):
-            if filename.endswith(".h5"):
-                zaid = filename.split(".")[0]
-                try:
-                    zaidnum = lm.get_zaidnum(zaid)
-                except ValueError:
-                    continue  # ignore the files that we cannot understand for the moment
-                self._available_zaids.append(zaidnum)
+        root = ET.parse(self.path).getroot()
+        for type_tag in root.findall("library"):
+            zaidname = type_tag.get("materials")
+            try:
+                zaidnum = lm.get_zaidnum(str(zaidname))
+            except ValueError:
+                continue  # ignore the files that we cannot understand for the moment
+            except KeyError:
+                continue  # ignore the files that we cannot understand for the moment
+            self._available_zaids.append(zaidnum)
 
     def get_lib_zaids(self) -> list[str]:
         return self._available_zaids

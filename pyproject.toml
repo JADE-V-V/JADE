@@ -30,7 +30,7 @@ dependencies = [
     "python-docx",
     "aspose-words",
     "requests",
-    "f4enix >= 0.8.1",
+    "f4enix >= 0.12.0",
 #    openmc @ git+https://github.com/openmc-dev/openmc.git@v0.14.0#egg=openmc
     "pyyaml",
     "ttkthemes",

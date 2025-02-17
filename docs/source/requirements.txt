@@ -9,7 +9,7 @@ scipy
 python-docx
 aspose-words
 requests
-f4enix >= 0.8.1
+f4enix >= 0.12.0
 seaborn
 # DOC reqs
 sphinx

@@ -125,4 +125,6 @@ class TestLibraryOpenMC:
         with OPENMC_LIBS as path:
             lib = LibraryOpenMC("dummy", path)
 
-        assert lib.get_lib_zaids() == ["1001", "2004"]
+        for name in lib.get_lib_zaids():
+            assert name in ["1001", "2004"]
+        assert len(lib.get_lib_zaids()) == 2

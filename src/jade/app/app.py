@@ -20,7 +20,7 @@ from jade.config.run_config import RunConfig
 from jade.config.status import GlobalStatus
 from jade.gui.post_config_gui import PostConfigGUI
 from jade.gui.run_config_gui import ConfigGUI
-from jade.helper.aux_functions import PathLike, get_code_lib, print_code_lib
+from jade.helper.aux_functions import PathLike, add_rmode0, get_code_lib, print_code_lib
 from jade.helper.constants import CODE, EXP_TAG, FIRST_INITIALIZATION, JADE_TITLE
 from jade.post.atlas_processor import AtlasProcessor
 from jade.post.excel_processor import ExcelProcessor
@@ -254,3 +254,8 @@ class JadeApp:
         logging.info("Starting the post-processing configuration GUI")
         app = PostConfigGUI(self.status)
         app.mainloop()
+
+    def add_rmode(self):
+        """Add the rmode=0 to the mcnp input files."""
+        logging.info("Adding RMODE 0 to the MCNP input files")
+        add_rmode0(self.tree.benchmark_input_templates)

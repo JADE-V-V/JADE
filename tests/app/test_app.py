@@ -64,3 +64,14 @@ class TestJadeApp:
         app = JadeApp(root=tmpdir)
 
         assert len(os.listdir(tmpdir)) > 0
+
+        # while we are at it, test also the add rmode 0
+        app.add_rmode()
+        # check one of the files, the Sphere
+        path = Path(tmpdir, "benchmark_templates/Sphere/Sphere/mcnp/Sphere.i")
+        success = False
+        with open(path) as f:
+            for line in f:
+                if "rmode 0" in line.lower():
+                    success = True
+        assert success

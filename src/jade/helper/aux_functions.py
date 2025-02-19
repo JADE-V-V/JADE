@@ -98,6 +98,26 @@ def get_jade_version() -> str:
     return importlib.metadata.version("jade")
 
 
+def add_rmode0(path: PathLike) -> None:
+    """Given a folder, iteratively search for MCNP input files and add the RMODE 0
+    card if it is not present."""
+    for pathroot, folder, filelist in os.walk(path):
+        # if the folder name is mcnp
+        if os.path.basename(pathroot) == "mcnp":
+            for file in filelist:
+                if file.endswith(".i"):
+                    with open(os.path.join(pathroot, file)) as f:
+                        lines = f.readlines()
+                    with open(os.path.join(pathroot, file), "w") as f:
+                        found = False
+                        for line in lines:
+                            if "rmode 0" in line.lower():
+                                found = True
+                            f.write(line)
+                        if not found:
+                            f.write("RMODE 0\n")
+
+
 CODE_CHECKERS = {
     CODE.MCNP: check_run_mcnp,
     CODE.OPENMC: check_run_openmc,

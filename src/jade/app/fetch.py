@@ -10,7 +10,8 @@ import requests
 
 from jade.helper.aux_functions import PathLike
 
-IAEA_URL = r"https://github.com/IAEA-NDS/open-benchmarks/archive/main.zip"
+BRANCH = "jadev4"  # TODO change in main once merged the PR
+IAEA_URL = f"https://github.com/IAEA-NDS/open-benchmarks/archive/{BRANCH}.zip"
 
 
 def _fetch_from_git(url: str, authorization_token: str | None = None) -> str | bool:
@@ -91,10 +92,13 @@ def fetch_iaea_inputs(inputs_root: PathLike, exp_data_root: PathLike) -> bool:
         return False
 
     path_to_inputs = Path(
-        extracted_folder, "open-benchmarks-main", "jade_open_benchmarks", "inputs"
+        extracted_folder, f"open-benchmarks-{BRANCH}", "jade_open_benchmarks", "inputs"
     )
     path_to_exp_data = os.path.join(
-        extracted_folder, "open-benchmarks-main", "jade_open_benchmarks", "exp_results"
+        extracted_folder,
+        f"open-benchmarks-{BRANCH}",
+        "jade_open_benchmarks",
+        "exp_results",
     )
 
     for fetched_folder, install_folder in [

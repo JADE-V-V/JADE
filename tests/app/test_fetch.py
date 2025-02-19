@@ -11,12 +11,14 @@ def test_fetch_iaea_inputs(tmpdir):
     # test correct fetching in an empty folder
     inp_path = tmpdir.mkdir("inputs")
     exp_path = tmpdir.mkdir("exp")
-    fetch_iaea_inputs(inp_path, exp_path)
+    success = fetch_iaea_inputs(inp_path, exp_path)
+    assert success
     assert len(os.listdir(inp_path)) > 0
     assert len(os.listdir(exp_path)) > 0
 
     # test that there no problems when the folder is not empty
-    fetch_iaea_inputs(inp_path, exp_path)
+    success = fetch_iaea_inputs(inp_path, exp_path)
+    assert success
     assert len(os.listdir(inp_path)) > 0
     assert len(os.listdir(exp_path)) > 0
 

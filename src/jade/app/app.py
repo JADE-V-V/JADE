@@ -87,7 +87,11 @@ class JadeApp:
 
         This will re-fetch inputs from the various repositories that feed JADE.
         """
-        fetch_iaea_inputs(self.tree.benchmark_input_templates, self.tree.exp_data)
+        success = fetch_iaea_inputs(
+            self.tree.benchmark_input_templates, self.tree.exp_data
+        )
+        if not success:
+            logging.error("Failed to update the benchmark inputs.")
 
     def restore_default_cfg(self, msg: str = ""):
         """Reset the configuration files to installation default. The session

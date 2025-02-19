@@ -157,11 +157,7 @@ class SingleRun(ABC):
 
         flagnotrun = False
         if env_vars.run_mode == RunMode.JOB_SUMISSION:
-            if env_vars.mpi_tasks is not None and env_vars.mpi_tasks > 1:
-                if env_vars.mpi_prefix is None:
-                    raise ConfigError(
-                        "MPI prefix is needed for MPI job submission, please provide one"
-                    )
+            if self._is_mpi_run(env_vars):
                 run_command.insert(0, env_vars.mpi_prefix)
             self._submit_job(env_vars, sim_folder, run_command, lib_data_command)
 
@@ -170,6 +166,9 @@ class SingleRun(ABC):
                 # in case of run in console dump the prints to a file
                 # to get the code version in the metadata
                 run_command.append(" > dump.out")
+                if self._is_mpi_run(env_vars):
+                    run_command.insert(0, f"-np {env_vars.mpi_tasks}")
+                    run_command.insert(0, env_vars.mpi_prefix)
                 if not sys.platform.startswith("win"):
                     unix.configure(env_vars.code_configurations[self.code])
                 print(" ".join(run_command))
@@ -187,6 +186,15 @@ class SingleRun(ABC):
                 flagnotrun = True
 
         return flagnotrun
+
+    def _is_mpi_run(self, env_vars: EnvironmentVariables) -> bool:
+        if env_vars.mpi_tasks is not None and env_vars.mpi_tasks > 1:
+            if env_vars.mpi_prefix is None:
+                raise ConfigError(
+                    "MPI prefix is needed for MPI job submission, please provide one"
+                )
+            return True
+        return False
 
     def _submit_job(
         self,

@@ -11,13 +11,18 @@ executables:
 
 # run mode is either "serial" to run locally or "job" to submit to a cluster
 run_mode: serial
+# This is needed only if mpi_tasks > 1
+mpi_prefix: srun  # the command to run jobs, it prepends your executable (e.g. mpirun, srun, etc.)
+
+# Not needed for a windows run. If all your modules are already loaded in your environment,
+# you can either make all these files empty or point to an empy file.
+code_configurations: # You can either modify the files at these (relative) paths that already exist or provide your own
+  - mcnp: cfg/exe_config/mcnp_config.sh
+  - openmc: cfg/exe_config/openmc_config.sh
+  - serpent: cfg/exe_config/serpent_config.sh
+  - d1s: cfg/exe_config/d1s_config.sh
 
 # These need to be non-empty only if submitting a job to a cluster
 batch_template: batch_template/Slurmtemplate.sh  # batch template. Both relative and absolute paths should work.
 batch_system: sbatch  # the command to submit a job to the cluster (e.g. llsubmit, sbatch, etc.)
-mpi_prefix: srun  # the command to run jobs, it prepends your executable (e.g. mpirun, srun, etc.)
-code_configurations: # You can either modify the files at these (relative) paths that already exist or provide your own
-  - mcnp: exe_config/mcnp_config.sh
-  - openmc: exe_config/openmc_config.sh
-  - serpent: exe_config/serpent_config.sh
-  - d1s: exe_config/d1s_config.sh
+

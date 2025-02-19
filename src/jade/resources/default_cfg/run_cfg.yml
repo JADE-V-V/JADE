@@ -75,6 +75,17 @@ SphereSDDR:
   description: Sphere SDDR
   nps: 1e8
   only_input: false
+#
+Simple_Tokamak:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: '10'
+  description: Sphere SDDR
+  nps: 1e9
+  only_input: false
 # --- Experimental benchmarks ---
 Oktavian:
   codes:

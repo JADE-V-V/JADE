@@ -95,7 +95,7 @@ class PostConfigGUI(tk.Tk):
             messagebox.showinfo("Success", "Settings saved successfully!")
 
     def _reset_selections(self):
-        libs, benchmarks = status.get_all_raw()
+        libs, benchmarks = self.status.get_all_raw()
         self._init_list(self.benchmark_listbox, benchmarks)
         self._init_list(self.code_lib_listbox, libs)
         self.displayed_benchmarks = benchmarks
@@ -118,13 +118,15 @@ class PostConfigGUI(tk.Tk):
 
         if selected_benchmarks:
             # Get the available code libraries for the selected benchmarks
-            available_code_libs = status.get_codelibs_from_raw_benchmark(
+            available_code_libs = self.status.get_codelibs_from_raw_benchmark(
                 selected_benchmarks
             )
             self.code_lib_listbox.delete(0, tk.END)
+            codelib2display = []
             for code_lib in available_code_libs:
                 if code_lib in self.displayed_code_libs:
                     self.code_lib_listbox.insert(tk.END, code_lib)
+                    codelib2display.append(code_lib)
 
             # Only display the selected benchmarks
             self.benchmark_listbox.delete(0, tk.END)
@@ -132,24 +134,26 @@ class PostConfigGUI(tk.Tk):
                 self.benchmark_listbox.insert(tk.END, benchmark)
 
             self.displayed_benchmarks = selected_benchmarks
-            self.displayed_code_libs = available_code_libs
+            self.displayed_code_libs = codelib2display
 
         if selected_code_libs:
             # Get the available benchmarks for the selected code libraries
-            available_benchmarks = status.get_benchmark_from_raw_codelib(
+            available_benchmarks = self.status.get_benchmark_from_raw_codelib(
                 selected_code_libs
             )
             self.benchmark_listbox.delete(0, tk.END)
+            benchmark2display = []
             for benchmark in available_benchmarks:
                 if benchmark in self.displayed_benchmarks:
                     self.benchmark_listbox.insert(tk.END, benchmark)
+                    benchmark2display.append(benchmark)
 
             # Only display the selected code libraries
             self.code_lib_listbox.delete(0, tk.END)
             for code_lib in selected_code_libs:
                 self.code_lib_listbox.insert(tk.END, code_lib)
 
-            self.displayed_benchmarks = available_benchmarks
+            self.displayed_benchmarks = benchmark2display
             self.displayed_code_libs = selected_code_libs
 
 

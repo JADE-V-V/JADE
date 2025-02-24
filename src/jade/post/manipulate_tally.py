@@ -67,7 +67,9 @@ def condense_groups(
         # get the rows that have Energy between min_e and max_e
         df = tally[(tally[group_column] >= min_e) & (tally[group_column] < max_e)]
         df = df.sum()
-        df["Error"] = df["abs err"] / df["Value"]
+        with np.errstate(divide="ignore", invalid="ignore"):
+            # it is ok to get some NaN if value is zero
+            df["Error"] = df["abs err"] / df["Value"]
         del df["abs err"]
         del df[group_column]  # avoid warning
         df[group_column] = f"{min_e} - {max_e}"

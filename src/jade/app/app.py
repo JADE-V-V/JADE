@@ -162,7 +162,13 @@ class JadeApp:
                     continue
                 # get the correspondent raw processor configuration
                 cfg_file = Path(root_cfg, f"{code.value}/{bench}.yaml")
-                raw_cfg = ConfigRawProcessor.from_yaml(cfg_file)
+                try:
+                    raw_cfg = ConfigRawProcessor.from_yaml(cfg_file)
+                except FileNotFoundError:
+                    logging.warning(
+                        f"Configuration file for {code.value} {bench} not found"
+                    )
+                    continue
                 to_process[(code, lib, bench)] = raw_cfg
                 logging.info(f"Processing {code.value} {lib} {bench} benchmarks")
 

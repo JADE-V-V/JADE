@@ -73,7 +73,9 @@ class RawProcessor:
                     tally = self.sim_output.tallydata[tallyid].copy()
                 except KeyError:
                     # for some benchmarks it may happen that the tally is not found
-                    logging.warning("Tally %s not found", tallyid)
+                    logging.warning(
+                        "Tally %s not found for %s", tallyid, self.single_run_name
+                    )
                     continue
                 for mod_option, keyargs in modifications:
                     tally = MOD_FUNCTIONS[mod_option](tally, **keyargs)

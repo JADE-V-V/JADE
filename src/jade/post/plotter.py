@@ -460,7 +460,8 @@ class BinnedPlot(Plot):
 
             # Comparison
             if idx > 0 and plot_CE:
-                ratio = df[self.cfg.y].values / self.data[0][1][self.cfg.y].values
+                with np.errstate(divide="ignore", invalid="ignore"):
+                    ratio = df[self.cfg.y].values / self.data[0][1][self.cfg.y].values
                 # Uniform plots actions
                 CE_ax.step(
                     df[self.cfg.x].values,
@@ -946,10 +947,11 @@ def _get_limits(
 
 def _get_error_x_pos(x_array: np.ndarray) -> np.ndarray:
     oldX = x_array
-    base = np.log(oldX[:-1])
-    shifted = np.log(oldX[1:])
-    newX = np.exp((base + shifted) / 2)
-    newX[0] = (oldX[1] + oldX[0]) / 2
+    with np.errstate(divide="ignore", invalid="ignore"):
+        base = np.log(oldX[:-1])
+        shifted = np.log(oldX[1:])
+        newX = np.exp((base + shifted) / 2)
+        newX[0] = (oldX[1] + oldX[0]) / 2
     return newX
 
 

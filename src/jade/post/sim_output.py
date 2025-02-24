@@ -152,8 +152,9 @@ class MCNPSimOutput(AbstractSimOutput):
                         if len(usr_bins) <= 2 and "total" in usr_bins:
                             # then the column does not add any additional info, to drop
                             del df["User"]
-                            # and drop the duplicates
-                            df.drop_duplicates(inplace=True)
+                            # and drop the duplicates ignoring the warning
+                            with pd.option_context("mode.chained_assignment", None):
+                                df.drop_duplicates(inplace=True)
                     except KeyError:
                         pass  # no user column
 

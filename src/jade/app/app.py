@@ -49,6 +49,7 @@ class JadeApp:
         self.pp_cfg = PostProcessConfig(self.tree.cfg.bench_pp)
 
         # Compute the global status
+        logging.info("Initializing the global status")
         self.status = GlobalStatus(
             simulations_path=self.tree.simulations,
             raw_results_path=self.tree.raw,
@@ -195,7 +196,7 @@ class JadeApp:
         codelibs_tags = to_pp["code_libs"]
         benchmarks = to_pp["benchmarks"]
 
-        for benchmark in benchmarks:
+        for benchmark in tqdm(benchmarks, desc="Benchmarks"):
             logging.info(f"Post-processing {benchmark}")
             # get the benchmark configurations
             excel_cfg = self.pp_cfg.excel_cfgs[benchmark]

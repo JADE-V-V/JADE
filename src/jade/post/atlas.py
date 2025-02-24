@@ -5,13 +5,15 @@ import os
 # import win32com.client
 # import aspose.words
 import docx
-import pandas as pd
-from docx.enum.table import WD_ALIGN_VERTICAL
+
+# from docx.enum.table import WD_ALIGN_VERTICAL
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.oxml import OxmlElement, parse_xml
-from docx.oxml.ns import nsdecls, qn
+
+# from docx.oxml import OxmlElement, parse_xml
+# from docx.oxml.ns import nsdecls, qn
 from docx.shared import Inches
 from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
 
 from jade.helper.aux_functions import PathLike
 
@@ -66,6 +68,8 @@ class Atlas:
         img_stream.seek(0)
 
         self.doc.add_picture(img_stream, width=width)
+        # be sure to close the figure once it has been added
+        plt.close(figure)
         last_paragraph = self.doc.paragraphs[-1]
         last_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 

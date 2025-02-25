@@ -632,6 +632,8 @@ class DoseContributionPlot(Plot):
         fig, axes = plt.subplots(
             nrows=nrows, ncols=1, gridspec_kw=gridspec_kw, sharex=True
         )
+        if isinstance(axes, Axes):
+            axes = [axes]
 
         indices = []
         for idx, (codelib, df) in enumerate(self.data):

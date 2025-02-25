@@ -232,6 +232,7 @@ class JadeApp:
             os.mkdir(atlas_folder)
 
             # perform the excel processing
+            logging.info("Processing Excel files for %s", benchmark)
             excel_processor = ExcelProcessor(
                 self.tree.raw,
                 excel_folder,
@@ -241,6 +242,7 @@ class JadeApp:
             excel_processor.process()
 
             # perform the atlas processing
+            logging.info("Processing Atlas files for %s", benchmark)
             atlas_processor = AtlasProcessor(
                 self.tree.raw,
                 atlas_folder,

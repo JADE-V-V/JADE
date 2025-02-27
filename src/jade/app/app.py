@@ -49,6 +49,7 @@ class JadeApp:
         self.pp_cfg = PostProcessConfig(self.tree.cfg.bench_pp)
 
         # Compute the global status
+        logging.info("Initializing the global status")
         self.status = GlobalStatus(
             simulations_path=self.tree.simulations,
             raw_results_path=self.tree.raw,
@@ -162,7 +163,13 @@ class JadeApp:
                     continue
                 # get the correspondent raw processor configuration
                 cfg_file = Path(root_cfg, f"{code.value}/{bench}.yaml")
-                raw_cfg = ConfigRawProcessor.from_yaml(cfg_file)
+                try:
+                    raw_cfg = ConfigRawProcessor.from_yaml(cfg_file)
+                except FileNotFoundError:
+                    logging.warning(
+                        f"Configuration file for {code.value} {bench} not found"
+                    )
+                    continue
                 to_process[(code, lib, bench)] = raw_cfg
                 logging.info(f"Processing {code.value} {lib} {bench} benchmarks")
 
@@ -189,7 +196,7 @@ class JadeApp:
         codelibs_tags = to_pp["code_libs"]
         benchmarks = to_pp["benchmarks"]
 
-        for benchmark in benchmarks:
+        for benchmark in tqdm(benchmarks, desc="Benchmarks"):
             logging.info(f"Post-processing {benchmark}")
             # get the benchmark configurations
             excel_cfg = self.pp_cfg.excel_cfgs[benchmark]
@@ -225,6 +232,7 @@ class JadeApp:
             os.mkdir(atlas_folder)
 
             # perform the excel processing
+            logging.info("Processing Excel files for %s", benchmark)
             excel_processor = ExcelProcessor(
                 self.tree.raw,
                 excel_folder,
@@ -234,6 +242,7 @@ class JadeApp:
             excel_processor.process()
 
             # perform the atlas processing
+            logging.info("Processing Atlas files for %s", benchmark)
             atlas_processor = AtlasProcessor(
                 self.tree.raw,
                 atlas_folder,

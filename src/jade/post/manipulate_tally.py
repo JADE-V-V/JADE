@@ -73,7 +73,9 @@ def condense_groups(
             square_err += row["abs err"] ** 2
         srss_err = math.sqrt(square_err)
         df = df.sum()
-        df["Error"] = srss_err / df["Value"]
+        with np.errstate(divide="ignore", invalid="ignore"):
+            # it is ok to get some NaN if value is zero
+            df["Error"] = srss_err / df["Value"]
         del df["abs err"]
         del df[group_column]  # avoid warning
         df[group_column] = f"{min_e} - {max_e}"

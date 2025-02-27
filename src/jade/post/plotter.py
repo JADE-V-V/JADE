@@ -826,7 +826,7 @@ class BarPlot(Plot):
             to_concat.append(df)
         global_df = pd.concat(to_concat)
 
-        fig, axes = plt.subplots(nrows=nrows, sharex=True)
+        fig, axes = plt.subplots(nrows=nrows)
         if isinstance(axes, Axes):
             axes = [axes]
         # Compute the position of the labels in the different rows
@@ -859,12 +859,26 @@ class BarPlot(Plot):
             ax.grid(True, which="major", linewidth=0.75, axis="y", alpha=0.5)
             ax.grid(True, which="minor", linewidth=0.30, axis="y", alpha=0.5)
 
+        # By default seaborn is going to put the y label. delete all y label in axes
+        for ax in axes:
+            ax.set_ylabel("")
+            ax.set_xlabel("")
+            _rotate_ticks(ax)
+            # delete the legend
+            ax.get_legend().remove()
+
+        # augment the padding between the axis depending on the max len of x ticks
+        # labels
+        for ax in axes[:-1]:
+            max_label_len = max(
+                [len(label.get_text()) for label in ax.get_xticklabels()]
+            )
+            fig.subplots_adjust(hspace=0.2 + 0.04 * max_label_len)
         # Since it may be multiple rows, the y label should only be in the middle one
         axes[len(axes) // 2].set_ylabel(self.cfg.y_labels[0])
 
         axes[-1].set_xlabel(self.cfg.x)
-        # rotate ticks if needed
-        _rotate_ticks(axes[-1])
+        axes[0].legend(loc="best")
 
         return fig, axes
 

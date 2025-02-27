@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import random
+import string
+
 import numpy as np
 import pandas as pd
 
 from jade.config.atlas_config import PlotConfig
-from jade.post.plotter import BinnedPlot, WavesPlot, CEPlot
+from jade.post.plotter import BarPlot, BinnedPlot, CEPlot, WavesPlot
 
 
 class TestBinnedPlot:
@@ -123,3 +126,41 @@ class TestCEPlot:
         plot = CEPlot(cfg, data)
         output = plot.plot()
         output[0][0].savefig(tmpdir.join("test.png"))
+
+
+class TestBarPlot:
+    def test_plot(self, tmpdir):
+        cfg = PlotConfig(
+            name="test",
+            results=["a"],
+            plot_type=None,  # dummy value
+            title="test",
+            x_label="Position",
+            y_labels=["dummy"],
+            x="Position",
+            y="Value",
+            # plot_args={"shorten_x_name": 2},
+        )
+        n_libs = 3
+        data = []
+        n_data = 30
+        letters = string.ascii_letters
+        length = 4
+        positions = []
+        for i in range(n_data):
+            pos = "".join(random.choice(letters) for i in range(length))
+            positions.append(pos)
+        for i in range(n_libs):
+            df = pd.DataFrame(
+                {
+                    "Position": positions,
+                    "Value": np.random.rand(n_data),
+                    "Error": np.random.rand(n_data) * 0.1,
+                }
+            )
+
+            data.append((f"lib{i}", df))
+
+        plot = BarPlot(cfg, data)
+        output = plot.plot()
+        output[0][0].savefig(tmpdir.join("test.png"), bbox_inches="tight")

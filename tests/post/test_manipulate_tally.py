@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 
 import pandas as pd
+import pytest
 
 from src.jade.post.manipulate_tally import (
     add_column,
@@ -100,7 +101,14 @@ def test_condense_groups():
     result = condense_groups(df.copy(), bins=[0, 3.1, 10])
     assert (result["Energy"] == ["0 - 3.1", "3.1 - 10"]).all()
     assert (result["Value"] == [60, 40]).all()
-    assert (result["Error"] == [0.15, 0.1]).all()
+    err = 0
+    val = 0
+    df["abs err"] = df["Error"] * df["Value"]
+    for i in range(3):
+        err += df.iloc[i]["abs err"] ** 2
+        val += df.iloc[i]["Value"]
+    assert pytest.approx(result["Error"][0]) == math.sqrt(err) / val
+    assert pytest.approx(result["Error"][1]) == 0.1
 
     result = condense_groups(df.copy(), bins=[0, 1, 3])
     assert len(result) == 1

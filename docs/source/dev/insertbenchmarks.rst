@@ -104,7 +104,9 @@ The currently supported modifiers are:
   No arguments are expected.
 * ``by_energy``: a flux tally is expected and converted to a flux per unit energy.
   No arguments are expected.
-* ``condense_groups``: takes a binned tallies and condenses into a coarser binning. Two keyargs needs to be passed:
+* ``condense_groups``: takes a binned tallies and condenses into a coarser binning. 
+  Errors are combined in squared root of sum of squares.
+  Two keyargs needs to be passed:
   
   * *bins*: a list of floats representing the new bin edges.
   * *group_column*: the name of the binning column (e.g. 'Energy').

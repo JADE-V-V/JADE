@@ -105,13 +105,14 @@ The benchmark input metadata is stored in a JSON file which is common for all co
 is an example of a metadata file:
 
 .. code-block:: json
+
     {
-    "name": "Sphere",
-    "version": {
-        "mcnp": "1.0",
-        "openmc": "1.0",
-        "serpent": "1.0"
-        }
+        "name": "Sphere",
+        "version": {
+            "mcnp": "1.0",
+            "openmc": "1.0",
+            "serpent": "1.0"
+            }
     }
 
 

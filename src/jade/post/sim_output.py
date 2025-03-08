@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from jade.helper.aux_functions import PathLike
 
 if OMC_AVAIL:
-    import jade.post.openmc as omc
+    import jade.helper.openmc as omc
 
 
 class AbstractSimOutput(ABC):

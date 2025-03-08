@@ -8,15 +8,17 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import numpy as np
-import openmc
+from jade.helper.__openmc__ import OMC_AVAIL
+
+if OMC_AVAIL:
+    import openmc
 import pandas as pd
 import yaml
-
-from jade.helper.aux_functions import PathLike
 
 if TYPE_CHECKING:
     from f4enix.input.libmanager import LibManager
     from f4enix.input.materials import MatCardsList, Material, SubMaterial, Zaid
+    from jade.helper.aux_functions import PathLike
 
 
 @dataclass

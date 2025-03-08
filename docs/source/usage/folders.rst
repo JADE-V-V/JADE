@@ -64,12 +64,16 @@ The following is a scheme of the JADE folder structure:
         |-----logs
         |
         |----- post_processing
-        |        |----- <date>
-        |                 |----- <Benchmark name>
-        |                              |----- atlas
-        |                              |----- excel
+        |            |
+        |            |----- <Benchmark name>
+        |                          |----- <date>
+        |                                   |----- atlas
+        |                                   |----- excel
         |        
         |----- raw_data
+        |        |
+        |        |----- _exp_-_exp_
+        |        |
         |        |----- _<code>_-_<library>_
         |                       |----- <Benchmark name>
         |                                   |----- metadata.json

@@ -15,6 +15,8 @@ from jade.run.input import (
     InputD1SSphere,
     InputMCNP,
     InputMCNPSphere,
+    InputOpenMC,
+    InputOpenMcSphere
 )
 from tests.run import resources
 
@@ -88,7 +90,7 @@ class TestInputMCNPSphere:
 class TestInputOpenMCSphere:
     def test_input_generation(self, tmpdir, libOpenMC):
         template_folder = TEMPLATE_ROOT.joinpath("Sphere/Sphere/openmc")
-        inp = InputMCNPSphere(template_folder, libOpenMC, "1001", "1.0")
+        inp = InputOpenMcSphere(template_folder, libOpenMC, "1001", "1.0")
         inp.set_nps(10)
         inp.translate()
         inp.write(tmpdir)

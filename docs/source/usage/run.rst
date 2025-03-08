@@ -15,7 +15,7 @@ and run from the command line:
 
     | ``jade --rungui``
 
-    or 
+or 
 
     | ``python -m jade --rungui``
 

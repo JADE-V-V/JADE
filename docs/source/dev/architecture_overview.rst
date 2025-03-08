@@ -13,6 +13,9 @@ users that are just more curious to know a bit more of how JADE works.
     need to know how JADE works. You can easily skip directly
     to the :ref:`add_benchmark` section.
 
+
+.. _ecosystem:
+
 JADE V&V ecosystem
 ==================
 

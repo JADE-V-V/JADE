@@ -86,7 +86,7 @@ button.
 
 .. important::
     The user is free to save the file to whatever location in case multiple settings need to
-    be prepared. Nevertheless, JADE will always look for the `<root>/cfg/run_cfg.yml` file
+    be prepared. Nevertheless, JADE will always look for the ``<root>/cfg/run_cfg.yml`` file
     when the run is started. This is the file to be overridden and it is also the file that 
     is loaded when the run GUI is opened. That is, settings of the previous run remain saved.
 

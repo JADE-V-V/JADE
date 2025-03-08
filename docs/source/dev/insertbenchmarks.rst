@@ -57,6 +57,38 @@ exactly like the ones produced by the raw data processing and have the same stru
 Add the raw config file
 =======================
 
+.. note::
+  JADE makes significant use of YAML configuration file. In YAML it is possible to define aliases
+  in order to avoid repetition of the same information. Here is an example:
+
+  .. code-block:: yaml
+
+    # Define the alias
+    key_dict: &my_alias
+      key1: value1
+      key2: value2
+
+    # Use the alias
+    my_key: *my_alias
+  
+  JADE allows the use of aliases on condition that the name starts with un underscore or it is omitted.
+  This is to avoid confusion with the other configuration keys. For instance, a correct use of aliases
+  would look like:
+
+  .. code-block:: yaml
+
+    _key_dict: &my_alias
+      key1: value1
+      key2: value2
+
+  or
+
+  .. code-block:: yaml
+
+    &my_alias
+      key1: value1
+      key2: value2
+
 The raw processing configuration file contains the instructions to transition from a transport-code
 dependent and tally-based output to a .csv *result* which will be completely transport-code independent.
 The objective of the processed raw data is to be a strong interface 

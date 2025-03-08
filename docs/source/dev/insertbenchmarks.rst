@@ -224,6 +224,8 @@ The **mandatory options** to include in a *table* configurations are:
   
   * ``simple``: The starting data is simply the dataframe itself.
   * ``pivot``: a pivot table is produced. This requires to specify also the ``value`` option.
+
+  Examples of the layout of these tables can be found in the :ref:`table_types` section.
   
   In case a new table type was needed, please refer to :ref:`add_table_type`.
 * ``x``: the name of the column that will be used as the x-axis in the table.

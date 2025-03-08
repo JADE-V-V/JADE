@@ -2,10 +2,68 @@
 Post-Processing Gallery
 #######################
 
+.. _table_types:
 
 Table types
 ===========
 
+Simple table (simple)
+---------------------
+
+This is the simplest type of table. No manipulation is made on the data. A sub-selection of the available columns
+can be made.
+
+The following is an example of simple table used for the TIARA BC benchmark:
+
+.. image:: /img/plot_gallery/simpletable.png
+    :width: 800
+    :align: center
+  
+This is the kind of YAML configuration that can be used to produce this table:
+
+.. code-block:: yaml
+
+  Neutron yield:
+    results:
+      - Coarse neutron yield
+    comparison_type: ratio
+    table_type: simple
+    x: ['Case', 'Offset', 'Energy']
+    y: ['Value', 'Error']
+    change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'C/E'}
+
+Pivot table (pivot)
+-------------------
+
+This works exactly like an excel simple table. The data is reshaped according to what is specified to be on the 
+x-axis, the y-axis (which can be multi-index) and which column to use as values.
+
+The following is an example of pivot table used for the Sphere leakage benchmark.
+
+.. image:: /img/plot_gallery/pivottable.png
+    :width: 800
+    :align: center
+
+This is the kind of YAML configuration that can be used to produce this table:
+
+.. code-block:: yaml
+
+  comparison %:
+    results:
+      - Leakage neutron flux
+      - Leakage photon flux
+      - Neutron heating
+      - Photon heating
+      - T production
+      - He ppm production
+      - DPA production
+    comparison_type: percentage
+    table_type: pivot
+    x: Case
+    y: [Result, Energy]
+    value: Value
+    add_error: true
+    conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
 
 .. _plot_types:
 

@@ -156,9 +156,11 @@ def test_delete_cols():
 
 def test_tol_to_energy():
     data = {
-        "Energy": [1, 2, 3],
+        "time": [1, 2, 3],
         "Value": [10, 20, 30],
         "Error": [0.1, 0.2, 0.3],
     }
+    time = 1e-6
+    distance = 1
     df = pd.DataFrame(data)
     result = tof_to_energy(df.copy())

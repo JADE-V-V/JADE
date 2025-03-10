@@ -335,9 +335,6 @@ class OpenMCSimOutput(AbstractSimOutput):
         file3 = os.path.join(results_path, file3) if file3 else None
         file4 = os.path.join(results_path, file4) if file4 else None
 
-        # if "volumes.json" in os.listdir(results_path):
-        #    file4 = os.path.join(results_path, "volumes.json")
-
         return file1, file2, file3, file4
 
     def _create_dataframes(

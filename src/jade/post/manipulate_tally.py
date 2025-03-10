@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import math
 
 import numpy as np
 import pandas as pd
@@ -66,10 +67,15 @@ def condense_groups(
     for max_e in bins[1:]:
         # get the rows that have Energy between min_e and max_e
         df = tally[(tally[group_column] >= min_e) & (tally[group_column] < max_e)]
+        # do the srt of sum of squares of absolute errors
+        square_err = 0
+        for _, row in df.iterrows():
+            square_err += row["abs err"] ** 2
+        srss_err = math.sqrt(square_err)
         df = df.sum()
         with np.errstate(divide="ignore", invalid="ignore"):
             # it is ok to get some NaN if value is zero
-            df["Error"] = df["abs err"] / df["Value"]
+            df["Error"] = srss_err / df["Value"]
         del df["abs err"]
         del df[group_column]  # avoid warning
         df[group_column] = f"{min_e} - {max_e}"

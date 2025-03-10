@@ -61,6 +61,38 @@ exactly like the ones produced by the raw data processing and have the same stru
 Add the raw config file
 =======================
 
+.. note::
+  JADE makes significant use of YAML configuration file. In YAML it is possible to define aliases
+  in order to avoid repetition of the same information. Here is an example:
+
+  .. code-block:: yaml
+
+    # Define the alias
+    key_dict: &my_alias
+      key1: value1
+      key2: value2
+
+    # Use the alias
+    my_key: *my_alias
+  
+  JADE allows the use of aliases on condition that the name starts with un underscore or it is omitted.
+  This is to avoid confusion with the other configuration keys. For instance, a correct use of aliases
+  would look like:
+
+  .. code-block:: yaml
+
+    _key_dict: &my_alias
+      key1: value1
+      key2: value2
+
+  or
+
+  .. code-block:: yaml
+
+    &my_alias
+      key1: value1
+      key2: value2
+
 The raw processing configuration file contains the instructions to transition from a transport-code
 dependent and tally-based output to a .csv *result* which will be completely transport-code independent.
 The objective of the processed raw data is to be a strong interface 
@@ -108,7 +140,9 @@ The currently supported modifiers are:
   No arguments are expected.
 * ``by_energy``: a flux tally is expected and converted to a flux per unit energy.
   No arguments are expected.
-* ``condense_groups``: takes a binned tallies and condenses into a coarser binning. Two keyargs needs to be passed:
+* ``condense_groups``: takes a binned tallies and condenses into a coarser binning. 
+  Errors are combined in squared root of sum of squares.
+  Two keyargs needs to be passed:
   
   * *bins*: a list of floats representing the new bin edges.
   * *group_column*: the name of the binning column (e.g. 'Energy').
@@ -198,6 +232,8 @@ The **mandatory options** to include in a *table* configurations are:
   
   * ``simple``: The starting data is simply the dataframe itself.
   * ``pivot``: a pivot table is produced. This requires to specify also the ``value`` option.
+
+  Examples of the layout of these tables can be found in the :ref:`table_types` section.
   
   In case a new table type was needed, please refer to :ref:`add_table_type`.
 * ``x``: the name of the column that will be used as the x-axis in the table.

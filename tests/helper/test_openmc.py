@@ -8,7 +8,7 @@ from jade.helper.__openmc__ import OMC_AVAIL
 from tests.post.resources import openmc as resources
 
 if OMC_AVAIL:
-    import jade.post.openmc as omc
+    import jade.helper.openmc as omc
 
 
 STATEPOINT = files(resources).joinpath("statepoint.10.h5")

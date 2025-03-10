@@ -17,6 +17,7 @@ from src.jade.post.manipulate_tally import (
     replace_column,
     scale,
     sum_tallies,
+    tof_to_energy,
 )
 
 
@@ -151,3 +152,13 @@ def test_delete_cols():
     assert "Another" not in result.columns
     assert "Value" in result.columns
     assert "Energy" in result.columns
+
+
+def test_tol_to_energy():
+    data = {
+        "Energy": [1, 2, 3],
+        "Value": [10, 20, 30],
+        "Error": [0.1, 0.2, 0.3],
+    }
+    df = pd.DataFrame(data)
+    result = tof_to_energy(df.copy())

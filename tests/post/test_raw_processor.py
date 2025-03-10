@@ -158,3 +158,21 @@ class TestRawProcessor:
             os.makedirs(path)
             processor = RawProcessor(cfg, folder, path)
             processor.process_raw_data()
+
+    def test_Simple_Tokamak(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("Simple_Tokamak.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(
+                SIMULATION_FOLDER,
+                "_mcnp_-_FENDL 3.2c_",
+                "Simple_Tokamak",
+                "Simple_Tokamak",
+            ),
+        ]
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            processor = RawProcessor(cfg, folder, path)
+            processor.process_raw_data()

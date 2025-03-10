@@ -154,6 +154,16 @@ def delete_cols(tally: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
     return tally.drop(columns=cols)
 
 
+def format_decimals(tally: pd.DataFrame, decimals: dict[str, int]) -> pd.DataFrame:
+    """Fix the number of decimals for the data in each column of the tally."""
+    for col, dec in decimals.items():
+        try:
+            tally[col] = tally[col].astype(float).round(dec)
+        except KeyError:
+            logging.debug(f"Column {col} not found in the tally.")
+    return tally
+
+
 MOD_FUNCTIONS = {
     TallyModOption.LETHARGY: by_lethargy,
     TallyModOption.SCALE: scale,
@@ -165,6 +175,7 @@ MOD_FUNCTIONS = {
     TallyModOption.KEEP_LAST_ROW: keep_last_row,
     TallyModOption.GROUPBY: groupby,
     TallyModOption.DELETE_COLS: delete_cols,
+    TallyModOption.FORMAT_DECIMALS: format_decimals,
 }
 
 

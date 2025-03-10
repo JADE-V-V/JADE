@@ -43,7 +43,11 @@ D1SUNED
 
 OpenMC
 ------
-TODO
+- The names of the input files should be ``settings.xml``, ``geometry.xml``, ``tallies.xml`` and ``settings.xml``.
+- The tallies IDs should be explicitely fixed when creating the ``tallies.xml`` file. This prevents
+  OpenMC from creating them automatically and, thus, potentially changing them between different runs
+  of a same benchmark. If possible, the tallies identifiers should be the same as the ones used in the
+  other transport codes.
 
 Serpent
 -------
@@ -130,6 +134,10 @@ The currently supported modifiers are:
 
 * ``delete_cols``: deletes columns from the tally. The keyarg to provide is *cols* which expects a list
   of column names to be deleted.
+
+* ``format_decimals``: formats the decimals of the data contained in specific columns. A 'decimals' dictionary is expected as a 
+  keyarg, where the keys should be the column names to be formatted and the values should be the corresponding number of decimals 
+  to keep. 
 
 More than one modifiers can be applied in series to a single tally.
 If your benchmark requires a new modifier, please refer to :ref:`add_tally_mod`.

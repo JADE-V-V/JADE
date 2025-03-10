@@ -332,8 +332,8 @@ class OpenMCSimOutput(AbstractSimOutput):
         file2 = os.path.join(results_path, file2)
         file3 = os.path.join(results_path, file3) if file3 else None
 
-        if "volumes.json" in os.path.dirname(results_path):
-            file4 = os.path.join(os.path.dirname(results_path), "volumes.json")
+        if "volumes.json" in os.listdir(results_path):
+            file4 = os.path.join(results_path, "volumes.json")
 
         return file1, file2, file3, file4
 
@@ -397,10 +397,16 @@ class OpenMCSimOutput(AbstractSimOutput):
             sorted_tally = tally.sort_values(filters)
             sorted_tally = sorted_tally.reset_index(drop=True)
             sorted_tally = sorted_tally.rename(columns=new_columns)
+            selected_columns = []
             for column in columns:
-                if column not in sorted_tally.columns:
-                    sorted_tally[column] = np.nan
-            sorted_tally = sorted_tally[columns]
+                if (
+                    column in sorted_tally.columns
+                    and sorted_tally[column].nunique() != 1
+                ):
+                    selected_columns.append(column)
+
+            sorted_tally = sorted_tally[selected_columns]
+
             # sorted_tally.to_csv('tally_'+str(id)+'_sorted.csv')
             tallydata[id] = sorted_tally
             totalbin[id] = None

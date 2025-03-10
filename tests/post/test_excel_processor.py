@@ -120,14 +120,14 @@ class TestExcelProcessor:
             files(default_cfg).joinpath("benchmarks_pp/excel/TUD-W.yaml")
         ) as file:
             cfg = ConfigExcelProcessor.from_yaml(file)
-        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c"), ("mcnp", "FENDL 3.1d")]
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.1d"), ("openmc", "FENDL 3.1d")]
         processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
         processor.process()
         file = Path(tmpdir, "TUD-W_exp-exp_Vs_mcnp-FENDL 3.1d.xlsx")
         assert file.exists()
         df = pd.read_excel(file, skiprows=3)
         assert len(df) == 144
-        file = Path(tmpdir, "TUD-W_exp-exp_Vs_mcnp-FENDL 3.2c.xlsx")
+        file = Path(tmpdir, "TUD-W_exp-exp_Vs_openmc-FENDL 3.1d.xlsx")
         assert file.exists()
         df = pd.read_excel(file, skiprows=3)
         assert len(df) == 144

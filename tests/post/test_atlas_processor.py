@@ -131,6 +131,6 @@ class TestAtlasProcessor:
             cfg = ConfigAtlasProcessor.from_yaml(file)
 
         word_template_path = files(resources).joinpath("atlas_template.docx")
-        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c"), ("mcnp", "FENDL 3.1d")]
+        codelibs = [("exp", "exp"), ("openmc", "FENDL 3.1d"), ("mcnp", "FENDL 3.1d")]
         processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
         processor.process()

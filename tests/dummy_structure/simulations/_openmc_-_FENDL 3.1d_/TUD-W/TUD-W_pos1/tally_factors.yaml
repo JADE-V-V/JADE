@@ -1,0 +1,10 @@
+1:
+  identifier: 1
+  normalisation: 1.0
+  volume: True
+  mass: False
+2:
+  identifier: 2
+  normalisation: 1.0
+  volume: True
+  mass: False

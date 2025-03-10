@@ -86,6 +86,7 @@ class TallyModOption(Enum):
     KEEP_LAST_ROW = "keep_last_row"
     GROUPBY = "groupby"
     DELETE_COLS = "delete_cols"
+    FORMAT_DECIMALS = "format_decimals"
 
 
 class TallyConcatOption(Enum):

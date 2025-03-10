@@ -1,50 +1,40 @@
 24:
-  identifier : 24
   normalisation : 1.0
   volume : True
   mass : False
 34:
-  identifier : 24
   normalisation : 1.0
   volume : True
   mass : False
 44:
-  identifier : 44
   normalisation : 1.0
   volume : True
   mass : False
 54:
-  identifier : 54
   normalisation : 1.0
   volume : True
   mass : False
 64:
-  identifier : 64
   normalisation : 1.0
   volume : True
   mass : False
 74:
-  identifier : 74
   normalisation : 1.0
   volume : True
   mass : False
 84:
-  identifier : 84
   normalisation : 1.0
   volume : True
   mass : False
 94:
-  identifier : 94
   normalisation : 1.0
   volume : True
   mass : False
 6:
-  identifier : 6
   normalisation : 1.0
   volume : False
   mass : True
 16:
-  identifier : 16
   normalisation : 1.0
   volume : False
   mass : True

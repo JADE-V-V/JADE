@@ -89,7 +89,7 @@ The following is a scheme of the JADE folder structure:
 
 
     
-``<JADE_root>`` is the root folder chosen by the user where JADE jas been installed 
+``<JADE_root>`` is the root folder chosen by the user where JADE has been installed 
 as described in :ref:`install` section.
 
 Hereafter, a general overview of the different JADE tree branches is presented.
@@ -132,7 +132,7 @@ new templates for different job submission systems.
 used to run the benchmarks. Normal users should not need to modify these files.
 
 ``<JADE_root>\cfg\benchmarks_pp`` contains the configuration files for the post-processing of the results.
-When adding new benchmarks, suitable cofiguration files should be added here. to control its post-processing
+When adding new benchmarks, suitable configuration files should be added here. to control its post-processing
 (only for developers).
 
 ``<JADE_root>\cfg\exe_cfg`` contains the configuration files for the execution of the codes. These files

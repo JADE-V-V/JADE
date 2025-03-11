@@ -39,7 +39,7 @@ D1SUNED
   If the reac file is not provided, the code will generate one automatically. All the isotopes
   contained in the input will be translated to the activation library if there is at least
   one decay pathway that can result into one of the daughters listed in the irrad file.
-- The benchmark input should not contain any ``STOP`` paramaters or ``NPS`` card.
+- The benchmark input should not contain any ``STOP`` parameters or ``NPS`` card.
 
 OpenMC
 ------
@@ -52,7 +52,9 @@ TODO
 Experimental Data
 -----------------
 Experimental data needs to be provided in the form of *.csv* files. These files should be named
-exactly like the ones produced by the raw data processing and have the same structure.
+exactly like the ones produced by the raw data processing and have the same structure. The Experimental
+results are stored in the repository with the input files in an *exp_results* folder. E.g. for those
+benchmarks in the IAEA repository, the experimental results can be found here: `here <https://github.com/IAEA-NDS/open-benchmarks/tree/main/jade_open_benchmarks/exp_results>`_ 
 
 Add the raw config file
 =======================
@@ -93,7 +95,7 @@ The raw processing configuration file contains the instructions to transition fr
 dependent and tally-based output to a .csv *result* which will be completely transport-code independent.
 The objective of the processed raw data is to be a strong interface 
 towards JADE post-processing but also towards other post-processing tools such as the
-JAD web-app or, possibly, third-party apps. 
+JADE web-app or, possibly, third-party apps. 
 
 The starting point for the processing of the raw data is a number of parsed tallies. JADE processes the
 different codes outputs and produces a pandas DataFrame for each tally of the simulation.
@@ -168,13 +170,13 @@ The currently supported modifiers are:
 More than one modifiers can be applied in series to a single tally.
 If your benchmark requires a new modifier, please refer to :ref:`add_tally_mod`.
 
-Once the modifiers have been applied, if the *result** is composed by more than one tally,
+Once the modifiers have been applied, if the *result* is composed by more than one tally,
 a concatenation option needs to be provided. The currently supported concatenation options are:
 
 * ``no_action``: perform no concatenation operation. (used when only one tally is present)
 * ``sum``: the tallies are summed.
 * ``concat``: simple pd.concat() operation where the rows of one tally are added to the other.
-* ``subtract``: the tallies are substracted (in the order they are provided).
+* ``subtract``: the tallies are subtracted (in the order they are provided).
 * ``ratio``: only two tallies are expected. The first is divided by the second.
 
 If your benchmark requires a new way to combine tallies, please refer to :ref:`add_tally_concat`.
@@ -237,7 +239,7 @@ The **optional configurations** that can be included in a *table* are:
 * ``add_error``: if True, the errors of both simulations will be added to the table.
 * ``conditional_formatting``: a dictionary that specifies the values to be used as thresholds 
   for the conditional color formatting. As an example, if ``{"red": 20, "orange": 10, "yellow": 5}`` is
-  provided, the table cells will be colored in red if the difference between the two simulations is greater than 20,
+  provided, the table cells will be coloured in red if the difference between the two simulations is greater than 20,
   in orange if it is greater than 10 and in yellow if it is greater than 5 and green otherwise.
 * ``change_col_names``: a dictionary that specifies the new names for the columns. The keys are the original column names
   and the values are the new names. This will be applied as a last operation before dumping the df.
@@ -313,9 +315,9 @@ The **mandatory options** for the *plot* configuration are:
 * ``plot_args``: a dictionary that specifies the arguments to be passed to a specific plot type. The keys are the arguments
   names and the values are the arguments values. The list of plot_args parameters available in each plot
   are described in the plot gallery.
-* ``recs``: This option allows to color part of the plot with rectangles. A list of rectangles options 
-  should be provided. Rectangle oprions must be a list/tuple of (in order), the name of the region (will
-  appear in an additional legend), the color of the rectangle, the x_min and x_max delimiting the region.
+* ``recs``: This option allows to colour part of the plot with rectangles. A list of rectangles options 
+  should be provided. Rectangle options must be a list/tuple of (in order), the name of the region (will
+  appear in an additional legend), the colour of the rectangle, the x_min and x_max delimiting the region.
 * ``subsets``: it is used to select only certain results. It is a list of dictionary. One dictionary
   needs to be provided for each *result* for which only a subset needs to be selected. The keys
   of each dictionary are:

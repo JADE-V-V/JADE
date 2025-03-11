@@ -32,7 +32,7 @@ rates and nuclear heating at different depths:
 
 * **Reaction rates**: *197Au(n,g)*, *58Ni(n,p)*, *27Al(n,a)*, *93Nb(n,2n)* at depths of 10.41, 25.65,
   40.89 and 56.13 cm from the block surface. 
-* **Nuclear heating**: Combined neutron and photon heating measured using TLDs at depths of 14.99, 30.23, 40.47 and 60.71 cm.
+* **Nuclear heating**: Combined neutron and photon heating measured using TLDs at depths of 14.99, 30.23, 45.47 and 60.71 cm.
 
 .. important::
     * There was a lack of reliable data on the concentration of boron in the SiC matrix therefore 

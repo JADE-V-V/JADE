@@ -43,8 +43,8 @@ D1SUNED
 
 OpenMC
 ------
-- The names of the input files should be ``settings.xml``, ``geometry.xml``, ``tallies.xml`` and ``settings.xml``.
-- The tallies IDs should be explicitely fixed when creating the ``tallies.xml`` file. This prevents
+- The names of the input files should be ``settings.xml``, ``geometry.xml``, ``tallies.xml`` and ``materials.xml``.
+- The tallies IDs should be explicitly fixed when creating the ``tallies.xml`` file. This prevents
   OpenMC from creating them automatically and, thus, potentially changing them between different runs
   of a same benchmark. If possible, the tallies identifiers should be the same as the ones used in the
   other transport codes.

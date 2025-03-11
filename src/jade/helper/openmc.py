@@ -8,15 +8,19 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import numpy as np
-import openmc
+
+from jade.helper.__openmc__ import OMC_AVAIL
+
+if OMC_AVAIL:
+    import openmc
 import pandas as pd
 import yaml
-
-from jade.helper.aux_functions import PathLike
 
 if TYPE_CHECKING:
     from f4enix.input.libmanager import LibManager
     from f4enix.input.materials import MatCardsList, Material, SubMaterial, Zaid
+
+    from jade.helper.aux_functions import PathLike
 
 
 @dataclass
@@ -50,7 +54,7 @@ class OpenMCTallyFactors:
 
         tally_factors = {}
         for key, value in cfg.items():
-            tally_factors[int(key)] = TallyFactors(**value)
+            tally_factors[int(key)] = TallyFactors(**value, identifier=int(key))
         return cls(tally_factors=tally_factors)
 
 
@@ -63,17 +67,17 @@ class TallyFactors:
     identifier : int
         Identifier of the tally.
     normalisation : float
-        Nomrlaisation factor for the tally.
+        Normalisation factor for the tally.
     volume : bool
-        True if volume divisor is needed, False if not.
+        True if volume divisor is needed, False if not. Default is False.
     mass : BinningType | list[BinningType]
-        True if mass divisor is needed, False if not.
+        True if mass divisor is needed, False if not. Default is False.
     """
 
     identifier: int
-    normalisation: float
-    volume: bool
-    mass: bool
+    volume: bool = False
+    mass: bool = False
+    normalisation: float = 1
 
 
 @dataclass
@@ -95,7 +99,7 @@ class OpenMCCellVolumes:
         Parameters
         ----------
         file : str | os.PathLike
-            path to the yaml file.
+            path to the json file.
 
         Returns
         -------
@@ -110,7 +114,7 @@ class OpenMCCellVolumes:
             cell_volumes[int(key)] = float(value)
         return cls(cell_volumes=cell_volumes)
 
-    def volumes(self, cells: iter | None = None) -> dict[int:float]:
+    def volumes(self, cells: iter | None = None) -> dict[int, float]:
         """
         Returns dictionary of volumes for a cell list
 
@@ -139,7 +143,7 @@ class OpenMCCellDensities:
 
     @classmethod
     def from_xml(cls, xml_path: str | os.PathLike) -> OpenMCCellDensities:
-        """Load in cell volumes from a json file.
+        """Load in cell densities from the geometry xml input file.
 
         Parameters
         ----------
@@ -149,7 +153,7 @@ class OpenMCCellDensities:
         Returns
         -------
         OpenMCCellDensities
-            The cell desnities for the OpenMC benchmark.
+            The cell densities for the OpenMC benchmark.
         """
         omc_input_files = OpenMCInputFiles(xml_path)
         cells = omc_input_files.geometry.get_all_cells()
@@ -411,7 +415,7 @@ class OpenMCStatePoint:
         tffile_path: str | os.PathLike | None = None,
         volfile_path: str | os.PathLike | None = None,
     ) -> None:
-        """Class for handling OpenMC tatepoint file
+        """Class for handling OpenMC statepoint file
 
         Parameters
         ----------

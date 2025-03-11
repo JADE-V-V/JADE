@@ -1,0 +1,6 @@
+Neutron flux:
+  concat_option: no_action
+  1: [['by_energy', {}],[format_decimals,{"decimals":{"Energy":2}}]]
+Photon flux:
+  concat_option: no_action
+  2: [['by_energy', {}],[format_decimals,{"decimals":{"Energy":2}}]]

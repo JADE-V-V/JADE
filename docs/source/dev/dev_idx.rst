@@ -30,6 +30,6 @@ classes are required.
     :caption: Add a new benchmark
     
     ./architecture_overview
-    ./pp_gallery
     ./insertbenchmarks
+    ./pp_gallery
     ./add_transport_code

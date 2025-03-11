@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 
 import pandas as pd
+import pytest
 
 from src.jade.post.manipulate_tally import (
     add_column,
@@ -11,6 +12,7 @@ from src.jade.post.manipulate_tally import (
     concat_tallies,
     condense_groups,
     delete_cols,
+    format_decimals,
     groupby,
     no_action,
     no_concat,
@@ -101,7 +103,14 @@ def test_condense_groups():
     result = condense_groups(df.copy(), bins=[0, 3.1, 10])
     assert (result["Energy"] == ["0 - 3.1", "3.1 - 10"]).all()
     assert (result["Value"] == [60, 40]).all()
-    assert (result["Error"] == [0.15, 0.1]).all()
+    err = 0
+    val = 0
+    df["abs err"] = df["Error"] * df["Value"]
+    for i in range(3):
+        err += df.iloc[i]["abs err"] ** 2
+        val += df.iloc[i]["Value"]
+    assert pytest.approx(result["Error"][0]) == math.sqrt(err) / val
+    assert pytest.approx(result["Error"][1]) == 0.1
 
     result = condense_groups(df.copy(), bins=[0, 1, 3])
     assert len(result) == 1
@@ -152,6 +161,25 @@ def test_delete_cols():
     assert "Another" not in result.columns
     assert "Value" in result.columns
     assert "Energy" in result.columns
+
+
+def test_format_decimals():
+    data = {
+        "Energy": [1, 2, 3],
+        "Value": [10.456, 20.23, 30.905768],
+        "Error": [0.199999, 0.2333, 0.34],
+    }
+    df = pd.DataFrame(data)
+    result = format_decimals(df.copy(), {"Energy": 2, "Value": 1, "Error": 3})
+
+    expected_data = {
+        "Energy": [1.00, 2.00, 3.00],
+        "Value": [10.5, 20.2, 30.9],
+        "Error": [0.200, 0.233, 0.340],
+    }
+    expected_df = pd.DataFrame(expected_data)
+
+    pd.testing.assert_frame_equal(result, expected_df)
 
 
 def test_tol_to_energy():

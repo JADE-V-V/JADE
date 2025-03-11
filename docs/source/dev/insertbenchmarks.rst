@@ -11,7 +11,7 @@ This section of the guide describes how to add custom benchmarks to the JADE sui
 Where should I put the benchmarks input files?
 ==============================================
 
-The input files for the benchmarks do not reside in JADE repository. If your benchmark can be freely
+The input files for the benchmarks do not reside in the JADE repository. If your benchmark can be freely
 distributed please upload it to the the IAEA open-source repository 
 `here <https://github.com/IAEA-NDS/open-benchmarks/tree/main/jade_open_benchmarks>`_. You will find 
 more detailed instructions on where to position the files directly in the repository.
@@ -51,7 +51,7 @@ TODO
 
 Experimental Data
 -----------------
-Experimental data needs to be provided in the form of .csv files. These files should be named
+Experimental data needs to be provided in the form of *.csv* files. These files should be named
 exactly like the ones produced by the raw data processing and have the same structure.
 
 Add the raw config file

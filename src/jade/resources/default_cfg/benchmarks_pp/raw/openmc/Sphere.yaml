@@ -1,0 +1,20 @@
+Leakage neutron flux Vitamin-J 175:
+  concat_option: no_action
+  2: [[no_action, {}]]
+Leakage photon flux:
+  concat_option: no_action
+  22: [[no_action, {}]]
+Leakage photon flux 24 groups:
+  concat_option: no_action
+  32: [[no_action, {}]]
+Neutron heating:
+  concat_option: no_action
+  6: [[no_action, {}]]
+Photon heating:
+  concat_option: sum
+  46: [[no_action, {}]]
+  461: [[no_action, {}]]
+  462: [[no_action, {}]]  
+Leakage neutron flux:
+  concat_option: no_action
+  12: [[no_action, {}]]

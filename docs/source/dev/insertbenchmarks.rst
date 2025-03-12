@@ -58,6 +58,28 @@ Experimental Data
 Experimental data needs to be provided in the form of .csv files. These files should be named
 exactly like the ones produced by the raw data processing and have the same structure.
 
+Modify the default run_cfg file
+===============================
+
+In order for the new benchmarks to appear among the available ones when running the JADE run
+GUI, it needs to be added to the default run configuration file. The file can be
+found at ``jade/resources/default_cfg/run_cfg.yaml``.
+
+This is an example of yaml code to be added to the file in order to add a benchmark:
+
+.. code-block:: yaml
+
+  benchmark_name:  # this is the ID of the benchmark. Used in all cfg related files
+    codes: # Leave empty like in the example
+      d1s: []
+      mcnp: []
+      openmc: []
+      serpent: []
+    custom_input: # leave empty
+    description: A short description of the benchmark
+    nps: 5e7  # default value of number of histories to simulate
+    only_input: false  # leave false
+
 Add the raw config file
 =======================
 

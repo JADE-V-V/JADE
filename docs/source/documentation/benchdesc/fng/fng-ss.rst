@@ -31,8 +31,9 @@ Activation foils were placed at different depths through the stainless steel. On
 same material were irradiation in a single irradiation.  Foil activities were then determined 
 using HPGe detectors and standard radiometric techniques. 
 
-* **Reaction rates**: *58Ni(n,p)*, *27Al(n,a)*, *56Fe(n,p)*, *115In(n,n')* at depths of 4.95, 10.05,
-  20.15, 30.30, 40.50, 50.70 and 60.90 cm. *197Au(n,g)*, *55Mn(n,g)* were measured at
+* **Reaction rates**: *58Ni(n,p)*, *56Fe(n,p)* at depths of 4.95, 10.05,
+  20.15, 30.30, 40.50, 50.70 and 60.90 cm. *27Al(n,a)* at 4.95, 10.05, 20.15, 30.30, 40.50, 50.70 and 55.90 cm.
+  *115In(n,n')* at 4.95, 10.05, 20.15, 30.30, 40.50, 50.60 and 60.90 cm. *197Au(n,g)*, *55Mn(n,g)* were measured at
   5.0, 10.0, 20.0, 30.0, 40.0, 50.0 and 60.0 cm. *58Ni(n,2n)* was measured at 4.95,
   10.05, 20.15 and 30.30 cm. All measurements are from the front surface of the assembly. 
 

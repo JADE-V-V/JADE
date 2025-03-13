@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from importlib.resources import as_file, files
 
-import tests.dummy_structure
 from jade import resources
 from jade.config.atlas_config import ConfigAtlasProcessor
 from jade.post.atlas_processor import AtlasProcessor
 from jade.resources import default_cfg
+
+import tests.dummy_structure
 
 ROOT_RAW = files(tests.dummy_structure).joinpath("raw_data")
 
@@ -121,6 +122,17 @@ class TestAtlasProcessor:
 
         word_template_path = files(resources).joinpath("atlas_template.docx")
         codelibs = [("d1s", "lib 1"), ("d1s", "lib 2")]
+        processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
+        processor.process()
+
+    def test_Simple_Tokamak(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/atlas/Simple_Tokamak.yaml")
+        ) as file:
+            cfg = ConfigAtlasProcessor.from_yaml(file)
+
+        word_template_path = files(resources).joinpath("atlas_template.docx")
+        codelibs = [("mcnp", "FENDL 3.2c"), ("mcnp", "ENDFB-VIII.0")]
         processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
         processor.process()
 

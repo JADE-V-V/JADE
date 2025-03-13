@@ -19,6 +19,7 @@ from src.jade.post.manipulate_tally import (
     replace_column,
     scale,
     sum_tallies,
+    tof_to_energy,
 )
 
 
@@ -179,3 +180,13 @@ def test_format_decimals():
     expected_df = pd.DataFrame(expected_data)
 
     pd.testing.assert_frame_equal(result, expected_df)
+
+
+def test_tol_to_energy():
+    data = {
+        "time": [1, 2, 3],
+        "Value": [10, 20, 30],
+        "Error": [0.1, 0.2, 0.3],
+    }
+    df = pd.DataFrame(data)
+    tof_to_energy(df.copy())

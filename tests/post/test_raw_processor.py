@@ -14,6 +14,7 @@ from jade.config.raw_config import (
     TallyConcatOption,
     TallyModOption,
 )
+from jade.helper.__openmc__ import OMC_AVAIL
 from jade.post.raw_processor import RawProcessor
 from jade.resources import default_cfg
 
@@ -160,22 +161,7 @@ class TestRawProcessor:
             processor = RawProcessor(cfg, folder, path)
             processor.process_raw_data()
 
-    def test_TUD_W_mcnp(self, tmpdir):
-        with as_file(RAW_CFG_FILES_MCNP.joinpath("TUD-W.yaml")) as f:
-            cfg = ConfigRawProcessor.from_yaml(f)
-
-        folders = [
-            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "TUD-W"),
-            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.1d_", "TUD-W"),
-        ]
-
-        for i, folder in enumerate(folders):
-            path = tmpdir.join(str(i))
-            os.makedirs(path)
-            for subfolder in folder.iterdir():
-                processor = RawProcessor(cfg, subfolder, path)
-                processor.process_raw_data()
-
+    @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC not available")
     def test_TUD_W_openmc(self, tmpdir):
         with as_file(RAW_CFG_FILES_OPENMC.joinpath("TUD-W.yaml")) as f:
             cfg = ConfigRawProcessor.from_yaml(f)

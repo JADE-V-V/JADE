@@ -169,7 +169,7 @@ class InputMCNPSphere(InputMCNP):
             density of the material/isotope in the sphere.
         """
         super().__init__(template_folder, lib)
-        self._assign_zaid_material(zaid, density) 
+        self._assign_zaid_material(zaid, density)
 
     def _assign_zaid_material(self, zaid: str | Material, density: str):
         # --- The material needs to be assigned to the sphere ---
@@ -270,7 +270,6 @@ class InputOpenMcSphere(InputOpenMC):
         super().__init__(template_folder, lib)
         self.lm = LibManager()
         self._assign_zaid_material(zaid, density)
-        
 
     def _assign_zaid_material(self, zaid: str | Material, density: str):
         material = self._get_material(zaid)

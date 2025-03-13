@@ -25,7 +25,7 @@ Please select what type of change this is.
 - [ ] This change requires a documentation update
 - [ ] (If Benchmark) This requires additional data that can be obtained from:
     - Benchmark data 1
-    - Benchamrk data 2
+    - Benchmark data 2
 
 # Testing
 

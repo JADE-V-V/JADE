@@ -39,32 +39,26 @@
   volume : False
   mass : True
 26:
-  identifier : 26
   normalisation : 1.0
   volume : False
   mass : True
 36:
-  identifier : 36
   normalisation : 1.0
   volume : False
   mass : True
 46:
-  identifier : 46
   normalisation : 1.0
   volume : False
   mass : True
 56:
-  identifier : 56
   normalisation : 1.0
   volume : False
   mass : True
 104:
-  identifier : 104
   normalisation : 1.0
   volume : True
   mass : False
 114:
-  identifier : 114
   normalisation : 1.0
   volume : False
   mass : False

@@ -5,11 +5,11 @@ from importlib.resources import as_file, files
 from pathlib import Path
 
 import pandas as pd
-
-import tests.dummy_structure
 from jade.config.excel_config import ConfigExcelProcessor
 from jade.post.excel_processor import ExcelProcessor
 from jade.resources import default_cfg
+
+import tests.dummy_structure
 
 ROOT_RAW = files(tests.dummy_structure).joinpath("raw_data")
 
@@ -114,6 +114,23 @@ class TestExcelProcessor:
         codelibs = [("d1s", "lib 1"), ("d1s", "lib 2")]
         processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
         processor.process()
+
+    def test_tud_w(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/TUD-W.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.1d"), ("openmc", "FENDL 3.1d")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()
+        file = Path(tmpdir, "TUD-W_exp-exp_Vs_mcnp-FENDL 3.1d.xlsx")
+        assert file.exists()
+        df = pd.read_excel(file, skiprows=3)
+        assert len(df) == 144
+        file = Path(tmpdir, "TUD-W_exp-exp_Vs_openmc-FENDL 3.1d.xlsx")
+        assert file.exists()
+        df = pd.read_excel(file, skiprows=3)
+        assert len(df) == 144
 
     def test_Simple_Tokamak(self, tmpdir):
         with as_file(

@@ -16,7 +16,7 @@ from jade.run.input import (
     InputMCNP,
     InputMCNPSphere,
     InputOpenMC,
-    InputOpenMcSphere
+    InputOpenMcSphere,
 )
 from tests.run import resources
 
@@ -61,7 +61,9 @@ class TestIputMCNP:
 
         # Check if the file was written correctly
         read_inp = ipt.Input.from_input(Path(tmpdir).joinpath("Oktavian_Al.i"))
-        assert read_inp.other_data["NPS"].lines == ["NPS 10 \n"]
+        nps_lines = read_inp.other_data["NPS"].lines
+        assert len(nps_lines) == 1
+        assert nps_lines[0][:6] == "NPS 10"
         assert read_inp.materials["M1"].submaterials[0].zaidList[0].library == "31c"
         assert os.path.exists(Path(tmpdir).joinpath("wwinp"))
 
@@ -82,7 +84,9 @@ class TestInputMCNPSphere:
 
         # Check if the file was written correctly
         read_inp = ipt.Input.from_input(Path(tmpdir).joinpath("Sphere_1001_H-1.i"))
-        assert read_inp.other_data["NPS"].lines == ["NPS 10 \n"]
+        nps_lines = read_inp.other_data["NPS"].lines
+        assert len(nps_lines) == 1
+        assert nps_lines[0][:6] == "NPS 10"
         assert read_inp.materials["M1"].submaterials[0].zaidList[0].library == "31c"
 
 

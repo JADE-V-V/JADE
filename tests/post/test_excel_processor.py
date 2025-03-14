@@ -114,3 +114,12 @@ class TestExcelProcessor:
         codelibs = [("d1s", "lib 1"), ("d1s", "lib 2")]
         processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
         processor.process()
+
+    def test_Simple_Tokamak(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/Simple_Tokamak.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("mcnp", "FENDL 3.2c"), ("mcnp", "ENDFB-VIII.0")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()

@@ -215,7 +215,12 @@ class SimpleTable(Table):
     def _get_sheet(self) -> list[pd.DataFrame]:
         value_df = self.data.set_index(self.cfg.x)
         value_df = value_df[self.cfg.y]
-        return [value_df]
+        dfs = [value_df]
+        if self.cfg.add_error:
+            ref_err = self.ref_df.set_index(self.cfg.x)[["Error"]]
+            target_err = self.target_df.set_index(self.cfg.x)[["Error"]]
+            dfs.extend([ref_err, target_err])
+        return dfs
 
 
 class TableFactory:

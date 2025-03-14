@@ -31,6 +31,14 @@ ports, toroidal and poloidal field coils and the bioshield. In total, the model 
 168 cells, 344 surfaces and 92 nuclides. The source term is an isotropic point source 
 emitting neutrons with an energy of 14 MeV positioned in the center of the plasma
 region of the geometry.
+The cells numbers have been labeled arbitrary assigning a more descriptive name for
+each component. For instance the first number is related to the z coordinates
+(up or down) as shown in the Figure below, while in the case of the breeding blanket
+cells the second number depends on the toroidal location (y coordinate).
+
+.. figure:: /img/benchmarks/Simple_Tokamak_PF_VV.png
+    :width: 600
+    :align: center
 
 Tallies
 ^^^^^^^

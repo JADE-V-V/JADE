@@ -20,7 +20,7 @@ class TestAtlasProcessor:
 
         word_template_path = files(resources).joinpath("atlas_template.docx")
 
-        codelibs = [("mcnp", "ENDFB-VIII.0"), ("mcnp", "FENDL 3.2c")]
+        codelibs = [("mcnp", "ENDFB-VIII.0"), ("mcnp", "FENDL 3.2c"), ("openmc", "FENDL, 3.2b")]
         processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
         processor.process()
 

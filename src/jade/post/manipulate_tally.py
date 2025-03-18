@@ -170,6 +170,29 @@ def format_decimals(tally: pd.DataFrame, decimals: dict[str, int]) -> pd.DataFra
     return tally
 
 
+def tof_to_energy(
+    tally: pd.DataFrame, m: float = 939.5654133, L: float = 1
+) -> pd.DataFrame:
+    """
+    Convert from time of lights to energy
+
+    Parameters
+    ----------
+    tally : pd.DataFrame
+        tally dataframe to modify
+    m : float, optional
+        mass of the particle in MeV/c^2, by default 939.5654133 (Neutron mass)
+    L : float, optional
+        distance of the detector, by default 1.0
+
+    """
+
+    c = 299792458  # m/s
+    energy = m * (1 / np.sqrt(1 - (L / (c * tally["time"])) ** 2) - 1)
+    tally["Energy"] = energy
+    return tally
+
+
 MOD_FUNCTIONS = {
     TallyModOption.LETHARGY: by_lethargy,
     TallyModOption.SCALE: scale,
@@ -182,6 +205,7 @@ MOD_FUNCTIONS = {
     TallyModOption.GROUPBY: groupby,
     TallyModOption.DELETE_COLS: delete_cols,
     TallyModOption.FORMAT_DECIMALS: format_decimals,
+    TallyModOption.TOF_TO_ENERGY: tof_to_energy,
 }
 
 

@@ -1,0 +1,23 @@
+Neutron(%):
+  results:
+    - Neutron flux
+  comparison_type: percentage
+  table_type: pivot
+  x: Energy
+  y: Case
+  value: Value
+  add_error: True
+  change_col_names: {'Energy': 'Energy [MeV]', 'Case': 'Position'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+#
+Photon(%):
+  results:
+    - Photon flux
+  comparison_type: percentage
+  table_type: pivot
+  x: Energy
+  y: Case
+  value: Value
+  add_error: True
+  change_col_names: {'Energy': 'Energy [MeV]', 'Case': 'Position'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}

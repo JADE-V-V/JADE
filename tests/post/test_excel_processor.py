@@ -114,3 +114,47 @@ class TestExcelProcessor:
         codelibs = [("d1s", "lib 1"), ("d1s", "lib 2")]
         processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
         processor.process()
+
+    def test_tud_w(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/TUD-W.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.1d"), ("openmc", "FENDL 3.1d")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()
+        file = Path(tmpdir, "TUD-W_exp-exp_Vs_mcnp-FENDL 3.1d.xlsx")
+        assert file.exists()
+        df = pd.read_excel(file, skiprows=3)
+        assert len(df) == 144
+        file = Path(tmpdir, "TUD-W_exp-exp_Vs_openmc-FENDL 3.1d.xlsx")
+        assert file.exists()
+        df = pd.read_excel(file, skiprows=3)
+        assert len(df) == 144
+
+    def test_Simple_Tokamak(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/Simple_Tokamak.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("mcnp", "FENDL 3.2c"), ("mcnp", "ENDFB-VIII.0")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()
+
+    def test_ASPIS_Fe88(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/ASPIS-Fe88.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c"), ("mcnp", "FENDL 3.1d")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()
+
+        file = Path(tmpdir, "ASPIS-Fe88_exp-exp_Vs_mcnp-FENDL 3.2c.xlsx")
+        assert file.exists()
+        df = pd.read_excel(file, skiprows=3)
+        assert len(df) == 15
+        file = Path(tmpdir, "ASPIS-Fe88_exp-exp_Vs_mcnp-FENDL 3.1d.xlsx")
+        assert file.exists()
+        df = pd.read_excel(file, skiprows=3)
+        assert len(df) == 15

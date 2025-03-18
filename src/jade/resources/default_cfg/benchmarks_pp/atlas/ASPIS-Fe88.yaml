@@ -10,3 +10,4 @@ Reaction rate:
   expand_runs: true
   plot_args:
     style: point
+    ce_limits: [0.5, 1.5]

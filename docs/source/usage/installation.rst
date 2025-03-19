@@ -86,6 +86,15 @@ If permissions errors are encountered, try:
   | ``python -m jade``
 
 The folder structure should now look like the one described in :ref:`folders`.
+During this operation the benchmark inputs contained at `IAEA repository <https://github.com/IAEA-NDS/open-benchmarks>`_
+are fetched.
 
 A JADE instance has now been initialized and it is ready to be configured as discussed
 in the :ref:`config` section.
+
+In case the user possesses a valid access token for the F4E GitLab, they can provide it
+in the ``<root>/cfg/env_vars_cfg.yml`` file. And then use the JADE utility:
+
+  | ``python -m jade.utilitis --fetch``
+
+in order to obtain also the inputs stored at the F4E GitLab.

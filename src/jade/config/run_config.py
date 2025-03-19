@@ -140,14 +140,16 @@ class EnvironmentVariables:
     code_configurations : dict[CODE, PathLike] | None
         path to the configuration files for the codes. If None, the default configuration
         will be used which can be found at cfg/exe_config. By default is None.
-    batch_template : PathLike | None
+    batch_template : PathLike | None, optional
         relative path to the batch template for job submission. location is cfg/batch_templates.
         By default is None.
-    batch_system : str | None
+    batch_system : str | None, optional
         name of the batch system to use for job submission. e.g. "slurm". By default is
         None.
-    mpi_prefix : str | None
+    mpi_prefix : str | None, optional
         prefix for the mpi command. e.g. "srun", by default None
+    f4e_gitlab_token : str | None, optional
+        token to access the F4E gitlab. By default is None.
     """
 
     # parallel options
@@ -162,6 +164,7 @@ class EnvironmentVariables:
     batch_template: PathLike | None = None
     batch_system: str | None = None
     mpi_prefix: str | None = None
+    f4e_gitlab_token: str | None = None
 
     def __post_init__(self):
         if self.mpi_tasks is not None:
@@ -181,6 +184,9 @@ class EnvironmentVariables:
                 raise ConfigError(
                     "Batch system is needed for job submission, please provide one"
                 )
+        # make sure that the gitlab token is set to None if empty
+        if self.f4e_gitlab_token == "":
+            self.f4e_gitlab_token = None
 
     @classmethod
     def from_yaml(cls, config_file: PathLike) -> EnvironmentVariables:
@@ -208,6 +214,7 @@ class EnvironmentVariables:
             batch_template=cfg["batch_template"],
             batch_system=cfg["batch_system"],
             mpi_prefix=cfg["mpi_prefix"],
+            f4e_gitlab_token=cfg.get("f4e_gitlab_token", None),
         )
 
 

@@ -12,7 +12,7 @@ from tqdm import tqdm
 
 import jade.resources as res
 from jade import resources
-from jade.app.fetch import fetch_iaea_inputs
+from jade.app.fetch import fetch_f4e_inputs, fetch_iaea_inputs
 from jade.config.paths_tree import PathsTree
 from jade.config.pp_config import PostProcessConfig
 from jade.config.raw_config import ConfigRawProcessor
@@ -92,7 +92,19 @@ class JadeApp:
             self.tree.benchmark_input_templates, self.tree.exp_data
         )
         if not success:
-            logging.error("Failed to update the benchmark inputs.")
+            logging.error("Failed to update the IAEA benchmark inputs.")
+
+        f4e_gitlab_token = self.run_cfg.env_vars.f4e_gitlab_token
+        if f4e_gitlab_token is not None:
+            success = fetch_f4e_inputs(
+                self.tree.benchmark_input_templates,
+                self.tree.exp_data,
+                f4e_gitlab_token,
+            )
+            if not success:
+                logging.error("Failed to update the F4E benchmark inputs.")
+        else:
+            logging.info("No F4E token found. Skipping F4E inputs update.")
 
     def restore_default_cfg(self, msg: str = ""):
         """Reset the configuration files to installation default. The session

@@ -71,6 +71,8 @@ jobs:
           pytest --cov=. -cov-config=jade.coveragerc --cov-report xml
         env:
           ACCESS_TOKEN_GITHUB: ${{ secrets.ACCESS_TOKEN_GITHUB }}
+          F4E_GITLAB_TOKEN: ${{ secrets.F4E_GITLAB_TOKEN }}
+
 
       # Activate environment and run pytest
       - name: Testing - Windows
@@ -79,6 +81,7 @@ jobs:
           pytest
         env:
           ACCESS_TOKEN_GITHUB: ${{ secrets.ACCESS_TOKEN_GITHUB }}
+          F4E_GITLAB_TOKEN: ${{ secrets.F4E_GITLAB_TOKEN }}
       
       # Upload coverage to Codecov. Do it only for one case of the matrix.
       - name: Upload coverage to Codecov

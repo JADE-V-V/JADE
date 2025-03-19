@@ -58,9 +58,8 @@ Documentation = "https://jade-a-nuclear-data-libraries-vv-tool.readthedocs.io/en
 [tool.setuptools_scm]
 write_to = "src/_version.py"
 
-[tool.setuptools]
-package-dir = {"" = "src"}
-packages = ["jade"]
+[tool.setuptools.package-dir]
+jade = 'src/jade'
 
 [tool.setuptools.package-data]
 "*" = ["*.txt", '*.csv', '*.sh', '*.cmd', '*.docx', '*.ico']

@@ -3,7 +3,7 @@ requires = ["setuptools >= 69.5.1", "setuptools_scm[toml]>=8.1.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "jade"
+name = "jadevv"
 license = {file = "LICENSE"}
 dynamic = ["version"]
 authors = [

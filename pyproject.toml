@@ -3,7 +3,7 @@ requires = ["setuptools >= 69.5.1", "setuptools_scm[toml]>=8.1.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "jade"
+name = "jadevv"
 license = {file = "LICENSE"}
 dynamic = ["version"]
 authors = [
@@ -58,9 +58,8 @@ Documentation = "https://jade-a-nuclear-data-libraries-vv-tool.readthedocs.io/en
 [tool.setuptools_scm]
 write_to = "src/_version.py"
 
-[tool.setuptools]
-package-dir = {"" = "src"}
-packages = ["jade"]
+[tool.setuptools.package-dir]
+jade = 'src/jade'
 
 [tool.setuptools.package-data]
 "*" = ["*.txt", '*.csv', '*.sh', '*.cmd', '*.docx', '*.ico']

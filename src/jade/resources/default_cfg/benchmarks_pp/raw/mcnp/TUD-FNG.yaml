@@ -1,0 +1,12 @@
+Neutron fluence (pos A):
+  concat_option: no_action
+  504: [['by_energy', {}], [add_column, {"column": "Tally", "values": "Pos A"}]]
+Photon fluence (pos A):
+  concat_option: no_action
+  514: [['by_energy', {}], [add_column, {"column": "Tally", "values": "Pos A"}]]
+Neutron fluence (pos B):
+  concat_option: no_action
+  524: [['by_energy', {}], [add_column, {"column": "Tally", "values": "Pos B"}]]
+Photon fluence (pos B):
+  concat_option: no_action
+  534: [['by_energy', {}], [add_column, {"column": "Tally", "values": "Pos B"}]]

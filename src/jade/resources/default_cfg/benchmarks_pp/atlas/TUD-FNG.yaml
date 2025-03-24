@@ -9,7 +9,7 @@ Neutron fluence:
   x: Energy
   y: Value
   plot_args:
-    subcases: ["Tally", ['Pos A', 'Pos B']]
+    subcases: ["Position", ['Pos A', 'Pos B']]
 #
 Neutron fluence C/E:
   results:
@@ -22,7 +22,7 @@ Neutron fluence C/E:
   x: Energy
   y: Value
   plot_args:
-    subcases: ["Tally", ['Pos A', 'Pos B']]
+    subcases: ["Position", ['Pos A', 'Pos B']]
     ce_limits: [0.0, 2.0]
     xscale: "log"
 #
@@ -37,7 +37,7 @@ Photon fluence:
   x: Energy
   y: Value
   plot_args:
-    subcases: ["Tally", ['Pos A', 'Pos B']]
+    subcases: ["Position", ['Pos A', 'Pos B']]
 #
 Photon fluence C/E:
   results:
@@ -50,7 +50,7 @@ Photon fluence C/E:
   x: Energy
   y: Value
   plot_args:
-    subcases: ["Tally", ['Pos A', 'Pos B']]
+    subcases: ["Position", ['Pos A', 'Pos B']]
     ce_limits: [0.0, 2.0]
     xscale: "log"
 #

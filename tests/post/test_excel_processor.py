@@ -158,3 +158,21 @@ class TestExcelProcessor:
         assert file.exists()
         df = pd.read_excel(file, skiprows=3)
         assert len(df) == 15
+
+    def test_TUD_FNG(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/TUD-FNG.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c"), ("mcnp", "FENDL 3.1d")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()
+
+        file = Path(tmpdir, "TUD-FNG_exp-exp_Vs_mcnp-FENDL 3.2c.xlsx")
+        assert file.exists()
+        df = pd.read_excel(file, skiprows=3)
+        assert len(df) == 212
+        file = Path(tmpdir, "TUD-FNG_exp-exp_Vs_mcnp-FENDL 3.1d.xlsx")
+        assert file.exists()
+        df = pd.read_excel(file, skiprows=3)
+        assert len(df) == 212

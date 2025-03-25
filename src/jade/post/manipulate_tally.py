@@ -6,6 +6,7 @@ import math
 import numpy as np
 import pandas as pd
 
+from jade.config.excel_config import ComparisonType
 from jade.config.raw_config import TallyConcatOption, TallyModOption
 
 
@@ -213,14 +214,15 @@ MOD_FUNCTIONS = {
 def sum_tallies(tallies: list[pd.DataFrame]) -> pd.DataFrame:
     """Sum all tallies. Value is sum, rel error is recomputed"""
     value = tallies[0]["Value"]
-    tot_err = tallies[0]["Error"] * value
+    error = tallies[0]["Error"]
     for tally in tallies[1:]:
-        value = value + tally["Value"]
-        tot_err = tot_err + tally["Error"] * tally["Value"]
+        value, error = compared_data(
+            value, -tally["Value"], error, tally["Error"], ComparisonType.ABSOLUTE
+        )  # Use of the substraction function with a negative sign in the second value to perform a sum
 
     df = tallies[0].copy()
     df["Value"] = value
-    df["Error"] = tot_err / value
+    df["Error"] = error
 
     return df
 
@@ -228,14 +230,15 @@ def sum_tallies(tallies: list[pd.DataFrame]) -> pd.DataFrame:
 def subtract_tallies(tallies: list[pd.DataFrame]) -> pd.DataFrame:
     """Subtract all tallies."""
     value = tallies[0]["Value"]
-    tot_err = tallies[0]["Error"] ** 2
+    error = tallies[0]["Error"]
     for tally in tallies[1:]:
-        value = value - tally["Value"]
-        tot_err = tot_err + tally["Error"] ** 2
+        value, error = compared_data(
+            value, tally["Value"], error, tally["Error"], ComparisonType.ABSOLUTE
+        )
 
     df = tallies[0].copy()
     df["Value"] = value
-    df["Error"] = np.sqrt(tot_err)  # This may be wrong
+    df["Error"] = error
 
     return df
 
@@ -256,14 +259,15 @@ def ratio(tallies: list[pd.DataFrame]) -> pd.DataFrame:
     if len(tallies) != 2:
         raise ValueError("Only two tallies can be used for ratio")
     value = tallies[0]["Value"]
-    tot_err = tallies[0]["Error"] ** 2
+    error = tallies[0]["Error"]
     for tally in tallies[1:]:
-        value = value / tally["Value"]
-        tot_err = tot_err + (tally["Error"] / tally["Value"]) ** 2
+        value, error = compared_data(
+            tally["Value"], value, tally["Error"], error, ComparisonType.RATIO
+        )
 
     df = tallies[0].copy()
     df["Value"] = value
-    df["Error"] = np.sqrt(tot_err)  # This may be wrong
+    df["Error"] = error
 
     return df
 
@@ -275,3 +279,42 @@ CONCAT_FUNCTIONS = {
     TallyConcatOption.SUBTRACT: subtract_tallies,
     TallyConcatOption.RATIO: ratio,
 }
+
+
+def compared_data(
+    val1: pd.Series,
+    val2: pd.Series,
+    err1: pd.Series,
+    err2: pd.Series,
+    comparison_type: ComparisonType,
+) -> tuple[pd.Series, pd.Series]:
+    """Returns the values and propagated errors for the chosen comparison between two data sets."""
+    error = []
+    if comparison_type == ComparisonType.ABSOLUTE:
+        value = val1 - val2
+        for v1, v2, e1, e2 in zip(val1, val2, err1, err2):
+            if v1 != v2:
+                error.append(
+                    np.sqrt((v1 * e1) ** 2 + (v2 * e2) ** 2) / (v1 - v2)
+                )  # relative error propagation for substraction
+            else:
+                error.append(
+                    e1 + e2
+                )  # Conservative choice, only applied if the values are equal
+    elif comparison_type == ComparisonType.PERCENTAGE:
+        value = (val1 - val2) / val1 * 100
+        for v1, v2, e1, e2 in zip(val1, val2, err1, err2):
+            if v1 != v2:
+                error.append(
+                    np.sqrt((v1 * v2 * e1) ** 2 + (v2 * e2) ** 2) / (v1 - v2)
+                )  # relative error propagation for percentage
+            else:
+                error.append(
+                    e1 + e2
+                )  # Conservative choice, only applied if the values are equal
+    elif comparison_type == ComparisonType.RATIO:
+        value = val2 / val1  # reference / target
+        error = np.sqrt(err1**2 + err2**2)  # relative error propagation for ratio
+
+    error = pd.Series(error)
+    return value, error

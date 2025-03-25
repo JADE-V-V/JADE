@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pytest
 
 from jade.config.excel_config import ComparisonType
 from jade.post.excel_routines import Table
@@ -18,5 +19,5 @@ class TestTable:
             np.sqrt((15 * 20 * 0.2) ** 2 + (15 * 0.25) ** 2) / 5,
             0.65,
         ]
-        assert result["Value"].tolist() == expected_values
-        assert result["Error"].tolist() == expected_errors
+        assert pytest.approx(result["Value"].tolist()) == expected_values
+        assert pytest.approx(result["Error"].tolist()) == expected_errors

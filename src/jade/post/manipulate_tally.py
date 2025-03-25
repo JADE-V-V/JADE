@@ -216,8 +216,13 @@ def sum_tallies(tallies: list[pd.DataFrame]) -> pd.DataFrame:
     value = tallies[0]["Value"]
     error = tallies[0]["Error"]
     for tally in tallies[1:]:
-        value, error = compared_data(
-            value, -tally["Value"], error, tally["Error"], ComparisonType.ABSOLUTE
+        value, error = compare_data(
+            value,
+            -tally["Value"],
+            error,
+            tally["Error"],
+            ComparisonType.ABSOLUTE,
+            ignore_index=True,
         )  # Use of the substraction function with a negative sign in the second value to perform a sum
 
     df = tallies[0].copy()
@@ -232,8 +237,13 @@ def subtract_tallies(tallies: list[pd.DataFrame]) -> pd.DataFrame:
     value = tallies[0]["Value"]
     error = tallies[0]["Error"]
     for tally in tallies[1:]:
-        value, error = compared_data(
-            value, tally["Value"], error, tally["Error"], ComparisonType.ABSOLUTE
+        value, error = compare_data(
+            value,
+            tally["Value"],
+            error,
+            tally["Error"],
+            ComparisonType.ABSOLUTE,
+            ignore_index=True,
         )
 
     df = tallies[0].copy()
@@ -258,12 +268,15 @@ def ratio(tallies: list[pd.DataFrame]) -> pd.DataFrame:
     """Ratio of the tallies."""
     if len(tallies) != 2:
         raise ValueError("Only two tallies can be used for ratio")
-    value = tallies[0]["Value"]
-    error = tallies[0]["Error"]
-    for tally in tallies[1:]:
-        value, error = compared_data(
-            tally["Value"], value, tally["Error"], error, ComparisonType.RATIO
-        )
+
+    value, error = compare_data(
+        tallies[1]["Value"],
+        tallies[0]["Value"],
+        tallies[1]["Error"],
+        tallies[0]["Error"],
+        ComparisonType.RATIO,
+        ignore_index=True,
+    )
 
     df = tallies[0].copy()
     df["Value"] = value
@@ -281,15 +294,20 @@ CONCAT_FUNCTIONS = {
 }
 
 
-def compared_data(
+def compare_data(
     val1: pd.Series,
     val2: pd.Series,
     err1: pd.Series,
     err2: pd.Series,
     comparison_type: ComparisonType,
-) -> tuple[pd.Series, pd.Series]:
+    ignore_index=False,
+) -> tuple[pd.Series | np.ndarray, pd.Series | np.ndarray]:
     """Returns the values and propagated errors for the chosen comparison between two data sets."""
     error = []
+    if ignore_index:
+        val1 = val1.values
+        val2 = val2.values
+
     if comparison_type == ComparisonType.ABSOLUTE:
         value = val1 - val2
         for v1, v2, e1, e2 in zip(val1, val2, err1, err2):
@@ -316,5 +334,9 @@ def compared_data(
         value = val2 / val1  # reference / target
         error = np.sqrt(err1**2 + err2**2)  # relative error propagation for ratio
 
-    error = pd.Series(error)
+    if not ignore_index:
+        error = pd.Series(error)
+        error.index = val1.index
+    else:
+        error = np.array(error)
     return value, error

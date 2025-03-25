@@ -9,7 +9,7 @@ from xlsxwriter.worksheet import Worksheet
 
 from jade.config.excel_config import ComparisonType, TableConfig, TableType
 from jade.helper.errors import PostProcessConfigError
-from jade.post.manipulate_tally import compared_data
+from jade.post.manipulate_tally import compare_data
 
 MAX_SHEET_NAME_LEN = 31
 DF_START_ROW = 3
@@ -75,9 +75,7 @@ class Table(ABC):
         err1 = df1.loc[common_index]["Error"]
         err2 = df2.loc[common_index]["Error"]
 
-        df["Value"], df["Error"] = compared_data(
-            val1, val2, err1, err2, comparison_type
-        )
+        df["Value"], df["Error"] = compare_data(val1, val2, err1, err2, comparison_type)
 
         return df.reset_index()
 

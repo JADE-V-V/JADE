@@ -41,10 +41,9 @@ dev = [
     "ruff"  # best formatter that should be used by everybody
     ]
 openmc = [
-    "openmc @ git+https://github.com/openmc-dev/openmc.git; python_version >= '3.11'",
-    "openmc @ git+https://github.com/openmc-dev/openmc.git@v0.15.0#egg=openmc; python_version < '3.11'"
-
-    ]
+    "openmc @ git+https://github.com/openmc-dev/openmc.git",  # Default for all Python versions
+    "openmc @ git+https://github.com/openmc-dev/openmc.git@v0.15.0#egg=openmc; python_version < '3.11'"  # Specific version for Python < 3.11
+]
 
 [project.urls]
 Homepage = "https://github.com/JADE-V-V/JADE"

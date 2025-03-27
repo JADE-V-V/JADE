@@ -84,9 +84,13 @@ def condense_groups(
     return pd.DataFrame(rows).dropna()
 
 
-def scale(tally: pd.DataFrame, factor: int | float = 1) -> pd.DataFrame:
+def scale(tally: pd.DataFrame, factor: int | float | list = 1) -> pd.DataFrame:
     """Scale the tally values."""
-    tally["Value"] = tally["Value"] * factor
+    if isinstance(factor, list):
+        factor2apply = np.array(factor)
+    else:
+        factor2apply = factor
+    tally["Value"] = tally["Value"] * factor2apply
     return tally
 
 

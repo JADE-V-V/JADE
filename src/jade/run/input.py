@@ -16,7 +16,7 @@ from f4enix.input.MCNPinput import Input as MCNPInput
 from jade.config.run_config import Library, LibraryD1S, LibraryMCNP
 from jade.helper.__openmc__ import OMC_AVAIL
 from jade.helper.aux_functions import PathLike
-from jade.helper.constants import CODE
+from jade.helper.constants import CODE, DOSIMETRY_LIBS
 from jade.helper.errors import ConfigError
 
 if OMC_AVAIL:
@@ -113,7 +113,7 @@ class InputMCNP(Input):
         self.inp = MCNPInput.from_input(filepath)
         self._name = file.split(".")[0]
         self._lib = lib
-        self.lm = LibManager(xsdir_path=lib.path)
+        self.lm = LibManager(xsdir_path=lib.path, dosimetry_lib=DOSIMETRY_LIBS)
 
     @property
     def code(self) -> CODE:
@@ -346,7 +346,7 @@ class InputD1S(Input):
         irrfile = Path(template_folder, f"{self.name}_irrad")
         reacfile = Path(template_folder, f"{self.name}_react")
         self.inp = D1S_Input.from_input(Path(template_folder, file))
-        self.lm = LibManager(xsdir_path=lib.path)
+        self.lm = LibManager(xsdir_path=lib.path, dosimetry_lib=DOSIMETRY_LIBS)
         self._lib = lib
 
         try:

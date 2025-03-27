@@ -54,8 +54,19 @@ jobs:
       - name: Install dependencies Linux
         if: runner.os == 'Linux'
         run: |
-          pip install -e .[dev,openmc]
-        
+          pip install -e .[dev]
+      
+      # Cap the openmc installation to 0.15.0 for older python
+      - name: Install openmc (legacy)
+        if: runner.os == 'Linux' || matrix.python-version == '3.10'
+        run: |
+          pip install "openmc @ git+https://github.com/openmc-dev/openmc.git@v0.15.0#egg=openmc
+      
+      - name: Install openmc
+        if: runner.os == 'Linux' || matrix.python-version != '3.10'
+        run: |
+          pip install "openmc @ git+https://github.com/openmc-dev/openmc.git
+
       # Install dependencies windows
       - name: Install dependencies Windows 
         if: runner.os == 'Windows'

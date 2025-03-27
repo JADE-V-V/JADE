@@ -31,6 +31,10 @@ MCNP
 - The input name shall be ``<benchmark_name>.i``
 - weight windows file (if present) should be named ``wwinp``
 
+.. note:: 
+  If the benchmark input uses special dosimetry libraries that should not be translated, their suffix
+  should be added to the ``DOSIMETRY_LIBS`` list in ``jade/helper/constants.py``.
+
 D1SUNED
 -------
 

@@ -65,7 +65,7 @@ jobs:
       - name: Install openmc
         if: runner.os == 'Linux' || matrix.python-version != '3.10'
         run: |
-          pip install git+https://github.com/openmc-dev/openmc.git"
+          pip install git+https://github.com/openmc-dev/openmc.git
 
       # Install dependencies windows
       - name: Install dependencies Windows 

@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-20.04, ubuntu-latest]
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.10", "3.11", '3.12']
         full-test:
           - ${{ contains(github.ref, 'master') || contains(github.ref, 'main') || startsWith(github.ref, 'refs/heads/release') }}
         exclude:

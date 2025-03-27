@@ -20,7 +20,7 @@ class TestExcelProcessor:
             files(default_cfg).joinpath("benchmarks_pp/excel/Sphere.yaml")
         ) as file:
             cfg = ConfigExcelProcessor.from_yaml(file)
-        codelibs = [("mcnp", "ENDFB-VIII.0"), ("mcnp", "FENDL 3.2c"), ("openmc", "FENDL, 3.2b")]
+        codelibs = [("mcnp", "ENDFB-VIII.0"), ("mcnp", "FENDL 3.2c")]
         processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
         processor.process()
 

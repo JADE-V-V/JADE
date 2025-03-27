@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -16,9 +17,12 @@ from src.jade.post.manipulate_tally import (
     groupby,
     no_action,
     no_concat,
+    ratio,
     replace_column,
     scale,
+    subtract_tallies,
     sum_tallies,
+    tof_to_energy,
 )
 
 
@@ -68,9 +72,41 @@ def test_sum_tallies():
     result = sum_tallies([df1, df2])
     expected_values = [15, 35, 55]
     expected_errors = [
-        (10 * 0.1 + 5 * 0.1) / 15,
-        (20 * 0.2 + 15 * 0.2) / 35,
-        (30 * 0.3 + 25 * 0.3) / 55,
+        np.sqrt((10 * 0.1) ** 2 + (5 * 0.1) ** 2) / 15,
+        np.sqrt((20 * 0.2) ** 2 + (15 * 0.2) ** 2) / 35,
+        np.sqrt((30 * 0.3) ** 2 + (25 * 0.3) ** 2) / 55,
+    ]
+    assert result["Value"].tolist() == expected_values
+    assert result["Error"].tolist() == expected_errors
+
+
+def test_subtract_tallies():
+    data1 = {"Energy": [1, 2, 3], "Value": [10, 20, 30], "Error": [0.1, 0.2, 0.3]}
+    data2 = {"Energy": [1, 2, 3], "Value": [5, 15, 25], "Error": [0.1, 0.2, 0.3]}
+    df1 = pd.DataFrame(data1)
+    df2 = pd.DataFrame(data2)
+    result = subtract_tallies([df1, df2])
+    expected_values = [5, 5, 5]
+    expected_errors = [
+        np.sqrt((10 * 0.1) ** 2 + (5 * 0.1) ** 2) / 5,
+        np.sqrt((20 * 0.2) ** 2 + (15 * 0.2) ** 2) / 5,
+        np.sqrt((30 * 0.3) ** 2 + (25 * 0.3) ** 2) / 5,
+    ]
+    assert result["Value"].tolist() == expected_values
+    assert result["Error"].tolist() == expected_errors
+
+
+def test_ratio_tallies():
+    data1 = {"Energy": [1, 2, 3], "Value": [10, 20, 30], "Error": [0.1, 0.2, 0.3]}
+    data2 = {"Energy": [1, 2, 3], "Value": [5, 15, 25], "Error": [0.1, 0.2, 0.3]}
+    df1 = pd.DataFrame(data1)
+    df2 = pd.DataFrame(data2)
+    result = ratio([df1, df2])
+    expected_values = [2, 4 / 3, 6 / 5]
+    expected_errors = [
+        np.sqrt((0.1) ** 2 + (0.1) ** 2),
+        np.sqrt((0.2) ** 2 + (0.2) ** 2),
+        np.sqrt((0.3) ** 2 + (0.3) ** 2),
     ]
     assert result["Value"].tolist() == expected_values
     assert result["Error"].tolist() == expected_errors
@@ -179,3 +215,13 @@ def test_format_decimals():
     expected_df = pd.DataFrame(expected_data)
 
     pd.testing.assert_frame_equal(result, expected_df)
+
+
+def test_tol_to_energy():
+    data = {
+        "time": [1, 2, 3],
+        "Value": [10, 20, 30],
+        "Error": [0.1, 0.2, 0.3],
+    }
+    df = pd.DataFrame(data)
+    tof_to_energy(df.copy())

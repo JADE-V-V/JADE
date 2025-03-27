@@ -1,0 +1,29 @@
+Neutron flux:
+  results:
+    - Neutron flux
+  plot_type: binned
+  title: Neutron flux
+  x_label: Energy [MeV]
+  y_labels: "Neutron flux $\\left[\\frac{1}{MeV\\cdot n \\cdot cm^2}\\right]$"
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_CE: true
+    show_error: true
+    xscale: linear
+#
+Photon flux:
+  results:
+    - Photon flux
+  plot_type: binned
+  title: Photon flux
+  x_label: Energy [MeV]
+  y_labels: "Photon flux $\\left[\\frac{1}{MeV\\cdot n \\cdot cm^2}\\right]$"
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_CE: true
+    show_error: true
+    xscale: linear

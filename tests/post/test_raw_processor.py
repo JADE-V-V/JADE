@@ -161,6 +161,22 @@ class TestRawProcessor:
             processor = RawProcessor(cfg, folder, path)
             processor.process_raw_data()
 
+    def test_TUD_W_mcnp(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("TUD-W.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.1d_", "TUD-W"),
+            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "TUD-W"),
+        ]
+
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            for subfolder in folder.iterdir():
+                processor = RawProcessor(cfg, subfolder, path)
+                processor.process_raw_data()
+
     @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC not available")
     def test_TUD_W_openmc(self, tmpdir):
         with as_file(RAW_CFG_FILES_OPENMC.joinpath("TUD-W.yaml")) as f:
@@ -168,6 +184,56 @@ class TestRawProcessor:
 
         folders = [
             Path(SIMULATION_FOLDER, "_openmc_-_FENDL 3.1d_", "TUD-W"),
+        ]
+
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            for subfolder in folder.iterdir():
+                processor = RawProcessor(cfg, subfolder, path)
+                processor.process_raw_data()
+
+    def test_Simple_Tokamak(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("Simple_Tokamak.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(
+                SIMULATION_FOLDER,
+                "_mcnp_-_FENDL 3.2c_",
+                "Simple_Tokamak",
+                "Simple_Tokamak",
+            ),
+        ]
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            processor = RawProcessor(cfg, folder, path)
+            processor.process_raw_data()
+
+    def test_ASPIS_Fe88(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("ASPIS-Fe88.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.1d_", "ASPIS-Fe88"),
+            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "ASPIS-Fe88"),
+        ]
+
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            for subfolder in folder.iterdir():
+                processor = RawProcessor(cfg, subfolder, path)
+                processor.process_raw_data()
+
+    def test_TUD_FNG(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("TUD-FNG.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.1d_", "TUD-FNG"),
+            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "TUD-FNG"),
         ]
 
         for i, folder in enumerate(folders):

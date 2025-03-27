@@ -1,0 +1,21 @@
+Neutron CE:
+  results:
+    - Neutron fluence (pos A)
+    - Neutron fluence (pos B)
+  comparison_type: ratio
+  table_type: pivot
+  x: ['Energy']
+  y: ['Position']
+  value: ['Value', 'Error']
+  change_col_names: {'Energy': 'Energy [MeV]', 0: 'C/E'}
+#
+Photon CE:
+  results:
+    - Photon fluence (pos A)
+    - Photon fluence (pos B)
+  comparison_type: ratio
+  table_type: pivot
+  x: ['Energy']
+  y: ['Position']
+  value: ['Value', 'Error']
+  change_col_names: {'Energy': 'Energy [MeV]', 0: 'C/E'}

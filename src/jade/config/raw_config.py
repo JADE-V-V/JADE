@@ -87,6 +87,7 @@ class TallyModOption(Enum):
     GROUPBY = "groupby"
     DELETE_COLS = "delete_cols"
     FORMAT_DECIMALS = "format_decimals"
+    TOF_TO_ENERGY = "tof_to_energy"
 
 
 class TallyConcatOption(Enum):

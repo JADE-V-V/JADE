@@ -82,8 +82,8 @@ Simple_Tokamak:
     mcnp: []
     openmc: []
     serpent: []
-  custom_input: '10'
-  description: Sphere SDDR
+  custom_input:
+  description: Simple Tokamak 
   nps: 1e9
   only_input: false
 # --- Experimental benchmarks ---

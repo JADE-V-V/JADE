@@ -176,3 +176,21 @@ class TestExcelProcessor:
         assert file.exists()
         df = pd.read_excel(file, skiprows=3)
         assert len(df) == 212
+
+    def test_FNG_SiC(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/FNG-SiC.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c"), ("mcnp", "JEFF 3.3")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()
+
+        file = Path(tmpdir, "FNG-SiC_exp-exp_Vs_mcnp-FENDL 3.2c.xlsx")
+        assert file.exists()
+        df = pd.read_excel(file, skiprows=3)
+        assert len(df) == 6
+        file = Path(tmpdir, "FNG-SiC_exp-exp_Vs_mcnp-JEFF 3.3.xlsx")
+        assert file.exists()
+        df = pd.read_excel(file, skiprows=3)
+        assert len(df) == 6

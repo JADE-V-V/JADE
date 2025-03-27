@@ -167,3 +167,14 @@ class TestAtlasProcessor:
         codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.1d"), ("mcnp", "FENDL 3.2c")]
         processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
         processor.process()
+
+    def test_FNG_SiC(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/atlas/FNG-SiC.yaml")
+        ) as file:
+            cfg = ConfigAtlasProcessor.from_yaml(file)
+
+        word_template_path = files(resources).joinpath("atlas_template.docx")
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c"), ("mcnp", "JEFF 3.3")]
+        processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
+        processor.process()

@@ -1,0 +1,9 @@
+{
+    "benchmark_name": "FNG-SiC",
+    "benchmark_version": "1.0",
+    "jade_run_version": "3.1.0",
+    "library": "JEFF 3.3",
+    "code": "mcnp",
+    "jade_version": "3.1.0",
+    "code_version": null
+}

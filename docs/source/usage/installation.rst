@@ -23,8 +23,8 @@ Or if you are using Anaconda:
   | ``conda activate jade``
 
 .. warning:: 
-  JADE officially supports only Python 3.9, 3.10 and 3.11. There are known
-  compatibility issues if Python 3.12 or later is used.
+  JADE officially supports only Python 3.10, 3.11 and 3.12.
+  It may work with other versions, but they are untested.
 
 Install the JADE package
 ------------------------
@@ -36,20 +36,14 @@ Jade is hosted on PyPi under the name of ``jadevv``. To install it, run:
 
   | ``pip install jadevv``
 
-If the user wishes to use the OpenMC features within JADE, they can install the
-additional dependency by running:
-
-  | ``pip install jadevv[openmc]``
-
-or 
-
-  | ``pip install "jadevv[openmc]"``
-
-Alternatively, the user can install OpenMC separately in the same python environment.
+It is responsability of the user to install OpenMC in the same python environment 
+in case they are planning to use it. This guarantees better visibility for the users
+on which version of OpenMC is being run.
 
 .. warning:: 
-  Note that currently OpenMC is supported only up to version 0.14.0 and that the user
-  will need to have git installed on their system if using the ``[openmc]`` option. 
+  Development cycles of OpenMC are quite fast. For instance, after version 0.15.0
+  OpenMC does not support anymore python 3.11. Be sure to install an OpenMC version
+  that your python environment supports.  
 
 .. _installdevelop:
 

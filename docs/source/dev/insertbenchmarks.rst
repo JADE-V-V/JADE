@@ -163,7 +163,8 @@ and the tallies themselves can be modified through the use of *modifiers*.
 The currently supported modifiers are:
 
 * ``no_action``: no action is taken on the tally. No arguments are expected.
-* ``scale``: the tally is scaled by a factor. The *factor* is expected as key argument. 
+* ``scale``: the tally is scaled by a factor. The *factor* is expected as key argument and the provided value can 
+  be either a float, and integer or a list (of floats or integers). 
 * ``lethargy``: a neutron flux tally is expected and converted to a neutron flux per unit lethargy.
   No arguments are expected.
 * ``by_energy``: a flux tally is expected and converted to a flux per unit energy.

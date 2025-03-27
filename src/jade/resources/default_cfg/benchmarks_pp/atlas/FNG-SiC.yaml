@@ -1,0 +1,27 @@
+Reaction rate:
+  results:
+    - Reaction rate
+  plot_type: ce
+  title: Neutron reaction rate in activation foils
+  x_label: Shielding depth [cm]
+  y_labels: C/E
+  x: Cells
+  y: Value
+  expand_runs: true
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]
+#
+Nuclear heating:
+  results:
+    - Nuclear heating
+  plot_type: ce
+  title: Total absorbed dose in TLD detectors
+  x_label: Shielding depth [cm]
+  y_labels: C/E
+  x: Cells
+  y: Value
+  expand_runs: true
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]

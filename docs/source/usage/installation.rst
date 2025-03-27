@@ -32,23 +32,18 @@ Install the JADE package
 User installation
 ^^^^^^^^^^^^^^^^^^
 
-JADE source code is hosted at `JADE repository <https://github.com/JADE-V-V/JADE>`_.
-You can either dowload the zip file or clone it using git with:
+Jade is hosted on PyPi under the name of ``jadevv``. To install it, run:
 
-  | ``git clone https://github.com/JADE-V-V/JADE``
+  | ``pip install jadevv``
 
-Moving into the downloaded folder, the user can install the ``jade`` python package
-through a local pip install.
-It is good practice to upgrade pip before performing
-the installation:
+If the user wishes to use the OpenMC features within JADE, they can install the
+additional dependency by running:
 
-  | ``pip install --upgrade pip``
-  | ``pip install .``
+  | ``pip install jadevv[openmc]``
 
-If the user wishes to use the OpenMC features within JADE, they should alternatively
-install JADE with OpenMC as follows:
+or 
 
-  | ``pip install .[openmc]``
+  | ``pip install "jadevv[openmc]"``
 
 Alternatively, the user can install OpenMC separately in the same python environment.
 
@@ -61,11 +56,20 @@ Alternatively, the user can install OpenMC separately in the same python environ
 Developer Installation
 ^^^^^^^^^^^^^^^^^^^^^^
 
-If you are developing JADE, the cloning of the repository is mandatory.
-Moreover, it is recommeded to use the '-e' option when installing (editable mode)
+JADE source code is hosted at `JADE repository <https://github.com/JADE-V-V/JADE>`_.
+You can either dowload the zip file or clone it using git with:
+
+  | ``git clone https://github.com/JADE-V-V/JADE``
+
+Moving into the downloaded folder, the user can install the ``jade`` python package
+through a local pip install.
+
+It is recommeded to use the '-e' option when installing (editable mode)
 and you should also install the additional 'dev' dependencies. 
 
   | ``pip install -e .[dev]``
+
+If your dev system allows it, install also openmc in the same python environment.
 
 Instantiate a JADE folder tree
 ------------------------------

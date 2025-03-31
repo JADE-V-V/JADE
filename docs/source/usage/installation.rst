@@ -36,13 +36,13 @@ Jade is hosted on PyPi under the name of ``jadevv``. To install it, run:
 
   | ``pip install jadevv``
 
-It is responsability of the user to install OpenMC in the same python environment 
+It is responsibility of the user to install OpenMC in the same python environment 
 in case they are planning to use it. This guarantees better visibility for the users
 on which version of OpenMC is being run.
 
 .. warning:: 
   Development cycles of OpenMC are quite fast. For instance, after version 0.15.0
-  OpenMC does not support anymore python 3.11. Be sure to install an OpenMC version
+  OpenMC does not support anymore python 3.10. Be sure to install an OpenMC version
   that your python environment supports.  
 
 .. _installdevelop:

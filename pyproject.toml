@@ -11,7 +11,7 @@ authors = [
 ]
 description = "JADE, a V&V tool for nuclear data libraries and transport codes"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: European Union Public Licence 1.2 (EUPL 1.2)",
@@ -24,14 +24,11 @@ dependencies = [
     "xlsxwriter",
     "openpyxl",
     "matplotlib",
-    # Latest version of scipy that supports Python 3.9.
-    # This is a temporary fix and should be removed once Python 3.9 support is dropped in JADE. 
-    "scipy == 1.13.1",
+    "scipy",
     "python-docx",
     "aspose-words",
     "requests",
     "f4enix >= 0.14.0",
-#    openmc @ git+https://github.com/openmc-dev/openmc.git@v0.14.0#egg=openmc
     "pyyaml",
     "ttkthemes",
     "seaborn"
@@ -42,9 +39,6 @@ dev = [
     "pytest-cov",
     "pytest-xvfb",  # needed for headless display
     "ruff"  # best formatter that should be used by everybody
-    ]
-openmc = [
-    "openmc @ git+https://github.com/openmc-dev/openmc.git@v0.14.0#egg=openmc"
     ]
 
 [project.urls]

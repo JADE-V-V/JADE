@@ -58,6 +58,30 @@ class TestRawProcessor:
         assert df2.iloc[0]["Value"] == pytest.approx(2 * 10 * 1.12099e-01, 1e-3)
         assert len(df1) == 191
 
+    def test_Sphere_mcnp(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("Sphere.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folder = Path(
+            SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "Sphere", "Sphere_m101"
+        )
+
+        processor = RawProcessor(cfg, folder, tmpdir)
+        processor.process_raw_data()
+    
+    @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC not available")
+    def test_Sphere_openmc(self, tmpdir):
+        with as_file(RAW_CFG_FILES_OPENMC.joinpath("Sphere.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folder = Path(
+            SIMULATION_FOLDER, "_openmc_-_FENDL 3.2b_", "Sphere", "Sphere_m101"
+        )
+
+        processor = RawProcessor(cfg, folder, tmpdir)
+        processor.process_raw_data()
+
+
     def test_oktavian_raw(self, tmpdir):
         with as_file(RAW_CFG_FILES_MCNP.joinpath("Oktavian.yaml")) as f:
             cfg = ConfigRawProcessor.from_yaml(f)

@@ -235,6 +235,7 @@ class TestRawProcessor:
             processor = RawProcessor(cfg, folder, path)
             processor.process_raw_data()
     
+    @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC not available")
     def test_Simple_Tokamak_openmc(self, tmpdir):
         with as_file(RAW_CFG_FILES_OPENMC.joinpath("Simple_Tokamak.yaml")) as f:
             cfg = ConfigRawProcessor.from_yaml(f)

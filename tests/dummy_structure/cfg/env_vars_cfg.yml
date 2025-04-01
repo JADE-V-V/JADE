@@ -1,0 +1,20 @@
+# parameters related to parallel run
+mpi_tasks: 0
+openmp_threads: 0
+# paths to the code executables
+executables:
+  mcnp: dummy
+  openmc: dummy
+  serpent: dummy
+  d1s: dummy
+# run mode is either "serial" to run locally or "job" to submit to a cluster
+run_mode: serial
+# You can either modify the files at these (relative) paths or provide your own
+code_configurations:
+  mcnp: exe_config/mcnp_config.sh
+  openmc: exe_config/openmc_config.sh
+  serpent: exe_config/serpent_config.sh
+  d1s: exe_config/d1s_config.sh
+batch_template: batch_template/Slurmtemplate.sh
+batch_system: null
+mpi_prefix: null

@@ -1,0 +1,20 @@
+On-axis U-238 FC:
+  concat_option: concat
+  14: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+On-axis Th-232 FC:
+  concat_option: concat
+  24: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+20 cm U-238 FC:
+  concat_option: concat
+  34: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+20 cm Th-232 FC:
+  concat_option: concat
+  44: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]

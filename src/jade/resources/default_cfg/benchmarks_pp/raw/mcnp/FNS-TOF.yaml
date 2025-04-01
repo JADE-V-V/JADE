@@ -1,0 +1,46 @@
+Neutron leakage flux at 0 deg:
+  concat_option: no_action
+  5: [[lethargy, {}], [add_column, {"column": "Angle", "values": "0 deg"}]]
+Neutron leakage flux at 12.2 deg:
+  concat_option: no_action
+  15: [[lethargy, {}], [add_column, {"column": "Angle", "values": "12.2 deg"}]]
+Neutron leakage flux at 24.9 deg:
+  concat_option: no_action
+  25: [[lethargy, {}], [add_column, {"column": "Angle", "values": "24.9 deg"}]]
+Neutron leakage flux at 41.8 deg:
+  concat_option: no_action
+  35: [[lethargy, {}], [add_column, {"column": "Angle", "values": "41.8 deg"}]]
+Neutron leakage flux at 66.8 deg:
+  concat_option: no_action
+  45: [[lethargy, {}], [add_column, {"column": "Angle", "values": "66.8 deg"}]]
+# Coarse results
+Coarse leakage flux at 0 deg:
+  concat_option: no_action
+  5:
+    - [lethargy, {}]
+    - [condense_groups, {"bins": [0.01, 0.1, 1, 3.5, 10, 20], "group_column": "Energy"}]
+    - [add_column, {"column": "Angle", "values": "0 deg"}]
+Coarse leakage flux at 12.2 deg:
+  concat_option: no_action
+  15:
+    - [lethargy, {}]
+    - [condense_groups, {"bins": [0.01, 0.1, 1, 3.5, 10, 20], "group_column": "Energy"}]
+    - [add_column, {"column": "Angle", "values": "12.2 deg"}]
+Coarse leakage flux at 24.9 deg:
+  concat_option: no_action
+  25:
+    - [lethargy, {}]
+    - [condense_groups, {"bins": [0.01, 0.1, 1, 3.5, 10, 20], "group_column": "Energy"}]
+    - [add_column, {"column": "Angle", "values": "24.9 deg"}]
+Coarse leakage flux at 41.8 deg:
+  concat_option: no_action
+  35:
+    - [lethargy, {}]
+    - [condense_groups, {"bins": [0.01, 0.1, 1, 3.5, 10, 20], "group_column": "Energy"}]
+    - [add_column, {"column": "Angle", "values": "41.8 deg"}]
+Coarse leakage flux at 66.8 deg:
+  concat_option: no_action
+  45:
+    - [lethargy, {}]
+    - [condense_groups, {"bins": [0.01, 0.1, 1, 3.5, 10, 20], "group_column": "Energy"}]
+    - [add_column, {"column": "Angle", "values": "66.8 deg"}]

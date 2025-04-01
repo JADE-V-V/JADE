@@ -1,0 +1,61 @@
+# Some useful aliases to avoid duplication
+_times: &times
+  1: '0s'
+  2: '2.7h'
+  3: '24h'
+  4: '11.6d'
+  5: '30d'
+  6: '10y'
+# --------------------------------------------------------
+# Actual results
+Leakage neutron flux Vitamin-J 175:
+  concat_option: no_action
+  2: [[no_action, {}]]
+Leakage photon flux:
+  concat_option: no_action
+  22:
+    - [replace, {'column': 'Time', 'values': *times}]
+    - [groupby, {'by': 'Time', 'action': 'sum'}]
+    - [delete_cols, {'cols': ['Energy']}]
+Leakage photon flux 24 groups:
+  concat_option: no_action
+  32: [[replace, {'column': 'Time', 'values': *times}]]
+# Neutron heating consistency:
+#   concat_option: ratio
+#   4: [[no_action, {}]]
+#   6: [[no_action, {}]]
+# Photon heating consistency:
+#   concat_option: ratio
+#   44: [[no_action, {}]]
+#   46: [[no_action, {}]]
+# Neutron heating:
+#   concat_option: no_action
+#   6: [[no_action, {}]]
+Photon heating:
+  concat_option: no_action
+  46:
+    - [replace, {'column': 'Time', 'values': *times}]
+Leakage neutron flux:
+  concat_option: no_action
+  12: [[no_action, {}]]
+Leakage neutron flux (total):
+  concat_option: no_action
+  12: [[groupby, {'by': 'all', 'action': 'sum'}]]
+# T production:
+#   concat_option: no_action
+#   24: [[no_action, {}]]
+# He ppm production:
+#   concat_option: no_action
+#   14: [[no_action, {}]]
+# DPA production:
+#   concat_option: no_action
+#   34: [[no_action, {}]]
+SDDR:
+  concat_option: no_action
+  104:
+    - [replace, {'column': 'Time', 'values': *times}]
+SDDR totals:
+  concat_option: no_action
+  104:
+    - [groupby, {'by': 'Time', 'action': 'sum'}]
+    - [replace, {'column': 'Time', 'values': *times}]

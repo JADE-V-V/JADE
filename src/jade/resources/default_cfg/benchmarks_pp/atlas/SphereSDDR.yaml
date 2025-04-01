@@ -1,0 +1,185 @@
+Decay photon leakage flux (Isotopes):
+  results:
+    - Leakage photon flux 24 groups
+  plot_type: binned
+  title: Photon leakage flux by unit energy
+  x_label: Energy [MeV]
+  y_labels: '[p/cm^2/n_s/MeV]'
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_error: true
+    show_CE: true
+  subsets:
+    - result: Leakage photon flux 24 groups
+      values:
+        Time: [0s]
+        User: [0]
+  select_runs: SphereSDDR_\d+_[A-Za-z]+-\d+_
+#
+Decay photon leakage flux (Materials) cooling time 0s:
+  results:
+    - Leakage photon flux 24 groups
+  plot_type: binned
+  title: Photon leakage flux by unit energy
+  x_label: Energy [MeV]
+  y_labels: '[p/cm^2/n_s/MeV]'
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_error: true
+    show_CE: true
+  subsets:
+    - result: Leakage photon flux 24 groups
+      values:
+        User: [0]
+        Time: [0s]
+  select_runs: SphereSDDR_M\d+
+#
+Decay photon leakage flux (Materials) cooling time 2.7h:
+  results:
+    - Leakage photon flux 24 groups
+  plot_type: binned
+  title: Photon leakage flux by unit energy
+  x_label: Energy [MeV]
+  y_labels: '[p/cm^2/n_s/MeV]'
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_error: true
+    show_CE: true
+  subsets:
+    - result: Leakage photon flux 24 groups
+      values:
+        User: [0]
+        Time: [2.7h]
+  select_runs: SphereSDDR_M\d+
+#
+Decay photon leakage flux (Materials) cooling time 24h:
+  results:
+    - Leakage photon flux 24 groups
+  plot_type: binned
+  title: Photon leakage flux by unit energy
+  x_label: Energy [MeV]
+  y_labels: '[p/cm^2/n_s/MeV]'
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_error: true
+    show_CE: true
+  subsets:
+    - result: Leakage photon flux 24 groups
+      values:
+        User: [0]
+        Time: [24h]
+  select_runs: SphereSDDR_M\d+
+#
+Decay photon leakage flux (Materials) cooling time 11.6d:
+  results:
+    - Leakage photon flux 24 groups
+  plot_type: binned
+  title: Photon leakage flux by unit energy
+  x_label: Energy [MeV]
+  y_labels: '[p/cm^2/n_s/MeV]'
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_error: true
+    show_CE: true
+  subsets:
+    - result: Leakage photon flux 24 groups
+      values:
+        User: [0]
+        Time: [11.6d]
+  select_runs: SphereSDDR_M\d+
+#
+Decay photon leakage flux (Materials) cooling time 30d:
+  results:
+    - Leakage photon flux 24 groups
+  plot_type: binned
+  title: Photon leakage flux by unit energy
+  x_label: Energy [MeV]
+  y_labels: '[p/cm^2/n_s/MeV]'
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_error: true
+    show_CE: true
+  subsets:
+    - result: Leakage photon flux 24 groups
+      values:
+        User: [0]
+        Time: [30d]
+  select_runs: SphereSDDR_M\d+
+#
+Decay photon leakage flux (Materials) cooling time 10y:
+  results:
+    - Leakage photon flux 24 groups
+  plot_type: binned
+  title: Photon leakage flux by unit energy
+  x_label: Energy [MeV]
+  y_labels: '[p/cm^2/n_s/MeV]'
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_error: true
+    show_CE: true
+  subsets:
+    - result: Leakage photon flux 24 groups
+      values:
+        User: [0]
+        Time: [10y]
+  select_runs: SphereSDDR_M\d+
+#
+Parent isotope contribution to SDDR (Materials):
+  results:
+    - SDDR
+  plot_type: dose contribution
+  title: Parent dose to SDDR
+  x_label: Time after shutdown
+  y_labels: dummy
+  x: dummy  # It is a very specific plot which knows which columns to use
+  y: dummy # It is a very specific plot which knows which columns to use
+  expand_runs: true
+  select_runs: SphereSDDR_M\d+
+#
+Wave plots (Isotopes):
+  results:
+    - Leakage neutron flux (total)
+    - Leakage photon flux
+    - SDDR
+  plot_type: waves
+  title: Ratio wave plots
+  x_label: Zaid and MT value
+  y_labels: ''
+  x: Case
+  y: Value
+  expand_runs: false
+  plot_args:
+    limits: [0.5, 1.5]
+    shorten_x_name: 2
+  select_runs: SphereSDDR_\d+_[A-Za-z]+-\d+_
+#
+Wave plots (Materials):
+  results:
+    - Leakage neutron flux (total)
+    - Leakage photon flux
+    - SDDR totals
+  plot_type: waves
+  title: Ratio wave plots
+  x_label: Zaid and MT value
+  y_labels: ''
+  x: Time
+  y: Value
+  expand_runs: true
+  plot_args:
+    limits: [0.5, 1.5]
+    shorten_x_name: 2
+  select_runs: SphereSDDR_M\d+

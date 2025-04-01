@@ -1,0 +1,12 @@
+Neutron flux:
+  concat_option: no_action
+  21: [[lethargy, {}]]
+Photon flux:
+  concat_option: no_action
+  41: [[by_energy, {}]]
+Coarse neutron flux:
+  concat_option: no_action
+  21: [[lethargy, {}], [condense_groups, {"bins": [0.01, 0.1, 1, 3.5, 10, 20], "group_column": "Energy"}]]
+Coarse photon flux:
+  concat_option: no_action
+  41: [[lethargy, {}], [condense_groups, {"bins": [0.01, 0.1, 1, 3.5, 10, 20], "group_column": "Energy"}]]

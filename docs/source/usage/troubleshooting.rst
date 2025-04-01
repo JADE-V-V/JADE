@@ -2,42 +2,62 @@
 Troubleshooting
 ###############
 
-Unable to post-process a libray
-===============================
+libGl.so.1 error
+================
 
-It may happen that the request to post-process a library fails, prompting to
-video that the library in question has not been run.
+When you install on linux it may happen that after installation, the first
+time you call jade there may be some missing libraries that ``vtk`` needs
+to run properly.
 
-.. image:: /img/troubleshooting/notrun.png
+If you get one of the following errors:
 
-This may puzzle the user who is sure to have run the library instead.
+.. code-block:: bash
 
-This may happen if:
+    Traceback (most recent call last):
+    File "/home/laghida/.conda/envs/jade/bin/jade", line 5, in <module>
+        from jade.main import main
+    File "/home/laghida/jade_repo/JADE/jade/main.py", line 34, in <module>
+        import jade.gui as gui
+    File "/home/laghida/jade_repo/JADE/jade/gui.py", line 35, in <module>
+        import jade.computational as cmp
+    File "/home/laghida/jade_repo/JADE/jade/computational.py", line 29, in <module>
+        import jade.testrun as testrun
+    File "/home/laghida/jade_repo/JADE/jade/testrun.py", line 40, in <module>
+        import f4enix.input.MCNPinput as ipt
+    File "/home/laghida/.conda/envs/jade/lib/python3.11/site-packages/f4enix/__init__.py", line 6, in <module>
+        from .output.meshtal import Meshtal
+    File "/home/laghida/.conda/envs/jade/lib/python3.11/site-packages/f4enix/output/meshtal.py", line 36, in <module>
+        import vtk
+    File "/home/laghida/.conda/envs/jade/lib/python3.11/site-packages/vtk.py", line 5, in <module>
+        from vtkmodules.vtkWebCore import *
 
-* in the :ref:`mainconfig` file, not all the benchmark that are currently set 
-  as active for the post-processing have been actually run;
-* MCNP was run for the benchmarks but there were errors in the Monte Carlo
-  simulations. JADE considers a benchmark to have been "run" only if a mctal or
-  fmesh file has been produced for each of the MCNP run foreseen by the benchmark.
+or 
+
+.. code-block:: bash
+
+    Traceback (most recent call last):
+    File "/home/laghida/.conda/envs/jade/bin/jade", line 5, in <module>
+        from jade.main import main
+    File "/home/laghida/jade_repo/JADE/jade/main.py", line 34, in <module>
+        import jade.gui as gui
+    File "/home/laghida/jade_repo/JADE/jade/gui.py", line 35, in <module>
+        import jade.computational as cmp
+    File "/home/laghida/jade_repo/JADE/jade/computational.py", line 29, in <module>
+        import jade.testrun as testrun
+    File "/home/laghida/jade_repo/JADE/jade/testrun.py", line 40, in <module>
+        import f4enix.input.MCNPinput as ipt
+    File "/home/laghida/.conda/envs/jade/lib/python3.11/site-packages/f4enix/__init__.py", line 6, in <module>
+        from .output.meshtal import Meshtal
+    File "/home/laghida/.conda/envs/jade/lib/python3.11/site-packages/f4enix/output/meshtal.py", line 36, in <module>
+        import vtk
+    File "/home/laghida/.conda/envs/jade/lib/python3.11/site-packages/vtk.py", line 5, in <module>
+        from vtkmodules.vtkWebCore import *
+
+you can solve the issue installing the following libraries:
+
+```
+conda install -c conda-forge libgl
+conda install -c conda-forge xorg-libxrender
+```
 
 
-JADE fails on first library assessment
-======================================
-
-A ``FileNotFound`` error may be encountered the first time an assessment is
-requested using JADE. Most likely, this would be caused by the impossibility
-to call the MCNP executable directly from a cmd prompt.
-Indeed, by default, MCNP installation provide also an ad hoc prompt where the
-necessary enviroment variables are already set up and does not set such variables
-as user enviroment variables.
-
-To solve this issue it is sufficient to set-up/modify the following enviromental
-variables for the user account:
-
-DATAPATH
-    path to the folder containing the xsdir files, it will be something like
-    ``<Custom path to MCNP folder>\MCNP_DATA\``.
-PATH
-    the path to the MCNP executables needs to be added to the PATH enviromental
-    variables. The path will be similar to
-    ``<Custom path to MCNP folder>\MCNP_CODE\bin``.

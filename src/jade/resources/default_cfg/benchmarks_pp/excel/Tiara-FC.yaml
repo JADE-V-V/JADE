@@ -1,0 +1,69 @@
+Concrete 43 MeV:
+  results:
+    - On-axis U-238 FC
+    - On-axis Th-232 FC
+    - 20 cm U-238 FC
+    - 20 cm Th-232 FC
+  comparison_type: ratio
+  table_type: pivot
+  x: ['Offset', 'Case']
+  y: 'Fission Cell'
+  value: 'Value'
+  add_error: false
+  select_runs: 'Tiara-FC_cc-43'
+#
+Concrete 68 MeV:
+  results:
+    - On-axis U-238 FC
+    - On-axis Th-232 FC
+    - 20 cm U-238 FC
+    - 20 cm Th-232 FC
+  comparison_type: ratio
+  table_type: pivot
+  x: ['Offset', 'Case']
+  y: 'Fission Cell'
+  value: 'Value'
+  add_error: false
+  select_runs: 'Tiara-FC_cc-68'
+#
+Iron 43 MeV:
+  results:
+    - On-axis U-238 FC
+    - On-axis Th-232 FC
+    - 20 cm U-238 FC
+    - 20 cm Th-232 FC
+  comparison_type: ratio
+  table_type: pivot
+  x: ['Offset', 'Case']
+  y: 'Fission Cell'
+  value: 'Value'
+  add_error: false
+  select_runs: 'Tiara-FC_fe-43'
+#
+Iron 68 MeV:
+  results:
+    - On-axis U-238 FC
+    - On-axis Th-232 FC
+    - 20 cm U-238 FC
+    - 20 cm Th-232 FC
+  comparison_type: ratio
+  table_type: pivot
+  x: ['Offset', 'Case']
+  y: 'Fission Cell'
+  value: 'Value'
+  add_error: false
+  select_runs: 'Tiara-FC_fe-68'
+# total one now, mostly to have all the errors in one place
+All results:
+  results:
+    - On-axis U-238 FC
+    - On-axis Th-232 FC
+    - 20 cm U-238 FC
+    - 20 cm Th-232 FC
+  comparison_type: ratio
+  table_type: pivot
+  x: ['Offset', 'Case']
+  y: 'Fission Cell'
+  value: 'Value'
+  add_error: true
+

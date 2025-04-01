@@ -1,0 +1,30 @@
+Binned plots:
+  results:
+    - Neutron yield
+  plot_type: binned
+  title: Neutron yield per unit lethargy
+  x_label: Energy [MeV]
+  y_labels: 'Neutron yield per unit lethargy [1/u]'
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_error: false
+    show_CE: false
+    subcases: ["Offset", ['on-axis', '20 cm', '40 cm']]
+    xscale: linear
+#
+C/E plots:
+  results:
+    - Neutron yield
+  plot_type: ce
+  title: Neutron yield C/E
+  x_label: Energy [MeV]
+  y_labels: 'dummy'
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    subcases: ["Offset", ['on-axis', '20 cm', '40 cm']]
+    style: 'step'
+    ce_limits: [0.5, 1.5]

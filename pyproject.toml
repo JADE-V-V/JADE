@@ -1,9 +1,60 @@
 [build-system]
-requires = [
-    "setuptools>=42",
-    "wheel"
-]
+requires = ["setuptools >= 69.5.1", "setuptools_scm[toml]>=8.1.0"]
 build-backend = "setuptools.build_meta"
 
-[tool.black]
-target-version = ['py39']
+[project]
+name = "jadevv"
+license = {file = "LICENSE"}
+dynamic = ["version"]
+authors = [
+  { name="JADE dev team", email="sc-radiationtransport@f4e.europa.eu" },
+]
+description = "JADE, a V&V tool for nuclear data libraries and transport codes"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: European Union Public Licence 1.2 (EUPL 1.2)",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "pandas",
+    "numjuggler",
+    "tqdm",
+    "xlsxwriter",
+    "openpyxl",
+    "matplotlib",
+    "scipy",
+    "python-docx",
+    "aspose-words",
+    "requests",
+    "f4enix >= 0.14.0",
+    "pyyaml",
+    "ttkthemes",
+    "seaborn"
+]
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "pytest-xvfb",  # needed for headless display
+    "ruff"  # best formatter that should be used by everybody
+    ]
+
+[project.urls]
+Homepage = "https://github.com/JADE-V-V/JADE"
+Repository = "https://github.com/JADE-V-V/JADE"
+Documentation = "https://jade-a-nuclear-data-libraries-vv-tool.readthedocs.io/en/latest/"
+
+# [project.scripts]
+# jade = "jade.main:main"
+
+[tool.setuptools_scm]
+write_to = "src/_version.py"
+
+[tool.setuptools.package-dir]
+jade = 'src/jade'
+
+[tool.setuptools.package-data]
+"*" = ["*.txt", '*.csv', '*.sh', '*.cmd', '*.docx', '*.ico']
+

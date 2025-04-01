@@ -1,0 +1,22 @@
+comparison %:
+  results:
+    - Leakage neutron flux
+    - Leakage photon flux
+    - Neutron heating
+    - Photon heating
+    - T production
+    - He ppm production
+    - DPA production
+  comparison_type: percentage
+  table_type: pivot
+  x: Case
+  y: [Result, Energy]
+  value: Value
+  add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+#
+# heating consistency:
+#   results:
+#     - Neutron heating consistency
+#     - Photon heating consistency
+#   comparison_type: 

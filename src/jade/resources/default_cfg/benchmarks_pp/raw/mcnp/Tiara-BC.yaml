@@ -1,0 +1,11 @@
+Neutron yield:
+  concat_option: concat
+  14: [[lethargy, {}], [add_column, {"column": "Offset", "values": "on-axis"}]]
+  24: [[lethargy, {}], [add_column, {"column": "Offset", "values": "20 cm"}]]
+  34: [[lethargy, {}], [add_column, {"column": "Offset", "values": "40 cm"}]]
+#
+Coarse neutron yield:
+  concat_option: concat
+  14: [[lethargy, {}], [condense_groups, {"bins": [5, 10, 20, 30, 40, 50, 60, 70]}], [add_column, {"column": "Offset", "values": "on-axis"}]]
+  24: [[lethargy, {}], [condense_groups, {"bins": [5, 10, 20, 30, 40, 50, 60, 70]}], [add_column, {"column": "Offset", "values": "20 cm"}]]
+  34: [[lethargy, {}], [condense_groups, {"bins": [5, 10, 20, 30, 40, 50, 60, 70]}], [add_column, {"column": "Offset", "values": "40 cm"}]]

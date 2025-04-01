@@ -1,2 +1,0 @@
-recursive-include jade/default_settings *
-recursive-include jade/templates *

@@ -1,0 +1,9 @@
+{
+    "benchmark_name": "ITER_Cyl_SDDR",
+    "benchmark_version": "2.0",
+    "jade_run_version": "3.0.1",
+    "library": "93c-32c",
+    "code": "d1s",
+    "jade_version": "3.1.1.dev180+g2fc4816.d20241216",
+    "code_version": "6.2"
+}

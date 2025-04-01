@@ -1,0 +1,17 @@
+comparison %:
+  results:
+    - Leakage neutron flux
+    - Leakage photon flux
+    - Photon heating
+    - SDDR
+  comparison_type: percentage
+  table_type: pivot
+  x: Case
+  y: [Result, Time, Energy]
+  value: Value
+  add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+  subsets:
+    - result: SDDR
+      values:
+        User: [0]

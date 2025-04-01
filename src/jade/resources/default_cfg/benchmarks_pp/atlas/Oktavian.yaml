@@ -1,0 +1,27 @@
+Neutron Leakage flux:
+  results:
+    - Neutron flux
+  plot_type: binned
+  title: Neutron leakage flux by unit lethargy
+  x_label: Energy [MeV]
+  y_labels: '[n/cm^2/s/u]'
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_error: false
+    show_CE: true
+#
+Photon Leakage flux:
+  results:
+    - Gamma flux
+  plot_type: binned
+  title: Photon leakage flux by unit energy
+  x_label: Energy [MeV]
+  y_labels: '[n/cm^2/s/MeV]'
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_error: false
+    show_CE: true

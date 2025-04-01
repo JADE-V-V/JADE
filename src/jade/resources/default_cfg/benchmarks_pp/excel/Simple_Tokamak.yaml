@@ -1,0 +1,54 @@
+Blanket:
+  results:
+      -  Neutron flux in blanket cells
+      -  Photon flux in blanket cells
+      -  Neutron nuclear heating in blanket 
+      -  Photon nuclear heating in blanket
+      -  Tritium production in blanket
+  comparison_type: ratio
+  table_type: pivot
+  y:  ['Cells']
+  x: ['Result']
+  add_error: true
+  value: 'Value'
+  conditional_formatting: {"red": 1.20, "orange": 1.10, "yellow": 1.05}
+
+VV:
+  results:
+      -  Neutron nuclear heating in VV 
+      -  Photon nuclear heating in VV
+  comparison_type: ratio
+  table_type: pivot
+  y:  ['Cells']
+  x: ['Result']
+  add_error: true
+  value: 'Value'
+  conditional_formatting: {"red": 1.20, "orange": 1.10, "yellow": 1.05}
+
+PF_coils:
+  results:
+      -  Neutron flux in PF coils
+      -  Photon flux in PF coils
+      -  Neutron nuclear heating in PF coils
+      -  Photon nuclear heating in PF coils
+  comparison_type: ratio
+  table_type: pivot
+  y:  ['Cells']
+  x: ['Result']
+  add_error: true
+  value: 'Value'
+  conditional_formatting: {"red": 1.20, "orange": 1.10, "yellow": 1.05}
+
+Divertor:
+  results:
+      -  DPA in divertor cell
+  comparison_type: ratio
+  table_type: pivot
+  y:  ['Cells']
+  x: ['Result']
+  add_error: true
+  value: 'Value'
+  conditional_formatting: {"red": 1.20, "orange": 1.10, "yellow": 1.05}
+
+
+

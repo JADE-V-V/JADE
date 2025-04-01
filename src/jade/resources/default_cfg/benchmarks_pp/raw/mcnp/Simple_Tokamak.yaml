@@ -1,0 +1,101 @@
+_cells_inverted: &components
+  23: PF_coil_1
+  21: PF_coil_2
+  20: PF_coil_3
+  22: PF_coil_4
+  9:  VV_inboard
+  10: VV_outboard
+  11: VV_3
+  12: VV_2
+  13: VV_4
+  14: VV_1
+  84: Blanket_t1_1
+  85: Blanket_t1_2
+  111: Blanket_t1_3
+  99: Blanket_inboard_t2_1
+  100: Blanket_inboard_t2_2
+  101: Blanket_inboard_t2_3
+  86: Blanket_outboard_t2_1
+  87: Blanket_outboard_t2_2
+  88: Blanket_outboard_t2_3
+  105: Blanket_inboard_t3_1
+  106: Blanket_inboard_t3_2
+  107: Blanket_inboard_t3_3
+  72: Blanket_outboard_t3_1
+  73: Blanket_outboard_t3_2
+  74: Blanket_outboard_t3_3
+  102: Blanket_inboard_t4_1
+  103: Blanket_inboard_t4_2
+  104: Blanket_inboard_t4_3
+  82: Blanket_outboard_t4
+  78: Blanket_outboard_m2_1
+  79: Blanket_outboard_m2_2
+  80: Blanket_outboard_m3_1
+  81: Blanket_outboard_m3_2
+  89: Blanket_outboard_m1_1
+  90: Blanket_outboard_m1_2
+  91: Blanket_outboard_m4_1
+  92: Blanket_outboard_m4_2
+  93: Blanket_inboard_m_1
+  94: Blanket_inboard_m_2
+  95: Blanket_inboard_m_3
+  96: Blanket_inboard_b1_1 
+  97: Blanket_inboard_b1_2 
+  98: Blanket_inboard_b1_3
+  83: Blanket_outboard_b1
+  108: Blanket_inboard_b2_1
+  109: Blanket_inboard_b2_2
+  110: Blanket_inboard_b2_3
+  75: Blanket_outboard_b2_1
+  76: Blanket_outboard_b2_2
+  77: Blanket_outboard_b2_3
+  121: Divertor
+
+Neutron flux in blanket cells:
+  concat_option: no_action
+  24: [['replace', {'column': 'Cells', 'values': *components}]]
+Photon flux in blanket cells:
+  concat_option: no_action
+  34: [['replace', {'column': 'Cells', 'values': *components}]]
+Neutron flux in PF coils:
+  concat_option: no_action
+  44: [['replace', {'column': 'Cells', 'values': *components}]]
+Photon flux in PF coils:
+  concat_option: no_action
+  54: [['replace', {'column': 'Cells', 'values': *components}]]
+Neutron spectrum in OB blanket [175 group]:
+  concat_option: no_action
+  64: [['replace', {'column': 'Cells', 'values': *components}]]
+Photon spectrum in OB blanket [175 group]:
+  concat_option: no_action
+  74: [['replace', {'column': 'Cells', 'values': *components}]]
+Neutron spectrum in PF coils [175 group]:
+  concat_option: no_action
+  84: [['replace', {'column': 'Cells', 'values': *components}]]
+Photon spectrum in PF coils [175 group]:
+  concat_option: no_action
+  94: [['replace', {'column': 'Cells', 'values': *components}]]
+Neutron nuclear heating in blanket:
+  concat_option: no_action
+  6: [['replace', {'column': 'Cells', 'values': *components}]]
+Photon nuclear heating in blanket:
+  concat_option: no_action
+  16: [['replace', {'column': 'Cells', 'values': *components}]]
+Neutron nuclear heating in PF coils:
+  concat_option: no_action
+  26: [['replace', {'column': 'Cells', 'values': *components}]]
+Photon nuclear heating in PF coils:
+  concat_option: no_action
+  36: [['replace', {'column': 'Cells', 'values': *components}]]
+Neutron nuclear heating in VV:
+  concat_option: no_action
+  46: [['replace', {'column': 'Cells', 'values': *components}]]
+Photon nuclear heating in VV:
+  concat_option: no_action
+  56: [['replace', {'column': 'Cells', 'values': *components}]]
+Tritium Production in blanket:
+  concat_option: no_action
+  104: [['replace', {'column': 'Cells', 'values': *components}]]
+DPA in divertor cell:
+  concat_option: no_action
+  114: [['replace', {'column': 'Cells', 'values': *components}]]

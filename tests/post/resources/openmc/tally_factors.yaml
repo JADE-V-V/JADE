@@ -1,0 +1,64 @@
+24:
+  normalisation : 1.0
+  volume : True
+  mass : False
+34:
+  normalisation : 1.0
+  volume : True
+  mass : False
+44:
+  normalisation : 1.0
+  volume : True
+  mass : False
+54:
+  normalisation : 1.0
+  volume : True
+  mass : False
+64:
+  normalisation : 1.0
+  volume : True
+  mass : False
+74:
+  normalisation : 1.0
+  volume : True
+  mass : False
+84:
+  normalisation : 1.0
+  volume : True
+  mass : False
+94:
+  normalisation : 1.0
+  volume : True
+  mass : False
+6:
+  normalisation : 1.0
+  volume : False
+  mass : True
+16:
+  normalisation : 1.0
+  volume : False
+  mass : True
+26:
+  normalisation : 1.0
+  volume : False
+  mass : True
+36:
+  normalisation : 1.0
+  volume : False
+  mass : True
+46:
+  normalisation : 1.0
+  volume : False
+  mass : True
+56:
+  normalisation : 1.0
+  volume : False
+  mass : True
+104:
+  normalisation : 1.0
+  volume : True
+  mass : False
+114:
+  normalisation : 1.0
+  volume : False
+  mass : False

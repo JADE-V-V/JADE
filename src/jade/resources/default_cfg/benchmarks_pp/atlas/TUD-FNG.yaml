@@ -1,0 +1,56 @@
+Neutron fluence:
+  results:
+    - Neutron fluence (pos A)
+    - Neutron fluence (pos B)
+  plot_type: binned
+  title: Neutron fluence
+  x_label: Energy [MeV]
+  y_labels: "Neutron fluence $\\left[\\frac{1}{MeV\\cdot n \\cdot cm^2}\\right]$"
+  x: Energy
+  y: Value
+  plot_args:
+    subcases: ["Position", ['Pos A', 'Pos B']]
+#
+Neutron fluence C/E:
+  results:
+    - Neutron fluence (pos A)
+    - Neutron fluence (pos B)
+  plot_type: ce
+  title: Neutron fluence C/E
+  x_label: Energy [MeV]
+  y_labels: "C/E"
+  x: Energy
+  y: Value
+  plot_args:
+    subcases: ["Position", ['Pos A', 'Pos B']]
+    ce_limits: [0.0, 2.0]
+    xscale: "log"
+#
+Photon fluence:
+  results:
+    - Photon fluence (pos A)
+    - Photon fluence (pos B)
+  plot_type: binned
+  title: Photon fluence
+  x_label: Energy [MeV]
+  y_labels: "Photon fluence $\\left[\\frac{1}{MeV\\cdot n \\cdot cm^2}\\right]$"
+  x: Energy
+  y: Value
+  plot_args:
+    subcases: ["Position", ['Pos A', 'Pos B']]
+#
+Photon fluence C/E:
+  results:
+    - Photon fluence (pos A)
+    - Photon fluence (pos B)
+  plot_type: ce
+  title: Photon fluence C/E
+  x_label: Energy [MeV]
+  y_labels: "C/E"
+  x: Energy
+  y: Value
+  plot_args:
+    subcases: ["Position", ['Pos A', 'Pos B']]
+    ce_limits: [0.0, 2.0]
+    xscale: "log"
+#

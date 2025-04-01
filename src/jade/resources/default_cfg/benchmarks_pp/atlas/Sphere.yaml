@@ -1,0 +1,28 @@
+Neutron Leakage flux:
+  results:
+    - Leakage neutron flux Vitamin-J 175
+  plot_type: binned
+  title: Neutron leakage flux by unit lethargy
+  x_label: Energy [MeV]
+  y_labels: '[n/cm^2/n_s/u]'
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_error: true
+    show_CE: true
+#
+Photon Leakage flux:
+  results:
+    - Leakage photon flux 24 groups
+  plot_type: binned
+  title: Photon leakage flux by unit energy
+  x_label: Energy [MeV]
+  y_labels: '[p/cm^2/n_s/MeV]'
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_error: true
+    show_CE: true
+  

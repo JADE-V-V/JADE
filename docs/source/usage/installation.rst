@@ -5,100 +5,85 @@ Installation
 ############
 
 JADE can be installed both on Windows and Linux operating systems. The recommended method
-for installation is to use virtual environments (see `the python website <https://docs.python.org/3/library/venv.html>`_ for more information). Currently, only MCNP can be run on the Windows installation. To use OpenMC
+for installation is to use virtual environments (see `the python website <https://docs.python.org/3/library/venv.html>`_ for more information).
+Currently, only MCNP can be run on the Windows installation. To use OpenMC
 and Serpent in JADE, the user should install on Linux. 
 
-Installation on Linux
----------------------
+Create a virtual environment
+----------------------------
 
 Firstly, create a virtual environment and activate it:
 
   | ``python -m venv jade_venv``
   | ``source jade/bin/activate``
 
-Visit the `JADE repository <https://github.com/JADE-V-V/jade>`_ and if you have `git <https://git-scm.com/>`_
-installed you can clone the repository:
+Or if you are using Anaconda:
 
-  | ``git clone https://github.com/JADE-V-V/JADE.git``
-  | ``mv JADE Code``
-  | ``cd Code``
+  | ``conda create -n jade python=3.11``
+  | ``conda activate jade``
 
-The folder structure should now look like the following:
-::
-      <JADE_root>
-        | --------- Code
-                      | ------ jade
-                      | ------ setup.cfg
-                      | ------ pyproject.toml
-                      | ------ ...
+.. warning:: 
+  JADE officially supports only Python 3.10, 3.11 and 3.12.
+  It may work with other versions, but they are untested.
 
+Install the JADE package
+------------------------
 
-The user can then checkout the relevant branch of the code. It is now recommended that you upgrade pip before performing
-the installation:
+User installation
+^^^^^^^^^^^^^^^^^^
 
-  | ``pip install --upgrade pip``
-  | ``pip install .``
+Jade is hosted on PyPi under the name of ``jadevv``. To install it, run:
+
+  | ``pip install jadevv``
+
+It is responsibility of the user to install OpenMC in the same python environment 
+in case they are planning to use it. This guarantees better visibility for the users
+on which version of OpenMC is being run.
+
+.. warning:: 
+  Development cycles of OpenMC are quite fast. For instance, after version 0.15.0
+  OpenMC does not support anymore python 3.10. Be sure to install an OpenMC version
+  that your python environment supports.  
 
 .. _installdevelop:
 
-Development Installation
-^^^^^^^^^^^^^^^^^^^^^^^^
+Developer Installation
+^^^^^^^^^^^^^^^^^^^^^^
 
-If you are developing JADE, you can use the '-e' option when installing and you should install the additional dev dependencies. 
+JADE source code is hosted at `JADE repository <https://github.com/JADE-V-V/JADE>`_.
+You can either dowload the zip file or clone it using git with:
+
+  | ``git clone https://github.com/JADE-V-V/JADE``
+
+Moving into the downloaded folder, the user can install the ``jade`` python package
+through a local pip install.
+
+It is recommeded to use the '-e' option when installing (editable mode)
+and you should also install the additional 'dev' dependencies. 
 
   | ``pip install -e .[dev]``
 
-Running
-^^^^^^^
+If your dev system allows it, install also openmc in the same python environment.
 
-JADE has now been installed as a command line tool and should now be initialised in the root directory as follows: 
+Instantiate a JADE folder tree
+------------------------------
 
-  | ``cd ../``
+JADE has now been installed as a command line tool at this point.
+
+Many JADE instances (i.e. JADE folder structures) can be created on the same machine.
+
+To use JADE, select a new root folder of your choice (different from where the JADE code clone
+has been saved). This is going to to be the <root> folder.
+
+Now Move into the root directory and run the following command: 
+
   | ``jade``
 
-The folder strucure should now look like the following:
-::
-      <JADE_root>
-        | --------- Benchmark_Inputs
-        | --------- Code
-        | --------- Configuration
-        | --------- Experimental_Results
-        | --------- jade
-        | --------- Quality
-        | --------- Tests
-        | --------- Utilities
+If permissions errors are encountered, try:
 
-The detailed folder structure should look like that illustrated in :ref:`folders`.
+  | ``python -m jade``
 
-Once initialised, the user should configure JADE for their system. This can be done by editing 
-``<jade_root>/Configuration/Config.xlsx.``
+The folder structure should now look like the one described in :ref:`folders`.
 
-.. seealso::
-   check also :ref:`mainconfig` for additional information on configuring JADE prior to running.
-
-Following configuration, the user can run 'jade' within ``<JADE_root>`` to start JADE and the user
-interface will appear. Each time a new window is launched, the user should remember to activate the
-virtual environment. 
-
-Installation on Windows
------------------------
-
-The steps for installation on windows are essentially the same as that described for Linux. 
-Again, use of virtual envrionments is recommended. Note that if you are using PowerShell, you may need
-to run PowerShell as an adminstrator and change the `Set-ExecutionPolicy <https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7.4>`_ 
-cmdlet in order to be able to activate the virtual environment. 
-
-  | ``python -m venv jade_venv``
-  | ``.\jade_venv\Scripts\activate``
-
-Once activated, the steps described above for Linux can be followed.
-
-If you use conda for managing your python environments, you can create a new environment and install JADE as follows:
-
-  | ``conda create -n jade_env python=3.X`` where 3.X is the version of python you want to use
-  | ``conda activate jade_env``
-  | ``pip install .``
-
-Currently, only the running of MCNP is supported on Windows and JADE should be configured accordingly.
-This is further detailed in :ref:`mainconfig`. 
-
+A JADE instance has now been initialized and it is ready to be configured as discussed
+in the :ref:`config` section.

@@ -9,9 +9,12 @@ scipy
 python-docx
 aspose-words
 requests
-f4enix >= 0.8.1
+f4enix >= 0.12.0
+seaborn
 # DOC reqs
 sphinx
 esbonio
 myst-parser
-sphinx_rtd_theme
+pydata-sphinx-theme
+pyyaml
+pygments

@@ -1,0 +1,18 @@
+RR(CE):
+  results:
+    - Reaction rate
+  comparison_type: ratio
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: ['Value', 'Error']
+  change_col_names: {'Cells': 'Shielding depth [cm]', 'Case': 'Activation Foil', 0: 'C/E'}
+
+Nuc.Heat.(CE):
+  results:
+    - Nuclear heating
+  comparison_type: ratio
+  table_type: simple
+  x: Cells
+  y: ['Value', 'Error']
+  change_col_names: {'Cells': 'Shielding depth [cm]', 'Value': 'C/E', Error: 'Error C/E'}

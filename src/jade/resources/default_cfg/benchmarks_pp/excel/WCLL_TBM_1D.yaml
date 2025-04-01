@@ -1,0 +1,14 @@
+comparison %:
+  results:
+    - T in SS316
+    - T in CuBeNi
+    - T in Inconel
+    - T in Be
+    - T in Li pt1
+    - T in Li pt2
+    - T in Li pt3
+  comparison_type: percentage
+  table_type: simple
+  x: Result
+  y: [Value]
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}

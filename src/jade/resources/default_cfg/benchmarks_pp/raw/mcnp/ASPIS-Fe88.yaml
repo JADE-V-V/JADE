@@ -1,0 +1,21 @@
+# Define anchors to be used in the file.
+# Use _ prefix to avoid confusing the jade parser.
+_cell_id_x: &depth
+  100: 0
+  101: 5.1
+  102: 10.22
+  103: 15.34
+  104: 20.44
+  105: 25.64
+  106: 30.79
+  107: 35.99
+  108: 41.19
+  109: 46.44
+  110: 51.62
+  111: 56.69
+  112: 61.81
+  113: 66.99
+# Fluxes
+Reaction rate:
+  concat_option: no_action
+  4: [[replace, {'column': 'Cells', 'values': *depth}]]

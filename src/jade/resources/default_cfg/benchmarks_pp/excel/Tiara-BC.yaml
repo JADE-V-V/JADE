@@ -1,0 +1,8 @@
+Neutron yield:
+  results:
+    - Coarse neutron yield
+  comparison_type: ratio
+  table_type: simple
+  x: ['Case', 'Offset', 'Energy']
+  y: ['Value', 'Error']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'C/E'}

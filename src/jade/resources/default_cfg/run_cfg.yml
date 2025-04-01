@@ -1,0 +1,220 @@
+# --- Computational Benchmarks ---
+Sphere:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: '10'
+  description: Sphere Leakage
+  nps: 1e8
+  only_input: false
+#
+ITER_1D:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  description: ITER 1D (by M. Sawan)
+  nps: 5e7
+  only_input: false
+#
+HCPB_TBM_1D:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  description: Helium Cooled Pebbled Bed Test Blanket Module (1D)
+  nps: 5e7
+  only_input: false
+#
+WCLL_TBM_1D:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  description: Water Cooled Lithium Lead Test Blanket Module (1D)
+  nps: 5e7
+  only_input: false
+#
+C_Model:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: C-Model R181031 rev190715
+  only_input: false
+#
+ITER_Cyl_SDDR:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 5e8
+  description: ITER Cylindrical benchmark for SDDR
+  only_input: false
+#
+SphereSDDR:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: '10'
+  description: Sphere SDDR
+  nps: 1e8
+  only_input: false
+#
+Simple_Tokamak:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input:
+  description: Simple Tokamak 
+  nps: 1e9
+  only_input: false
+# --- Experimental benchmarks ---
+Oktavian:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 5e7
+  description: Oktavian Experiment
+  only_input: false
+#
+FNG:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: Frascati Neutron Generator SDDR experiment
+  only_input: false
+#
+Tiara-BC:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: Tiara BC scintillator detector
+  only_input: false
+#
+Tiara-BS:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: Tiara Bonner Sphere detector
+  only_input: false
+#
+Tiara-FC:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: Tiara Fission Chambers detector
+  only_input: false
+#
+FNS-TOF:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: FNS Time-of-Flight Experiment
+  only_input: false
+#
+FNG-BKT:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e9
+  description: FNG Bulk Blanket and Shielding Experiment
+  only_input: false
+#
+FNG-W:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: FNG Tungsten
+  only_input: false
+#
+ASPIS-Fe88:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: ASPIS Iron-88 benchmark
+  only_input: false
+#
+TUD-Fe:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: Iron Slab Experiment (TUD)
+  only_input: false
+#
+TUD-FNG:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: TUD Spectra Measurements (FNG Bulk Shield)
+  only_input: false
+#
+TUD-W:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: FNG/TUD Tungsten Experiment
+  only_input: false

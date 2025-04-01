@@ -1,0 +1,7 @@
+{
+    "benchmark_name": "ASPIS-Fe88",
+    "benchmark_version": "1.0",
+    "jade_run_version": "3.1.0",
+    "library": "FENDL 3.1d",
+    "code": "mcnp"
+}

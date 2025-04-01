@@ -1,0 +1,13 @@
+C/E plots:
+  results:
+    - Bonner sphere detector
+  plot_type: ce
+  title: Bonner sphere detector
+  x_label: Bonner sphere radius
+  y_labels: 'dummy' # C/E is put automatically
+  x: Radius
+  y: Value
+  expand_runs: true
+  plot_args:
+    style: 'point'
+    ce_limits: [0.5, 1.5]

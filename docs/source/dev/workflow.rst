@@ -24,8 +24,7 @@ There are different ways to contribute to JADE, and not all of them require you 
   and benchmarks, helping steering JADE priorities
 * A *Contributor* is any individual creating or commenting on an issue or pull request.
 * An *Approver* is a subset of contributors who are authorized to review and merge pull requests.
-* The *Technical Leader* is currently Davide Laghi (davide.laghi01@gmail.com) who has the authority
-  to tag new releases.
+  We try to appoint at least one approver for each organization steadily contributing to JADE codebase.
 
 A list of all the people contributing to JADE can be found at :ref:`contributor_list`.
 The scope of the following section is to describe the procedure to be followed by *Contributors*.
@@ -52,27 +51,27 @@ contribute to JADE development, we highly recommend that you read this
 `blog post <https://nvie.com/posts/a-successful-git-branching-model/>`_
 to get a sense of how the branching model works. 
 
-There are two primary branches that always exist: ``master`` and ``Developing``. 
+There are two primary branches that always exist: ``master`` and ``developing``. 
 The ``master`` branch is a stable branch that contains the latest release of the 
-code. The ``Developing`` branch is where any ongoing development takes place 
+code. The ``developing`` branch is where any ongoing development takes place 
 prior to a release and is not guaranteed to be stable. 
 
 Other branches will be created as required for different purposes which are 
 listed below. When any of these branches need to be merged (e.g., into the 
-``Developing`` branch), a pull request (PR) should be initiated on GitHub that is 
+``developing`` branch), a pull request (PR) should be initiated on GitHub that is 
 then reviewed by an approver (see `Requirements for a successful merge`_). If the 
 pull request is satisfactory, it is then merged into develop. Note that a 
 committer may not review their own pull request (i.e., an independent code 
 review is required). 
 
 * **Feature** - All new features, enhancements, and bug fixes should be 
-  developed on a ``Feature`` branch off ``Developing``. Most branches on the 
+  developed on a ``Feature`` branch off ``developing``. Most branches on the 
   repository will be of this type and consist of work by the core JADE team.
 * **Benchmark** - This type of branch is similar to that above, except it is 
-  specifically for adding new benchmarks. This is branched off ``Developing`` in
+  specifically for adding new benchmarks. This is branched off ``developing`` in
   the same way as ``Feature`` branches and will be the most frequently Pull 
   Requested (PR'd) from forks outside the core team.
-* **Release** - This type of branch will come off ``Developing`` when  the project 
+* **Release** - This type of branch will come off ``developing`` when  the project 
   leader decides that a release should occur. This is solely for allowing further 
   testing and bug fixes for an upcoming release and will be merged into ``main`` 
   once completed.
@@ -115,14 +114,13 @@ The general steps for contributing are as follows:
 #. Fork the main JADE repository from `GitHub <https://github.com/JADE-V-V/JADE>`_. This will create a
    repository with the same name under your personal account. As such, you can commit
    to it as you please without disrupting other developers.
-#. Clone locally your fork of JADE and create a new branch off of the ``Developing`` one.
+#. Clone locally your fork of JADE and create a new branch off of the ``developing`` one.
 #. Setup your environment for developing JADE.
   #. Install JADE for development (see :ref:`installdevelop`.)
-  #. Install the pre-commit hooks (``pre-commit install``) and check they 
-     can run (``pre-commit run --all-files``).
+  #. Install and use `ruff https://docs.astral.sh/ruff/`_ for code style.
   #. Ensure you can run the tests (see :ref:`Testing In JADE <runtesting>`)
-#. Make your changes on the new branch that you intend to have included in ``Developing``.
-#. Issue a pull request from GitHub and select the ``Developing`` branch of JADE main
+#. Make your changes on the new branch that you intend to have included in ``developing``.
+#. Issue a pull request from GitHub and select the ``developing`` branch of JADE main
    repo as the target. You should then follow the fields in the PR template, but
    at a minimum, you should describe what the changes you've made are and why 
    you are making them. If the changes are related to an outstanding issue, make
@@ -145,8 +143,8 @@ The following are minimum requirements necessary for the approval of a pull requ
 * if a new feature is developed, new test cases must be added to unit test suites.
   `pytest <https://docs.pytest.org/en>`_ must be used. Some additional 
   info on this can be found at :ref:`testing`.
-* no conflicts are allowed with the ``Developing`` branch, i.e., the original 
-  ``Developing`` branch should be pulled into the fork and all eventual 
+* no conflicts are allowed with the ``developing`` branch, i.e., the original 
+  ``developing`` branch should be pulled into the fork and all eventual 
   conflicts resolved prior to the submission of the pull request.
 * the new code shall not break any pre-existing feature, i.e., all unit tests 
   and regression tests are passed.

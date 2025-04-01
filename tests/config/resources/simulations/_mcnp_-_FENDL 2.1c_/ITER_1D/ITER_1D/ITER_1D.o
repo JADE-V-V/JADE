@@ -1,0 +1,59 @@
+          Code Name & Version = MCNP_6.20, 6.2.0
+  
+     _/      _/        _/_/_/       _/      _/       _/_/_/         _/_/_/ 
+    _/_/  _/_/      _/             _/_/    _/       _/    _/     _/        
+   _/  _/  _/      _/             _/  _/  _/       _/_/_/       _/_/_/     
+  _/      _/      _/             _/    _/_/       _/           _/    _/    
+ _/      _/        _/_/_/       _/      _/       _/             _/_/       
+  
+  +-----------------------------------------------------------------------+
+  | Copyright (2018).  Los Alamos National Security, LLC.  All rights     !
+  | reserved.                                                             !
+  |  This material was produced under U.S. Government contract            !
+  | DE-AC52-06NA25396 for Los Alamos National Laboratory, which is        !
+  | operated by Los Alamos National Security, LLC for the U.S.            !
+  | Department of Energy. The Government is granted for itself and        !
+  | others acting on its behalf a paid-up, nonexclusive, irrevocable      !
+  | worldwide license in this material to reproduce, prepare derivative   !
+  | works, and perform publicly and display publicly. Beginning five (5)  !
+  | years after February 14, 2018, subject to additional five-year        !
+  | worldwide renewals, the Government is granted for itself and others   !
+  | acting on its behalf a paid-up, nonexclusive, irrevocable worldwide   !
+  | license in this material to reproduce, prepare derivative works,      !
+  | distribute copies to the public, perform publicly and display         !
+  | publicly, and to permit others to do so. NEITHER THE UNITED STATES    !
+  | NOR THE UNITED STATES DEPARTMENT OF ENERGY, NOR LOS ALAMOS NATIONAL   !
+  | SECURITY, LLC, NOR ANY OF THEIR EMPLOYEES, MAKES ANY WARRANTY,        !
+  | EXPRESS OR IMPLIED, OR ASSUMES ANY LEGAL LIABILITY OR RESPONSIBILITY  !
+  | FOR THE ACCURACY, COMPLETENESS, OR USEFULNESS OF ANY INFORMATION,     !
+  | APPARATUS, PRODUCT, OR PROCESS DISCLOSED, OR REPRESENTS THAT ITS USE  !
+  | WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS.                            !
+  +-----------------------------------------------------------------------+
+  
+1mcnp     version 6     ld=02/20/18                     03/06/21 10:57:13 
+ *************************************************************************                 probid =  03/06/21 10:57:13 
+ name=ITER_1D wwinp=wwinp tasks 20
+
+ 
+  comment.  Physics models disabled.
+         1-       ITER 1D
+         2-       c  -use endfb8.0 with ljj builds of mcnp6
+         3-       c
+         4-       c  mcnp6.mpi n=inp173
+         5-       c
+         6-       c        bohm edits
+         7-       c             -added ebin to f14 photon flux tally
+         8-       c
+         9-       c        Cells section:
+        10-       1    0                -55 56 -1          imp:n,p=8388608
+        11-       2     13  7.2058e-002  -55 56   1  -60   imp:n,p=8388608
+        12-       3     13  7.2058e-002  -55 56  60  -61   imp:n,p=8388608
+        13-       4     13  7.2058e-002  -55 56  61  -62   imp:n,p=4194304
+        14-       5     13  7.2058e-002  -55 56  62  -63   imp:n,p=4194304
+        15-       6     13  7.2058e-002  -55 56  63  -64   imp:n,p=2097152
+        16-       7     13  7.2058e-002  -55 56  64  -65   imp:n,p=2097152
+        17-       8     13  7.2058e-002  -55 56  65  -66   imp:n,p=1048576
+        18-       9     13  7.2058e-002  -55 56  66  -67   imp:n,p=1048576
+        19-       10    13  7.2058e-002  -55 56  67  -68   imp:n,p=524288
+        20-       11    13  7.2058e-002  -55 56  68  -69   imp:n,p=524288
+        21-       12    13  7.2058e-002  -55 56  69  -70   imp:n,p=262144

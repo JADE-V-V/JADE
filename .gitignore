@@ -17,6 +17,7 @@ docs/source/_static/
 docs/source/_templates/
 JADE.egg-info/
 jade.egg-info/
+jadevv.egg-info/
 build/
 .DS_Store/
 

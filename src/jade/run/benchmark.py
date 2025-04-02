@@ -526,7 +526,8 @@ class SphereBenchmarkRun(BenchmarkRun):
                 inp = InputMCNPSphere(template_folder, lib, zaid, str(-1 * density))
                 single_run = SingleRunMCNP(inp, lib, nps)
             else:
-                raise NotImplementedError(f"Code {code} not supported for Sphere")
+                inp = InputOpenMcSphere(template_folder, lib, zaid, str(-1 * density))
+                single_run = SingleRunOpenMC(inp, lib, nps)
             self._run_single_run(
                 sub_bench_folder, self.benchmark_templates_root, single_run
             )

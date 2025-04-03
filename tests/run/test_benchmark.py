@@ -103,6 +103,35 @@ class TestSphereBenchmarkRun:
             len(os.listdir(Path(tmpdir, "_mcnp_-_FENDL 3.2c_/Sphere/Sphere_1001_H-1")))
             == 2
         )
+    
+    @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC not available")
+    def test_run_openmc(self, tmpdir):
+        with as_file(RUN_RES.joinpath('cross_sections.xml')) as infile:
+            lib = LibraryOpenMC(name="ENDF VII-1", path=infile)
+        perform = [
+            (CODE.OPENMC, lib),
+        ]
+        cfg = BenchmarkRunConfig(
+            description="Sphere benchmark",
+            name="Sphere",
+            run=perform,
+            nps=10,
+            only_input=True,
+            custom_inp=2,
+            additional_settings_path=DEFAULT_CFG.joinpath("benchmarks/Sphere"),
+        )
+
+        env_vars = EnvironmentVariables(
+            None,
+            0,
+            {CODE.OPENMC: "openmc"},
+            run_mode=RunMode.SERIAL,
+        )
+
+        benchmark = SphereBenchmarkRun(cfg, tmpdir, BENCHMARKS_ROOT, env_vars)
+        benchmark.run()
+
+        assert len(os.listdir(tmpdir)) == 1
 
 
 class TestSphereSDDRBenchmarkRun:

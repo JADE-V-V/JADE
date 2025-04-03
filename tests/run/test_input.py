@@ -5,12 +5,17 @@ from importlib.resources import as_file, files
 from pathlib import Path
 
 import f4enix.input.MCNPinput as ipt
+from f4enix.input.libmanager import LibManager
+from f4enix.input.materials import Zaid
 import pytest
 
 import jade.resources.default_cfg.benchmarks as bench
 import tests.dummy_structure.benchmark_templates as res
 from jade.config.run_config import LibraryD1S, LibraryMCNP, LibraryOpenMC
 from jade.helper.__openmc__ import OMC_AVAIL
+if OMC_AVAIL:
+    import openmc
+    from jade.helper.openmc import OpenMCInputFiles
 from jade.run.input import (
     InputD1SSphere,
     InputMCNP,
@@ -70,8 +75,16 @@ class TestIputMCNP:
 
 @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC not available")
 class TestIputOpenMC:
-    # TODO
-    pass
+    def test_zaid_openmc(self):
+        nuclide = Zaid.from_string('1000.31c -1')
+        material = openmc.Material()
+        lm = LibManager()
+        OpenMCInputFiles.zaid_to_openmc(nuclide, material, lm)
+        assert material.nuclides[0].name == 'H0'
+
+        nuclide = Zaid.from_string('1001.31c -1')
+        OpenMCInputFiles.zaid_to_openmc(nuclide, material, lm)
+        assert material.nuclides[1].name == 'H1'
 
 
 class TestInputMCNPSphere:
@@ -94,7 +107,7 @@ class TestInputMCNPSphere:
 class TestInputOpenMCSphere:
     def test_input_generation(self, tmpdir, libOpenMC):
         template_folder = TEMPLATE_ROOT.joinpath("Sphere/Sphere/openmc")
-        inp = InputOpenMcSphere(template_folder, libOpenMC, "1001", "1.0")
+        inp = InputOpenMcSphere(template_folder, libOpenMC, "1001", "-1.0")
         inp.set_nps(10)
         inp.translate()
         inp.write(tmpdir)

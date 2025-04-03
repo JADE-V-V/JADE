@@ -525,6 +525,9 @@ class SphereBenchmarkRun(BenchmarkRun):
                     )
                 inp = InputMCNPSphere(template_folder, lib, zaid, str(-1 * density))
                 single_run = SingleRunMCNP(inp, lib, nps)
+            elif code == CODE.OPENMC:
+                inp = InputOpenMcSphere(template_folder, lib, zaid, str(-1 * density))
+                single_run = SingleRunOpenMC(inp, lib, nps)
             else:
                 raise NotImplementedError(f"Code {code} not supported for Sphere")
             self._run_single_run(
@@ -550,7 +553,9 @@ class SphereBenchmarkRun(BenchmarkRun):
                 )
                 single_run = SingleRunMCNP(inp, lib, int(self.config.nps))
             elif code == CODE.OPENMC:
-                inp = InputOpenMcSphere(template_folder, lib)
+                inp = InputOpenMcSphere(
+                    template_folder, lib, material, str(-1 * float(density))
+                )
                 single_run = SingleRunOpenMC(inp, lib, int(self.config.nps))
             else:
                 raise NotImplementedError(f"Code {code} not supported for Sphere")

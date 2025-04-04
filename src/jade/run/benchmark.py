@@ -537,9 +537,12 @@ class SphereBenchmarkRun(BenchmarkRun):
         for material in tqdm(materials.materials[:limit], desc="Materials"):
             # Get density
             density = settings_mat.loc[material.name.upper(), "Density [g/cc]"]
+            extended_name = settings_mat.loc[material.name.upper(), "Name"]
 
             # derive the sub-benchmark folder name
-            sub_bench_folder_name = f"{self.config.name}_{material.name}"
+            sub_bench_folder_name = (
+                f"{self.config.name}_{material.name}_{extended_name}"
+            )
             sub_bench_folder = Path(root_benchmark, sub_bench_folder_name)
             os.mkdir(sub_bench_folder)
 

@@ -13,11 +13,14 @@ users that are just more curious to know a bit more of how JADE works.
     need to know how JADE works. You can easily skip directly
     to the :ref:`add_benchmark` section.
 
+
+.. _ecosystem:
+
 JADE V&V ecosystem
 ==================
 
 This documentation describes what we usually refer as the "JADE engine". However,
-This is only a part of the JADE V&V ecosystem.
+this is only a part of the JADE V&V ecosystem.
 
 .. image:: /img/dev_guide/JADE_ecosystem.png
     :width: 800
@@ -35,13 +38,13 @@ The three repositories fully owned by the JADE team are:
   to install JADE. The level of post-processing detail is lower than the one provided by JADE engine 
   processor, but it has the advantage of being interactive and easy to use.
 
-Moreover, it can bee seen how two further important functions have been separated from the JADE engine scope.
+Moreover, it can be seen how two further important functions have been separated from the JADE engine scope.
 The first is the storage and version control of the benchmark inputs. Depending on the distribution
 policy, these are stored either in the `IAEA repository <https://github.com/IAEA-NDS/open-benchmarks>`_,
 in the SINBAD project GitLab or in the F4E GitLab.
 
 The second function is the parsing of simulation input and output files. Parsers of this type are
-transport-code dependent and have much more usecases than just being used by JADE. MCNP and D1UNED files
+transport-code dependent and have much more use cases beyond JADE. MCNP and D1UNED files
 are parsed using `F4Enix <https://f4enix.readthedocs.io/en/latest/>`_, OpenMC files are parsed using their
 native `Python API <https://docs.openmc.org/en/stable/pythonapi/index.html>`_ while Serpent files are parsed
 thanks to `serpentTools <https://serpent-tools.readthedocs.io/en/master/>`_.
@@ -59,7 +62,7 @@ described in the :ref:`config` section. Of these, only the ones related to
 environmental variables and libraries should be manually modified. Instead, due to
 their complexity, the files controlling jade benchmarks executions and 
 post-processing should be modified through the provided GUI. All this information,
-toghether with the benchmark specific configurations and the status of the 
+together with the benchmark specific configurations and the status of the 
 local JADE installation (i.e. the contents of the folder structure) are fed into
 the ``JadeApp`` class which controls all JADE operations.
 
@@ -69,7 +72,7 @@ The :class:`JadeApp` class is the main class of JADE. All entry points contained
 ``src/__main__.py`` and ``src/utilities.py`` files are connected to methods
 of this class. The App is responsible for the following tasks:
 
-- parsing and storing all the configuration options (through speicif data classes)
+- parsing and storing all the configuration options (through specific data classes)
 - install jade folder structure at the first run (including input fetching). Paths are stored in the
   :class:`PathsTree` class
 - parse and store information regarding which simulations have been already performed and which
@@ -91,10 +94,10 @@ Benchmark execution architecture
 The core object controlling one benchmark execution is the :class:`BenchmarkRun` class
 (``src/jade/run/benchmark.py``). This object receives information about which benchmarks and
 which code-library combinations should be run and it generate the inputs and runs them
-sepending on the transport code that needs to be used. Indeed, the two main interface for
-the :class:`BenchmarkRun` are the abstact classes :class:`Input` and :class:`SingleRun`.
+depending on the transport code that needs to be used. Indeed, the two main interfaces for
+the :class:`BenchmarkRun` are the abstract classes :class:`Input` and :class:`SingleRun`.
 Children for these classes need to be implemented for each transport code that JADE
-supports. Chilldrens of :class:`Input` are responsible for generating the input files,
+supports. Chilldren of :class:`Input` are responsible for generating the input files,
 while children of :class:`SingleRun` are responsible for running one simulation (i.e.
 a single case of the benchmark).
 
@@ -109,9 +112,9 @@ Raw processing architecture
 ===========================
 
 The main class of the raw processing branch is the :class:`RawProcessor`
-(``src/jade/post/raw_processor.py``). This class receives informatino on which benchmarks
+(``src/jade/post/raw_processor.py``). This class receives information on which benchmarks
 have been simulated but not processed yet, parses such results and creates the 
-general .csv raw data files which have the same structure independently from the 
+general *.csv* raw data files which have the same structure independently from the 
 transport code used. The actual parsing of the output files is handled by transport code
 specific implementations of the abstract class :class:`AbstractSimOutput`.`
 

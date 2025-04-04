@@ -106,11 +106,9 @@ Tally n. 24
 Tally n. 34
     Displacement Per Atom (DPA) production in the filled sphere.
 
-.. warning:: **Limitations of additional codes
-    Please note that in order to aid comparisons between the 3 codes currently 
-    being implemented, a reduced tally set containing only the F4 and F14 tallies
-    is currently being used. This is due to a lack of surface tallies in OpenMC, 
-    and will be remedied when this capability is introduced.
+.. warning:: **Limitations of additional codes**
+    Currently not all of the above tallies are implemented for OpenMC. 
+    Tally numbers 4, 44, 14, 24 and 34 are excluded.
 
 .. seealso:: **Related papers and contributions:**
 

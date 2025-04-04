@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from jade.helper.aux_functions import PathLike
 
 if OMC_AVAIL:
-    import jade.post.openmc as omc
+    import jade.helper.openmc as omc
 
 
 class AbstractSimOutput(ABC):
@@ -322,6 +322,8 @@ class OpenMCSimOutput(AbstractSimOutput):
                 file2 = file_name
             elif file_name.endswith(".yaml"):
                 file3 = file_name
+            elif file_name == "volumes.json":
+                file4 = file_name
 
         if file1 is None or file2 is None:
             raise FileNotFoundError(
@@ -331,9 +333,7 @@ class OpenMCSimOutput(AbstractSimOutput):
         file1 = os.path.join(results_path, file1)
         file2 = os.path.join(results_path, file2)
         file3 = os.path.join(results_path, file3) if file3 else None
-
-        if "volumes.json" in os.path.dirname(results_path):
-            file4 = os.path.join(os.path.dirname(results_path), "volumes.json")
+        file4 = os.path.join(results_path, file4) if file4 else None
 
         return file1, file2, file3, file4
 
@@ -397,10 +397,15 @@ class OpenMCSimOutput(AbstractSimOutput):
             sorted_tally = tally.sort_values(filters)
             sorted_tally = sorted_tally.reset_index(drop=True)
             sorted_tally = sorted_tally.rename(columns=new_columns)
-            for column in columns:
-                if column not in sorted_tally.columns:
-                    sorted_tally[column] = np.nan
-            sorted_tally = sorted_tally[columns]
+            # selected_columns = []
+            # for column in columns:
+            #     if (
+            #         column in sorted_tally.columns
+            #         and sorted_tally[column].nunique() != 1
+            #     ):
+            #         selected_columns.append(column)
+            
+            # sorted_tally = sorted_tally[selected_columns]
             # sorted_tally.to_csv('tally_'+str(id)+'_sorted.csv')
             tallydata[id] = sorted_tally
             totalbin[id] = None

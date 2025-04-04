@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 from importlib.resources import files
 from pathlib import Path
 
@@ -75,3 +76,19 @@ class TestJadeApp:
                 if "rmode 0" in line.lower():
                     success = True
         assert success
+
+    def test_rmv_runtpe(self, tmpdir):
+        app = JadeApp(root=DUMMY_ROOT, skip_init=True)
+        # copy the simulation folder in tmp
+        shutil.copytree(app.tree.simulations, tmpdir.join("simulations"))
+        # place a fake .r file in one of the folders
+        target = "_mcnp_-_FENDL 3.2c_/Sphere/Sphere_dummy1"
+        nfiles = len(os.listdir(Path(app.tree.simulations, target)))
+        # override the simulation root folder
+        app.tree.simulations = tmpdir.join("simulations")
+        with open(Path(app.tree.simulations, target, "dummy.r"), "w") as out:
+            out.write("dummy content")
+        check = len(os.listdir(Path(app.tree.simulations, target)))
+        app.rmv_runtpe()
+        new_len = len(os.listdir(Path(app.tree.simulations, target)))
+        assert new_len == nfiles == check - 1

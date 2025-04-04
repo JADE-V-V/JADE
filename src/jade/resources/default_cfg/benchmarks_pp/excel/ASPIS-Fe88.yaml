@@ -1,0 +1,11 @@
+RR(%):
+  results:
+    - Reaction rate
+  comparison_type: percentage
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: Value
+  add_error: True
+  change_col_names: {'Cells': 'Shielding depth [cm]', 'Case': 'Activation Foil'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}

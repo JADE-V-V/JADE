@@ -92,13 +92,13 @@ class SingleRun(ABC):
         pass
 
     @abstractmethod
-    def _get_lib_data_command(self) -> str:
+    def _get_lib_data_command(self) -> tuple[str, str]:
         """Get the command to export env variables for libraries data
 
         Returns
         -------
-        str
-            _description_
+        str, str
+            name of the environmental variable, value of the environmental variable
         """
 
     def write(self, output_folder: PathLike):
@@ -137,7 +137,9 @@ class SingleRun(ABC):
         with open(outfile, "w", encoding="utf-8") as f:
             json.dump(metadata, f, indent=4)
 
-    def run(self, env_vars: EnvironmentVariables, sim_folder: PathLike) -> bool:
+    def run(
+        self, env_vars: EnvironmentVariables, sim_folder: PathLike, test=False
+    ) -> bool:
         """Run the simulation.
 
         Parameters
@@ -146,6 +148,8 @@ class SingleRun(ABC):
             environment variables for JADE execution in general.
         sim_folder : PathLike
             path to the simulation folder.
+        test : bool, optional
+            flag to run the simulation in test mode, by default False.
 
         Returns
         -------
@@ -153,37 +157,41 @@ class SingleRun(ABC):
             True if the simulation run correctly, False otherwise.
         """
         run_command = self._build_command(env_vars)
-        lib_data_command = self._get_lib_data_command()
+        name, value = self._get_lib_data_command()
+        lib_data_command = f"export {name}={value}"
 
         flagnotrun = False
         if env_vars.run_mode == RunMode.JOB_SUMISSION:
             if self._is_mpi_run(env_vars):
                 run_command.insert(0, env_vars.mpi_prefix)
-            self._submit_job(env_vars, sim_folder, run_command, lib_data_command)
+            command = self._submit_job(
+                env_vars, sim_folder, run_command, lib_data_command, test=test
+            )
+            if test:
+                return command
 
         elif env_vars.run_mode == RunMode.SERIAL:
-            try:
-                # in case of run in console dump the prints to a file
-                # to get the code version in the metadata
-                run_command.append(" > dump.out")
-                if self._is_mpi_run(env_vars):
-                    run_command.insert(0, f"-np {env_vars.mpi_tasks}")
-                    run_command.insert(0, env_vars.mpi_prefix)
-                if not sys.platform.startswith("win"):
-                    unix.configure(env_vars.code_configurations[self.code])
-                print(" ".join(run_command))
+            # in case of run in console dump the prints to a file
+            # to get the code version in the metadata
+            run_command.append("> dump.out")
+            if self._is_mpi_run(env_vars):
+                run_command.insert(0, f"-np {env_vars.mpi_tasks}")
+                run_command.insert(0, env_vars.mpi_prefix)
+            if not sys.platform.startswith("win"):
+                unix.configure(env_vars.code_configurations[self.code])
+            print(" ".join(run_command))
+            if test:
+                return " ".join(run_command)
+            else:
+                # Be sure that the datapath has been set correctly
+                os.environ[name] = value
                 subprocess.run(
                     " ".join(run_command),
                     cwd=sim_folder,
                     shell=True,
-                    timeout=43200,
+                    check=True,
+                    # timeout=43200, serial can also last days on workstations
                 )
-
-            except subprocess.TimeoutExpired:
-                logging.warning(
-                    "Sesion timed out after 12 hours. Consider submitting as a job."
-                )
-                flagnotrun = True
 
         return flagnotrun
 
@@ -202,6 +210,7 @@ class SingleRun(ABC):
         directory: PathLike,
         run_command: list,
         data_command: str,
+        test: bool = False,
     ) -> None:
         """Submits a job script to the users batch system for running in parallel.
 
@@ -215,6 +224,8 @@ class SingleRun(ABC):
             Executable command
         data_command : str
             user specified/ code specific environment variables
+        test : bool, optional
+            flag to run the simulation in test mode, by default False
         """
         # store cwd to get back to it after job submission
         cwd = os.getcwd()
@@ -257,9 +268,12 @@ class SingleRun(ABC):
             fout.write(contents)
 
         # Submit the job using the specified batch system (checked for existence in post_init)
-        subprocess.run(
-            f"{env_vars.batch_system} {job_script}", cwd=directory, shell=True
-        )
+        if not test:
+            subprocess.run(
+                f"{env_vars.batch_system} {job_script}", cwd=directory, shell=True
+            )
+        else:
+            return f"{env_vars.batch_system} {job_script}"
         # return to the original directory
         os.chdir(cwd)
 
@@ -283,14 +297,14 @@ class SingleRunMCNP(SingleRun):
             tasks = "tasks " + str(omp_threads)
         else:
             tasks = ""
-        xsstring = f"xs={self.lib.path}"
+        xsstring = f"xsdir={Path(self.lib.path).name}"
 
         run_command = [executable, inputstring, outputstring, xsstring, tasks]
 
         return run_command
 
-    def _get_lib_data_command(self) -> str:
-        return f"export DATAPATH={Path(self.lib.path).parent}"
+    def _get_lib_data_command(self) -> tuple[str, str]:
+        return "DATAPATH", str(Path(self.lib.path).parent)
 
 
 class SingleRunOpenMC(SingleRun):
@@ -311,8 +325,8 @@ class SingleRunOpenMC(SingleRun):
 
         return run_command
 
-    def _get_lib_data_command(self) -> str:
-        return f"export OPENMC_CROSS_SECTIONS={self.lib.path}"
+    def _get_lib_data_command(self) -> tuple[str, str]:
+        return "OPENMC_CROSS_SECTIONS", str(self.lib.path)
 
 
 class SingleRunSerpent(SingleRun):
@@ -511,6 +525,9 @@ class SphereBenchmarkRun(BenchmarkRun):
                     )
                 inp = InputMCNPSphere(template_folder, lib, zaid, str(-1 * density))
                 single_run = SingleRunMCNP(inp, lib, nps)
+            elif code == CODE.OPENMC:
+                inp = InputOpenMcSphere(template_folder, lib, zaid, str(-1 * density))
+                single_run = SingleRunOpenMC(inp, lib, nps)
             else:
                 raise NotImplementedError(f"Code {code} not supported for Sphere")
             self._run_single_run(
@@ -520,9 +537,12 @@ class SphereBenchmarkRun(BenchmarkRun):
         for material in tqdm(materials.materials[:limit], desc="Materials"):
             # Get density
             density = settings_mat.loc[material.name.upper(), "Density [g/cc]"]
+            extended_name = settings_mat.loc[material.name.upper(), "Name"]
 
             # derive the sub-benchmark folder name
-            sub_bench_folder_name = f"{self.config.name}_{material.name}"
+            sub_bench_folder_name = (
+                f"{self.config.name}_{material.name}_{extended_name}"
+            )
             sub_bench_folder = Path(root_benchmark, sub_bench_folder_name)
             os.mkdir(sub_bench_folder)
 
@@ -536,7 +556,9 @@ class SphereBenchmarkRun(BenchmarkRun):
                 )
                 single_run = SingleRunMCNP(inp, lib, int(self.config.nps))
             elif code == CODE.OPENMC:
-                inp = InputOpenMcSphere(template_folder, lib)
+                inp = InputOpenMcSphere(
+                    template_folder, lib, material, str(-1 * float(density))
+                )
                 single_run = SingleRunOpenMC(inp, lib, int(self.config.nps))
             else:
                 raise NotImplementedError(f"Code {code} not supported for Sphere")

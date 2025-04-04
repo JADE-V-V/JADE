@@ -9,6 +9,7 @@ from xlsxwriter.worksheet import Worksheet
 
 from jade.config.excel_config import ComparisonType, TableConfig, TableType
 from jade.helper.errors import PostProcessConfigError
+from jade.post.manipulate_tally import compare_data
 
 MAX_SHEET_NAME_LEN = 31
 DF_START_ROW = 3
@@ -74,17 +75,8 @@ class Table(ABC):
         err1 = df1.loc[common_index]["Error"]
         err2 = df2.loc[common_index]["Error"]
 
-        error = np.sqrt(err1**2 + err2**2)
+        df["Value"], df["Error"] = compare_data(val1, val2, err1, err2, comparison_type)
 
-        if comparison_type == ComparisonType.ABSOLUTE:
-            value = val1 - val2
-        elif comparison_type == ComparisonType.PERCENTAGE:
-            value = (val1 - val2) / val1 * 100
-        elif comparison_type == ComparisonType.RATIO:
-            value = val2 / val1  # reference / target
-
-        df["Value"] = value
-        df["Error"] = error
         return df.reset_index()
 
     def _add_sheet(
@@ -215,7 +207,12 @@ class SimpleTable(Table):
     def _get_sheet(self) -> list[pd.DataFrame]:
         value_df = self.data.set_index(self.cfg.x)
         value_df = value_df[self.cfg.y]
-        return [value_df]
+        dfs = [value_df]
+        if self.cfg.add_error:
+            ref_err = self.ref_df.set_index(self.cfg.x)[["Error"]]
+            target_err = self.target_df.set_index(self.cfg.x)[["Error"]]
+            dfs.extend([ref_err, target_err])
+        return dfs
 
 
 class TableFactory:

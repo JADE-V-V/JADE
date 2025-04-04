@@ -78,9 +78,9 @@ def condense_groups(
     return pd.DataFrame(rows).dropna()
 
 
-def scale(tally: pd.DataFrame, factor: int | float = 1) -> pd.DataFrame:
+def scale(tally: pd.DataFrame, factor: int | float = 1, column: str = "Value") -> pd.DataFrame:
     """Scale the tally values."""
-    tally["Value"] = tally["Value"] * factor
+    tally[column] = tally[column] * float(factor)
     return tally
 
 
@@ -153,6 +153,22 @@ def delete_cols(tally: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
     """Delete the columns from the tally."""
     return tally.drop(columns=cols)
 
+def tof_to_energy(tally: pd.DataFrame, m: float = 939.5654133, L: float = 1) -> pd.DataFrame:
+    """
+    Convert from TOF to energy domain. Time needs to be in seconds.
+
+    Parameters
+    ----------
+    m: float
+        mass of the particle in MeV/c^2. Default is neutron mass
+    L: float
+        distance between source and detection in meters. Default is 1.
+    """
+    c = 3e8 # m/s
+    energy = m*(1/np.sqrt(1-(L/(c*tally['Time'].astype(float).values))**2)-1)
+    tally["Energy"] = energy
+    return tally
+
 
 MOD_FUNCTIONS = {
     TallyModOption.LETHARGY: by_lethargy,
@@ -165,6 +181,7 @@ MOD_FUNCTIONS = {
     TallyModOption.KEEP_LAST_ROW: keep_last_row,
     TallyModOption.GROUPBY: groupby,
     TallyModOption.DELETE_COLS: delete_cols,
+    TallyModOption.TOF: tof_to_energy
 }
 
 

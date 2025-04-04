@@ -123,3 +123,15 @@ class TestAtlasProcessor:
         codelibs = [("d1s", "lib 1"), ("d1s", "lib 2")]
         processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
         processor.process()
+
+    def test_IPPEDT(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/atlas/IPPE-DT.yaml")
+        ) as file:
+            cfg = ConfigAtlasProcessor.from_yaml(file)
+
+        word_template_path = files(resources).joinpath("atlas_template.docx")
+
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c")]
+        processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
+        processor.process()

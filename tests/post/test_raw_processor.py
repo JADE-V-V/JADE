@@ -158,3 +158,19 @@ class TestRawProcessor:
             os.makedirs(path)
             processor = RawProcessor(cfg, folder, path)
             processor.process_raw_data()
+
+    def test_IPPEDT(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("IPPE-DT.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(
+                SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "IPPE-DT"
+            ),
+        ]
+        for i, folder in enumerate(folders):
+            dump_folder = tmpdir.join(str(i))
+            os.mkdir(dump_folder)
+            for subrun in folder.iterdir():
+                processor = RawProcessor(cfg, subrun, dump_folder)
+                processor.process_raw_data()

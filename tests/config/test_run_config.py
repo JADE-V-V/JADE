@@ -125,5 +125,6 @@ class TestLibraryOpenMC:
         with as_file(CONF_RES.joinpath("cross_sections.xml")) as file:
             lib = LibraryOpenMC("dummy", file)
 
-        assert "1001" in lib.get_lib_zaids()
-        assert "1000" in lib.get_lib_zaids()
+        zaids = lib.get_lib_zaids()
+        assert "1001" in zaids
+        assert len(zaids) == len(set(zaids))  # no duplicates

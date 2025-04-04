@@ -37,7 +37,7 @@ def by_energy(tally: pd.DataFrame) -> pd.DataFrame:
     ergs.extend(energies.tolist())
     ergs = np.array(ergs)
 
-    flux = flux / (ergs[1:] - ergs[:-1])
+    flux = flux / np.abs(ergs[1:] - ergs[:-1])
     tally["Value"] = flux
     return tally
 
@@ -85,12 +85,14 @@ def condense_groups(
     return pd.DataFrame(rows).dropna()
 
 
-def scale(tally: pd.DataFrame, factor: int | float | list = 1, column: str = "Value") -> pd.DataFrame:
+def scale(
+    tally: pd.DataFrame, factor: int | float | list = 1, column: str = "Value"
+) -> pd.DataFrame:
     """Scale the tally values."""
     if isinstance(factor, list):
         factor2apply = np.array(factor)
     else:
-        factor2apply = factor
+        factor2apply = float(factor)
     tally[column] = tally[column] * factor2apply
     return tally
 
@@ -175,7 +177,9 @@ def format_decimals(tally: pd.DataFrame, decimals: dict[str, int]) -> pd.DataFra
     return tally
 
 
-def tof_to_energy(tally: pd.DataFrame, m: float = 939.5654133, L: float = 1) -> pd.DataFrame:
+def tof_to_energy(
+    tally: pd.DataFrame, m: float = 939.5654133, L: float = 1
+) -> pd.DataFrame:
     """
     Convert from TOF to energy domain. Time needs to be in seconds.
 
@@ -189,7 +193,9 @@ def tof_to_energy(tally: pd.DataFrame, m: float = 939.5654133, L: float = 1) -> 
         distance between source and detection in meters. Default is 1.
     """
     c = 299792458  # m/s
-    energy = m*(1/np.sqrt(1-(L/(c*tally['time'].astype(float).values))**2)-1)
+    energy = m * (
+        1 / np.sqrt(1 - (L / (c * tally["Time"].astype(float).values)) ** 2) - 1
+    )
     tally["Energy"] = energy
     return tally
 

@@ -219,11 +219,9 @@ def test_format_decimals():
 
 def test_tof_to_energy():
     data = {
-        "time": [1, 2, 3],
+        "Time": [1, 2, 3],
         "Value": [10, 20, 30],
         "Error": [0.1, 0.2, 0.3],
     }
     df = pd.DataFrame(data)
     tof_to_energy(df.copy())
-
-

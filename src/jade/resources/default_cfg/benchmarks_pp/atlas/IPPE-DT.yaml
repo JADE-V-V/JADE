@@ -1,4 +1,4 @@
-Neutron Leakage flux:
+Neutron Leakage flux (energy):
   results:
     - Neutron flux energy domain
   plot_type: binned
@@ -7,7 +7,39 @@ Neutron Leakage flux:
   y_labels: '[n/cm^2/s/MeV]'
   x: Energy
   y: Value
-  expand_runs: true
+  expand_runs: false
+  subset: 
+    - {'result': 'Dir', 'values': [0]}
+  plot_args:
+    show_error: false
+    show_CE: false
+#
+Neutron Leakage flux (time):
+  results:
+    - Neutron flux time domain
+  plot_type: binned
+  title: Neutron leakage flux 
+  x_label: Energy [MeV]
+  y_labels: '[n/cm^2/s/MeV]'
+  x: Energy
+  y: Value
+  expand_runs: false
+  subset: 
+    - {'result': 'Dir', 'values': [0]}
+  plot_args:
+    show_error: false
+    show_CE: false
+#
+Neutron Leakage flux (time broadened):
+  results:
+    - Neutron flux time domain broadened
+  plot_type: binned
+  title: Neutron leakage flux 
+  x_label: Energy [MeV]
+  y_labels: '[n/cm^2/s/MeV]'
+  x: Energy
+  y: Value
+  expand_runs: false
   subset: 
     - {'result': 'Dir', 'values': [0]}
   plot_args:

@@ -150,6 +150,18 @@ class JadeApp:
                 benchmark.run()
         logging.info("Benchmarks run completed.")
 
+    def continue_run(self):
+        """Continue the run of the benchmarks that were not completed."""
+        for bench_name, cfg in self.run_cfg.benchmarks.items():
+            benchmark = BenchmarkRunFactory.create(
+                cfg,
+                self.tree.simulations,
+                self.tree.benchmark_input_templates,
+                self.run_cfg.env_vars,
+            )
+            benchmark.continue_run()
+        logging.info("Benchmarks run have been submitted.")
+
     def raw_process(self, subset: list[str] | None = None):
         """Process the raw data from the simulations."""
         logging.info("Processing raw data")

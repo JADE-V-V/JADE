@@ -1,6 +1,7 @@
 import argparse
 
 from jade.app.app import JadeApp
+from jade.helper.aux_functions import add_rmode0
 
 
 def main():
@@ -21,6 +22,11 @@ def main():
         help="Add the RMODE 0 card to all mcnp benchmarks",
         action="store_true",
     )
+    parser.add_argument(
+        "--continue_run",
+        help="Continue the run for not simulated inputs",
+        action="store_true",
+    )
 
     args = parser.parse_args()
 
@@ -33,6 +39,10 @@ def main():
         app.restore_default_cfg()
     if args.runtpe:
         app.rmv_runtpe()
+    if args.addrmode:
+        app.add_rmode()
+    if args.continue_run:
+        app.continue_run()
 
 
 if __name__ == "__main__":

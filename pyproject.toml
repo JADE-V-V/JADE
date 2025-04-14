@@ -31,7 +31,8 @@ dependencies = [
     "f4enix >= 0.14.0",
     "pyyaml",
     "ttkthemes",
-    "seaborn"
+    "seaborn",
+    "python-gitlab"
 ]
 [project.optional-dependencies]
 dev = [

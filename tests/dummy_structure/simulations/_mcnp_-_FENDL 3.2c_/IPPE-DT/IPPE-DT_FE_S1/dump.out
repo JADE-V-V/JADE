@@ -1,0 +1,44 @@
+          Code Name & Version = mcnp6, 6.3.0, production
+          Copyright Triad National Security, LLC/LANL/DOE - see LICENSE file
+  
+     _/      _/        _/_/_/       _/      _/       _/_/_/         _/_/_/ 
+    _/_/  _/_/      _/             _/_/    _/       _/    _/     _/        
+   _/  _/  _/      _/             _/  _/  _/       _/_/_/       _/_/_/     
+  _/      _/      _/             _/    _/_/       _/           _/    _/    
+ _/      _/        _/_/_/       _/      _/       _/             _/_/       
+  
+ mcnp6 ver=6.3.0, ld=01/26/23  02/25/25 17:49:02                   
+Source version = release/6.3-55762725c4
+  comment.  Physics models disabled.
+ comment. using random number generator  1, initial seed = 19073486328125      
+ 
+  comment.  total nubar used if fissionable isotopes are present.
+  comment.           5 surfaces were deleted for being the same as others.
+  warning.  last time bin of tally       15 is less than time cutoff.
+  warning.  last time bin of tally       25 is less than time cutoff.
+  warning.     1 cells appear to consist of more than one piece.
+ imcn   is done
+
+  comment.  setting up hash-based fast table search for xsec tables
+
+ ctm =        0.00   nrn =                 0
+ dump    1 on file IPPE-DT_FE_S1.r.h5   nps =           0   coll =                0
+ xact   is done
+
+ cp0 =   0.05
+ warning. tally not scored beyond last time bin.                      
+ nps =        2938     tal =   15     tme = 2.1429E+03      
+ warning. tally not scored beyond last time bin.                      
+ nps =        2938     tal =   25     tme = 6.1276E+01      
+      run terminated when      500000  particle histories were done.
+
+ =====>     147.25 M histories/hr    (based on wall-clock time in mcrun)
+
+
+  warning.     3 of   3 tallies had bins with large relative errors.
+
+ ctm =        0.20   nrn =          16304559
+ dump    2 on file IPPE-DT_FE_S1.r.h5   nps =      500000   coll =           974421
+ tally data written to file IPPE-DT_FE_S1.m
+ mcrun  is done
+

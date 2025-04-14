@@ -1,0 +1,37 @@
+Neutron flux time domain:
+  concat_option: no_action
+  15:
+    - [scale, {'factor': 1e8, "column": Time}]
+    - [tof_to_energy, {"L": 6.825}]
+    - [scale, {'factor': 5.85E6}]
+Neutron flux energy domain:
+  concat_option: no_action
+  5:
+    - [by_energy, {}]
+    - [scale, {'factor': 5.85E6}]
+Neutron flux time domain broadened:
+  concat_option: no_action
+  25:
+    - [scale, {'factor': 1e8, "column": Time}]
+    - [tof_to_energy, {"L": 6.825}]
+    - [scale, {'factor': 5.85E6}]
+Coarse neutron energy flux:
+  concat_option: no_action
+  5:
+    - [by_energy, {}]
+    - [condense_groups, {"bins": [0.01, 0.1, 1, 3.5, 10, 20], "group_column": "Energy"}]
+    - [scale, {'factor': 5.85E6}]
+Coarse neutron time broadened flux (time):
+  concat_option: no_action
+  25:
+    - [scale, {'factor': 1e8, "column": Time}]
+    - [condense_groups, {"bins": [10, 12, 13, 20, 100, 500, 1000], "group_column": "Time"}]
+    - [scale, {'factor': 5.85E6}]
+Coarse neutron time broadened flux (energy):
+  concat_option: no_action
+  25:
+    - [scale, {'factor': 1e8, "column": Time}]
+    - [tof_to_energy, {"L": 6.825}]
+    - [scale, {'factor': 5.85E6}]
+    - [condense_groups, {"bins": [0.01, 0.1, 1, 3.5, 10, 20], "group_column": "Energy"}]
+

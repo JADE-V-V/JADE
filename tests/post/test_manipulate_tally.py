@@ -217,7 +217,7 @@ def test_format_decimals():
     pd.testing.assert_frame_equal(result, expected_df)
 
 
-def test_tol_to_energy():
+def test_tof_to_energy():
     data = {
         "time": [1, 2, 3],
         "Value": [10, 20, 30],
@@ -225,3 +225,5 @@ def test_tol_to_energy():
     }
     df = pd.DataFrame(data)
     tof_to_energy(df.copy())
+
+

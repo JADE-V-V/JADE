@@ -1,0 +1,27 @@
+# Define anchors to be used in the file.
+# Use _ prefix to avoid confusing the jade parser.
+_cell_id_foils: &depth_foils
+  602: 5
+  611: 5
+  641: 5
+  613: 15
+  614: 15
+  643: 15
+  622: 25
+  623: 25
+  645: 25
+  632: 35
+  633: 35
+  647: 35
+_cell_id_tld: &depth_tld
+  611: 5
+  614: 15
+  623: 25
+  633: 35
+# Fluxes
+Activation Foils:
+  concat_option: no_action
+  4: [[replace, {'column': 'Cells', 'values': *depth_foils}]]
+Nuclear heating:
+  concat_option: no_action
+  6: [[replace, {'column': 'Cells', 'values': *depth_foils}]]

@@ -301,3 +301,18 @@ class TestRawProcessor:
             for subfolder in folder.iterdir():
                 processor = RawProcessor(cfg, subfolder, path)
                 processor.process_raw_data()
+
+    def test_FNG_W(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("FNG-W.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 2.1c_", "FNG-W"),
+        ]
+
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            for subfolder in folder.iterdir():
+                processor = RawProcessor(cfg, subfolder, path)
+                processor.process_raw_data()

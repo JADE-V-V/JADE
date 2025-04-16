@@ -2,7 +2,7 @@ Neutron Leakage flux (energy):
   results:
     - Neutron flux energy domain
   plot_type: binned
-  title: Neutron leakage flux 
+  title: Neutron leakage flux in energy domain MV4
   x_label: Energy [MeV]
   y_labels: '[n/cm^2/s/MeV]'
   x: Energy
@@ -30,7 +30,7 @@ Neutron Leakage flux (time):
     show_error: false
     show_CE: false
 #
-Neutron Leakage flux (time broadened):
+Neutron Leakage flux (time broadened 2.5 ns):
   results:
     - Neutron flux time domain broadened
   plot_type: binned

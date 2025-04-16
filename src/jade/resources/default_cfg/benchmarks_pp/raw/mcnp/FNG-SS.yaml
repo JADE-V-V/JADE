@@ -1,0 +1,14 @@
+# Define anchors to be used in the file.
+# Use _ prefix to avoid confusing the jade parser.
+_cell_id_foils: &depth_foils
+  500: 5
+  501: 10
+  502: 20
+  503: 30
+  504: 40
+  505: 50
+  506: 60
+# Fluxes
+Reaction rate:
+  concat_option: no_action
+  4: [[replace, {'column': 'Cells', 'values': *depth_foils}]]

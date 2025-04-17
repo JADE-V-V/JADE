@@ -1,0 +1,19 @@
+RR(CE):
+  results:
+    - Reaction rate
+  comparison_type: ratio
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: ['Value', 'Error']
+  change_col_names: {'Cells': 'Shielding depth [cm]', 'Case': 'Activation Foil', 0: 'C/E'}
+
+Tritium activity:
+  results:
+    - Tritium activity
+  comparison_type: ratio
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: ['Value', 'Error']
+  change_col_names: {'Cells': 'Distance from the source [cm], last two digits represents the pellet number (from 1 to 12)', 'Case': 'Pellet positions', 0: 'C/E'}

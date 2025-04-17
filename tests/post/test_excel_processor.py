@@ -194,3 +194,12 @@ class TestExcelProcessor:
         assert file.exists()
         df = pd.read_excel(file, skiprows=3)
         assert len(df) == 6
+
+    def test_FNG_HCPB(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/FNG-HCPB.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("exp", "exp"), ("mcnp", "JEFF 3.3")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()

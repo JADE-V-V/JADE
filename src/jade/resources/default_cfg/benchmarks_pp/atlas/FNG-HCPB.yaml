@@ -1,0 +1,31 @@
+
+
+Reaction rate:
+  results:
+    - Reaction rate
+  plot_type: ce
+  title: Neutron reaction rate in activation foils
+  x_label: Shielding depth [cm]
+  y_labels: C/E
+  x: Cells
+  y: Value
+  expand_runs: true
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]
+
+Tritium activity Pellet:
+  results:
+    - Tritium activity
+  plot_type: ce
+  title: Tritium activity
+  x_label: Distance from source [cm]
+  y_labels: C/E
+  x: Cells
+  y: Value
+  expand_runs: true
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]
+    
+

@@ -22,11 +22,6 @@ def main():
         help="Add the RMODE 0 card to all mcnp benchmarks",
         action="store_true",
     )
-    parser.add_argument(
-        "--continue_run",
-        help="Continue the run for not simulated inputs",
-        action="store_true",
-    )
 
     args = parser.parse_args()
 
@@ -41,8 +36,6 @@ def main():
         app.rmv_runtpe()
     if args.addrmode:
         app.add_rmode()
-    if args.continue_run:
-        app.continue_run()
 
 
 if __name__ == "__main__":

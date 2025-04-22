@@ -51,7 +51,9 @@ class TestBenchmarkRun:
             10,
             {CODE.MCNP: "mcnp6.2"},
             run_mode=RunMode.JOB_SUMISSION,
-            code_configurations={CODE.MCNP: Path(DEFAULT_CFG, "mcnp/mcnp.cfg")},
+            code_configurations={
+                CODE.MCNP: Path(DEFAULT_CFG, "exe_config/mcnp_config.sh")
+            },
             batch_template=DEFAULT_CFG.joinpath("batch_templates/Slurmtemplate.sh"),
             batch_system="slurm",
             mpi_prefix="srun",
@@ -90,7 +92,9 @@ class TestBenchmarkRun:
             10,
             {CODE.MCNP: "mcnp6.2"},
             run_mode=RunMode.SERIAL,
-            code_configurations={CODE.MCNP: Path(DEFAULT_CFG, "mcnp/mcnp.cfg")},
+            code_configurations={
+                CODE.MCNP: Path(DEFAULT_CFG, "exe_config/mcnp_config.sh")
+            },
             batch_template=DEFAULT_CFG.joinpath("batch_templates/Slurmtemplate.sh"),
             batch_system="slurm",
             mpi_prefix="srun",

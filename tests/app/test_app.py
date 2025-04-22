@@ -127,6 +127,9 @@ class TestJadeApp:
             10,
             {CODE.MCNP: "mcnp6.2"},
             run_mode=RunMode.SERIAL,
+            code_configurations={
+                CODE.MCNP: Path(DUMMY_ROOT, "cfg/exe_config/mcnp_config.sh")
+            },
         )
         run_cfg = RunConfig(env_vars, {"Dummy_continue": cfg})
         app.run_cfg = run_cfg

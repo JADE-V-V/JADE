@@ -461,7 +461,12 @@ class BenchmarkRun:
     def _get_continue_run_command(self, code: CODE, lib: Library) -> str:
         # we can assume that the single run has been already originated
         total_command = ""
-        for i, single_run_root in enumerate(os.listdir(self.simulation_root)):
+        codelib_folder = print_code_lib(code, lib)
+        benchmark_root = os.path.join(
+            self.simulation_root, codelib_folder, self.config.name
+        )
+        for i, single_run_folder in enumerate(os.listdir(benchmark_root)):
+            single_run_root = Path(benchmark_root, single_run_folder)
             # check if the simulation has been completed
             flag_run = CODE_CHECKERS[code](single_run_root)
             if flag_run:
@@ -476,6 +481,10 @@ class BenchmarkRun:
             single_run = SingleRunFactory.create(
                 code, template_folder, lib, int(self.config.nps)
             )
+            # need to override the name if MCNP to be sure there are no
+            # problems with Spheres
+            if code in (CODE.MCNP, CODE.D1S):
+                single_run.input._name = single_run_folder
             if i == 0:
                 # this is the first run, we need to set the environment variables
                 name, value = single_run._get_lib_data_command()

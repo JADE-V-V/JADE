@@ -525,6 +525,9 @@ class SphereBenchmarkRun(BenchmarkRun):
                     )
                 inp = InputMCNPSphere(template_folder, lib, zaid, str(-1 * density))
                 single_run = SingleRunMCNP(inp, lib, nps)
+            elif code == CODE.OPENMC:
+                inp = InputOpenMcSphere(template_folder, lib, zaid, str(-1 * density))
+                single_run = SingleRunOpenMC(inp, lib, nps)
             else:
                 raise NotImplementedError(f"Code {code} not supported for Sphere")
             self._run_single_run(
@@ -534,9 +537,12 @@ class SphereBenchmarkRun(BenchmarkRun):
         for material in tqdm(materials.materials[:limit], desc="Materials"):
             # Get density
             density = settings_mat.loc[material.name.upper(), "Density [g/cc]"]
+            extended_name = settings_mat.loc[material.name.upper(), "Name"]
 
             # derive the sub-benchmark folder name
-            sub_bench_folder_name = f"{self.config.name}_{material.name}"
+            sub_bench_folder_name = (
+                f"{self.config.name}_{material.name}_{extended_name}"
+            )
             sub_bench_folder = Path(root_benchmark, sub_bench_folder_name)
             os.mkdir(sub_bench_folder)
 
@@ -550,7 +556,9 @@ class SphereBenchmarkRun(BenchmarkRun):
                 )
                 single_run = SingleRunMCNP(inp, lib, int(self.config.nps))
             elif code == CODE.OPENMC:
-                inp = InputOpenMcSphere(template_folder, lib)
+                inp = InputOpenMcSphere(
+                    template_folder, lib, material, str(-1 * float(density))
+                )
                 single_run = SingleRunOpenMC(inp, lib, int(self.config.nps))
             else:
                 raise NotImplementedError(f"Code {code} not supported for Sphere")

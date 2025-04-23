@@ -273,7 +273,7 @@ class InputOpenMcSphere(InputOpenMC):
 
     def _assign_zaid_material(self, zaid: str | Material, density: str):
         material = self._get_material(zaid)
-        material.density = -float(density)
+        material.density = float(density)
         materials = MatCardsList([material])
         # Assign material
         self.inp.matlist_to_openmc(materials, self.lm)

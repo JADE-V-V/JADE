@@ -397,16 +397,15 @@ class OpenMCSimOutput(AbstractSimOutput):
             sorted_tally = tally.sort_values(filters)
             sorted_tally = sorted_tally.reset_index(drop=True)
             sorted_tally = sorted_tally.rename(columns=new_columns)
-            selected_columns = []
-            for column in columns:
-                if (
-                    column in sorted_tally.columns
-                    and sorted_tally[column].nunique() != 1
-                ):
-                    selected_columns.append(column)
-
-            sorted_tally = sorted_tally[selected_columns]
-
+            # selected_columns = []
+            # for column in columns:
+            #     if (
+            #         column in sorted_tally.columns
+            #         and sorted_tally[column].nunique() != 1
+            #     ):
+            #         selected_columns.append(column)
+            
+            # sorted_tally = sorted_tally[selected_columns]
             # sorted_tally.to_csv('tally_'+str(id)+'_sorted.csv')
             tallydata[id] = sorted_tally
             totalbin[id] = None

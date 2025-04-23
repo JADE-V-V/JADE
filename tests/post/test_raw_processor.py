@@ -62,13 +62,11 @@ class TestRawProcessor:
         with as_file(RAW_CFG_FILES_MCNP.joinpath("Sphere.yaml")) as f:
             cfg = ConfigRawProcessor.from_yaml(f)
 
-        folder = Path(
-            SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "Sphere", "Sphere_m101"
-        )
+        folder = Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "Sphere", "Sphere_m101")
 
         processor = RawProcessor(cfg, folder, tmpdir)
         processor.process_raw_data()
-    
+
     @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC not available")
     def test_Sphere_openmc(self, tmpdir):
         with as_file(RAW_CFG_FILES_OPENMC.joinpath("Sphere.yaml")) as f:
@@ -80,7 +78,6 @@ class TestRawProcessor:
 
         processor = RawProcessor(cfg, folder, tmpdir)
         processor.process_raw_data()
-
 
     def test_oktavian_raw(self, tmpdir):
         with as_file(RAW_CFG_FILES_MCNP.joinpath("Oktavian.yaml")) as f:
@@ -234,7 +231,7 @@ class TestRawProcessor:
             os.makedirs(path)
             processor = RawProcessor(cfg, folder, path)
             processor.process_raw_data()
-    
+
     @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC not available")
     def test_Simple_Tokamak_openmc(self, tmpdir):
         with as_file(RAW_CFG_FILES_OPENMC.joinpath("Simple_Tokamak.yaml")) as f:
@@ -323,6 +320,21 @@ class TestRawProcessor:
 
         folders = [
             Path(SIMULATION_FOLDER, "_mcnp_-_JEFF 3.3_", "FNG-SS"),
+        ]
+
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            for subfolder in folder.iterdir():
+                processor = RawProcessor(cfg, subfolder, path)
+                processor.process_raw_data()
+
+    def test_FNG_HCPB(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("FNG-HCPB.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(SIMULATION_FOLDER, "_mcnp_-_JEFF 3.3_", "FNG-HCPB"),
         ]
 
         for i, folder in enumerate(folders):

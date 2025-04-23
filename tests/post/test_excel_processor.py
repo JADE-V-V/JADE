@@ -195,6 +195,24 @@ class TestExcelProcessor:
         df = pd.read_excel(file, skiprows=3)
         assert len(df) == 6
 
+    def test_FNG_W(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/FNG-W.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 2.1c")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()
+
+    def test_FNG_SS(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/FNG-SS.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("exp", "exp"), ("mcnp", "JEFF 3.3")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()
+
     def test_FNG_BKT(self, tmpdir):
         with as_file(
             files(default_cfg).joinpath("benchmarks_pp/excel/FNG-BKT.yaml")

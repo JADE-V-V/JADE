@@ -1,0 +1,18 @@
+Leakage neutron flux Vitamin-J 175:
+  concat_option: no_action
+  2: [[scale, {"factor": 3.182462327E-3}]]
+Leakage photon flux:
+  concat_option: no_action
+  22: [[scale, {"factor": 3.182462327E-3}]]
+Leakage photon flux 24 groups:
+  concat_option: no_action
+  32: [[scale, {"factor": 3.182462327E-3}]]
+Neutron heating:
+  concat_option: no_action
+  6: [[scale, {"factor": 3.182462327E-3}]]
+Photon heating:
+  concat_option: no_action
+  46: [[scale, {"factor": 3.182462327E-3}]]
+Leakage neutron flux:
+  concat_option: no_action
+  12: [[scale, {"factor": 3.182462327E-3}]]

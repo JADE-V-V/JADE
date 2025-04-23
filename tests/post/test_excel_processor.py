@@ -213,6 +213,15 @@ class TestExcelProcessor:
         processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
         processor.process()
 
+    def test_FNG_HCPB(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/FNG-HCPB.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("exp", "exp"), ("mcnp", "JEFF 3.3")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()
+
     def test_FNG_BKT(self, tmpdir):
         with as_file(
             files(default_cfg).joinpath("benchmarks_pp/excel/FNG-BKT.yaml")

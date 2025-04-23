@@ -329,6 +329,21 @@ class TestRawProcessor:
                 processor = RawProcessor(cfg, subfolder, path)
                 processor.process_raw_data()
 
+    def test_FNG_HCPB(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("FNG-HCPB.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(SIMULATION_FOLDER, "_mcnp_-_JEFF 3.3_", "FNG-HCPB"),
+        ]
+
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            for subfolder in folder.iterdir():
+                processor = RawProcessor(cfg, subfolder, path)
+                processor.process_raw_data()
+
     def test_FNG_BKT(self, tmpdir):
         with as_file(RAW_CFG_FILES_MCNP.joinpath("FNG-BKT.yaml")) as f:
             cfg = ConfigRawProcessor.from_yaml(f)

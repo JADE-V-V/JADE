@@ -185,6 +185,12 @@ The currently supported modifiers are:
   * *column*: the name of the new column.
   * *values*: a list of values to be added to the column. A single value can also be provided.
 
+* ``add_column_with_dict``: adds new columns to the tally. Three keyargs needs to be passed:
+
+  * *ref_column*: the name of the column used as reference to create the new columns.
+  * *values*: a dictionary of values to be added to the new columns, taking as keys the values of ref_column with the same order.
+  * *new_columns*: the names of the new columns.
+  
 * ``keep_last_row``: keeps only the last row of the tally. No arguments are expected. 
 * ``groupby``: this implements the pandas groupby method. The keyargs to provide are:
   

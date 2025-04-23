@@ -260,7 +260,7 @@ class SingleRun(ABC):
         essential_commands = ["MPI_TASKS"]
 
         # that the file exists it has been checked in the post_init already
-        with open(env_vars.batch_template) as fin, open(job_script, "w") as fout:
+        with open(env_vars.batch_template) as fin:
             # Replace placeholders in batch file template with actual values
             contents = fin.read()
             for cmd in essential_commands:
@@ -283,15 +283,17 @@ class SingleRun(ABC):
             else:
                 contents += "\n\n" + " ".join(run_command)
 
-            fout.write(contents)
+        if not test:
+            with open(job_script, "w") as fout:
+                fout.write(contents)
+        else:
+            return contents
 
         # Submit the job using the specified batch system (checked for existence in post_init)
         if not test:
             subprocess.run(
                 f"{env_vars.batch_system} {job_script}", cwd=directory, shell=True
             )
-        else:
-            return f"{env_vars.batch_system} {job_script}"
         # return to the original directory
         os.chdir(cwd)
 
@@ -440,7 +442,7 @@ class BenchmarkRun:
         self.env_vars = env_vars
         self.simulation_root = simulation_root
 
-    def continue_run(self):
+    def continue_run(self, testing=False):
         """Allow to continue a run on previously generated inputs. This allows to launch
         a single job and optimize HPC resources usage.
         """
@@ -456,7 +458,10 @@ class BenchmarkRun:
                 )
             elif self.env_vars.run_mode == RunMode.JOB_SUMISSION:
                 cwd = os.getcwd()
-                SingleRun._submit_job(self.env_vars, cwd, command, "", code)
+                command = SingleRun._submit_job(
+                    self.env_vars, cwd, command, "", code, test=testing
+                )
+                return command
 
     def _get_continue_run_command(self, code: CODE, lib: Library) -> str:
         # we can assume that the single run has been already originated
@@ -465,7 +470,8 @@ class BenchmarkRun:
         benchmark_root = os.path.join(
             self.simulation_root, codelib_folder, self.config.name
         )
-        for i, single_run_folder in enumerate(os.listdir(benchmark_root)):
+        flag_datapath = False
+        for single_run_folder in os.listdir(benchmark_root):
             single_run_root = Path(benchmark_root, single_run_folder)
             # check if the simulation has been completed
             flag_run = CODE_CHECKERS[code](single_run_root)
@@ -485,10 +491,12 @@ class BenchmarkRun:
             # problems with Spheres
             if code in (CODE.MCNP, CODE.D1S):
                 single_run.input._name = single_run_folder
-            if i == 0:
+            if not flag_datapath:
                 # this is the first run, we need to set the environment variables
                 name, value = single_run._get_lib_data_command()
                 os.environ[name] = value
+                flag_datapath = True
+
             command = single_run.run(
                 env_vars=self.env_vars, sim_folder=single_run_root, test=True
             )

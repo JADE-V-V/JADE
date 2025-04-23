@@ -130,13 +130,16 @@ class TestJadeApp:
             code_configurations={
                 CODE.MCNP: Path(DUMMY_ROOT, "cfg/exe_config/mcnp_config.sh")
             },
+            batch_template=Path(DUMMY_ROOT, "cfg/batch_templates/Slurmtemplate.sh"),
+            batch_system="sbatch",
         )
         run_cfg = RunConfig(env_vars, {"Dummy_continue": cfg})
         app.run_cfg = run_cfg
         with pytest.raises(FileNotFoundError):
             app.continue_run()
 
-        # env_vars.run_mode = RunMode.JOB_SUMISSION
-        # run_cfg = RunConfig(env_vars, {"Dummy_continue": cfg})
-        # app.run_cfg = run_cfg
-        # app.continue_run()
+        env_vars.run_mode = RunMode.JOB_SUMISSION
+        run_cfg = RunConfig(env_vars, {"Dummy_continue": cfg})
+        app.run_cfg = run_cfg
+        command = app.continue_run(testing=True)
+        assert "#!/bin/sh\n\n#SBATCH" in command[0]

@@ -284,7 +284,7 @@ class TestSingleRunMCNP:
         single_run = SingleRunMCNP(mock_input, lib, 100)
 
         command = single_run.run(env_vars, tmpdir, test=True)
-        assert f"sbatch {tmpdir}" in command
+        assert "#!/bin/sh\n\n#SBATCH" in command
 
 
 class MockLibrary:

@@ -236,6 +236,25 @@ An example of a *result* configuration is shown below:
   The *results* do not have to be present in all benchmark cases/runs. When they are not
   found, they are simply skipped.
 
+In some cases it may be useful to produce certain results only from some cases/runs and
+not from others. Or maybe different modifiers need to be applied in different runs.
+An example may be the case of having a benchmark composed by two runs with the same tallies.
+Nevertheless, in one run the geometry is slightly different from the other or the irradiation
+scenario is different and a distinction is needed in the applied modifiers. In this case,
+an optional parameter can be specified in the *result* config to specify a list of runs/cases
+to which the configuration is applicable:
+
+.. code-block:: yaml
+
+  # Result configuration. the result name can contain spaces.
+  result name specific for a run1:
+    apply_to: [run1] # A list of runs/cases to which the configuration is applicable.
+    concat_option: sum  # The concatenation option 'sum' is used.
+    44: [[no_action, {}]]  # Example of tally that is left untouched. 44 is the tally identifier used in the transport code.
+    46: [[scale, {"factor": 1e5}], [lethargy, {}]]  # Example of tally that is scaled and converted to flux per unit lethargy.
+
+
+
 Add the excel config file
 =========================
 

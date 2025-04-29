@@ -63,6 +63,7 @@ class ResultConfig:
     def from_dict(cls, dictionary: dict, name) -> ResultConfig:
         mods = {}
         concat_option = TallyConcatOption(dictionary.pop("concat_option"))
+        apply_to = dictionary.pop("apply_to", None)
         for tallyid, modifications in dictionary.items():
             new_modifications = []
             for option, keyargs in modifications:
@@ -74,7 +75,7 @@ class ResultConfig:
             name=name,
             modify=mods,
             concat_option=concat_option,
-            apply_to=dictionary.get("apply_to", None),
+            apply_to=apply_to,
         )
 
 

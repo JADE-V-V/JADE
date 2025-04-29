@@ -343,3 +343,11 @@ class TestRawProcessor:
             for subfolder in folder.iterdir():
                 processor = RawProcessor(cfg, subfolder, path)
                 processor.process_raw_data()
+
+    def test_FNG_SDDR(self, tmpdir):
+        with as_file(RAW_CFG_FILES_D1S.joinpath("FNG-SDDR.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        for folder in Path(SIMULATION_FOLDER, "_d1s_-_lib 1_", "FNG-SDDR").iterdir():
+            processor = RawProcessor(cfg, folder, tmpdir)
+            processor.process_raw_data()

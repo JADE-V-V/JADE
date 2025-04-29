@@ -57,6 +57,18 @@ class TestRawProcessor:
         df2 = pd.read_csv(res2path)
         assert df2.iloc[0]["Value"] == pytest.approx(2 * 10 * 1.12099e-01, 1e-3)
         assert len(df1) == 191
+        os.remove(res1path)
+        os.remove(res2path)
+
+        # test the apply_to option
+        cfg.results[0].apply_to = ["Oktavian_Al"]
+        cfg.results[1].apply_to = ["Dummy"]
+        processor = RawProcessor(cfg, folder, tmpdir)
+        processor.process_raw_data()
+        res1path = Path(tmpdir, f"{processor.single_run_name} 1.csv")
+        assert os.path.exists(res1path)
+        res2path = Path(tmpdir, f"{processor.single_run_name} 2.csv")
+        assert not os.path.exists(res2path)
 
     def test_Sphere_mcnp(self, tmpdir):
         with as_file(RAW_CFG_FILES_MCNP.joinpath("Sphere.yaml")) as f:
@@ -335,6 +347,21 @@ class TestRawProcessor:
 
         folders = [
             Path(SIMULATION_FOLDER, "_mcnp_-_JEFF 3.3_", "FNG-HCPB"),
+        ]
+
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            for subfolder in folder.iterdir():
+                processor = RawProcessor(cfg, subfolder, path)
+                processor.process_raw_data()
+
+    def test_FNG_BKT(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("FNG-BKT.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(SIMULATION_FOLDER, "_mcnp_-_JEFF 3.3_", "FNG-BKT"),
         ]
 
         for i, folder in enumerate(folders):

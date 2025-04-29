@@ -33,10 +33,16 @@ class RawProcessor:
         NotImplementedError
             If the code is not implemented yet for raw data processing.
         """
-        self.cfg = cfg
         self.sim_folder = sim_folder
         self.out_folder = out_folder
         self.single_run_name = os.path.basename(sim_folder)
+
+        # Retain only the applicable result config
+        applicable_results = []
+        for result in cfg.results:
+            if result.apply_to is None or self.single_run_name in result.apply_to:
+                applicable_results.append(result)
+        self.cfg = ConfigRawProcessor(applicable_results)
 
         # adjourn the metadata
         self.metadata = self._read_metadata_run()

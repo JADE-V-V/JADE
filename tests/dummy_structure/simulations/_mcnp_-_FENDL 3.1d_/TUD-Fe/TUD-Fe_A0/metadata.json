@@ -1,0 +1,7 @@
+{
+    "benchmark_version": "1.0",
+    "jade_run_version": "3.0.1",
+    "benchmark_name": "TUD-Fe",
+    "library": "FENDL 3.1d",
+    "code": "mcnp"
+}

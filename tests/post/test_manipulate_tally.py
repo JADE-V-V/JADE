@@ -14,6 +14,7 @@ from src.jade.post.manipulate_tally import (
     concat_tallies,
     condense_groups,
     delete_cols,
+    divide_by_bin,
     format_decimals,
     groupby,
     no_action,
@@ -39,6 +40,13 @@ def test_by_energy():
     data = {"Energy": [15, 20, 35], "Value": [10, 20, 30]}
     df = pd.DataFrame(data)
     result = by_energy(df.copy())
+    assert (df["Value"] != result["Value"]).all()
+
+
+def test_by_bin():
+    data = {"Time": [15, 20, 35], "Value": [10, 20, 30]}
+    df = pd.DataFrame(data)
+    result = divide_by_bin(df.copy(), "Time")
     assert (df["Value"] != result["Value"]).all()
 
 

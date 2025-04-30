@@ -29,15 +29,19 @@ def by_lethargy(tally: pd.DataFrame) -> pd.DataFrame:
 
 def by_energy(tally: pd.DataFrame) -> pd.DataFrame:
     """Convert values by energy into values by unit energy."""
-    # Energies for lethargy computation
-    energies = tally["Energy"].values
+    return divide_by_bin(tally, "Energy")
+
+
+def divide_by_bin(tally: pd.DataFrame, column_name: str) -> pd.DataFrame:
+    """Convert values by time into values by unit time."""
+    bins = tally[column_name].values
     flux = tally["Value"].values
 
-    ergs = [1e-10]  # Additional "zero" energy for lethargy computation
-    ergs.extend(energies.tolist())
-    ergs = np.array(ergs)
+    bin_intervals = [1e-10]  # Additional "zero" bin
+    bin_intervals.extend(bins.tolist())
+    bin_intervals = np.array(bin_intervals)
 
-    flux = flux / (ergs[1:] - ergs[:-1])
+    flux = flux / (bin_intervals[1:] - bin_intervals[:-1])
     tally["Value"] = flux
     return tally
 
@@ -217,6 +221,7 @@ MOD_FUNCTIONS = {
     TallyModOption.SCALE: scale,
     TallyModOption.NO_ACTION: no_action,
     TallyModOption.BY_ENERGY: by_energy,
+    TallyModOption.BY_BIN: divide_by_bin,
     TallyModOption.CONDENSE_GROUPS: condense_groups,
     TallyModOption.REPLACE: replace_column,
     TallyModOption.ADD_COLUMN: add_column,

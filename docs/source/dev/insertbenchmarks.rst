@@ -169,6 +169,9 @@ The currently supported modifiers are:
   No arguments are expected.
 * ``by_energy``: a flux tally is expected and converted to a flux per unit energy.
   No arguments are expected.
+* ``by_bin``: a flux tally is expected and converted to a flux per unit bin.
+  The *column_name* is expected as key argument and the provided value has to be the name of the binning column in 
+  the form of a string.
 * ``condense_groups``: takes a binned tallies and condenses into a coarser binning. 
   Errors are combined in squared root of sum of squares.
   Two keyargs needs to be passed:
@@ -252,6 +255,8 @@ in the table, a type of comparisons (e.g. absolute difference), and then a numbe
 how the compared data is presented in the excel file.
 When more than one *result* is used in a table, they all are combined in a single pandas dataframe and an 
 extra column called "Result" is added to the dataframe to distinguish the different results.
+Additionally, when a benchmark consists of more than one run, the results are combined in a single dataframe
+and an extra column called "Case" is added to the dataframe to distinguish the different runs.
 
 The **mandatory options** to include in a *table* configurations are:
 

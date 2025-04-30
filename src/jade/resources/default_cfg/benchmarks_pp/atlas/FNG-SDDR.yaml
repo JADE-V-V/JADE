@@ -1,0 +1,41 @@
+Parent isotope contribution to SDDR:
+  results:
+
+    - SDDR in air (parents) irr. 1
+    - SDDR in air (parents) irr. 2
+
+  plot_type: dose contribution
+  title: Parent dose to SDDR
+  x_label: Time after shutdown [s]
+  y_labels: dummy
+  x: dummy  # It is a very specific plot which knows which columns to use
+  y: dummy # It is a very specific plot which knows which columns to use
+
+
+Daughter isotope contribution to SDDR:
+  results:
+
+    - SDDR in air (daughters) irr. 1
+    - SDDR in air (daughters) irr. 2
+
+  plot_type: dose contribution
+  title: Daughter dose to SDDR
+  x_label: Time after shutdown [s]
+  y_labels: dummy
+  x: dummy  # It is a very specific plot which knows which columns to use
+  y: dummy # It is a very specific plot which knows which columns to use
+
+SDDR in air:
+  results:
+    - SDDR in air irr. 1
+    - SDDR in air irr. 2
+  plot_type: ce
+  title: SDDR in air
+  x_label: Time after shoutdown [s]
+  y_labels: C/E
+  x: Time
+  y: Value
+  expand_runs: true
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]

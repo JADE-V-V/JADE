@@ -222,3 +222,14 @@ class TestAtlasProcessor:
         codelibs = [("exp", "exp"), ("mcnp", "JEFF 3.3")]
         processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
         processor.process()
+
+    def test_FNG_SDDR(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/atlas/FNG-SDDR.yaml")
+        ) as file:
+            cfg = ConfigAtlasProcessor.from_yaml(file)
+
+        word_template_path = files(resources).joinpath("atlas_template.docx")
+        codelibs = [("exp", "exp"), ("d1s", "lib 2")]
+        processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
+        processor.process()

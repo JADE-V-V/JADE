@@ -1,0 +1,41 @@
+
+
+  # comparison_type: percentage
+  # table_type: simple
+  # x: Time
+  # y: Value
+  # x_label: Time after shutdown [s]
+  # y_label: SDDR [Sv/hr]
+  # add_error: true
+  # conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+# SSDR 1:
+#   apply_to: FNG-SDDR_1
+#   results:
+#     - SDDR in air irr. 1
+#   comparison_type: ratio
+#   table_type: pivot
+#   x: Time
+#   y: Case
+#   value: ['Value', 'Error']
+#   change_col_names: {'Time':'Time after shutdown [s]','Case': 'Irradiation scenario', 0: 'C/E'}
+
+SDDR irr. 1:
+  results:
+    - SDDR in air irr. 1
+  comparison_type: ratio
+  table_type: pivot
+  x: Time
+  y: Case
+  value: ['Value', 'Error']
+  change_col_names: {'Time':'Time after shutdown [s]','Case': 'Irradiation scenario', 0: 'C/E'}
+
+SDDR irr. 2:
+  results:
+    - SDDR in air irr. 2
+  comparison_type: ratio
+  table_type: pivot
+  x: Time
+  y: Case
+  value: ['Value', 'Error']
+  change_col_names: {'Time':'Time after shutdown [s]','Case': 'Irradiation scenario', 0: 'C/E'}
+

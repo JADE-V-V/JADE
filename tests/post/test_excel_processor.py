@@ -230,3 +230,12 @@ class TestExcelProcessor:
         codelibs = [("exp", "exp"), ("mcnp", "JEFF 3.3")]
         processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
         processor.process()
+
+    def test_FNG_SDDR(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/FNG-SDDR.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("exp", "exp"), ("d1s", "lib 2")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()

@@ -1,0 +1,12 @@
+Neutron fluence (energy):
+  concat_option: no_action
+  5: 
+    - ['by_energy', {}]
+Neutron fluence (time):
+  concat_option: no_action
+  15:
+    - ['by_bin', {"column_name":"Time"}]
+Photon fluence:
+  concat_option: no_action
+  25: 
+    - ['by_energy', {}]

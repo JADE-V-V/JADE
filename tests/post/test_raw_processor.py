@@ -378,3 +378,18 @@ class TestRawProcessor:
         for folder in Path(SIMULATION_FOLDER, "_d1s_-_lib 1_", "FNG-SDDR").iterdir():
             processor = RawProcessor(cfg, folder, tmpdir)
             processor.process_raw_data()
+
+    def test_TUD_Fe(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("TUD-Fe.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.1d_", "TUD-Fe"),
+        ]
+
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            for subfolder in folder.iterdir():
+                processor = RawProcessor(cfg, subfolder, path)
+                processor.process_raw_data()

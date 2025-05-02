@@ -86,6 +86,7 @@ class TallyModOption(Enum):
     SCALE = "scale"
     NO_ACTION = "no_action"
     BY_ENERGY = "by_energy"
+    BY_BIN = "by_bin"
     CONDENSE_GROUPS = "condense_groups"
     REPLACE = "replace"
     ADD_COLUMN = "add_column"

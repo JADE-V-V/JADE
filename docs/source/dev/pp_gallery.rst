@@ -212,6 +212,10 @@ These are the extra ``plot_args`` that this type of plot can accept:
 * ``rotate_ticks`` if set to True, the x-axis ticks are rotated by 45 degrees. default is False.
 * ``xscale``: The scale of the x-axis. Every argument that could be passed to the matplotlib function
   ``set_xscale()`` is accepted. Common ones are 'linear' or 'log'. Default is 'linear'.
+* ``shorten_x_name``: this type of plots are often categorical. In the event of using the 
+  cases as x axis, the long names of the benchmark runs can become problematic. This option
+  will split the name of the benchmark run on the '_' symbols and retain only the last N chunks
+  where N is the specified *shorten_x_name* value.
 
 Barplot (barplot)
 -----------------

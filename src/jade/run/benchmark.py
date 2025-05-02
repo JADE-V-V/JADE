@@ -23,7 +23,13 @@ from jade.config.run_config import (
     LibraryMCNP,
     RunMode,
 )
-from jade.helper.aux_functions import PathLike, get_jade_version, print_code_lib
+from jade.helper.aux_functions import (
+    CODE_CHECKERS,
+    PathLike,
+    get_code_lib,
+    get_jade_version,
+    print_code_lib,
+)
 from jade.helper.constants import CODE
 from jade.helper.errors import ConfigError
 from jade.run import unix
@@ -139,7 +145,7 @@ class SingleRun(ABC):
 
     def run(
         self, env_vars: EnvironmentVariables, sim_folder: PathLike, test=False
-    ) -> bool:
+    ) -> bool | str:
         """Run the simulation.
 
         Parameters
@@ -153,8 +159,9 @@ class SingleRun(ABC):
 
         Returns
         -------
-        bool
+        bool | str
             True if the simulation run correctly, False otherwise.
+            If the test flag is set, the command to run the simulation is returned instead
         """
         run_command = self._build_command(env_vars)
         name, value = self._get_lib_data_command()
@@ -165,7 +172,12 @@ class SingleRun(ABC):
             if self._is_mpi_run(env_vars):
                 run_command.insert(0, env_vars.mpi_prefix)
             command = self._submit_job(
-                env_vars, sim_folder, run_command, lib_data_command, test=test
+                env_vars,
+                sim_folder,
+                run_command,
+                lib_data_command,
+                self.code,
+                test=test,
             )
             if test:
                 return command
@@ -204,12 +216,13 @@ class SingleRun(ABC):
             return True
         return False
 
+    @staticmethod
     def _submit_job(
-        self,
         env_vars: EnvironmentVariables,
         directory: PathLike,
-        run_command: list,
+        run_command: list | str,
         data_command: str,
+        code: CODE,
         test: bool = False,
     ) -> None:
         """Submits a job script to the users batch system for running in parallel.
@@ -220,17 +233,19 @@ class SingleRun(ABC):
             Environment variables for JADE execution in general
         directory : Pathlike
             Job working directory
-        run_command : list
+        run_command : list | str
             Executable command
         data_command : str
             user specified/ code specific environment variables
+        code: CODE
+            code to be used for the simulation.
         test : bool, optional
             flag to run the simulation in test mode, by default False
         """
         # store cwd to get back to it after job submission
         cwd = os.getcwd()
         # Read contents of batch file template.
-        with open(env_vars.code_configurations[self.code]) as f:
+        with open(env_vars.code_configurations[code]) as f:
             config_script = ""
             for line in f:
                 if not line.startswith("#!"):
@@ -245,7 +260,7 @@ class SingleRun(ABC):
         essential_commands = ["MPI_TASKS"]
 
         # that the file exists it has been checked in the post_init already
-        with open(env_vars.batch_template) as fin, open(job_script, "w") as fout:
+        with open(env_vars.batch_template) as fin:
             # Replace placeholders in batch file template with actual values
             contents = fin.read()
             for cmd in essential_commands:
@@ -263,17 +278,22 @@ class SingleRun(ABC):
 
             contents += "\n\n" + config_script
             contents += "\n\n" + str(data_command)
-            contents += "\n\n" + " ".join(run_command)
+            if isinstance(run_command, str):
+                contents += "\n\n" + run_command
+            else:
+                contents += "\n\n" + " ".join(run_command)
 
-            fout.write(contents)
+        if not test:
+            with open(job_script, "w") as fout:
+                fout.write(contents)
+        else:
+            return contents
 
         # Submit the job using the specified batch system (checked for existence in post_init)
         if not test:
             subprocess.run(
                 f"{env_vars.batch_system} {job_script}", cwd=directory, shell=True
             )
-        else:
-            return f"{env_vars.batch_system} {job_script}"
         # return to the original directory
         os.chdir(cwd)
 
@@ -421,6 +441,69 @@ class BenchmarkRun:
         self.config = config
         self.env_vars = env_vars
         self.simulation_root = simulation_root
+
+    def continue_run(self, testing=False):
+        """Allow to continue a run on previously generated inputs. This allows to launch
+        a single job and optimize HPC resources usage.
+        """
+        # recover the code and library from simulation root
+        for code, lib in self.config.run:
+            command = self._get_continue_run_command(code, lib)
+            # if serial, send the command, otherwis build a job script
+            if self.env_vars.run_mode == RunMode.SERIAL:
+                subprocess.Popen(
+                    command,
+                    # check=True,
+                    # timeout=43200, serial can also last days on workstations
+                )
+            elif self.env_vars.run_mode == RunMode.JOB_SUMISSION:
+                cwd = os.getcwd()
+                command = SingleRun._submit_job(
+                    self.env_vars, cwd, command, "", code, test=testing
+                )
+                return command
+
+    def _get_continue_run_command(self, code: CODE, lib: Library) -> str:
+        # we can assume that the single run has been already originated
+        total_command = ""
+        codelib_folder = print_code_lib(code, lib)
+        benchmark_root = os.path.join(
+            self.simulation_root, codelib_folder, self.config.name
+        )
+        flag_datapath = False
+        for single_run_folder in os.listdir(benchmark_root):
+            single_run_root = Path(benchmark_root, single_run_folder)
+            # check if the simulation has been completed
+            flag_run = CODE_CHECKERS[code](single_run_root)
+            if flag_run:
+                continue
+
+            sub_bench = os.path.basename(single_run_root)
+            # recover the input template
+            template_folder = os.path.join(
+                self.benchmark_templates_root, sub_bench, code.value
+            )
+            # create the single run
+            single_run = SingleRunFactory.create(
+                code, template_folder, lib, int(self.config.nps)
+            )
+            # need to override the name if MCNP to be sure there are no
+            # problems with Spheres
+            if code in (CODE.MCNP, CODE.D1S):
+                single_run.input._name = single_run_folder
+            if not flag_datapath:
+                # this is the first run, we need to set the environment variables
+                name, value = single_run._get_lib_data_command()
+                os.environ[name] = value
+                flag_datapath = True
+
+            command = single_run.run(
+                env_vars=self.env_vars, sim_folder=single_run_root, test=True
+            )
+            assert isinstance(command, str)
+            cd_command = f"cd {single_run_root} {os.linesep}"
+            total_command = total_command + cd_command + command + os.linesep
+        return total_command
 
     def run(self):
         """Run the benchmark. This creates the inputs and runs the simulations for each

@@ -102,6 +102,10 @@ class PlotConfig:
         specific result. Each dictionary should have the keys "result", "column" and "values".
     select_runs : re.Pattern, optional
         Regular expression to select only the runs that match the pattern.
+    xlimits : tuple[float, float], optional
+        Limits for the x-axis. If not set, the limits will be set automatically (None).
+    ylimits : tuple[float, float], optional
+        Limits for the y-axis. If not set, the limits will be set automatically (None).
     """
 
     name: str
@@ -120,6 +124,8 @@ class PlotConfig:
     recs: list[tuple[str, str, float, float]] | None = None
     subsets: list[dict] | None = None
     select_runs: re.Pattern | None = None
+    xlimits: tuple[float, float] | None = None
+    ylimits: tuple[float, float] | None = None
 
     @classmethod
     def from_dict(cls, dictionary: dict, name: str) -> PlotConfig:
@@ -142,6 +148,8 @@ class PlotConfig:
             recs=dictionary.get("recs", None),
             subsets=dictionary.get("subsets", None),
             select_runs=select_runs,
+            xlimits=dictionary.get("xlimits", None),
+            ylimits=dictionary.get("ylimits", None),
         )
 
     def __post_init__(self):

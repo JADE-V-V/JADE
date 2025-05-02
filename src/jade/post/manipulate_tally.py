@@ -102,6 +102,11 @@ def no_action(tally: pd.DataFrame) -> pd.DataFrame:
     return tally
 
 
+def select_subset(tally: pd.DataFrame, column: str, values: list) -> pd.DataFrame:
+    """Select a subset of the tally based on the provided column and values."""
+    return tally.set_index(column).loc[values].reset_index()
+
+
 def replace_column(
     tally: pd.DataFrame, column: str | None = None, values: dict | None = None
 ) -> pd.DataFrame:
@@ -228,6 +233,7 @@ MOD_FUNCTIONS = {
     TallyModOption.DELETE_COLS: delete_cols,
     TallyModOption.FORMAT_DECIMALS: format_decimals,
     TallyModOption.TOF_TO_ENERGY: tof_to_energy,
+    TallyModOption.SELECT_SUBSET: select_subset,
 }
 
 

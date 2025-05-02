@@ -1,0 +1,8 @@
+Neutron flux:
+  results:
+    - Coarse neutron flux time domain (broadened)
+  comparison_type: ratio
+  table_type: simple
+  x: ['Case', 'Energy']
+  y: ['Value', 'Error']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'C/E'}

@@ -21,6 +21,7 @@ from src.jade.post.manipulate_tally import (
     ratio,
     replace_column,
     scale,
+    select_subset,
     subtract_tallies,
     sum_tallies,
     tof_to_energy,
@@ -252,3 +253,15 @@ def test_tof_to_energy():
     }
     df = pd.DataFrame(data)
     tof_to_energy(df.copy())
+
+
+def test_select_subset():
+    data = {
+        "Energy": [1, 2, 3, 4, 5],
+        "Value": [10, 20, 30, 40, 50],
+        "Error": [0.1, 0.2, 0.3, 0.4, 0.5],
+    }
+    df = pd.DataFrame(data)
+    result = select_subset(df.copy(), "Energy", [1, 3])
+
+    assert len(result) == 2

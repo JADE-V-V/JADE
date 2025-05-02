@@ -208,6 +208,11 @@ The currently supported modifiers are:
   keyarg, where the keys should be the column names to be formatted and the values should be the corresponding number of decimals 
   to keep. 
 
+* ``select_subset``: selects a subset of the data. The keyargs to provide are:
+
+  * *column*: the name of the column to be used for the subset selection.
+  * *values*: list of values in *column* identifying the rows to be retained.
+
 More than one modifiers can be applied in series to a single tally.
 If your benchmark requires a new modifier, please refer to :ref:`add_tally_mod`.
 

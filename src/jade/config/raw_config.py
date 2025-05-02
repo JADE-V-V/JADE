@@ -95,6 +95,7 @@ class TallyModOption(Enum):
     DELETE_COLS = "delete_cols"
     FORMAT_DECIMALS = "format_decimals"
     TOF_TO_ENERGY = "tof_to_energy"
+    SELECT_SUBSET = "select_subset"
 
 
 class TallyConcatOption(Enum):

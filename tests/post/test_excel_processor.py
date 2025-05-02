@@ -240,11 +240,11 @@ class TestExcelProcessor:
         processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
         processor.process()
 
-    # def test_IPPEDT(self, tmpdir):
-    #     with as_file(
-    #         files(default_cfg).joinpath("benchmarks_pp/excel/IPPE-DT.yaml")
-    #     ) as file:
-    #         cfg = ConfigExcelProcessor.from_yaml(file)
-    #     codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c")]
-    #     processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
-    #     processor.process()
+    def test_IPPEDT(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/IPPE-DT.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()

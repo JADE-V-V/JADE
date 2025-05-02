@@ -101,3 +101,28 @@ simply run in the root directory from the command line:
 or 
 
     | ``python -m jade --run``
+
+Continue executions
+===================
+In cases such as the Sphere Leakage benchmark, when running on HPC,
+it may preferable to run sequentially the different benchmark runs using
+a single job instead of submitting a different one for each benchmark.
+To handle this, JADE provides a *continue run* option that allows to 
+identify all benchmarks that have been generated but not run successfully
+run them in sequence.
+
+to resume simulations the user can run from the command line:
+
+    | ``jade --cnt``
+
+or 
+
+    | ``python -m jade --cnt``
+
+.. tip:: 
+    The continue run is particularly useful when used in combination with
+    the *Only Input* option.
+
+.. warning:: 
+    if a simulation was terminated abruptly, output files will need to
+    be deleted before issuing the continue command.

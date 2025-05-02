@@ -1,0 +1,7 @@
+{
+    "benchmark_version": "1.0",
+    "jade_run_version": "3.0.1",
+    "benchmark_name": "FNG-BKT",
+    "library": "JEFF-3.3",
+    "code": "mcnp"
+}

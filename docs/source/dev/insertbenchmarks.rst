@@ -185,6 +185,12 @@ The currently supported modifiers are:
   * *column*: the name of the new column.
   * *values*: a list of values to be added to the column. A single value can also be provided.
 
+* ``add_column_with_dict``: adds new columns to the tally. Three keyargs needs to be passed:
+
+  * *ref_column*: the name of the column used as reference to create the new columns.
+  * *values*: a dictionary of values to be added to the new columns, taking as keys the values of ref_column with the same order.
+  * *new_columns*: the names of the new columns.
+  
 * ``keep_last_row``: keeps only the last row of the tally. No arguments are expected. 
 * ``groupby``: this implements the pandas groupby method. The keyargs to provide are:
   
@@ -229,6 +235,25 @@ An example of a *result* configuration is shown below:
 .. note:: 
   The *results* do not have to be present in all benchmark cases/runs. When they are not
   found, they are simply skipped.
+
+In some cases it may be useful to produce certain results only from some cases/runs and
+not from others. Or maybe different modifiers need to be applied in different runs.
+An example may be the case of having a benchmark composed by two runs with the same tallies.
+Nevertheless, in one run the geometry is slightly different from the other or the irradiation
+scenario is different and a distinction is needed in the applied modifiers. In this case,
+an optional parameter can be specified in the *result* config to specify a list of runs/cases
+to which the configuration is applicable:
+
+.. code-block:: yaml
+
+  # Result configuration. the result name can contain spaces.
+  result name specific for a run1:
+    apply_to: [run1] # A list of runs/cases to which the configuration is applicable.
+    concat_option: sum  # The concatenation option 'sum' is used.
+    44: [[no_action, {}]]  # Example of tally that is left untouched. 44 is the tally identifier used in the transport code.
+    46: [[scale, {"factor": 1e5}], [lethargy, {}]]  # Example of tally that is scaled and converted to flux per unit lethargy.
+
+
 
 Add the excel config file
 =========================
@@ -363,6 +388,11 @@ The **mandatory options** for the *plot* configuration are:
 
 * ``select_runs``: This option allows
   to specify a regex pattern (in string format). Only the cases/runs that match the pattern will be plotted.
+* ``xlimits`` : a tuple with the lower and upper limits for the x-axis to apply.
+  If not set, the limits will be set automatically (preferred option).
+* ``ylimits`` : a tuple with the lower and upper limits for the y-axis to apply.
+  If not set, the limits will be set automatically (preferred option).
+
 
 An example of plot configuration is shown below:
 

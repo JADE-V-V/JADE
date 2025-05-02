@@ -8,6 +8,7 @@ import pytest
 
 from src.jade.post.manipulate_tally import (
     add_column,
+    add_column_with_dict,
     by_energy,
     by_lethargy,
     concat_tallies,
@@ -158,6 +159,32 @@ def test_add_column():
     assert (result["New"] == [1, 2, 3]).all()
     result = add_column(df.copy(), "another", 1)
     assert (result["another"] == [1, 1, 1]).all()
+
+
+def test_add_column_with_dict():
+    # Input DataFrame
+    tally = pd.DataFrame({"Cases": ["A", "B", "C", "D"], "Value": [100, 200, 300, 400]})
+
+    # Reference column and values dictionary
+    ref_column = "Cases"
+    values = {"A": [10, 1], "B": [15, 1], "C": [20, 1], "D": [25, 1]}
+    new_columns = ["new_col1", "new_col2"]
+
+    # Call the function
+    result = add_column_with_dict(tally, ref_column, values, new_columns)
+
+    # Expected DataFrame
+    expected = pd.DataFrame(
+        {
+            "Cases": ["A", "B", "C", "D"],
+            "Value": [100, 200, 300, 400],
+            "new_col1": [10, 15, 20, 25],
+            "new_col2": [1, 1, 1, 1],
+        }
+    )
+
+    # Assert the result matches the expected DataFrame
+    pd.testing.assert_frame_equal(result, expected)
 
 
 def test_groupby():

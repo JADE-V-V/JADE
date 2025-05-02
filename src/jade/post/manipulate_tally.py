@@ -116,6 +116,20 @@ def add_column(tally: pd.DataFrame, column: str, values: list) -> pd.DataFrame:
     return tally
 
 
+def add_column_with_dict(
+    tally: pd.DataFrame, ref_column: str, values: dict, new_columns: list[str]
+) -> pd.DataFrame:
+    """Add a new column to the tally with the provided values."""
+    # create a new column with the values from the dictionary
+    for i, new_column in enumerate(new_columns):
+        vals = []
+        for idx, row in tally.iterrows():
+            key = row[ref_column]
+            vals.append(values[key][i])
+        tally[new_column] = vals
+    return tally
+
+
 def keep_last_row(tally: pd.DataFrame) -> pd.DataFrame:
     """Keep only the last row of the tally."""
     return tally.iloc[-1:]
@@ -208,6 +222,7 @@ MOD_FUNCTIONS = {
     TallyModOption.CONDENSE_GROUPS: condense_groups,
     TallyModOption.REPLACE: replace_column,
     TallyModOption.ADD_COLUMN: add_column,
+    TallyModOption.ADD_COLUMN_WITH_DICT: add_column_with_dict,
     TallyModOption.KEEP_LAST_ROW: keep_last_row,
     TallyModOption.GROUPBY: groupby,
     TallyModOption.DELETE_COLS: delete_cols,

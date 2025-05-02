@@ -1,0 +1,62 @@
+# Some useful aliases to avoid duplication
+_times: &times1
+  1: 86400
+  2: 604800
+  3: 1296000
+  4: 2592000
+  5: 5184000
+# --------------------------------------------------------
+_times2: &times2
+  1: 4380
+  2: 6180
+  3: 7488
+  4: 11580
+  5: 17280
+  6: 24480
+  7: 34080
+  8: 45780
+  9: 57240
+  10: 72550
+  11: 90720
+  12: 132000
+  13: 212400
+  14: 345600
+  15: 479300
+  16: 708500
+  17: 1050000
+  18: 1670000
+  19: 1710000
+
+# --------------------------------------------------------
+SDDR in air irr. 1:
+  concat_option: no_action
+  apply_to: FNG-SDDR_1
+  4: 
+    - [replace, {'column': 'Time', 'values': *times1}]
+SDDR in air (daughters) irr. 1:
+  apply_to: FNG-SDDR_1
+  concat_option: no_action
+  14: 
+  - [replace, {'column': 'Time', 'values': *times1}]
+SDDR in air (parents) irr. 1:
+  apply_to: FNG-SDDR_1
+  concat_option: no_action
+  24: 
+  - [replace, {'column': 'Time', 'values': *times1}]
+
+SDDR in air irr. 2:
+  concat_option: no_action
+  apply_to: FNG-SDDR_2
+  4: 
+    - [replace, {'column': 'Time', 'values': *times2}]
+SDDR in air (daughters) irr. 2:
+  apply_to: FNG-SDDR_2
+  concat_option: no_action
+  14: 
+  - [replace, {'column': 'Time', 'values': *times2}]
+SDDR in air (parents) irr. 2:
+  apply_to: FNG-SDDR_2
+  concat_option: no_action
+  24: 
+  - [replace, {'column': 'Time', 'values': *times2}]
+

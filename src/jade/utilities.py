@@ -1,6 +1,7 @@
 import argparse
 
 from jade.app.app import JadeApp
+from jade.helper.aux_functions import add_rmode0
 
 
 def main():
@@ -33,6 +34,8 @@ def main():
         app.restore_default_cfg()
     if args.runtpe:
         app.rmv_runtpe()
+    if args.addrmode:
+        app.add_rmode()
 
 
 if __name__ == "__main__":

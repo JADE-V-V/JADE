@@ -369,6 +369,11 @@ The **mandatory options** for the *plot* configuration are:
 
 * ``select_runs``: This option allows
   to specify a regex pattern (in string format). Only the cases/runs that match the pattern will be plotted.
+* ``xlimits`` : a tuple with the lower and upper limits for the x-axis to apply.
+  If not set, the limits will be set automatically (preferred option).
+* ``ylimits`` : a tuple with the lower and upper limits for the y-axis to apply.
+  If not set, the limits will be set automatically (preferred option).
+
 
 An example of plot configuration is shown below:
 

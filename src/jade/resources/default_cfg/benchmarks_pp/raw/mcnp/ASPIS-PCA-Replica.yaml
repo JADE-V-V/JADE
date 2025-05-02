@@ -1,0 +1,43 @@
+_depth_foils: &depth_foils
+  Input 1: 39.01
+  Input 2: 49.61
+  1078: 58.61
+# --------------------------------------------------------
+_depth_foils2: &depth_foils2
+  Input 1: 1.91
+  924: 7.41
+  944: 12.41
+  Input 4: 14.01
+  Input 5: 19.91
+  Input 6: 25.41
+  Input 7: 30.41
+  Input 8: 39.01
+  Input 9: 49.61
+  1078: 58.61
+  # -------------------------------------------------------
+Neutron flux (z=39.01cm):
+  apply_to: [ASPIS-PCA-Replica_flux]
+  concat_option: no_action
+  914: 
+    - ['lethargy', {}]
+#
+Neutron flux (z=58.61cm):
+  apply_to: [ASPIS-PCA-Replica_flux]
+  concat_option: no_action
+  924: 
+    - ['lethargy', {}]
+#
+Reaction Rate In:
+  apply_to: [ASPIS-PCA-Replica_In]
+  concat_option: no_action
+  4: [[replace, {'column': 'Cells', 'values': *depth_foils}]]
+#
+Reaction Rate S:
+  apply_to: [ASPIS-PCA-Replica_S]
+  concat_option: no_action
+  4: [[replace, {'column': 'Cells', 'values': *depth_foils}]]
+#
+Reaction Rate Rh:
+  apply_to: [ASPIS-PCA-Replica_Rh]
+  concat_option: no_action
+  4: [[replace, {'column': 'Cells', 'values': *depth_foils2}]]

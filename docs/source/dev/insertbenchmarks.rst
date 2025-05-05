@@ -211,6 +211,20 @@ The currently supported modifiers are:
   keyarg, where the keys should be the column names to be formatted and the values should be the corresponding number of decimals 
   to keep. 
 
+* ``tof_to_energy``: converts the time-of-flight to energy. The tally is expected
+  to be binned in time and a new column *Energy* will be created. 
+  The used formula is:
+
+  .. math:: 
+    E = m \cdot \dfrac{1}{\sqrt{1-\dfrac{L}{\left( c \cdot t\right)^2}} - 1
+
+  where *E* is the energy in MeV, *m* is the mass of the particle in MeV/c^2, *L* is the distance between source and detector in meters,
+
+  Two optional keyargs that can be passed are:
+
+  * ``m``: mass of the particle in MeV/c^2. Default is the neutron one, 939.5654133.
+  * ``L``: distance between source and detector in meters. Default is 1.0.
+
 * ``select_subset``: selects a subset of the data. The keyargs to provide are:
 
   * *column*: the name of the column to be used for the subset selection.

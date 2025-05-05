@@ -22,6 +22,7 @@ from src.jade.post.manipulate_tally import (
     ratio,
     replace_column,
     scale,
+    select_subset,
     subtract_tallies,
     sum_tallies,
     tof_to_energy,
@@ -252,11 +253,23 @@ def test_format_decimals():
     pd.testing.assert_frame_equal(result, expected_df)
 
 
-def test_tol_to_energy():
+def test_tof_to_energy():
     data = {
-        "time": [1, 2, 3],
+        "Time": [1, 2, 3],
         "Value": [10, 20, 30],
         "Error": [0.1, 0.2, 0.3],
     }
     df = pd.DataFrame(data)
     tof_to_energy(df.copy())
+
+
+def test_select_subset():
+    data = {
+        "Energy": [1, 2, 3, 4, 5],
+        "Value": [10, 20, 30, 40, 50],
+        "Error": [0.1, 0.2, 0.3, 0.4, 0.5],
+    }
+    df = pd.DataFrame(data)
+    result = select_subset(df.copy(), "Energy", [1, 3])
+
+    assert len(result) == 2

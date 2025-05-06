@@ -1,6 +1,6 @@
-Neutron Leakage flux (time broadened):
+Neutron Leakage flux:
   results:
-    - Neutron flux time domain broadened
+    - Neutron flux time domain
   plot_type: binned
   title: Neutron leakage flux 
   x_label: Energy [MeV]

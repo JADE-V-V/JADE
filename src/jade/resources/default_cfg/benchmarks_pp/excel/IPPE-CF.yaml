@@ -1,0 +1,17 @@
+Neutron flux HPD:
+  results:
+    - Coarse neutron flux HPD
+  comparison_type: ratio
+  table_type: simple
+  x: ['Case', 'Energy']
+  y: ['Value', 'Error']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'C/E'}
+#
+Neutron flux SSD:
+  results:
+    - Coarse neutron flux SSD
+  comparison_type: ratio
+  table_type: simple
+  x: ['Case', 'Energy']
+  y: ['Value', 'Error']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'C/E'}

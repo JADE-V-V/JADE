@@ -61,12 +61,12 @@ class JadeApp:
             self.tree.logs, "Log " + time.ctime().replace(":", "-") + ".txt"
         )
         logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
+        logger.setLevel(logging.INFO)
 
         # set the logging to a file and keep warnings to video
         # Create a file handler for logging INFO level messages
         file_handler = logging.FileHandler(log, encoding="utf-8")
-        file_handler.setLevel(logging.DEBUG)
+        file_handler.setLevel(logging.INFO)
         file_handler.setFormatter(
             logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         )
@@ -149,6 +149,21 @@ class JadeApp:
                 )
                 benchmark.run()
         logging.info("Benchmarks run completed.")
+
+    def continue_run(self, testing: bool = False):
+        """Continue the run of the benchmarks that were not completed."""
+        commands = []
+        for bench_name, cfg in self.run_cfg.benchmarks.items():
+            benchmark = BenchmarkRunFactory.create(
+                cfg,
+                self.tree.simulations,
+                self.tree.benchmark_input_templates,
+                self.run_cfg.env_vars,
+            )
+            command = benchmark.continue_run(testing=testing)
+            commands.append(command)
+        logging.info("Benchmarks run have been submitted.")
+        return commands
 
     def raw_process(self, subset: list[str] | None = None):
         """Process the raw data from the simulations."""

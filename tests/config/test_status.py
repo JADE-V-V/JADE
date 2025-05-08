@@ -26,6 +26,7 @@ class TestGlobalStatus:
         assert status.was_simulated(CODE("mcnp"), "FENDL 3.2c", "Oktavian")
         assert not status.was_simulated(CODE("openmc"), "FENDL 3.2c", "Oktavian")
         assert not status.was_simulated(CODE("mcnp"), "FENDL 3.2c", "Sphere")
+        assert not status.was_simulated(CODE("mcnp"), "FENDL 3.2c", "Dummy_continue")
 
     def test_get_all_raw(self):
         status = GlobalStatus(DUMMY_SIMULATIONS, CONFIG_RAW)

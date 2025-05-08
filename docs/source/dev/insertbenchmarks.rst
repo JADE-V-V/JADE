@@ -169,6 +169,9 @@ The currently supported modifiers are:
   No arguments are expected.
 * ``by_energy``: a flux tally is expected and converted to a flux per unit energy.
   No arguments are expected.
+* ``by_bin``: a flux tally is expected and converted to a flux per unit bin.
+  The *column_name* is expected as key argument and the provided value has to be the name of the binning column in 
+  the form of a string.
 * ``condense_groups``: takes a binned tallies and condenses into a coarser binning. 
   Errors are combined in squared root of sum of squares.
   Two keyargs needs to be passed:
@@ -185,6 +188,12 @@ The currently supported modifiers are:
   * *column*: the name of the new column.
   * *values*: a list of values to be added to the column. A single value can also be provided.
 
+* ``add_column_with_dict``: adds new columns to the tally. Three keyargs needs to be passed:
+
+  * *ref_column*: the name of the column used as reference to create the new columns.
+  * *values*: a dictionary of values to be added to the new columns, taking as keys the values of ref_column with the same order.
+  * *new_columns*: the names of the new columns.
+  
 * ``keep_last_row``: keeps only the last row of the tally. No arguments are expected. 
 * ``groupby``: this implements the pandas groupby method. The keyargs to provide are:
   
@@ -201,6 +210,26 @@ The currently supported modifiers are:
 * ``format_decimals``: formats the decimals of the data contained in specific columns. A 'decimals' dictionary is expected as a 
   keyarg, where the keys should be the column names to be formatted and the values should be the corresponding number of decimals 
   to keep. 
+
+* ``tof_to_energy``: converts the time-of-flight to energy. The tally is expected
+  to be binned in time and a new column *Energy* will be created. 
+  The used formula is:
+
+  .. math::
+  
+    E = m \cdot \dfrac{1}{\sqrt{1-\dfrac{L}{\left( c \cdot t\right)^2}} - 1
+
+  where *E* is the energy in MeV, *m* is the mass of the particle in MeV/c^2, *L* is the distance between source and detector in meters,
+
+  Two optional keyargs that can be passed are:
+
+  * ``m``: mass of the particle in MeV/c^2. Default is the neutron one, 939.5654133.
+  * ``L``: distance between source and detector in meters. Default is 1.0.
+
+* ``select_subset``: selects a subset of the data. The keyargs to provide are:
+
+  * *column*: the name of the column to be used for the subset selection.
+  * *values*: list of values in *column* identifying the rows to be retained.
 
 More than one modifiers can be applied in series to a single tally.
 If your benchmark requires a new modifier, please refer to :ref:`add_tally_mod`.
@@ -230,6 +259,25 @@ An example of a *result* configuration is shown below:
   The *results* do not have to be present in all benchmark cases/runs. When they are not
   found, they are simply skipped.
 
+In some cases it may be useful to produce certain results only from some cases/runs and
+not from others. Or maybe different modifiers need to be applied in different runs.
+An example may be the case of having a benchmark composed by two runs with the same tallies.
+Nevertheless, in one run the geometry is slightly different from the other or the irradiation
+scenario is different and a distinction is needed in the applied modifiers. In this case,
+an optional parameter can be specified in the *result* config to specify a list of runs/cases
+to which the configuration is applicable:
+
+.. code-block:: yaml
+
+  # Result configuration. the result name can contain spaces.
+  result name specific for a run1:
+    apply_to: [run1] # A list of runs/cases to which the configuration is applicable.
+    concat_option: sum  # The concatenation option 'sum' is used.
+    44: [[no_action, {}]]  # Example of tally that is left untouched. 44 is the tally identifier used in the transport code.
+    46: [[scale, {"factor": 1e5}], [lethargy, {}]]  # Example of tally that is scaled and converted to flux per unit lethargy.
+
+
+
 Add the excel config file
 =========================
 
@@ -246,6 +294,8 @@ in the table, a type of comparisons (e.g. absolute difference), and then a numbe
 how the compared data is presented in the excel file.
 When more than one *result* is used in a table, they all are combined in a single pandas dataframe and an 
 extra column called "Result" is added to the dataframe to distinguish the different results.
+Additionally, when a benchmark consists of more than one run, the results are combined in a single dataframe
+and an extra column called "Case" is added to the dataframe to distinguish the different runs.
 
 The **mandatory options** to include in a *table* configurations are:
 
@@ -257,10 +307,13 @@ The **mandatory options** to include in a *table* configurations are:
   * ``absolute``: the absolute difference between the two simulations.
   * ``percentage``: the percentage difference between the two simulations.
   * ``ratio``: the ratio between the two simulations.
+  * ``chi_squared``: the chi-squared difference between computational and experimental results.
 * ``table_type``: the type of table that is produced. The currently supported types are:
   
   * ``simple``: The starting data is simply the dataframe itself.
   * ``pivot``: a pivot table is produced. This requires to specify also the ``value`` option.
+  * ``chi_squared``: a specific implementation of the *simple* table type that is used to
+    report the chi-squared value of a C/E result.
 
   Examples of the layout of these tables can be found in the :ref:`table_types` section.
   
@@ -363,6 +416,11 @@ The **mandatory options** for the *plot* configuration are:
 
 * ``select_runs``: This option allows
   to specify a regex pattern (in string format). Only the cases/runs that match the pattern will be plotted.
+* ``xlimits`` : a tuple with the lower and upper limits for the x-axis to apply.
+  If not set, the limits will be set automatically (preferred option).
+* ``ylimits`` : a tuple with the lower and upper limits for the y-axis to apply.
+  If not set, the limits will be set automatically (preferred option).
+
 
 An example of plot configuration is shown below:
 

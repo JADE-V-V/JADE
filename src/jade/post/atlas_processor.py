@@ -67,16 +67,22 @@ class AtlasProcessor:
                 logging.info("Parsing reference data")
                 raw_folder = Path(self.raw_root, codelib, self.cfg.benchmark)
 
-                df = ExcelProcessor._get_table_df(
-                    plot_cfg.results, raw_folder, subsets=plot_cfg.subsets
-                )
-                _dfs, _cases = self._select_runs(plot_cfg, df, codelib_pretty)
-                dfs.extend(_dfs)
-                for case in _cases:
-                    if case in cases:
-                        cases[case].extend(_cases[case])
-                    else:
-                        cases[case] = _cases[case]
+                try:
+                    df = ExcelProcessor._get_table_df(
+                        plot_cfg.results, raw_folder, subsets=plot_cfg.subsets
+                    )
+                    _dfs, _cases = self._select_runs(plot_cfg, df, codelib_pretty)
+                    dfs.extend(_dfs)
+                    for case in _cases:
+                        if case in cases:
+                            cases[case].extend(_cases[case])
+                        else:
+                            cases[case] = _cases[case]
+                except ValueError:
+                    # No objects to concatenate, i.e., no results for this code-lib
+                    logging.warning(
+                        f"No results for {codelib_pretty} in {plot_cfg.name} plot"
+                    )
 
             # create the plot
             if plot_cfg.expand_runs:  # one plot for each case/run

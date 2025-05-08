@@ -1,0 +1,41 @@
+          Code Name & Version = mcnp6, 6.3.0, production
+          Copyright Triad National Security, LLC/LANL/DOE - see LICENSE file
+  
+     _/      _/        _/_/_/       _/      _/       _/_/_/         _/_/_/ 
+    _/_/  _/_/      _/             _/_/    _/       _/    _/     _/        
+   _/  _/  _/      _/             _/  _/  _/       _/_/_/       _/_/_/     
+  _/      _/      _/             _/    _/_/       _/           _/    _/    
+ _/      _/        _/_/_/       _/      _/       _/             _/_/       
+  
+ mcnp6 ver=6.3.0, ld=01/26/23  04/15/25 11:12:18                   
+Source version = release/6.3-55762725c4
+  comment.  Physics models disabled.
+ comment. using random number generator  1, initial seed = 19073486328125      
+ 
+  comment.  total nubar used if fissionable isotopes are present.
+  comment.           6 surfaces were deleted for being the same as others.
+  warning.  last time bin of tally       15 is less than time cutoff.
+  warning.  last time bin of tally       25 is less than time cutoff.
+  warning.    1 materials had unnormalized fractions. print table 40.
+  warning.     1 cells appear to consist of more than one piece.
+ imcn   is done
+
+  comment.  setting up hash-based fast table search for xsec tables
+
+ ctm =        0.00   nrn =                 0
+ dump    1 on file IPPE-DT_FE_S2.r.h5   nps =           0   coll =                0
+ xact   is done
+
+ cp0 =   0.15
+      run terminated when    50000000  particle histories were done.
+
+ =====>     257.86 M histories/hr    (based on wall-clock time in mcrun)
+
+
+  warning.     2 of   3 tallies had bins with large relative errors.
+
+ ctm =       92.58   nrn =        3653963622
+ dump    2 on file IPPE-DT_FE_S2.r.h5   nps =    50000000   coll =        271383359
+ tally data written to file IPPE-DT_FE_S2.m
+ mcrun  is done
+

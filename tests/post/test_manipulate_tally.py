@@ -8,11 +8,13 @@ import pytest
 
 from src.jade.post.manipulate_tally import (
     add_column,
+    add_column_with_dict,
     by_energy,
     by_lethargy,
     concat_tallies,
     condense_groups,
     delete_cols,
+    divide_by_bin,
     format_decimals,
     groupby,
     no_action,
@@ -20,6 +22,7 @@ from src.jade.post.manipulate_tally import (
     ratio,
     replace_column,
     scale,
+    select_subset,
     subtract_tallies,
     sum_tallies,
     tof_to_energy,
@@ -38,6 +41,13 @@ def test_by_energy():
     data = {"Energy": [15, 20, 35], "Value": [10, 20, 30]}
     df = pd.DataFrame(data)
     result = by_energy(df.copy())
+    assert (df["Value"] != result["Value"]).all()
+
+
+def test_by_bin():
+    data = {"Time": [15, 20, 35], "Value": [10, 20, 30]}
+    df = pd.DataFrame(data)
+    result = divide_by_bin(df.copy(), "Time")
     assert (df["Value"] != result["Value"]).all()
 
 
@@ -160,6 +170,32 @@ def test_add_column():
     assert (result["another"] == [1, 1, 1]).all()
 
 
+def test_add_column_with_dict():
+    # Input DataFrame
+    tally = pd.DataFrame({"Cases": ["A", "B", "C", "D"], "Value": [100, 200, 300, 400]})
+
+    # Reference column and values dictionary
+    ref_column = "Cases"
+    values = {"A": [10, 1], "B": [15, 1], "C": [20, 1], "D": [25, 1]}
+    new_columns = ["new_col1", "new_col2"]
+
+    # Call the function
+    result = add_column_with_dict(tally, ref_column, values, new_columns)
+
+    # Expected DataFrame
+    expected = pd.DataFrame(
+        {
+            "Cases": ["A", "B", "C", "D"],
+            "Value": [100, 200, 300, 400],
+            "new_col1": [10, 15, 20, 25],
+            "new_col2": [1, 1, 1, 1],
+        }
+    )
+
+    # Assert the result matches the expected DataFrame
+    pd.testing.assert_frame_equal(result, expected)
+
+
 def test_groupby():
     data = {
         "Energy": [1, 1, 2, 2],
@@ -217,11 +253,23 @@ def test_format_decimals():
     pd.testing.assert_frame_equal(result, expected_df)
 
 
-def test_tol_to_energy():
+def test_tof_to_energy():
     data = {
-        "time": [1, 2, 3],
+        "Time": [1, 2, 3],
         "Value": [10, 20, 30],
         "Error": [0.1, 0.2, 0.3],
     }
     df = pd.DataFrame(data)
     tof_to_energy(df.copy())
+
+
+def test_select_subset():
+    data = {
+        "Energy": [1, 2, 3, 4, 5],
+        "Value": [10, 20, 30, 40, 50],
+        "Error": [0.1, 0.2, 0.3, 0.4, 0.5],
+    }
+    df = pd.DataFrame(data)
+    result = select_subset(df.copy(), "Energy", [1, 3])
+
+    assert len(result) == 2

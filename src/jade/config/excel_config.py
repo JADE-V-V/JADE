@@ -15,6 +15,7 @@ class TableType(Enum):
 
     PIVOT = "pivot"
     SIMPLE = "simple"
+    CHI_SQUARED = "chi_squared"
 
 
 class ComparisonType(Enum):
@@ -23,6 +24,7 @@ class ComparisonType(Enum):
     ABSOLUTE = "absolute"
     PERCENTAGE = "percentage"
     RATIO = "ratio"
+    CHI_SQUARED = "chi_squared"
 
 
 @dataclass

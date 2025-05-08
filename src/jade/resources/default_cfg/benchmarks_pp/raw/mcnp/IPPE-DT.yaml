@@ -1,0 +1,19 @@
+Neutron flux time domain:
+  concat_option: no_action
+  15:
+    - [select_subset, {'column': 'Dir', 'values': [0]}]
+    - [delete_cols, {'cols': ['Dir']}]
+    - [scale, {'factor': 1e-8, "column": Time}]
+    - [tof_to_energy, {"L": 6.825}]
+    - [scale, {'factor': 5.85E6}]
+    - [by_energy, {}]
+Coarse neutron flux time domain:
+  concat_option: no_action
+  15:
+    - [select_subset, {'column': 'Dir', 'values': [0]}]
+    - [delete_cols, {'cols': ['Dir']}]
+    - [scale, {'factor': 1e-8, "column": Time}]
+    - [tof_to_energy, {"L": 6.825}]
+    - [scale, {'factor': 5.85E6}]
+    - [condense_groups, {"bins": [0.01, 0.03, 0.06, 0.1, 0.15, 0.2, 0.4, 0.5, 0.7, 1, 1.2, 1.5, 2, 2.5, 3, 4, 7, 10, 20], "group_column": "Energy"}]
+

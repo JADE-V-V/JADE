@@ -1,0 +1,14 @@
+Neutron Leakage flux:
+  results:
+    - Neutron flux time domain
+  plot_type: binned
+  title: Neutron leakage flux 
+  x_label: Energy [MeV]
+  y_labels: '[n/cm^2/s/MeV]'
+  x: Energy
+  y: Value
+  expand_runs: true
+  xlimits: [0.04, 17.2]
+  plot_args:
+    show_error: false
+    show_CE: false

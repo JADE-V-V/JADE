@@ -29,15 +29,19 @@ def by_lethargy(tally: pd.DataFrame) -> pd.DataFrame:
 
 def by_energy(tally: pd.DataFrame) -> pd.DataFrame:
     """Convert values by energy into values by unit energy."""
-    # Energies for lethargy computation
-    energies = tally["Energy"].values
+    return divide_by_bin(tally, "Energy")
+
+
+def divide_by_bin(tally: pd.DataFrame, column_name: str) -> pd.DataFrame:
+    """Convert values by time into values by unit time."""
+    bins = tally[column_name].values
     flux = tally["Value"].values
 
-    ergs = [1e-10]  # Additional "zero" energy for lethargy computation
-    ergs.extend(energies.tolist())
-    ergs = np.array(ergs)
+    bin_intervals = [1e-10]  # Additional "zero" bin
+    bin_intervals.extend(bins.tolist())
+    bin_intervals = np.array(bin_intervals)
 
-    flux = flux / (ergs[1:] - ergs[:-1])
+    flux = flux / np.abs((bin_intervals[1:] - bin_intervals[:-1]))
     tally["Value"] = flux
     return tally
 
@@ -85,19 +89,26 @@ def condense_groups(
     return pd.DataFrame(rows).dropna()
 
 
-def scale(tally: pd.DataFrame, factor: int | float | list = 1) -> pd.DataFrame:
+def scale(
+    tally: pd.DataFrame, factor: int | float | list = 1, column: str = "Value"
+) -> pd.DataFrame:
     """Scale the tally values."""
     if isinstance(factor, list):
         factor2apply = np.array(factor)
     else:
-        factor2apply = factor
-    tally["Value"] = tally["Value"] * factor2apply
+        factor2apply = float(factor)
+    tally[column] = tally[column] * factor2apply
     return tally
 
 
 def no_action(tally: pd.DataFrame) -> pd.DataFrame:
     """Do nothing to the tally."""
     return tally
+
+
+def select_subset(tally: pd.DataFrame, column: str, values: list) -> pd.DataFrame:
+    """Select a subset of the tally based on the provided column and values."""
+    return tally.set_index(column).loc[values].reset_index()
 
 
 def replace_column(
@@ -111,6 +122,20 @@ def replace_column(
 def add_column(tally: pd.DataFrame, column: str, values: list) -> pd.DataFrame:
     """Add a new column to the tally with the provided values."""
     tally[column] = values
+    return tally
+
+
+def add_column_with_dict(
+    tally: pd.DataFrame, ref_column: str, values: dict, new_columns: list[str]
+) -> pd.DataFrame:
+    """Add a new column to the tally with the provided values."""
+    # create a new column with the values from the dictionary
+    for i, new_column in enumerate(new_columns):
+        vals = []
+        for idx, row in tally.iterrows():
+            key = row[ref_column]
+            vals.append(values[key][i])
+        tally[new_column] = vals
     return tally
 
 
@@ -179,21 +204,21 @@ def tof_to_energy(
     tally: pd.DataFrame, m: float = 939.5654133, L: float = 1
 ) -> pd.DataFrame:
     """
-    Convert from time of lights to energy
+    Convert from TOF to energy domain. Time needs to be in seconds.
 
     Parameters
     ----------
     tally : pd.DataFrame
         tally dataframe to modify
-    m : float, optional
-        mass of the particle in MeV/c^2, by default 939.5654133 (Neutron mass)
-    L : float, optional
-        distance of the detector, by default 1.0
-
+    m: float
+        mass of the particle in MeV/c^2. Default is neutron mass
+    L: float
+        distance between source and detection in meters. Default is 1.
     """
-
     c = 299792458  # m/s
-    energy = m * (1 / np.sqrt(1 - (L / (c * tally["time"])) ** 2) - 1)
+    energy = m * (
+        1 / np.sqrt(1 - (L / (c * tally["Time"].astype(float).values)) ** 2) - 1
+    )
     tally["Energy"] = energy
     return tally
 
@@ -203,14 +228,17 @@ MOD_FUNCTIONS = {
     TallyModOption.SCALE: scale,
     TallyModOption.NO_ACTION: no_action,
     TallyModOption.BY_ENERGY: by_energy,
+    TallyModOption.BY_BIN: divide_by_bin,
     TallyModOption.CONDENSE_GROUPS: condense_groups,
     TallyModOption.REPLACE: replace_column,
     TallyModOption.ADD_COLUMN: add_column,
+    TallyModOption.ADD_COLUMN_WITH_DICT: add_column_with_dict,
     TallyModOption.KEEP_LAST_ROW: keep_last_row,
     TallyModOption.GROUPBY: groupby,
     TallyModOption.DELETE_COLS: delete_cols,
     TallyModOption.FORMAT_DECIMALS: format_decimals,
     TallyModOption.TOF_TO_ENERGY: tof_to_energy,
+    TallyModOption.SELECT_SUBSET: select_subset,
 }
 
 
@@ -307,6 +335,7 @@ def compare_data(
     ignore_index=False,
 ) -> tuple[pd.Series | np.ndarray, pd.Series | np.ndarray]:
     """Returns the values and propagated errors for the chosen comparison between two data sets."""
+
     error = []
     if ignore_index:
         val1 = val1.values
@@ -337,6 +366,15 @@ def compare_data(
     elif comparison_type == ComparisonType.RATIO:
         value = val2 / val1  # reference / target
         error = np.sqrt(err1**2 + err2**2)  # relative error propagation for ratio
+
+    elif comparison_type == ComparisonType.CHI_SQUARED:
+        value = (val2 / val1 - 1) ** 2 / (err1**2 + err2**2)
+        error = [np.nan] * len(value)
+
+    else:
+        raise NotImplementedError(
+            f"Comparison type: {comparison_type} is not implemented"
+        )
 
     if not ignore_index:
         error = pd.Series(error)

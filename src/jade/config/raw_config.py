@@ -49,16 +49,21 @@ class ResultConfig:
         function should also be provided.
     concat_option : TallyConcatOption
         How to combine the tallies
+    apply_to: list[str] | None
+        if None, the result config applies to run. If not, it applies only to
+        the specified runs in the list.
     """
 
     name: int
     modify: dict[int, list[tuple[TallyModOption, dict]]]
     concat_option: TallyConcatOption
+    apply_to: list[str] | None = None
 
     @classmethod
     def from_dict(cls, dictionary: dict, name) -> ResultConfig:
         mods = {}
         concat_option = TallyConcatOption(dictionary.pop("concat_option"))
+        apply_to = dictionary.pop("apply_to", None)
         for tallyid, modifications in dictionary.items():
             new_modifications = []
             for option, keyargs in modifications:
@@ -70,6 +75,7 @@ class ResultConfig:
             name=name,
             modify=mods,
             concat_option=concat_option,
+            apply_to=apply_to,
         )
 
 
@@ -80,14 +86,17 @@ class TallyModOption(Enum):
     SCALE = "scale"
     NO_ACTION = "no_action"
     BY_ENERGY = "by_energy"
+    BY_BIN = "by_bin"
     CONDENSE_GROUPS = "condense_groups"
     REPLACE = "replace"
     ADD_COLUMN = "add_column"
+    ADD_COLUMN_WITH_DICT = "add_column_with_dict"
     KEEP_LAST_ROW = "keep_last_row"
     GROUPBY = "groupby"
     DELETE_COLS = "delete_cols"
     FORMAT_DECIMALS = "format_decimals"
     TOF_TO_ENERGY = "tof_to_energy"
+    SELECT_SUBSET = "select_subset"
 
 
 class TallyConcatOption(Enum):

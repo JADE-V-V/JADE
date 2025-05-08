@@ -399,6 +399,9 @@ class OpenMCSimOutput(AbstractSimOutput):
             sorted_tally = sorted_tally.rename(columns=new_columns)
             # remove constant columns
             sorted_tally = _remove_constant_columns(sorted_tally)
+            if "Value" in sorted_tally.columns and "Error" in sorted_tally.columns:
+                sorted_tally["Error"] = sorted_tally["Error"] / sorted_tally["Value"]
+
             tallydata[id] = sorted_tally
             totalbin[id] = None
         return tallydata, totalbin

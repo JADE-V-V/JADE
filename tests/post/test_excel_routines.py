@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 
 from jade.config.excel_config import ComparisonType
-from jade.post.excel_routines import Table
+from jade.post.excel_routines import ChiTable, Table
 
 
 class TestTable:
@@ -46,3 +46,27 @@ class TestTable:
         Table._rename_columns(newdf, {"C": "CC", None: "AA"})
         assert "CC" in newdf.columns.names
         assert "AA" in newdf.columns.names
+
+
+class TestChiTable:
+    def test_compare(self):
+        data1 = {
+            "Energy": [0, 1, 2, 3],
+            "Value": [2, 10, 20, 30],
+            "Error": [0.1, 0.1, 0.2, 0.3],
+            "Case": ["a", "a", "b", "b"],
+        }
+        data2 = {
+            "Energy": [1, 2, 3],
+            "Value": [5, 15, 30],
+            "Error": [0.15, 0.25, 0.35],
+            "Case": ["a", "b", "b"],
+        }
+        df1 = pd.DataFrame(data1)
+        df2 = pd.DataFrame(data2)
+        result = ChiTable._compare(df1, df2, ComparisonType.CHI_SQUARED)
+        result = result.set_index(["Case", "Energy"])
+        assert (
+            pytest.approx(result.loc[("b", "TOT"), "Value"])
+            == (0.25 / 0.2 - 1) ** 2 / (0.2**2 + 0.25**2) / 2
+        )

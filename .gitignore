@@ -25,4 +25,4 @@ venv/*
 .vscode/
 
 # secret file for local testing
-tests/secrets.json
+secrets.py

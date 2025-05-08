@@ -215,7 +215,8 @@ The currently supported modifiers are:
   to be binned in time and a new column *Energy* will be created. 
   The used formula is:
 
-  .. math:: 
+  .. math::
+  
     E = m \cdot \dfrac{1}{\sqrt{1-\dfrac{L}{\left( c \cdot t\right)^2}} - 1
 
   where *E* is the energy in MeV, *m* is the mass of the particle in MeV/c^2, *L* is the distance between source and detector in meters,
@@ -306,10 +307,13 @@ The **mandatory options** to include in a *table* configurations are:
   * ``absolute``: the absolute difference between the two simulations.
   * ``percentage``: the percentage difference between the two simulations.
   * ``ratio``: the ratio between the two simulations.
+  * ``chi_squared``: the chi-squared difference between computational and experimental results.
 * ``table_type``: the type of table that is produced. The currently supported types are:
   
   * ``simple``: The starting data is simply the dataframe itself.
   * ``pivot``: a pivot table is produced. This requires to specify also the ``value`` option.
+  * ``chi_squared``: a specific implementation of the *simple* table type that is used to
+    report the chi-squared value of a C/E result.
 
   Examples of the layout of these tables can be found in the :ref:`table_types` section.
   

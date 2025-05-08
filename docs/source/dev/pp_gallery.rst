@@ -32,6 +32,41 @@ This is the kind of YAML configuration that can be used to produce this table:
     y: ['Value', 'Error']
     change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'C/E'}
 
+
+Chi-square table (chi_squared)
+------------------------------
+This is a specific implementation of the simple table which is used to report the chi-square value of a
+C/E comparison.
+
+The implemented formula is:
+
+.. math:: 
+
+    \chi^2 = \frac{1}{N}\sum_{i=1}^{N} \frac{(C_i/E_i -1)^2}{\left(\sigma_{Ci}^2+\sigma_{Ei}^2\right)}
+
+where N is the total number of bins.
+
+The following is an example of the chi-square table used for the IPPE-DT benchmark:
+
+.. image:: /img/plot_gallery/chi_table.PNG
+    :width: 800
+    :align: center
+
+This is the kind of YAML configuration that can be used to produce this table:
+
+.. code-block:: yaml
+
+  Neutron flux (chi):
+    results:
+      - Coarse neutron flux time domain
+    comparison_type: chi_squared
+    table_type: chi_squared
+    x: ['Case', 'Energy']
+    y: ['Value']
+    change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'Chi^2'}
+
+
+
 Pivot table (pivot)
 -------------------
 

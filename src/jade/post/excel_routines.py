@@ -153,11 +153,18 @@ class Table(ABC):
     def _select_common_index_data(
         df1: pd.DataFrame, df2: pd.DataFrame
     ) -> tuple[pd.DataFrame, pd.Series, pd.Series, pd.Series, pd.Series]:
-        index_cols = []
-        # everything that is not Value or Error should be an index
+        index_cols1 = []
+        index_cols2 = []
+        # everything that is not Value or Error should be an index, but only
+        # common columns should be retained. This is because, depending on the code
+        # there may be extra columns that are not useful for the comparison
         for col in df1.columns:
             if col not in ["Value", "Error"]:
-                index_cols.append(col)
+                index_cols1.append(col)
+        for col in df2.columns:
+            if col not in ["Value", "Error"]:
+                index_cols2.append(col)
+        index_cols = list(set(index_cols1).intersection(set(index_cols2)))
         df1 = df1.set_index(index_cols)
         df2 = df2.set_index(index_cols)
         # we want only the intersection of the two indices

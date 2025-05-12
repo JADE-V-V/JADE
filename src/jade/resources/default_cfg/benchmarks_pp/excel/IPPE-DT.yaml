@@ -6,3 +6,12 @@ Neutron flux:
   x: ['Case', 'Energy']
   y: ['Value', 'Error']
   change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'C/E'}
+#
+Neutron flux (chi):
+  results:
+    - Coarse neutron flux time domain
+  comparison_type: chi_squared
+  table_type: chi_squared
+  x: ['Case', 'Energy']
+  y: ['Value', 'Error']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'Chi^2', 'Error': 'Exp rel err.'}

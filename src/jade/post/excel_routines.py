@@ -59,21 +59,7 @@ class Table(ABC):
 
     @staticmethod
     def _compare(df1: pd.DataFrame, df2: pd.DataFrame, comparison_type: ComparisonType):
-        index_cols = []
-        # everything that is not Value or Error should be an index
-        for col in df1.columns:
-            if col not in ["Value", "Error"]:
-                index_cols.append(col)
-        df1 = df1.set_index(index_cols)
-        df2 = df2.set_index(index_cols)
-        # we want only the intersection of the two indices
-        common_index = df1.index.intersection(df2.index)
-        df = df1.loc[common_index].copy()
-
-        val1 = df1.loc[common_index]["Value"]
-        val2 = df2.loc[common_index]["Value"]
-        err1 = df1.loc[common_index]["Error"]
-        err2 = df2.loc[common_index]["Error"]
+        df, val1, val2, err1, err2 = Table._select_common_index_data(df1, df2)
 
         df["Value"], df["Error"] = compare_data(val1, val2, err1, err2, comparison_type)
 
@@ -163,6 +149,35 @@ class Table(ABC):
         else:
             df.rename(columns=names, inplace=True)
 
+    @staticmethod
+    def _select_common_index_data(
+        df1: pd.DataFrame, df2: pd.DataFrame
+    ) -> tuple[pd.DataFrame, pd.Series, pd.Series, pd.Series, pd.Series]:
+        index_cols1 = []
+        index_cols2 = []
+        # everything that is not Value or Error should be an index, but only
+        # common columns should be retained. This is because, depending on the code
+        # there may be extra columns that are not useful for the comparison
+        for col in df1.columns:
+            if col not in ["Value", "Error"]:
+                index_cols1.append(col)
+        for col in df2.columns:
+            if col not in ["Value", "Error"]:
+                index_cols2.append(col)
+        index_cols = list(set(index_cols1).intersection(set(index_cols2)))
+        df1 = df1.set_index(index_cols)
+        df2 = df2.set_index(index_cols)
+        # we want only the intersection of the two indices
+        common_index = df1.index.intersection(df2.index)
+        df = df1.loc[common_index].copy()
+
+        val1 = df1.loc[common_index]["Value"]
+        val2 = df2.loc[common_index]["Value"]
+        err1 = df1.loc[common_index]["Error"]
+        err2 = df2.loc[common_index]["Error"]
+
+        return df, val1, val2, err1, err2
+
 
 class PivotTable(Table):
     """multi level pivot table"""
@@ -215,6 +230,47 @@ class SimpleTable(Table):
         return dfs
 
 
+class ChiTable(SimpleTable):
+    """Table for Chi^2 comparison"""
+
+    @staticmethod
+    def _compare(df1: pd.DataFrame, df2: pd.DataFrame, comparison_type: ComparisonType):
+        """Needs to be redefined for the chitable to perform the Chi^2 separately for
+        each case"""
+        assert comparison_type == ComparisonType.CHI_SQUARED  # only one supported
+
+        dfs = []
+        for run in df1["Case"].unique():
+            df1_case = df1[df1["Case"] == run]
+            df2_case = df2[df2["Case"] == run]
+            df_case, val1, val2, err1, err2 = Table._select_common_index_data(
+                df1_case, df2_case
+            )
+
+            df_case["Value"], df_case["Error"] = compare_data(
+                val1, val2, err1, err2, comparison_type
+            )
+
+            idx_cols = []
+            row = {}
+            for name in df_case.index.names:
+                if name == "Case":
+                    row[name] = run
+                else:
+                    row[name] = "TOT"
+                idx_cols.append(name)
+            row["Value"] = df_case["Value"].sum() / len(df_case["Value"])
+            row["Error"] = None
+
+            tot_line = pd.DataFrame([row]).set_index(idx_cols)
+            df_case = pd.concat([df_case, tot_line])
+
+            df_case = df_case.reset_index()
+            dfs.append(df_case)
+
+        return pd.concat(dfs)
+
+
 class TableFactory:
     """Factory class for creating Table objects according to the TableType."""
 
@@ -243,6 +299,8 @@ class TableFactory:
             return PivotTable(*args)
         elif table_type == TableType.SIMPLE:
             return SimpleTable(*args)
+        elif table_type == TableType.CHI_SQUARED:
+            return ChiTable(*args)
         else:
             raise NotImplementedError(f"Table type {table_type} not supported")
 

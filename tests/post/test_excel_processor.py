@@ -24,6 +24,15 @@ class TestExcelProcessor:
         processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
         processor.process()
 
+    def test_Sphere_code2code(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/Sphere.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("mcnp", "FENDL 3.2c"), ("openmc", "FENDL 3.2b")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()
+
     def test_oktavian(self, tmpdir):
         with as_file(
             files(default_cfg).joinpath("benchmarks_pp/excel/Oktavian.yaml")

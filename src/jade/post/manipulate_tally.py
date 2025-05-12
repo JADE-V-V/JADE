@@ -335,6 +335,7 @@ def compare_data(
     ignore_index=False,
 ) -> tuple[pd.Series | np.ndarray, pd.Series | np.ndarray]:
     """Returns the values and propagated errors for the chosen comparison between two data sets."""
+
     error = []
     if ignore_index:
         val1 = val1.values
@@ -365,6 +366,19 @@ def compare_data(
     elif comparison_type == ComparisonType.RATIO:
         value = val2 / val1  # reference / target
         error = np.sqrt(err1**2 + err2**2)  # relative error propagation for ratio
+
+    elif comparison_type == ComparisonType.CHI_SQUARED:
+        # for chi squared evaluation the assumption is that val 1 is the experimental
+        # result. In order for the value to be simulation independent and in the
+        # assumption that the simulation error are low, only the experimental uncertainty
+        # is considered
+        value = (val2 / val1 - 1) ** 2 / err1**2
+        error = err1
+
+    else:
+        raise NotImplementedError(
+            f"Comparison type: {comparison_type} is not implemented"
+        )
 
     if not ignore_index:
         error = pd.Series(error)

@@ -13,5 +13,5 @@ Neutron flux (chi):
   comparison_type: chi_squared
   table_type: chi_squared
   x: ['Case', 'Energy']
-  y: ['Value']
-  change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'Chi^2'}
+  y: ['Value', 'Error']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'Chi^2', 'Error': 'Exp rel err.'}

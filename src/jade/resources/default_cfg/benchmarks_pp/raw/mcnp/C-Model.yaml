@@ -1,0 +1,139 @@
+Neutron current on plasma boundary (inboard BLK#1-6):
+  concat_option: no_action
+  11: [['no_action', {}]]
+
+Neutron current on plasma boundary (inboard BLK#7):
+  concat_option: no_action
+  21: [['no_action', {}]]
+
+Neutron current on plasma boundary (inboard BLK#8):
+  concat_option: no_action
+  31: [['no_action', {}]]
+
+Neutron current on plasma boundary (inboard BLK#9):
+  concat_option: no_action
+  41: [['no_action', {}]]
+
+Neutron current on plasma boundary (inboard BLK#10):
+  concat_option: no_action
+  51: [['no_action', {}]]
+
+Neutron current on plasma boundary (inboard BLK#11):
+  concat_option: no_action
+  61: [['no_action', {}]]
+
+Neutron current on plasma boundary (inboard BLK#12):
+  concat_option: no_action
+  71: [['no_action', {}]]
+
+Neutron current on plasma boundary (inboard BLK#13):
+  concat_option: no_action
+  81: [['no_action', {}]]
+
+Neutron current on plasma boundary (inboard BLK#14):
+  concat_option: no_action
+  91: [['no_action', {}]]
+
+Neutron current on plasma boundary (inboard BLK#15):
+  concat_option: no_action
+  101: [['no_action', {}]]
+
+Neutron current on plasma boundary (inboard BLK#16):
+  concat_option: no_action
+  111: [['no_action', {}]]
+
+Neutron current on plasma boundary (inboard BLK#17):
+  concat_option: no_action
+  121: [['no_action', {}]]
+
+Neutron current on plasma boundary (inboard BLK#18):
+  concat_option: no_action
+  131: [['no_action', {}]]
+
+Neutron flux on plasma boundary (inboard BLK#1-6):
+  concat_option: no_action
+  12: [['no_action', {}]]
+
+Neutron flux on plasma boundary (inboard BLK#7):
+  concat_option: no_action
+  22: [['no_action', {}]]
+
+Neutron flux on plasma boundary (inboard BLK#8):
+  concat_option: no_action
+  32: [['no_action', {}]]
+
+Neutron flux on plasma boundary (inboard BLK#9):
+  concat_option: no_action
+  42: [['no_action', {}]]
+
+Neutron flux on plasma boundary (inboard BLK#10):
+  concat_option: no_action
+  52: [['no_action', {}]]
+
+Neutron flux on plasma boundary (inboard BLK#11):
+  concat_option: no_action
+  62: [['no_action', {}]]
+
+Neutron flux on plasma boundary (inboard BLK#12):
+  concat_option: no_action
+  72: [['no_action', {}]]
+
+Neutron flux on plasma boundary (inboard BLK#13):
+  concat_option: no_action
+  82: [['no_action', {}]]
+
+Neutron flux on plasma boundary (inboard BLK#14):
+  concat_option: no_action
+  92: [['no_action', {}]]
+
+Neutron flux on plasma boundary (inboard BLK#15):
+  concat_option: no_action
+  102: [['no_action', {}]]
+
+Neutron flux on plasma boundary (inboard BLK#16):
+  concat_option: no_action
+  112: [['no_action', {}]]
+
+Neutron flux on plasma boundary (inboard BLK#17):
+  concat_option: no_action
+  122: [['no_action', {}]]
+
+Neutron flux on plasma boundary (inboard BLK#18):
+  concat_option: no_action
+  132: [['no_action', {}]]
+
+NUCLEAR HEAT IN BLANKET & IN DIVERTOR [W]:
+  concat_option: no_action
+  16: [['no_action', {}]]
+
+NUCLEAR HEAT IN VACUUM VESSEL, PORT EXTENSIONS, AND PORT DUCTS [W]:
+  concat_option: no_action
+  26: [['no_action', {}]]
+
+NUCLEAR HEAT IN THERMAL SHIELDS [W]:
+  concat_option: no_action
+  36: [['no_action', {}]]
+
+NUCLEAR HEAT IN CRYOSTAT [W]:
+  concat_option: no_action
+  46: [['no_action', {}]]
+
+NUCLEAR HEAT IN PORT PLUGS [W]:
+  concat_option: no_action
+  56: [['no_action', {}]]
+
+NUCLEAR HEAT IN PF COILS [W]:
+  concat_option: no_action
+  66: [['no_action', {}]]
+
+NUCLEAR HEAT IN TF COILS [W]:
+  concat_option: no_action
+  76: [['no_action', {}]]
+
+NUCLEAR HEAT IN CORRECTION COILS [W]:
+  concat_option: no_action
+  86: [['no_action', {}]]
+
+NUCLEAR HEAT IN CENTRAL SOLENOID [W]:
+  concat_option: no_action
+  96: [['no_action', {}]]

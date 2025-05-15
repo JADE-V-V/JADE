@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 
 import tests.dummy_structure as dummy_struct
-from jade.helper.__openmc__ import OMC_AVAIL
+from jade.helper.__optionals__ import OMC_AVAIL
 from jade.post.sim_output import MCNPSimOutput, OpenMCSimOutput
 
 SIMULATION_FOLDER = files(dummy_struct).joinpath("simulations")

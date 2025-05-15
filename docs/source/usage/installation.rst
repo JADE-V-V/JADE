@@ -34,11 +34,17 @@ User installation
 
 Jade is hosted on PyPi under the name of ``jadevv``. To install it, run:
 
-  | ``pip install jadevv``
+  | ``pip install jadevv[ui]``
 
 It is responsibility of the user to install OpenMC in the same python environment 
 in case they are planning to use it. This guarantees better visibility for the users
 on which version of OpenMC is being run.
+
+.. note:: 
+  By using the ``[ui]`` option, the user will also install the GUI dependencies, in
+  particular ``tkinter``. This may not be desirable if installing on clusters as
+  often the module is not available in these systems. In this case, the recommended
+  installation is to use simply ``pip install jadevv``.
 
 .. warning:: 
   Development cycles of OpenMC are quite fast. For instance, after version 0.15.0

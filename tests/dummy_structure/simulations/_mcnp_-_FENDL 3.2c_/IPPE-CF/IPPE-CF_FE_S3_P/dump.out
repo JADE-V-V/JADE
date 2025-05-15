@@ -1,0 +1,53 @@
+          Code Name & Version = mcnp6, 6.3.0, production
+          Copyright Triad National Security, LLC/LANL/DOE - see LICENSE file
+  
+     _/      _/        _/_/_/       _/      _/       _/_/_/         _/_/_/ 
+    _/_/  _/_/      _/             _/_/    _/       _/    _/     _/        
+   _/  _/  _/      _/             _/  _/  _/       _/_/_/       _/_/_/     
+  _/      _/      _/             _/    _/_/       _/           _/    _/    
+ _/      _/        _/_/_/       _/      _/       _/             _/_/       
+  
+ mcnp6 ver=6.3.0, ld=01/26/23  04/24/25 02:14:28                   
+Source version = release/6.3-55762725c4
+  comment.  Physics models disabled.
+        6012.32c        3.889094E-4     $ C-12   WEIGHT(%) 0.099996 AB
+  warning.  neutron table inconsistent with mode will be ignored.
+        6013.32c        4.166606E-6     $ C-13   WEIGHT(%) 0.099996 AB
+  warning.  neutron table inconsistent with mode will be ignored.
+       25055.32c        3.437510E-4     $ Mn-55  WEIGHT(%) 0.4 AB(%) 1
+  warning.  neutron table inconsistent with mode will be ignored.
+       26054.32c        5.051712E-3     $ Fe-54  WEIGHT(%) 99.5 AB(%) 
+  warning.  neutron table inconsistent with mode will be ignored.
+       26056.32c        7.701353E-2     $ Fe-56  WEIGHT(%) 99.5 AB(%) 
+  warning.  neutron table inconsistent with mode will be ignored.
+       26057.32c        1.815180E-3     $ Fe-57  WEIGHT(%) 99.5 AB(%) 
+  warning.  neutron table inconsistent with mode will be ignored.
+       26058.32c        2.432620E-4     $ Fe-58  WEIGHT(%) 99.5 AB(%) 
+  warning.  neutron table inconsistent with mode will be ignored.
+       29063.32c        5.834042E-2     $ Cu-63  WEIGHT(%) 100.0 AB(%)
+  warning.  neutron table inconsistent with mode will be ignored.
+       29065.32c        2.600238E-2     $ Cu-65  WEIGHT(%) 100.0 AB(%)
+  warning.  neutron table inconsistent with mode will be ignored.
+ comment. using random number generator  1, initial seed = 19073486328125      
+ imcn   is done
+
+  warning.  material        1 has been set to a conductor.
+  warning.  material        2 has been set to a conductor.
+
+ ctm =        0.00   nrn =                 0
+ dump    1 on file IPPE-CF_FE_S3_P.r.h5   nps =           0   coll =                0
+ xact   is done
+
+ cp0 =   0.06
+      run terminated when   100000000  particle histories were done.
+
+ =====>    2611.38 M histories/hr    (based on wall-clock time in mcrun)
+
+
+  warning.     2 of   2 tallies had bins with large relative errors.
+
+ ctm =       18.34   nrn =        6575429255
+ dump    2 on file IPPE-CF_FE_S3_P.r.h5   nps =   100000000   coll =        473257980
+ tally data written to file IPPE-CF_FE_S3_P.m
+ mcrun  is done
+

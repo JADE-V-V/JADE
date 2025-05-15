@@ -1,0 +1,27 @@
+Neutron flux HPD:
+  results:
+    - Neutron flux HPD
+  plot_type: binned
+  title: IPPE CF Neutron flux (HPD)
+  x_label: Energy [MeV]
+  y_labels: '[n/cm^2/s/MeV]'
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_error: false
+    show_CE: false
+#
+Neutron flux SSD:
+  results:
+    - Neutron flux SSD
+  plot_type: binned
+  title: IPPE CF Neutron flux (SSD)
+  x_label: Energy [MeV]
+  y_labels: '[n/cm^2/s/MeV]'
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_error: false
+    show_CE: false

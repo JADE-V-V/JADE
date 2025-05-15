@@ -4,7 +4,7 @@ from importlib.resources import files
 
 import pytest
 
-from jade.helper.__openmc__ import OMC_AVAIL
+from jade.helper.__optionals__ import OMC_AVAIL
 from tests.post.resources import openmc as resources
 
 if OMC_AVAIL:

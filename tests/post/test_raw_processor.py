@@ -14,7 +14,7 @@ from jade.config.raw_config import (
     TallyConcatOption,
     TallyModOption,
 )
-from jade.helper.__openmc__ import OMC_AVAIL
+from jade.helper.__optionals__ import OMC_AVAIL
 from jade.post.raw_processor import RawProcessor
 from jade.resources import default_cfg
 

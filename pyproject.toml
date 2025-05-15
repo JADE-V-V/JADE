@@ -38,7 +38,8 @@ dev = [
     "pytest",
     "pytest-cov",
     "pytest-xvfb",  # needed for headless display
-    "ruff"  # best formatter that should be used by everybody
+    "ruff",  # best formatter that should be used by everybody
+    'ttkthemes'
 ]
 ui = [
     "ttkthemes"

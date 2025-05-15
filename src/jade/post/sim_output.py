@@ -12,7 +12,7 @@ from f4enix.output.MCNPoutput import Output
 from f4enix.output.mctal import Mctal, Tally
 from f4enix.output.meshtal import Fmesh1D, Meshtal
 
-from jade.helper.__openmc__ import OMC_AVAIL
+from jade.helper.__optionals__ import OMC_AVAIL
 
 if TYPE_CHECKING:
     from jade.helper.aux_functions import PathLike
@@ -404,7 +404,7 @@ class OpenMCSimOutput(AbstractSimOutput):
             #         and sorted_tally[column].nunique() != 1
             #     ):
             #         selected_columns.append(column)
-            
+
             # sorted_tally = sorted_tally[selected_columns]
             # sorted_tally.to_csv('tally_'+str(id)+'_sorted.csv')
             tallydata[id] = sorted_tally

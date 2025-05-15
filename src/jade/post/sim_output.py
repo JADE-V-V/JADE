@@ -397,16 +397,11 @@ class OpenMCSimOutput(AbstractSimOutput):
             sorted_tally = tally.sort_values(filters)
             sorted_tally = sorted_tally.reset_index(drop=True)
             sorted_tally = sorted_tally.rename(columns=new_columns)
-            # selected_columns = []
-            # for column in columns:
-            #     if (
-            #         column in sorted_tally.columns
-            #         and sorted_tally[column].nunique() != 1
-            #     ):
-            #         selected_columns.append(column)
+            # remove constant columns
+            sorted_tally = _remove_constant_columns(sorted_tally)
+            if "Value" in sorted_tally.columns and "Error" in sorted_tally.columns:
+                sorted_tally["Error"] = sorted_tally["Error"] / sorted_tally["Value"]
 
-            # sorted_tally = sorted_tally[selected_columns]
-            # sorted_tally.to_csv('tally_'+str(id)+'_sorted.csv')
             tallydata[id] = sorted_tally
             totalbin[id] = None
         return tallydata, totalbin
@@ -428,3 +423,23 @@ class OpenMCSimOutput(AbstractSimOutput):
 
     def _read_code_version(self) -> str | None:
         return self.output.version
+
+
+def _remove_constant_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """eliminate unnecessary columns from OpenMC tally data"""
+    # Drop constant axes (if len is > 1)
+    if len(df) > 1:
+        for column in df.columns:
+            if column not in ["Value", "Error"]:
+                firstval = df[column].values[0]
+                # Should work as long as they are the exact same value
+                allequal = (df[column] == firstval).all()
+                if allequal:
+                    del df[column]
+    else:
+        # Drop all but the first column
+        for column in df.columns:
+            if column not in ["Value", "Error"]:
+                # Should work as long as they are the exact same value
+                del df[column]
+    return df

@@ -81,6 +81,12 @@ class Plot(ABC):
                 for ax in axes:
                     self._add_labels(ax)
 
+            # apply x and y limit if requested
+            if self.cfg.xlimits:
+                axes[0].set_xlim(self.cfg.xlimits[0], self.cfg.xlimits[1])
+            if self.cfg.ylimits:
+                axes[0].set_ylim(self.cfg.ylimits[0], self.cfg.ylimits[1])
+
             newoutput.append((fig, axes))
         return newoutput
 

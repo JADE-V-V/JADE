@@ -1,9 +1,17 @@
-import tkinter as tk
-from importlib.resources import as_file, files
-from tkinter import TclError, filedialog, messagebox, ttk
+import logging
 
 import yaml
-from ttkthemes import ThemedTk
+
+from jade.helper.__optionals__ import TKINTER_AVAIL
+
+if TKINTER_AVAIL:
+    import tkinter as tk
+    from tkinter import TclError, filedialog, messagebox, ttk
+
+    from ttkthemes import ThemedTk
+
+
+from importlib.resources import as_file, files
 
 import jade.resources as res
 from jade.helper.aux_functions import PathLike, VerboseSafeDumper
@@ -278,7 +286,10 @@ class ConfigGUI:
         if file_path:
             with open(file_path, "w") as file:
                 yaml.dump(
-                    benchmarks, file, default_flow_style=False, Dumper=VerboseSafeDumper
+                    benchmarks,
+                    file,
+                    default_flow_style=False,
+                    Dumper=VerboseSafeDumper,
                 )
             messagebox.showinfo("Success", "Settings saved successfully!")
 
@@ -299,7 +310,11 @@ class ConfigGUI:
 
 
 if __name__ == "__main__":
-    yaml_run = "src/jade/resources/default_cfg/run_cfg.yml"
-    yaml_libs = "src/jade/resources/default_cfg/libs_cfg.yml"
-    app = ConfigGUI(yaml_run, yaml_libs)
-    app.window.mainloop()
+    if TKINTER_AVAIL:
+        yaml_run = "src/jade/resources/default_cfg/run_cfg.yml"
+        yaml_libs = "src/jade/resources/default_cfg/libs_cfg.yml"
+        app = ConfigGUI(yaml_run, yaml_libs)
+        if app.window:
+            app.window.mainloop()
+    else:
+        logging.error("The GUI cannot be launched because 'tkinter' is not installed.")

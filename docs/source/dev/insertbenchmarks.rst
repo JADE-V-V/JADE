@@ -169,6 +169,9 @@ The currently supported modifiers are:
   No arguments are expected.
 * ``by_energy``: a flux tally is expected and converted to a flux per unit energy.
   No arguments are expected.
+* ``by_bin``: a flux tally is expected and converted to a flux per unit bin.
+  The *column_name* is expected as key argument and the provided value has to be the name of the binning column in 
+  the form of a string.
 * ``condense_groups``: takes a binned tallies and condenses into a coarser binning. 
   Errors are combined in squared root of sum of squares.
   Two keyargs needs to be passed:
@@ -207,6 +210,26 @@ The currently supported modifiers are:
 * ``format_decimals``: formats the decimals of the data contained in specific columns. A 'decimals' dictionary is expected as a 
   keyarg, where the keys should be the column names to be formatted and the values should be the corresponding number of decimals 
   to keep. 
+
+* ``tof_to_energy``: converts the time-of-flight to energy. The tally is expected
+  to be binned in time and a new column *Energy* will be created. 
+  The used formula is:
+
+  .. math::
+  
+    E = m \cdot \dfrac{1}{\sqrt{1-\dfrac{L}{\left( c \cdot t\right)^2}} - 1
+
+  where *E* is the energy in MeV, *m* is the mass of the particle in MeV/c^2, *L* is the distance between source and detector in meters,
+
+  Two optional keyargs that can be passed are:
+
+  * ``m``: mass of the particle in MeV/c^2. Default is the neutron one, 939.5654133.
+  * ``L``: distance between source and detector in meters. Default is 1.0.
+
+* ``select_subset``: selects a subset of the data. The keyargs to provide are:
+
+  * *column*: the name of the column to be used for the subset selection.
+  * *values*: list of values in *column* identifying the rows to be retained.
 
 More than one modifiers can be applied in series to a single tally.
 If your benchmark requires a new modifier, please refer to :ref:`add_tally_mod`.
@@ -271,6 +294,8 @@ in the table, a type of comparisons (e.g. absolute difference), and then a numbe
 how the compared data is presented in the excel file.
 When more than one *result* is used in a table, they all are combined in a single pandas dataframe and an 
 extra column called "Result" is added to the dataframe to distinguish the different results.
+Additionally, when a benchmark consists of more than one run, the results are combined in a single dataframe
+and an extra column called "Case" is added to the dataframe to distinguish the different runs.
 
 The **mandatory options** to include in a *table* configurations are:
 
@@ -282,10 +307,13 @@ The **mandatory options** to include in a *table* configurations are:
   * ``absolute``: the absolute difference between the two simulations.
   * ``percentage``: the percentage difference between the two simulations.
   * ``ratio``: the ratio between the two simulations.
+  * ``chi_squared``: the chi-squared difference between computational and experimental results.
 * ``table_type``: the type of table that is produced. The currently supported types are:
   
   * ``simple``: The starting data is simply the dataframe itself.
   * ``pivot``: a pivot table is produced. This requires to specify also the ``value`` option.
+  * ``chi_squared``: a specific implementation of the *simple* table type that is used to
+    report the chi-squared value of a C/E result.
 
   Examples of the layout of these tables can be found in the :ref:`table_types` section.
   
@@ -388,6 +416,11 @@ The **mandatory options** for the *plot* configuration are:
 
 * ``select_runs``: This option allows
   to specify a regex pattern (in string format). Only the cases/runs that match the pattern will be plotted.
+* ``xlimits`` : a tuple with the lower and upper limits for the x-axis to apply.
+  If not set, the limits will be set automatically (preferred option).
+* ``ylimits`` : a tuple with the lower and upper limits for the y-axis to apply.
+  If not set, the limits will be set automatically (preferred option).
+
 
 An example of plot configuration is shown below:
 

@@ -18,8 +18,11 @@ from jade.config.pp_config import PostProcessConfig
 from jade.config.raw_config import ConfigRawProcessor
 from jade.config.run_config import RunConfig
 from jade.config.status import GlobalStatus
-from jade.gui.post_config_gui import PostConfigGUI
-from jade.gui.run_config_gui import ConfigGUI
+from jade.helper.__optionals__ import TKINTER_AVAIL
+
+if TKINTER_AVAIL:
+    from jade.gui.post_config_gui import PostConfigGUI
+    from jade.gui.run_config_gui import ConfigGUI
 from jade.helper.aux_functions import PathLike, add_rmode0, get_code_lib, print_code_lib
 from jade.helper.constants import CODE, EXP_TAG, FIRST_INITIALIZATION, JADE_TITLE
 from jade.post.atlas_processor import AtlasProcessor
@@ -61,12 +64,12 @@ class JadeApp:
             self.tree.logs, "Log " + time.ctime().replace(":", "-") + ".txt"
         )
         logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
+        logger.setLevel(logging.INFO)
 
         # set the logging to a file and keep warnings to video
         # Create a file handler for logging INFO level messages
         file_handler = logging.FileHandler(log, encoding="utf-8")
-        file_handler.setLevel(logging.DEBUG)
+        file_handler.setLevel(logging.INFO)
         file_handler.setFormatter(
             logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         )
@@ -149,6 +152,21 @@ class JadeApp:
                 )
                 benchmark.run()
         logging.info("Benchmarks run completed.")
+
+    def continue_run(self, testing: bool = False):
+        """Continue the run of the benchmarks that were not completed."""
+        commands = []
+        for bench_name, cfg in self.run_cfg.benchmarks.items():
+            benchmark = BenchmarkRunFactory.create(
+                cfg,
+                self.tree.simulations,
+                self.tree.benchmark_input_templates,
+                self.run_cfg.env_vars,
+            )
+            command = benchmark.continue_run(testing=testing)
+            commands.append(command)
+        logging.info("Benchmarks run have been submitted.")
+        return commands
 
     def raw_process(self, subset: list[str] | None = None):
         """Process the raw data from the simulations."""
@@ -254,15 +272,21 @@ class JadeApp:
 
     def start_run_config_gui(self):
         """Start the configuration GUI."""
-        logging.info("Starting the configuration GUI")
-        app = ConfigGUI(self.tree.cfg.run_cfg, self.tree.cfg.libs_cfg)
-        app.window.mainloop()
+        if not TKINTER_AVAIL:
+            logging.error("Tkinter is not available. Cannot start the GUI.")
+        else:
+            logging.info("Starting the configuration GUI")
+            app = ConfigGUI(self.tree.cfg.run_cfg, self.tree.cfg.libs_cfg)
+            app.window.mainloop()
 
     def start_pp_config_gui(self):
         """Start the post-processing configuration GUI."""
-        logging.info("Starting the post-processing configuration GUI")
-        app = PostConfigGUI(self.status)
-        app.mainloop()
+        if not TKINTER_AVAIL:
+            logging.error("Tkinter is not available. Cannot start the GUI.")
+        else:
+            logging.info("Starting the post-processing configuration GUI")
+            app = PostConfigGUI(self.status)
+            app.mainloop()
 
     def add_rmode(self):
         """Add the rmode=0 to the mcnp input files."""

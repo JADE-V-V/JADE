@@ -1,0 +1,67 @@
+Neutron flux (z=39.01cm):
+  results:
+    - Neutron flux (z=39.01cm)
+  plot_type: binned
+  title: Neutron flux (z=39.01cm)
+  x_label: Energy [MeV]
+  y_labels: "Spectrum $\\left[\\frac{Flux}{lethargy\\cdot NESTOR \\ Watt}\\right]$"
+  x: Energy
+  y: Value
+  expand_runs: false
+  plot_args:
+    show_CE: true
+#
+Neutron flux (z=58.61cm):
+  results:
+    - Neutron flux (z=58.61cm)
+  plot_type: binned
+  title: Neutron flux (z=58.61cm)
+  x_label: Energy [MeV]
+  y_labels: "Spectrum $\\left[\\frac{Flux}{lethargy\\cdot NESTOR \\ Watt}\\right]$"
+  x: Energy
+  y: Value
+  expand_runs: false
+  plot_args:
+    show_CE: true
+#
+Reaction rates - In:
+  results:
+    - Reaction Rate In
+  plot_type: ce
+  title: Neutron Reaction Rate - In115(n,n')In115m
+  x_label: Shielding thickness [cm]
+  y_labels: C/E
+  x: Cells
+  y: Value
+  expand_runs: false
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]
+#
+Reaction rates - S:
+  results:
+    - Reaction Rate S
+  plot_type: ce
+  title: Neutron Reaction Rate - S32(n,p)P32
+  x_label: Shielding thickness [cm]
+  y_labels: C/E
+  x: Cells
+  y: Value
+  expand_runs: false
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]
+#
+Reaction rates - Rh:
+  results:
+    - Reaction Rate Rh
+  plot_type: ce
+  title: Neutron Reaction Rate - Rh103(n,n')Rh103m
+  x_label: Shielding thickness [cm]
+  y_labels: C/E
+  x: Cells
+  y: Value
+  expand_runs: false
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]

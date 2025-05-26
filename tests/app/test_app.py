@@ -5,8 +5,21 @@ import shutil
 from importlib.resources import files
 from pathlib import Path
 
+import pytest
+
 import tests
 from jade.app.app import JadeApp
+from jade.config.run_config import (
+    BenchmarkRunConfig,
+    EnvironmentVariables,
+    LibraryMCNP,
+    RunConfig,
+    RunMode,
+)
+from jade.helper.constants import CODE
+from tests.run import resources as run_res
+
+RUN_RES = files(run_res)
 
 DUMMY_ROOT = files(tests).joinpath("dummy_structure")
 
@@ -92,3 +105,41 @@ class TestJadeApp:
         app.rmv_runtpe()
         new_len = len(os.listdir(Path(app.tree.simulations, target)))
         assert new_len == nfiles == check - 1
+
+    def test_continue_run(self):
+        app = JadeApp(root=DUMMY_ROOT, skip_init=True)
+        # override the run config file
+        lib = LibraryMCNP(
+            name="FENDL 3.2c", path=RUN_RES.joinpath("xsdir.txt"), suffix="31c"
+        )
+        perform = [
+            (CODE.MCNP, lib),
+        ]
+        cfg = BenchmarkRunConfig(
+            description="Dummy",
+            name="Dummy_continue",
+            run=perform,
+            nps=10,
+            only_input=True,
+        )
+        env_vars = EnvironmentVariables(
+            0,
+            10,
+            {CODE.MCNP: "mcnp6.2"},
+            run_mode=RunMode.SERIAL,
+            code_configurations={
+                CODE.MCNP: Path(DUMMY_ROOT, "cfg/exe_config/mcnp_config.sh")
+            },
+            batch_template=Path(DUMMY_ROOT, "cfg/batch_templates/Slurmtemplate.sh"),
+            batch_system="sbatch",
+        )
+        run_cfg = RunConfig(env_vars, {"Dummy_continue": cfg})
+        app.run_cfg = run_cfg
+        with pytest.raises(FileNotFoundError):
+            app.continue_run()
+
+        env_vars.run_mode = RunMode.JOB_SUMISSION
+        run_cfg = RunConfig(env_vars, {"Dummy_continue": cfg})
+        app.run_cfg = run_cfg
+        command = app.continue_run(testing=True)
+        assert "#!/bin/sh\n\n#SBATCH" in command[0]

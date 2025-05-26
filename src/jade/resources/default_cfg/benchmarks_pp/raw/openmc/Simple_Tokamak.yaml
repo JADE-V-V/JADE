@@ -98,4 +98,4 @@ Tritium Production in blanket:
   104: [['replace', {'column': 'Cells', 'values': *components}]]
 DPA in divertor cell:
   concat_option: no_action
-  114: [['replace', {'column': 'Cells', 'values': *components}]]
+  114: [['add_column', {'column': 'Cells', 'values': [Divertor]}]]

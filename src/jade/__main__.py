@@ -16,6 +16,11 @@ def main():
     parser.add_argument(
         "--ppgui", help="open the post-process configuration GUI", action="store_true"
     )
+    parser.add_argument(
+        "--cnt",
+        help="Continue the run for not simulated inputs",
+        action="store_true",
+    )
 
     args = parser.parse_args()
 
@@ -32,6 +37,8 @@ def main():
         app.raw_process()
     if args.pp:
         app.post_process()
+    if args.cnt:
+        app.continue_run()
 
 
 if __name__ == "__main__":

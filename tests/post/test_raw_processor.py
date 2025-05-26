@@ -14,7 +14,7 @@ from jade.config.raw_config import (
     TallyConcatOption,
     TallyModOption,
 )
-from jade.helper.__openmc__ import OMC_AVAIL
+from jade.helper.__optionals__ import OMC_AVAIL
 from jade.post.raw_processor import RawProcessor
 from jade.resources import default_cfg
 
@@ -369,6 +369,72 @@ class TestRawProcessor:
             os.makedirs(path)
             for subfolder in folder.iterdir():
                 processor = RawProcessor(cfg, subfolder, path)
+                processor.process_raw_data()
+
+    def test_FNG_SDDR(self, tmpdir):
+        with as_file(RAW_CFG_FILES_D1S.joinpath("FNG-SDDR.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        for folder in Path(SIMULATION_FOLDER, "_d1s_-_lib 1_", "FNG-SDDR").iterdir():
+            processor = RawProcessor(cfg, folder, tmpdir)
+            processor.process_raw_data()
+
+    def test_TUD_Fe(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("TUD-Fe.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.1d_", "TUD-Fe"),
+        ]
+
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            for subfolder in folder.iterdir():
+                processor = RawProcessor(cfg, subfolder, path)
+                processor.process_raw_data()
+
+    def test_IPPEDT(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("IPPE-DT.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "IPPE-DT"),
+        ]
+        for i, folder in enumerate(folders):
+            dump_folder = tmpdir.join(str(i))
+            os.mkdir(dump_folder)
+            for subrun in folder.iterdir():
+                processor = RawProcessor(cfg, subrun, dump_folder)
+                processor.process_raw_data()
+
+    def test_ASPIS_PCA_Replica(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("ASPIS-PCA-Replica.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "ASPIS-PCA-Replica"),
+        ]
+
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            for subfolder in folder.iterdir():
+                processor = RawProcessor(cfg, subfolder, path)
+                processor.process_raw_data()
+
+    def test_IPPECF(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("IPPE-CF.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "IPPE-CF"),
+        ]
+        for i, folder in enumerate(folders):
+            dump_folder = tmpdir.join(str(i))
+            os.mkdir(dump_folder)
+            for subrun in folder.iterdir():
+                processor = RawProcessor(cfg, subrun, dump_folder)
                 processor.process_raw_data()
 
     def test_C_model(self, tmpdir):

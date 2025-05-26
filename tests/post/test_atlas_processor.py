@@ -223,6 +223,63 @@ class TestAtlasProcessor:
         processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
         processor.process()
 
+    def test_FNG_SDDR(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/atlas/FNG-SDDR.yaml")
+        ) as file:
+            cfg = ConfigAtlasProcessor.from_yaml(file)
+
+        word_template_path = files(resources).joinpath("atlas_template.docx")
+        codelibs = [("exp", "exp"), ("d1s", "lib 2")]
+        processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
+        processor.process()
+
+    def test_TUD_Fe(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/atlas/TUD-Fe.yaml")
+        ) as file:
+            cfg = ConfigAtlasProcessor.from_yaml(file)
+
+        word_template_path = files(resources).joinpath("atlas_template.docx")
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.1d")]
+        processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
+        processor.process()
+
+    def test_IPPEDT(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/atlas/IPPE-DT.yaml")
+        ) as file:
+            cfg = ConfigAtlasProcessor.from_yaml(file)
+
+        word_template_path = files(resources).joinpath("atlas_template.docx")
+
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c")]
+        processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
+        processor.process()
+
+    def test_ASPIS_PCA_Replica(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/atlas/ASPIS-PCA-Replica.yaml")
+        ) as file:
+            cfg = ConfigAtlasProcessor.from_yaml(file)
+
+        word_template_path = files(resources).joinpath("atlas_template.docx")
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c")]
+        processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
+        processor.process()
+
+    def test_IPPECF(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/atlas/IPPE-CF.yaml")
+        ) as file:
+            cfg = ConfigAtlasProcessor.from_yaml(file)
+
+        word_template_path = files(resources).joinpath("atlas_template.docx")
+
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c")]
+        processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
+        processor.process()
+
     def test_C_model(self, tmpdir):
         with as_file(
             files(default_cfg).joinpath("benchmarks_pp/atlas/C-Model.yaml")

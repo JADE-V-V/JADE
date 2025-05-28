@@ -81,3 +81,7 @@ Experimental Benchmarks
 .. include:: benchdesc/fns-tof.rst
 
 .. include:: benchdesc/tud-fe.rst
+
+.. include:: benchdesc/ippe/ippe-dt.rst
+
+.. include:: benchdesc/ippe/ippe-cf.rst

@@ -1,7 +1,7 @@
 TUD Spectra Measurements (FNG Bulk Shield)
 ------------------------------------------
 
-.. include:: ../sinbad_disclaimer.rst
+.. include:: /documentation/benchdesc/sinbad_disclaimer.rst
 
 The purpose of the experiment is the determination of neutron and photon spectra
 in a neutronic mock-up of the ITER shielding system, irradiated with 14-MeV neutrons.

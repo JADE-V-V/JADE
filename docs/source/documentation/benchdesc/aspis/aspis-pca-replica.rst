@@ -3,7 +3,7 @@
 Winfrith Water/Iron Benchmark Experiment (ASPIS-PCA-Replica)
 ------------------------------------------------------------
 
-.. include:: ../sinbad_disclaimer.rst
+.. include:: /documentation/benchdesc/sinbad_disclaimer.rst
 
 The experiment was designed to replicate the Oak Ridge Pool Critical Assembly (PCA) experiment with a highly enriched fission plate in 
 place of the core source. Neutron spectra and reaction rate measurements were recorded through a water/iron shield as a model of the ex-core 

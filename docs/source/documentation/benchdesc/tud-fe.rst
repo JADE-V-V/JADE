@@ -1,7 +1,7 @@
 TUD Iron Slab Benchmark Experiment
 ----------------------------------
 
-.. include:: ./sinbad_disclaimer.rst
+.. include:: /documentation/benchdesc/sinbad_disclaimer.rst
 
 TUD Iron Slab Benchmark Experiment consists in the determination of spectral 
 neutron flux, spectral photon flux and neutron time-of-arrival (TOA) flux 

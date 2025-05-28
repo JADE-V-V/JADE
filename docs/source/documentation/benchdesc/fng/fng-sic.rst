@@ -3,7 +3,7 @@
 FNG Silicon Carbide (FNG SiC)
 -----------------------------
 
-.. include:: ../sinbad_disclaimer.rst
+.. include:: /documentation/benchdesc/sinbad_disclaimer.rst
 
 The purpose of this experiment is to validate Si and C cross sections through irradiation 
 of a monolithic sintered SiC block placed in front of the FNG source. This is in important 

@@ -3,7 +3,7 @@
 FNG Stainless Steel (FNG SS)
 -----------------------------
 
-.. include:: ../sinbad_disclaimer.rst
+.. include:: /documentation/benchdesc/sinbad_disclaimer.rst
 
 The purpose of this benchmark was to improve understanding of neutron transport in
 structural materials, specifically, stainless steel. This is a common material for many

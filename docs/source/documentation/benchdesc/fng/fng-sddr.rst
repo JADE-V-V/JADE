@@ -3,7 +3,7 @@
 FNG SDDR Experiment
 ------------------------------------------
 
-.. include:: ../sinbad_disclaimer.rst
+.. include:: /documentation/benchdesc/sinbad_disclaimer.rst
 
 The Frascati Neutron Generator (FNG) is an experimental facility designed and built by ENEA
 (the italian New Technology, Energy and Ambient Body) in Frascati, Italy. The installation

@@ -3,7 +3,7 @@
 FNG Bulk Blanket and Shield Experiment
 --------------------------------------
 
-.. include:: ../sinbad_disclaimer.rst
+.. include:: /documentation/benchdesc/sinbad_disclaimer.rst
 
 The aim of the experiment is to carry out a series of neutronics measurements, 
 using 14 MeV neutrons, on a mockup of ITER inboard shielding system, with 

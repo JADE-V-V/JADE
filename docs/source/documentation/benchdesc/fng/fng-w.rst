@@ -3,7 +3,7 @@
 FNG Benchmark Experiment on Tungsten
 ------------------------------------
 
-.. include:: ../sinbad_disclaimer.rst
+.. include:: /documentation/benchdesc/sinbad_disclaimer.rst
 
 The experiment was carried out in 2001 at FNG facility. The purpose is to validate tungsten cross sections as it is a candidate material for high 
 flux components in ITER and its development is pursued in the 

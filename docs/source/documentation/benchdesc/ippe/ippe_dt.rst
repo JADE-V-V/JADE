@@ -1,7 +1,7 @@
 (IPPE-DT) Institute of Physics and Power Engineering DT Iron Sphere Experiment
 ------------------------------------------------------------------------------
 
-.. include:: ../sinbad_disclaimer.rst
+.. include:: /documentation/benchdesc/sinbad_disclaimer.rst
 
 The IPPE DT Iron Sphere Experiment was carried out at the Institute of Physics and Power Engineering (IPPE) in Obninsk,
 Russia, to provide benchmark data for validating neutron transport codes and nuclear data libraries.

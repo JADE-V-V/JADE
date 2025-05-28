@@ -1,7 +1,7 @@
 (IPPE-CF) Institute of Physics and Power Engineering 252Cf 
 ----------------------------------------------------------
 
-.. include:: ../icbep_disclaimer.rst
+.. include:: /documentation/benchdesc/icbep_disclaimer.rst
 
 In the 1980’s at the Institute of Physics and Power Engineering (IPPE) in Obninsk, Russia, several experiments were executed to study the spectra of neutrons and gamma-ray photons flowing away from iron spheres of different diameters with a 252Cf radionuclide source placed at the center of these spheres. Measurements of the spectra were made outside the spheres. For the measurements of spectra, the following spectrometers were used:
 -	scintillation spectrometer of neutrons and gamma rays with a crystal of stilbene;

@@ -27,7 +27,7 @@ and alpha particle detection was used to monitor neutron yield. Room return was 
 performing a measurement with a shadow bar.
 
 
-.. figure:: /img/benchmarks/ippe-dt1.png
+.. figure:: /img/benchmarks/ippe-dt1.jpg
   :align: center
   :width: 600
 

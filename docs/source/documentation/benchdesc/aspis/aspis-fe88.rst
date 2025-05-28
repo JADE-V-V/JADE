@@ -3,6 +3,8 @@
 ASPIS Iron-88 benchmark
 -----------------------------
 
+.. include:: ../sinbad_disclaimer.rst
+
 The ASPIS experiment was designed for providing information of benchmark quality
 for testing of data and calculation methods for deep-penetration profile by 
 natural iron shielding material.

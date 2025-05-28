@@ -3,10 +3,7 @@
 FNG SDDR Experiment
 ------------------------------------------
 
-.. important::
-  This benchmark input cannot be distributed directly with JADE. The user must have a valid SINBAD
-  license and contact the JADE team in order to obtain the instructions on how to modify
-  the inputs in order for them to be used in JADE.
+.. include:: ../sinbad_disclaimer.rst
 
 The Frascati Neutron Generator (FNG) is an experimental facility designed and built by ENEA
 (the italian New Technology, Energy and Ambient Body) in Frascati, Italy. The installation

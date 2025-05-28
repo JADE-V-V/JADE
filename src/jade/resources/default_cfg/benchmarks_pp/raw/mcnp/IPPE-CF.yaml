@@ -1,0 +1,21 @@
+# This is a configuration file for the MCNP benchmark IPPE-CF.
+Neutron flux HPD:
+   concat_option: no_action
+   2:
+     - [by_energy, {}]
+Neutron flux SSD:
+  concat_option: no_action
+  12:
+    - [by_energy, {}]
+
+Coarse neutron flux HPD:
+   concat_option: no_action
+   2:
+    - [condense_groups, {"bins": [0.001, 0.01,0.03, 0.06, 0.1, 0.15, 0.2, 0.4, 0.5, 0.7], "group_column": "Energy"}]
+
+Coarse neutron flux SSD:
+   concat_option: no_action
+   12:
+    - [condense_groups, {"bins": [0.2, 0.4, 0.5, 0.7, 1, 1.2, 1.5, 2, 2.5, 3, 4, 7, 10, 20], "group_column": "Energy"}]
+
+# 0.0, 2.5E-8, 0.001, 0.01, 0.03, 0.06, 0.1, 0.15, 0.2, 0.4, 0.5, 0.7, 1.0, 1.2, 1.5, 2.0, 2.5, 3.0, 4.0, 7.0, 10.0, 20.0, 50.0, 1000.0

@@ -3,9 +3,7 @@
 FNG Silicon Carbide (FNG SiC)
 -----------------------------
 
-This experiment is part of the SINBAD database (`NEA-1553/56 <https://www.oecd-nea.org/science/wprs/shielding/sinbad/fng_sic/fngsic-a.htm>`_). 
-Users will need to show proof of licence and request the required input files to use this 
-benchmark in JADE.
+.. include:: /documentation/benchdesc/sinbad_disclaimer.rst
 
 The purpose of this experiment is to validate Si and C cross sections through irradiation 
 of a monolithic sintered SiC block placed in front of the FNG source. This is in important 

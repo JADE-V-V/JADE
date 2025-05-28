@@ -3,9 +3,7 @@
 FNG Helium Cooled Pebble Bed (HCPB) Tritium Breeder Module (TBM) Mock-up
 ------------------------------------------------------------------------
 
-This experiment is part of the SINBAD database (`NEA-1553/71 <hhttps://www.oecd-nea.org/science/wprs/shielding/sinbad/fng_hcpb/fnghcpb-a.htm>`_). 
-Users will need to show proof of licence and request the required input files to use this 
-benchmark in JADE.
+.. include:: /documentation/benchdesc/sinbad_disclaimer.rst
 
 The purpose of this experiment was to validate transport through a mock-up of the Helium 
 Cooled Pebble Bed (HCPB) blanket concept. This is one of the concepts anticipated for 

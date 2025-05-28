@@ -1,0 +1,43 @@
+          Code Name & Version = mcnp6, 6.3.0, production
+          Copyright Triad National Security, LLC/LANL/DOE - see LICENSE file
+  
+     _/      _/        _/_/_/       _/      _/       _/_/_/         _/_/_/ 
+    _/_/  _/_/      _/             _/_/    _/       _/    _/     _/        
+   _/  _/  _/      _/             _/  _/  _/       _/_/_/       _/_/_/     
+  _/      _/      _/             _/    _/_/       _/           _/    _/    
+ _/      _/        _/_/_/       _/      _/       _/             _/_/       
+  
+ mcnp6 ver=6.3.0, ld=01/26/23  04/24/25 02:05:40                   
+Source version = release/6.3-55762725c4
+  comment.  Physics models disabled.
+ mode n p                                                             
+  comment.  photonuclear physics may be needed (phys:p).
+ comment. using random number generator  1, initial seed = 19073486328125      
+ 
+  comment.  total nubar used if fissionable isotopes are present.
+ imcn   is done
+
+  warning.  material        1 has been set to a conductor.
+  warning.  material        2 has been set to a conductor.
+  comment.  setting up hash-based fast table search for xsec tables
+
+ ctm =        0.00   nrn =                 0
+ dump    1 on file IPPE-CF_FE_S3_NP.r.h5   nps =           0   coll =                0
+ xact   is done
+
+ cp0 =   0.12
+      run terminated when   100000000  particle histories were done.
+
+ =====>     687.95 M histories/hr    (based on wall-clock time in mcrun)
+
+
+  warning.  tally       12 tfc bin did not pass  1 of 10 statistical checks.
+  warning.  tally       22 tfc bin did not pass  1 of 10 statistical checks.
+  warning.  tally       62 tfc bin did not pass  1 of 10 statistical checks.
+ additional error messages on file IPPE-CF_FE_S3_NP.o
+
+ ctm =       69.56   nrn =       22589438338
+ dump    2 on file IPPE-CF_FE_S3_NP.r.h5   nps =   100000000   coll =       1813061154
+ tally data written to file IPPE-CF_FE_S3_NP.m
+ mcrun  is done
+

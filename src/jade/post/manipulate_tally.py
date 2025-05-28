@@ -368,8 +368,12 @@ def compare_data(
         error = np.sqrt(err1**2 + err2**2)  # relative error propagation for ratio
 
     elif comparison_type == ComparisonType.CHI_SQUARED:
-        value = (val2 / val1 - 1) ** 2 / (err1**2 + err2**2)
-        error = [np.nan] * len(value)
+        # for chi squared evaluation the assumption is that val 1 is the experimental
+        # result. In order for the value to be simulation independent and in the
+        # assumption that the simulation error are low, only the experimental uncertainty
+        # is considered
+        value = (val2 / val1 - 1) ** 2 / err1**2
+        error = err1
 
     else:
         raise NotImplementedError(

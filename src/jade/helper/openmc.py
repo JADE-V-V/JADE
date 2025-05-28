@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from jade.helper.__openmc__ import OMC_AVAIL
+from jade.helper.__optionals__ import OMC_AVAIL
 
 if OMC_AVAIL:
     import openmc

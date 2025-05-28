@@ -1,6 +1,8 @@
 FNG/TUD Tungsten Experiment
 ---------------------------
 
+.. include:: /documentation/benchdesc/sinbad_disclaimer.rst
+
 The purpose of the experiment is transport data benchmark by determination of spectral neutron flux and
 spectral photon flux at four positions in a thick block of W irradiated
 with 14 MeV neutrons.

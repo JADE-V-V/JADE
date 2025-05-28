@@ -280,7 +280,7 @@ This plot can be produced by the the following YAML configuration:
 
 These are the extra ``plot_args`` that this type of plot can accept:
 
-* ``maxgroups``: indicates the maximum number of values that are plotted in a single row (to avoid overcrowding).
+* ``max_groups``: indicates the maximum number of values that are plotted in a single row (to avoid overcrowding).
   by default it is set to 20.
 * ``log``: if True, the y-axis is set to log scale. Default is False. The code also analyses the data to be plotted
   and if the values span in less than 2 order of magnitude the log scale is not applied.

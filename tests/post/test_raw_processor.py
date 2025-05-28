@@ -436,3 +436,18 @@ class TestRawProcessor:
             for subrun in folder.iterdir():
                 processor = RawProcessor(cfg, subrun, dump_folder)
                 processor.process_raw_data()
+
+    def test_C_model(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("C-Model.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "C-Model"),
+        ]
+
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            for subfolder in folder.iterdir():
+                processor = RawProcessor(cfg, subfolder, path)
+                processor.process_raw_data()

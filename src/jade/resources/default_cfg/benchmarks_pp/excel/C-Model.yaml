@@ -1,0 +1,409 @@
+current BLK#1-6:
+  results:
+    - Neutron current on plasma boundary (inboard BLK#1-6)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+current BLK#7:
+  results:
+    - Neutron current on plasma boundary (inboard BLK#7)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+current BLK#8:
+  results:
+    - Neutron current on plasma boundary (inboard BLK#8)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+#
+current BLK#9:
+  results:
+    - Neutron current on plasma boundary (inboard BLK#9)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+current BLK#10:
+  results:
+    - Neutron current on plasma boundary (inboard BLK#10)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+current BLK#11:
+  results:
+    - Neutron current on plasma boundary (inboard BLK#11)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+current BLK#12:
+  results:
+    - Neutron current on plasma boundary (inboard BLK#12)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+current BLK#13:
+  results:
+    - Neutron current on plasma boundary (inboard BLK#13)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+current BLK#14:
+  results:
+    - Neutron current on plasma boundary (inboard BLK#14)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+current BLK#15:
+  results:
+    - Neutron current on plasma boundary (inboard BLK#15)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+current BLK#16:
+  results:
+    - Neutron current on plasma boundary (inboard BLK#16)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+current BLK#17:
+  results:
+    - Neutron current on plasma boundary (inboard BLK#17)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+current BLK#18:
+  results:
+    - Neutron current on plasma boundary (inboard BLK#18)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+  neutron flux BLK#1-6:
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#1-6)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+  neutron flux BLK#7:
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#7)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+neutron flux BLK#8:
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#8)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+neutron flux BLK#9:
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#9)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+neutron flux BLK#10:
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#10)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+neutron flux BLK#11:
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#11)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+neutron flux BLK#12:
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#12)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+neutron flux BLK#13:
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#13)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+neutron flux BLK#14:
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#14)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+neutron flux BLK#15:
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#15)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+neutron flux BLK#16:
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#16)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+neutron flux BLK#17:
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#17)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+neutron flux BLK#18:
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#18)
+  comparison_type: percentage
+  table_type: pivot
+  x: [User, Segments]
+  y: Case
+  value: Value
+  change_col_names: {'User': 'Collision', 'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+# # NUCLEAR HEAT IN BLANKET & IN DIVERTOR [W]
+
+Heating BLK & DIV:
+  results:
+    - NUCLEAR HEAT IN BLANKET & IN DIVERTOR [W]
+  comparison_type: percentage
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: Value
+  # change_col_names: {'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+Heating CS:
+  results:
+    - NUCLEAR HEAT IN CENTRAL SOLENOID [W]
+  comparison_type: percentage
+  table_type: pivot
+  x: [Cells,Segments]
+  y: Case
+  value: Value
+  # change_col_names: {'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+Heating Corr. coils:
+  results:
+    - NUCLEAR HEAT IN CORRECTION COILS [W]
+  comparison_type: percentage
+  table_type: pivot
+  x: [Cells,Segments]
+  y: Case
+  value: Value
+  # change_col_names: {'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+Heating Cryostat:
+  results:
+    - NUCLEAR HEAT IN CRYOSTAT [W]
+  comparison_type: percentage
+  table_type: pivot
+  x: [Cells,Segments]
+  y: Case
+  value: Value
+  # change_col_names: {'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+Heating PF Coils:
+  results:
+    - NUCLEAR HEAT IN PF COILS [W]
+  comparison_type: percentage
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: Value
+  # change_col_names: {'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+Heating Port plugs:
+  results:
+    - NUCLEAR HEAT IN PORT PLUGS [W]
+  comparison_type: percentage
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: Value
+  # change_col_names: {'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+Heating TF Coils:
+  results:
+    - NUCLEAR HEAT IN TF COILS [W]
+  comparison_type: percentage
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: Value
+  # change_col_names: {'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+Heating shield:
+  results:
+    - NUCLEAR HEAT IN THERMAL SHIELDS [W]
+  comparison_type: percentage
+  table_type: pivot
+  x: [Cells, Segments]
+  y: Case
+  value: Value
+  # change_col_names: {'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+
+Heating VV:
+  results:
+    - NUCLEAR HEAT IN VACUUM VESSEL, PORT EXTENSIONS, AND PORT DUCTS [W]
+  comparison_type: percentage
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: Value
+  # change_col_names: {'Value': 'comparison %'}
+  # add_error: true
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+

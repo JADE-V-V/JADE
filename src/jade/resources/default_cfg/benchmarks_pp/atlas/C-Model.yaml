@@ -1,0 +1,727 @@
+Neutron current BLK#1-6 (0):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#1-6)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#1-6)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#1-6)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron current BLK#1-6 (1):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#1-6)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#1-6)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#1-6)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron current BLK#7 (0):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#7)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#7)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#7)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron current BLK#7 (1):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#7)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#7)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#7)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron current BLK#8 (0):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#8)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#8)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#8)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron current BLK#8 (1):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#8)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#8)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#8)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron current BLK#9 (0):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#9)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#9)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#9)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron current BLK#9 (1):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#9)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#9)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#9)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron current BLK#10 (0):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#10)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#10)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#10)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron current BLK#10 (1):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#10)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#10)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#10)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron current BLK#11 (0):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#11)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#11)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#11)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron current BLK#11 (1):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#11)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#11)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#11)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron current BLK#12 (0):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#12)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#12)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#12)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron current BLK#12 (1):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#12)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#12)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#12)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron current BLK#13 (0):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#13)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#13)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#13)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron current BLK#13 (1):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#13)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#13)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#13)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron current BLK#14 (0):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#14)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#14)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#14)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron current BLK#14 (1):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#14)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#14)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#14)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron current BLK#15 (0):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#15)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#15)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#15)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron current BLK#15 (1):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#15)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#15)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#15)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron current BLK#16 (0):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#16)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#16)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#16)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron current BLK#16 (1):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#16)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#16)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#16)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron current BLK#17 (0):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#17)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#17)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#17)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron current BLK#17 (1):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#17)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#17)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#17)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron current BLK#18 (0):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#18)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#18)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#18)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron current BLK#18 (1):
+  results:
+    - Neutron current on plasma boundary (inboard BLK#18)
+  plot_type: barplot
+  title: Neutron current on plasma boundary (inboard BLK#18)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron current on plasma boundary (inboard BLK#18)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron flux BLK#1-6 (0):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#1-6)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#1-6)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#1-6)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron flux BLK#1-6 (1):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#1-6)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#1-6)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#1-6)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron flux BLK#7 (0):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#7)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#7)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#7)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron flux BLK#7 (1):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#7)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#7)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#7)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron flux BLK#8 (0):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#8)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#8)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#8)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron flux BLK#8 (1):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#8)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#8)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#8)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron flux BLK#9 (0):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#9)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#9)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#9)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron flux BLK#9 (1):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#9)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#9)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#9)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron flux BLK#10 (0):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#10)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#10)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#10)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron flux BLK#10 (1):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#10)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#10)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#10)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron flux BLK#11 (0):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#11)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#11)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#11)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron flux BLK#11 (1):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#11)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#11)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#11)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron flux BLK#12 (0):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#12)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#12)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#12)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron flux BLK#12 (1):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#12)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#12)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#12)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron flux BLK#13 (0):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#13)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#13)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#13)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron flux BLK#13 (1):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#13)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#13)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#13)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron flux BLK#14 (0):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#14)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#14)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#14)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron flux BLK#14 (1):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#14)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#14)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#14)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron flux BLK#15 (0):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#15)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#15)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#15)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron flux BLK#15 (1):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#15)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#15)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#15)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron flux BLK#16 (0):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#16)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#16)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#16)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron flux BLK#16 (1):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#16)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#16)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#16)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron flux BLK#17 (0):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#17)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#17)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#17)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron flux BLK#17 (1):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#17)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#17)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#17)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+Neutron flux BLK#18 (0):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#18)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#18)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#18)',  'values': {'User':[0]}}]
+  plot_args:
+    log: true
+Neutron flux BLK#18 (1):
+  results:
+    - Neutron flux on plasma boundary (inboard BLK#18)
+  plot_type: barplot
+  title: Neutron flux on plasma boundary (inboard BLK#18)
+  x_label: Segment #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: Segments
+  y: Value
+  subsets: [{'result':'Neutron flux on plasma boundary (inboard BLK#18)',  'values': {'User':[1]}}]
+  plot_args:
+    log: true
+
+NUCLEAR HEAT IN BLANKET [W]:
+  results:
+    - NUCLEAR HEAT IN BLANKET & IN DIVERTOR [W]
+  plot_type: barplot
+  title: NUCLEAR HEAT IN BLANKET [W]
+  x_label: Cell #
+  y_labels: Neclear heating [W]
+  x: Cells
+  y: Value
+  subsets: [{'result':'NUCLEAR HEAT IN BLANKET & IN DIVERTOR [W]',  'values': {'Cells':[4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,29,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60]}}]
+  plot_args:
+    log: false
+    max_groups: 30
+
+NUCLEAR HEAT IN DIVERTOR [W]:
+  results:
+    - NUCLEAR HEAT IN BLANKET & IN DIVERTOR [W]
+  plot_type: barplot
+  title: NUCLEAR HEAT IN DIVERTOR [W]
+  x_label: Cell #
+  y_labels: Nuclear heating [W]
+  x: Cells
+  y: Value
+  subsets: [{'result':'NUCLEAR HEAT IN BLANKET & IN DIVERTOR [W]',  'values': {'Cells':[61,62,63,64,65,66,67]}}]
+  plot_args:
+    log: false
+
+NUCLEAR HEAT IN PORT PLUGS [W]:
+  results:
+    - NUCLEAR HEAT IN PORT PLUGS [W]
+  plot_type: barplot
+  title: NUCLEAR HEAT IN PORT PLUGS [W]
+  x_label: Cell #
+  y_labels: Nuclear heating [W]
+  x: Cells
+  y: Value
+  plot_args:
+    log: false
+
+NUCLEAR HEAT IN PF COILS [W]:
+  results:
+    - NUCLEAR HEAT IN PF COILS [W]
+  plot_type: barplot
+  title: NUCLEAR HEAT IN PF COILS [W]
+  x_label: Cell #
+  y_labels: Nuclear heating [W]
+  x: Cells
+  y: Value
+  plot_args:
+    log: false
+
+NUCLEAR HEAT IN TF COILS [W]:
+  results:
+    - NUCLEAR HEAT IN TF COILS [W]
+  plot_type: barplot
+  title: NUCLEAR HEAT IN TF COILS [W]
+  x_label: Cell #
+  y_labels: Nuclear heating [W]
+  x: Cells
+  y: Value
+  plot_args:
+    log: false
+
+NUCLEAR HEAT IN VACUUM VESSEL, PORT EXTENSIONS, AND PORT DUCTS [W]:
+  results:
+    - NUCLEAR HEAT IN VACUUM VESSEL, PORT EXTENSIONS, AND PORT DUCTS [W]
+  plot_type: barplot
+  title: NUCLEAR HEAT IN VACUUM VESSEL, PORT EXTENSIONS, AND PORT DUCTS [W]
+  x_label: Cell #
+  y_labels: Nuclear heating [W]
+  x: Cells
+  y: Value
+  plot_args:
+    log: false
+    max_groups: 30
+
+

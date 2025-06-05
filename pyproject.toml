@@ -28,7 +28,7 @@ dependencies = [
     "python-docx",
     "aspose-words",
     "requests",
-    "f4enix >= 0.14.0",
+    "f4enix >= 0.15.0",
     "pyyaml",
     "seaborn"
 ]

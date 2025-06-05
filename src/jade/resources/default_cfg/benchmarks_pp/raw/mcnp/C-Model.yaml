@@ -4,7 +4,7 @@ Neutron current on plasma boundary:
     - ["select_subset", { column: Segments, values: [2, 3, 4, 5, 6, 7] }]
     - [
         "add_column",
-        { column: "BLK n.", values: [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6] },
+        { column: "BLK n.", values: [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6] },
       ]
 
   21:
@@ -49,7 +49,7 @@ Neutron flux on plasma boundary:
     - ["select_subset", { column: Segments, values: [2, 3, 4, 5, 6, 7] }]
     - [
         "add_column",
-        { column: "BLK n.", values: [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6] },
+        { column: "BLK n.", values: [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6] },
       ]
 
   22:
@@ -237,36 +237,6 @@ NUCLEAR HEAT IN VACUUM VESSEL, PORT EXTENSIONS, AND PORT DUCTS [W]:
   concat_option: concat
   26:
     - [
-        "select_subset",
-        {
-          column: Cells,
-          values:
-            [
-              75,
-              157,
-              158,
-              159,
-              160,
-              161,
-              162,
-              163,
-              164,
-              166,
-              167,
-              168,
-              68,
-              116,
-              134,
-              135,
-              125,
-              126,
-              127,
-              Input 20,
-              Input 21,
-            ],
-        },
-      ]
-    - [
         "add_column",
         {
           column: "Components",
@@ -309,10 +279,6 @@ NUCLEAR HEAT IN PORT PLUGS [W]:
   concat_option: concat
   56:
     - [
-        "select_subset",
-        { column: Cells, values: [Input 1, Input 2, Input 3, 85, Input 5] },
-      ]
-    - [
         "add_column",
         {
           column: "Components",
@@ -324,14 +290,6 @@ NUCLEAR HEAT IN PF COILS [W]:
   concat_option: concat
   66:
     - [
-        "select_subset",
-        {
-          column: Cells,
-          values:
-            [Input 1, Input 2, Input 3, Input 4, Input 5, Input 6, Input 7],
-        },
-      ]
-    - [
         "add_column",
         {
           column: "Components",
@@ -341,14 +299,6 @@ NUCLEAR HEAT IN PF COILS [W]:
 NUCLEAR HEAT IN TF COILS [W]:
   concat_option: concat
   76:
-    - [
-        "select_subset",
-        {
-          column: Cells,
-          values:
-            [Input 1, Input 2, Input 3, Input 4, Input 5, Input 6, Input 7],
-        },
-      ]
     - [
         "add_column",
         {

@@ -3,8 +3,8 @@ Neutron current:
     - Neutron current on plasma boundary
   comparison_type: percentage
   table_type: pivot
-  x: [User, Segments, BLK n.]
-  y: Case
+  x: [BLK n.]
+  y: User
   value: Value
   change_col_names: { "User": "Collision", "Value": "comparison %" }
   conditional_formatting: { "red": 20, "orange": 10, "yellow": 5 }
@@ -14,8 +14,8 @@ Neutron flux:
     - Neutron flux on plasma boundary
   comparison_type: percentage
   table_type: pivot
-  x: [User, Segments, BLK n.]
-  y: Case
+  x: [BLK n.]
+  y: User
   value: Value
   change_col_names: { "User": "Collision", "Value": "comparison %" }
   conditional_formatting: { "red": 20, "orange": 10, "yellow": 5 }
@@ -25,21 +25,20 @@ Nuclear Heat BLK:
   results:
     - NUCLEAR HEAT IN BLANKET [W]
   comparison_type: percentage
-  table_type: pivot
+  table_type: simple
   x: Components
-  y: Case
+  y: [Value, Error]
   value: Value
   # change_col_names: {'Value': 'comparison %'}
   # add_error: true
   conditional_formatting: { "red": 20, "orange": 10, "yellow": 5 }
-
 Nuclear Heat DIV:
   results:
     - NUCLEAR HEAT IN DIVERTOR [W]
   comparison_type: percentage
-  table_type: pivot
+  table_type: simple
   x: Cells
-  y: Case
+  y: [Value, Error]
   value: Value
   # change_col_names: {'Value': 'comparison %'}
   # add_error: true
@@ -48,9 +47,9 @@ Heating CS:
   results:
     - NUCLEAR HEAT IN CENTRAL SOLENOID [W]
   comparison_type: percentage
-  table_type: pivot
+  table_type: simple
   x: [Cells, Segments]
-  y: Case
+  y: [Value, Error]
   value: Value
   # change_col_names: {'Value': 'comparison %'}
   # add_error: true
@@ -59,9 +58,9 @@ Heating Corr. coils:
   results:
     - NUCLEAR HEAT IN CORRECTION COILS [W]
   comparison_type: percentage
-  table_type: pivot
+  table_type: simple
   x: [Cells, Segments]
-  y: Case
+  y: [Value, Error]
   value: Value
   # change_col_names: {'Value': 'comparison %'}
   # add_error: true
@@ -71,9 +70,9 @@ Heating Cryostat:
   results:
     - NUCLEAR HEAT IN CRYOSTAT [W]
   comparison_type: percentage
-  table_type: pivot
+  table_type: simple
   x: [Cells, Segments]
-  y: Case
+  y: [Value, Error]
   value: Value
   # change_col_names: {'Value': 'comparison %'}
   # add_error: true
@@ -83,9 +82,9 @@ Heating PF Coils:
   results:
     - NUCLEAR HEAT IN PF COILS [W]
   comparison_type: percentage
-  table_type: pivot
+  table_type: simple
   x: Components
-  y: Case
+  y: [Value, Error]
   value: Value
   # change_col_names: {'Value': 'comparison %'}
   # add_error: true
@@ -95,9 +94,9 @@ Heating Port plugs:
   results:
     - NUCLEAR HEAT IN PORT PLUGS [W]
   comparison_type: percentage
-  table_type: pivot
+  table_type: simple
   x: Components
-  y: Case
+  y: [Value, Error]
   value: Value
   # change_col_names: {'Value': 'comparison %'}
   # add_error: true
@@ -107,9 +106,9 @@ Heating TF Coils:
   results:
     - NUCLEAR HEAT IN TF COILS [W]
   comparison_type: percentage
-  table_type: pivot
+  table_type: simple
   x: Components
-  y: Case
+  y: [Value, Error]
   value: Value
   # change_col_names: {'Value': 'comparison %'}
   # add_error: true
@@ -119,9 +118,9 @@ Heating shield:
   results:
     - NUCLEAR HEAT IN THERMAL SHIELDS [W]
   comparison_type: percentage
-  table_type: pivot
+  table_type: simple
   x: [Cells, Segments]
-  y: Case
+  y: [Value, Error]
   value: Value
   # change_col_names: {'Value': 'comparison %'}
   # add_error: true
@@ -130,9 +129,9 @@ Heating VV:
   results:
     - NUCLEAR HEAT IN VACUUM VESSEL, PORT EXTENSIONS, AND PORT DUCTS [W]
   comparison_type: percentage
-  table_type: pivot
+  table_type: simple
   x: Components
-  y: Case
+  y: [Value, Error]
   value: Value
   # change_col_names: {'Value': 'comparison %'}
   # add_error: true

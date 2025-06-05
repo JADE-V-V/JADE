@@ -1,4 +1,4 @@
-Neutron current on plasma boundary:
+Neutron current on plasma boundary 0:
   results:
     - Neutron current on plasma boundary
   plot_type: barplot
@@ -10,14 +10,30 @@ Neutron current on plasma boundary:
   subsets:
     [
       {
-        "result": "Neutron current on plasma boundary",
-        "values": { "User": [0, 1] },
+        "result": "Neutron current on plasma boundary_0",
+        "values": { "User": [0] },
       },
     ]
   plot_args:
     log: true
+Neutron current on plasma boundary 1:
+  results:
+    - Neutron current on plasma boundary
+  plot_type: barplot
+  title: Neutron current on plasma boundary
+  x_label: BLK n. #
+  y_labels: Neutron current [#/cm^2/s]
+  x: BLK n.
+  y: Value
+  subsets:
+    [
+      {
+        "result": "Neutron current on plasma boundary_1",
+        "values": { "User": [1] },
+      },
+    ]
 
-Neutron flux on plasma boundary:
+Neutron flux on plasma boundary 0:
   results:
     - Neutron flux on plasma boundary
   plot_type: barplot
@@ -29,12 +45,29 @@ Neutron flux on plasma boundary:
   subsets:
     [
       {
-        "result": "Neutron flux on plasma boundary",
-        "values": { "User": [0, 1] },
+        "result": "Neutron flux on plasma boundary 0",
+        "values": { "User": [0] },
       },
     ]
   plot_args:
     log: true
+
+Neutron flux on plasma boundary 1:
+  results:
+    - Neutron flux on plasma boundary
+  plot_type: barplot
+  title: Neutron flux on plasma boundary
+  x_label: BLK n. #
+  y_labels: Neutron flux [#/cm^2/s]
+  x: BLK n.
+  y: Value
+  subsets:
+    [
+      {
+        "result": "Neutron flux on plasma boundary 1",
+        "values": { "User": [1] },
+      },
+    ]
 
 NUCLEAR HEAT IN BLANKET [W]:
   results:
@@ -107,7 +140,7 @@ NUCLEAR HEAT IN VACUUM VESSEL, PORT EXTENSIONS, AND PORT DUCTS [W]:
   results:
     - NUCLEAR HEAT IN VACUUM VESSEL, PORT EXTENSIONS, AND PORT DUCTS [W]
   plot_type: barplot
-  title: NUCLEAR HEAT IN VACUUM VESSEL, PORT EXTENSIONS, AND PORT DUCTS [W]
+  title: NUCLEAR HEAT IN VV, PORT EXTENSIONS, AND PORT DUCTS [W]
   x_label: Components #
   y_labels: Nuclear heating [W]
   x: Components

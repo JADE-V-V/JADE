@@ -139,7 +139,11 @@ class Table(ABC):
             index_names = {k: v for k, v in names.items() if k in df.index.names}
             df.index = df.index.rename(index_names)
         else:
-            df.index.names = [names[df.index.names[0]]]
+            try:
+                df.index.names = [names[df.index.names[0]]]
+            except KeyError:
+                # if the index name is not in the names dict, do nothing
+                pass
 
         # Apply changes to the columns
         if isinstance(df.columns, pd.MultiIndex):

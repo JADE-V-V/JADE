@@ -1,0 +1,315 @@
+Neutron current on plasma boundary:
+  concat_option: concat
+  11:
+    - ["select_subset", { column: Segments, values: [2, 3, 4, 5, 6, 7] }]
+    - [
+        "add_column",
+        { column: "BLK n.", values: [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6] },
+      ]
+
+  21:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [7, 7] }]
+  31:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [8, 8] }]
+  41:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [9, 9] }]
+  51:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [10, 10] }]
+  61:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [11, 11] }]
+  71:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [12, 12] }]
+  81:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [13, 13] }]
+  91:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [14, 14] }]
+  101:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [15, 15] }]
+  111:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [16, 16] }]
+  121:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [17, 17] }]
+  131:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [18, 18] }]
+Neutron flux on plasma boundary:
+  concat_option: concat
+  12:
+    - ["select_subset", { column: Segments, values: [2, 3, 4, 5, 6, 7] }]
+    - [
+        "add_column",
+        { column: "BLK n.", values: [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6] },
+      ]
+
+  22:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [7, 7] }]
+  32:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [8, 8] }]
+  42:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [9, 9] }]
+  52:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [10, 10] }]
+  62:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [11, 11] }]
+  72:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [12, 12] }]
+  82:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [13, 13] }]
+  92:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [14, 14] }]
+  102:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [15, 15] }]
+  112:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [16, 16] }]
+  122:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [17, 17] }]
+  132:
+    - ["select_subset", { column: Segments, values: [2] }]
+    - ["add_column", { column: "BLK n.", values: [18, 18] }]
+
+NUCLEAR HEAT IN BLANKET [W]:
+  concat_option: concat
+  16:
+    - [
+        "select_subset",
+        {
+          column: Cells,
+          values:
+            [
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27,
+              28,
+              29,
+              30,
+              31,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              47,
+              48,
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59,
+              60,
+            ],
+        },
+      ]
+    - [
+        "add_column",
+        {
+          column: "Components",
+          values:
+            [
+              BM01_C03,
+              BM01_C02,
+              BM01_C01,
+              BM02_C03,
+              BM02_C02,
+              BM02_C01,
+              BM03_C03,
+              BM03_C02,
+              BM03_C01,
+              BM04_C03,
+              BM04_C02,
+              BM04_C01,
+              BM05_C03,
+              BM05_C02,
+              BM05_C01,
+              BM06_C03,
+              BM06_C02,
+              BM06_C01,
+              7-8-9_-20deg,
+              7-8-9_cen,
+              7-8-9_+20deg,
+              BM10_1,
+              BM10_2,
+              BM11_C01,
+              BM11_S02,
+              BM11_C02,
+              BM11_S01,
+              BM11_C01_2,
+              BM12_C03,
+              BM12_S02,
+              BM12_C02,
+              BM12_S01,
+              BM12_C01,
+              BM13_C03,
+              BM13_S02,
+              BM13_C02,
+              BM13_S01,
+              BM13_C01,
+              BM14_S02,
+              BM14_S01,
+              BM15_S02,
+              BM15_S01,
+              BM16_C03,
+              BM16_S02,
+              BM16_C02,
+              BM16_S01,
+              BM16_C01,
+              BM17_C03,
+              BM17_S02,
+              BM17_C02,
+              BM17_S01,
+              BM17_C01,
+              BM18_C03,
+              BM18_S02,
+              BM18_C02,
+              BM18_S01,
+              BM18_C01,
+            ],
+        },
+      ]
+
+NUCLEAR HEAT IN DIVERTOR [W]:
+  concat_option: concat
+  16:
+    - ["select_subset", { column: Cells, values: [61, 62, 63, 64, 65, 66, 67] }]
+    - [
+        "add_column",
+        { column: "Cells n.", values: [61, 62, 63, 64, 65, 66, 67] },
+      ]
+NUCLEAR HEAT IN VACUUM VESSEL, PORT EXTENSIONS, AND PORT DUCTS [W]:
+  concat_option: concat
+  26:
+    - [
+        "add_column",
+        {
+          column: "Components",
+          values:
+            [
+              PS1,
+              PS2 FJ Y+,
+              PS2 FJ Y-,
+              PS2 Y+,
+              PS2 Y-,
+              PS3 EQ Y+,
+              PS3 EQ Y-,
+              PS4 FJ Y+,
+              PS4 FJ Y-,
+              PS4 LOW Y+/-,
+              PS4 UP Y+,
+              PS4 UP Y-,
+              TRIANG SUPPORT,
+              HOOK,
+              G SUPPORT,
+              GUSSETS,
+              SHIELD EVEN,
+              SHIELD Y+,
+              SHIELD Y-,
+              UP Port ext and duct,
+              EQ Port ext and duct,
+            ],
+        },
+      ]
+
+NUCLEAR HEAT IN THERMAL SHIELDS [W]:
+  concat_option: no_action
+  36: [["no_action", {}]]
+
+NUCLEAR HEAT IN CRYOSTAT [W]:
+  concat_option: no_action
+  46: [["no_action", {}]]
+
+NUCLEAR HEAT IN PORT PLUGS [W]:
+  concat_option: concat
+  56:
+    - [
+        "add_column",
+        {
+          column: "Components",
+          values: [UP Port ENV, UP PP+PI, EQ PP+PI, LOW PP CEN, LOW PP LAT],
+        },
+      ]
+
+NUCLEAR HEAT IN PF COILS [W]:
+  concat_option: concat
+  66:
+    - [
+        "add_column",
+        {
+          column: "Components",
+          values: [PF1, PF2, PF3, PF4, PF5, PF6, PF3-4 SUPP],
+        },
+      ]
+NUCLEAR HEAT IN TF COILS [W]:
+  concat_option: concat
+  76:
+    - [
+        "add_column",
+        {
+          column: "Components",
+          values: [IB STR, IB TOP, OB TOP, OB EQ, OB BOT, IB BOT, G SUPP],
+        },
+      ]
+NUCLEAR HEAT IN CORRECTION COILS [W]:
+  concat_option: no_action
+  86: [["no_action", {}]]
+
+NUCLEAR HEAT IN CENTRAL SOLENOID [W]:
+  concat_option: no_action
+  96: [["no_action", {}]]

@@ -19,4 +19,6 @@ class TestConfigGui:
             DUMMY_STRUCT.joinpath("raw_data"),
         )
 
-        return PostConfigGUI(status)
+        gui = PostConfigGUI(status)
+
+        assert gui is not None

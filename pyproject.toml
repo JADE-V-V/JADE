@@ -28,18 +28,22 @@ dependencies = [
     "python-docx",
     "aspose-words",
     "requests",
-    "f4enix >= 0.14.0",
+    "f4enix >= 0.15.0",
     "pyyaml",
-    "ttkthemes",
     "seaborn"
 ]
+
 [project.optional-dependencies]
 dev = [
     "pytest",
     "pytest-cov",
     "pytest-xvfb",  # needed for headless display
-    "ruff"  # best formatter that should be used by everybody
-    ]
+    "ruff",  # best formatter that should be used by everybody
+    'ttkthemes'
+]
+ui = [
+    "ttkthemes"
+]
 
 [project.urls]
 Homepage = "https://github.com/JADE-V-V/JADE"

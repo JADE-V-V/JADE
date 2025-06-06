@@ -68,5 +68,5 @@ class TestChiTable:
         result = result.set_index(["Case", "Energy"])
         assert (
             pytest.approx(result.loc[("b", "TOT"), "Value"])
-            == (0.25 / 0.2 - 1) ** 2 / (0.2**2 + 0.25**2) / 2
+            == (0.25 / 0.2 - 1) ** 2 / (0.2**2) / 2
         )

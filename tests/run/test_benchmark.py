@@ -16,7 +16,7 @@ from jade.config.run_config import (
     LibraryOpenMC,
     RunMode,
 )
-from jade.helper.__openmc__ import OMC_AVAIL
+from jade.helper.__optionals__ import OMC_AVAIL
 from jade.helper.constants import CODE
 from jade.run.benchmark import (
     BenchmarkRun,

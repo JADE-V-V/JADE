@@ -218,3 +218,25 @@ TUD-W:
   nps: 1e8
   description: FNG/TUD Tungsten Experiment
   only_input: false
+#
+IPPE-DT:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: IPPE DT Iron Sphere Experiment
+  only_input: false
+#
+IPPE-CF:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: IPPE 252Cf experiment
+  only_input: false

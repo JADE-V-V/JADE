@@ -1,10 +1,15 @@
-from __future__ import annotations
-
-import tkinter as tk
-from importlib.resources import as_file, files
-from tkinter import TclError, filedialog, messagebox, ttk
+import logging
 
 import yaml
+
+from jade.helper.__optionals__ import TKINTER_AVAIL
+
+if TKINTER_AVAIL:
+    import tkinter as tk
+    from tkinter import TclError, filedialog, messagebox, ttk
+
+
+from importlib.resources import as_file, files
 
 import jade.resources as res
 from jade.config.status import GlobalStatus
@@ -158,9 +163,12 @@ class PostConfigGUI(tk.Tk):
 
 
 if __name__ == "__main__":
-    status = GlobalStatus(
-        r"D:\DATA\laghida\Documents\GitHub\JADE\Code\tests\dummy_structure\simulations",
-        r"D:\DATA\laghida\Documents\GitHub\JADE\Code\tests\dummy_structure\raw_data",
-    )
-    app = PostConfigGUI(status)
-    app.mainloop()
+    if TKINTER_AVAIL:
+        status = GlobalStatus(
+            r"D:\DATA\laghida\Documents\GitHub\JADE\Code\tests\dummy_structure\simulations",
+            r"D:\DATA\laghida\Documents\GitHub\JADE\Code\tests\dummy_structure\raw_data",
+        )
+        app = PostConfigGUI(status)
+        app.mainloop()
+    else:
+        logging.error("The GUI cannot be launched because 'tkinter' is not installed.")

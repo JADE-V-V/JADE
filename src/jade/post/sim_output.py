@@ -6,13 +6,12 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import numpy as np
 import pandas as pd
 from f4enix.output.MCNPoutput import Output
 from f4enix.output.mctal import Mctal, Tally
-from f4enix.output.meshtal import Fmesh1D, Meshtal
+from f4enix.output.meshtal import Meshtal
 
-from jade.helper.__openmc__ import OMC_AVAIL
+from jade.helper.__optionals__ import OMC_AVAIL
 
 if TYPE_CHECKING:
     from jade.helper.aux_functions import PathLike
@@ -173,7 +172,7 @@ class MCNPSimOutput(AbstractSimOutput):
             self.meshtal.readMesh()
             # Extract the available 1D to be merged with normal tallies
             for msh in self.meshtal.mesh.values():
-                if isinstance(msh, Fmesh1D):
+                try:
                     tallynum, tallydata1D, comment = msh.convert2tally()
                     # Add them to the tallly data
                     tallydata[tallynum] = tallydata1D
@@ -182,8 +181,8 @@ class MCNPSimOutput(AbstractSimOutput):
                     dummyTally = Tally(tallynum)
                     dummyTally.tallyComment = [comment]
                     self.mctal.tallies.append(dummyTally)
-                else:
-                    continue
+                except RuntimeError:
+                    continue  # not a 1D mesh
         for tally in self.mctal.tallies:
             self._tally_numbers.append(tally.tallyNumber)
             if len(tally.tallyComment) > 0:

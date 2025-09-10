@@ -6,13 +6,12 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import numpy as np
 import pandas as pd
 from f4enix.output.MCNPoutput import Output
 from f4enix.output.mctal import Mctal, Tally
-from f4enix.output.meshtal import Fmesh1D, Meshtal
+from f4enix.output.meshtal import Meshtal
 
-from jade.helper.__openmc__ import OMC_AVAIL
+from jade.helper.__optionals__ import OMC_AVAIL
 
 if TYPE_CHECKING:
     from jade.helper.aux_functions import PathLike
@@ -173,7 +172,7 @@ class MCNPSimOutput(AbstractSimOutput):
             self.meshtal.readMesh()
             # Extract the available 1D to be merged with normal tallies
             for msh in self.meshtal.mesh.values():
-                if isinstance(msh, Fmesh1D):
+                try:
                     tallynum, tallydata1D, comment = msh.convert2tally()
                     # Add them to the tallly data
                     tallydata[tallynum] = tallydata1D
@@ -182,8 +181,8 @@ class MCNPSimOutput(AbstractSimOutput):
                     dummyTally = Tally(tallynum)
                     dummyTally.tallyComment = [comment]
                     self.mctal.tallies.append(dummyTally)
-                else:
-                    continue
+                except RuntimeError:
+                    continue  # not a 1D mesh
         for tally in self.mctal.tallies:
             self._tally_numbers.append(tally.tallyNumber)
             if len(tally.tallyComment) > 0:
@@ -397,17 +396,11 @@ class OpenMCSimOutput(AbstractSimOutput):
             sorted_tally = tally.sort_values(filters)
             sorted_tally = sorted_tally.reset_index(drop=True)
             sorted_tally = sorted_tally.rename(columns=new_columns)
-            selected_columns = []
-            for column in columns:
-                if (
-                    column in sorted_tally.columns
-                    and sorted_tally[column].nunique() != 1
-                ):
-                    selected_columns.append(column)
+            # remove constant columns
+            sorted_tally = _remove_constant_columns(sorted_tally)
+            if "Value" in sorted_tally.columns and "Error" in sorted_tally.columns:
+                sorted_tally["Error"] = sorted_tally["Error"] / sorted_tally["Value"]
 
-            sorted_tally = sorted_tally[selected_columns]
-
-            # sorted_tally.to_csv('tally_'+str(id)+'_sorted.csv')
             tallydata[id] = sorted_tally
             totalbin[id] = None
         return tallydata, totalbin
@@ -429,3 +422,23 @@ class OpenMCSimOutput(AbstractSimOutput):
 
     def _read_code_version(self) -> str | None:
         return self.output.version
+
+
+def _remove_constant_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """eliminate unnecessary columns from OpenMC tally data"""
+    # Drop constant axes (if len is > 1)
+    if len(df) > 1:
+        for column in df.columns:
+            if column not in ["Value", "Error"]:
+                firstval = df[column].values[0]
+                # Should work as long as they are the exact same value
+                allequal = (df[column] == firstval).all()
+                if allequal:
+                    del df[column]
+    else:
+        # Drop all but the first column
+        for column in df.columns:
+            if column not in ["Value", "Error"]:
+                # Should work as long as they are the exact same value
+                del df[column]
+    return df

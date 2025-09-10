@@ -23,14 +23,38 @@ Or if you are using Anaconda:
   | ``conda activate jade``
 
 .. warning:: 
-  JADE officially supports only Python 3.9, 3.10 and 3.11. There are known
-  compatibility issues if Python 3.12 or later is used.
+  JADE officially supports only Python 3.10, 3.11 and 3.12.
+  It may work with other versions, but they are untested.
 
 Install the JADE package
 ------------------------
 
 User installation
 ^^^^^^^^^^^^^^^^^^
+
+Jade is hosted on PyPi under the name of ``jadevv``. To install it, run:
+
+  | ``pip install jadevv[ui]``
+
+It is responsibility of the user to install OpenMC in the same python environment 
+in case they are planning to use it. This guarantees better visibility for the users
+on which version of OpenMC is being run.
+
+.. note:: 
+  By using the ``[ui]`` option, the user will also install the GUI dependencies, in
+  particular ``tkinter``. This may not be desirable if installing on clusters as
+  often the module is not available in these systems. In this case, the recommended
+  installation is to use simply ``pip install jadevv``.
+
+.. warning:: 
+  Development cycles of OpenMC are quite fast. For instance, after version 0.15.0
+  OpenMC does not support anymore python 3.10. Be sure to install an OpenMC version
+  that your python environment supports.  
+
+.. _installdevelop:
+
+Developer Installation
+^^^^^^^^^^^^^^^^^^^^^^
 
 JADE source code is hosted at `JADE repository <https://github.com/JADE-V-V/JADE>`_.
 You can either dowload the zip file or clone it using git with:
@@ -39,33 +63,13 @@ You can either dowload the zip file or clone it using git with:
 
 Moving into the downloaded folder, the user can install the ``jade`` python package
 through a local pip install.
-It is good practice to upgrade pip before performing
-the installation:
 
-  | ``pip install --upgrade pip``
-  | ``pip install .``
-
-If the user wishes to use the OpenMC features within JADE, they should alternatively
-install JADE with OpenMC as follows:
-
-  | ``pip install .[openmc]``
-
-Alternatively, the user can install OpenMC separately in the same python environment.
-
-.. warning:: 
-  Note that currently OpenMC is supported only up to version 0.14.0 and that the user
-  will need to have git installed on their system if using the ``[openmc]`` option. 
-
-.. _installdevelop:
-
-Developer Installation
-^^^^^^^^^^^^^^^^^^^^^^
-
-If you are developing JADE, the cloning of the repository is mandatory.
-Moreover, it is recommeded to use the '-e' option when installing (editable mode)
+It is recommeded to use the '-e' option when installing (editable mode)
 and you should also install the additional 'dev' dependencies. 
 
   | ``pip install -e .[dev]``
+
+If your dev system allows it, install also openmc in the same python environment.
 
 Instantiate a JADE folder tree
 ------------------------------

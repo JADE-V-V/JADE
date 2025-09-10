@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from jade.helper.__openmc__ import OMC_AVAIL
+from jade.helper.__optionals__ import OMC_AVAIL
 
 if OMC_AVAIL:
     import openmc
@@ -21,6 +21,8 @@ if TYPE_CHECKING:
     from f4enix.input.materials import MatCardsList, Material, SubMaterial, Zaid
 
     from jade.helper.aux_functions import PathLike
+
+PAT_DIGITS = re.compile(r"\d+")
 
 
 @dataclass
@@ -297,8 +299,9 @@ class OpenMCInputFiles:
         self.settings.batches = batches
         self.settings.particles = int(nps / batches)
 
+    @staticmethod
     def zaid_to_openmc(
-        self, zaid: Zaid, openmc_material: openmc.Material, libmanager: LibManager
+        zaid: Zaid, openmc_material: openmc.Material, libmanager: LibManager
     ) -> None:
         """Convert Zaid to OpenMC format with atom or weight fraction
 
@@ -314,6 +317,9 @@ class OpenMCInputFiles:
         None
         """
         nuclide = zaid.get_fullname(libmanager).replace("-", "")
+        # if no istope number is in the nuclide, a zero needs to be added
+        if PAT_DIGITS.search(nuclide) is None:
+            nuclide = nuclide + "0"
         if zaid.fraction < 0.0:
             openmc_material.add_nuclide(nuclide, 100 * abs(zaid.fraction), "wo")
         else:
@@ -364,6 +370,8 @@ class OpenMCInputFiles:
         matdensity = abs(material.density)
         if material.density < 0:
             density_units = "g/cc"
+        else:
+            raise ValueError("Density should be provided negative (mass)")
         openmc_material = openmc.Material(matid, name=matname)
         openmc_material.set_density(density_units, matdensity)
         if material.submaterials is not None:

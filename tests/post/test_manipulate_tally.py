@@ -2,22 +2,28 @@ from __future__ import annotations
 
 import math
 
+import numpy as np
 import pandas as pd
 import pytest
 
 from src.jade.post.manipulate_tally import (
     add_column,
+    add_column_with_dict,
     by_energy,
     by_lethargy,
     concat_tallies,
     condense_groups,
     delete_cols,
+    divide_by_bin,
     format_decimals,
     groupby,
     no_action,
     no_concat,
+    ratio,
     replace_column,
     scale,
+    select_subset,
+    subtract_tallies,
     sum_tallies,
     tof_to_energy,
 )
@@ -35,6 +41,13 @@ def test_by_energy():
     data = {"Energy": [15, 20, 35], "Value": [10, 20, 30]}
     df = pd.DataFrame(data)
     result = by_energy(df.copy())
+    assert (df["Value"] != result["Value"]).all()
+
+
+def test_by_bin():
+    data = {"Time": [15, 20, 35], "Value": [10, 20, 30]}
+    df = pd.DataFrame(data)
+    result = divide_by_bin(df.copy(), "Time")
     assert (df["Value"] != result["Value"]).all()
 
 
@@ -69,9 +82,41 @@ def test_sum_tallies():
     result = sum_tallies([df1, df2])
     expected_values = [15, 35, 55]
     expected_errors = [
-        (10 * 0.1 + 5 * 0.1) / 15,
-        (20 * 0.2 + 15 * 0.2) / 35,
-        (30 * 0.3 + 25 * 0.3) / 55,
+        np.sqrt((10 * 0.1) ** 2 + (5 * 0.1) ** 2) / 15,
+        np.sqrt((20 * 0.2) ** 2 + (15 * 0.2) ** 2) / 35,
+        np.sqrt((30 * 0.3) ** 2 + (25 * 0.3) ** 2) / 55,
+    ]
+    assert result["Value"].tolist() == expected_values
+    assert result["Error"].tolist() == expected_errors
+
+
+def test_subtract_tallies():
+    data1 = {"Energy": [1, 2, 3], "Value": [10, 20, 30], "Error": [0.1, 0.2, 0.3]}
+    data2 = {"Energy": [1, 2, 3], "Value": [5, 15, 25], "Error": [0.1, 0.2, 0.3]}
+    df1 = pd.DataFrame(data1)
+    df2 = pd.DataFrame(data2)
+    result = subtract_tallies([df1, df2])
+    expected_values = [5, 5, 5]
+    expected_errors = [
+        np.sqrt((10 * 0.1) ** 2 + (5 * 0.1) ** 2) / 5,
+        np.sqrt((20 * 0.2) ** 2 + (15 * 0.2) ** 2) / 5,
+        np.sqrt((30 * 0.3) ** 2 + (25 * 0.3) ** 2) / 5,
+    ]
+    assert result["Value"].tolist() == expected_values
+    assert result["Error"].tolist() == expected_errors
+
+
+def test_ratio_tallies():
+    data1 = {"Energy": [1, 2, 3], "Value": [10, 20, 30], "Error": [0.1, 0.2, 0.3]}
+    data2 = {"Energy": [1, 2, 3], "Value": [5, 15, 25], "Error": [0.1, 0.2, 0.3]}
+    df1 = pd.DataFrame(data1)
+    df2 = pd.DataFrame(data2)
+    result = ratio([df1, df2])
+    expected_values = [2, 4 / 3, 6 / 5]
+    expected_errors = [
+        np.sqrt((0.1) ** 2 + (0.1) ** 2),
+        np.sqrt((0.2) ** 2 + (0.2) ** 2),
+        np.sqrt((0.3) ** 2 + (0.3) ** 2),
     ]
     assert result["Value"].tolist() == expected_values
     assert result["Error"].tolist() == expected_errors
@@ -123,6 +168,32 @@ def test_add_column():
     assert (result["New"] == [1, 2, 3]).all()
     result = add_column(df.copy(), "another", 1)
     assert (result["another"] == [1, 1, 1]).all()
+
+
+def test_add_column_with_dict():
+    # Input DataFrame
+    tally = pd.DataFrame({"Cases": ["A", "B", "C", "D"], "Value": [100, 200, 300, 400]})
+
+    # Reference column and values dictionary
+    ref_column = "Cases"
+    values = {"A": [10, 1], "B": [15, 1], "C": [20, 1], "D": [25, 1]}
+    new_columns = ["new_col1", "new_col2"]
+
+    # Call the function
+    result = add_column_with_dict(tally, ref_column, values, new_columns)
+
+    # Expected DataFrame
+    expected = pd.DataFrame(
+        {
+            "Cases": ["A", "B", "C", "D"],
+            "Value": [100, 200, 300, 400],
+            "new_col1": [10, 15, 20, 25],
+            "new_col2": [1, 1, 1, 1],
+        }
+    )
+
+    # Assert the result matches the expected DataFrame
+    pd.testing.assert_frame_equal(result, expected)
 
 
 def test_groupby():
@@ -182,11 +253,23 @@ def test_format_decimals():
     pd.testing.assert_frame_equal(result, expected_df)
 
 
-def test_tol_to_energy():
+def test_tof_to_energy():
     data = {
-        "time": [1, 2, 3],
+        "Time": [1, 2, 3],
         "Value": [10, 20, 30],
         "Error": [0.1, 0.2, 0.3],
     }
     df = pd.DataFrame(data)
     tof_to_energy(df.copy())
+
+
+def test_select_subset():
+    data = {
+        "Energy": [1, 2, 3, 4, 5],
+        "Value": [10, 20, 30, 40, 50],
+        "Error": [0.1, 0.2, 0.3, 0.4, 0.5],
+    }
+    df = pd.DataFrame(data)
+    result = select_subset(df.copy(), "Energy", [1, 3])
+
+    assert len(result) == 2

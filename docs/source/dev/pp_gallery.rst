@@ -32,6 +32,41 @@ This is the kind of YAML configuration that can be used to produce this table:
     y: ['Value', 'Error']
     change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'C/E'}
 
+
+Chi-square table (chi_squared)
+------------------------------
+This is a specific implementation of the simple table which is used to report the chi-square value of a
+C/E comparison.
+
+The implemented formula is:
+
+.. math:: 
+
+    \chi^2 = \frac{1}{N}\sum_{i=1}^{N} \frac{(C_i/E_i -1)^2}{\left(\sigma_{Ci}^2+\sigma_{Ei}^2\right)}
+
+where N is the total number of bins.
+
+The following is an example of the chi-square table used for the IPPE-DT benchmark:
+
+.. image:: /img/plot_gallery/chi_table.PNG
+    :width: 800
+    :align: center
+
+This is the kind of YAML configuration that can be used to produce this table:
+
+.. code-block:: yaml
+
+  Neutron flux (chi):
+    results:
+      - Coarse neutron flux time domain
+    comparison_type: chi_squared
+    table_type: chi_squared
+    x: ['Case', 'Energy']
+    y: ['Value']
+    change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'Chi^2'}
+
+
+
 Pivot table (pivot)
 -------------------
 
@@ -212,6 +247,10 @@ These are the extra ``plot_args`` that this type of plot can accept:
 * ``rotate_ticks`` if set to True, the x-axis ticks are rotated by 45 degrees. default is False.
 * ``xscale``: The scale of the x-axis. Every argument that could be passed to the matplotlib function
   ``set_xscale()`` is accepted. Common ones are 'linear' or 'log'. Default is 'linear'.
+* ``shorten_x_name``: this type of plots are often categorical. In the event of using the 
+  cases as x axis, the long names of the benchmark runs can become problematic. This option
+  will split the name of the benchmark run on the '_' symbols and retain only the last N chunks
+  where N is the specified *shorten_x_name* value.
 
 Barplot (barplot)
 -----------------
@@ -241,7 +280,7 @@ This plot can be produced by the the following YAML configuration:
 
 These are the extra ``plot_args`` that this type of plot can accept:
 
-* ``maxgroups``: indicates the maximum number of values that are plotted in a single row (to avoid overcrowding).
+* ``max_groups``: indicates the maximum number of values that are plotted in a single row (to avoid overcrowding).
   by default it is set to 20.
 * ``log``: if True, the y-axis is set to log scale. Default is False. The code also analyses the data to be plotted
   and if the values span in less than 2 order of magnitude the log scale is not applied.

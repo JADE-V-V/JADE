@@ -258,15 +258,18 @@ class LibraryOpenMC(Library):
     """
 
     def __post_init__(self):
-        # in OpenMC the path points to a folder where a number of hdf files are stored.
-        # I am assuming here that the format is always something like Cd116.h5
-        # If this is not the case, we will be forced in the future to parse each single
-        # table to get the correct zaid name. This could be expensive.
+        # Assumptions:
+        # material is alwasy of the type "Ti50" or "Ti50_m1" if metastable
+        # look only for type=neutron
         lm = LibManager(defaultlib="00c")  # Just for name conversions
         self._available_zaids = []
         root = ET.parse(self.path).getroot()
         for type_tag in root.findall("library"):
             zaidname = type_tag.get("materials")
+            zaid_type = type_tag.get("type")
+            # Check only neutrons and remove metastable
+            if zaid_type != "neutron" or "_" in str(zaidname):
+                continue
             try:
                 zaidnum = lm.get_zaidnum(str(zaidname))
             except ValueError:

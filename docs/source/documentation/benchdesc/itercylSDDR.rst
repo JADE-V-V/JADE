@@ -1,4 +1,4 @@
-ITER CYLYNDER SDDR
+ITER CYLINDER SDDR
 ------------------
 
 The ITER Cylinder SDDR is a very popular computational benchmark for

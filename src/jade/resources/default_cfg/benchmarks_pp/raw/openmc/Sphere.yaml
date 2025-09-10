@@ -1,0 +1,23 @@
+# extra columns to be deleted
+_cols: &del_cols
+  cols: 
+    - energy low [eV]
+
+Leakage neutron flux Vitamin-J 175:
+  concat_option: no_action
+  2: [[scale, {"factor": 3.182462327E-3}], [delete_cols, *del_cols]]
+Leakage photon flux:
+  concat_option: no_action
+  22: [[scale, {"factor": 3.182462327E-3}], [delete_cols, *del_cols]]
+Leakage photon flux 24 groups:
+  concat_option: no_action
+  32: [[scale, {"factor": 3.182462327E-3}], [delete_cols, *del_cols]]
+Neutron heating:
+  concat_option: no_action
+  6: [[no_action, {}]]
+Photon heating:
+  concat_option: no_action
+  46: [[no_action, {}]]
+Leakage neutron flux:
+  concat_option: no_action
+  12: [[scale, {"factor": 3.182462327E-3}], [delete_cols, *del_cols]]

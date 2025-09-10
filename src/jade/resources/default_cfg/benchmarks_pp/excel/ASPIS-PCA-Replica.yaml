@@ -1,0 +1,30 @@
+Neutron flux (z=39.01cm):
+  results:
+    - Neutron flux (z=39.01cm)
+    - Neutron flux (z=58.61cm)
+  comparison_type: ratio
+  table_type: simple
+  x: Energy
+  y: ['Value', 'Error']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Case': 'Configuration', 0: 'C/E'}
+#
+Neutron flux (z=58.61cm):
+  results:
+    - Neutron flux (z=58.61cm)
+  comparison_type: ratio
+  table_type: simple
+  x: Energy
+  y: ['Value', 'Error']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Case': 'Configuration', 0: 'C/E'}
+#
+Reaction rates:
+  results:
+    - Reaction Rate In
+    - Reaction Rate S
+    - Reaction Rate Rh
+  comparison_type: ratio
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: ['Value', 'Error']
+  change_col_names: {'Cells': 'Shielding thickness [cm]', 'Case': 'Activation Foil', 0: 'C/E'}

@@ -1,0 +1,9 @@
+RR(CE):
+  results:
+    - Reaction rate
+  comparison_type: ratio
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: ['Value', 'Error']
+  change_col_names: {'Cells': 'Shielding depth [cm]', 'Case': 'Activation Foil', 0: 'C/E'}

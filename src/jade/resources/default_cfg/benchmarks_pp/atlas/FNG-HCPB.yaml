@@ -1,0 +1,76 @@
+Reaction rate:
+  results:
+    - Reaction rate
+  plot_type: ce
+  title: Neutron reaction rate in activation foils
+  x_label: Shielding depth [cm]
+  y_labels: C/E
+  x: Cells
+  y: Value
+  expand_runs: true
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]
+
+# Tritium activity at 9.5 cm from the source
+Tritium activity at 9.5 cm from the source: 
+  results:
+    - Tritium activity Pellet
+  plot_type: ce
+  title: Tritium activity at 9.5 cm from the source
+  x_label: Pellet no.
+  y_labels: C/E
+  x: Pellet
+  y: Value
+  subsets: [{'result':'Tritium activity Pellet', 'values': {'Distance':[9.5]}}]
+  expand_runs: false
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]
+#tritium activity at 15.8 cm from the source
+Tritium activity at 15.8 cm from the source: 
+  results:
+    - Tritium activity Pellet
+  plot_type: ce
+  title: Tritium activity at 15.8 cm from the source
+  x_label: Pellet no.
+  y_labels: C/E
+  x: Pellet
+  y: Value
+  subsets: [{'result':'Tritium activity Pellet', 'values': {'Distance':[15.8]}}]
+  expand_runs: false
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]
+#tritium activity at 22.1 cm from the source
+Tritium activity at 22.1 cm from the source: 
+  results:
+    - Tritium activity Pellet
+  plot_type: ce
+  title: Tritium activity at 22.1 cm from the source
+  x_label: Pellet no.
+  y_labels: C/E
+  x: Pellet
+  y: Value
+  subsets: [{'result':'Tritium activity Pellet', 'values': {'Distance':[22.1]}}]
+  expand_runs: false
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]
+#tritium activity at 28.4 cm from the source
+Tritium activity at 28.4 cm from the source: 
+  results:
+    - Tritium activity Pellet
+  plot_type: ce
+  title: Tritium activity at 28.4 cm from the source
+  x_label: Pellet no.
+  y_labels: C/E
+  x: Pellet
+  y: Value
+  subsets: [{'result':'Tritium activity Pellet', 'values': {'Distance':[28.4]}}]
+  expand_runs: false
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]    
+
+

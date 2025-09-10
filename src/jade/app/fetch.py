@@ -12,7 +12,7 @@ import requests
 
 from jade.helper.aux_functions import PathLike
 
-BRANCH = "jadev4"  # TODO change in main once merged the PR
+BRANCH = "main"  # TODO change in main once merged the PR
 IAEA_URL = f"https://github.com/IAEA-NDS/open-benchmarks/archive/{BRANCH}.zip"
 
 

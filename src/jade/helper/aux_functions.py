@@ -95,7 +95,10 @@ def check_run_d1s(folder: PathLike) -> bool:
 
 
 def get_jade_version() -> str:
-    return importlib.metadata.version("jade")
+    try:
+        return importlib.metadata.version("jade")
+    except importlib.metadata.PackageNotFoundError:
+        return importlib.metadata.version("jadevv")
 
 
 def add_rmode0(path: PathLike) -> None:

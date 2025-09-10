@@ -1,0 +1,93 @@
+Neutron Spectral fluence:
+  results:
+    - Neutron fluence (energy)
+  plot_type: binned
+  title: Neutron Spectral fluence
+  x_label: Energy [MeV]
+  y_labels: "Spectral fluence $\\left[\\frac{1}{MeV\\cdot n \\cdot cm^2}\\right]$"
+  x: Energy
+  y: Value
+  expand_runs: false
+  plot_args:
+    subcases: ["Case", ['TUD-Fe_A0','TUD-Fe_A1','TUD-Fe_A2']]
+    scale_subcases: true
+    xscale: "log"
+#
+Neutron Spectral fluence (C/E):
+  results:
+    - Neutron fluence (energy)
+  plot_type: ce
+  title: Neutron Spectral fluence (C/E)
+  x_label: Energy [MeV]
+  y_labels: "C/E"
+  x: Energy
+  y: Value
+  expand_runs: false
+  plot_args:
+    subcases: ["Case", ['TUD-Fe_A0','TUD-Fe_A1','TUD-Fe_A2']]
+    style: 'step'
+    xscale: "log"
+    ce_limits: [0, 2]
+#
+Neutron Spectral time-of-arrival fluence:
+  results:
+    - Neutron fluence (time)
+  plot_type: binned
+  title: Neutron Spectral fluence
+  x_label: Time [shakes]
+  y_labels: "Spectral time-of-arrival fluence $\\left[\\frac{1}{MeV\\cdot n \\cdot cm^2}\\right]$"
+  x: Time
+  y: Value
+  expand_runs: false
+  xlimits: [6, 30]
+  plot_args:
+    subcases: ["Case", ['TUD-Fe_A0','TUD-Fe_A1','TUD-Fe_A2']]
+    scale_subcases: true
+    xscale: "log"
+#
+Neutron Spectral time-of-arrival fluence (C/E):
+  results:
+    - Neutron fluence (time)
+  plot_type: ce
+  title: Neutron Spectral time-of-arrival fluence (C/E)
+  x_label: Time [shakes]
+  y_labels: "C/E"
+  x: Time
+  y: Value
+  expand_runs: false
+  plot_args:
+    subcases: ["Case", ['TUD-Fe_A0','TUD-Fe_A1','TUD-Fe_A2']]
+    style: 'step'
+    xscale: "log"
+    ce_limits: [0, 2]
+#
+Photon Spectral fluence:
+  results:
+    - Photon fluence
+  plot_type: binned
+  title: Photon Spectral fluence
+  x_label: Energy [MeV]
+  y_labels: "Spectral fluence $\\left[\\frac{1}{MeV\\cdot n \\cdot cm^2}\\right]$"
+  x: Energy
+  y: Value
+  expand_runs: false
+  plot_args:
+    subcases: ["Case", ['TUD-Fe_A0','TUD-Fe_A1','TUD-Fe_A2']]
+    scale_subcases: true
+    xscale: "log"
+#
+Photon Spectral fluence (C/E):
+  results:
+    - Photon fluence
+  plot_type: ce
+  title: Photon Spectral fluence (C/E)
+  x_label: Energy [MeV]
+  y_labels: "C/E"
+  x: Energy
+  y: Value
+  expand_runs: false
+  plot_args:
+    subcases: ["Case", ['TUD-Fe_A0','TUD-Fe_A1','TUD-Fe_A2']]
+    style: 'step'
+    xscale: "log"
+    ce_limits: [0, 2]

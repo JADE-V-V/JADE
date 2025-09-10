@@ -16,7 +16,7 @@ from jade.config.run_config import (
     LibraryOpenMC,
     RunMode,
 )
-from jade.helper.__openmc__ import OMC_AVAIL
+from jade.helper.__optionals__ import OMC_AVAIL
 from jade.helper.constants import CODE
 from jade.run.benchmark import (
     BenchmarkRun,
@@ -51,7 +51,9 @@ class TestBenchmarkRun:
             10,
             {CODE.MCNP: "mcnp6.2"},
             run_mode=RunMode.JOB_SUMISSION,
-            code_configurations={CODE.MCNP: Path(DEFAULT_CFG, "mcnp/mcnp.cfg")},
+            code_configurations={
+                CODE.MCNP: Path(DEFAULT_CFG, "exe_config/mcnp_config.sh")
+            },
             batch_template=DEFAULT_CFG.joinpath("batch_templates/Slurmtemplate.sh"),
             batch_system="slurm",
             mpi_prefix="srun",
@@ -69,6 +71,44 @@ class TestBenchmarkRun:
     @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC not available")
     def test_run_openmc(self, tmpdir):
         pass
+
+    def test_get_continue_run_command(self):
+        lib = LibraryMCNP(
+            name="FENDL 3.2c", path=RUN_RES.joinpath("xsdir.txt"), suffix="31c"
+        )
+        perform = [
+            (CODE.MCNP, lib),
+        ]
+        cfg = BenchmarkRunConfig(
+            description="Dummy",
+            name="Dummy_continue",
+            run=perform,
+            nps=10,
+            only_input=True,
+        )
+
+        env_vars = EnvironmentVariables(
+            10,
+            10,
+            {CODE.MCNP: "mcnp6.2"},
+            run_mode=RunMode.SERIAL,
+            code_configurations={
+                CODE.MCNP: Path(DEFAULT_CFG, "exe_config/mcnp_config.sh")
+            },
+            batch_template=DEFAULT_CFG.joinpath("batch_templates/Slurmtemplate.sh"),
+            batch_system="slurm",
+            mpi_prefix="srun",
+        )
+        sim_folder = files(dummy_struct).joinpath("simulations")
+        benchmark = BenchmarkRun(cfg, sim_folder, BENCHMARKS_ROOT, env_vars)
+        command = benchmark._get_continue_run_command(CODE.MCNP, lib)
+        # assert command == expected_command
+        assert "Dummy_continue1" not in command  # successful simulation
+        assert "Dummy_continue2" in command  # correct simulation
+        assert (
+            "srun -np 10 mcnp6.2 i=Dummy_continue2.i n=Dummy_continue2. xsdir=xsdir.txt tasks 10"
+            in command
+        )
 
 
 class TestSphereBenchmarkRun:
@@ -103,6 +143,35 @@ class TestSphereBenchmarkRun:
             len(os.listdir(Path(tmpdir, "_mcnp_-_FENDL 3.2c_/Sphere/Sphere_1001_H-1")))
             == 2
         )
+
+    @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC not available")
+    def test_run_openmc(self, tmpdir):
+        with as_file(RUN_RES.joinpath("cross_sections.xml")) as infile:
+            lib = LibraryOpenMC(name="ENDF VII-1", path=infile)
+        perform = [
+            (CODE.OPENMC, lib),
+        ]
+        cfg = BenchmarkRunConfig(
+            description="Sphere benchmark",
+            name="Sphere",
+            run=perform,
+            nps=10,
+            only_input=True,
+            custom_inp=2,
+            additional_settings_path=DEFAULT_CFG.joinpath("benchmarks/Sphere"),
+        )
+
+        env_vars = EnvironmentVariables(
+            None,
+            0,
+            {CODE.OPENMC: "openmc"},
+            run_mode=RunMode.SERIAL,
+        )
+
+        benchmark = SphereBenchmarkRun(cfg, tmpdir, BENCHMARKS_ROOT, env_vars)
+        benchmark.run()
+
+        assert len(os.listdir(tmpdir)) == 1
 
 
 class TestSphereSDDRBenchmarkRun:
@@ -215,7 +284,7 @@ class TestSingleRunMCNP:
         single_run = SingleRunMCNP(mock_input, lib, 100)
 
         command = single_run.run(env_vars, tmpdir, test=True)
-        assert f"sbatch {tmpdir}" in command
+        assert "#!/bin/sh\n\n#SBATCH" in command
 
 
 class MockLibrary:

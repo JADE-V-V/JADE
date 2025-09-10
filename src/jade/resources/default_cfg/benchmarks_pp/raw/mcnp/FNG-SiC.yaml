@@ -1,0 +1,20 @@
+# Define anchors to be used in the file.
+# Use _ prefix to avoid confusing the jade parser.
+_cell_id_foils: &depth_foils
+  602: 10.41
+  612: 25.65
+  622: 40.89
+  632: 56.13
+_cell_id_tld: &depth_tld
+  602: 14.99
+  612: 30.23
+  622: 45.47
+  632: 60.71
+# Fluxes
+Reaction rate:
+  concat_option: no_action
+  4: [[replace, {'column': 'Cells', 'values': *depth_foils}]]
+Nuclear heating:
+  concat_option: sum
+  16: [[replace, {'column': 'Cells', 'values': *depth_tld}], [scale,{"factor": [3.396E-11, 3.268E-11, 3.236E-11, 3.236E-11]}]]
+  26: [[replace, {'column': 'Cells', 'values': *depth_tld}], [scale,{"factor": 1.602E-10}]]

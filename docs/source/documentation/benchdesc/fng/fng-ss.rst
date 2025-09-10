@@ -3,9 +3,7 @@
 FNG Stainless Steel (FNG SS)
 -----------------------------
 
-This experiment is part of the SINBAD database (`NEA-1553/57 <https://www.oecd-nea.org/science/wprs/shielding/sinbad/FNG_SS/FNGSS_A.HTM>`_). 
-Users will need to show proof of licence and request the required input files to use this 
-benchmark in JADE.
+.. include:: /documentation/benchdesc/sinbad_disclaimer.rst
 
 The purpose of this benchmark was to improve understanding of neutron transport in
 structural materials, specifically, stainless steel. This is a common material for many

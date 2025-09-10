@@ -15,6 +15,8 @@ Publications featuring JADE
 * D.Laghi, M. Fabbri, S. La Rovere, L. Isolan, R. Pampin, A. Portone and M. Sumini,
   2022, "Status of JADE, an open-source software for nuclear data libraries V&V",
   *Fusion Engineering and Design*, **187** 113380, doi: https://doi.org/10.1016/j.fusengdes.2022.113380
+* G. Schnabel et al., 2024, "FENDL: A library for fusion research and applications",
+  *Nuclear Data Sheets*, **193** 1-78, doi: https://doi.org/10.1016/j.nds.2024.01.001
 
 
 Benchmarks Related Publications
@@ -43,7 +45,17 @@ Benchmarks Related Publications
   Proceedings of the Ninth International Symposiumon Fusion Nuclear Technology, pp. 2080–2085.
 * J. Sanz, O. Cabellos, and N. Garcia-Herranz. Inventory Code for Nuclear Applications:
   User’s Manual V. 2008. RSICC. 2008.
-
+* S. Simakov, B.V. Devkin, M.G. Kobozev, V.A. Talalaev, U. Fischer, U. von Möllendorff,
+  "Validation of evaluated data libraries against an iron shell transmission experiment and against the Fe(n,xn)
+  reaction cross section with 14 MeV neutron source", Report EFF-DOC-747, NEA Data Bank, Dec. 2000, Paris
+* I. Kodeli, A. Milocco and A. Trkov, "Lessons learned from the TOF-benchmark intercomparison exercise
+  within EU CONRAD project (how not to misinterpret a TOF-benchmark)", Nucl Technol 168 3 (2009) 965-969
+* I. Kodeli and E. Sartori, "SINBAD - Radiational shieding benchmark Experiments",
+  Annals of Nuclear Energy, 159 (2021) 108254
+* ICBEP, NEA/NSC/DOC/(95)03/VIII, Volume VIII, ALARM-CF-FE-SHIELD-001,
+  neutron and photon leakage spectra from cf-252 source at centers of six
+  iron spheres of different diameters
+  
 Miscellaneous
 =============
 * **MCNP**, Werner C.J., 2017, "MCNP User’S Manual Code", Los Alamos: LAUR-17-29981 (version 6.2).

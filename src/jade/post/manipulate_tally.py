@@ -67,26 +67,21 @@ def condense_groups(
         modified tally
     """
     tally["abs err"] = tally["Error"] * tally["Value"]
-    rows = []
-    min_e = bins[0]
-    for max_e in bins[1:]:
-        # get the rows that have Energy between min_e and max_e
-        df = tally[(tally[group_column] >= min_e) & (tally[group_column] < max_e)]
-        # do the srt of sum of squares of absolute errors
-        square_err = 0
-        for _, row in df.iterrows():
-            square_err += row["abs err"] ** 2
-        srss_err = math.sqrt(square_err)
-        df = df.sum()
-        with np.errstate(divide="ignore", invalid="ignore"):
-            # it is ok to get some NaN if value is zero
-            df["Error"] = srss_err / df["Value"]
-        del df["abs err"]
-        del df[group_column]  # avoid warning
-        df[group_column] = f"{min_e} - {max_e}"
-        rows.append(df)
-        min_e = max_e
-    return pd.DataFrame(rows).dropna()
+    # this divides the entries in coarse energy bins
+    tally["coarse_bin"] = pd.cut(tally[group_column], bins=bins, right=False)
+    tally[group_column] = tally["coarse_bin"].apply(
+        lambda x: f"{x.left:g} - {x.right:g}"
+    )
+    del tally["coarse_bin"]
+    grouped = tally.groupby(group_column, observed=False).agg(
+        {"Value": "sum", "abs err": lambda x: math.sqrt((x**2).sum())}
+    )
+    with np.errstate(divide="ignore", invalid="ignore"):
+        grouped["Error"] = grouped["abs err"] / grouped["Value"]
+    del grouped["abs err"]
+    # drop zero values
+    grouped = grouped[grouped["Value"] != 0]
+    return grouped.reset_index()
 
 
 def scale(

@@ -420,7 +420,7 @@ class OpenMCInputFiles:
         None
         """
         if self.compiled_source is not None:
-            outfile = Path(path, "libsource.so")
+            outfile = os.path.join(path, "libsource.so")
             shutil.copyfile(self.compiled_source, outfile)
             self.settings.source = openmc.CompiledSource(outfile, strength=1.0)
         self.geometry.export_to_xml(os.path.join(path, "geometry.xml"))

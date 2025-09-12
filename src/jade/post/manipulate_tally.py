@@ -218,6 +218,20 @@ def tof_to_energy(
     return tally
 
 
+def cumulative_sum(tally: pd.DataFrame, column: str = "Value") -> pd.DataFrame:
+    """Compute the cumulative sum of the specified column.
+
+    Parameters
+    ----------
+    tally : pd.DataFrame
+        tally dataframe to modify
+    column: str
+        name of the column to compute the cumulative sum for. Default is "Value".
+    """
+    tally[column] = tally[column].cumsum()
+    return tally
+
+
 MOD_FUNCTIONS = {
     TallyModOption.LETHARGY: by_lethargy,
     TallyModOption.SCALE: scale,
@@ -234,6 +248,7 @@ MOD_FUNCTIONS = {
     TallyModOption.FORMAT_DECIMALS: format_decimals,
     TallyModOption.TOF_TO_ENERGY: tof_to_energy,
     TallyModOption.SELECT_SUBSET: select_subset,
+    TallyModOption.CUMULATIVE_SUM: cumulative_sum,
 }
 
 

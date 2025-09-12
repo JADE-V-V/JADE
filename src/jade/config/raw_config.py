@@ -97,6 +97,7 @@ class TallyModOption(Enum):
     FORMAT_DECIMALS = "format_decimals"
     TOF_TO_ENERGY = "tof_to_energy"
     SELECT_SUBSET = "select_subset"
+    CUMULATIVE_SUM = "cumulative_sum"
 
 
 class TallyConcatOption(Enum):

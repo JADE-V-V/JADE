@@ -419,9 +419,9 @@ class OpenMCInputFiles:
         None
         """
         if self.compiled_source is not None:
-            self.settings.source = openmc.CompiledSource(self.compiled_source, strength=1.0)
             outfile = Path(path, "libsource.so")
             shutil.copyfile(self.compiled_source, outfile)
+            self.settings.source = openmc.CompiledSource(outfile, strength=1.0)
         self.geometry.export_to_xml(os.path.join(path, "geometry.xml"))
         self.settings.export_to_xml(os.path.join(path, "settings.xml"))
         self.tallies.export_to_xml(os.path.join(path, "tallies.xml"))

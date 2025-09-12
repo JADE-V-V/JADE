@@ -228,6 +228,7 @@ class OpenMCInputFiles:
             self.load_settings(os.path.join(path, "settings.xml"))
         else:
             self.settings = openmc.Settings()
+            self.settings.run_mode = 'fixed source'
         if "libsource.so" in files:
             self.compiled_source = os.path.join(path, "libsource.so")
         else:

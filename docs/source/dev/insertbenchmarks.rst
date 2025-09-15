@@ -47,7 +47,13 @@ D1SUNED
 
 OpenMC
 ------
-- The names of the input files should be ``settings.xml``, ``geometry.xml``, ``tallies.xml`` and ``materials.xml``.
+- The names of the input files should be ``settings.xml``, ``geometry.xml``, ``tallies.xml`` and ``materials.xml``, 
+  if the model uses an ``openmc.IndependentSource``.
+- If the model uses an ``openmc.CompiledSource``, the ``settings.xml`` file is optional;
+  if this is omitted, a ``settings.xml`` file is generated within JADE, assuming default options.
+  A compiled library file, ``libsource.so`` must be provided, which has been compiled using ``gcc`` 
+  with shared libraries enabled. An example of how to compile an OpenMC source is provided in the
+  `OpenMC documentation <https://docs.openmc.org/en/stable/usersguide/settings.html#compiled-sources>`_.
 - The tallies IDs should be explicitly fixed when creating the ``tallies.xml`` file. This prevents
   OpenMC from creating them automatically and, thus, potentially changing them between different runs
   of a same benchmark. If possible, the tallies identifiers should be the same as the ones used in the

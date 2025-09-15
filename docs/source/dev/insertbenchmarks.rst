@@ -207,9 +207,9 @@ The currently supported modifiers are:
 * ``delete_cols``: deletes columns from the tally. The keyarg to provide is *cols* which expects a list
   of column names to be deleted.
 
-* ``format_decimals``: formats the decimals of the data contained in specific columns. A 'decimals' dictionary is expected as a 
-  keyarg, where the keys should be the column names to be formatted and the values should be the corresponding number of decimals 
-  to keep. 
+* ``format_decimals``: formats the decimals of the data contained in specific columns. A *decimals* dictionary is expected as a
+  keyarg, where the keys should be the column names to be formatted and the values should be the corresponding number of decimals
+  to keep.
 
 * ``tof_to_energy``: converts the time-of-flight to energy. The tally is expected
   to be binned in time and a new column *Energy* will be created. 
@@ -230,6 +230,9 @@ The currently supported modifiers are:
 
   * *column*: the name of the column to be used for the subset selection.
   * *values*: list of values in *column* identifying the rows to be retained.
+
+* ``cumulative_sum``: computes the cumulative sum of a specific column. The optional keyarg to provide is *column*, the name of the column 
+  to be used for the cumulative sum. If no *column* argument is provided, the cumulative sum is computed on the 'Value' column by default.
 
 More than one modifiers can be applied in series to a single tally.
 If your benchmark requires a new modifier, please refer to :ref:`add_tally_mod`.

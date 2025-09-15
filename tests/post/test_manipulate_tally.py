@@ -13,6 +13,7 @@ from src.jade.post.manipulate_tally import (
     by_lethargy,
     concat_tallies,
     condense_groups,
+    cumulative_sum,
     delete_cols,
     divide_by_bin,
     format_decimals,
@@ -273,3 +274,21 @@ def test_select_subset():
     result = select_subset(df.copy(), "Energy", [1, 3])
 
     assert len(result) == 2
+
+
+def test_cumulative_sum():
+    data = {
+        "Time": [1, 2, 3, 4],
+        "Value": [10, 20, 30, 40],
+    }
+    df = pd.DataFrame(data)
+
+    result = cumulative_sum(df.copy())
+    expected_values = [10, 30, 60, 100]
+    assert result["Time"].tolist() == data["Time"]
+    assert result["Value"].tolist() == expected_values
+
+    result = cumulative_sum(df.copy(), column="Time")
+    expected_values = [1, 3, 6, 10]
+    assert result["Time"].tolist() == expected_values
+    assert result["Value"].tolist() == data["Value"]

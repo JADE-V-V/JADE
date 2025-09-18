@@ -96,9 +96,10 @@ are fetched.
 A JADE instance has now been initialized and it is ready to be configured as discussed
 in the :ref:`config` section.
 
-In case the user possesses a valid access token for the F4E GitLab, they can provide it
-in the ``<root>/cfg/env_vars_cfg.yml`` file. And then use the JADE utility:
+In case the user possesses a valid access token for the F4E GitLab, they can add an environment
+variable to their system named `F4E_GITLAB_TOKEN` with such token. JADE will automatically fetch
+inputs also from the F4E GitLab. Alternatively, the token can be added later and
+additional inputs can be recovered using the JADE utility:
 
-  | ``python -m jade.utilitis --fetch``
+  | ``python -m jade.utilities --fetch``
 
-in order to obtain also the inputs stored at the F4E GitLab.

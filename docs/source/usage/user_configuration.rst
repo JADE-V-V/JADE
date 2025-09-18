@@ -44,9 +44,6 @@ Here is an example:
     batch_template: batch_template/Slurmtemplate.sh  # batch template. Both relative and absolute paths should work.
     batch_system: sbatch  # the command to submit a job to the cluster (e.g. llsubmit, sbatch, etc.)
 
-    # Tokens for closed benchmarks repos
-    f4e_gitlab_token:  # token for the F4E gitlab, leave empty if not needed
-
 It can be seen that in order to submit a job to a cluster, the user needs to provide the path to the batch template
 file and a config file for the code(s) to be run.
 The batch template file is the job submission script to be utilised on the users chosen system.

@@ -41,6 +41,16 @@ def test_fetch_iaea_inputs(tmpdir):
     # assert not ans
 
 
+def test_wrong_fetch_f4e_inputs(tmpdir):
+    """ " Test that benchmarks can be correctly fetched from the IAEA website.
+    test also the overwriting"""
+    # test correct fetching in an empty folder
+    inp_path = tmpdir.mkdir("inputs")
+    exp_path = tmpdir.mkdir("exp")
+    success = fetch_f4e_inputs(inp_path, exp_path, access_token="wrongtoken")
+    assert not success
+
+
 @pytest.mark.skipif(F4E_GITLAB_TOKEN is None, reason="No token found")
 def test_fetch_f4e_inputs(tmpdir):
     assert F4E_GITLAB_TOKEN is not None

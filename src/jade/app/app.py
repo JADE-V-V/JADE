@@ -86,15 +86,10 @@ class JadeApp:
 
         logging.debug(JADE_TITLE)
 
-    def update_inputs(self, only_iaea: bool = False):
+    def update_inputs(self):
         """Update the benchmark inputs for the simulations.
 
         This will re-fetch inputs from the various repositories that feed JADE.
-
-        Parameters
-        ----------
-        only_iaea : bool, optional
-            If True, only the IAEA inputs are updated, by default False
         """
         success = fetch_iaea_inputs(
             self.tree.benchmark_input_templates, self.tree.exp_data
@@ -102,18 +97,18 @@ class JadeApp:
         if not success:
             logging.error("Failed to update the IAEA benchmark inputs.")
 
-        if not only_iaea:
-            f4e_gitlab_token = self.run_cfg.env_vars.f4e_gitlab_token
-            if f4e_gitlab_token is not None:
-                success = fetch_f4e_inputs(
-                    self.tree.benchmark_input_templates,
-                    self.tree.exp_data,
-                    f4e_gitlab_token,
-                )
-                if not success:
-                    logging.error("Failed to update the F4E benchmark inputs.")
-            else:
-                logging.info("No F4E token found. Skipping F4E inputs update.")
+        f4e_gitlab_token = os.getenv("F4E_GITLAB_TOKEN")
+
+        if f4e_gitlab_token is not None:
+            success = fetch_f4e_inputs(
+                self.tree.benchmark_input_templates,
+                self.tree.exp_data,
+                f4e_gitlab_token,
+            )
+            if not success:
+                logging.error("Failed to update the F4E benchmark inputs.")
+        else:
+            logging.info("No F4E token found. Skipping F4E inputs update.")
 
     def restore_default_cfg(self, msg: str = ""):
         """Reset the configuration files to installation default. The session

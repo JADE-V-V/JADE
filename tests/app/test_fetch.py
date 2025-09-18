@@ -4,14 +4,10 @@ import os
 
 import pytest
 
-try:
-    from tests.app.secrets import F4E_GITLAB_TOKEN
-except (ImportError, ModuleNotFoundError):
-    # By default this should set the token to None if not found
-    F4E_GITLAB_TOKEN = os.getenv("F4E_GITLAB_TOKEN")
-
-
 from jade.app.fetch import fetch_f4e_inputs, fetch_iaea_inputs
+
+# By default this should set the token to None if not found
+F4E_GITLAB_TOKEN = os.getenv("F4E_GITLAB_TOKEN")
 
 
 def test_fetch_iaea_inputs(tmpdir):

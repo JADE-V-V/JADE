@@ -43,7 +43,7 @@ class JadeApp:
         if self.tree.check_not_installed_folders(root) and not skip_init:
             self.tree.init_tree()
             self.restore_default_cfg(FIRST_INITIALIZATION)
-            self.update_inputs(only_iaea=True)
+            self.update_inputs()
             return
 
         # parse the config files

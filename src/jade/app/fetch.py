@@ -196,14 +196,16 @@ def fetch_f4e_inputs(
     bool
         True if the inputs were successfully fetched, False otherwise.
     """
-    extracted_folder = str(
-        fetch_from_gitlab(
-            "https://eng-gitlab.f4e.europa.eu/",
-            "f4e-projects/jade-benchmarks",
-            "main",
-            authorization_token=access_token,
-        )
+    extracted_folder = fetch_from_gitlab(
+        "https://eng-gitlab.f4e.europa.eu/",
+        "f4e-projects/jade-benchmarks",
+        "main",
+        authorization_token=access_token,
     )
+    if not extracted_folder:  # authentication went wrong
+        return False
+    if not isinstance(extracted_folder, PathLike):  # anything else that went wrong
+        return False
     path_to_inputs = Path(extracted_folder, "inputs")
     path_to_exp_data = Path(
         extracted_folder,

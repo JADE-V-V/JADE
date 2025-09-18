@@ -151,9 +151,10 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
         grouped = tally
         # Error propagation considering that tally["Error"] are relative errors
         # Valid both for sum and mean
-        error = (
+        error = pd.Series(
             np.sqrt(((tally["Error"] * tally["Value"]) ** 2).sum())
-            / tally["Value"].sum()
+            / tally["Value"].sum(),
+            name="Error",
         )
     else:
         value_df = tally.set_index(by)["Value"]
@@ -174,11 +175,11 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
     if action == "sum":
         df = grouped.sum()
         # Application of the computed error propagation
-        df["Error"] = error
+        df["Error"] = error.values
     elif action == "mean":
         df = grouped.mean()
         # Application of the computed error propagation
-        df["Error"] = error
+        df["Error"] = error.values
     elif action == "max":
         # No error propagation needed when taking the max
         df = grouped.max()

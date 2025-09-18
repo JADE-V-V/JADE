@@ -149,21 +149,30 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
 
     if by == "all":
         grouped = tally
-        error = np.sqrt((tally["Error"] ** 2).sum())
+        error = (
+            np.sqrt(((tally["Error"] * tally["Value"]) ** 2).sum())
+            / tally["Value"].sum()
+        )
     else:
+        value_df = tally.set_index(by)["Value"]
         error_df = tally.set_index(by)["Error"]
         rows = []
         for idx_val in error_df.index.unique():
-            subset = error_df.loc[idx_val]
-            err = np.sqrt(np.sum(subset**2))
+            subset_error = error_df.loc[idx_val]
+            subset_value = value_df.loc[idx_val]
+            err = (
+                np.sqrt(np.sum((subset_error * subset_value) ** 2)) / subset_value.sum()
+            )
             rows.append(err)
         error = pd.Series(rows, name="Error")
         grouped = tally.groupby(by, sort=False)
 
     if action == "sum":
         df = grouped.sum()
+        df["Error"] = error
     elif action == "mean":
         df = grouped.mean()
+        df["Error"] = error
     elif action == "max":
         df = grouped.max()
     elif action == "min":
@@ -174,8 +183,6 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
         df = df.to_frame().T
     else:
         df.reset_index(inplace=True)
-
-    df["Error"] = error
 
     return df
 
@@ -228,7 +235,17 @@ def cumulative_sum(tally: pd.DataFrame, column: str = "Value") -> pd.DataFrame:
     column: str
         name of the column to compute the cumulative sum for. Default is "Value".
     """
+    if column not in tally.columns:
+        raise ValueError(f"Column {column} not found in the tally.")
+    elif column == "Error":
+        raise ValueError("Cumulative sum cannot be computed for the Error column.")
+    original_tally = tally.copy()
     tally[column] = tally[column].cumsum()
+    if column == "Value":
+        tally["Error"] = (
+            np.sqrt(((tally["Error"] * original_tally[column]) ** 2).cumsum())
+            / tally[column]
+        )
     return tally
 
 

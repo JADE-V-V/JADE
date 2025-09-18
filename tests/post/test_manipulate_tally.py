@@ -280,15 +280,25 @@ def test_cumulative_sum():
     data = {
         "Time": [1, 2, 3, 4],
         "Value": [10, 20, 30, 40],
+        "Error": [0.1, 0.2, 0.3, 0.4],
     }
     df = pd.DataFrame(data)
 
     result = cumulative_sum(df.copy())
     expected_values = [10, 30, 60, 100]
+    expected_error = [
+        0.1,
+        np.sqrt((0.1 * 10) ** 2 + (0.2 * 20) ** 2) / 30,
+        np.sqrt((0.1 * 10) ** 2 + (0.2 * 20) ** 2 + (0.3 * 30) ** 2) / 60,
+        np.sqrt((0.1 * 10) ** 2 + (0.2 * 20) ** 2 + (0.3 * 30) ** 2 + (0.4 * 40) ** 2)
+        / 100,
+    ]
     assert result["Time"].tolist() == data["Time"]
     assert result["Value"].tolist() == expected_values
+    assert result["Error"].tolist() == expected_error
 
     result = cumulative_sum(df.copy(), column="Time")
     expected_values = [1, 3, 6, 10]
     assert result["Time"].tolist() == expected_values
     assert result["Value"].tolist() == data["Value"]
+    assert result["Error"].tolist() == data["Error"]

@@ -149,6 +149,8 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
 
     if by == "all":
         grouped = tally
+        # Error propagation considering that tally["Error"] are relative errors
+        # Valid both for sum and mean
         error = (
             np.sqrt(((tally["Error"] * tally["Value"]) ** 2).sum())
             / tally["Value"].sum()
@@ -160,6 +162,8 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
         for idx_val in error_df.index.unique():
             subset_error = error_df.loc[idx_val]
             subset_value = value_df.loc[idx_val]
+            # Error propagation considering that tally["Error"] are relative errors
+            # Valid both for sum and mean
             err = (
                 np.sqrt(np.sum((subset_error * subset_value) ** 2)) / subset_value.sum()
             )
@@ -169,13 +173,17 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
 
     if action == "sum":
         df = grouped.sum()
+        # Application of the computed error propagation
         df["Error"] = error
     elif action == "mean":
         df = grouped.mean()
+        # Application of the computed error propagation
         df["Error"] = error
     elif action == "max":
+        # No error propagation needed when taking the max
         df = grouped.max()
     elif action == "min":
+        # No error propagation needed when taking the min
         df = grouped.min()
 
     if isinstance(df, pd.Series):
@@ -242,6 +250,7 @@ def cumulative_sum(tally: pd.DataFrame, column: str = "Value") -> pd.DataFrame:
     original_tally = tally.copy()
     tally[column] = tally[column].cumsum()
     if column == "Value":
+        # Error propagation considering that tally["Error"] are relative errors
         tally["Error"] = (
             np.sqrt(((tally["Error"] * original_tally[column]) ** 2).cumsum())
             / tally[column]

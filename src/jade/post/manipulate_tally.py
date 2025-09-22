@@ -181,11 +181,16 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
         # Application of the computed error propagation
         df["Error"] = error.values
     elif action == "max":
-        # No error propagation needed when taking the max
+    elif action == "max":
+        # Preserve Error of the row defining the maximum Value
+        idx = tally.groupby(by, sort=False)["Value"].idxmax()
         df = grouped.max()
+        df["Error"] = tally.loc[idx, "Error"].values
     elif action == "min":
-        # No error propagation needed when taking the min
+        # Preserve Error of the row defining the minimum Value
+        idx = tally.groupby(by, sort=False)["Value"].idxmin()
         df = grouped.min()
+        df["Error"] = tally.loc[idx, "Error"].values
 
     if isinstance(df, pd.Series):
         # a series has been created but we want a df

@@ -66,19 +66,42 @@ Reaction Rate SR:
   plot_args:
     style: 'point'
     ce_limits: [0.5, 1.5]
-Cumulative Reaction Rates Au (RI):
+Cumulative Reaction Rates Au pos 1 (RI):
   results:
-    - Cumulative Reaction Rates Au
+    - Cumulative Reaction Rates Au pos 1
   plot_type: binned
-  title: Reaction Rates for 197Au(n,g)198Au
+  title: Reaction Rates for 197Au(n,g)198Au at 5.04 cm depth
   x_label: Energy [MeV]
-  y_labels: "Cumulative Reaction Rate [$reactions/cm^3/s$]"
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
-  expand_runs: false
-  plot_args:
-    subcases: ["Cells", ["5.04 cm", "10.08 cm", "15.12 cm", "20.16 cm"]]
-    scale_subcases: true
+Cumulative Reaction Rates Au pos 2 (RI):
+  results:
+    - Cumulative Reaction Rates Au pos 2
+  plot_type: binned
+  title: Reaction Rates for 197Au(n,g)198Au at 10.08 cm depth
+  x_label: Energy [MeV]
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
+  x: Energy
+  y: Value
+Cumulative Reaction Rates Au pos 3 (RI):
+  results:
+    - Cumulative Reaction Rates Au pos 3
+  plot_type: binned
+  title: Reaction Rates for 197Au(n,g)198Au at 15.12 cm depth
+  x_label: Energy [MeV]
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
+  x: Energy
+  y: Value
+Cumulative Reaction Rates Au pos 4 (RI):
+  results:
+    - Cumulative Reaction Rates Au pos 4
+  plot_type: binned
+  title: Reaction Rates for 197Au(n,g)198Au at 20.16 cm depth
+  x_label: Energy [MeV]
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
+  x: Energy
+  y: Value
 Total Reaction Rate Au (RI):
   results:
     - Total Reaction Rates Au
@@ -91,19 +114,42 @@ Total Reaction Rate Au (RI):
   plot_args:
     style: 'point'
     ce_limits: [0.5, 1.5]
-Cumulative Reaction Rates Ni (RI):
+Cumulative Reaction Rates Ni pos 1 (RI):
   results:
-    - Cumulative Reaction Rates Ni (RI)
+    - Cumulative Reaction Rates Ni (RI) pos 1
   plot_type: binned
-  title: Reaction Rates for 58Ni(n,p)58Co
+  title: Reaction Rates for 58Ni(n,p)58Co at 5.04 cm depth
   x_label: Energy [MeV]
-  y_labels: "Cumulative Reaction Rate [$reactions/cm^3/s$]"
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
-  expand_runs: false
-  plot_args:
-    subcases: ["Cells", ["5.04 cm", "10.08 cm", "15.12 cm", "20.16 cm"]]
-    scale_subcases: true
+Cumulative Reaction Rates Ni pos 2 (RI):
+  results:
+    - Cumulative Reaction Rates Ni (RI) pos 2
+  plot_type: binned
+  title: Reaction Rates for 58Ni(n,p)58Co at 10.08 cm depth
+  x_label: Energy [MeV]
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
+  x: Energy
+  y: Value
+Cumulative Reaction Rates Ni pos 3 (RI):
+  results:
+    - Cumulative Reaction Rates Ni (RI) pos 3
+  plot_type: binned
+  title: Reaction Rates for 58Ni(n,p)58Co at 15.12 cm depth
+  x_label: Energy [MeV]
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
+  x: Energy
+  y: Value
+Cumulative Reaction Rates Ni pos 4 (RI):
+  results:
+    - Cumulative Reaction Rates Ni (RI) pos 4
+  plot_type: binned
+  title: Reaction Rates for 58Ni(n,p)58Co at 20.16 cm depth
+  x_label: Energy [MeV]
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
+  x: Energy
+  y: Value
 Total Reaction Rate Ni (RI):
   results:
     - Total Reaction Rates Ni (RI)
@@ -116,19 +162,42 @@ Total Reaction Rate Ni (RI):
   plot_args:
     style: 'point'
     ce_limits: [0.5, 1.5]
-Cumulative Reaction Rates Ta (RI):
+Cumulative Reaction Rates Ta pos 1 (RI):
   results:
-    - Cumulative Reaction Rates Ta
+    - Cumulative Reaction Rates Ta pos 1
   plot_type: binned
-  title: Reaction Rates for 181Ta(n,g)182Ta
+  title: Reaction Rates for 181Ta(n,g)182Ta at 5.04 cm depth
   x_label: Energy [MeV]
-  y_labels: "Cumulative Reaction Rate [$reactions/cm^3/s$]"
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
-  expand_runs: false
-  plot_args:
-    subcases: ["Cells", ["5.04 cm", "10.08 cm", "15.12 cm", "20.16 cm"]]
-    scale_subcases: true
+Cumulative Reaction Rates Ta pos 2 (RI):
+  results:
+    - Cumulative Reaction Rates Ta pos 2
+  plot_type: binned
+  title: Reaction Rates for 181Ta(n,g)182Ta at 10.08 cm depth
+  x_label: Energy [MeV]
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
+  x: Energy
+  y: Value
+Cumulative Reaction Rates Ta pos 3 (RI):
+  results:
+    - Cumulative Reaction Rates Ta pos 3
+  plot_type: binned
+  title: Reaction Rates for 181Ta(n,g)182Ta at 15.12 cm depth
+  x_label: Energy [MeV]
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
+  x: Energy
+  y: Value
+Cumulative Reaction Rates Ta pos 4 (RI):
+  results:
+    - Cumulative Reaction Rates Ta pos 4
+  plot_type: binned
+  title: Reaction Rates for 181Ta(n,g)182Ta at 20.16 cm depth
+  x_label: Energy [MeV]
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
+  x: Energy
+  y: Value
 Total Reaction Rate Ta (RI):
   results:
     - Total Reaction Rates Ta
@@ -141,19 +210,42 @@ Total Reaction Rate Ta (RI):
   plot_args:
     style: 'point'
     ce_limits: [0.5, 1.5]
-Cumulative Reaction Rates Cu (RI):
+Cumulative Reaction Rates Cu pos 1 (RI):
   results:
-    - Cumulative Reaction Rates Cu
+    - Cumulative Reaction Rates Cu pos 1
   plot_type: binned
-  title: Reaction Rates for 63Cu(n,g)64Cu
+  title: Reaction Rates for 63Cu(n,g)64Cu at 5.04 cm depth
   x_label: Energy [MeV]
-  y_labels: "Cumulative Reaction Rate [$reactions/cm^3/s$]"
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
-  expand_runs: false
-  plot_args:
-    subcases: ["Cells", ["5.04 cm", "10.08 cm", "15.12 cm", "20.16 cm"]]
-    scale_subcases: true
+Cumulative Reaction Rates Cu pos 2 (RI):
+  results:
+    - Cumulative Reaction Rates Cu pos 2
+  plot_type: binned
+  title: Reaction Rates for 63Cu(n,g)64Cu at 10.08 cm depth
+  x_label: Energy [MeV]
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
+  x: Energy
+  y: Value
+Cumulative Reaction Rates Cu pos 3 (RI):
+  results:
+    - Cumulative Reaction Rates Cu pos 3
+  plot_type: binned
+  title: Reaction Rates for 63Cu(n,g)64Cu at 15.12 cm depth
+  x_label: Energy [MeV]
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
+  x: Energy
+  y: Value
+Cumulative Reaction Rates Cu pos 4 (RI):
+  results:
+    - Cumulative Reaction Rates Cu pos 4
+  plot_type: binned
+  title: Reaction Rates for 63Cu(n,g)64Cu at 20.16 cm depth
+  x_label: Energy [MeV]
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
+  x: Energy
+  y: Value
 Total Reaction Rate Cu (RI):
   results:
     - Total Reaction Rates Cu

@@ -21,6 +21,7 @@ Coarse neutron flux HPD:
       - [by_energy, {}]
       - [condense_groups, {"bins": [0.001, 0.01, 0.03, 0.06, 0.1, 0.15, 0.2, 0.4, 0.5, 0.7, 1.0, 1.2, 1.5, 2.0, 2.5, 3.0, 4.0, 7.0, 10.0, 20.0], "group_column": "Energy"}]
 Coarse neutron flux SSD:
+   apply_to: [RCR-SS_SR]
    concat_option: no_action
    5:
      - [select_subset, {'column': 'Dir', 'values': [0]}]
@@ -60,18 +61,27 @@ Total Reaction Rate In2:
     44: 
      - [add_column, {column: 'Cells', values: ["115In(n,g)116mIn"]}]
      - [delete_cols, {'cols': ['Dir','Segments','Multiplier','Energy']}]
-Cumulative Reaction Rates Au:
+Cumulative Reaction Rates Au pos 1:
     apply_to: [RCR-SS_RI]
-    concat_option: concat
+    concat_option: no_action
     4: 
      - [cumulative_sum, {}]
      - [add_column, {column: 'Cells', values: '5.04 cm'}]
+Cumulative Reaction Rates Au pos 2:
+    apply_to: [RCR-SS_RI]
+    concat_option: no_action
     44: 
      - [cumulative_sum, {}]
      - [add_column, {column: 'Cells', values: '10.08 cm'}]
+Cumulative Reaction Rates Au pos 3:
+    apply_to: [RCR-SS_RI]
+    concat_option: no_action
     94: 
      - [cumulative_sum, {}]
      - [add_column, {column: 'Cells', values: '15.12 cm'}]
+Cumulative Reaction Rates Au pos 4:
+    apply_to: [RCR-SS_RI]
+    concat_option: no_action
     134: 
      - [cumulative_sum, {}]
      - [add_column, {column: 'Cells', values: '20.16 cm'}]
@@ -90,18 +100,27 @@ Total Reaction Rates Au:
     304: 
      - [add_column, {column: 'Cells', values: ['20.16']}]
      - [delete_cols, {'cols': ['Dir','Segments','Multiplier','Energy']}]
-Cumulative Reaction Rates Ni (RI):
+Cumulative Reaction Rates Ni (RI) pos 1:
     apply_to: [RCR-SS_RI]
-    concat_option: concat
+    concat_option: no_action
     14: 
      - [cumulative_sum, {}]
      - [add_column, {column: 'Cells', values: '5.04 cm'}]
+Cumulative Reaction Rates Ni (RI) pos 2:
+    apply_to: [RCR-SS_RI]
+    concat_option: no_action
     54: 
      - [cumulative_sum, {}]
      - [add_column, {column: 'Cells', values: '10.08 cm'}]
+Cumulative Reaction Rates Ni (RI) pos 3:
+    apply_to: [RCR-SS_RI]
+    concat_option: no_action
     104: 
      - [cumulative_sum, {}]
      - [add_column, {column: 'Cells', values: '15.12 cm'}]
+Cumulative Reaction Rates Ni (RI) pos 4:
+    apply_to: [RCR-SS_RI]
+    concat_option: no_action
     144: 
      - [cumulative_sum, {}]
      - [add_column, {column: 'Cells', values: '20.16 cm'}]
@@ -120,18 +139,27 @@ Total Reaction Rates Ni (RI):
     314: 
      - [add_column, {column: 'Cells', values: ['20.16']}]
      - [delete_cols, {'cols': ['Dir','Segments','Multiplier','Energy']}]
-Cumulative Reaction Rates Ta:
+Cumulative Reaction Rates Ta pos 1:
     apply_to: [RCR-SS_RI]
-    concat_option: concat
+    concat_option: no_action
     24: 
      - [cumulative_sum, {}]
      - [add_column, {column: 'Cells', values: '5.04 cm'}]
+Cumulative Reaction Rates Ta pos 2:
+    apply_to: [RCR-SS_RI]
+    concat_option: no_action
     64: 
      - [cumulative_sum, {}]
      - [add_column, {column: 'Cells', values: '10.08 cm'}]
+Cumulative Reaction Rates Ta pos 3:
+    apply_to: [RCR-SS_RI]
+    concat_option: no_action
     114: 
      - [cumulative_sum, {}]
      - [add_column, {column: 'Cells', values: '15.12 cm'}]
+Cumulative Reaction Rates Ta pos 4:
+    apply_to: [RCR-SS_RI]
+    concat_option: no_action
     154: 
      - [cumulative_sum, {}]
      - [add_column, {column: 'Cells', values: '20.16 cm'}]
@@ -150,18 +178,27 @@ Total Reaction Rates Ta:
     324: 
      - [add_column, {column: 'Cells', values: ['20.16']}]
      - [delete_cols, {'cols': ['Dir','Segments','Multiplier','Energy']}]
-Cumulative Reaction Rates Cu:
+Cumulative Reaction Rates Cu pos 1:
     apply_to: [RCR-SS_RI]
-    concat_option: concat
+    concat_option: no_action
     34: 
      - [cumulative_sum, {}]
      - [add_column, {column: 'Cells', values: '5.04 cm'}]
+Cumulative Reaction Rates Cu pos 2:
+    apply_to: [RCR-SS_RI]
+    concat_option: no_action
     84: 
      - [cumulative_sum, {}]
      - [add_column, {column: 'Cells', values: '10.08 cm'}]
+Cumulative Reaction Rates Cu pos 3:
+    apply_to: [RCR-SS_RI]
+    concat_option: no_action
     124: 
      - [cumulative_sum, {}]
      - [add_column, {column: 'Cells', values: '15.12 cm'}]
+Cumulative Reaction Rates Cu pos 4:
+    apply_to: [RCR-SS_RI]
+    concat_option: no_action
     164: 
      - [cumulative_sum, {}]
      - [add_column, {column: 'Cells', values: '20.16 cm'}]

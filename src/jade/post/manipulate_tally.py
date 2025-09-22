@@ -238,7 +238,9 @@ def tof_to_energy(
     return tally
 
 
-def cumulative_sum(tally: pd.DataFrame, column: str = "Value") -> pd.DataFrame:
+def cumulative_sum(
+    tally: pd.DataFrame, column: str = "Value", norm: bool = True
+) -> pd.DataFrame:
     """Compute the cumulative sum of the specified column.
 
     Parameters
@@ -260,6 +262,13 @@ def cumulative_sum(tally: pd.DataFrame, column: str = "Value") -> pd.DataFrame:
             np.sqrt(((tally["Error"] * original_tally[column]) ** 2).cumsum())
             / tally[column]
         )
+    if norm:
+        # Normalize in percentage to the last value (total reaction rate)
+        tally[column] = tally[column] / tally[column].iloc[-1] * 100
+        if column == "Value":
+            tally["Error"] = np.sqrt(
+                (tally["Error"] ** 2 + tally["Error"].iloc[-1] ** 2)
+            )
     return tally
 
 

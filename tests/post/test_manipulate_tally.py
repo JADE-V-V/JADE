@@ -226,12 +226,6 @@ def test_groupby():
         / result["Value"].iloc[0]
     )
     assert len(result) == 1
-    with pytest.raises(ValueError, match="Column NotAColumn not found in the tally"):
-        cumulative_sum(df, column="NotAColumn")
-    with pytest.raises(
-        ValueError, match="Cumulative sum cannot be computed for the Error column"
-    ):
-        cumulative_sum(df, column="Error")
 
 
 def test_delete_cols():
@@ -292,27 +286,36 @@ def test_select_subset():
 
 def test_cumulative_sum():
     data = {
-        "Time": [1, 2, 3, 4],
-        "Value": [10, 20, 30, 40],
+        "Time": [1, 2, 3, 5],
+        "Value": [10, 20, 30, 50],
         "Error": [0.1, 0.2, 0.3, 0.4],
     }
     df = pd.DataFrame(data)
 
-    result = cumulative_sum(df.copy())
-    expected_values = [10, 30, 60, 100]
+    result = cumulative_sum(df.copy(), norm=False)
+    expected_values = [10, 30, 60, 110]
     expected_error = [
         0.1,
         np.sqrt((0.1 * 10) ** 2 + (0.2 * 20) ** 2) / 30,
         np.sqrt((0.1 * 10) ** 2 + (0.2 * 20) ** 2 + (0.3 * 30) ** 2) / 60,
-        np.sqrt((0.1 * 10) ** 2 + (0.2 * 20) ** 2 + (0.3 * 30) ** 2 + (0.4 * 40) ** 2)
-        / 100,
+        np.sqrt((0.1 * 10) ** 2 + (0.2 * 20) ** 2 + (0.3 * 30) ** 2 + (0.4 * 50) ** 2)
+        / 110,
     ]
     assert result["Time"].tolist() == data["Time"]
     assert result["Value"].tolist() == expected_values
     assert result["Error"].tolist() == expected_error
 
     result = cumulative_sum(df.copy(), column="Time")
-    expected_values = [1, 3, 6, 10]
+    expected_values = [1 / 11 * 100, 3 / 11 * 100, 6 / 11 * 100, 100]
+    for i in range(len(expected_error)):
+        expected_error[i] = np.sqrt(expected_error[i] ** 2 + expected_error[-1] ** 2)
     assert result["Time"].tolist() == expected_values
     assert result["Value"].tolist() == data["Value"]
     assert result["Error"].tolist() == data["Error"]
+
+    with pytest.raises(ValueError, match="Column NotAColumn not found in the tally"):
+        cumulative_sum(df, column="NotAColumn")
+    with pytest.raises(
+        ValueError, match="Cumulative sum cannot be computed for the Error column"
+    ):
+        cumulative_sum(df, column="Error")

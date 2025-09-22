@@ -237,8 +237,9 @@ The currently supported modifiers are:
   * *column*: the name of the column to be used for the subset selection.
   * *values*: list of values in *column* identifying the rows to be retained.
 
-* ``cumulative_sum``: computes the cumulative sum of a specific column. The optional keyarg to provide is *column*, the name of the column 
-  to be used for the cumulative sum. If no *column* argument is provided, the cumulative sum is computed on the 'Value' column by default.
+* ``cumulative_sum``: computes the cumulative sum of a specific column. The optional keyargs to provide are *column*, the name of the column 
+  to be used for the cumulative sum, and *norm*, a boolean indicating whether to normalize the result with respect to the total sum. If no *column* 
+  argument is provided, the cumulative sum is computed on the 'Value' column by default. The argument *norm* is True by default.
 
 More than one modifiers can be applied in series to a single tally.
 If your benchmark requires a new modifier, please refer to :ref:`add_tally_mod`.

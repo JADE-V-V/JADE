@@ -201,7 +201,7 @@ def test_groupby():
     data = {
         "Energy": [1, 1, 2, 2],
         "Value": [1, 2, 3, 4],
-        "Error": [0.1, 0.2, 0.1, 0.1],
+        "Error": [0.1, 0.2, 0.3, 0.1],
     }
     df = pd.DataFrame(data)
     result = groupby(df.copy(), "Energy", "sum")
@@ -214,14 +214,15 @@ def test_groupby():
     assert (result["Value"] == [1.5, 3.5]).all()
     result = groupby(df.copy(), "Energy", "max")
     assert (result["Value"] == [2, 4]).all()
+    assert (result["Error"] == [0.2, 0.1]).all()
     result = groupby(df.copy(), "Energy", "min")
     assert (result["Value"] == [1, 3]).all()
-
+    assert (result["Error"] == [0.1, 0.3]).all()
     result = groupby(df.copy(), "all", "sum")
     assert result["Value"].iloc[0] == 10
     assert (
         result["Error"].iloc[0]
-        == math.sqrt((0.1 * 1) ** 2 + (0.2 * 2) ** 2 + (0.1 * 3) ** 2 + (0.1 * 4) ** 2)
+        == math.sqrt((0.1 * 1) ** 2 + (0.2 * 2) ** 2 + (0.3 * 3) ** 2 + (0.1 * 4) ** 2)
         / result["Value"].iloc[0]
     )
     assert len(result) == 1

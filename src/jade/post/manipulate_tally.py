@@ -181,7 +181,6 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
         # Application of the computed error propagation
         df["Error"] = error.values
     elif action == "max":
-    elif action == "max":
         # Preserve Error of the row defining the maximum Value
         idx = tally.groupby(by, sort=False)["Value"].idxmax()
         df = grouped.max()

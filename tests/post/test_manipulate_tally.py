@@ -226,6 +226,12 @@ def test_groupby():
         / result["Value"].iloc[0]
     )
     assert len(result) == 1
+    with pytest.raises(ValueError, match="Column NotAColumn not found in the tally"):
+        cumulative_sum(df, column="NotAColumn")
+    with pytest.raises(
+        ValueError, match="Cumulative sum cannot be computed for the Error column"
+    ):
+        cumulative_sum(df, column="Error")
 
 
 def test_delete_cols():

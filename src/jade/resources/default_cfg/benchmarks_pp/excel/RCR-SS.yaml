@@ -1,0 +1,78 @@
+Neutron flux HPD:
+  results:
+    - Neutron flux HPD
+  comparison_type: absolute
+  table_type: simple
+  x: ['Energy']
+  y: ['Value']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Value': "Neutron fluence [n/cm^2/s/MeV] (exp-comp)"}
+#
+Neutron flux SSD:
+  results:
+    - Neutron flux SSD
+  comparison_type: absolute
+  table_type: simple
+  x: ['Energy']
+  y: ['Value']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Value': "Neutron fluence [n/cm^2/s/MeV] (exp-comp)"}
+#
+Coarse neutron flux HPD CE:
+  results:
+    - Coarse neutron flux HPD
+  comparison_type: ratio
+  table_type: simple
+  x: ['Energy']
+  y: ['Value', 'Error']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'C/E'}
+#
+HPD Coarse neutron flux X2:
+  results:
+    - Coarse neutron flux HPD
+  comparison_type: chi_squared
+  table_type: chi_squared
+  x: ['Energy']
+  y: ['Value']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'Chi^2'}
+#
+Coarse neutron flux SSD CE:
+  results:
+    - Coarse neutron flux SSD
+  comparison_type: ratio
+  table_type: simple
+  x: ['Energy']
+  y: ['Value', 'Error']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'C/E'}
+#
+SSD Coarse neutron flux X2:
+  results:
+    - Coarse neutron flux SSD
+  comparison_type: chi_squared
+  table_type: chi_squared
+  x: ['Energy']
+  y: ['Value']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'Chi^2'}
+#
+Reaction rates (RI) CE:
+  results:
+    - Total Reaction Rates Au
+    - Total Reaction Rates Ni (RI)
+    - Total Reaction Rates Ta
+    - Total Reaction Rates Cu
+    - Total Reaction Rate Nb
+  comparison_type: ratio
+  table_type: pivot
+  x: [Cells]
+  y: [Result]
+  value: ['Value', 'Error']
+  change_col_names: {'Cells': 'Shielding depth [cm]', 'Result': '', '0': ''}
+#
+Reaction rates (SR) CE:
+  results:
+    - Total Reaction Rate Ni (SR)
+    - Total Reaction Rate In1
+    - Total Reaction Rate In2
+  comparison_type: ratio
+  table_type: simple
+  x: [Cells]
+  y: ['Value', 'Error']
+  change_col_names: {'Cells': 'Reaction', 'Value': 'C/E'}

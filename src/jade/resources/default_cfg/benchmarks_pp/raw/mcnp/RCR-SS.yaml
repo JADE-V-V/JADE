@@ -5,6 +5,7 @@ Neutron flux HPD:
       - [select_subset, {'column': 'Dir', 'values': [0]}]
       - [delete_cols, {'cols': ['Dir']}]
       - [by_energy, {}]
+      - [format_decimals, {'decimals': {'Energy':4}}]
 Neutron flux SSD:
    apply_to: [RCR-SS_SR]
    concat_option: no_action
@@ -12,6 +13,7 @@ Neutron flux SSD:
      - [select_subset, {'column': 'Dir', 'values': [0]}]
      - [delete_cols, {'cols': ['Dir']}]
      - [by_energy, {}]
+     - [format_decimals, {'decimals': {'Energy':1}}]
 Coarse neutron flux HPD:
    apply_to: [RCR-SS_SR]
    concat_option: no_action

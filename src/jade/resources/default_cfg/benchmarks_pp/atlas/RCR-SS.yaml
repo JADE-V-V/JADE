@@ -4,7 +4,7 @@ Neutron flux HPD:
   plot_type: binned
   title: Neutron flux [0.1,1.3] MeV
   x_label: Energy [MeV]
-  y_labels: '[n/cm^2/s/MeV]'
+  y_labels: "Neutron fluence [$n/cm^2/s/MeV$]"
   x: Energy
   y: Value
   plot_args:
@@ -16,7 +16,7 @@ Neutron flux SSD:
   plot_type: binned
   title: Neutron flux [1,12] MeV
   x_label: Energy [MeV]
-  y_labels: '[n/cm^2/s/MeV]'
+  y_labels: "Neutron fluence [$n/cm^2/s/MeV$]"
   x: Energy
   y: Value
   plot_args:

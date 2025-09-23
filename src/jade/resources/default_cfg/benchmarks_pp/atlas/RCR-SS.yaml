@@ -28,7 +28,7 @@ Cumulative Reaction Rate 58Ni(n,p)58Co (SR):
   plot_type: binned
   title: Surface Reaction Rate for 58Ni(n,p)58Co
   x_label: Energy [MeV]
-  y_labels: "Cumulative Reaction Rate [$reactions/cm^3/s$]"
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
   expand_runs: false
@@ -38,7 +38,7 @@ Cumulative Reaction Rate 115In(n,n')115mIn (SR):
   plot_type: binned
   title: Surface Reaction Rate for 115In(n,n')115mIn
   x_label: Energy [MeV]
-  y_labels: "Cumulative Reaction Rate [$reactions/cm^3/s$]"
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
   expand_runs: false
@@ -48,7 +48,7 @@ Cumulative Reaction Rate 115In(n,g)116mIn (SR):
   plot_type: binned
   title: Surface Reaction Rate for 115In(n,g)116mIn
   x_label: Energy [MeV]
-  y_labels: "Cumulative Reaction Rate [$reactions/cm^3/s$]"
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
   expand_runs: false
@@ -264,7 +264,7 @@ Cumulative Reaction Rate Nb (RI):
   plot_type: binned
   title: Reaction Rates for 93Nb(n,2n)92mNb
   x_label: Energy [MeV]
-  y_labels: "Cumulative Reaction Rate [$reactions/cm^3/s$]"
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
   expand_runs: false

@@ -32,6 +32,9 @@ Cumulative Reaction Rate 58Ni(n,p)58Co:
   x: Energy
   y: Value
   expand_runs: false
+  xlimits: [0.1, 30]
+  plot_args:
+    yscale: linear
 Cumulative Reaction Rate 115In(n,n')115mIn:
   results:
     - Cumulative Reaction Rate In
@@ -42,6 +45,9 @@ Cumulative Reaction Rate 115In(n,n')115mIn:
   x: Energy
   y: Value
   expand_runs: false
+  xlimits: [0.1, 30]
+  plot_args:
+    yscale: linear
 Reaction Rate SR:
   results:
     - Total Reaction Rate Ni

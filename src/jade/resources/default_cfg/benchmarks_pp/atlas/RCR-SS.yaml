@@ -32,6 +32,9 @@ Cumulative Reaction Rate 58Ni(n,p)58Co (SR):
   x: Energy
   y: Value
   expand_runs: false
+  xlimits: [0.1, 30]
+  plot_args:
+    yscale: linear
 Cumulative Reaction Rate 115In(n,n')115mIn (SR):
   results:
     - Cumulative Reaction Rate In1
@@ -42,6 +45,9 @@ Cumulative Reaction Rate 115In(n,n')115mIn (SR):
   x: Energy
   y: Value
   expand_runs: false
+  xlimits: [0.1, 30]
+  plot_args:
+    yscale: linear
 Cumulative Reaction Rate 115In(n,g)116mIn (SR):
   results:
     - Cumulative Reaction Rate In2
@@ -52,6 +58,9 @@ Cumulative Reaction Rate 115In(n,g)116mIn (SR):
   x: Energy
   y: Value
   expand_runs: false
+  xlimits: [0.0000001, 30]
+  plot_args:
+    yscale: linear
 Reaction Rate SR:
   results:
     - Total Reaction Rate Ni (SR)
@@ -75,6 +84,9 @@ Cumulative Reaction Rates Au pos 1 (RI):
   y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
+  xlimits: [0.00000005, 30]
+  plot_args:
+    yscale: linear
 Cumulative Reaction Rates Au pos 2 (RI):
   results:
     - Cumulative Reaction Rates Au pos 2
@@ -84,6 +96,9 @@ Cumulative Reaction Rates Au pos 2 (RI):
   y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
+  xlimits: [0.00000005, 30]
+  plot_args:
+    yscale: linear
 Cumulative Reaction Rates Au pos 3 (RI):
   results:
     - Cumulative Reaction Rates Au pos 3
@@ -93,6 +108,9 @@ Cumulative Reaction Rates Au pos 3 (RI):
   y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
+  xlimits: [0.00000005, 30]
+  plot_args:
+    yscale: linear
 Cumulative Reaction Rates Au pos 4 (RI):
   results:
     - Cumulative Reaction Rates Au pos 4
@@ -102,6 +120,9 @@ Cumulative Reaction Rates Au pos 4 (RI):
   y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
+  xlimits: [0.00000005, 30]
+  plot_args:
+    yscale: linear
 Total Reaction Rate Au (RI):
   results:
     - Total Reaction Rates Au
@@ -123,6 +144,9 @@ Cumulative Reaction Rates Ni pos 1 (RI):
   y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
+  xlimits: [0.1, 30]
+  plot_args:
+    yscale: linear
 Cumulative Reaction Rates Ni pos 2 (RI):
   results:
     - Cumulative Reaction Rates Ni (RI) pos 2
@@ -132,6 +156,9 @@ Cumulative Reaction Rates Ni pos 2 (RI):
   y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
+  xlimits: [0.1, 30]
+  plot_args:
+    yscale: linear
 Cumulative Reaction Rates Ni pos 3 (RI):
   results:
     - Cumulative Reaction Rates Ni (RI) pos 3
@@ -141,6 +168,9 @@ Cumulative Reaction Rates Ni pos 3 (RI):
   y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
+  xlimits: [0.1, 30]
+  plot_args:
+    yscale: linear
 Cumulative Reaction Rates Ni pos 4 (RI):
   results:
     - Cumulative Reaction Rates Ni (RI) pos 4
@@ -150,6 +180,9 @@ Cumulative Reaction Rates Ni pos 4 (RI):
   y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
+  xlimits: [0.1, 30]
+  plot_args:
+    yscale: linear
 Total Reaction Rate Ni (RI):
   results:
     - Total Reaction Rates Ni (RI)
@@ -171,6 +204,9 @@ Cumulative Reaction Rates Ta pos 1 (RI):
   y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
+  xlimits: [0.0000001, 30]
+  plot_args:
+    yscale: linear
 Cumulative Reaction Rates Ta pos 2 (RI):
   results:
     - Cumulative Reaction Rates Ta pos 2
@@ -180,6 +216,9 @@ Cumulative Reaction Rates Ta pos 2 (RI):
   y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
+  xlimits: [0.0000001, 30]
+  plot_args:
+    yscale: linear
 Cumulative Reaction Rates Ta pos 3 (RI):
   results:
     - Cumulative Reaction Rates Ta pos 3
@@ -189,6 +228,9 @@ Cumulative Reaction Rates Ta pos 3 (RI):
   y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
+  xlimits: [0.0000001, 30]
+  plot_args:
+    yscale: linear
 Cumulative Reaction Rates Ta pos 4 (RI):
   results:
     - Cumulative Reaction Rates Ta pos 4
@@ -198,6 +240,9 @@ Cumulative Reaction Rates Ta pos 4 (RI):
   y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
+  xlimits: [0.0000001, 30]
+  plot_args:
+    yscale: linear
 Total Reaction Rate Ta (RI):
   results:
     - Total Reaction Rates Ta
@@ -219,6 +264,9 @@ Cumulative Reaction Rates Cu pos 1 (RI):
   y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
+  xlimits: [0.0000001, 30]
+  plot_args:
+    yscale: linear
 Cumulative Reaction Rates Cu pos 2 (RI):
   results:
     - Cumulative Reaction Rates Cu pos 2
@@ -228,6 +276,9 @@ Cumulative Reaction Rates Cu pos 2 (RI):
   y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
+  xlimits: [0.0000001, 30]
+  plot_args:
+    yscale: linear
 Cumulative Reaction Rates Cu pos 3 (RI):
   results:
     - Cumulative Reaction Rates Cu pos 3
@@ -237,6 +288,9 @@ Cumulative Reaction Rates Cu pos 3 (RI):
   y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
+  xlimits: [0.0000001, 30]
+  plot_args:
+    yscale: linear
 Cumulative Reaction Rates Cu pos 4 (RI):
   results:
     - Cumulative Reaction Rates Cu pos 4
@@ -246,6 +300,9 @@ Cumulative Reaction Rates Cu pos 4 (RI):
   y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
+  xlimits: [0.0000001, 30]
+  plot_args:
+    yscale: linear
 Total Reaction Rate Cu (RI):
   results:
     - Total Reaction Rates Cu
@@ -268,6 +325,9 @@ Cumulative Reaction Rate Nb (RI):
   x: Energy
   y: Value
   expand_runs: false
+  xlimits: [8, 30]
+  plot_args:
+    yscale: linear
 Total Reaction Rate Nb (RI):
   results:
     - Total Reaction Rate Nb

@@ -97,6 +97,12 @@ class TestIputOpenMC:
         settings = openmc.Settings.from_xml(settings_file)
         assert settings.source is not None
 
+        weight_windows_outfile = os.path.join(tmpdir, "weight_windows.h5")
+        assert os.path.exists(weight_windows_outfile)
+        assert hasattr(settings, "weight_windows")
+        assert settings.weight_windows is not None
+        assert settings.weight_windows_on is True
+
 
 class TestInputMCNPSphere:
     def test_input_generation(self, libMCNP, tmpdir):

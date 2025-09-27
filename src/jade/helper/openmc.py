@@ -228,7 +228,7 @@ class OpenMCInputFiles:
             self.load_settings(os.path.join(path, "settings.xml"))
         else:
             self.settings = openmc.Settings()
-            self.settings.run_mode = 'fixed source'
+            self.settings.run_mode = "fixed source"
         if "libsource.so" in files:
             self.compiled_source = os.path.join(path, "libsource.so")
         else:
@@ -237,6 +237,10 @@ class OpenMCInputFiles:
             self.load_tallies(os.path.join(path, "tallies.xml"))
         else:
             self.tallies = openmc.Tallies()
+        if "weight_windows.h5" in files:
+            self.weight_windows_file = os.path.join(path, "weight_windows.h5")
+        else:
+            self.weight_windows_file = None
 
     def load_geometry(
         self,
@@ -423,6 +427,13 @@ class OpenMCInputFiles:
             outfile = os.path.join(path, "libsource.so")
             shutil.copyfile(self.compiled_source, outfile)
             self.settings.source = openmc.CompiledSource(outfile, strength=1.0)
+
+        if self.weight_windows_file is not None:
+            weight_windows_outfile = os.path.join(path, "weight_windows.h5")
+            shutil.copyfile(self.weight_windows_file, weight_windows_outfile)
+            self.settings.weight_windows_on = True
+            self.settings.weight_windows = openmc.hdf5_to_wws(weight_windows_outfile)
+
         self.geometry.export_to_xml(os.path.join(path, "geometry.xml"))
         self.settings.export_to_xml(os.path.join(path, "settings.xml"))
         self.tallies.export_to_xml(os.path.join(path, "tallies.xml"))

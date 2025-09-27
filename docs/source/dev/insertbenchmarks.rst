@@ -54,6 +54,8 @@ OpenMC
   A compiled library file, ``libsource.so`` must be provided, which has been compiled using ``gcc`` 
   with shared libraries enabled. An example of how to compile an OpenMC source is provided in the
   `OpenMC documentation <https://docs.openmc.org/en/stable/usersguide/settings.html#compiled-sources>`_.
+- If the model uses weight windows, a weight windows file in HDF5 format should be provided.
+  The file should be named ``weight_windows.h5``. This weight window will be used in simulation if it is provided.
 - The tallies IDs should be explicitly fixed when creating the ``tallies.xml`` file. This prevents
   OpenMC from creating them automatically and, thus, potentially changing them between different runs
   of a same benchmark. If possible, the tallies identifiers should be the same as the ones used in the

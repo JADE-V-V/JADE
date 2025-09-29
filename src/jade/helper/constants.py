@@ -59,4 +59,4 @@ ALLOWED_COLUMN_NAMES = [
     "Cor C",
 ]
 
-DOSIMETRY_LIBS = ["34y"]
+DOSIMETRY_LIBS = ["34y", "17c"]

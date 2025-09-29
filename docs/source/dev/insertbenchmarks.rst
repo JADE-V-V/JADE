@@ -47,7 +47,13 @@ D1SUNED
 
 OpenMC
 ------
-- The names of the input files should be ``settings.xml``, ``geometry.xml``, ``tallies.xml`` and ``materials.xml``.
+- The names of the input files should be ``settings.xml``, ``geometry.xml``, ``tallies.xml`` and ``materials.xml``, 
+  if the model uses an ``openmc.IndependentSource``.
+- If the model uses an ``openmc.CompiledSource``, the ``settings.xml`` file is optional;
+  if this is omitted, a ``settings.xml`` file is generated within JADE, assuming default options.
+  A compiled library file, ``libsource.so`` must be provided, which has been compiled using ``gcc`` 
+  with shared libraries enabled. An example of how to compile an OpenMC source is provided in the
+  `OpenMC documentation <https://docs.openmc.org/en/stable/usersguide/settings.html#compiled-sources>`_.
 - The tallies IDs should be explicitly fixed when creating the ``tallies.xml`` file. This prevents
   OpenMC from creating them automatically and, thus, potentially changing them between different runs
   of a same benchmark. If possible, the tallies identifiers should be the same as the ones used in the
@@ -207,9 +213,9 @@ The currently supported modifiers are:
 * ``delete_cols``: deletes columns from the tally. The keyarg to provide is *cols* which expects a list
   of column names to be deleted.
 
-* ``format_decimals``: formats the decimals of the data contained in specific columns. A 'decimals' dictionary is expected as a 
-  keyarg, where the keys should be the column names to be formatted and the values should be the corresponding number of decimals 
-  to keep. 
+* ``format_decimals``: formats the decimals of the data contained in specific columns. A *decimals* dictionary is expected as a
+  keyarg, where the keys should be the column names to be formatted and the values should be the corresponding number of decimals
+  to keep.
 
 * ``tof_to_energy``: converts the time-of-flight to energy. The tally is expected
   to be binned in time and a new column *Energy* will be created. 
@@ -230,6 +236,10 @@ The currently supported modifiers are:
 
   * *column*: the name of the column to be used for the subset selection.
   * *values*: list of values in *column* identifying the rows to be retained.
+
+* ``cumulative_sum``: computes the cumulative sum of a specific column. The optional keyargs to provide are *column*, the name of the column
+  to be used for the cumulative sum, and *norm*, a boolean indicating whether to normalize the result with respect to the total sum (a percentage is returned).
+  If no *column* argument is provided, the cumulative sum is computed on the 'Value' column by default. The argument *norm* is True by default.
 
 More than one modifiers can be applied in series to a single tally.
 If your benchmark requires a new modifier, please refer to :ref:`add_tally_mod`.

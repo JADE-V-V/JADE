@@ -149,33 +149,53 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
 
     if by == "all":
         grouped = tally
-        error = np.sqrt((tally["Error"] ** 2).sum())
+        # Error propagation considering that tally["Error"] are relative errors
+        # Valid both for sum and mean
+        error = pd.Series(
+            np.sqrt(((tally["Error"] * tally["Value"]) ** 2).sum())
+            / tally["Value"].sum(),
+            name="Error",
+        )
     else:
+        value_df = tally.set_index(by)["Value"]
         error_df = tally.set_index(by)["Error"]
         rows = []
         for idx_val in error_df.index.unique():
-            subset = error_df.loc[idx_val]
-            err = np.sqrt(np.sum(subset**2))
+            subset_error = error_df.loc[idx_val]
+            subset_value = value_df.loc[idx_val]
+            # Error propagation considering that tally["Error"] are relative errors
+            # Valid both for sum and mean
+            err = (
+                np.sqrt(np.sum((subset_error * subset_value) ** 2)) / subset_value.sum()
+            )
             rows.append(err)
         error = pd.Series(rows, name="Error")
         grouped = tally.groupby(by, sort=False)
 
     if action == "sum":
         df = grouped.sum()
+        # Application of the computed error propagation
+        df["Error"] = error.values
     elif action == "mean":
         df = grouped.mean()
+        # Application of the computed error propagation
+        df["Error"] = error.values
     elif action == "max":
+        # Preserve Error of the row defining the maximum Value
+        idx = tally.groupby(by, sort=False)["Value"].idxmax()
         df = grouped.max()
+        df["Error"] = tally.loc[idx, "Error"].values
     elif action == "min":
+        # Preserve Error of the row defining the minimum Value
+        idx = tally.groupby(by, sort=False)["Value"].idxmin()
         df = grouped.min()
+        df["Error"] = tally.loc[idx, "Error"].values
 
     if isinstance(df, pd.Series):
         # a series has been created but we want a df
         df = df.to_frame().T
     else:
         df.reset_index(inplace=True)
-
-    df["Error"] = error
 
     return df
 
@@ -218,6 +238,40 @@ def tof_to_energy(
     return tally
 
 
+def cumulative_sum(
+    tally: pd.DataFrame, column: str = "Value", norm: bool = True
+) -> pd.DataFrame:
+    """Compute the cumulative sum of the specified column.
+
+    Parameters
+    ----------
+    tally : pd.DataFrame
+        tally dataframe to modify
+    column: str
+        name of the column to compute the cumulative sum for. Default is "Value".
+    """
+    if column not in tally.columns:
+        raise ValueError(f"Column {column} not found in the tally.")
+    elif column == "Error":
+        raise ValueError("Cumulative sum cannot be computed for the Error column.")
+    original_tally = tally.copy()
+    tally[column] = tally[column].cumsum()
+    if column == "Value":
+        # Error propagation considering that tally["Error"] are relative errors
+        tally["Error"] = (
+            np.sqrt(((tally["Error"] * original_tally[column]) ** 2).cumsum())
+            / tally[column]
+        )
+    if norm:
+        # Normalize in percentage to the last value (total reaction rate)
+        tally[column] = tally[column] / tally[column].iloc[-1] * 100
+        if column == "Value":
+            tally["Error"] = np.sqrt(
+                (tally["Error"] ** 2 + tally["Error"].iloc[-1] ** 2)
+            )
+    return tally
+
+
 MOD_FUNCTIONS = {
     TallyModOption.LETHARGY: by_lethargy,
     TallyModOption.SCALE: scale,
@@ -234,6 +288,7 @@ MOD_FUNCTIONS = {
     TallyModOption.FORMAT_DECIMALS: format_decimals,
     TallyModOption.TOF_TO_ENERGY: tof_to_energy,
     TallyModOption.SELECT_SUBSET: select_subset,
+    TallyModOption.CUMULATIVE_SUM: cumulative_sum,
 }
 
 

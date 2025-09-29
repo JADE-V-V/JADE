@@ -9,17 +9,19 @@ from ttkthemes import ThemedTk
 
 import jade.resources
 from jade.gui.run_config_gui import ConfigGUI
+from unittest.mock import patch
 
 DEFAULT_CFG = files(jade.resources).joinpath("default_cfg")
 
 
 class TestConfigGui:
-    @pytest.fixture
+    @pytest.fixture(scope="session")
     def config_gui(self):
         run_cfg = Path(DEFAULT_CFG, "run_cfg.yml")
         libs_cfg = Path(DEFAULT_CFG, "libs_cfg.yml")
 
-        return ConfigGUI(run_cfg, libs_cfg)
+        with patch("ttkthemes.ThemedTk", autospec=True):
+            return ConfigGUI(run_cfg, libs_cfg)
 
     def test_init(self, config_gui):
         assert isinstance(config_gui.window, ThemedTk)
@@ -31,7 +33,6 @@ class TestConfigGui:
         assert config_gui.notebook.tab(0, "text") == "Benchmarks"
         assert config_gui.notebook.tab(1, "text") == "Libraries"
         assert isinstance(config_gui.save_button, ttk.Button)
-        config_gui.window.destroy()
 
     def test_save_settings(self, config_gui, monkeypatch, tmpdir):
         def mock_return_file(defaultextension=None, filetypes=None):
@@ -50,7 +51,6 @@ class TestConfigGui:
 
         config_gui.save_settings()
         assert Path(tmpdir, "test_output.yml").exists()
-        config_gui.window.destroy()
 
     #     def test_on_benchmark_click(self, config_gui: ConfigGUI, monkeypatch):
     #         # Simulate a click on the first cell of the benchmarks tree

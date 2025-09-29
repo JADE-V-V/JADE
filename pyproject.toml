@@ -30,7 +30,9 @@ dependencies = [
     "requests",
     "f4enix >= 0.15.0",
     "pyyaml",
-    "seaborn"
+    "seaborn",
+    "tk", # Fix for Windows where tkinter is not installed properly
+    "tcl" # Fix for Windows where tkinter is not installed properly
 ]
 
 [project.optional-dependencies]

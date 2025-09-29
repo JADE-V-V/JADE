@@ -31,6 +31,7 @@ class TestConfigGui:
         assert config_gui.notebook.tab(0, "text") == "Benchmarks"
         assert config_gui.notebook.tab(1, "text") == "Libraries"
         assert isinstance(config_gui.save_button, ttk.Button)
+        config_gui.window.destroy()
 
     def test_save_settings(self, config_gui, monkeypatch, tmpdir):
         def mock_return_file(defaultextension=None, filetypes=None):
@@ -49,6 +50,7 @@ class TestConfigGui:
 
         config_gui.save_settings()
         assert Path(tmpdir, "test_output.yml").exists()
+        config_gui.window.destroy()
 
     #     def test_on_benchmark_click(self, config_gui: ConfigGUI, monkeypatch):
     #         # Simulate a click on the first cell of the benchmarks tree

@@ -22,3 +22,4 @@ class TestConfigGui:
         gui = PostConfigGUI(status)
 
         assert gui is not None
+        gui.destroy()

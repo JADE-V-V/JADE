@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from f4enix.input.libmanager import LibManager
+import matplotlib
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
@@ -17,6 +18,7 @@ from matplotlib.ticker import AutoLocator, AutoMinorLocator, LogLocator, Multipl
 
 from jade.config.atlas_config import PlotConfig, PlotType
 
+matplotlib.use("Agg")  # use a non-interactive backend
 LM = LibManager()
 # Color-blind saver palette
 COLORS = [

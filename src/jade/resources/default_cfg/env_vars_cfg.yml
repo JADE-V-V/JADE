@@ -26,3 +26,5 @@ code_configurations: # You can either modify the files at these (relative) paths
 batch_template: batch_template/Slurmtemplate.sh  # batch template. Both relative and absolute paths should work.
 batch_system: sbatch  # the command to submit a job to the cluster (e.g. llsubmit, sbatch, etc.)
 
+# Tokens for closed benchmarks repos
+f4e_gitlab_token:  # token for the F4E gitlab, leave empty if not needed

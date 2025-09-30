@@ -30,7 +30,8 @@ dependencies = [
     "requests",
     "f4enix >= 0.15.0",
     "pyyaml",
-    "seaborn"
+    "seaborn",
+    "python-gitlab"
 ]
 
 [project.optional-dependencies]

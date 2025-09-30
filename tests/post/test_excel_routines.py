@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 
 from jade.config.excel_config import ComparisonType
-from jade.post.excel_routines import ChiTable, Table
+from jade.post.excel_routines import ChiTable, SpherePivotTable, Table
 
 
 class TestTable:
@@ -70,3 +70,78 @@ class TestChiTable:
             pytest.approx(result.loc[("b", "TOT"), "Value"])
             == (0.25 / 0.2 - 1) ** 2 / (0.2**2) / 2
         )
+
+
+class TestSpherePivotTable:
+    def test_sort_sphere_index_single(self):
+        """Test sorting with single index (Case only)"""
+        # Create a dataframe with unsorted cases
+        data = {
+            "Value": [1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+        }
+        index = [
+            "Sphere_M400",
+            "Sphere_26056_Fe-56",
+            "Sphere_1001_H-1",
+            "Sphere_M101",
+            "Sphere_92235_U-235",
+            "Sphere_1002_H-2",
+        ]
+        df = pd.DataFrame(data, index=index)
+        
+        # Sort the dataframe
+        sorted_df = SpherePivotTable._sort_sphere_index(df)
+        
+        # Expected order: isotopes by Z number, then materials alphabetically
+        # Z=1 (H): 1001, 1002
+        # Z=26 (Fe): 26056
+        # Z=92 (U): 92235
+        # Materials: M101, M400
+        expected_order = [
+            "Sphere_1001_H-1",
+            "Sphere_1002_H-2",
+            "Sphere_26056_Fe-56",
+            "Sphere_92235_U-235",
+            "Sphere_M101",
+            "Sphere_M400",
+        ]
+        
+        assert sorted_df.index.tolist() == expected_order
+
+    def test_sort_sphere_index_multi(self):
+        """Test sorting with multi-index (Case and Energy)"""
+        # Create a dataframe with multi-index
+        cases = [
+            "Sphere_M400",
+            "Sphere_M400",
+            "Sphere_26056_Fe-56",
+            "Sphere_26056_Fe-56",
+            "Sphere_1001_H-1",
+            "Sphere_1001_H-1",
+        ]
+        energies = [1.0, 2.0, 1.0, 2.0, 1.0, 2.0]
+        values = [10, 20, 30, 40, 50, 60]
+        
+        df = pd.DataFrame({"Value": values})
+        df.index = pd.MultiIndex.from_arrays([cases, energies], names=["Case", "Energy"])
+        
+        # Sort the dataframe
+        sorted_df = SpherePivotTable._sort_sphere_index(df)
+        
+        # Expected order: H-1 first (Z=1), then Fe-56 (Z=26), then M400
+        expected_cases = [
+            "Sphere_1001_H-1",
+            "Sphere_1001_H-1",
+            "Sphere_26056_Fe-56",
+            "Sphere_26056_Fe-56",
+            "Sphere_M400",
+            "Sphere_M400",
+        ]
+        expected_energies = [1.0, 2.0, 1.0, 2.0, 1.0, 2.0]
+        
+        result_cases = sorted_df.index.get_level_values(0).tolist()
+        result_energies = sorted_df.index.get_level_values(1).tolist()
+        
+        assert result_cases == expected_cases
+        assert result_energies == expected_energies
+

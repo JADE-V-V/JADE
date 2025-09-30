@@ -16,6 +16,7 @@ class TableType(Enum):
     PIVOT = "pivot"
     SIMPLE = "simple"
     CHI_SQUARED = "chi_squared"
+    SPHERE_PIVOT = "sphere_pivot"
 
 
 class ComparisonType(Enum):

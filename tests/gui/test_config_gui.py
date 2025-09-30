@@ -9,17 +9,19 @@ from ttkthemes import ThemedTk
 
 import jade.resources
 from jade.gui.run_config_gui import ConfigGUI
+from unittest.mock import patch
 
 DEFAULT_CFG = files(jade.resources).joinpath("default_cfg")
 
 
 class TestConfigGui:
-    @pytest.fixture
+    @pytest.fixture(scope="session")
     def config_gui(self):
         run_cfg = Path(DEFAULT_CFG, "run_cfg.yml")
         libs_cfg = Path(DEFAULT_CFG, "libs_cfg.yml")
 
-        return ConfigGUI(run_cfg, libs_cfg)
+        with patch("ttkthemes.ThemedTk", autospec=True):
+            return ConfigGUI(run_cfg, libs_cfg)
 
     def test_init(self, config_gui):
         assert isinstance(config_gui.window, ThemedTk)

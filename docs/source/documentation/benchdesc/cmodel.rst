@@ -31,7 +31,45 @@ the scope of this work and can be found, instead, in a dedicated F4E report.
 Tallies
 ^^^^^^^
 The C-model standard tallies have been used. They include neutron current,
-neutron current and nuclear heating at different locations.
+neutron flux and nuclear heating at different locations. More precisely:
+
+ - F11: Neutron current on plasma boundary (inboard BLK#1-6)
+ - F21: Neutron current on plasma boundary (BLK#7)
+ - F31: Neutron current on plasma boundary (BLK#8)
+ - F41: Neutron current on plasma boundary (BLK#9)
+ - F51: Neutron current on plasma boundary (BLK#10)
+ - F61: Neutron current on plasma boundary (BLK#11)
+ - F71: Neutron current on plasma boundary (BLK#12)
+ - F81: Neutron current on plasma boundary (BLK#13)
+ - F91: Neutron current on plasma boundary (BLK#14)
+ - F101: Neutron current on plasma boundary (BLK#15)
+ - F111: Neutron current on plasma boundary (BLK#16)
+ - F121: Neutron current on plasma boundary (BLK#17)
+ - F131: Neutron current on plasma boundary (BLK#18)
+
+ - F12: Neutron flux on plasma boundary (inboard BLK#1-6)
+ - F22: Neutron flux on plasma boundary (BLK#7)
+ - F32: Neutron flux on plasma boundary (BLK#8)
+ - F42: Neutron flux on plasma boundary (BLK#9)
+ - F52: Neutron flux on plasma boundary (BLK#10)
+ - F62: Neutron flux on plasma boundary (BLK#11)
+ - F72: Neutron flux on plasma boundary (BLK#12)
+ - F82: Neutron flux on plasma boundary (BLK#13)
+ - F92: Neutron flux on plasma boundary (BLK#14)
+ - F102: Neutron flux on plasma boundary (BLK#15)
+ - F112: Neutron flux on plasma boundary (BLK#16)
+ - F122: Neutron flux on plasma boundary (BLK#17)
+ - F132: Neutron flux on plasma boundary (BLK#18)
+
+ - F16: Nuclear heat in the blanket and divertor
+ - F26: Nuclear heat in the vacuum vessel, port extension and port ducts
+ - F36: Nuclear heat in thermal shields
+ - F46: Nuclear heat in the cryostat
+ - F56: Nuclear heat in port plugs
+ - F66: Nuclear heat in PF coils
+ - F76: Nuclear heat in TF coils
+ - F86: Nuclear heat in correction coils
+ - F96: Nuclear heat in Central solenoid
 
 .. seealso:: **Related papers and contributions:**
 

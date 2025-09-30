@@ -44,7 +44,9 @@ on which version of OpenMC is being run.
   By using the ``[ui]`` option, the user will also install the GUI dependencies, in
   particular ``tkinter``. This may not be desirable if installing on clusters as
   often the module is not available in these systems. In this case, the recommended
-  installation is to use simply ``pip install jadevv``.
+  installation is to use simply ``pip install jadevv``. Ubuntu users should note
+  that the default python installation does not come with Tkinter, and should run
+  ``sudo apt-get install python3-tk`` before installing JADE.
 
 .. warning:: 
   Development cycles of OpenMC are quite fast. For instance, after version 0.15.0

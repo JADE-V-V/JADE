@@ -15,7 +15,7 @@ Create a virtual environment
 Firstly, create a virtual environment and activate it:
 
   | ``python -m venv jade_venv``
-  | ``source jade/bin/activate``
+  | ``source jade_venv/bin/activate``
 
 Or if you are using Anaconda:
 

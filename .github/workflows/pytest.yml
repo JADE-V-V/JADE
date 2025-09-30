@@ -54,7 +54,7 @@ jobs:
       - name: Install dependencies Linux
         if: runner.os == 'Linux'
         run: |
-          pip install -e .[dev]
+          pip install -e .[dev,ui]
       
       # Cap the openmc installation to 0.15.0 for older python
       - name: Install openmc (legacy)
@@ -71,7 +71,7 @@ jobs:
       - name: Install dependencies Windows 
         if: runner.os == 'Windows'
         run: |
-          pip install -e .[dev]     
+          pip install -e .[dev,ui]     
 
       # Activate environment and run pytest
       - name: Testing - Linux

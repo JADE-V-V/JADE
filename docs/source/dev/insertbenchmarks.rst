@@ -266,8 +266,13 @@ An example of a *result* configuration is shown below:
     46: [[scale, {"factor": 1e5}], [lethargy, {}]]  # Example of tally that is scaled and converted to flux per unit lethargy.
 
 .. note:: 
-  The *results* do not have to be present in all benchmark cases/runs. When they are not
+  The *results* do not have to be present in all benchmark cases/runs/transport codes. When they are not
   found, they are simply skipped.
+
+.. note:: 
+  To get an equivalent result to photon heating in MCNP, the photon, electron and positron heating must be 
+  summed. This is all handled by the code and only the id of the photon heating tally needs to be provided
+  in the raw config file.
 
 In some cases it may be useful to produce certain results only from some cases/runs and
 not from others. Or maybe different modifiers need to be applied in different runs.

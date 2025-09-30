@@ -263,12 +263,10 @@ def cumulative_sum(
             / tally[column]
         )
     if norm:
-        # Normalize in percentage to the last value (total reaction rate)
+        # Normalize in percentage to the last value (total sum)
         tally[column] = tally[column] / tally[column].iloc[-1] * 100
         if column == "Value":
-            tally["Error"] = np.sqrt(
-                (tally["Error"] ** 2 + tally["Error"].iloc[-1] ** 2)
-            )
+            tally["Error"] = np.sqrt(tally["Error"] ** 2 + tally["Error"].iloc[-1] ** 2)
     return tally
 
 

@@ -271,7 +271,7 @@ An example of a *result* configuration is shown below:
 
 .. note:: 
   To get an equivalent result to photon heating in MCNP, the photon, electron and positron heating must be 
-  summed. This is all handled by the code and only the id of the photon heating tally needs to be provided
+  summed in OpenMC. This is all handled by the code and only the id of the *photon* heating tally needs to be provided
   in the raw config file.
 
 In some cases it may be useful to produce certain results only from some cases/runs and

@@ -30,7 +30,7 @@ dependencies = [
     "requests",
     "f4enix >= 0.15.0",
     "pyyaml",
-    "seaborn"
+    "seaborn",
 ]
 
 [project.optional-dependencies]

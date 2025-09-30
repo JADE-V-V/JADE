@@ -69,12 +69,11 @@ class Table(ABC):
         self,
         sheet_name: str,
         df: pd.DataFrame,
-        apply_conditional: bool = True,
+        apply_conditional: bool | dict = True,
         title: str | None = None,
     ):
         if len(sheet_name) > MAX_SHEET_NAME_LEN:
             sheet_name = sheet_name[:31]
-
         ws = self.writer.book.add_worksheet(sheet_name)
         if title is None:
             title = sheet_name
@@ -83,14 +82,17 @@ class Table(ABC):
         if self.cfg.change_col_names:
             self._rename_columns(df, self.cfg.change_col_names)
         df.to_excel(self.writer, sheet_name=sheet_name, startrow=DF_START_ROW)
-
         # additional operation on the sheet
-        if apply_conditional and self.cfg.conditional_formatting:
+        if apply_conditional is not False and self.cfg.conditional_formatting:
+            if apply_conditional == True:
+                conditional_formatting = self.cfg.conditional_formatting
+            else:
+                conditional_formatting = apply_conditional
             self.formatter.apply_conditional_formatting(
                 ws,
                 DF_START_ROW + df.columns.nlevels,
                 df.index.nlevels - 1,
-                self.cfg.conditional_formatting,
+                conditional_formatting,
             )
         # put the scientific formatter for all numbers
         self.formatter.apply_scientific_formatting(
@@ -115,14 +117,7 @@ class Table(ABC):
             ):
                 sheet_name = f"{val} rel. err. {self.cfg.name}"
                 title = f"{tag} Relative Error for {self.cfg.name}"
-                self._add_sheet(sheet_name, df, title=title)
-                # apply standard formatting for error sheets
-                self.formatter.apply_conditional_formatting(
-                    self.writer.book.get_worksheet_by_name(sheet_name),
-                    DF_START_ROW + df.columns.nlevels,
-                    df.index.nlevels - 1,
-                    ERRORS_THRESHOLD,
-                )
+                self._add_sheet(sheet_name, df, apply_conditional=ERRORS_THRESHOLD, title=title)
 
     @abstractmethod
     def _get_sheet(self) -> list[pd.DataFrame]:

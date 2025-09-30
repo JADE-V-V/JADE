@@ -15,7 +15,7 @@ Create a virtual environment
 Firstly, create a virtual environment and activate it:
 
   | ``python -m venv jade_venv``
-  | ``source jade/bin/activate``
+  | ``source jade_venv/bin/activate``
 
 Or if you are using Anaconda:
 
@@ -44,7 +44,9 @@ on which version of OpenMC is being run.
   By using the ``[ui]`` option, the user will also install the GUI dependencies, in
   particular ``tkinter``. This may not be desirable if installing on clusters as
   often the module is not available in these systems. In this case, the recommended
-  installation is to use simply ``pip install jadevv``.
+  installation is to use simply ``pip install jadevv``. Ubuntu users should note
+  that the default python installation does not come with Tkinter, and should run
+  ``sudo apt-get install python3-tk`` before installing JADE.
 
 .. warning:: 
   Development cycles of OpenMC are quite fast. For instance, after version 0.15.0
@@ -90,6 +92,16 @@ If permissions errors are encountered, try:
   | ``python -m jade``
 
 The folder structure should now look like the one described in :ref:`folders`.
+During this operation the benchmark inputs contained at `IAEA repository <https://github.com/IAEA-NDS/open-benchmarks>`_
+are fetched.
 
 A JADE instance has now been initialized and it is ready to be configured as discussed
 in the :ref:`config` section.
+
+In case the user possesses a valid access token for the F4E GitLab, they can add an environment
+variable to their system named `F4E_GITLAB_TOKEN` with such token. JADE will automatically fetch
+inputs also from the F4E GitLab. Alternatively, the token can be added later and
+additional inputs can be recovered using the JADE utility:
+
+  | ``python -m jade.utilities --fetch``
+

@@ -22,23 +22,27 @@ Here is an example:
 
     # paths to the code executables. If the codes are not installed, just leave the field empty.
     executables:
-        - mcnp: path/to/mcnp6/executable  # it can also be just 'mcnp6' if the executable is in the PATH
-        - openmc:  path/to/openmc/executable  # it can also be just 'openmc' if the executable is in the PATH
-        - serpent: path/to/serpent/executable  # it can also be just 'sss2' if the executable is in the PATH
-        - d1s: path/to/d1s/executable  # it can also be just 'd1s' if the executable is in the PATH
+    - mcnp: path/to/mcnp6/executable  # it can also be just 'mcnp6' if the executable is in the PATH
+    - openmc:  path/to/openmc/executable  # idem
+    - serpent: path/to/serpent/executable  # idem
+    - d1s: path/to/d1s/executable  # idem
 
     # run mode is either "serial" to run locally or "job" to submit to a cluster
     run_mode: serial
-    
+    # This is needed only if mpi_tasks > 1
+    mpi_prefix: srun  # the command to run jobs, it prepends your executable (e.g. mpirun, srun, etc.)
+
+    # Not needed for a windows run. If all your modules are already loaded in your environment,
+    # you can either make all these files empty or point to an empy file.
+    code_configurations: # You can either modify the files at these (relative) paths that already exist or provide your own
+    - mcnp: cfg/exe_config/mcnp_config.sh
+    - openmc: cfg/exe_config/openmc_config.sh
+    - serpent: cfg/exe_config/serpent_config.sh
+    - d1s: cfg/exe_config/d1s_config.sh
+
     # These need to be non-empty only if submitting a job to a cluster
     batch_template: batch_template/Slurmtemplate.sh  # batch template. Both relative and absolute paths should work.
     batch_system: sbatch  # the command to submit a job to the cluster (e.g. llsubmit, sbatch, etc.)
-    mpi_prefix: srun  # the command to run jobs, it prepends your executable (e.g. mpirun, srun, etc.)
-    code_configurations: # You can either modify the files at these (relative) paths that already exist or provide your own
-        - mcnp: exe_config/mcnp_config.sh
-        - openmc: exe_config/openmc_config.sh
-        - serpent: exe_config/serpent_config.sh
-        - d1s: exe_config/d1s_config.sh
 
 It can be seen that in order to submit a job to a cluster, the user needs to provide the path to the batch template
 file and a config file for the code(s) to be run.

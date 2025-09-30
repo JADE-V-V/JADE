@@ -2,7 +2,12 @@ from __future__ import annotations
 
 import os
 
-from jade.app.fetch import fetch_iaea_inputs
+import pytest
+
+from jade.app.fetch import fetch_f4e_inputs, fetch_iaea_inputs
+
+# By default this should set the token to None if not found
+F4E_GITLAB_TOKEN = os.getenv("F4E_GITLAB_TOKEN")
 
 
 def test_fetch_iaea_inputs(tmpdir):
@@ -34,3 +39,31 @@ def test_fetch_iaea_inputs(tmpdir):
     # monkeypatch.setattr("builtins.input", lambda msg: next(inputs))
     # ans = fetch_iaea_inputs(session, authorization_token="wrongtoken")
     # assert not ans
+
+
+def test_wrong_fetch_f4e_inputs(tmpdir):
+    """ " Test that benchmarks can be correctly fetched from the IAEA website.
+    test also the overwriting"""
+    # test correct fetching in an empty folder
+    inp_path = tmpdir.mkdir("inputs")
+    exp_path = tmpdir.mkdir("exp")
+    success = fetch_f4e_inputs(inp_path, exp_path, access_token="wrongtoken")
+    assert not success
+
+
+@pytest.mark.skipif(F4E_GITLAB_TOKEN is None, reason="No token found")
+def test_fetch_f4e_inputs(tmpdir):
+    assert F4E_GITLAB_TOKEN is not None
+    # test correct fetching in an empty folder
+    inp_path = tmpdir.mkdir("inputs")
+    exp_path = tmpdir.mkdir("exp")
+    success = fetch_f4e_inputs(inp_path, exp_path, F4E_GITLAB_TOKEN)
+    assert success
+    assert len(os.listdir(inp_path)) > 0
+    assert len(os.listdir(exp_path)) > 0
+
+    # test that there no problems when the folder is not empty
+    success = fetch_f4e_inputs(inp_path, exp_path, F4E_GITLAB_TOKEN)
+    assert success
+    assert len(os.listdir(inp_path)) > 0
+    assert len(os.listdir(exp_path)) > 0

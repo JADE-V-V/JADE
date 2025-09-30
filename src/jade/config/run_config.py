@@ -140,13 +140,13 @@ class EnvironmentVariables:
     code_configurations : dict[CODE, PathLike] | None
         path to the configuration files for the codes. If None, the default configuration
         will be used which can be found at cfg/exe_config. By default is None.
-    batch_template : PathLike | None
+    batch_template : PathLike | None, optional
         relative path to the batch template for job submission. location is cfg/batch_templates.
         By default is None.
-    batch_system : str | None
+    batch_system : str | None, optional
         name of the batch system to use for job submission. e.g. "slurm". By default is
         None.
-    mpi_prefix : str | None
+    mpi_prefix : str | None, optional
         prefix for the mpi command. e.g. "srun", by default None
     """
 

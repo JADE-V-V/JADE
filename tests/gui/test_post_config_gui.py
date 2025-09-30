@@ -20,7 +20,7 @@ class TestPostConfigGui:
             DUMMY_STRUCT.joinpath("raw_data"),
         )
 
-        with patch("tkinter.Tk", autospec=True):
+        with patch("jade.gui.post_config_gui.tk.Tk", autospec=True):
             gui = PostConfigGUI(status)
 
         assert gui is not None

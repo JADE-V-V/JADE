@@ -20,7 +20,12 @@ class TestConfigGui:
         run_cfg = Path(DEFAULT_CFG, "run_cfg.yml")
         libs_cfg = Path(DEFAULT_CFG, "libs_cfg.yml")
 
-        with patch("ttkthemes.ThemedTk", autospec=True):
+        with (
+            patch("jade.gui.run_config_gui.ThemedTk", autospec=True)
+            and patch("jade.gui.run_config_gui.ttk", autospec=True)
+            and patch("jade.gui.run_config_gui.filedialog", autospec=True)
+            and patch("jade.gui.run_config_gui.messagebox", autospec=True)
+        ):
             return ConfigGUI(run_cfg, libs_cfg)
 
     def test_init(self, config_gui):

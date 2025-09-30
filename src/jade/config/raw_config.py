@@ -98,6 +98,7 @@ class TallyModOption(Enum):
     TOF_TO_ENERGY = "tof_to_energy"
     SELECT_SUBSET = "select_subset"
     CUMULATIVE_SUM = "cumulative_sum"
+    GAUSSIAN_BROADENING = "gaussian_broadening"
 
 
 class TallyConcatOption(Enum):

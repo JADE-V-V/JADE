@@ -270,6 +270,50 @@ def cumulative_sum(
     return tally
 
 
+def gaussian_broadening(
+    tally: pd.DataFrame, fwhm_frac: float | list[float] = 0.10
+) -> pd.DataFrame:
+    """Apply Gaussian broadening to the tally.
+
+    Parameters
+    ----------
+    tally : pd.DataFrame
+        tally dataframe to modify
+    fwhm_frac: float | list[float]
+        FWHM fraction(s) to apply. Default is 0.10 (10%) for all energy bins.
+    """
+    # If fwhm_frac is a single float, convert it to a list with the same length as the tally
+    if isinstance(fwhm_frac, (float, int)):
+        fwhm_frac = [float(fwhm_frac)] * len(tally["Energy"])
+    # If fwhm_frac is a list, check that its length matches the number of rows in the tally
+    elif isinstance(fwhm_frac, list):
+        if len(fwhm_frac) != len(tally["Energy"]):
+            raise ValueError(
+                "Length of fwhm_frac list must match number of rows in tally."
+            )
+    else:
+        raise ValueError("fwhm_frac must be a float or a list of floats.")
+
+    Eb = tally["Energy"].values.astype(float)
+    Yb = np.zeros_like(tally["Value"])
+    sigma = np.array(fwhm_frac) * np.array(tally["Energy"]) / 2.3548
+
+    # Apply Gaussian broadening
+    for Ei, si, Yi in zip(tally["Energy"], sigma, tally["Value"]):
+        if Yi == 0 or si == 0:
+            continue
+        width = 4 * si
+        mask = (Eb >= Ei - width) & (Eb <= Ei + width)
+        x = Eb[mask]
+        k = np.exp(-0.5 * ((x - Ei) / si) ** 2)
+        k /= k.sum()
+        Yb[mask] += Yi * k
+
+    # Assign the new broadened values to the tally
+    tally["Value"] = Yb
+    return tally
+
+
 MOD_FUNCTIONS = {
     TallyModOption.LETHARGY: by_lethargy,
     TallyModOption.SCALE: scale,
@@ -287,6 +331,7 @@ MOD_FUNCTIONS = {
     TallyModOption.TOF_TO_ENERGY: tof_to_energy,
     TallyModOption.SELECT_SUBSET: select_subset,
     TallyModOption.CUMULATIVE_SUM: cumulative_sum,
+    TallyModOption.GAUSSIAN_BROADENING: gaussian_broadening,
 }
 
 

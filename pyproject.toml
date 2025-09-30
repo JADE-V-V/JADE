@@ -40,7 +40,6 @@ dev = [
     "pytest-cov",
     "pytest-xvfb",  # needed for headless display
     "ruff",  # best formatter that should be used by everybody
-    'ttkthemes',
     "sphinx",
     "myst-parser",
     "sphinx-book-theme",

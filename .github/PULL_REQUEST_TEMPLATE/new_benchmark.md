@@ -6,7 +6,7 @@ Please describe the new benchmark and its purpose.
 
 ## Availability
 
-Is the benchmark closed or open source.
+Is the benchmark closed or open source?
 
 - [ ] Closed
 - [ ] Open
@@ -25,7 +25,7 @@ Please select the transport code for which the benchmark is added.
 
 ## Checklist:
 
-- [ ] I have added the required YAML files
-- [ ] I have updated the documentation to include th benchmark description.
+- [ ] I have added the required YAML files.
+- [ ] I have updated the documentation to include the benchmark description.
 - [ ] I have updated the documentation summary table which gives and overview of the implemented benchmark. 
 - [ ] My changes generate no new warnings.

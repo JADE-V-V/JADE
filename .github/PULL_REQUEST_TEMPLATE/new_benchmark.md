@@ -17,7 +17,6 @@ Please select the transport code for which the benchmark is added.
 
 - [ ] MCNP
 - [ ] OpenMC
-- [ ] Serpent
 
 ## Type of change
 
@@ -27,5 +26,6 @@ Please select the transport code for which the benchmark is added.
 
 - [ ] I have added the required YAML files.
 - [ ] I have updated the documentation to include the benchmark description.
-- [ ] I have updated the documentation summary table which gives and overview of the implemented benchmark. 
+- [ ] I have updated the documentation summary table which gives an overview of the implemented benchmark. 
+- [ ] Have the benchmark inputs been added to the appropriate respository. 
 - [ ] My changes generate no new warnings.

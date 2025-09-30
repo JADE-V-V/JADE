@@ -241,6 +241,11 @@ The currently supported modifiers are:
   to be used for the cumulative sum, and *norm*, a boolean indicating whether to normalize the result with respect to the total sum (a percentage is returned).
   If no *column* argument is provided, the cumulative sum is computed on the 'Value' column by default. The argument *norm* is True by default.
 
+* ``gaussian_broadening``: applies Gaussian broadening to the 'Value' column. The optional keyarg to provide is *fwhm_frac*, 
+which specifies the fraction of the FWHM (Full Width at Half Maximum) to use for Gaussian broadening. This can be provided either 
+as a single float value, which will be applied uniformly to all energy bins, or as a list of float values with the same length as the 
+'Energy' column, allowing for a different broadening parameter for each energy bin. If not specified, the default value is 0.1 (10%).
+
 More than one modifiers can be applied in series to a single tally.
 If your benchmark requires a new modifier, please refer to :ref:`add_tally_mod`.
 

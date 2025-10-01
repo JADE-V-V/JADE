@@ -1,0 +1,24 @@
+# Define anchors to be used in the file.
+# Use _ prefix to avoid confusing the jade parser.
+_cell_id_shield1: &depth_shield1
+  842: 20
+  852: 40
+  862: 60
+  872: 80
+  882: 100
+
+_cell_id_shield2: &depth_shield2
+  842: 10
+  852: 20
+  862: 30
+  872: 40
+  882: 50
+Reaction rate Ct:
+  apply_to: [ISIS-800MeV-C_Ct]
+  concat_option: no_action
+  24: [[replace, { "column": "Cells", "values": *depth_shield1 }]]
+
+Reaction rate Fe:
+  apply_to: [ISIS-800MeV-C_Fe]
+  concat_option: no_action
+  14: [[replace, { "column": "Cells", "values": *depth_shield2 }]]

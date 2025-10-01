@@ -80,7 +80,7 @@ class Table(ABC):
             Shortened sheet name string
         """
         if len(sheet_name) > MAX_SHEET_NAME_LEN:
-            sheet_name = sheet_name[:31]
+            sheet_name = sheet_name[:MAX_SHEET_NAME_LEN]
         return sheet_name
 
     def _add_sheet(
@@ -90,7 +90,7 @@ class Table(ABC):
         apply_conditional: bool = True,
         title: str | None = None,
     ):
-        """Function to add a worksheet ffrom pandas dataframe
+        """Function to add a worksheet from pandas dataframe
 
         Parameters
         ----------

@@ -7,7 +7,7 @@ from jade.post.excel_routines import ChiTable, Table
 
 
 class TestTable:
-    def test_get_dafe_name(self):
+    def test_get_safe_name(self):
         sheet_name = Table._get_safe_name(
             "Some really long sheet name which is over 32 charaters"
         )

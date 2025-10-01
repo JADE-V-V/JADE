@@ -321,6 +321,38 @@ def gaussian_broadening(
     return tally
 
 
+def volume(tally: pd.DataFrame) -> pd.DataFrame:
+    """Apply volume divisor to tally
+
+    Parameters
+    ----------
+    tally : pd.DataFrame
+       tally dataframe to modify
+
+    Returns
+    -------
+    pd.DataFrame
+        Modified tally data frame
+    """
+    return tally
+
+
+def mass(tally: pd.DataFrame) -> pd.DataFrame:
+    """Apply mass divisor to tally
+
+    Parameters
+    ----------
+    tally : pd.DataFrame
+       tally dataframe to modify
+
+    Returns
+    -------
+    pd.DataFrame
+        Modified tally data frame
+    """
+    return tally
+
+
 MOD_FUNCTIONS = {
     TallyModOption.LETHARGY: by_lethargy,
     TallyModOption.SCALE: scale,
@@ -339,6 +371,8 @@ MOD_FUNCTIONS = {
     TallyModOption.SELECT_SUBSET: select_subset,
     TallyModOption.CUMULATIVE_SUM: cumulative_sum,
     TallyModOption.GAUSSIAN_BROADENING: gaussian_broadening,
+    TallyModOption.VOLUME: volume,
+    TallyModOption.MASS: mass,
 }
 
 

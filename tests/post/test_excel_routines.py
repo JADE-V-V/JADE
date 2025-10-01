@@ -7,6 +7,12 @@ from jade.post.excel_routines import ChiTable, Table
 
 
 class TestTable:
+    def test_get_dafe_name(self):
+        sheet_name = Table._get_safe_name(
+            "Some really long sheet name which is over 32 charaters"
+        )
+        assert len(sheet_name) < 32
+
     def test_compare(self):
         data1 = {"Energy": [1, 2, 3], "Value": [10, 20, 30], "Error": [0.1, 0.2, 0.3]}
         data2 = {"Energy": [1, 2, 3], "Value": [5, 15, 30], "Error": [0.15, 0.25, 0.35]}

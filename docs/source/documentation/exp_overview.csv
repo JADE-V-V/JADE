@@ -1,11 +1,11 @@
-Benchmark, MCNP Status, OpenMC Status, Serpent Status
-Oktavian (Al; Co; Cr; Cu; LiF; Mn; Mo; Pb; Si; Ti; W; Zr), I, W, W
-FNG Dose, I, W, W
-Tiara Shielding (BC; BS; FC), I, W, W
-FNG Bulk Blanket and Shield, I, W, W
-FNG W, I, W, W
-FNS (Be; C; Fe; N; O; Pb; V), D, D, W
-ASPIS Fe-88, I, W, W
+Benchmark, Location
+Oktavian (Al; Co; Cr; Cu; LiF; Mn; Mo; Pb; Si; Ti; W; Zr), IAEA open-benchmark
+FNG Dose, F4E GitLab
+Tiara Shielding (BC; BS; FC), IAEA open-benchmark
+FNG Bulk Blanket and Shield, F4E GitLab
+FNG W, F4E GitLab
+FNS (Be; C; Fe; N; O; Pb; V), IAEA open-benchmark
+ASPIS Fe-88, F4E GitLab
 Iron Slab (TUD), D, W, W
 TUD/FNG Bulk Shield, D, W, W
 FNG/TUD W, D, W, W

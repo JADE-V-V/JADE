@@ -7,14 +7,12 @@ executables:
   openmc: dummy
   serpent: dummy
   d1s: dummy
-# run mode is either "serial" to run locally or "job" to submit to a cluster
-run_mode: serial
+# run mode is either "local" to run locally or "job" to submit to a cluster
+run_mode: local
 # You can either modify the files at these (relative) paths or provide your own
-code_configurations:
-  mcnp: exe_config/mcnp_config.sh
-  openmc: exe_config/openmc_config.sh
-  serpent: exe_config/serpent_config.sh
-  d1s: exe_config/d1s_config.sh
-batch_template: batch_template/Slurmtemplate.sh
-batch_system: null
-mpi_prefix: null
+code_job_template:
+  mcnp: exe_config/mcnp_template.sh
+  openmc: exe_config/openmc_template.sh
+  serpent: exe_config/serpent_template.sh
+  d1s: exe_config/d1s_template.sh
+scheduler_command: null

@@ -15,8 +15,8 @@ This file contains the environmental variables that are used by JADE to run the 
 Here is an example:
 
 .. code-block:: yaml
-
     # parameters related to parallel run
+    # if both mpi_tasks and openmp_threads are set to 0 or 1, the code will run in serial mode.
     mpi_tasks: 0  # this controls the number of MPI tasks to be used on a cluster
     openmp_threads: 8  # this controls the number of OpenMP threads to be used during execution
 
@@ -27,31 +27,36 @@ Here is an example:
     - serpent: path/to/serpent/executable  # idem
     - d1s: path/to/d1s/executable  # idem
 
-    # run mode is either "serial" to run locally or "job" to submit to a cluster
-    run_mode: serial
-    # This is needed only if mpi_tasks > 1
-    mpi_prefix: srun  # the command to run jobs, it prepends your executable (e.g. mpirun, srun, etc.)
+    # run mode is either "local" to run locally or "job" to submit to a cluster
+    run_mode: local
+    # scheduler command (needed only if run_mode is "job")
+    scheduler_command: sbatch  # e.g. 'sbatch' for slurm, 'qsub' for torque, 'bsub' for lsf
 
-    # Not needed for a windows run. If all your modules are already loaded in your environment,
-    # you can either make all these files empty or point to an empy file.
-    code_configurations: # You can either modify the files at these (relative) paths that already exist or provide your own
-    - mcnp: cfg/exe_config/mcnp_config.sh
-    - openmc: cfg/exe_config/openmc_config.sh
-    - serpent: cfg/exe_config/serpent_config.sh
-    - d1s: cfg/exe_config/d1s_config.sh
-
-    # These need to be non-empty only if submitting a job to a cluster
-    batch_template: batch_template/Slurmtemplate.sh  # batch template. Both relative and absolute paths should work.
-    batch_system: sbatch  # the command to submit a job to the cluster (e.g. llsubmit, sbatch, etc.)
+    # Not needed for a windows run.
+    # These templates are used for job submission on a cluster.
+    code_job_template: # You can either modify the files at these (relative) paths that already exist or provide your own
+    - mcnp: cfg/exe_config/mcnp_template.sh
+    - openmc: cfg/exe_config/openmc_template.sh
+    - serpent: cfg/exe_config/serpent_template.sh
+    - d1s: cfg/exe_config/d1s_template.sh
 
 It can be seen that in order to submit a job to a cluster, the user needs to provide the path to the batch template
-file and a config file for the code(s) to be run.
+file for the code(s) to be run.
 The batch template file is the job submission script to be utilised on the users chosen system.
-This should match the command provided for the batch system variable.
-Several default job submission scripts are provided in the ``cfg/batch_template`` folder.
-The config file for the code is a shell script containing environment variables required for running
-a specific code on UNIX.
-By default these files should exist already in the ``cfg/exe_config`` folder.
+Several default job submission scripts are provided in the ``cfg/exe_config`` folder.
+
+These file should contain all the necessary job submission options (e.g. slurm directives) and
+all the necessary commands to load the modules required by the different transport codes.
+Some placeholder are defined and will be substituted by JADE at runtime when submitting the job. They
+are all optional:
+- ``INITIAL_DIR``: the directory where the job is submitted from (i.e. the simulation folder)
+- ``OUT_FILE``: the file where the standard output will be written
+- ``ERR_FILE``: the file where the standard error will be written
+- ``MPI_TASKS``: the number of MPI tasks to be used
+- ``OMP_THREADS``: the number of OpenMP threads to be used
+- ``USER``: the user who submitted the job
+
+
 
 Configure the libraries
 =======================

@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 import json
-import logging
 import os
 import shutil
 import subprocess
-import sys
 from abc import ABC, abstractmethod
 from pathlib import Path
 
@@ -31,7 +29,6 @@ from jade.helper.aux_functions import (
 )
 from jade.helper.constants import CODE
 from jade.helper.errors import ConfigError
-from jade.run import unix
 from jade.run.input import (
     Input,
     InputD1S,
@@ -167,9 +164,10 @@ class SingleRun(ABC):
         lib_data_command = f'export {name}="{value}"'
 
         flagnotrun = False
-        if env_vars.run_mode == RunMode.JOB_SUMISSION:
-            if self._is_mpi_run(env_vars):
-                run_command.insert(0, env_vars.mpi_prefix)
+        if env_vars.run_mode == RunMode.JOB_SUBMISSION:
+            if env_vars.mpi_tasks is not None and env_vars.mpi_tasks > 1:
+                run_command.insert(0, f"-np {env_vars.mpi_tasks}")
+                run_command.insert(0, "mpirun")
             command = self._submit_job(
                 env_vars,
                 sim_folder,
@@ -181,15 +179,14 @@ class SingleRun(ABC):
             if test:
                 return command
 
-        elif env_vars.run_mode == RunMode.SERIAL:
+        elif env_vars.run_mode == RunMode.LOCAL:
             # in case of run in console dump the prints to a file
             # to get the code version in the metadata
             run_command.append("> dump.out")
-            if self._is_mpi_run(env_vars):
+            if env_vars.mpi_tasks is not None and env_vars.mpi_tasks > 1:
                 run_command.insert(0, f"-np {env_vars.mpi_tasks}")
-                run_command.insert(0, env_vars.mpi_prefix)
-            if not sys.platform.startswith("win"):
-                unix.configure(env_vars.code_configurations[self.code])
+                run_command.insert(0, "mpirun")
+
             print(" ".join(run_command))
             if test:
                 return " ".join(run_command)
@@ -205,15 +202,6 @@ class SingleRun(ABC):
                 )
 
         return flagnotrun
-
-    def _is_mpi_run(self, env_vars: EnvironmentVariables) -> bool:
-        if env_vars.mpi_tasks is not None and env_vars.mpi_tasks > 1:
-            if env_vars.mpi_prefix is None:
-                raise ConfigError(
-                    "MPI prefix is needed for MPI job submission, please provide one"
-                )
-            return True
-        return False
 
     @staticmethod
     def _submit_job(
@@ -243,12 +231,6 @@ class SingleRun(ABC):
         """
         # store cwd to get back to it after job submission
         cwd = os.getcwd()
-        # Read contents of batch file template.
-        with open(env_vars.code_configurations[code]) as f:
-            config_script = ""
-            for line in f:
-                if not line.startswith("#!"):
-                    config_script += line
         user = (
             subprocess.run("whoami", capture_output=True).stdout.decode("utf-8").strip()
         )
@@ -256,18 +238,15 @@ class SingleRun(ABC):
         job_script = os.path.join(
             directory, os.path.basename(directory) + "_job_script"
         )
-        essential_commands = ["MPI_TASKS"]
 
-        # that the file exists it has been checked in the post_init already
-        with open(env_vars.batch_template) as fin:
+        job_template = env_vars.code_job_template[code]
+        if not os.path.isfile(job_template):
+            raise ConfigError(
+                f"Job script template {job_template} not found, please check and re-run"
+            )
+        with open(job_template) as fin:
             # Replace placeholders in batch file template with actual values
             contents = fin.read()
-            for cmd in essential_commands:
-                if cmd not in contents:
-                    raise ConfigError(
-                        f"Unable to find essential dummy variable {cmd} in job "
-                        "script template, please check and re-run"
-                    )
             contents = contents.replace("INITIAL_DIR", f'"{str(directory)}"')
             contents = contents.replace("OUT_FILE", f'"{job_script + ".out"}"')
             contents = contents.replace("ERROR_FILE", f'"{job_script + ".err"}"')
@@ -275,7 +254,6 @@ class SingleRun(ABC):
             contents = contents.replace("OMP_THREADS", str(env_vars.openmp_threads))
             contents = contents.replace("USER", user)
 
-            contents += "\n\n" + config_script
             contents += "\n\n" + str(data_command)
             if isinstance(run_command, str):
                 contents += "\n\n" + run_command
@@ -291,7 +269,7 @@ class SingleRun(ABC):
         # Submit the job using the specified batch system (checked for existence in post_init)
         if not test:
             subprocess.run(
-                f"{env_vars.batch_system} {job_script}", cwd=directory, shell=True
+                f"{env_vars.scheduler_command} {job_script}", cwd=directory, shell=True
             )
         # return to the original directory
         os.chdir(cwd)
@@ -449,13 +427,13 @@ class BenchmarkRun:
         for code, lib in self.config.run:
             command = self._get_continue_run_command(code, lib)
             # if serial, send the command, otherwis build a job script
-            if self.env_vars.run_mode == RunMode.SERIAL:
+            if self.env_vars.run_mode == RunMode.LOCAL:
                 subprocess.Popen(
                     command,
                     # check=True,
                     # timeout=43200, serial can also last days on workstations
                 )
-            elif self.env_vars.run_mode == RunMode.JOB_SUMISSION:
+            elif self.env_vars.run_mode == RunMode.JOB_SUBMISSION:
                 cwd = os.getcwd()
                 command = SingleRun._submit_job(
                     self.env_vars, cwd, command, "", code, test=testing

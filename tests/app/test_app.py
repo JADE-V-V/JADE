@@ -126,19 +126,18 @@ class TestJadeApp:
             0,
             10,
             {CODE.MCNP: "mcnp6.2"},
-            run_mode=RunMode.SERIAL,
-            code_configurations={
-                CODE.MCNP: Path(DUMMY_ROOT, "cfg/exe_config/mcnp_config.sh")
+            run_mode=RunMode.LOCAL,
+            code_job_template={
+                CODE.MCNP: Path(DUMMY_ROOT, "cfg/exe_config/mcnp_template.sh")
             },
-            batch_template=Path(DUMMY_ROOT, "cfg/batch_templates/Slurmtemplate.sh"),
-            batch_system="sbatch",
+            scheduler_command="sbatch",
         )
         run_cfg = RunConfig(env_vars, {"Dummy_continue": cfg})
         app.run_cfg = run_cfg
         with pytest.raises(FileNotFoundError):
             app.continue_run()
 
-        env_vars.run_mode = RunMode.JOB_SUMISSION
+        env_vars.run_mode = RunMode.JOB_SUBMISSION
         run_cfg = RunConfig(env_vars, {"Dummy_continue": cfg})
         app.run_cfg = run_cfg
         command = app.continue_run(testing=True)

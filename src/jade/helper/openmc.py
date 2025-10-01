@@ -424,7 +424,7 @@ class OpenMCInputFiles:
             shutil.copyfile(self.compiled_source, outfile)
             self.settings.source = openmc.CompiledSource(outfile, strength=1.0)
         model = openmc.Model(geometry=self.geometry, settings=self.settings, tallies=self.tallies)
-        model.export_to_xml(os.path.join(path, "model.xml"))
+        model.export_to_xml(os.path.join(path))
 
 
 class OpenMCStatePoint:

@@ -165,7 +165,8 @@ class OpenMCCellData:
     ) -> dict[int, float]:
         cell_masses = {}
         for cell in cell_volumes:
-            cell_masses[cell] = cell_volumes[cell] * cell_densities[cell]
+            if cell in cell_densities:
+                cell_masses[cell] = cell_volumes[cell] * cell_densities[cell]
         return cell_masses
 
     def volumes(self, cells: iter | None = None) -> dict[int, float]:

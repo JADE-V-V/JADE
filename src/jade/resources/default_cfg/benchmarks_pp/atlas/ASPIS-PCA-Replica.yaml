@@ -29,7 +29,7 @@ Reaction rates - In:
     - Reaction Rate In
   plot_type: ce
   title: Neutron Reaction Rate - In115(n,n')In115m
-  x_label: Shielding thickness [cm]
+  x_label: "Shielding thickness $\\left[\\mathrm{cm}\\right]$"
   y_labels: C/E
   x: Cells
   y: Value
@@ -43,7 +43,7 @@ Reaction rates - S:
     - Reaction Rate S
   plot_type: ce
   title: Neutron Reaction Rate - S32(n,p)P32
-  x_label: Shielding thickness [cm]
+  x_label: "Shielding thickness $\\left[\\mathrm{cm}\\right]$"
   y_labels: C/E
   x: Cells
   y: Value
@@ -57,7 +57,7 @@ Reaction rates - Rh:
     - Reaction Rate Rh
   plot_type: ce
   title: Neutron Reaction Rate - Rh103(n,n')Rh103m
-  x_label: Shielding thickness [cm]
+  x_label: "Shielding thickness $\\left[\\mathrm{cm}\\right]$"
   y_labels: C/E
   x: Cells
   y: Value

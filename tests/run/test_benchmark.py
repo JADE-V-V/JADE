@@ -106,7 +106,7 @@ class TestBenchmarkRun:
         assert "Dummy_continue1" not in command  # successful simulation
         assert "Dummy_continue2" in command  # correct simulation
         assert (
-            "srun -np 10 mcnp6.2 i=Dummy_continue2.i n=Dummy_continue2. xsdir=xsdir.txt tasks 10"
+            'srun -np 10 mcnp6.2 i=Dummy_continue2.i n=Dummy_continue2. xsdir="xsdir.txt" tasks 10'
             in command
         )
 
@@ -262,18 +262,20 @@ class TestSingleRunMCNP:
         command = single_run.run(env_vars, "dummy", test=True)
 
         assert command == (
-            "mpirun -np 5 mcnp6.2 i=name.i n=name. xsdir=xsdir.txt tasks 10 > dump.out"
+            'mpirun -np 5 mcnp6.2 i=name.i n=name. xsdir="xsdir.txt" tasks 10 > dump.out'
         )
 
         # test with no mpi
         env_vars.mpi_tasks = 1
         command = single_run.run(env_vars, "dummy", test=True)
-        assert command == "mcnp6.2 i=name.i n=name. xsdir=xsdir.txt tasks 10 > dump.out"
+        assert (
+            command == 'mcnp6.2 i=name.i n=name. xsdir="xsdir.txt" tasks 10 > dump.out'
+        )
 
         # test with no openmp
         env_vars.openmp_threads = 1
         command = single_run.run(env_vars, "dummy", test=True)
-        assert command == "mcnp6.2 i=name.i n=name. xsdir=xsdir.txt  > dump.out"
+        assert command == 'mcnp6.2 i=name.i n=name. xsdir="xsdir.txt"  > dump.out'
 
     def test_submit_job(self, env_vars, tmpdir):
         mock_input = MockInput()
@@ -285,6 +287,10 @@ class TestSingleRunMCNP:
 
         command = single_run.run(env_vars, tmpdir, test=True)
         assert "#!/bin/sh\n\n#SBATCH" in command
+        # avoid linux path breaking in case of lib names with spaces
+        assert '--workdir="' in command
+        assert '--output="' in command
+        assert '--error="' in command
 
 
 class MockLibrary:

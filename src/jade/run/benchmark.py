@@ -26,7 +26,6 @@ from jade.config.run_config import (
 from jade.helper.aux_functions import (
     CODE_CHECKERS,
     PathLike,
-    get_code_lib,
     get_jade_version,
     print_code_lib,
 )
@@ -165,7 +164,7 @@ class SingleRun(ABC):
         """
         run_command = self._build_command(env_vars)
         name, value = self._get_lib_data_command()
-        lib_data_command = f"export {name}={value}"
+        lib_data_command = f'export {name}="{value}"'
 
         flagnotrun = False
         if env_vars.run_mode == RunMode.JOB_SUMISSION:
@@ -269,9 +268,9 @@ class SingleRun(ABC):
                         f"Unable to find essential dummy variable {cmd} in job "
                         "script template, please check and re-run"
                     )
-            contents = contents.replace("INITIAL_DIR", str(directory))
-            contents = contents.replace("OUT_FILE", job_script + ".out")
-            contents = contents.replace("ERROR_FILE", job_script + ".err")
+            contents = contents.replace("INITIAL_DIR", f'"{str(directory)}"')
+            contents = contents.replace("OUT_FILE", f'"{job_script + ".out"}"')
+            contents = contents.replace("ERROR_FILE", f'"{job_script + ".err"}"')
             contents = contents.replace("MPI_TASKS", str(env_vars.mpi_tasks))
             contents = contents.replace("OMP_THREADS", str(env_vars.openmp_threads))
             contents = contents.replace("USER", user)
@@ -317,7 +316,7 @@ class SingleRunMCNP(SingleRun):
             tasks = "tasks " + str(omp_threads)
         else:
             tasks = ""
-        xsstring = f"xsdir={Path(self.lib.path).name}"
+        xsstring = f'xsdir="{Path(self.lib.path).name}"'
 
         run_command = [executable, inputstring, outputstring, xsstring, tasks]
 

@@ -39,6 +39,24 @@ class TestJadeApp:
         app.run_benchmarks()
         assert len(os.listdir(tmpdir)) > 0
 
+    def test_run_benchmarks_global_job(self, tmpdir, monkeypatch):
+        app = JadeApp(root=DUMMY_ROOT, skip_init=True)
+        # override the simulation root folder
+        app.tree.simulations = tmpdir
+        # change the run config to job submission
+        app.run_cfg.env_vars.run_mode = RunMode.GLOBAL_JOB
+        # set the only input to false in all benchmarks
+        for bench in app.run_cfg.benchmarks.values():
+            bench.only_input = False
+            # Mock the lib.path to a valid string
+            for code, lib in bench.run:
+                lib.path = RUN_RES.joinpath("xsdir.txt")
+        monkeypatch.setattr("builtins.input", lambda _: "y")
+
+        commands = app.run_benchmarks(testing=True)
+        assert len(commands) == 1
+        assert commands[0].count("cd ") == 4
+
     def test_raw_process(self, tmpdir):
         app = JadeApp(root=DUMMY_ROOT, skip_init=True)
         # override the raw processor folder

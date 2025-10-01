@@ -106,6 +106,46 @@ class TestBenchmarkRun:
             in command
         )
 
+    def test_global_run(self, tmpdir):
+        perform = [
+            (
+                CODE.MCNP,
+                LibraryMCNP(
+                    name="FENDL 3.2c", path=RUN_RES.joinpath("xsdir.txt"), suffix="31c"
+                ),
+            ),
+            (
+                CODE.MCNP,
+                LibraryMCNP(
+                    name="ENDF VII-1", path=RUN_RES.joinpath("xsdir.txt"), suffix="00c"
+                ),
+            ),
+        ]
+        cfg = BenchmarkRunConfig(
+            description="Oktavian TOF",
+            name="Oktavian",
+            run=perform,
+            nps=10,
+            only_input=False,
+        )
+
+        env_vars = EnvironmentVariables(
+            10,
+            10,
+            {CODE.MCNP: "mcnp6.2"},
+            run_mode=RunMode.GLOBAL_JOB,
+            code_job_template={
+                CODE.MCNP: Path(DEFAULT_CFG, "exe_config/mcnp_template.sh")
+            },
+            scheduler_command="slurm",
+        )
+
+        benchmark = BenchmarkRun(cfg, tmpdir, BENCHMARKS_ROOT, env_vars)
+        commands = benchmark.run()
+        assert len(commands) == 4
+        assert os.path.exists(commands[0][1])
+        assert len(commands[0][0]) == 7
+
 
 class TestSphereBenchmarkRun:
     def test_run_mcnp(self, tmpdir):

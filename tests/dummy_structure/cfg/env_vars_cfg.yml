@@ -9,10 +9,11 @@ executables:
   d1s: dummy
 # run mode is either "local" to run locally or "job" to submit to a cluster
 run_mode: local
-# You can either modify the files at these (relative) paths or provide your own
+# You can either modify the files or provide your own
+# path can be expressed as relative to cfg/exec_config or absolute
 code_job_template:
-  mcnp: exe_config/mcnp_template.sh
-  openmc: exe_config/openmc_template.sh
-  serpent: exe_config/serpent_template.sh
-  d1s: exe_config/d1s_template.sh
+  mcnp: mcnp_template.sh
+  openmc: openmc_template.sh
+  serpent: serpent_template.sh
+  d1s: d1s_template.sh
 scheduler_command: null

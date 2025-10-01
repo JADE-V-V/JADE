@@ -16,7 +16,7 @@ from jade.app.fetch import fetch_f4e_inputs, fetch_iaea_inputs
 from jade.config.paths_tree import PathsTree
 from jade.config.pp_config import PostProcessConfig
 from jade.config.raw_config import ConfigRawProcessor
-from jade.config.run_config import RunConfig
+from jade.config.run_config import RunConfig, RunMode
 from jade.config.status import GlobalStatus
 from jade.helper.__optionals__ import TKINTER_AVAIL
 
@@ -28,7 +28,7 @@ from jade.helper.constants import CODE, EXP_TAG, FIRST_INITIALIZATION, JADE_TITL
 from jade.post.atlas_processor import AtlasProcessor
 from jade.post.excel_processor import ExcelProcessor
 from jade.post.raw_processor import RawProcessor
-from jade.run.benchmark import BenchmarkRunFactory
+from jade.run.benchmark import BenchmarkRunFactory, launch_global_jobs
 
 DEFAULT_SETTINGS_PATH = files(res).joinpath("default_cfg")
 
@@ -134,7 +134,7 @@ class JadeApp:
                             os.remove(os.path.join(pathroot, file))
         logging.info("Runtpe files were removed successfully")
 
-    def run_benchmarks(self):
+    def run_benchmarks(self, testing: bool = False) -> list[str] | None:
         """Run the benchmarks according to the configuration."""
         logging.info("Running benchmarks")
         # first thing do to is to check if the benchmarks were already run
@@ -156,6 +156,7 @@ class JadeApp:
             proceed_flag = input("Do you want to continue? [y/n]: ").lower() == "y"
 
         if proceed_flag:
+            run_commands = []
             for bench_name, cfg in self.run_cfg.benchmarks.items():
                 benchmark = BenchmarkRunFactory.create(
                     cfg,
@@ -163,7 +164,16 @@ class JadeApp:
                     self.tree.benchmark_input_templates,
                     self.run_cfg.env_vars,
                 )
-                benchmark.run()
+                commands = benchmark.run()
+                run_commands.extend(commands)
+            # In case only one job is requested, build it after all commands
+            # have been collected
+            if self.run_cfg.env_vars.run_mode == RunMode.GLOBAL_JOB:
+                jobs = launch_global_jobs(
+                    run_commands, self.run_cfg.env_vars, test=testing
+                )
+                logging.info("Benchmarks run have been submitted.")
+                return jobs
         logging.info("Benchmarks run completed.")
 
     def continue_run(self, testing: bool = False):

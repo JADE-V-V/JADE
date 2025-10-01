@@ -227,6 +227,8 @@ class JadeApp:
         codelibs_tags = to_pp["code_libs"]
         benchmarks = to_pp["benchmarks"]
 
+        # before, check that the benchmark versions are consistent with each other
+
         for benchmark in tqdm(benchmarks, desc="Benchmarks"):
             logging.info(f"Post-processing {benchmark}")
             # get the benchmark configurations

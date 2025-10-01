@@ -230,6 +230,29 @@ class GlobalStatus:
             return True
         return False
 
+    def check_benchmark_version(self, benchmark: str, codelib: list[str]) -> bool:
+        """Check that the version of the given benchmark is the same for all
+        the simulations performed.
+
+        Parameters
+        ----------
+        benchmark : str
+            benchmark name.
+        codelib : list[str]
+            list of codelib strings.
+        Returns
+        -------
+        bool
+            True if the version is the same for all the simulations, False otherwise.
+        """
+        versions = []
+        for code, lib, bench in self.simulations.keys():
+            if bench == benchmark and print_code_lib(code, lib) in codelib:
+                versions.append(
+                    self.simulations[(code, lib, bench)].metadata["version"]
+                )
+        return len(set(versions)) <= 1
+
 
 @dataclass
 class CodeLibRunStatus:

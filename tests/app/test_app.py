@@ -58,6 +58,10 @@ class TestJadeApp:
         app.raw_process(subset=["Oktavian"])
         assert os.path.getmtime(filepath) == initial_mod_time
 
+        # finally try the force option and check that the file was overridden
+        app.raw_process(subset=["Oktavian"], force=True)
+        assert os.path.getmtime(filepath) > initial_mod_time
+
     def test_post_process(self, tmpdir):
         app = JadeApp(root=DUMMY_ROOT, skip_init=True)
         # override the post processor folder

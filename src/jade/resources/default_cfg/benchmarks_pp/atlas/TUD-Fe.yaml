@@ -34,7 +34,7 @@ Neutron Spectral time-of-arrival fluence:
     - Neutron fluence (time)
   plot_type: binned
   title: Neutron Spectral fluence
-  x_label: Time [shakes]
+  x_label: "Time $\\left[\\mathrm{shakes}\\right]$"
   y_labels: "Spectral time-of-arrival fluence $\\left[\\frac{1}{MeV\\cdot n \\cdot cm^2}\\right]$"
   x: Time
   y: Value
@@ -50,7 +50,7 @@ Neutron Spectral time-of-arrival fluence (C/E):
     - Neutron fluence (time)
   plot_type: ce
   title: Neutron Spectral time-of-arrival fluence (C/E)
-  x_label: Time [shakes]
+  x_label: "Time $\\left[\\mathrm{shakes}\\right]$"
   y_labels: "C/E"
   x: Time
   y: Value

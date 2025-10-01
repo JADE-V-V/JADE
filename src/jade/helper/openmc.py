@@ -27,39 +27,39 @@ if TYPE_CHECKING:
 PAT_DIGITS = re.compile(r"\d+")
 
 
-@dataclass
-class OpenMCTallyFactors:
-    """Configuration for a computational benchmark.
-
-    Attributes
-    ----------
-    tally_factors : dict[int, TallyFactors]
-        Options for the Excel benchmark.
-    """
-
-    tally_factors: dict[int, TallyFactors]
-
-    @classmethod
-    def from_yaml(cls, file: str | os.PathLike) -> OpenMCTallyFactors:
-        """Build the configuration for a computational benchmark from a yaml file.
-
-        Parameters
-        ----------
-        file : str | os.PathLike
-            path to the yaml file.
-
-        Returns
-        -------
-        OpenMCTallyFactors
-            The tally factors for the OpenMC benchmark.
-        """
-        with open(file) as f:
-            cfg = yaml.safe_load(f)
-
-        tally_factors = {}
-        for key, value in cfg.items():
-            tally_factors[int(key)] = TallyFactors(**value, identifier=int(key))
-        return cls(tally_factors=tally_factors)
+# @dataclass
+# class OpenMCTallyFactors:
+#    """Configuration for a computational benchmark.
+#
+#    Attributes
+#    ----------
+#    tally_factors : dict[int, TallyFactors]
+#        Options for the Excel benchmark.
+#    """
+#
+#    tally_factors: dict[int, TallyFactors]
+#
+#    @classmethod
+#    def from_yaml(cls, file: str | os.PathLike) -> OpenMCTallyFactors:
+#        """Build the configuration for a computational benchmark from a yaml file.
+#
+#        Parameters
+#        ----------
+#        file : str | os.PathLike
+#            path to the yaml file.
+#
+#        Returns
+#        -------
+#        OpenMCTallyFactors
+#            The tally factors for the OpenMC benchmark.
+#        """
+#        with open(file) as f:
+#            cfg = yaml.safe_load(f)
+#
+#        tally_factors = {}
+#        for key, value in cfg.items():
+#            tally_factors[int(key)] = TallyFactors(**value, identifier=int(key))
+#        return cls(tally_factors=tally_factors)
 
 
 # @dataclass

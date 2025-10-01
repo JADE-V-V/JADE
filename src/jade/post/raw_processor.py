@@ -85,9 +85,9 @@ class RawProcessor:
                     continue
                 for mod_option, keyargs in modifications:
                     if mod_option == "volume":
-                        keyargs = self.sim_output.output.cell_volumes
+                        keyargs = self.sim_output.output.cell_data.cell_volumes
                     if mod_option == "mass":
-                        keyargs = self.sim_output.output.cell_masses
+                        keyargs = self.sim_output.output.cell_data.cell_masses
                     tally = MOD_FUNCTIONS[mod_option](tally, **keyargs)
                 mod_tallies.append(tally)
             # in case the number of found tallies is zero skip the df printing

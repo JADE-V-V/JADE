@@ -616,94 +616,94 @@ class OpenMCStatePoint:
                     ).pow(0.5)
         return heating_tallies_df
 
-    def _get_volumes(self, tally_df: pd.DataFrame) -> dict[int, float]:
-        """
-        Function to extract unique cell volumes from tally dataframe
-
-        Parameters
-        ----------
-        tally_df : pd.DataFrame
-            Pandas DataFrame containing tally data
-
-        Returns
-        -------
-        volumes : dict[int, float]
-            Dictionary of cell volumes, indeced by cell
-        """
-        cells = tally_df.cell.unique()
-        volumes = self.cell_volumes.volumes(cells)
-        return volumes
-
-    def _get_masses(self, tally_df: pd.DataFrame) -> dict[int, float]:
-        """
-        Function to extract unique cell masses from tally dataframe
-
-        Parameters
-        ----------
-        tally_df : pd.DataFrame
-            Pandas DataFrame containing tally data
-
-        Returns
-        -------
-        masses : dict[int, float]
-            Dictionary of cell volumes, indeced by cell
-        """
-        volumes = self._get_volumes(tally_df)
-        masses = {}
-        for cell, volume in volumes.items():
-            density = self.cell_densities.cell_densities[cell]
-            masses[cell] = density * volume
-        return masses
-
-    def _apply_tally_factors(self, tallies: dict) -> dict:
-        """
-        Function to apply tally factor and volume corrections to tally data
-
-        Parameters
-        ----------
-        tallies : dict
-            Dictionary of tallies to be corrected
-
-        Returns
-        -------
-        tallies : dict
-            Dictionary of tallies with tally factors applied
-        """
-        for tally_number, tally_df in tallies.items():
-            if tally_number in self.tally_factors.tally_factors:
-                normalisation = self.tally_factors.tally_factors[
-                    tally_number
-                ].normalisation
-                tally_df["mean"] *= normalisation
-                tally_df["std. dev."] *= normalisation
-                if self.tally_factors.tally_factors[tally_number].volume:
-                    volumes = self._get_volumes(tally_df)
-                    for cell, volume in volumes.items():
-                        tally_df["mean"] = np.where(
-                            (tally_df["cell"] == cell),
-                            tally_df["mean"] / volume,
-                            tally_df["mean"],
-                        )
-                        tally_df["std. dev."] = np.where(
-                            (tally_df["cell"] == cell),
-                            tally_df["std. dev."] / volume,
-                            tally_df["std. dev."],
-                        )
-                if self.tally_factors.tally_factors[tally_number].mass:
-                    masses = self._get_masses(tally_df)
-                    for cell, mass in masses.items():
-                        tally_df["mean"] = np.where(
-                            (tally_df["cell"] == cell),
-                            tally_df["mean"] / mass,
-                            tally_df["mean"],
-                        )
-                        tally_df["std. dev."] = np.where(
-                            (tally_df["cell"] == cell),
-                            tally_df["std. dev."] / mass,
-                            tally_df["std. dev."],
-                        )
-            tallies[tally_number] = tally_df
-        return tallies
+    #    def _get_volumes(self, tally_df: pd.DataFrame) -> dict[int, float]:
+    #        """
+    #        Function to extract unique cell volumes from tally dataframe
+    #
+    #        Parameters
+    #        ----------
+    #        tally_df : pd.DataFrame
+    #            Pandas DataFrame containing tally data
+    #
+    #        Returns
+    #        -------
+    #        volumes : dict[int, float]
+    #            Dictionary of cell volumes, indeced by cell
+    #        """
+    #        cells = tally_df.cell.unique()
+    #        volumes = self.cell_volumes.volumes(cells)
+    #        return volumes
+    #
+    #    def _get_masses(self, tally_df: pd.DataFrame) -> dict[int, float]:
+    #        """
+    #        Function to extract unique cell masses from tally dataframe
+    #
+    #        Parameters
+    #        ----------
+    #        tally_df : pd.DataFrame
+    #            Pandas DataFrame containing tally data
+    #
+    #        Returns
+    #        -------
+    #        masses : dict[int, float]
+    #            Dictionary of cell volumes, indeced by cell
+    #        """
+    #        volumes = self._get_volumes(tally_df)
+    #        masses = {}
+    #        for cell, volume in volumes.items():
+    #            density = self.cell_densities.cell_densities[cell]
+    #            masses[cell] = density * volume
+    #        return masses
+    #
+    #    def _apply_tally_factors(self, tallies: dict) -> dict:
+    #        """
+    #        Function to apply tally factor and volume corrections to tally data
+    #
+    #        Parameters
+    #        ----------
+    #        tallies : dict
+    #            Dictionary of tallies to be corrected
+    #
+    #        Returns
+    #        -------
+    #        tallies : dict
+    #            Dictionary of tallies with tally factors applied
+    #        """
+    #        for tally_number, tally_df in tallies.items():
+    #            if tally_number in self.tally_factors.tally_factors:
+    #                normalisation = self.tally_factors.tally_factors[
+    #                    tally_number
+    #                ].normalisation
+    #                tally_df["mean"] *= normalisation
+    #                tally_df["std. dev."] *= normalisation
+    #                if self.tally_factors.tally_factors[tally_number].volume:
+    #                    volumes = self._get_volumes(tally_df)
+    #                    for cell, volume in volumes.items():
+    #                        tally_df["mean"] = np.where(
+    #                            (tally_df["cell"] == cell),
+    #                            tally_df["mean"] / volume,
+    #                            tally_df["mean"],
+    #                        )
+    #                        tally_df["std. dev."] = np.where(
+    #                            (tally_df["cell"] == cell),
+    #                            tally_df["std. dev."] / volume,
+    #                            tally_df["std. dev."],
+    #                        )
+    #                if self.tally_factors.tally_factors[tally_number].mass:
+    #                    masses = self._get_masses(tally_df)
+    #                    for cell, mass in masses.items():
+    #                        tally_df["mean"] = np.where(
+    #                            (tally_df["cell"] == cell),
+    #                            tally_df["mean"] / mass,
+    #                            tally_df["mean"],
+    #                        )
+    #                        tally_df["std. dev."] = np.where(
+    #                            (tally_df["cell"] == cell),
+    #                            tally_df["std. dev."] / mass,
+    #                            tally_df["std. dev."],
+    #                        )
+    #            tallies[tally_number] = tally_df
+    #        return tallies
 
     def tallies_to_dataframes(self) -> dict:
         """Call to extract tally data from statepoint file

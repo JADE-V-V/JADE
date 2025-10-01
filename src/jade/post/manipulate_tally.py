@@ -321,35 +321,63 @@ def gaussian_broadening(
     return tally
 
 
-def volume(tally: pd.DataFrame) -> pd.DataFrame:
-    """Apply volume divisor to tally
+def volume(tally: pd.DataFrame, volumes: dict[int, float]) -> pd.DataFrame:
+    """Volume divisor function
 
     Parameters
     ----------
     tally : pd.DataFrame
-       tally dataframe to modify
+        Tally to be modified
+    volumes : dict[int, float]
+        Cell volumes dictionary
 
     Returns
     -------
-    pd.DataFrame
-        Modified tally data frame
+    tally : pd.DataFrame
+        Modified tally
     """
+    cells = tally.Cell.unique()
+    for cell in cells:
+        tally["Value"] = np.where(
+            (tally["Cell"] == cell),
+            tally["Value"] / volumes[cell],
+            tally["Value"],
+        )
+        tally["Error"] = np.where(
+            (tally["Cell"] == cell),
+            tally["Error"] / volumes[cell],
+            tally["Error"],
+        )
     return tally
 
 
-def mass(tally: pd.DataFrame) -> pd.DataFrame:
-    """Apply mass divisor to tally
+def mass(tally: pd.DataFrame, masses: dict[int, float]) -> pd.DataFrame:
+    """Volume divisor function
 
     Parameters
     ----------
     tally : pd.DataFrame
-       tally dataframe to modify
+        Tally to be modified
+    masses : dict[int, float]
+        Cell masses dictionary
 
     Returns
     -------
-    pd.DataFrame
-        Modified tally data frame
+    tally : pd.DataFrame
+        Modified tally
     """
+    cells = tally.Cell.unique()
+    for cell in cells:
+        tally["Value"] = np.where(
+            (tally["Cell"] == cell),
+            tally["Value"] / masses[cell],
+            tally["Value"],
+        )
+        tally["Error"] = np.where(
+            (tally["Cell"] == cell),
+            tally["Error"] / masses[cell],
+            tally["Error"],
+        )
     return tally
 
 

@@ -3,7 +3,7 @@ Neutron flux (z=39.01cm):
     - Neutron flux (z=39.01cm)
   plot_type: binned
   title: Neutron flux (z=39.01cm)
-  x_label: Energy [MeV]
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
   y_labels: "Spectrum $\\left[\\frac{Flux}{lethargy\\cdot NESTOR \\ Watt}\\right]$"
   x: Energy
   y: Value
@@ -16,7 +16,7 @@ Neutron flux (z=58.61cm):
     - Neutron flux (z=58.61cm)
   plot_type: binned
   title: Neutron flux (z=58.61cm)
-  x_label: Energy [MeV]
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
   y_labels: "Spectrum $\\left[\\frac{Flux}{lethargy\\cdot NESTOR \\ Watt}\\right]$"
   x: Energy
   y: Value

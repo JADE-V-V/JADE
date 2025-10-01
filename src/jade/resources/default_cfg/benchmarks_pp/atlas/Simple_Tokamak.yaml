@@ -3,8 +3,8 @@ Neutron spectrum in Blanket [175 group]:
     - Neutron spectrum in OB blanket [175 group]
   plot_type: binned
   title: Neutron spectrum in OB blanket [175 group]
-  x_label: Energy [MeV]
-  y_labels: '[n/cm^2/n_s]'
+  x_label: "Energy $\\\\left[\\\\mathrm{MeV}\\\\right]$"
+  y_labels: "$\\\\left[\\\\mathrm{cm}^{-2}\\\\cdot\\\\mathrm{n}_\\\\mathrm{s}^{-1}\\\\right]$"
   x: Energy
   y: Value
   expand_runs: false
@@ -20,8 +20,8 @@ Photon spectrum in Blanket [175 group]:
     - Photon spectrum in OB blanket [175 group]
   plot_type: binned
   title: Photon spectrum in OB blanket [175 group]
-  x_label: Energy [MeV]
-  y_labels: '[p/cm^2/n_s]'
+  x_label: "Energy $\\\\left[\\\\mathrm{MeV}\\\\right]$"
+  y_labels: "$\\\\left[\\\\mathrm{cm}^{-2}\\\\cdot\\\\mathrm{n}_\\\\mathrm{s}^{-1}\\\\right]$"
   x: Energy
   y: Value
   expand_runs: false
@@ -38,8 +38,8 @@ Neutron spectrum in PF coils [175 group]:
     - Neutron spectrum in PF coils [175 group]
   plot_type: binned
   title: Neutron spectrum in PF coils [175 group]
-  x_label: Energy [MeV]
-  y_labels: '[n/cm^2/n_s]'
+  x_label: "Energy $\\\\left[\\\\mathrm{MeV}\\\\right]$"
+  y_labels: "$\\\\left[\\\\mathrm{cm}^{-2}\\\\cdot\\\\mathrm{n}_\\\\mathrm{s}^{-1}\\\\right]$"
   x: Energy
   y: Value
   expand_runs: false
@@ -55,8 +55,8 @@ Photon spectrum in PF coils [175 group]:
     - Photon spectrum in PF coils [175 group]
   plot_type: binned
   title: Photon spectrum in PF coils [175 group]
-  x_label: Energy [MeV]
-  y_labels: '[p/cm^2/n_s]'
+  x_label: "Energy $\\\\left[\\\\mathrm{MeV}\\\\right]$"
+  y_labels: "$\\\\left[\\\\mathrm{cm}^{-2}\\\\cdot\\\\mathrm{n}_\\\\mathrm{s}^{-1}\\\\right]$"
   x: Energy
   y: Value
   expand_runs: false

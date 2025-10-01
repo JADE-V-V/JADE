@@ -49,4 +49,4 @@ can use one of these classes or a new one needs to be created.
 - [ ] yes
 - [ ] no
 
-If no, please specificy who will be able to access the experimental data.
+If no, please specify who will be able to access the experimental data.

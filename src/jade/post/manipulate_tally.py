@@ -302,7 +302,7 @@ def gaussian_broadening(
 
     # Apply Gaussian broadening
     for Ei, si, Yi in zip(tally["Energy"], sigma, tally["Value"]):
-        if Yi == 0 or si == 0:
+        if Yi == 0:
             continue
         width = 4 * si
         mask = (Eb >= Ei - width) & (Eb <= Ei + width)

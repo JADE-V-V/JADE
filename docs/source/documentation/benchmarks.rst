@@ -17,7 +17,7 @@ Overview
 ========
 The following tables summarise the computational and experimental benchmarks
 that are included in JADE. Those benchmarks currently under development are captured in 
-the Github Project [here](https://github.com/orgs/JADE-V-V/projects/9). A more detailed 
+the Github Project `here <https://github.com/orgs/JADE-V-V/projects/9>`_. A more detailed 
 description of the implemented benchmarks can be found in the following sections.
 
 **COMPUTATIONAL BENCHMARKS:**

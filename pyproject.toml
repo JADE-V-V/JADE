@@ -18,14 +18,8 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "pandas",
-    "numjuggler",
-    "tqdm",
     "xlsxwriter",
-    "openpyxl",
     "matplotlib",
-    "scipy",
-    "python-docx",
     "aspose-words",
     "requests",
     "f4enix >= 0.15.0",

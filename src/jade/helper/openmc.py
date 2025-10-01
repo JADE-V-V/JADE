@@ -62,26 +62,26 @@ class OpenMCTallyFactors:
         return cls(tally_factors=tally_factors)
 
 
-@dataclass
-class TallyFactors:
-    """Data class storing tally factors
-
-    Attributes
-    ----------
-    identifier : int
-        Identifier of the tally.
-    normalisation : float
-        Normalisation factor for the tally.
-    volume : bool
-        True if volume divisor is needed, False if not. Default is False.
-    mass : BinningType | list[BinningType]
-        True if mass divisor is needed, False if not. Default is False.
-    """
-
-    identifier: int
-    volume: bool = False
-    mass: bool = False
-    normalisation: float = 1
+# @dataclass
+# class TallyFactors:
+#    """Data class storing tally factors
+#
+#    Attributes
+#    ----------
+#    identifier : int
+#        Identifier of the tally.
+#    normalisation : float
+#        Normalisation factor for the tally.
+#    volume : bool
+#        True if volume divisor is needed, False if not. Default is False.
+#    mass : BinningType | list[BinningType]
+#        True if mass divisor is needed, False if not. Default is False.
+#    """
+#
+#    identifier: int
+#    volume: bool = False
+#    mass: bool = False
+#    normalisation: float = 1
 
 
 @dataclass
@@ -104,9 +104,9 @@ class OpenMCCellData:
 
     @classmethod
     def from_files(cls, json_path: PathLike, xml_path: PathLike) -> OpenMCCellData:
-        cell_volumes = cls().from_json(json_path)
-        cell_densities = cls().from_xml(xml_path)
-        cell_masses = cls().from_volume_density(cell_volumes, cell_densities)
+        cell_volumes = cls.from_json(json_path)
+        cell_densities = cls.from_xml(xml_path)
+        cell_masses = cls.from_volume_density(cell_volumes, cell_densities)
         return cls(
             cell_volumes=cell_volumes,
             cell_densities=cell_densities,

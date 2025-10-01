@@ -458,6 +458,13 @@ An example of plot configuration is shown below:
       shorten_x_name: 2
     select_runs: SphereSDDR_\d+_[A-Za-z]+-\d+_
 
+Update the documentation
+==============================
+
+The final step to add a new benchmark to JADE, assuming that no new functionalities are added, as detailed
+below, is to add the assocaited documentation. This includes a descirption of the benchmark as well as updating
+the overview table of implemented benchmarks in :ref:`benchmarks`.
+
 Implement new functionalities
 =============================
 

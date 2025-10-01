@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-import numpy as np
 import pandas as pd
 from xlsxwriter import Workbook
 from xlsxwriter.worksheet import Worksheet
@@ -220,6 +219,112 @@ class PivotTable(Table):
         return [value_df]
 
 
+class SpherePivotTable(PivotTable):
+    """Pivot table with custom sorting for Sphere benchmark.
+    
+    Sorts the index by:
+    1. Isotopes first (sorted by Z number extracted from the case name)
+    2. Materials second (sorted alphabetically)
+    """
+
+    def _get_sheet(self) -> list[pd.DataFrame]:
+        # Get the parent class results
+        dfs = super()._get_sheet()
+        
+        # Apply sorting to all dataframes
+        sorted_dfs = []
+        for df in dfs:
+            sorted_df = self._sort_sphere_index(df)
+            sorted_dfs.append(sorted_df)
+        
+        return sorted_dfs
+
+    @staticmethod
+    def _sort_sphere_index(df: pd.DataFrame) -> pd.DataFrame:
+        """Sort the index of the dataframe for Sphere benchmark.
+        
+        Isotopes (cases starting with numbers) are sorted by their Z number,
+        and materials (cases starting with 'M') are sorted alphabetically.
+        
+        Parameters
+        ----------
+        df : pd.DataFrame
+            DataFrame with index to sort
+            
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame with sorted index
+        """
+        if df.empty:
+            return df
+            
+        # Get the index name(s)
+        if isinstance(df.index, pd.MultiIndex):
+            # For multi-index, we need to sort by the first level (Case)
+            # Extract the first level values
+            cases = df.index.get_level_values(0).unique()
+        else:
+            # For single index
+            cases = df.index.unique()
+        
+        # Separate isotopes and materials
+        isotopes = []
+        materials = []
+        
+        for case in cases:
+            case_str = str(case)
+            # Check if it starts with a digit (isotope) or 'M' (material)
+            # Expected format: "Sphere_1001_H-1" for isotopes or "Sphere_M101" for materials
+            parts = case_str.split('_')
+            if len(parts) >= 2:
+                identifier = parts[1]  # e.g., "1001" or "M101"
+                if identifier[0].isdigit():
+                    # It's an isotope, extract Z number (atomic number)
+                    # ZAID format is ZZAAA (5 digits) or ZAAA (4 digits)
+                    # where ZZ (or Z) is atomic number, AAA is mass number
+                    if len(identifier) == 4:
+                        z_number = int(identifier[0])
+                    elif len(identifier) == 5:
+                        z_number = int(identifier[:2])
+                    else:
+                        # Unknown format, use the identifier as-is for sorting
+                        z_number = int(identifier) if identifier.isdigit() else 0
+                    isotopes.append((z_number, case))
+                elif identifier.startswith('M'):
+                    materials.append(case)
+                else:
+                    # Unknown format, treat as material
+                    materials.append(case)
+            else:
+                # Unknown format, treat as material
+                materials.append(case)
+        
+        # Sort isotopes by Z number, materials alphabetically
+        isotopes.sort(key=lambda x: x[0])
+        materials.sort()
+        
+        # Create the sorted order
+        sorted_order = [case for _, case in isotopes] + materials
+        
+        # Reindex the dataframe
+        if isinstance(df.index, pd.MultiIndex):
+            # For multi-index, we need to reindex by the first level
+            # This is more complex - we need to get all index combinations for each case
+            new_index = []
+            for case in sorted_order:
+                # Get all rows for this case
+                mask = df.index.get_level_values(0) == case
+                case_indices = df.index[mask]
+                new_index.extend(case_indices)
+            df = df.reindex(new_index)
+        else:
+            # Simple reindex for single index
+            df = df.reindex(sorted_order)
+        
+        return df
+
+
 class SimpleTable(Table):
     """Simply dump the data using cfg.x as index and cfg.y as columns to be retained"""
 
@@ -305,6 +410,8 @@ class TableFactory:
             return SimpleTable(*args)
         elif table_type == TableType.CHI_SQUARED:
             return ChiTable(*args)
+        elif table_type == TableType.SPHERE_PIVOT:
+            return SpherePivotTable(*args)
         else:
             raise NotImplementedError(f"Table type {table_type} not supported")
 

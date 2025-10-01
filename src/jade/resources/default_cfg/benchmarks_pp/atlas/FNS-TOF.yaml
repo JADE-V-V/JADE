@@ -7,8 +7,8 @@ Binned plots:
     - Neutron leakage flux at 66.8 deg
   plot_type: binned
   title: Leakage lethragy flux
-  x_label: "Energy $\\\\left[\\\\mathrm{MeV}\\\\right]$"
-  y_labels: "Leakage lethargy flux $\\\\left[\\\\mathrm{s}^{-1}\\\\cdot\\\\mathrm{u}^{-1}\\\\cdot\\\\mathrm{cm}^{-2}\\\\right]$"
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: "Leakage lethargy flux $\\left[\\mathrm{s}^{-1}\\cdot\\mathrm{u}^{-1}\\cdot\\mathrm{cm}^{-2}\\right]$"
   x: Energy
   y: Value
   expand_runs: true
@@ -27,7 +27,7 @@ C/E plots:
     - Neutron leakage flux at 66.8 deg
   plot_type: ce
   title: C/E
-  x_label: "Energy $\\\\left[\\\\mathrm{MeV}\\\\right]$"
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
   y_labels: 'dummy'
   x: Energy
   y: Value

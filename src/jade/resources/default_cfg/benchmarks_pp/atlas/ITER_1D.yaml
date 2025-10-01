@@ -21,7 +21,7 @@ Total Neutron flux:
     - Total neutron flux
   plot_type: ratio
   title: Total neutron flux in ITER 1D
-  x_label: "Radial position $\\\\left[\\\\mathrm{cm}\\\\right]$"
+  x_label: "Radial position $\\left[\\mathrm{cm}\\right]$"
   y_labels: neutron flux
   x: Cells
   y: Value
@@ -36,7 +36,7 @@ Total Photon flux:
     - Total photon flux
   plot_type: ratio
   title: Total photon flux in ITER 1D
-  x_label: "Radial position $\\\\left[\\\\mathrm{cm}\\\\right]$"
+  x_label: "Radial position $\\left[\\mathrm{cm}\\right]$"
   y_labels: photon flux
   x: Cells
   y: Value
@@ -51,7 +51,7 @@ Total nuclear heating:
     - Total nuclear heating
   plot_type: ratio
   title: Total nuclear heating in ITER 1D
-  x_label: "Radial position $\\\\left[\\\\mathrm{cm}\\\\right]$"
+  x_label: "Radial position $\\left[\\mathrm{cm}\\right]$"
   y_labels: nuclear heating
   x: Cells
   y: Value
@@ -66,7 +66,7 @@ Neutron heating:
     - Neutron heating
   plot_type: ratio
   title: Neutron heating in ITER 1D
-  x_label: "Radial position $\\\\left[\\\\mathrm{cm}\\\\right]$"
+  x_label: "Radial position $\\left[\\mathrm{cm}\\right]$"
   y_labels: neutron heating
   x: Cells
   y: Value
@@ -81,7 +81,7 @@ Photon heating:
     - Photon heating
   plot_type: ratio
   title: Photon heating in ITER 1D
-  x_label: "Radial position $\\\\left[\\\\mathrm{cm}\\\\right]$"
+  x_label: "Radial position $\\left[\\mathrm{cm}\\right]$"
   y_labels: photon heating
   x: Cells
   y: Value

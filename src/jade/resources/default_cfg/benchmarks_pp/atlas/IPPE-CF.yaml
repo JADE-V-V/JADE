@@ -3,8 +3,8 @@ Neutron flux HPD:
     - Neutron flux HPD
   plot_type: binned
   title: IPPE CF Neutron flux (HPD)
-  x_label: "Energy $\\\\left[\\\\mathrm{MeV}\\\\right]$"
-  y_labels: "$\\\\left[\\\\mathrm{cm}^{-2}\\\\cdot\\\\mathrm{s}^{-1}\\\\cdot\\\\mathrm{MeV}^{-1}\\\\right]$"
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: "$\\left[\\mathrm{cm}^{-2}\\cdot\\mathrm{s}^{-1}\\cdot\\mathrm{MeV}^{-1}\\right]$"
   x: Energy
   y: Value
   expand_runs: true
@@ -17,8 +17,8 @@ Neutron flux SSD:
     - Neutron flux SSD
   plot_type: binned
   title: IPPE CF Neutron flux (SSD)
-  x_label: "Energy $\\\\left[\\\\mathrm{MeV}\\\\right]$"
-  y_labels: "$\\\\left[\\\\mathrm{cm}^{-2}\\\\cdot\\\\mathrm{s}^{-1}\\\\cdot\\\\mathrm{MeV}^{-1}\\\\right]$"
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: "$\\left[\\mathrm{cm}^{-2}\\cdot\\mathrm{s}^{-1}\\cdot\\mathrm{MeV}^{-1}\\right]$"
   x: Energy
   y: Value
   expand_runs: true

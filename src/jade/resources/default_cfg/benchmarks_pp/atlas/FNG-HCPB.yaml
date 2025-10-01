@@ -3,7 +3,7 @@ Reaction rate:
     - Reaction rate
   plot_type: ce
   title: Neutron reaction rate in activation foils
-  x_label: "Shielding depth $\\\\left[\\\\mathrm{cm}\\\\right]$"
+  x_label: "Shielding depth $\\left[\\mathrm{cm}\\right]$"
   y_labels: C/E
   x: Cells
   y: Value

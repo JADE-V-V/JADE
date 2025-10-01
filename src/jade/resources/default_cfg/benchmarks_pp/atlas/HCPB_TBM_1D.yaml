@@ -16,7 +16,7 @@ Neutron heating:
     - Neutron heating
   plot_type: ratio
   title: Neutron heating
-  x_label: "Radial position $\\\\left[\\\\mathrm{cm}\\\\right]$"
+  x_label: "Radial position $\\left[\\mathrm{cm}\\right]$"
   y_labels: neutron heating
   x: Cor A
   y: Value
@@ -28,7 +28,7 @@ Photon heating:
     - Photon heating
   plot_type: ratio
   title: Photon heating
-  x_label: "Radial position $\\\\left[\\\\mathrm{cm}\\\\right]$"
+  x_label: "Radial position $\\left[\\mathrm{cm}\\right]$"
   y_labels: photon heating
   x: Cor A
   y: Value
@@ -40,7 +40,7 @@ Neutron flux:
     - Neutron flux
   plot_type: ratio
   title: Neutron flux
-  x_label: "Radial position $\\\\left[\\\\mathrm{cm}\\\\right]$"
+  x_label: "Radial position $\\left[\\mathrm{cm}\\right]$"
   y_labels: neutron flux
   x: Cor A
   y: Value
@@ -52,7 +52,7 @@ Photon flux:
     - Photon flux
   plot_type: ratio
   title: Photon flux
-  x_label: "Radial position $\\\\left[\\\\mathrm{cm}\\\\right]$"
+  x_label: "Radial position $\\left[\\mathrm{cm}\\right]$"
   y_labels: photon flux
   x: Cor A
   y: Value
@@ -64,7 +64,7 @@ Tritium production:
     - Tritium Production
   plot_type: ratio
   title: Tritium production
-  x_label: "Radial position $\\\\left[\\\\mathrm{cm}\\\\right]$"
+  x_label: "Radial position $\\left[\\mathrm{cm}\\right]$"
   y_labels: tritium production
   x: Cor A
   y: Value

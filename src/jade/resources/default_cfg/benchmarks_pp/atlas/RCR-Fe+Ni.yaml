@@ -55,7 +55,7 @@ Cumulative Reaction Rate 58Ni(n,p)58Co:
   y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
-  expand_runs: false
+  expand_runs: true
   xlimits: [0.1, 30]
   plot_args:
     yscale: linear
@@ -68,7 +68,7 @@ Cumulative Reaction Rate 115In(n,n')115mIn:
   y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
   y: Value
-  expand_runs: false
+  expand_runs: true
   xlimits: [0.1, 30]
   plot_args:
     yscale: linear

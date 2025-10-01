@@ -480,12 +480,12 @@ class TestRawProcessor:
                 processor = RawProcessor(cfg, subfolder, path)
                 processor.process_raw_data()
 
-    def test_RCR_Fe(self, tmpdir):
-        with as_file(RAW_CFG_FILES_MCNP.joinpath("RCR-Fe.yaml")) as f:
+    def test_RCR_Fe_Ni(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("RCR-Fe+Ni.yaml")) as f:
             cfg = ConfigRawProcessor.from_yaml(f)
 
         folders = [
-            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "RCR-Fe"),
+            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "RCR-Fe+Ni"),
         ]
 
         for i, folder in enumerate(folders):

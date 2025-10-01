@@ -41,9 +41,11 @@ Total Reaction Rate Ni:
 Cumulative Reaction Rate In:
     concat_option: no_action
     14: 
+     - [groupby, {by: "Energy", action: "mean"}]
      - [cumulative_sum, {}]
 Total Reaction Rate In:
     concat_option: no_action
     34: 
+     - [groupby, {by: "all", action: "mean"}]
      - [add_column, {column: 'Cells', values: ["115In(n,n')115mIn"]}]
      - [delete_cols, {'cols': ['Dir','Segments','Multiplier','Energy']}]

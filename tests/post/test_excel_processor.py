@@ -303,9 +303,9 @@ class TestExcelProcessor:
         processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
         processor.process()
 
-    def test_RCR_Fe(self, tmpdir):
+    def test_RCR_Fe_Ni(self, tmpdir):
         with as_file(
-            files(default_cfg).joinpath("benchmarks_pp/excel/RCR-Fe.yaml")
+            files(default_cfg).joinpath("benchmarks_pp/excel/RCR-Fe+Ni.yaml")
         ) as file:
             cfg = ConfigExcelProcessor.from_yaml(file)
         codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c")]

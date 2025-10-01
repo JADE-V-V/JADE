@@ -202,7 +202,7 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
 
 def delete_cols(tally: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
     """Delete the columns from the tally."""
-    return tally.drop(columns=cols)
+    return tally.drop(columns=cols, errors="ignore")
 
 
 def format_decimals(tally: pd.DataFrame, decimals: dict[str, int]) -> pd.DataFrame:

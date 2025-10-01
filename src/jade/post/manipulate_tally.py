@@ -299,7 +299,9 @@ def gaussian_broadening(
     Eb = tally["Energy"].values.astype(float)
     Yb = np.zeros_like(tally["Value"])
     Errb = np.zeros_like(tally["Error"])
-    sigma = np.array(fwhm_frac) * np.array(tally["Energy"]) / 2.3548
+    sigma = (
+        np.array(fwhm_frac) * np.array(tally["Energy"]) / (2 * np.sqrt(2 * np.log(2)))
+    )
 
     # Apply Gaussian broadening
     for Ei, si, Yi, Erri in zip(tally["Energy"], sigma, tally["Value"], tally["Error"]):

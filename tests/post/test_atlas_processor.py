@@ -290,3 +290,36 @@ class TestAtlasProcessor:
         codelibs = [("mcnp", "FENDL 3.2c"), ("mcnp", "FENDL 3.2c")]
         processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
         processor.process()
+
+    def test_RCR_SS(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/atlas/RCR-SS.yaml")
+        ) as file:
+            cfg = ConfigAtlasProcessor.from_yaml(file)
+
+        word_template_path = files(resources).joinpath("atlas_template.docx")
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c")]
+        processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
+        processor.process()
+
+    def test_RCR_Fe_Ni(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/atlas/RCR-Fe+Ni.yaml")
+        ) as file:
+            cfg = ConfigAtlasProcessor.from_yaml(file)
+
+        word_template_path = files(resources).joinpath("atlas_template.docx")
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c")]
+        processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
+        processor.process()
+
+    def test_ISIS_800MeV_C(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/atlas/ISIS-800MeV-C.yaml")
+        ) as file:
+            cfg = ConfigAtlasProcessor.from_yaml(file)
+
+        word_template_path = files(resources).joinpath("atlas_template.docx")
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c")]
+        processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
+        processor.process()

@@ -88,6 +88,21 @@ class TestIputOpenMC:
         OpenMCInputFiles.zaid_to_openmc(nuclide, material, lm)
         assert material.nuclides[1].name == "H1"
 
+    def test_input_generation(self, libOpenMC, tmpdir):
+        template_folder = TEMPLATE_ROOT.joinpath("ITER_1D/ITER_1D/openmc")
+        inp = InputOpenMC(template_folder, libOpenMC)
+        inp.set_nps(10)
+        inp.write(tmpdir)
+        settings_file = os.path.join(tmpdir, "settings.xml")
+        settings = openmc.Settings.from_xml(settings_file)
+        assert settings.source is not None
+
+        weight_windows_outfile = os.path.join(tmpdir, "weight_windows.h5")
+        assert os.path.exists(weight_windows_outfile)
+        assert hasattr(settings, "weight_windows")
+        assert settings.weight_windows is not None
+        assert settings.weight_windows_on is True
+
 
 class TestInputMCNPSphere:
     def test_input_generation(self, libMCNP, tmpdir):

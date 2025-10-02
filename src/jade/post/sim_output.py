@@ -281,9 +281,9 @@ class OpenMCSimOutput(AbstractSimOutput):
         None.
 
         """
-        outfile, statefile, tffile, volfile = self.retrieve_file(sim_folder)
+        _, statefile, volfile = self.retrieve_file(sim_folder)
 
-        self.output = omc.OpenMCStatePoint(statefile, tffile, volfile)
+        self.output = omc.OpenMCStatePoint(statefile, volfile)
         self._tally_numbers = self.output.tally_numbers
         self._tally_comments = self.output.tally_comments
         self._tallydata, self._totalbin = self._process_tally()
@@ -319,10 +319,8 @@ class OpenMCSimOutput(AbstractSimOutput):
                 file1 = file_name
             elif file_name.startswith("statepoint"):
                 file2 = file_name
-            elif file_name.endswith(".yaml"):
-                file3 = file_name
             elif file_name == "volumes.json":
-                file4 = file_name
+                file3 = file_name
 
         if file1 is None or file2 is None:
             raise FileNotFoundError(
@@ -332,9 +330,8 @@ class OpenMCSimOutput(AbstractSimOutput):
         file1 = os.path.join(results_path, file1)
         file2 = os.path.join(results_path, file2)
         file3 = os.path.join(results_path, file3) if file3 else None
-        file4 = os.path.join(results_path, file4) if file4 else None
 
-        return file1, file2, file3, file4
+        return file1, file2, file3
 
     def _create_dataframes(
         self, tallies: dict

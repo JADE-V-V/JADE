@@ -1,4 +1,4 @@
-comparison %:
+A long name that will break the excel sheets:
   results:
     - Leakage neutron flux
     - Leakage photon flux
@@ -8,7 +8,7 @@ comparison %:
     - He ppm production
     - DPA production
   comparison_type: percentage
-  table_type: pivot
+  table_type: sphere_pivot
   x: Case
   y: [Result, Energy]
   value: Value

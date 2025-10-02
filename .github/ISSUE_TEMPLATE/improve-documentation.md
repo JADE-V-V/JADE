@@ -1,23 +1,20 @@
 ---
 name: Improve documentation
-about: Help us improve our documentation
+about: Suggest improvements to the documentation
 title: "[DOC] - title of the issue"
 labels: documentation
 assignees: ''
 
 ---
 
-# What where you looking for
-Please try to describe in a concise way which kind of information you were looking for and where were you looking.
+# What information were you looking for?
+Briefly describe what you were trying to find and where you looked.
 
-# Is the information available in the doc but not where you would expect?
-let us know if you ended up finding the information you were looking for in another (unexpected) section of the doc.
+# Was the information unclear or missing?
+Let us know if the information was unclear, incomplete, or missing entirely.
 
-# Is information completely lacking or partial?
-please specify if you are asking for better explanation/clarification of the text or if the information is completely lacking.
-
-# Where would you insert the missing information?
-describe here where you would put the information.
+# Where should the missing information go?
+Suggest where in the documentation the information should be added.
 
 # Additional context
-you can use this space to give any other additional information that you think would be useful to solve the issue.
+Add any other details or suggestions to help improve the documentation.

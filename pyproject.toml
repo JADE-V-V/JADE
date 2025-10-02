@@ -18,19 +18,14 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "pandas",
-    "numjuggler",
-    "tqdm",
     "xlsxwriter",
-    "openpyxl",
     "matplotlib",
-    "scipy",
-    "python-docx",
     "aspose-words",
     "requests",
     "f4enix >= 0.15.0",
     "pyyaml",
-    "seaborn"
+    "seaborn",
+    "python-gitlab"
 ]
 
 [project.optional-dependencies]
@@ -39,7 +34,12 @@ dev = [
     "pytest-cov",
     "pytest-xvfb",  # needed for headless display
     "ruff",  # best formatter that should be used by everybody
-    'ttkthemes'
+    "sphinx",
+    "myst-parser",
+    "sphinx-book-theme",
+    "sphinx-copybutton",
+    "sphinx-togglebutton",
+    "sphinx-design"
 ]
 ui = [
     "ttkthemes"

@@ -3,8 +3,8 @@ Binned plots:
     - Neutron yield
   plot_type: binned
   title: Neutron yield per unit lethargy
-  x_label: Energy [MeV]
-  y_labels: 'Neutron yield per unit lethargy [1/u]'
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: "Neutron yield per unit lethargy $\\left[\\mathrm{u}^{-1}\\right]$"
   x: Energy
   y: Value
   expand_runs: true
@@ -19,7 +19,7 @@ C/E plots:
     - Neutron yield
   plot_type: ce
   title: Neutron yield C/E
-  x_label: Energy [MeV]
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
   y_labels: 'dummy'
   x: Energy
   y: Value

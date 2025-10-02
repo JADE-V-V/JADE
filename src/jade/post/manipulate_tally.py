@@ -67,26 +67,21 @@ def condense_groups(
         modified tally
     """
     tally["abs err"] = tally["Error"] * tally["Value"]
-    rows = []
-    min_e = bins[0]
-    for max_e in bins[1:]:
-        # get the rows that have Energy between min_e and max_e
-        df = tally[(tally[group_column] >= min_e) & (tally[group_column] < max_e)]
-        # do the srt of sum of squares of absolute errors
-        square_err = 0
-        for _, row in df.iterrows():
-            square_err += row["abs err"] ** 2
-        srss_err = math.sqrt(square_err)
-        df = df.sum()
-        with np.errstate(divide="ignore", invalid="ignore"):
-            # it is ok to get some NaN if value is zero
-            df["Error"] = srss_err / df["Value"]
-        del df["abs err"]
-        del df[group_column]  # avoid warning
-        df[group_column] = f"{min_e} - {max_e}"
-        rows.append(df)
-        min_e = max_e
-    return pd.DataFrame(rows).dropna()
+    # this divides the entries in coarse energy bins
+    tally["coarse_bin"] = pd.cut(tally[group_column], bins=bins, right=False)
+    tally[group_column] = tally["coarse_bin"].apply(
+        lambda x: f"{x.left:g} - {x.right:g}"
+    )
+    del tally["coarse_bin"]
+    grouped = tally.groupby(group_column, observed=False).agg(
+        {"Value": "sum", "abs err": lambda x: math.sqrt((x**2).sum())}
+    )
+    with np.errstate(divide="ignore", invalid="ignore"):
+        grouped["Error"] = grouped["abs err"] / grouped["Value"]
+    del grouped["abs err"]
+    # drop zero values
+    grouped = grouped[grouped["Value"] != 0]
+    return grouped.reset_index()
 
 
 def scale(
@@ -154,25 +149,47 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
 
     if by == "all":
         grouped = tally
-        error = np.sqrt((tally["Error"] ** 2).sum())
+        # Error propagation considering that tally["Error"] are relative errors
+        # Valid both for sum and mean
+        error = pd.Series(
+            np.sqrt(((tally["Error"] * tally["Value"]) ** 2).sum())
+            / tally["Value"].sum(),
+            name="Error",
+        )
     else:
+        value_df = tally.set_index(by)["Value"]
         error_df = tally.set_index(by)["Error"]
         rows = []
         for idx_val in error_df.index.unique():
-            subset = error_df.loc[idx_val]
-            err = np.sqrt(np.sum(subset**2))
+            subset_error = error_df.loc[idx_val]
+            subset_value = value_df.loc[idx_val]
+            # Error propagation considering that tally["Error"] are relative errors
+            # Valid both for sum and mean
+            err = (
+                np.sqrt(np.sum((subset_error * subset_value) ** 2)) / subset_value.sum()
+            )
             rows.append(err)
         error = pd.Series(rows, name="Error")
         grouped = tally.groupby(by, sort=False)
 
     if action == "sum":
         df = grouped.sum()
+        # Application of the computed error propagation
+        df["Error"] = error.values
     elif action == "mean":
         df = grouped.mean()
+        # Application of the computed error propagation
+        df["Error"] = error.values
     elif action == "max":
+        # Preserve Error of the row defining the maximum Value
+        idx = tally.groupby(by, sort=False)["Value"].idxmax()
         df = grouped.max()
+        df["Error"] = tally.loc[idx, "Error"].values
     elif action == "min":
+        # Preserve Error of the row defining the minimum Value
+        idx = tally.groupby(by, sort=False)["Value"].idxmin()
         df = grouped.min()
+        df["Error"] = tally.loc[idx, "Error"].values
 
     if isinstance(df, pd.Series):
         # a series has been created but we want a df
@@ -180,14 +197,12 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
     else:
         df.reset_index(inplace=True)
 
-    df["Error"] = error
-
     return df
 
 
 def delete_cols(tally: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
     """Delete the columns from the tally."""
-    return tally.drop(columns=cols)
+    return tally.drop(columns=cols, errors="ignore")
 
 
 def format_decimals(tally: pd.DataFrame, decimals: dict[str, int]) -> pd.DataFrame:
@@ -223,6 +238,149 @@ def tof_to_energy(
     return tally
 
 
+def cumulative_sum(
+    tally: pd.DataFrame, column: str = "Value", norm: bool = True
+) -> pd.DataFrame:
+    """Compute the cumulative sum of the specified column.
+
+    Parameters
+    ----------
+    tally : pd.DataFrame
+        tally dataframe to modify
+    column: str
+        name of the column to compute the cumulative sum for. Default is "Value".
+    """
+    if column not in tally.columns:
+        raise ValueError(f"Column {column} not found in the tally.")
+    elif column == "Error":
+        raise ValueError("Cumulative sum cannot be computed for the Error column.")
+    original_tally = tally.copy()
+    tally[column] = tally[column].cumsum()
+    if column == "Value":
+        # Error propagation considering that tally["Error"] are relative errors
+        tally["Error"] = (
+            np.sqrt(((tally["Error"] * original_tally[column]) ** 2).cumsum())
+            / tally[column]
+        )
+    if norm:
+        # Normalize in percentage to the last value (total sum)
+        tally[column] = tally[column] / tally[column].iloc[-1] * 100
+        if column == "Value":
+            tally["Error"] = np.sqrt(tally["Error"] ** 2 + tally["Error"].iloc[-1] ** 2)
+    return tally
+
+
+def gaussian_broadening(
+    tally: pd.DataFrame, fwhm_frac: float | list[float] = 0.10
+) -> pd.DataFrame:
+    """Apply Gaussian broadening to the tally.
+
+    Parameters
+    ----------
+    tally : pd.DataFrame
+        tally dataframe to modify
+    fwhm_frac: float | list[float]
+        FWHM fraction(s) to apply. Default is 0.10 (10%) for all energy bins.
+    """
+    # If fwhm_frac is a single float, convert it to a list with the same length as the tally
+    if isinstance(fwhm_frac, (float, int)):
+        fwhm_frac = [float(fwhm_frac)] * len(tally["Energy"])
+    # If fwhm_frac is a list, check that its length matches the number of rows in the tally
+    elif isinstance(fwhm_frac, list):
+        if len(fwhm_frac) != len(tally["Energy"]):
+            raise ValueError(
+                "Length of fwhm_frac list must match number of rows in tally."
+            )
+    else:
+        raise ValueError("fwhm_frac must be a float or a list of floats.")
+
+    Eb = tally["Energy"].values.astype(float)
+    Yb = np.zeros_like(tally["Value"])
+    Errb = np.zeros_like(tally["Error"])
+    sigma = (
+        np.array(fwhm_frac) * np.array(tally["Energy"]) / (2 * np.sqrt(2 * np.log(2)))
+    )
+
+    # Apply Gaussian broadening
+    for Ei, si, Yi, Erri in zip(tally["Energy"], sigma, tally["Value"], tally["Error"]):
+        if Yi == 0:
+            continue
+        width = 4 * si
+        mask = (Eb >= Ei - width) & (Eb <= Ei + width)
+        x = Eb[mask]
+        k = np.exp(-0.5 * ((x - Ei) / si) ** 2)
+        k /= k.sum()
+        Yb[mask] += Yi * k
+        Errb[mask] += (Erri * Yi * k) ** 2
+
+    # Assign the new broadened values to the tally
+    tally["Value"] = Yb
+    tally["Error"] = np.sqrt(Errb) / Yb
+    return tally
+
+
+def volume(tally: pd.DataFrame, volumes: dict[int, float]) -> pd.DataFrame:
+    """Volume divisor function
+
+    Parameters
+    ----------
+    tally : pd.DataFrame
+        Tally to be modified
+    volumes : dict[int, float]
+        Cell volumes dictionary
+
+    Returns
+    -------
+    tally : pd.DataFrame
+        Modified tally
+    """
+    if "Cells" in tally:
+        cells = tally.Cells.unique()
+        for cell in cells:
+            tally["Value"] = np.where(
+                (tally["Cells"] == cell),
+                tally["Value"] / volumes[cell],
+                tally["Value"],
+            )
+            tally["Error"] = np.where(
+                (tally["Cells"] == cell),
+                tally["Error"] / volumes[cell],
+                tally["Error"],
+            )
+    return tally
+
+
+def mass(tally: pd.DataFrame, masses: dict[int, float]) -> pd.DataFrame:
+    """Volume divisor function
+
+    Parameters
+    ----------
+    tally : pd.DataFrame
+        Tally to be modified
+    masses : dict[int, float]
+        Cell masses dictionary
+
+    Returns
+    -------
+    tally : pd.DataFrame
+        Modified tally
+    """
+    if "Cells" in tally:
+        cells = tally.Cells.unique()
+        for cell in cells:
+            tally["Value"] = np.where(
+                (tally["Cells"] == cell),
+                tally["Value"] / masses[cell],
+                tally["Value"],
+            )
+            tally["Error"] = np.where(
+                (tally["Cells"] == cell),
+                tally["Error"] / masses[cell],
+                tally["Error"],
+            )
+    return tally
+
+
 MOD_FUNCTIONS = {
     TallyModOption.LETHARGY: by_lethargy,
     TallyModOption.SCALE: scale,
@@ -239,6 +397,10 @@ MOD_FUNCTIONS = {
     TallyModOption.FORMAT_DECIMALS: format_decimals,
     TallyModOption.TOF_TO_ENERGY: tof_to_energy,
     TallyModOption.SELECT_SUBSET: select_subset,
+    TallyModOption.CUMULATIVE_SUM: cumulative_sum,
+    TallyModOption.GAUSSIAN_BROADENING: gaussian_broadening,
+    TallyModOption.VOLUME: volume,
+    TallyModOption.MASS: mass,
 }
 
 

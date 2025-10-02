@@ -54,9 +54,11 @@ class RunConfig:
         run_cfg_file = paths_tree.cfg.run_cfg
         lib_cfg_file = paths_tree.cfg.libs_cfg
         additional_settings_root = paths_tree.cfg.bench_additional_files
+        env_cfg_folder = paths_tree.cfg.exe_cfg
 
         return cls.from_yamls(
             env_vars_file,
+            env_cfg_folder,
             run_cfg_file,
             lib_cfg_file,
             additional_settings_root,
@@ -66,6 +68,7 @@ class RunConfig:
     def from_yamls(
         cls,
         env_vars_file: PathLike,
+        env_cfg_folder: PathLike,
         run_cfg_file: PathLike,
         lib_cfg_file: PathLike,
         additional_settings_root: PathLike,
@@ -89,7 +92,7 @@ class RunConfig:
             configuration object for the JADE run.
         """
         lib_factory = LibraryFactory(lib_cfg_file)
-        env_vars = EnvironmentVariables.from_yaml(env_vars_file)
+        env_vars = EnvironmentVariables.from_yaml(env_vars_file, env_cfg_folder)
 
         with open(run_cfg_file) as f:
             cfg = yaml.safe_load(f)
@@ -140,14 +143,14 @@ class EnvironmentVariables:
     code_configurations : dict[CODE, PathLike] | None
         path to the configuration files for the codes. If None, the default configuration
         will be used which can be found at cfg/exe_config. By default is None.
-    batch_template : PathLike | None
-        relative path to the batch template for job submission. location is cfg/batch_templates.
-        By default is None.
-    batch_system : str | None
-        name of the batch system to use for job submission. e.g. "slurm". By default is
-        None.
-    mpi_prefix : str | None
-        prefix for the mpi command. e.g. "srun", by default None
+    scheduler_command : str | None
+        command to submit jobs to the scheduler (e.g. sbatch, qsub, bsub). Needed only if
+        run_mode is "job". By default None.
+    exe_cfg_root: PathLike
+        root folder where the exe_config folder is located. By default None.
+    exe_prefix: str | None
+        optional prefix to prepend to all executable commands (e.g. for wrappers like
+        srun, mpirun, etc.). By default None.
     """
 
     # parallel options
@@ -157,39 +160,47 @@ class EnvironmentVariables:
     executables: dict[CODE, str]
     run_mode: RunMode
     # codes configurations
-    code_configurations: dict[CODE, PathLike] | None = None
-    # run params
-    batch_template: PathLike | None = None
-    batch_system: str | None = None
-    mpi_prefix: str | None = None
+    code_job_template: dict[CODE, PathLike] | None = None
+    scheduler_command: str | None = None
+    exe_cfg_root: PathLike | None = None
+    exe_prefix: str | None = None
 
     def __post_init__(self):
         if self.mpi_tasks is not None:
             self.mpi_tasks = int(self.mpi_tasks)
         if self.openmp_threads is not None:
             self.openmp_threads = int(self.openmp_threads)
-        # Check if the batch template exists if submission is requested
-        if self.run_mode == RunMode.JOB_SUMISSION:
-            if self.batch_template is None:
-                raise ConfigError(
-                    "Batch template is needed for job submission, please provide one"
-                )
-            elif not os.path.exists(self.batch_template):
-                raise ConfigError(f"Batch template {self.batch_template} not found")
-
-            if self.batch_system is None:
-                raise ConfigError(
-                    "Batch system is needed for job submission, please provide one"
-                )
+        if (
+            self.run_mode in [RunMode.JOB_SUBMISSION, RunMode.GLOBAL_JOB]
+            and self.scheduler_command is None
+        ):
+            raise ConfigError(
+                "Scheduler command is needed if run_mode is 'job', please provide one"
+            )
+        code_job_template = {}
+        if self.code_job_template is not None and self.exe_cfg_root is not None:
+            for code, path in self.code_job_template.items():
+                if not os.path.isabs(path) and self.exe_cfg_root is not None:
+                    path = os.path.join(self.exe_cfg_root, path)
+                if not os.path.isfile(path):
+                    raise ConfigError(
+                        f"Job script template {path} not found, please check and re-run"
+                    )
+                code_job_template[code] = path
+        self.code_job_template = code_job_template
 
     @classmethod
-    def from_yaml(cls, config_file: PathLike) -> EnvironmentVariables:
+    def from_yaml(
+        cls, config_file: PathLike, env_cfg_folder: PathLike | None = None
+    ) -> EnvironmentVariables:
         """Create an EnvironmentVariables object from a yaml configuration file.
 
         Parameters
         ----------
         config_file : PathLike
             path to the yaml configuration file for environment variables.
+        env_cfg_folder : PathLike
+            path to the folder where the exe_config folder is located.
 
         Returns
         -------
@@ -204,10 +215,10 @@ class EnvironmentVariables:
             openmp_threads=cfg["openmp_threads"],
             executables=_cast_to_code(cfg["executables"]),
             run_mode=RunMode(cfg["run_mode"]),
-            code_configurations=_cast_to_code(cfg["code_configurations"]),
-            batch_template=cfg["batch_template"],
-            batch_system=cfg["batch_system"],
-            mpi_prefix=cfg["mpi_prefix"],
+            code_job_template=_cast_to_code(cfg["code_job_template"]),
+            scheduler_command=cfg.get("scheduler_command", None),
+            exe_cfg_root=env_cfg_folder,
+            exe_prefix=cfg.get("exe_prefix", None),
         )
 
 
@@ -504,5 +515,6 @@ class BenchmarkRunConfig:
 class RunMode(Enum):
     """Enumeration of the possible run modes for JADE."""
 
-    SERIAL = "serial"
-    JOB_SUMISSION = "job"
+    LOCAL = "local"
+    JOB_SUBMISSION = "job"
+    GLOBAL_JOB = "global_job"

@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from f4enix.input.libmanager import LibManager
+import matplotlib
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
@@ -17,6 +18,7 @@ from matplotlib.ticker import AutoLocator, AutoMinorLocator, LogLocator, Multipl
 
 from jade.config.atlas_config import PlotConfig, PlotType
 
+matplotlib.use("Agg")  # use a non-interactive backend
 LM = LibManager()
 # Color-blind saver palette
 COLORS = [
@@ -307,12 +309,14 @@ class BinnedPlot(Plot):
             plot_CE = self.cfg.plot_args.get("show_CE", False)
             subcases = self.cfg.plot_args.get("subcases", False)
             xscale = self.cfg.plot_args.get("xscale", "log")
+            yscale = self.cfg.plot_args.get("yscale", "log")
             scale_subcases = self.cfg.plot_args.get("scale_subcases", False)
         else:
             plot_error = False
             plot_CE = False
             subcases = False
             xscale = "log"
+            yscale = "log"
             scale_subcases = False
 
         # if subcases is used, nrows must be 1
@@ -351,12 +355,13 @@ class BinnedPlot(Plot):
         # Ticks
         subs = (0.2, 0.4, 0.6, 0.8)
         ax1.set_xscale(xscale)
-        ax1.set_yscale("log")
+        ax1.set_yscale(yscale)
         ax1.set_ylabel(self.cfg.y_labels[0])
         if xscale == "log":
             ax1.xaxis.set_major_locator(LogLocator(base=10, numticks=15))
-            ax1.yaxis.set_major_locator(LogLocator(base=10, numticks=15))
             ax1.xaxis.set_minor_locator(LogLocator(base=10.0, subs=subs, numticks=12))
+        if yscale == "log":
+            ax1.yaxis.set_major_locator(LogLocator(base=10, numticks=15))
             ax1.yaxis.set_minor_locator(LogLocator(base=10.0, subs=subs, numticks=12))
 
         # --- Error Plot ---

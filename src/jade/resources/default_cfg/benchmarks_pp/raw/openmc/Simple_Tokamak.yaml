@@ -53,28 +53,44 @@ _cells_inverted: &components
 
 Neutron flux in blanket cells:
   concat_option: no_action
-  24: [['replace', {'column': 'Cells', 'values': *components}]]
+  24:  
+     - ['volume', {}]
+     - ['replace', {'column': 'Cells', 'values': *components}]
 Photon flux in blanket cells:
   concat_option: no_action
-  34: [['replace', {'column': 'Cells', 'values': *components}]]
+  34: 
+     - ['volume', {}]
+     - ['replace', {'column': 'Cells', 'values': *components}]     
 Neutron flux in PF coils:
   concat_option: no_action
-  44: [['replace', {'column': 'Cells', 'values': *components}]]
+  44: 
+    - ['volume', {}]    
+    - ['replace', {'column': 'Cells', 'values': *components}]
 Photon flux in PF coils:
   concat_option: no_action
-  54: [['replace', {'column': 'Cells', 'values': *components}]]
+  54: 
+     - ['volume', {}]     
+     - ['replace', {'column': 'Cells', 'values': *components}]
 Neutron spectrum in OB blanket [175 group]:
   concat_option: no_action
-  64: [['replace', {'column': 'Cells', 'values': *components}]]
+  64:
+     - ['volume', {}]     
+     - ['replace', {'column': 'Cells', 'values': *components}]
 Photon spectrum in OB blanket [175 group]:
   concat_option: no_action
-  74: [['replace', {'column': 'Cells', 'values': *components}]]
+  74:
+     - ['volume', {}]  
+     - ['replace', {'column': 'Cells', 'values': *components}]
 Neutron spectrum in PF coils [175 group]:
   concat_option: no_action
-  84: [['replace', {'column': 'Cells', 'values': *components}]]
+  84:
+     - ['volume', {}]  
+     - ['replace', {'column': 'Cells', 'values': *components}]
 Photon spectrum in PF coils [175 group]:
   concat_option: no_action
-  94: [['replace', {'column': 'Cells', 'values': *components}]]
+  94: 
+     - ['volume', {}]
+     - ['replace', {'column': 'Cells', 'values': *components}]
 Neutron nuclear heating in blanket:
   concat_option: no_action
   6: [['replace', {'column': 'Cells', 'values': *components}]]
@@ -95,7 +111,11 @@ Photon nuclear heating in VV:
   56: [['replace', {'column': 'Cells', 'values': *components}]]
 Tritium Production in blanket:
   concat_option: no_action
-  104: [['replace', {'column': 'Cells', 'values': *components}]]
+  104:
+      - ['volume', {}]
+      - ['replace', {'column': 'Cells', 'values': *components}]
 DPA in divertor cell:
   concat_option: no_action
-  114: [['add_column', {'column': 'Cells', 'values': [Divertor]}]]
+  114:
+      - ['volume', {}]
+      - ['add_column', {'column': 'Cells', 'values': [Divertor]}]

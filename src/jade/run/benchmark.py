@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 import json
-import logging
 import os
 import shutil
 import subprocess
-import sys
 from abc import ABC, abstractmethod
 from pathlib import Path
 
@@ -26,13 +24,11 @@ from jade.config.run_config import (
 from jade.helper.aux_functions import (
     CODE_CHECKERS,
     PathLike,
-    get_code_lib,
     get_jade_version,
     print_code_lib,
 )
 from jade.helper.constants import CODE
 from jade.helper.errors import ConfigError
-from jade.run import unix
 from jade.run.input import (
     Input,
     InputD1S,
@@ -145,7 +141,7 @@ class SingleRun(ABC):
 
     def run(
         self, env_vars: EnvironmentVariables, sim_folder: PathLike, test=False
-    ) -> bool | str:
+    ) -> bool | str | list[str]:
         """Run the simulation.
 
         Parameters
@@ -159,18 +155,24 @@ class SingleRun(ABC):
 
         Returns
         -------
-        bool | str
+        bool | str | list[str]
             True if the simulation run correctly, False otherwise.
             If the test flag is set, the command to run the simulation is returned instead
+            in case of global job, only returns the command list.
         """
         run_command = self._build_command(env_vars)
         name, value = self._get_lib_data_command()
-        lib_data_command = f"export {name}={value}"
+        lib_data_command = f'export {name}="{value}"'
+        # if the exe prefix is present it takes precedence
+        if env_vars.exe_prefix is not None:
+            run_command.insert(0, env_vars.exe_prefix)
+
+        elif env_vars.mpi_tasks is not None and env_vars.mpi_tasks > 1:
+            run_command.insert(0, f"-np {env_vars.mpi_tasks}")
+            run_command.insert(0, "mpirun")
 
         flagnotrun = False
-        if env_vars.run_mode == RunMode.JOB_SUMISSION:
-            if self._is_mpi_run(env_vars):
-                run_command.insert(0, env_vars.mpi_prefix)
+        if env_vars.run_mode == RunMode.JOB_SUBMISSION:
             command = self._submit_job(
                 env_vars,
                 sim_folder,
@@ -182,15 +184,14 @@ class SingleRun(ABC):
             if test:
                 return command
 
-        elif env_vars.run_mode == RunMode.SERIAL:
+        elif env_vars.run_mode == RunMode.GLOBAL_JOB:
+            return run_command
+
+        elif env_vars.run_mode == RunMode.LOCAL:
             # in case of run in console dump the prints to a file
             # to get the code version in the metadata
             run_command.append("> dump.out")
-            if self._is_mpi_run(env_vars):
-                run_command.insert(0, f"-np {env_vars.mpi_tasks}")
-                run_command.insert(0, env_vars.mpi_prefix)
-            if not sys.platform.startswith("win"):
-                unix.configure(env_vars.code_configurations[self.code])
+
             print(" ".join(run_command))
             if test:
                 return " ".join(run_command)
@@ -206,15 +207,6 @@ class SingleRun(ABC):
                 )
 
         return flagnotrun
-
-    def _is_mpi_run(self, env_vars: EnvironmentVariables) -> bool:
-        if env_vars.mpi_tasks is not None and env_vars.mpi_tasks > 1:
-            if env_vars.mpi_prefix is None:
-                raise ConfigError(
-                    "MPI prefix is needed for MPI job submission, please provide one"
-                )
-            return True
-        return False
 
     @staticmethod
     def _submit_job(
@@ -244,12 +236,6 @@ class SingleRun(ABC):
         """
         # store cwd to get back to it after job submission
         cwd = os.getcwd()
-        # Read contents of batch file template.
-        with open(env_vars.code_configurations[code]) as f:
-            config_script = ""
-            for line in f:
-                if not line.startswith("#!"):
-                    config_script += line
         user = (
             subprocess.run("whoami", capture_output=True).stdout.decode("utf-8").strip()
         )
@@ -257,31 +243,13 @@ class SingleRun(ABC):
         job_script = os.path.join(
             directory, os.path.basename(directory) + "_job_script"
         )
-        essential_commands = ["MPI_TASKS"]
 
-        # that the file exists it has been checked in the post_init already
-        with open(env_vars.batch_template) as fin:
-            # Replace placeholders in batch file template with actual values
-            contents = fin.read()
-            for cmd in essential_commands:
-                if cmd not in contents:
-                    raise ConfigError(
-                        f"Unable to find essential dummy variable {cmd} in job "
-                        "script template, please check and re-run"
-                    )
-            contents = contents.replace("INITIAL_DIR", str(directory))
-            contents = contents.replace("OUT_FILE", job_script + ".out")
-            contents = contents.replace("ERROR_FILE", job_script + ".err")
-            contents = contents.replace("MPI_TASKS", str(env_vars.mpi_tasks))
-            contents = contents.replace("OMP_THREADS", str(env_vars.openmp_threads))
-            contents = contents.replace("USER", user)
-
-            contents += "\n\n" + config_script
-            contents += "\n\n" + str(data_command)
-            if isinstance(run_command, str):
-                contents += "\n\n" + run_command
-            else:
-                contents += "\n\n" + " ".join(run_command)
+        contents = replace_template_vars(code, directory, env_vars)
+        contents += "\n\n" + str(data_command)
+        if isinstance(run_command, str):
+            contents += "\n\n" + run_command
+        else:
+            contents += "\n\n" + " ".join(run_command)
 
         if not test:
             with open(job_script, "w") as fout:
@@ -291,9 +259,7 @@ class SingleRun(ABC):
 
         # Submit the job using the specified batch system (checked for existence in post_init)
         if not test:
-            subprocess.run(
-                f"{env_vars.batch_system} {job_script}", cwd=directory, shell=True
-            )
+            subprocess.run([env_vars.scheduler_command, job_script], cwd=directory)
         # return to the original directory
         os.chdir(cwd)
 
@@ -317,7 +283,7 @@ class SingleRunMCNP(SingleRun):
             tasks = "tasks " + str(omp_threads)
         else:
             tasks = ""
-        xsstring = f"xsdir={Path(self.lib.path).name}"
+        xsstring = f'xsdir="{Path(self.lib.path).name}"'
 
         run_command = [executable, inputstring, outputstring, xsstring, tasks]
 
@@ -450,13 +416,13 @@ class BenchmarkRun:
         for code, lib in self.config.run:
             command = self._get_continue_run_command(code, lib)
             # if serial, send the command, otherwis build a job script
-            if self.env_vars.run_mode == RunMode.SERIAL:
+            if self.env_vars.run_mode == RunMode.LOCAL:
                 subprocess.Popen(
                     command,
                     # check=True,
                     # timeout=43200, serial can also last days on workstations
                 )
-            elif self.env_vars.run_mode == RunMode.JOB_SUMISSION:
+            elif self.env_vars.run_mode == RunMode.JOB_SUBMISSION:
                 cwd = os.getcwd()
                 command = SingleRun._submit_job(
                     self.env_vars, cwd, command, "", code, test=testing
@@ -505,7 +471,7 @@ class BenchmarkRun:
             total_command = total_command + cd_command + command + os.linesep
         return total_command
 
-    def run(self):
+    def run(self) -> list[tuple[list[str] | None, PathLike]]:
         """Run the benchmark. This creates the inputs and runs the simulations for each
         single run included in the benchmark.
 
@@ -514,6 +480,7 @@ class BenchmarkRun:
         ConfigError
             The executable for the code to be used was not set in the main config file.
         """
+        benchmark_runs = []
         # first we run the benchmark for each code-lib couple
         for code, lib in self.config.run:
             # --- perform some consistency checks here ---
@@ -539,10 +506,17 @@ class BenchmarkRun:
                 shutil.rmtree(root_benchmark)
                 os.mkdir(root_benchmark)
 
-            self._run_sub_benchmarks(root_benchmark, code, lib)
+            runs = self._run_sub_benchmarks(root_benchmark, code, lib)
+            # add the code to each tuple
+            runs = [(code, commands, folder) for commands, folder in runs]
+            benchmark_runs.extend(runs)
+        return benchmark_runs
 
-    def _run_sub_benchmarks(self, root_benchmark: PathLike, code: CODE, lib: Library):
+    def _run_sub_benchmarks(
+        self, root_benchmark: PathLike, code: CODE, lib: Library
+    ) -> list[tuple[list[str] | None, PathLike]]:
         # now create a single run for each of the benchmark subfolders
+        run_returns = []
         for sub_bench in os.listdir(self.benchmark_templates_root):
             # create the folder
             sub_bench_folder = os.path.join(root_benchmark, sub_bench)
@@ -557,22 +531,26 @@ class BenchmarkRun:
             single_run = SingleRunFactory.create(
                 code, template_folder, lib, int(self.config.nps)
             )
-            self._run_single_run(
+            ans = self._run_single_run(
                 sub_bench_folder, self.benchmark_templates_root, single_run
             )
+            run_returns.append((ans, sub_bench_folder))
+        return run_returns
 
     def _run_single_run(
         self,
         sub_bench_folder: PathLike,
         root_templates: PathLike,
         single_run: SingleRun,
-    ):
+    ) -> list[str] | None:
         single_run.write(sub_bench_folder)
         input_metadata_file = os.path.join(root_templates, "benchmark_metadata.json")
         single_run.print_metadata(sub_bench_folder, input_metadata_file)
 
         if not self.config.only_input:
-            single_run.run(self.env_vars, sub_bench_folder)
+            ans = single_run.run(self.env_vars, sub_bench_folder)
+            if isinstance(ans, list):
+                return ans
 
 
 class SphereBenchmarkRun(BenchmarkRun):
@@ -590,6 +568,7 @@ class SphereBenchmarkRun(BenchmarkRun):
             self._recover_settings(lib, code)
         )
 
+        run_returns = []
         for zaid in tqdm(zaids[:limit], desc="Zaids"):
             nps, density = self._recover_zaids_nps_density(zaid, zaid_settings)
             # derive the sub-benchmark folder name
@@ -613,9 +592,10 @@ class SphereBenchmarkRun(BenchmarkRun):
                 single_run = SingleRunOpenMC(inp, lib, nps)
             else:
                 raise NotImplementedError(f"Code {code} not supported for Sphere")
-            self._run_single_run(
+            ans = self._run_single_run(
                 sub_bench_folder, self.benchmark_templates_root, single_run
             )
+            run_returns.append((ans, sub_bench_folder))
 
         for material in tqdm(materials.materials[:limit], desc="Materials"):
             # Get density
@@ -645,9 +625,11 @@ class SphereBenchmarkRun(BenchmarkRun):
                 single_run = SingleRunOpenMC(inp, lib, int(self.config.nps))
             else:
                 raise NotImplementedError(f"Code {code} not supported for Sphere")
-            self._run_single_run(
+            ans = self._run_single_run(
                 sub_bench_folder, self.benchmark_templates_root, single_run
             )
+            run_returns.append((ans, sub_bench_folder))
+        return run_returns
 
     def _recover_settings(
         self, lib: Library, code: CODE
@@ -738,6 +720,7 @@ class SphereSDDRBenchmarkRun(SphereBenchmarkRun):
                 f"An irradiation file template for the library {lib.suffix} was not found"
             )
 
+        run_returns = []
         for zaid in tqdm(zaids[:limit], desc="Zaids"):
             reactions = lm.get_reactions(lib.suffix, zaid)
             nps, density = self._recover_zaids_nps_density(zaid, zaid_settings)
@@ -765,9 +748,10 @@ class SphereSDDRBenchmarkRun(SphereBenchmarkRun):
                     single_run = SingleRunD1S(inp, lib, nps)
                 else:
                     raise NotImplementedError(f"Code {code} not supported for Sphere")
-                self._run_single_run(
+                ans = self._run_single_run(
                     sub_bench_folder, self.benchmark_templates_root, single_run
                 )
+                run_returns.append((ans, sub_bench_folder))
 
         for material in tqdm(materials.materials[:limit], desc="Materials"):
             # Get density
@@ -796,9 +780,74 @@ class SphereSDDRBenchmarkRun(SphereBenchmarkRun):
                 shutil.rmtree(sub_bench_folder)
                 continue
 
-            self._run_single_run(
+            ans = self._run_single_run(
                 sub_bench_folder, self.benchmark_templates_root, single_run
             )
+            run_returns.append((ans, sub_bench_folder))
+        return run_returns
+
+    def _recover_settings(
+        self, lib: Library, code: CODE
+    ) -> tuple[
+        list[str],
+        MatCardsList,
+        pd.DataFrame,
+        pd.DataFrame,
+        int,
+        LibManager,
+        PathLike,
+    ]:
+        # first of all retrieve the typical material file which is at the root of the
+        # benchmarks folder
+        matpath = Path(Path(self.benchmark_templates_root).parent, "TypicalMaterials")
+        inpmat = ipt.Input.from_input(matpath)
+        materials = inpmat.materials
+
+        # init a libmanager to get the zaid names
+        lm = LibManager()
+        zaids = lib.get_lib_zaids()
+
+        # GET SETTINGS
+        # These paths not being None have been checked in the post_init of the Config Object
+        settings_path = Path(self.config.additional_settings_path, "ZaidSettings.csv")
+        settings_mat_path = Path(
+            self.config.additional_settings_path, "MaterialsSettings.csv"
+        )
+
+        zaid_settings = pd.read_csv(settings_path, sep=",").set_index("Z")
+        settings_mat = pd.read_csv(settings_mat_path, sep=",").set_index("Symbol")
+
+        limit = self.config.custom_inp
+        if limit is not None and not isinstance(limit, int):
+            raise ConfigError(
+                "The custom input for the Sphere benchmark should be an integer"
+            )
+
+        # recover the input template. There is going to be only one run
+        template_folder = os.path.join(
+            self.benchmark_templates_root, self.config.name, code.value
+        )
+
+        return zaids, materials, zaid_settings, settings_mat, limit, lm, template_folder
+
+    def _recover_zaids_nps_density(
+        self, zaid: str, zaid_settings: pd.DataFrame
+    ) -> tuple[int, float]:
+        # --- get some config parameters ---
+        Z = int(zaid[:-3])
+        # Get Density
+        density = zaid_settings.loc[Z, "Density [g/cc]"]
+        if zaid_settings.loc[Z, "Let Override"]:
+            # get stop parameters
+            if self.config.nps == 0:
+                nps = zaid_settings.loc[Z, "NPS cut-off"]
+            else:
+                nps = self.config.nps
+        # Zaid local settings are prioritized
+        else:
+            nps = zaid_settings.loc[Z, "NPS cut-off"]
+
+        return int(nps), float(density)
 
 
 class BenchmarkRunFactory:
@@ -828,3 +877,98 @@ class BenchmarkRunFactory:
             return SphereSDDRBenchmarkRun(config, simulation_root, input_root, env_vars)
         else:
             return BenchmarkRun(config, simulation_root, input_root, env_vars)
+
+
+def replace_template_vars(
+    code: CODE,
+    directory: PathLike,
+    env_vars: EnvironmentVariables,
+) -> str:
+    """Replace the variables in the template string with the values in the environment variables.
+
+    Parameters
+    ----------
+    code : CODE
+        transport code to be used for the simulation.
+    directory : PathLike
+        path to the directory where the job script will be created.
+    env_vars : EnvironmentVariables
+        environment variables for the simulation.
+
+    Returns
+    -------
+    str
+        job script contents with replaced variables.
+
+    """
+    job_template = env_vars.code_job_template[code]
+    # store cwd to get back to it after job submission
+    user = subprocess.run("whoami", capture_output=True).stdout.decode("utf-8").strip()
+    job_script = os.path.join(directory, os.path.basename(directory) + "_job_script")
+
+    if not os.path.isfile(job_template):
+        raise ConfigError(
+            f"Job script template {job_template} not found, please check and re-run"
+        )
+    with open(job_template) as fin:
+        # Replace placeholders in batch file template with actual values
+        contents = fin.read()
+        contents = contents.replace("INITIAL_DIR", f'"{str(directory)}"')
+        contents = contents.replace("OUT_FILE", f'"{job_script + ".out"}"')
+        contents = contents.replace("ERROR_FILE", f'"{job_script + ".err"}"')
+        contents = contents.replace("MPI_TASKS", str(env_vars.mpi_tasks))
+        contents = contents.replace("OMP_THREADS", str(env_vars.openmp_threads))
+        contents = contents.replace("USER", user)
+    return contents
+
+
+def launch_global_jobs(
+    commands: list[tuple[CODE, PathLike, PathLike]],
+    env_vars: EnvironmentVariables,
+    test: bool = False,
+) -> list[str]:
+    """Build a global job command list.
+
+    Parameters
+    ----------
+    commands : list[tuple[CODE, PathLike, PathLike]]
+        list of commands to be executed.
+    env_vars : EnvironmentVariables
+        environment variables for the simulation.
+    test : bool, optional
+        flag to run the simulation in test mode, by default False.
+
+    Returns
+    -------
+    list[str]
+        list of commands to be executed in global job mode.
+    """
+    cwd = os.getcwd()
+    # first organize the different commands by code
+    commands_by_code: dict[CODE, list[tuple[list[str], PathLike]]] = {}
+    for code, command, folder in commands:
+        if code not in commands_by_code:
+            commands_by_code[code] = []
+        commands_by_code[code].append((command, folder))
+
+    scripts = []
+    for code, cmdlist in commands_by_code.items():
+        # fill the template
+        contents = replace_template_vars(code, cwd, env_vars)
+        # add the commands
+        for command, folder in cmdlist:
+            cd_command = f'cd "{folder}" {os.linesep}'
+            if isinstance(command, list):
+                command = " ".join(command)
+            contents = contents + os.linesep + cd_command + command + os.linesep
+
+        scripts.append(contents)
+
+        job_script = os.path.join(cwd, f"job_{code.value}")
+        if not test:
+            with open(job_script, "w") as fout:
+                fout.write(contents)
+            subprocess.run([env_vars.scheduler_command, job_script], cwd=cwd)
+    # return to the original directory
+    os.chdir(cwd)
+    return scripts

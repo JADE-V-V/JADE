@@ -13,11 +13,12 @@ These can be executed using the utilities module of jade:
 
 or 
 
-    | ``python -m jade.utilitis --<option>``
+    | ``python -m jade.utilities --<option>``
 
 The following is a list of the available utilities:
 
-* ``--fetch``: re-download/sync benchmark inputs from the IAEA GitHub repository.
+* ``--fetch``: re-download/sync benchmark inputs from the IAEA GitHub repository and F4E GitLab (if access token
+  was provided).
 * ``--restore``: restore the default configuration settings.
 * ``--runtpe``: remove the runtpe files (.r) from MCNP simulation folders. This helps in
   reducing the storage memory occupied by the simulation outputs.

@@ -1,4 +1,4 @@
-[![Testing](https://github.com/JADE-V-V/JADE/actions/workflows/pytest.yml/badge.svg?branch=master)](https://github.com/JADE-V-V/JADE/actions/workflows/pytest.yml)
+[![Testing](https://github.com/JADE-V-V/JADE/actions/workflows/pytest.yml/badge.svg?branch=developing)](https://github.com/JADE-V-V/JADE/actions/workflows/pytest.yml)
 [![Documentation Status](https://readthedocs.org/projects/jade-a-nuclear-data-libraries-vv-tool/badge/?version=latest)](https://jade-a-nuclear-data-libraries-vv-tool.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gh/JADE-V-V/JADE/graph/badge.svg?token=C0Q75M9FVH)](https://codecov.io/gh/JADE-V-V/JADE)
 [![PyPi version](https://badgen.net/pypi/v/jadevv/)](https://pypi.org/project/jadevv)

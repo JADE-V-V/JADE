@@ -13,7 +13,7 @@ These can be executed using the utilities module of jade:
 
 or 
 
-    | ``python -m jade.utilitis --<option>``
+    | ``python -m jade.utilities --<option>``
 
 The following is a list of the available utilities:
 

@@ -181,28 +181,55 @@ class JadeApp:
         logging.info("Benchmarks run have been submitted.")
         return commands
 
-    def raw_process(self, subset: list[str] | None = None):
-        """Process the raw data from the simulations."""
+    def raw_process(self, force: bool = False, subset: list[str] | None = None):
+        """Process the raw data from the simulations.
+
+        Parameters
+        ----------
+        force : bool, optional
+            Whether to force the processing on all available simulations overriding
+            previous results, by default False
+        subset : list[str] | None, optional
+            A list of specific benchmarks to process, by default None
+        """
         logging.info("Processing raw data")
         # first identify all simulations that were successful but were not processed
         root_cfg = self.tree.cfg.bench_raw
         successful = self.status.get_successful_simulations()
+
+        def get_config(
+            root_cfg: Path, code: CODE, bench: str
+        ) -> ConfigRawProcessor | None:
+            # get the correspondent raw processor configuration
+            cfg_file = Path(root_cfg, f"{code.value}/{bench}.yaml")
+            try:
+                raw_cfg = ConfigRawProcessor.from_yaml(cfg_file)
+            except FileNotFoundError:
+                logging.warning(
+                    f"Configuration file for {code.value} {bench} not found"
+                )
+                return None
+            return raw_cfg
+
         to_process = {}
         for code, lib, bench in successful:
-            if (code, lib, bench) not in self.status.raw_data:
-                if subset is not None and bench not in subset:
-                    continue
-                # get the correspondent raw processor configuration
-                cfg_file = Path(root_cfg, f"{code.value}/{bench}.yaml")
-                try:
-                    raw_cfg = ConfigRawProcessor.from_yaml(cfg_file)
-                except FileNotFoundError:
-                    logging.warning(
-                        f"Configuration file for {code.value} {bench} not found"
-                    )
+            if force:
+                # process all the successful simulations, force override
+                raw_cfg = get_config(root_cfg, code, bench)
+                if raw_cfg is None:
                     continue
                 to_process[(code, lib, bench)] = raw_cfg
                 logging.info(f"Processing {code.value} {lib} {bench} benchmarks")
+            else:
+                # only process if not already done
+                if (code, lib, bench) not in self.status.raw_data:
+                    if subset is not None and bench not in subset:
+                        continue
+                    raw_cfg = get_config(root_cfg, code, bench)
+                    if raw_cfg is None:
+                        continue
+                    to_process[(code, lib, bench)] = raw_cfg
+                    logging.info(f"Processing {code.value} {lib} {bench} benchmarks")
 
         # process the raw data
         for (code, lib, bench), cfg in tqdm(to_process.items(), desc="Process raw"):

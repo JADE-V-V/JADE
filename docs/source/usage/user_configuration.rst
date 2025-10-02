@@ -32,7 +32,7 @@ Here is an example:
     # job: the code will be submitted as a job to a cluster. Each simulation will be sent as a separate job
     # global_job: the code will be submitted as a job to a cluster but all simulations will be sent as a single job
     run_mode: local
-    # scheduler command (needed only if run_mode is "job")
+    # scheduler command (needed only if run_mode is "job" or "global_job")
     scheduler_command: sbatch  # e.g. 'sbatch' for slurm, 'qsub' for torque, 'bsub' for lsf
 
     # Not needed for a windows run.
@@ -61,7 +61,7 @@ Some placeholder are defined and will be substituted by JADE at runtime when sub
 are all optional:
 - ``INITIAL_DIR``: the directory where the job is submitted from (i.e. the simulation folder)
 - ``OUT_FILE``: the file where the standard output will be written
-- ``ERR_FILE``: the file where the standard error will be written
+- ``ERROR_FILE``: the file where the standard error will be written
 - ``MPI_TASKS``: the number of MPI tasks to be used
 - ``OMP_THREADS``: the number of OpenMP threads to be used
 - ``USER``: the user who submitted the job

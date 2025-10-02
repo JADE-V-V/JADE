@@ -228,8 +228,8 @@ class OpenMCInputFiles:
         None
         """
         self.geometry = openmc.Geometry.from_xml(geometry, materials)
-        if type(materials) is not openmc.Materials:
-            self.materials = openmc.Materials.from_xml(materials)
+        # if type(materials) is not openmc.Materials:
+        #    self.materials = openmc.Materials.from_xml(materials)
 
     def load_settings(self, settings: str) -> None:
         """Initialise OpenMC settings from xml
@@ -394,17 +394,15 @@ class OpenMCInputFiles:
             outfile = os.path.join(path, "libsource.so")
             shutil.copyfile(self.compiled_source, outfile)
             self.settings.source = openmc.CompiledSource(outfile, strength=1.0)
-
         if self.weight_windows_file is not None:
             weight_windows_outfile = os.path.join(path, "weight_windows.h5")
             shutil.copyfile(self.weight_windows_file, weight_windows_outfile)
             self.settings.weight_windows_on = True
             self.settings.weight_windows = openmc.hdf5_to_wws(weight_windows_outfile)
-
-        self.geometry.export_to_xml(os.path.join(path, "geometry.xml"))
-        self.settings.export_to_xml(os.path.join(path, "settings.xml"))
-        self.tallies.export_to_xml(os.path.join(path, "tallies.xml"))
-        self.materials.export_to_xml(os.path.join(path, "materials.xml"))
+        model = openmc.Model(
+            geometry=self.geometry, settings=self.settings, tallies=self.tallies
+        )
+        model.export_to_xml(os.path.join(path))
 
 
 class OpenMCStatePoint:

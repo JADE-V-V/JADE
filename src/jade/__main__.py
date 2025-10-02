@@ -42,7 +42,7 @@ def main():
     if args.raw:
         if args.raw == "force":
             force = True
-        if isinstance(args.raw, str) and args.raw != "force":
+        elif isinstance(args.raw, str) and args.raw != "force":
             raise ValueError("Invalid argument for --raw. Use 'force' or leave empty.")
         else:
             force = False

@@ -1,4 +1,4 @@
-ISIS Benchmark Experiment on Deep-Penetration Neutrons through Concrete and Iron Shields WITH 800 MeV PROTONSShape 
+ISIS Benchmark Experiment on Deep-Penetration Neutrons through Concrete and Iron Shields WITH 800 MeV PROTONS
 -------
 
 .. important::
@@ -70,5 +70,21 @@ The following quantities have been compared with the experimental results:
 
 Corresponding to the tally 14 and 24 of the input file.
 
-Those quantities have been scored in a 0.1 mm thickness cylinder located at 90 degrees from the beam direction, behind the additional shielding, more presicely at 20, 40, 60, 80 and 100 cm from the additional concrete shield, and at 10, 20, 30, 40 and 50 cm from the additional iron shield.
+Those quantities have been scored in a 0.1 mm thickness cylinder located at 90 degrees from the beam direction, behind the additional shielding, more precisely at 20, 40, 60, 80 and 100 cm from the additional concrete shield, and at 10, 20, 30, 40 and 50 cm from the additional iron shield.
 
+
+.. seealso:: **Related papers and contributions:** 
+
+OECD Nuclear Energy Agency Data Bank SINBAD, http://www.oecd-nea.org/science/wprs/shielding/sinbad/sinbadis.htm  
+
+T. Nunomiya, N. Nakao, P. Wright, T. Nakamura, E. Kim, T. Kurosawa, S. Taniguchi, M. Sasaki,, H. Iwase, Y. Uwamino, T. Shibata, S. Ito, D.R. Perry “Measurements of deep penetration of neutrons produced by 800MeV proton beam through concrete and iron at ISIS” Nuclear Instruments and Methods in Physics Research B179 (2001) 89-102. 
+
+S. Kitsos and I. Kodeli. SINBAD Compilation NEA-1552/21 “ISIS Deep-Penetration of Neutrons through Concrete and Iron shields” 
+
+ 
+
+T. Nunomiya, N. Nakao, P. Wright, T. Nakamura, E. Kim, T. Kurosawa, S. Taniguchi, M. Sasaki,, H. Iwase, Y. Uwamino, T. Shibata, S. Ito, D.R. Perry. “Experimental Data of Deep Penetration Neutrons through a Concrete and Iron Shield at the ISIS Spallation Neutron Source Facility using an 800MeV Proton Beam” KEK Report 2001-24 (February 2002). 
+
+ 
+
+Y. Uwamino, T Shibata, T. Ohkubo, S. Sato and D. Perry. Proceedings of SATIF-1, page 185. Arlington, Texas (1994). 

@@ -1,18 +1,18 @@
-Benchmark, Location
-Oktavian (Al; Co; Cr; Cu; LiF; Mn; Mo; Pb; Si; Ti; W; Zr), IAEA open-benchmark
-Tiara Shielding (BC; BS; FC), IAEA open-benchmark
-FNG Dose, F4E GitLab
-FNG Bulk Blanket and Shield, F4E GitLab
-FNG W, F4E GitLab
-FNG SiC, F4E GitLab
-FNG HCPB, F4E GitLab
-FNG SS, F4E GitLab
-FNG/TUD W, F4E GitLab
-FNG/TUD SiC, F4E GitLab
-FNS (Be; C; Fe; N; O; Pb; V), IAEA open-benchmark
-ASPIS Fe-88, Conderc
-Iron Slab (TUD), F4E GitLab
-TUD/FNG Bulk Shield, F4E GitLab
-PCA REPLICA, F4E GitLab
-IPPE Fe Cf252, ICSBEP 2023
-IPPE Fe DT, F4E GitLab
+Benchmark, Location, Reference
+Oktavian (Al; Co; Cr; Cu; LiF; Mn; Mo; Pb; Si; Ti; W; Zr), IAEA open-benchmark, CoNDERC
+Tiara Shielding (BC; BS; FC), IAEA open-benchmark, CoNDERC
+FNG Dose, F4E GitLab, SINBAD
+FNG Bulk Blanket and Shield, F4E GitLab, SINBAD
+FNG W, F4E GitLab, SINBAD
+FNG SiC, F4E GitLab, SINBAD
+FNG HCPB, F4E GitLab, SINBAD
+FNG SS, F4E GitLab, SINBAD
+FNG/TUD W, F4E GitLab, SINBAD
+FNG/TUD SiC, F4E GitLab, SINBAD
+FNS (Be; C; Fe; N; O; Pb; V), IAEA open-benchmark, CoNDERC
+ASPIS Fe-88, F4E GitLab, CoNDERC
+Iron Slab (TUD), F4E GitLab, SINBAD
+TUD/FNG Bulk Shield, F4E GitLab, SINBAD
+PCA REPLICA, F4E GitLab, SINBAD
+IPPE Fe Cf252, F4E GitLab, ICSBEP 2023
+IPPE Fe DT, F4E GitLab, SINBAD

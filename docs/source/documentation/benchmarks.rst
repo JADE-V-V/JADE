@@ -23,20 +23,21 @@ that are included in JADE. Benchmarks that are openly available are hosted in th
 Those that are not free to distribute are hosted in a private respository on the F4E GitLab. 
 For access to this private respository, see :ref:`install`. Those benchmarks currently 
 under development are captured in the Github Project `here <https://github.com/orgs/JADE-V-V/projects/9>`_. 
-A more detailed description of the implemented benchmarks can be found in the following sections.
+A more detailed description of the implemented benchmarks can be found in the following sections. The tables
+also include the reference repository of the benchmarks. 
 
 **COMPUTATIONAL BENCHMARKS:**
 
 .. csv-table::
     :file: computational_overview.csv
-    :widths: 60 40
+    :widths: 60 30 30
     :header-rows: 1
 
 **EXPERIMENTAL BENCHMARKS:**
 
 .. csv-table::
     :file: exp_overview.csv
-    :widths: 60 40
+    :widths: 60 30 30
     :header-rows: 1
 
 Computational Benchmarks

@@ -1,8 +1,8 @@
-Benchmark, Location
-Sphere Leakage, IAEA open-benchmark
-ITER 1-D, IAEA open-benchmark
-Test Blanket Module (TBM), IAEA open-benchmark
-C-Model, F4E GitLab
-Sphere SDDR, IAEA open-benchmark
-ITER Cylinder SDDR, IAEA open-benchmark
-Simple tokamak, IAEA open-benchmark
+Benchmark, Location, Reference
+Sphere Leakage, IAEA open-benchmark, JADE
+ITER 1-D, IAEA open-benchmark, M. Sawan
+Test Blanket Module (TBM), IAEA open-benchmark, F4E
+C-Model, F4E GitLab, ITER Organisation
+Sphere SDDR, IAEA open-benchmark, JADE
+ITER Cylinder SDDR, IAEA open-benchmark, ITER Organisation
+Simple tokamak, IAEA open-benchmark, UKAEA

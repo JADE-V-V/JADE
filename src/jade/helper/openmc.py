@@ -7,7 +7,6 @@ import re
 import shutil
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
-from pathlib import Path
 
 import numpy as np
 
@@ -16,7 +15,6 @@ from jade.helper.__optionals__ import OMC_AVAIL
 if OMC_AVAIL:
     import openmc
 import pandas as pd
-import yaml
 
 if TYPE_CHECKING:
     from f4enix.input.libmanager import LibManager
@@ -28,76 +26,36 @@ PAT_DIGITS = re.compile(r"\d+")
 
 
 @dataclass
-class OpenMCTallyFactors:
-    """Configuration for a computational benchmark.
-
-    Attributes
-    ----------
-    tally_factors : dict[int, TallyFactors]
-        Options for the Excel benchmark.
-    """
-
-    tally_factors: dict[int, TallyFactors]
-
-    @classmethod
-    def from_yaml(cls, file: str | os.PathLike) -> OpenMCTallyFactors:
-        """Build the configuration for a computational benchmark from a yaml file.
-
-        Parameters
-        ----------
-        file : str | os.PathLike
-            path to the yaml file.
-
-        Returns
-        -------
-        OpenMCTallyFactors
-            The tally factors for the OpenMC benchmark.
-        """
-        with open(file) as f:
-            cfg = yaml.safe_load(f)
-
-        tally_factors = {}
-        for key, value in cfg.items():
-            tally_factors[int(key)] = TallyFactors(**value, identifier=int(key))
-        return cls(tally_factors=tally_factors)
-
-
-@dataclass
-class TallyFactors:
-    """Data class storing tally factors
-
-    Attributes
-    ----------
-    identifier : int
-        Identifier of the tally.
-    normalisation : float
-        Normalisation factor for the tally.
-    volume : bool
-        True if volume divisor is needed, False if not. Default is False.
-    mass : BinningType | list[BinningType]
-        True if mass divisor is needed, False if not. Default is False.
-    """
-
-    identifier: int
-    volume: bool = False
-    mass: bool = False
-    normalisation: float = 1
-
-
-@dataclass
-class OpenMCCellVolumes:
-    """Configuration for a computational benchmark.
+class OpenMCCellData:
+    """Cell data class for OpenMC.
 
     Attributes
     ----------
     cell_volumes : dict[int, float]
         Dictionary of cell volumes
+    cell_densities : dict[int, float]
+        Dictionary of cell densities
+    cell_masses : dict[int, float]
+        Dictionary of cell masses
     """
 
     cell_volumes: dict[int, float]
+    cell_densities: dict[int, float]
+    cell_masses: dict[int, float]
 
     @classmethod
-    def from_json(cls, file: str | os.PathLike) -> OpenMCCellVolumes:
+    def from_files(cls, json_path: PathLike, xml_path: PathLike) -> OpenMCCellData:
+        cell_volumes = cls.from_json(json_path)
+        cell_densities = cls.from_xml(xml_path)
+        cell_masses = cls.from_volume_density(cell_volumes, cell_densities)
+        return cls(
+            cell_volumes=cell_volumes,
+            cell_densities=cell_densities,
+            cell_masses=cell_masses,
+        )
+
+    @staticmethod
+    def from_json(json_path: PathLike) -> dict[int, float]:
         """Load in cell volumes from a json file.
 
         Parameters
@@ -107,16 +65,50 @@ class OpenMCCellVolumes:
 
         Returns
         -------
-        OpenMCCellVolumes
+        cell_volumes : dict[int, float]
             The cell volumes for the OpenMC benchmark.
         """
-        with open(file) as f:
-            cfg = json.load(f)
+        with open(json_path) as f:
+            data = json.load(f)
 
         cell_volumes = {}
-        for key, value in cfg["cells"].items():
+        for key, value in data["cells"].items():
             cell_volumes[int(key)] = float(value)
-        return cls(cell_volumes=cell_volumes)
+        return cell_volumes
+
+    @staticmethod
+    def from_xml(xml_path: str | os.PathLike) -> dict[int, float]:
+        """Load in cell densities from the geometry xml input file.
+
+        Parameters
+        ----------
+        xml_path : str | os.PathLike
+            path to the xml input files
+
+        Returns
+        -------
+        cell_densities : dict[int, float]
+            The cell densities for the OpenMC benchmark.
+        """
+        omc_input_files = OpenMCInputFiles(xml_path)
+        cells = omc_input_files.geometry.get_all_cells()
+        cell_densities = {}
+        for cell_number, cell in cells.items():
+            materials = cell.get_all_materials()
+            if len(materials) == 1:
+                for material in materials.values():
+                    cell_densities[int(cell_number)] = material.get_mass_density()
+        return cell_densities
+
+    @staticmethod
+    def from_volume_density(
+        cell_volumes: dict[int, float], cell_densities: dict[int, float]
+    ) -> dict[int, float]:
+        cell_masses = {}
+        for cell in cell_volumes:
+            if cell in cell_densities:
+                cell_masses[cell] = cell_volumes[cell] * cell_densities[cell]
+        return cell_masses
 
     def volumes(self, cells: iter | None = None) -> dict[int, float]:
         """
@@ -132,56 +124,31 @@ class OpenMCCellVolumes:
         )
         return volumes
 
-
-@dataclass
-class OpenMCCellDensities:
-    """Configuration for a computational benchmark.
-
-    Attributes
-    ----------
-    cell_volumes : dict[int, float]
-        Dictionary of cell volumes
-    """
-
-    cell_densities: dict[int, float]
-
-    @classmethod
-    def from_xml(cls, xml_path: str | os.PathLike) -> OpenMCCellDensities:
-        """Load in cell densities from the geometry xml input file.
-
-        Parameters
-        ----------
-        xml_path : str | os.PathLike
-            path to the xml input files
-
-        Returns
-        -------
-        OpenMCCellDensities
-            The cell densities for the OpenMC benchmark.
-        """
-        omc_input_files = OpenMCInputFiles(xml_path)
-        cells = omc_input_files.geometry.get_all_cells()
-        cell_densities = {}
-        for cell_number, cell in cells.items():
-            materials = cell.get_all_materials()
-            if len(materials) == 1:
-                for material in materials.values():
-                    cell_densities[int(cell_number)] = material.get_mass_density()
-        return cls(cell_densities=cell_densities)
-
-    def densities(self, cells: iter | None = None) -> dict[int:float]:
+    def densities(self, cells: iter | None = None) -> dict[int, float]:
         """
         Returns dictionary of densities for a cell list
 
         Returns
         -------
         densities : dict
-            Dictionary of densities in g/cm3, indexed by cell number
+            Dictionary of densities, indexed by cell number
         """
         densities = dict(
             (k, self.cell_densities[k]) for k in cells if k in self.cell_densities
         )
         return densities
+
+    def masses(self, cells: iter | None = None) -> dict[int, float]:
+        """
+        Returns dictionary of masses for a cell list
+
+        Returns
+        -------
+        masses : dict
+            Dictionary of masses, indexed by cell number
+        """
+        masses = dict((k, self.cell_masses[k]) for k in cells if k in self.cell_masses)
+        return masses
 
 
 class OpenMCInputFiles:
@@ -444,7 +411,6 @@ class OpenMCStatePoint:
     def __init__(
         self,
         spfile_path: str | os.PathLike,
-        tffile_path: str | os.PathLike | None = None,
         volfile_path: str | os.PathLike | None = None,
     ) -> None:
         """Class for handling OpenMC statepoint file
@@ -454,13 +420,12 @@ class OpenMCStatePoint:
         spfile_path : str
             path to statepoint file
         """
-        self.initialise(spfile_path, tffile_path, volfile_path)
+        self.initialise(spfile_path, volfile_path)
         self.version = self.read_openmc_version()
 
     def initialise(
         self,
         spfile_path: str | os.PathLike,
-        tffile_path: str | os.PathLike | None,
         volfile_path: str | os.PathLike | None,
     ) -> None:
         """Read in statepoint file
@@ -485,29 +450,14 @@ class OpenMCStatePoint:
                 spfile_path,
             )
         try:
-            self.tally_factors = OpenMCTallyFactors.from_yaml(tffile_path)
+            self.cell_data = OpenMCCellData.from_files(volfile_path, self.results_path)
         except (FileNotFoundError, TypeError):
             logging.warning(
-                "OpenMC tally factor file not found for %s",
-                tffile_path,
-            )
-            self.tally_factors = None
-        try:
-            self.cell_volumes = OpenMCCellVolumes.from_json(volfile_path)
-        except (FileNotFoundError, TypeError):
-            logging.warning(
-                "OpenMC volume file not found for %s",
+                "OpenMC volume file not found for %s, OpenMC xml files not found for %s",
                 volfile_path,
-            )
-            self.cell_volumes = None
-        try:
-            self.cell_densities = OpenMCCellDensities.from_xml(self.results_path)
-        except FileNotFoundError:
-            logging.warning(
-                "OpenMC xml files not found for %s",
                 self.results_path,
             )
-            self.cell_densities = None
+            self.cell_data = None
 
     def read_openmc_version(self) -> str:
         """Get OpenMC version from statepoint file
@@ -619,95 +569,6 @@ class OpenMCStatePoint:
                     ).pow(0.5)
         return heating_tallies_df
 
-    def _get_volumes(self, tally_df: pd.DataFrame) -> dict[int, float]:
-        """
-        Function to extract unique cell volumes from tally dataframe
-
-        Parameters
-        ----------
-        tally_df : pd.DataFrame
-            Pandas DataFrame containing tally data
-
-        Returns
-        -------
-        volumes : dict[int, float]
-            Dictionary of cell volumes, indeced by cell
-        """
-        cells = tally_df.cell.unique()
-        volumes = self.cell_volumes.volumes(cells)
-        return volumes
-
-    def _get_masses(self, tally_df: pd.DataFrame) -> dict[int, float]:
-        """
-        Function to extract unique cell masses from tally dataframe
-
-        Parameters
-        ----------
-        tally_df : pd.DataFrame
-            Pandas DataFrame containing tally data
-
-        Returns
-        -------
-        masses : dict[int, float]
-            Dictionary of cell volumes, indeced by cell
-        """
-        volumes = self._get_volumes(tally_df)
-        masses = {}
-        for cell, volume in volumes.items():
-            density = self.cell_densities.cell_densities[cell]
-            masses[cell] = density * volume
-        return masses
-
-    def _apply_tally_factors(self, tallies: dict) -> dict:
-        """
-        Function to apply tally factor and volume corrections to tally data
-
-        Parameters
-        ----------
-        tallies : dict
-            Dictionary of tallies to be corrected
-
-        Returns
-        -------
-        tallies : dict
-            Dictionary of tallies with tally factors applied
-        """
-        for tally_number, tally_df in tallies.items():
-            if tally_number in self.tally_factors.tally_factors:
-                normalisation = self.tally_factors.tally_factors[
-                    tally_number
-                ].normalisation
-                tally_df["mean"] *= normalisation
-                tally_df["std. dev."] *= normalisation
-                if self.tally_factors.tally_factors[tally_number].volume:
-                    volumes = self._get_volumes(tally_df)
-                    for cell, volume in volumes.items():
-                        tally_df["mean"] = np.where(
-                            (tally_df["cell"] == cell),
-                            tally_df["mean"] / volume,
-                            tally_df["mean"],
-                        )
-                        tally_df["std. dev."] = np.where(
-                            (tally_df["cell"] == cell),
-                            tally_df["std. dev."] / volume,
-                            tally_df["std. dev."],
-                        )
-                if self.tally_factors.tally_factors[tally_number].mass:
-                    masses = self._get_masses(tally_df)
-                    for cell, mass in masses.items():
-                        tally_df["mean"] = np.where(
-                            (tally_df["cell"] == cell),
-                            tally_df["mean"] / mass,
-                            tally_df["mean"],
-                        )
-                        tally_df["std. dev."] = np.where(
-                            (tally_df["cell"] == cell),
-                            tally_df["std. dev."] / mass,
-                            tally_df["std. dev."],
-                        )
-            tallies[tally_number] = tally_df
-        return tallies
-
     def tallies_to_dataframes(self) -> dict:
         """Call to extract tally data from statepoint file
 
@@ -728,8 +589,8 @@ class OpenMCStatePoint:
             for id, tally_df in heating_tallies_df.items():
                 tallies[id] = tally_df
         self._update_tally_numbers(tallies.keys())
-        if self.tally_factors is not None:
-            tallies = self._apply_tally_factors(tallies)
+        # if self.tally_factors is not None:
+        #    tallies = self._apply_tally_factors(tallies)
         return tallies
 
 

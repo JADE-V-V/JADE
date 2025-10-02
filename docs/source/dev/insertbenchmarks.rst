@@ -171,6 +171,8 @@ and the tallies themselves can be modified through the use of *modifiers*.
 The currently supported modifiers are:
 
 * ``no_action``: no action is taken on the tally. No arguments are expected.
+* ``volume``: a volume divisor is applied to the tally, obtained from a ``volumes.json`` file supplied with the bechmark inputs. No arguments are expected.
+* ``mass``: a mass divisor is applied to the tally, obtained from a ``volumes.json`` file supplied with the bechmark inputs, and OpenMC ``xml`` files. No arguments are expected.
 * ``scale``: the tally is scaled by a factor. The *factor* is expected as key argument and the provided value can 
   be either a float, and integer or a list (of floats or integers). 
 * ``lethargy``: a neutron flux tally is expected and converted to a neutron flux per unit lethargy.

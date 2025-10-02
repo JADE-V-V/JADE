@@ -321,6 +321,68 @@ def gaussian_broadening(
     return tally
 
 
+def volume(tally: pd.DataFrame, volumes: dict[int, float]) -> pd.DataFrame:
+    """Volume divisor function
+
+    Parameters
+    ----------
+    tally : pd.DataFrame
+        Tally to be modified
+    volumes : dict[int, float]
+        Cell volumes dictionary
+
+    Returns
+    -------
+    tally : pd.DataFrame
+        Modified tally
+    """
+    if "Cells" in tally:
+        cells = tally.Cells.unique()
+        for cell in cells:
+            tally["Value"] = np.where(
+                (tally["Cells"] == cell),
+                tally["Value"] / volumes[cell],
+                tally["Value"],
+            )
+            tally["Error"] = np.where(
+                (tally["Cells"] == cell),
+                tally["Error"] / volumes[cell],
+                tally["Error"],
+            )
+    return tally
+
+
+def mass(tally: pd.DataFrame, masses: dict[int, float]) -> pd.DataFrame:
+    """Volume divisor function
+
+    Parameters
+    ----------
+    tally : pd.DataFrame
+        Tally to be modified
+    masses : dict[int, float]
+        Cell masses dictionary
+
+    Returns
+    -------
+    tally : pd.DataFrame
+        Modified tally
+    """
+    if "Cells" in tally:
+        cells = tally.Cells.unique()
+        for cell in cells:
+            tally["Value"] = np.where(
+                (tally["Cells"] == cell),
+                tally["Value"] / masses[cell],
+                tally["Value"],
+            )
+            tally["Error"] = np.where(
+                (tally["Cells"] == cell),
+                tally["Error"] / masses[cell],
+                tally["Error"],
+            )
+    return tally
+
+
 MOD_FUNCTIONS = {
     TallyModOption.LETHARGY: by_lethargy,
     TallyModOption.SCALE: scale,
@@ -339,6 +401,8 @@ MOD_FUNCTIONS = {
     TallyModOption.SELECT_SUBSET: select_subset,
     TallyModOption.CUMULATIVE_SUM: cumulative_sum,
     TallyModOption.GAUSSIAN_BROADENING: gaussian_broadening,
+    TallyModOption.VOLUME: volume,
+    TallyModOption.MASS: mass,
 }
 
 

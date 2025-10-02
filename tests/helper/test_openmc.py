@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from importlib.resources import files
 
-import pytest
+import pytest, os
 
 from jade.helper.__optionals__ import OMC_AVAIL
 from tests.post.resources import openmc as resources
@@ -12,38 +12,33 @@ if OMC_AVAIL:
 
 
 STATEPOINT = files(resources).joinpath("statepoint.10.h5")
-TALLY_FACTORS = files(resources).joinpath("tally_factors.yaml")
 CELL_VOLUMES = files(resources).joinpath("volumes.json")
+XML_PATH = os.path.dirname(STATEPOINT)
 
 
-class TestOpenMCTallyFactors:
+class TestOpenMCCellData:
     @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC is not available")
-    def test_from_yaml(self):
-        omc_tally_factors = omc.OpenMCTallyFactors.from_yaml(TALLY_FACTORS)
-        assert omc_tally_factors.tally_factors[24].volume == True
-        assert omc_tally_factors.tally_factors[56].mass == True
-        assert omc_tally_factors.tally_factors[114].identifier == 114
-
-
-class TestOpenMCCellVolumes:
-    @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC is not available")
-    def test_from_json(self):
-        omc_cell_volumes = omc.OpenMCCellVolumes.from_json(CELL_VOLUMES)
-        assert omc_cell_volumes.cell_volumes[84] == 396061.0
-        assert omc_cell_volumes.cell_volumes[106] == 225997.0
-        assert omc_cell_volumes.cell_volumes[73] == 758884.0
+    def test_from_files(self):
+        omc_cell_data = omc.OpenMCCellData.from_files(CELL_VOLUMES, XML_PATH)
+        assert omc_cell_data.cell_volumes[84] == 396061.0
+        assert omc_cell_data.cell_volumes[106] == 225997.0
+        assert omc_cell_data.cell_volumes[73] == 758884.0
+        assert omc_cell_data.cell_masses[84] == pytest.approx(2864154.7276)
+        assert omc_cell_data.cell_masses[106] == pytest.approx(1634319.9052)
+        assert omc_cell_data.cell_masses[73] == pytest.approx(5487945.534399999)
 
 
 class TestOpenMCStatePoint:
     @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC is not available")
     def test_tallies_to_dataframes(self):
-        out = omc.OpenMCStatePoint(STATEPOINT, TALLY_FACTORS, CELL_VOLUMES)
+        out = omc.OpenMCStatePoint(STATEPOINT, CELL_VOLUMES)
         tallies = out.tallies_to_dataframes()
         assert "photon" == tallies[56]["particle"][5]
         assert 11 == tallies[56]["cell"][2]
-        assert 5.388881950654537e-06 == pytest.approx(tallies[24]["mean"][5])
-        assert 4.331494120455328e-08 == pytest.approx(tallies[24]["std. dev."][5])
-        # TODO update these numerical tests with correct values
-        #     after volumes.json and stetepoint10.h5 are updated
-        # assert 0.17727477233532538 == pytest.approx(tallies[56]['mean'][5])
-        # assert 0.0015627129050264142 == pytest.approx(tallies[56]['std. dev.'][5])
+        assert 5.388881950654537e-06 == pytest.approx(
+            tallies[24]["mean"][5] / out.cell_data.cell_volumes[tallies[24]["cell"][5]]
+        )
+        assert 4.331494120455328e-08 == pytest.approx(
+            tallies[24]["std. dev."][5]
+            / out.cell_data.cell_volumes[tallies[24]["cell"][5]]
+        )

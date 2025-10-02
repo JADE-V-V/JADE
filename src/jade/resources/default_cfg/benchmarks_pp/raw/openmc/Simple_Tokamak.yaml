@@ -54,43 +54,43 @@ _cells_inverted: &components
 Neutron flux in blanket cells:
   concat_option: no_action
   24:  
-     - ['replace', {'column': 'Cells', 'values': *components}]
      - ['volume', {}]
+     - ['replace', {'column': 'Cells', 'values': *components}]
 Photon flux in blanket cells:
   concat_option: no_action
   34: 
-     - ['replace', {'column': 'Cells', 'values': *components}]
      - ['volume', {}]
+     - ['replace', {'column': 'Cells', 'values': *components}]     
 Neutron flux in PF coils:
   concat_option: no_action
   44: 
+    - ['volume', {}]    
     - ['replace', {'column': 'Cells', 'values': *components}]
-    - ['volume', {}]
 Photon flux in PF coils:
   concat_option: no_action
   54: 
+     - ['volume', {}]     
      - ['replace', {'column': 'Cells', 'values': *components}]
-     - ['volume', {}]
 Neutron spectrum in OB blanket [175 group]:
   concat_option: no_action
   64:
+     - ['volume', {}]     
      - ['replace', {'column': 'Cells', 'values': *components}]
-     - ['volume', {}]
 Photon spectrum in OB blanket [175 group]:
   concat_option: no_action
   74:
+     - ['volume', {}]  
      - ['replace', {'column': 'Cells', 'values': *components}]
-     - ['volume', {}]
 Neutron spectrum in PF coils [175 group]:
   concat_option: no_action
-  84: 
+  84:
+     - ['volume', {}]  
      - ['replace', {'column': 'Cells', 'values': *components}]
-     - ['volume', {}]
 Photon spectrum in PF coils [175 group]:
   concat_option: no_action
   94: 
-     - ['replace', {'column': 'Cells', 'values': *components}]
      - ['volume', {}]
+     - ['replace', {'column': 'Cells', 'values': *components}]
 Neutron nuclear heating in blanket:
   concat_option: no_action
   6: [['replace', {'column': 'Cells', 'values': *components}]]
@@ -112,10 +112,10 @@ Photon nuclear heating in VV:
 Tritium Production in blanket:
   concat_option: no_action
   104:
-      - ['replace', {'column': 'Cells', 'values': *components}]
       - ['volume', {}]
+      - ['replace', {'column': 'Cells', 'values': *components}]
 DPA in divertor cell:
   concat_option: no_action
-  114: 
-      - ['add_column', {'column': 'Cells', 'values': [Divertor]}]
+  114:
       - ['volume', {}]
+      - ['add_column', {'column': 'Cells', 'values': [Divertor]}]

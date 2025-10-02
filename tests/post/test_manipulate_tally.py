@@ -17,6 +17,9 @@ from src.jade.post.manipulate_tally import (
     delete_cols,
     divide_by_bin,
     format_decimals,
+    gaussian_broadening,
+    volume,
+    mass,
     groupby,
     no_action,
     no_concat,
@@ -319,3 +322,85 @@ def test_cumulative_sum():
         ValueError, match="Cumulative sum cannot be computed for the Error column"
     ):
         cumulative_sum(df, column="Error")
+
+
+def test_gaussian_broadening():
+    data = {
+        "Energy": [0.1000, 0.1059, 0.1122, 0.1188, 0.1259],
+        "Value": [7.301230e-06, 5.373435e-06, 6.279305e-06, 7.781032e-06, 1.129645e-05],
+        "Error": [0.1, 0.2, 0.3, 0.4, 0.5],
+    }
+    df = pd.DataFrame(data)
+
+    # Test with default fwhm_frac
+    result = gaussian_broadening(df.copy())
+    assert len(result) == len(df)
+
+    assert result["Value"].tolist() == pytest.approx(
+        [
+            6.61055830e-06,
+            6.53424775e-06,
+            6.67475584e-06,
+            8.80555537e-06,
+            9.40633474e-06,
+        ],
+        rel=1e-2,
+    )
+
+    # Test with single float fwhm_frac
+    result = gaussian_broadening(df.copy(), fwhm_frac=0.15)
+    assert len(result) == len(df)
+    assert result["Value"].tolist() == pytest.approx(
+        [
+            6.17342002e-06,
+            7.27380890e-06,
+            7.71537669e-06,
+            8.78467520e-06,
+            8.08417119e-06,
+        ],
+        rel=1e-2,
+    )
+
+    # Test with list fwhm_frac
+    result = gaussian_broadening(df.copy(), fwhm_frac=[0.05, 0.05, 0.05, 0.05, 0.05])
+    assert len(result) == len(df)
+    assert result["Value"].tolist() == pytest.approx(
+        [
+            7.31409730e-06,
+            5.44059484e-06,
+            6.31197038e-06,
+            7.85001867e-06,
+            1.11147708e-05,
+        ],
+        rel=1e-2,
+    )
+
+    # Test with mismatched list length
+    with pytest.raises(ValueError, match="Length of fwhm_frac list must match"):
+        gaussian_broadening(df.copy(), fwhm_frac=[0.1, 0.2])
+
+
+def test_volume():
+    data = {
+        "Cells": [1, 2, 3, 4, 5],
+        "Value": [7.301230e-06, 5.373435e-06, 6.279305e-06, 7.781032e-06, 1.129645e-05],
+        "Error": [0.1, 0.2, 0.3, 0.4, 0.5],
+    }
+    df = pd.DataFrame(data)
+    volumes = {1: 2.0, 2: 2.0, 3: 2.0, 4: 2.0, 5: 2.0}
+    result = volume(df, volumes)
+    assert 3.65062e-06 == pytest.approx(result["Value"][0], rel=1e-5)
+    assert 0.05 == pytest.approx(result["Error"][0], rel=1e-5)
+
+
+def test_mass():
+    data = {
+        "Cells": [1, 2, 3, 4, 5],
+        "Value": [7.301230e-06, 5.373435e-06, 6.279305e-06, 7.781032e-06, 1.129645e-05],
+        "Error": [0.1, 0.2, 0.3, 0.4, 0.5],
+    }
+    df = pd.DataFrame(data)
+    masses = {1: 2.0, 2: 2.0, 3: 2.0, 4: 2.0, 5: 2.0}
+    result = mass(df, masses)
+    assert 3.65062e-06 == pytest.approx(result["Value"][0], rel=1e-5)
+    assert 0.05 == pytest.approx(result["Error"][0], rel=1e-5)

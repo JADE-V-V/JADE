@@ -60,7 +60,7 @@ SDDR parameters
 The irradiation schedule considered for ITER Cylinder SDDR benchmark is
 reported hereafter:
 
-.. list-table:: Irradiation schedule (ITER SA2 irradiation scenario)
+.. list-table:: Irradiation schedule (Conservative ITER SA2 irradiation scenario)
     :header-rows: 1
 
     * - Source Intensity [n/s]
@@ -94,6 +94,11 @@ reported hereafter:
 Two different cool-down times were considered in the photon tallies: 0s and 1e6 s (approx. 11.5 days).
 That is, these are the time interval waited after the irradiation phase has finished before tallying
 the SDDR and the photon flux.
+
+.. note::
+    This scenario does not match exactly the official ITER SA2 irradiation scenario which has only 3
+    final pulses instead of 4. The results from JADE will be conservative with respect to the official
+    scenario. 
 
 The possible reactions considered during the simulation are listed in the following table:
 

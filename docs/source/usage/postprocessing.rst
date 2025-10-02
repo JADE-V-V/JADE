@@ -19,7 +19,12 @@ This command will scan all available simulation results and produce the raw data
 those simulations for wich the data was not generated yet. These files are stored in the
 ``raw_data`` folder in the root directory of the project. Their format are simple .csv tables.
 
-These files are the interface between the results processing which is transport code dependent
+It is possible to force the re-generation of the raw data for all successful simulations
+(independently if the raw data was already generated or not) by running:
+
+| ``jade --raw force``
+
+These raw results are the interface between the results processing which is transport code dependent
 and the post-processing which is transport code independent. This means that the user is free
 to build its own post-processing in case the one provided by JADE are not sufficient. A file
 is produced for each result (i.e. a nuclear response) in each benchmark run. 

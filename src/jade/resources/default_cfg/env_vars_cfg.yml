@@ -4,27 +4,26 @@ openmp_threads: 8  # this controls the number of OpenMP threads to be used durin
 
 # paths to the code executables. If the codes are not installed, just leave the field empty.
 executables:
-  - mcnp: path/to/mcnp6/executable  # it can also be just 'mcnp6' if the executable is in the PATH
-  - openmc:  path/to/openmc/executable  # idem
-  - serpent: path/to/serpent/executable  # idem
-  - d1s: path/to/d1s/executable  # idem
+  mcnp: path/to/mcnp6/executable  # it can also be just 'mcnp6' if the executable is in the PATH
+  openmc:  path/to/openmc/executable  # idem
+  serpent: path/to/serpent/executable  # idem
+  d1s: path/to/d1s/executable  # idem
 
-# run mode is either "serial" to run locally or "job" to submit to a cluster
-run_mode: serial
-# This is needed only if mpi_tasks > 1
-mpi_prefix: srun  # the command to run jobs, it prepends your executable (e.g. mpirun, srun, etc.)
+# run mode is either "local", "job" or "global_job"
+# local: the code will be run locally on the machine where JADE is running
+# job: the code will be submitted as a job to a cluster. Each simulation will be sent as a separate job
+# global_job: the code will be submitted as a job to a cluster but all simulations will be sent as a single job
+run_mode: local
+# scheduler command (needed only if run_mode is "job" or "global_job")
+scheduler_command: sbatch  # e.g. 'sbatch' for slurm, 'qsub' for torque, 'bsub' for lsf
 
-# Not needed for a windows run. If all your modules are already loaded in your environment,
-# you can either make all these files empty or point to an empy file.
-code_configurations: # You can either modify the files at these (relative) paths that already exist or provide your own
-  - mcnp: cfg/exe_config/mcnp_config.sh
-  - openmc: cfg/exe_config/openmc_config.sh
-  - serpent: cfg/exe_config/serpent_config.sh
-  - d1s: cfg/exe_config/d1s_config.sh
-
-# These need to be non-empty only if submitting a job to a cluster
-batch_template: batch_template/Slurmtemplate.sh  # batch template. Both relative and absolute paths should work.
-batch_system: sbatch  # the command to submit a job to the cluster (e.g. llsubmit, sbatch, etc.)
-
-# Tokens for closed benchmarks repos
-f4e_gitlab_token:  # token for the F4E gitlab, leave empty if not needed
+# You can either modify the files or provide your own
+# path can be expressed as relative to cfg/exe_config or absolute
+# These templates are used for submission in cluster
+code_job_template:
+  mcnp: mcnp_template.sh
+  openmc: openmc_template.sh
+  serpent: serpent_template.sh
+  d1s: d1s_template.sh
+# Optional prefix to be added before the executable command
+exe_prefix: srun  # e.g. 'srun' or 'aprun' or 'ibrun' or 'mpirun' depending on the system

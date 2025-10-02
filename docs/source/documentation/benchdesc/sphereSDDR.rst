@@ -45,10 +45,9 @@ comparisons at different cool-down times will not lead to different results, hen
 during post-processing operations only the results at 0 s are elaborated. This does
 not apply to materials simulations, where many different reactions are included.
 
-The irradiation schedule considered for the Sphere SDDR benchmark is reported hereafter
-and represents an actual equivalent irradiation scenario foreseen for ITER blanket (SA2):
+The irradiation schedule considered for the Sphere SDDR benchmark is reported hereafter:
 
-.. list-table:: Irradiation schedule (ITER SA2 irradiation scenario)
+.. list-table:: Irradiation schedule (Conservative ITER SA2 irradiation scenario)
     :header-rows: 1
 
     * - Source Intensity [n/s]
@@ -78,6 +77,11 @@ and represents an actual equivalent irradiation scenario foreseen for ITER blank
     * - 2.8000E+19
       - 400 s
       - 4
+  
+.. note::
+    This scenario does not match exactly the official ITER SA2 irradiation scenario which has only 3
+    final pulses instead of 4. The results from JADE will be conservative with respect to the official
+    scenario. 
 
 As previously discussed, the irradiation file and reaction file provided together with the
 MCNP input file are generated in two different ways depending on if the simulation is

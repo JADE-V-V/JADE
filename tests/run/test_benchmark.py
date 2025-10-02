@@ -50,13 +50,11 @@ class TestBenchmarkRun:
             10,
             10,
             {CODE.MCNP: "mcnp6.2"},
-            run_mode=RunMode.JOB_SUMISSION,
-            code_configurations={
-                CODE.MCNP: Path(DEFAULT_CFG, "exe_config/mcnp_config.sh")
+            run_mode=RunMode.JOB_SUBMISSION,
+            code_job_template={
+                CODE.MCNP: Path(DEFAULT_CFG, "exe_config/mcnp_template.sh")
             },
-            batch_template=DEFAULT_CFG.joinpath("batch_templates/Slurmtemplate.sh"),
-            batch_system="slurm",
-            mpi_prefix="srun",
+            scheduler_command="slurm",
         )
 
         benchmark = BenchmarkRun(cfg, tmpdir, BENCHMARKS_ROOT, env_vars)
@@ -91,13 +89,11 @@ class TestBenchmarkRun:
             10,
             10,
             {CODE.MCNP: "mcnp6.2"},
-            run_mode=RunMode.SERIAL,
-            code_configurations={
+            run_mode=RunMode.LOCAL,
+            code_job_template={
                 CODE.MCNP: Path(DEFAULT_CFG, "exe_config/mcnp_config.sh")
             },
-            batch_template=DEFAULT_CFG.joinpath("batch_templates/Slurmtemplate.sh"),
-            batch_system="slurm",
-            mpi_prefix="srun",
+            scheduler_command="slurm",
         )
         sim_folder = files(dummy_struct).joinpath("simulations")
         benchmark = BenchmarkRun(cfg, sim_folder, BENCHMARKS_ROOT, env_vars)
@@ -106,9 +102,52 @@ class TestBenchmarkRun:
         assert "Dummy_continue1" not in command  # successful simulation
         assert "Dummy_continue2" in command  # correct simulation
         assert (
-            'srun -np 10 mcnp6.2 i=Dummy_continue2.i n=Dummy_continue2. xsdir="xsdir.txt" tasks 10'
+            'mpirun -np 10 mcnp6.2 i=Dummy_continue2.i n=Dummy_continue2. xsdir="xsdir.txt" tasks 10'
             in command
         )
+
+    def test_global_run(self, tmpdir):
+        perform = [
+            (
+                CODE.MCNP,
+                LibraryMCNP(
+                    name="FENDL 3.2c", path=RUN_RES.joinpath("xsdir.txt"), suffix="31c"
+                ),
+            ),
+            (
+                CODE.MCNP,
+                LibraryMCNP(
+                    name="ENDF VII-1", path=RUN_RES.joinpath("xsdir.txt"), suffix="00c"
+                ),
+            ),
+        ]
+        cfg = BenchmarkRunConfig(
+            description="Oktavian TOF",
+            name="Oktavian",
+            run=perform,
+            nps=10,
+            only_input=False,
+        )
+
+        env_vars = EnvironmentVariables(
+            10,
+            10,
+            {CODE.MCNP: "mcnp6.2"},
+            run_mode=RunMode.GLOBAL_JOB,
+            code_job_template={
+                CODE.MCNP: Path(DEFAULT_CFG, "exe_config/mcnp_template.sh")
+            },
+            scheduler_command="slurm",
+            exe_prefix="srun",
+        )
+
+        benchmark = BenchmarkRun(cfg, tmpdir, BENCHMARKS_ROOT, env_vars)
+        commands = benchmark.run()
+        assert len(commands) == 4
+        assert os.path.exists(commands[0][2])
+        assert len(commands[0][1]) == 6
+        assert commands[0][0] == CODE.MCNP
+        assert "srun" in commands[0][1][0]
 
 
 class TestSphereBenchmarkRun:
@@ -131,7 +170,7 @@ class TestSphereBenchmarkRun:
             None,
             0,
             {CODE.MCNP: "mcnp6.2"},
-            run_mode=RunMode.SERIAL,
+            run_mode=RunMode.LOCAL,
         )
 
         benchmark = SphereBenchmarkRun(cfg, tmpdir, BENCHMARKS_ROOT, env_vars)
@@ -165,7 +204,7 @@ class TestSphereBenchmarkRun:
             None,
             0,
             {CODE.OPENMC: "openmc"},
-            run_mode=RunMode.SERIAL,
+            run_mode=RunMode.LOCAL,
         )
 
         benchmark = SphereBenchmarkRun(cfg, tmpdir, BENCHMARKS_ROOT, env_vars)
@@ -212,7 +251,7 @@ class TestSphereSDDRBenchmarkRun:
             0,
             None,
             {CODE.D1S: "d1suned"},
-            run_mode=RunMode.SERIAL,
+            run_mode=RunMode.LOCAL,
         )
 
         benchmark = SphereSDDRBenchmarkRun(cfg, tmpdir, BENCHMARKS_ROOT, env_vars)
@@ -240,14 +279,13 @@ def env_vars():
         mpi_tasks=5,
         openmp_threads=10,
         executables={CODE.MCNP: "mcnp6.2", CODE.OPENMC: "openmc"},
-        run_mode=RunMode.SERIAL,
-        code_configurations={
-            CODE.MCNP: Path(DEFAULT_CFG, "exe_config/mcnp_config.sh"),
-            CODE.OPENMC: Path(DEFAULT_CFG, "exe_config/openmc_config.sh"),
+        run_mode=RunMode.LOCAL,
+        code_job_template={
+            CODE.MCNP: Path(DEFAULT_CFG, "exe_config/mcnp_template.sh"),
+            CODE.OPENMC: Path(DEFAULT_CFG, "exe_config/openmc_template.sh"),
         },
-        batch_template=DEFAULT_CFG.joinpath("batch_templates/Slurmtemplate.sh"),
-        batch_system="sbatch",
-        mpi_prefix="mpirun",
+        scheduler_command="sbatch",
+        exe_cfg_root=DEFAULT_CFG.joinpath("exe_config"),
     )
 
 
@@ -279,7 +317,7 @@ class TestSingleRunMCNP:
 
     def test_submit_job(self, env_vars, tmpdir):
         mock_input = MockInput()
-        env_vars.run_mode = RunMode.JOB_SUMISSION
+        env_vars.run_mode = RunMode.JOB_SUBMISSION
         with as_file(RUN_RES.joinpath("xsdir.txt")) as xsdir:
             lib = LibraryMCNP(name="FENDL 3.2c", path=xsdir, suffix="31c")
 

@@ -955,7 +955,7 @@ def launch_global_jobs(
         contents = replace_template_vars(code, cwd, env_vars)
         # add the commands
         for command, folder in cmdlist:
-            cd_command = f"cd {folder} {os.linesep}"
+            cd_command = f'cd "{folder}" {os.linesep}'
             if isinstance(command, list):
                 command = " ".join(command)
             contents = contents + os.linesep + cd_command + command + os.linesep

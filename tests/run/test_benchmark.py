@@ -143,8 +143,9 @@ class TestBenchmarkRun:
         benchmark = BenchmarkRun(cfg, tmpdir, BENCHMARKS_ROOT, env_vars)
         commands = benchmark.run()
         assert len(commands) == 4
-        assert os.path.exists(commands[0][1])
-        assert len(commands[0][0]) == 7
+        assert os.path.exists(commands[0][2])
+        assert len(commands[0][1]) == 7
+        assert commands[0][0] == CODE.MCNP
 
 
 class TestSphereBenchmarkRun:
@@ -282,6 +283,7 @@ def env_vars():
             CODE.OPENMC: Path(DEFAULT_CFG, "exe_config/openmc_template.sh"),
         },
         scheduler_command="sbatch",
+        exe_cfg_root=DEFAULT_CFG.joinpath("exe_config"),
     )
 
 

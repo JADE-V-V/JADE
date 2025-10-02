@@ -149,6 +149,7 @@ class TestJadeApp:
                 CODE.MCNP: Path(DUMMY_ROOT, "cfg/exe_config/mcnp_template.sh")
             },
             scheduler_command="sbatch",
+            exe_cfg_root=Path(DUMMY_ROOT, "cfg/exe_config"),
         )
         run_cfg = RunConfig(env_vars, {"Dummy_continue": cfg})
         app.run_cfg = run_cfg

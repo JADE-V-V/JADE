@@ -27,7 +27,10 @@ Here is an example:
     - serpent: path/to/serpent/executable  # idem
     - d1s: path/to/d1s/executable  # idem
 
-    # run mode is either "local" to run locally or "job" to submit to a cluster
+    # run mode is either "local", "job" or "global_job"
+    # local: the code will be run locally on the machine where JADE is running
+    # job: the code will be submitted as a job to a cluster. Each simulation will be sent as a separate job
+    # global_job: the code will be submitted as a job to a cluster but all simulations will be sent as a single job
     run_mode: local
     # scheduler command (needed only if run_mode is "job")
     scheduler_command: sbatch  # e.g. 'sbatch' for slurm, 'qsub' for torque, 'bsub' for lsf

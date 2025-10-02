@@ -48,6 +48,11 @@ file for the code(s) to be run.
 The batch template file is the job submission script to be utilised on the users chosen system.
 Several default job submission scripts are provided in the ``cfg/exe_config`` folder.
 
+.. important::
+    In case of a ``global_job``, in addition to the modules, the bash template should also contain
+    the export command to load the cross sections (different command depending on the code).
+    This is automatically handled by JADE in case of ``job`` mode.
+
 These file should contain all the necessary job submission options (e.g. slurm directives) and
 all the necessary commands to load the modules required by the different transport codes.
 Some placeholder are defined and will be substituted by JADE at runtime when submitting the job. They

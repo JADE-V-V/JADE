@@ -4,10 +4,10 @@ openmp_threads: 8  # this controls the number of OpenMP threads to be used durin
 
 # paths to the code executables. If the codes are not installed, just leave the field empty.
 executables:
-  - mcnp: path/to/mcnp6/executable  # it can also be just 'mcnp6' if the executable is in the PATH
-  - openmc:  path/to/openmc/executable  # idem
-  - serpent: path/to/serpent/executable  # idem
-  - d1s: path/to/d1s/executable  # idem
+  mcnp: path/to/mcnp6/executable  # it can also be just 'mcnp6' if the executable is in the PATH
+  openmc:  path/to/openmc/executable  # idem
+  serpent: path/to/serpent/executable  # idem
+  d1s: path/to/d1s/executable  # idem
 
 # run mode is either "local", "job" or "global_job"
 # local: the code will be run locally on the machine where JADE is running
@@ -18,7 +18,7 @@ run_mode: local
 scheduler_command: sbatch  # e.g. 'sbatch' for slurm, 'qsub' for torque, 'bsub' for lsf
 
 # You can either modify the files or provide your own
-# path can be expressed as relative to cfg/exec_config or absolute
+# path can be expressed as relative to cfg/exe_config or absolute
 # These templates are used for submission in cluster
 code_job_template:
   mcnp: mcnp_template.sh

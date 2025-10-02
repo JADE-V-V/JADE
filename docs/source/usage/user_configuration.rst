@@ -22,10 +22,10 @@ Here is an example:
 
     # paths to the code executables. If the codes are not installed, just leave the field empty.
     executables:
-    - mcnp: path/to/mcnp6/executable  # it can also be just 'mcnp6' if the executable is in the PATH
-    - openmc:  path/to/openmc/executable  # idem
-    - serpent: path/to/serpent/executable  # idem
-    - d1s: path/to/d1s/executable  # idem
+        mcnp: path/to/mcnp6/executable  # it can also be just 'mcnp6' if the executable is in the PATH
+        openmc:  path/to/openmc/executable  # idem
+        serpent: path/to/serpent/executable  # idem
+        d1s: path/to/d1s/executable  # idem
 
     # run mode is either "local", "job" or "global_job"
     # local: the code will be run locally on the machine where JADE is running
@@ -38,10 +38,10 @@ Here is an example:
     # Not needed for a windows run.
     # These templates are used for job submission on a cluster.
     code_job_template: # You can either modify the files at these (relative) paths that already exist or provide your own
-    - mcnp: cfg/exe_config/mcnp_template.sh
-    - openmc: cfg/exe_config/openmc_template.sh
-    - serpent: cfg/exe_config/serpent_template.sh
-    - d1s: cfg/exe_config/d1s_template.sh
+        mcnp: cfg/exe_config/mcnp_template.sh
+        openmc: cfg/exe_config/openmc_template.sh
+        serpent: cfg/exe_config/serpent_template.sh
+        d1s: cfg/exe_config/d1s_template.sh
     # Optional prefix to be added before the executable command (it can also be null)
     exe_prefix: srun  # e.g. 'srun' or 'aprun' or 'ibrun' or 'mpirun' depending on the system
 

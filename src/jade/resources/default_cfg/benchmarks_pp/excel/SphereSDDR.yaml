@@ -5,7 +5,7 @@ comparison %:
     - Photon heating
     - SDDR
   comparison_type: percentage
-  table_type: pivot
+  table_type: sphere_pivot
   x: Case
   y: [Result, Time, Energy]
   value: Value

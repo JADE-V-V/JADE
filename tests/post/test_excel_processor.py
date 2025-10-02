@@ -15,6 +15,15 @@ ROOT_RAW = files(tests.dummy_structure).joinpath("raw_data")
 
 
 class TestExcelProcessor:
+    def test_table_name(self, tmpdir):
+        with as_file(
+             files(tests.dummy_structure).joinpath("cfg/benchmarks_pp/excel/Sphere.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("mcnp", "ENDFB-VIII.0"), ("mcnp", "FENDL 3.2c")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()       
+    
     def test_process(self, tmpdir):
         with as_file(
             files(default_cfg).joinpath("benchmarks_pp/excel/Sphere.yaml")

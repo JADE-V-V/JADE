@@ -255,9 +255,7 @@ class SingleRun(ABC):
 
         # Submit the job using the specified batch system (checked for existence in post_init)
         if not test:
-            subprocess.run(
-                f"{env_vars.scheduler_command} {job_script}", cwd=directory, shell=True
-            )
+            subprocess.run([env_vars.scheduler_command, job_script], cwd=directory)
         # return to the original directory
         os.chdir(cwd)
 
@@ -966,9 +964,7 @@ def launch_global_jobs(
         if not test:
             with open(job_script, "w") as fout:
                 fout.write(contents)
-            subprocess.run(
-                f"{env_vars.scheduler_command} {job_script}", cwd=cwd, shell=True
-            )
+            subprocess.run([env_vars.scheduler_command, job_script], cwd=cwd)
     # return to the original directory
     os.chdir(cwd)
     return scripts

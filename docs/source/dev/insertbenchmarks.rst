@@ -462,7 +462,7 @@ Update the documentation
 ==============================
 
 The final step to add a new benchmark to JADE, assuming that no new functionalities are added, as detailed
-below, is to add the assocaited documentation. This includes a descirption of the benchmark as well as updating
+below, is to add the associated documentation. This includes a description of the benchmark as well as updating
 the overview table of implemented benchmarks in :ref:`benchmarks`.
 
 Implement new functionalities

@@ -166,7 +166,10 @@ class EnvironmentVariables:
             self.mpi_tasks = int(self.mpi_tasks)
         if self.openmp_threads is not None:
             self.openmp_threads = int(self.openmp_threads)
-        if self.run_mode == RunMode.JOB_SUBMISSION and self.scheduler_command is None:
+        if (
+            self.run_mode in [RunMode.JOB_SUBMISSION, RunMode.GLOBAL_JOB]
+            and self.scheduler_command is None
+        ):
             raise ConfigError(
                 "Scheduler command is needed if run_mode is 'job', please provide one"
             )

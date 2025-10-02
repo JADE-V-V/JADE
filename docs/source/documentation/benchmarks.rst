@@ -91,3 +91,7 @@ Experimental Benchmarks
 .. include:: benchdesc/ippe/ippe_dt.rst
 
 .. include:: benchdesc/ippe/ippe_cf.rst
+
+.. include:: benchdesc/rcr/rcr-ss.rst
+
+.. include:: benchdesc/rcr/rcr-fe+ni.rst

@@ -148,6 +148,9 @@ class EnvironmentVariables:
         run_mode is "job". By default None.
     exe_cfg_root: PathLike
         root folder where the exe_config folder is located. By default None.
+    exe_prefix: str | None
+        optional prefix to prepend to all executable commands (e.g. for wrappers like
+        srun, mpirun, etc.). By default None.
     """
 
     # parallel options
@@ -160,6 +163,7 @@ class EnvironmentVariables:
     code_job_template: dict[CODE, PathLike] | None = None
     scheduler_command: str | None = None
     exe_cfg_root: PathLike | None = None
+    exe_prefix: str | None = None
 
     def __post_init__(self):
         if self.mpi_tasks is not None:
@@ -214,6 +218,7 @@ class EnvironmentVariables:
             code_job_template=_cast_to_code(cfg["code_job_template"]),
             scheduler_command=cfg.get("scheduler_command", None),
             exe_cfg_root=env_cfg_folder,
+            exe_prefix=cfg.get("exe_prefix", None),
         )
 
 

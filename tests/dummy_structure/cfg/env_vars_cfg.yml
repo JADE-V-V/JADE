@@ -17,3 +17,5 @@ code_job_template:
   serpent: serpent_template.sh
   d1s: d1s_template.sh
 scheduler_command: null
+# Optional prefix to be added before the executable command
+exe_prefix: srun  # e.g. 'srun' or 'aprun' or 'ibrun' or 'mpirun' depending on the system

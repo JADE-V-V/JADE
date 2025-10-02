@@ -163,7 +163,11 @@ class SingleRun(ABC):
         run_command = self._build_command(env_vars)
         name, value = self._get_lib_data_command()
         lib_data_command = f'export {name}="{value}"'
-        if env_vars.mpi_tasks is not None and env_vars.mpi_tasks > 1:
+        # if the exe prefix is present it takes precedence
+        if env_vars.exe_prefix is not None:
+            run_command.insert(0, env_vars.exe_prefix)
+
+        elif env_vars.mpi_tasks is not None and env_vars.mpi_tasks > 1:
             run_command.insert(0, f"-np {env_vars.mpi_tasks}")
             run_command.insert(0, "mpirun")
 

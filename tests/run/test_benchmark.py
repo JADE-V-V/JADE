@@ -138,14 +138,16 @@ class TestBenchmarkRun:
                 CODE.MCNP: Path(DEFAULT_CFG, "exe_config/mcnp_template.sh")
             },
             scheduler_command="slurm",
+            exe_prefix="srun",
         )
 
         benchmark = BenchmarkRun(cfg, tmpdir, BENCHMARKS_ROOT, env_vars)
         commands = benchmark.run()
         assert len(commands) == 4
         assert os.path.exists(commands[0][2])
-        assert len(commands[0][1]) == 7
+        assert len(commands[0][1]) == 6
         assert commands[0][0] == CODE.MCNP
+        assert "srun" in commands[0][1][0]
 
 
 class TestSphereBenchmarkRun:

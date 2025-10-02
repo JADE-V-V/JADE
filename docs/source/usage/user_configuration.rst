@@ -42,6 +42,8 @@ Here is an example:
     - openmc: cfg/exe_config/openmc_template.sh
     - serpent: cfg/exe_config/serpent_template.sh
     - d1s: cfg/exe_config/d1s_template.sh
+    # Optional prefix to be added before the executable command (it can also be null)
+    exe_prefix: srun  # e.g. 'srun' or 'aprun' or 'ibrun' or 'mpirun' depending on the system
 
 It can be seen that in order to submit a job to a cluster, the user needs to provide the path to the batch template
 file for the code(s) to be run.

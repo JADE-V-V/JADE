@@ -7,7 +7,6 @@ import re
 import shutil
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
-from pathlib import Path
 
 import numpy as np
 
@@ -16,7 +15,6 @@ from jade.helper.__optionals__ import OMC_AVAIL
 if OMC_AVAIL:
     import openmc
 import pandas as pd
-import yaml
 
 if TYPE_CHECKING:
     from f4enix.input.libmanager import LibManager
@@ -25,63 +23,6 @@ if TYPE_CHECKING:
     from jade.helper.aux_functions import PathLike
 
 PAT_DIGITS = re.compile(r"\d+")
-
-
-# @dataclass
-# class OpenMCTallyFactors:
-#    """Configuration for a computational benchmark.
-#
-#    Attributes
-#    ----------
-#    tally_factors : dict[int, TallyFactors]
-#        Options for the Excel benchmark.
-#    """
-#
-#    tally_factors: dict[int, TallyFactors]
-#
-#    @classmethod
-#    def from_yaml(cls, file: str | os.PathLike) -> OpenMCTallyFactors:
-#        """Build the configuration for a computational benchmark from a yaml file.
-#
-#        Parameters
-#        ----------
-#        file : str | os.PathLike
-#            path to the yaml file.
-#
-#        Returns
-#        -------
-#        OpenMCTallyFactors
-#            The tally factors for the OpenMC benchmark.
-#        """
-#        with open(file) as f:
-#            cfg = yaml.safe_load(f)
-#
-#        tally_factors = {}
-#        for key, value in cfg.items():
-#            tally_factors[int(key)] = TallyFactors(**value, identifier=int(key))
-#        return cls(tally_factors=tally_factors)
-
-
-# @dataclass
-# class TallyFactors:
-#    """Data class storing tally factors
-#
-#    Attributes
-#    ----------
-#    identifier : int
-#        Identifier of the tally.
-#    normalisation : float
-#        Normalisation factor for the tally.
-#    volume : bool
-#        True if volume divisor is needed, False if not. Default is False.
-#    mass : BinningType | list[BinningType]
-#        True if mass divisor is needed, False if not. Default is False.
-#    """
-#
-#    identifier: int
-#    volume: bool = False
-#    mass: bool = False
-#    normalisation: float = 1
 
 
 @dataclass
@@ -616,95 +557,6 @@ class OpenMCStatePoint:
                         + tally_df["std. dev."].pow(2)
                     ).pow(0.5)
         return heating_tallies_df
-
-    #    def _get_volumes(self, tally_df: pd.DataFrame) -> dict[int, float]:
-    #        """
-    #        Function to extract unique cell volumes from tally dataframe
-    #
-    #        Parameters
-    #        ----------
-    #        tally_df : pd.DataFrame
-    #            Pandas DataFrame containing tally data
-    #
-    #        Returns
-    #        -------
-    #        volumes : dict[int, float]
-    #            Dictionary of cell volumes, indeced by cell
-    #        """
-    #        cells = tally_df.cell.unique()
-    #        volumes = self.cell_volumes.volumes(cells)
-    #        return volumes
-    #
-    #    def _get_masses(self, tally_df: pd.DataFrame) -> dict[int, float]:
-    #        """
-    #        Function to extract unique cell masses from tally dataframe
-    #
-    #        Parameters
-    #        ----------
-    #        tally_df : pd.DataFrame
-    #            Pandas DataFrame containing tally data
-    #
-    #        Returns
-    #        -------
-    #        masses : dict[int, float]
-    #            Dictionary of cell volumes, indeced by cell
-    #        """
-    #        volumes = self._get_volumes(tally_df)
-    #        masses = {}
-    #        for cell, volume in volumes.items():
-    #            density = self.cell_densities.cell_densities[cell]
-    #            masses[cell] = density * volume
-    #        return masses
-    #
-    #    def _apply_tally_factors(self, tallies: dict) -> dict:
-    #        """
-    #        Function to apply tally factor and volume corrections to tally data
-    #
-    #        Parameters
-    #        ----------
-    #        tallies : dict
-    #            Dictionary of tallies to be corrected
-    #
-    #        Returns
-    #        -------
-    #        tallies : dict
-    #            Dictionary of tallies with tally factors applied
-    #        """
-    #        for tally_number, tally_df in tallies.items():
-    #            if tally_number in self.tally_factors.tally_factors:
-    #                normalisation = self.tally_factors.tally_factors[
-    #                    tally_number
-    #                ].normalisation
-    #                tally_df["mean"] *= normalisation
-    #                tally_df["std. dev."] *= normalisation
-    #                if self.tally_factors.tally_factors[tally_number].volume:
-    #                    volumes = self._get_volumes(tally_df)
-    #                    for cell, volume in volumes.items():
-    #                        tally_df["mean"] = np.where(
-    #                            (tally_df["cell"] == cell),
-    #                            tally_df["mean"] / volume,
-    #                            tally_df["mean"],
-    #                        )
-    #                        tally_df["std. dev."] = np.where(
-    #                            (tally_df["cell"] == cell),
-    #                            tally_df["std. dev."] / volume,
-    #                            tally_df["std. dev."],
-    #                        )
-    #                if self.tally_factors.tally_factors[tally_number].mass:
-    #                    masses = self._get_masses(tally_df)
-    #                    for cell, mass in masses.items():
-    #                        tally_df["mean"] = np.where(
-    #                            (tally_df["cell"] == cell),
-    #                            tally_df["mean"] / mass,
-    #                            tally_df["mean"],
-    #                        )
-    #                        tally_df["std. dev."] = np.where(
-    #                            (tally_df["cell"] == cell),
-    #                            tally_df["std. dev."] / mass,
-    #                            tally_df["std. dev."],
-    #                        )
-    #            tallies[tally_number] = tally_df
-    #        return tallies
 
     def tallies_to_dataframes(self) -> dict:
         """Call to extract tally data from statepoint file

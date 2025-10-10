@@ -63,7 +63,7 @@ Total Reaction Rate In2:
     apply_to: [RCR-SS_SR]
     concat_option: no_action
     44: 
-     - [add_column, {column: 'Cells', values: ["115In(n,g)116mIn"]}]
+     - [add_column, {column: 'Cells', values: ["115In(n,g)116In"]}]
      - [delete_cols, {'cols': ['Dir','Segments','Multiplier','Energy']}]
 Cumulative Reaction Rates Au pos 1:
     apply_to: [RCR-SS_RI]

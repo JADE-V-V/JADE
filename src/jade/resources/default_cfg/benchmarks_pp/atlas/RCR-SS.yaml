@@ -72,11 +72,11 @@ Cumulative Reaction Rate 115In(n,n')115mIn (SR):
   xlimits: [0.1, 30]
   plot_args:
     yscale: linear
-Cumulative Reaction Rate 115In(n,g)116mIn (SR):
+Cumulative Reaction Rate 115In(n,g)116In (SR):
   results:
     - Cumulative Reaction Rate In2
   plot_type: binned
-  title: Surface Reaction Rate for 115In(n,g)116mIn
+  title: Surface Reaction Rate for 115In(n,g)116In
   x_label: Energy [MeV]
   y_labels: "Normalized Cumulative Reaction Rate [%]"
   x: Energy
@@ -91,7 +91,7 @@ Reaction Rate SR:
     - Total Reaction Rate In1
     - Total Reaction Rate In2
   plot_type: ce
-  title: Surface Reaction Rates for 58Ni(n,p)58Co, 115In(n,n')115mIn and 115In(n,g)116mIn
+  title: Surface Reaction Rates for 58Ni(n,p)58Co, 115In(n,n')115mIn and 115In(n,g)116In
   x_label: Reaction
   y_labels: C/E
   x: Cells

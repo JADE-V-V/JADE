@@ -102,7 +102,7 @@ Two MCNP inputs, corresponding to the two experimental cases were used:
      - Yes
    * - 14
      - Outer block surface
-     - 115In(n,g)116m1In
+     - 115In(n,g)116In
      - Yes
    * - 24
      - Outer block surface
@@ -114,7 +114,7 @@ Two MCNP inputs, corresponding to the two experimental cases were used:
      - No
    * - 44
      - Outer block surface
-     - 115In(n,g)116m1In
+     - 115In(n,g)116In
      - No
    * - 54
      - Outer block surface

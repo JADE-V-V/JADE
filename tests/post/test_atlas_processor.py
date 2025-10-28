@@ -302,9 +302,9 @@ class TestAtlasProcessor:
         processor = AtlasProcessor(ROOT_RAW, tmpdir, cfg, codelibs, word_template_path)
         processor.process()
 
-    def test_RCR_Fe_Ni(self, tmpdir):
+    def test_RCR_Sphere(self, tmpdir):
         with as_file(
-            files(default_cfg).joinpath("benchmarks_pp/atlas/RCR-Fe+Ni.yaml")
+            files(default_cfg).joinpath("benchmarks_pp/atlas/RCR-Sphere.yaml")
         ) as file:
             cfg = ConfigAtlasProcessor.from_yaml(file)
 

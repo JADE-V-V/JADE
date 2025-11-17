@@ -90,8 +90,9 @@ def fetch_from_gitlab(
     gl = gitlab.Gitlab(url=url, private_token=authorization_token, ssl_verify=False)
     try:
         gl.auth()
-    except gitlab.exceptions.GitlabAuthenticationError:
+    except gitlab.exceptions.GitlabAuthenticationError as e:
         logging.error("Gitlab authentication failed")
+        logging.error(e)
         return False
 
     # select the correct project

@@ -240,3 +240,14 @@ IPPE-CF:
   nps: 1e8
   description: IPPE 252Cf experiment
   only_input: false
+#
+FNG-SS:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: FNG Stainless Steel (FNG SS)
+  only_input: false

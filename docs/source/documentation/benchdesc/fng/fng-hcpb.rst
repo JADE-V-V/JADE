@@ -70,6 +70,19 @@ where :math:`{\lambda}` is the decay constant, :math:`n_{tot}` is the total neut
 mass is for an individual pellet. This normalisation is included in the MCNP input file so the raw output
 can be directly compared to the measured data. 
 
+OpenMC model
+^^^^^^^^^^^^
+To allow for the simulation to run in OpenMC, vacuum boundary conditions were set for all outer surfaces of the geometry. 
+
+OpenMC tallies
+^^^^^^^^^^^^^^
+The reaction rates are calcaulated using a flux tally and an EnergyFunctionFilter, corresponding to the cross-section data for the nuclide being tallied over.  
+To make the results comparable to the experimental data, the raw output from OpenMC must be divided by the volume of the foils.
+
+The tritium production was tallied using the (n,Xt) score in OpenMC. The specific activity is then calculated in the same way as for MCNP, 
+but factors have to be folded in during post-processing. 
+
+
 Patch file
 ^^^^^^^^^^
 Coming soon... 

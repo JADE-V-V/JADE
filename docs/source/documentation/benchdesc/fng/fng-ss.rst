@@ -56,6 +56,18 @@ Reaction rates for each of the different foils in the experiment have been calcu
 The raw output from MCNP can be compared directly the reported measured data available in SINBAD which is given 
 in units of 10\ :sup:`24`/(source neutron). 
 
+OpenMC model
+^^^^^^^^^^^^
+To prevent OpenMC from returning an error, vacuum boundary conditions were set for
+the outermost surfaces of the facility housing. The geometry definition of the water funnel (cells 10, 11, 12 and 15) had to be altered 
+due to limitations with OpenMC. Only double-sided cones can be defined in OpenMC, therefore each cone definition has to be coupled with a plane
+in order to split the cone at its apex.
+
+OpenMC tallies
+^^^^^^^^^^^^^^
+The reaction rates are calculated using a flux tally, paired with an openmc.EnergyFunctionFilter for the nuclide in question. 
+The raw output from OpenMC must be divided by the foil volumes in order to give fair comparison to the reported measured data.
+
 Patch file
 ^^^^^^^^^^
 Coming soon... 

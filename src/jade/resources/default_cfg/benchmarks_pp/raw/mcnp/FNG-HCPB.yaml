@@ -67,7 +67,7 @@ _cell_id_h3: &depth_h3
   16055: 28.410
   16059: 28.411
   16063: 28.412
-_cell_id_h3: &depth_h3d
+_cell_id_h3d: &depth_h3d
   16016: [9.5, 01]
   16020: [9.5,02]
   16024: [9.5,03]
@@ -128,4 +128,3 @@ Tritium activity:
 Tritium activity Pellet:
   concat_option: no_action
   84: [[add_column_with_dict, {'ref_column': 'Cells', 'values': *depth_h3d, new_columns: [ 'Distance','Pellet']}],[replace, {'column': 'Cells', 'values': *depth_h3}]]
-

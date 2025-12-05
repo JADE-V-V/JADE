@@ -627,7 +627,7 @@ class CEPlot(Plot):
                         dfv.index,
                         dfv.values,
                         yerr=dfe.values,
-                        fmt="none",
+                        # fmt="none",
                         ecolor=COLORS[idx],
                         # elinewidth=0.5,
                         # capsize=2,

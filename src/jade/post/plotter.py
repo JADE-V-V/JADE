@@ -642,7 +642,7 @@ class CEPlot(Plot):
                     axes[i].errorbar(
                         dfv.index,
                         dfv.values,
-                        yerr=dfe.values,
+                        yerr=dfe.values * dfv.values,
                         # fmt="none",
                         ecolor=COLORS[idx],
                         # elinewidth=0.5,

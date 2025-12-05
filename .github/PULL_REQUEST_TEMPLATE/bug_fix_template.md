@@ -1,12 +1,3 @@
----
-name: Bug fix
-about: Fix a bug
-title: "[Bug fix] - XXX"
-labels: bug
-assignees: ''
-
----
-
 # Bug Fix Template
 
 ## Description

@@ -328,3 +328,14 @@ IPPE-CF:
   nps: 1e8
   description: IPPE 252Cf experiment
   only_input: false
+#
+ISIS-800MeV-C:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: ISIS 800 MeV Proton Experiment
+  only_input: false

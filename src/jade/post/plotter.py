@@ -17,6 +17,7 @@ from matplotlib.patches import Patch, Rectangle
 from matplotlib.ticker import AutoLocator, AutoMinorLocator, LogLocator, MultipleLocator
 
 from jade.config.atlas_config import PlotConfig, PlotType
+from jade.post.manipulate_tally import compare_data, ComparisonType
 
 matplotlib.use("Agg")  # use a non-interactive backend
 LM = LibManager()
@@ -523,41 +524,40 @@ class CEPlot(Plot):
             raise ValueError(f"Style {style} not recognized")
 
         # compute the ratios
+        to_plot = []
         if subcases:
-            to_plot = []
-            for codelib, df in self.data[1:]:
-                to_plot.append(
-                    (
-                        codelib,
-                        df.set_index([subcases[0], self.cfg.x])[self.cfg.y]
-                        / self.data[0][1].set_index([subcases[0], self.cfg.x])[
-                            self.cfg.y
-                        ],
-                    )
-                )
+            ref = self.data[0][1].set_index([subcases[0], self.cfg.x])
         else:
-            to_plot = [
-                (
-                    codelib,
-                    df.set_index(self.cfg.x)[self.cfg.y]
-                    / self.data[0][1].set_index(self.cfg.x)[self.cfg.y],
-                )
-                for (codelib, df) in self.data[1:]
-            ]
+            ref = self.data[0][1].set_index(self.cfg.x)
+        val1 = ref[self.cfg.y]
+        err1 = ref["Error"]
+
+        for codelib, df in self.data[1:]:
+            if subcases:
+                target = df.set_index([subcases[0], self.cfg.x])
+            else:
+                target = df.set_index(self.cfg.x)
+            val2 = target[self.cfg.y]
+            err2 = target["Error"]
+            values, errors = compare_data(
+                val1, val2, err1, err2, comparison_type=ComparisonType.RATIO
+            )
+            to_plot.append((codelib, values, errors))
 
         # Plot the data
-        for idx, (codelib, df) in enumerate(to_plot):
+        for idx, (codelib, df_vals, df_errors) in enumerate(to_plot):
             # Split the dfs into the subcases if needed
             if subcases:
                 dfs = []
                 for value in subcases[1]:
                     try:
-                        subset = df.loc[value]
+                        subset_val = df_vals.loc[value]
+                        subset_err = df_errors.loc[value]
                     except KeyError:
                         continue
-                    dfs.append((value, subset))
+                    dfs.append((value, subset_val, subset_err))
             else:
-                dfs = [(None, df)]
+                dfs = [(None, df_vals, df_errors)]
 
             # If this is the first lib, create the plot
             if idx == 0:
@@ -571,7 +571,7 @@ class CEPlot(Plot):
                     axes = ax
 
             # plot all subcases
-            for i, (case, df1) in enumerate(dfs):
+            for i, (case, dfv, dfe) in enumerate(dfs):
                 if i == 0:
                     label = codelib
                 else:
@@ -593,8 +593,8 @@ class CEPlot(Plot):
 
                 if style == "step":
                     axes[i].step(
-                        df1.index,
-                        df1.values,
+                        dfv.index,
+                        dfv.values,
                         label=label,
                         color=COLORS[idx],
                         linestyle=LINESTYLES[idx],
@@ -606,22 +606,38 @@ class CEPlot(Plot):
                         _apply_CE_limits(
                             ce_limits[0],
                             ce_limits[1],
-                            df1.values,
-                            df1.index,
+                            dfv.values,
+                            dfv.index,
                             axes[i],
                             idx,
                             label,
                         )
                     else:
-                        ax.scatter(
-                            df1.index,
-                            df1.values,
+                        axes[i].scatter(
+                            dfv.index,
+                            dfv.values,
                             label=label,
                             color=COLORS[idx],
                             marker=MARKERS[idx],
                             # the marker should be not filled
                             facecolors="none",
                         )
+                    # add error bars
+                    axes[i].errorbar(
+                        dfv.index,
+                        dfv.values,
+                        yerr=dfe.values,
+                        fmt="none",
+                        ecolor=COLORS[idx],
+                        # elinewidth=0.5,
+                        # capsize=2,
+                        # label=None,
+                    )
+                    # if it is a scatter plot we must check for categorical X axis
+                    # as this is not automatically detected by matplotlib
+                    if dfv.index.dtype == str or dfv.index.dtype == object:
+                        axes[i].set_xticks(range(len(dfv.index)))
+                        axes[i].set_xticklabels(dfv.index)
 
         # put the legend in the top right corner if it was not already placed
         if not axes[0].get_legend():
@@ -1045,7 +1061,7 @@ def _apply_CE_limits(
     combined = handles + leg
 
     if label is not None:
-        ax.legend(handles=combined, loc="best")
+        ax.legend(handles=combined, bbox_to_anchor=(1, 1))
 
 
 def _rotate_ticks(ax: Axes) -> None:

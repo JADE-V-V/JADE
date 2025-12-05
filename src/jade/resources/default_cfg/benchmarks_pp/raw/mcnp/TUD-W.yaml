@@ -1,6 +1,22 @@
-Neutron flux:
+# normal binned fluxes
+Neutron spectra:
   concat_option: no_action
   4: [['by_energy', {}]]
-Photon flux:
+Photon spectra:
   concat_option: no_action
   44: [['by_energy', {}]]
+# coarse fluxes
+Neutron spectra coarse:
+  concat_option: no_action
+  4:
+    - [condense_groups,
+       {"bins": [1, 3, 6, 9, 12, 20],
+        "group_column": "Energy"}
+      ]
+Photon spectra coarse:
+  concat_option: no_action
+  44:
+    - [condense_groups,
+       {"bins": [0.4, 3, 6, 10],
+        "group_column": "Energy"}
+      ]

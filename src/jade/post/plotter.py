@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 import warnings
 import matplotlib.pyplot as plt
 import numpy as np
+import logging
 
 import pandas as pd
 import seaborn as sns
@@ -542,6 +543,16 @@ class CEPlot(Plot):
                 target = df.set_index(self.cfg.x)
             val2 = target[self.cfg.y]
             err2 = target["Error"]
+            # sometimes there are index which are numerical and may have slight
+            # differences due to rounding. In reality the two must be the same
+            # in a C/E plot
+            if not val1.index.equals(val2.index):
+                # this is a dirty fix, it may miss some edge cases but they
+                # should be fairly easy to spot from the plots
+                logging.debug("Indices do not match, substituting with experiment")
+                val2.index = val1.index
+                err2.index = err1.index
+
             values, errors = compare_data(
                 val1, val2, err1, err2, comparison_type=ComparisonType.RATIO
             )

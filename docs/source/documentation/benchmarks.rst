@@ -95,3 +95,5 @@ Experimental Benchmarks
 .. include:: benchdesc/rcr/rcr-ss.rst
 
 .. include:: benchdesc/rcr/rcr-fe+ni.rst
+
+.. include:: benchdesc/ISIS-800MeV-C.rst

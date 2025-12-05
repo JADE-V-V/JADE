@@ -38,7 +38,7 @@ C/E neutron spectra (1-9 MeV):
   y: Value
   expand_runs: false
   plot_args:
-    subcases: ["Energy", ['1 - 3', '3 - 6', '6 - 9']]
+    subcases: ["Energy", ['1.15 - 3', '3 - 6', '6 - 9']]
     style: 'point'
     ce_limits: [0.5, 1.5]
     shorten_x_name: 1

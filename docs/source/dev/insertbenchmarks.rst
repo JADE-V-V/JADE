@@ -56,6 +56,8 @@ OpenMC
   `OpenMC documentation <https://docs.openmc.org/en/stable/usersguide/settings.html#compiled-sources>`_.
 - If the model uses weight windows, a weight windows file in HDF5 format should be provided.
   The file should be named ``weight_windows.h5``. This weight window will be used in simulation if it is provided.
+- If dosimetry calculations are required, the IRDFF-II data library should be used and can be implemented using an ``openmc.EnergyFunctionFilter``
+  which is outlined in this `notebook <https://nbviewer.org/gist/paulromano/842b1df9eb2003747e2fd6d95514129a>`.
 - The tallies IDs should be explicitly fixed when creating the ``tallies.xml`` file. This prevents
   OpenMC from creating them automatically and, thus, potentially changing them between different runs
   of a same benchmark. If possible, the tallies identifiers should be the same as the ones used in the

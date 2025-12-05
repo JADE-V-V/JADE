@@ -1,0 +1,22 @@
+ ===================>     TALLY 4: AL REACTION RATE     <===================
+
+ Cell 48001
+   Particle: neutron
+     Energy Function f([3.2e+06, ..., 6.0e+07]) = [0.0e+00, ..., 2.2e-04]
+       Total Material
+         Flux                                 8.57628e-06 +/- 3.12686e-08
+ Cell 48002
+   Particle: neutron
+     Energy Function f([3.2e+06, ..., 6.0e+07]) = [0.0e+00, ..., 2.2e-04]
+       Total Material
+         Flux                                 2.164e-06 +/- 1.41474e-08
+ Cell 48003
+   Particle: neutron
+     Energy Function f([3.2e+06, ..., 6.0e+07]) = [0.0e+00, ..., 2.2e-04]
+       Total Material
+         Flux                                 7.02088e-07 +/- 9.52015e-09
+ Cell 48004
+   Particle: neutron
+     Energy Function f([3.2e+06, ..., 6.0e+07]) = [0.0e+00, ..., 2.2e-04]
+       Total Material
+         Flux                                 2.68821e-07 +/- 5.69553e-09

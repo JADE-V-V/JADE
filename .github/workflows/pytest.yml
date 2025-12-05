@@ -78,6 +78,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           set -o pipefail
+          git config --global http.sslBackend schannel
           source /usr/local/Modules/init/sh
           pytest --cov=. -cov-config=jade.coveragerc --cov-report xml
         env:
@@ -89,6 +90,7 @@ jobs:
       - name: Testing - Windows
         if: runner.os == 'Windows'
         run: |
+          git config --global http.sslBackend schannel
           pytest
         env:
           ACCESS_TOKEN_GITHUB: ${{ secrets.ACCESS_TOKEN_GITHUB }}

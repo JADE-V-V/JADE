@@ -1,0 +1,68 @@
+Neutron flux HPD:
+  results:
+    - Neutron flux HPD
+  comparison_type: absolute
+  table_type: pivot
+  x: ['Energy']
+  y: ['Case']
+  value: ['Value','Error']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Case':"",0: "Neutron fluence [n/cm^2/s/MeV] (exp-comp)"}
+#
+Neutron flux SSD:
+  results:
+    - Neutron flux SSD
+  comparison_type: absolute
+  table_type: pivot
+  x: ['Energy']
+  y: ['Case']
+  value: ['Value','Error']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Case':"",0: "Neutron fluence [n/cm^2/s/MeV] (exp-comp)"}
+#
+Coarse neutron flux HPD CE:
+  results:
+    - Coarse neutron flux HPD
+  comparison_type: ratio
+  table_type: pivot
+  x: ['Energy']
+  y: ['Case']
+  value: ['Value', 'Error']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Case':"", 0: 'C/E'}
+#
+HPD Coarse neutron flux X2:
+  results:
+    - Coarse neutron flux HPD
+  comparison_type: chi_squared
+  table_type: chi_squared
+  x: ['Case','Energy']
+  y: ['Value']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'Chi^2'}
+#
+Coarse neutron flux SSD CE:
+  results:
+    - Coarse neutron flux SSD
+  comparison_type: ratio
+  table_type: pivot
+  x: ['Energy']
+  y: ['Case']
+  value: ['Value', 'Error']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Case':"", 0: 'C/E'}
+#
+SSD Coarse neutron flux X2:
+  results:
+    - Coarse neutron flux SSD
+  comparison_type: chi_squared
+  table_type: chi_squared
+  x: ['Case','Energy']
+  y: ['Value']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'Chi^2'}
+#
+Reaction rates CE:
+  results:
+    - Total Reaction Rate Ni
+    - Total Reaction Rate In
+  comparison_type: ratio
+  table_type: pivot
+  x: [Cells]
+  y: ['Case']
+  value: ['Value', 'Error']
+  change_col_names: {'Cells': 'Reaction', 'Case':"", 0: 'C/E'}

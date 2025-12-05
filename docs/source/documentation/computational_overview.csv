@@ -1,11 +1,8 @@
-Benchmark, MCNP Status, OpenMC Status, Serpent Status
-Sphere Leakage, I,I, D
-ITER 1-D, I, W, W
-Test Blanket Module, I, W, W
-C-Model, I, W, W
-Sphere SDDR, I, W, W
-ITER Cylinder SDDR, I, W, W
-FNSF 3-D, W, W, W
-FNSF 1-D, W, W, W
-EU DEMO-3D divertor, W, W, W
-Simple tokamak, I, I, W
+Benchmark, Location, Reference
+Sphere Leakage, IAEA open-benchmark, JADE
+ITER 1-D, IAEA open-benchmark, M. Sawan
+Test Blanket Module (TBM), IAEA open-benchmark, F4E
+C-Model, F4E GitLab, ITER Organisation
+Sphere SDDR, IAEA open-benchmark, JADE
+ITER Cylinder SDDR, IAEA open-benchmark, ITER Organisation
+Simple tokamak, IAEA open-benchmark, UKAEA

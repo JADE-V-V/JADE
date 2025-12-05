@@ -147,6 +147,8 @@ These are the extra ``plot_args`` that this type of plot can accept:
   in the same subplot. Default is false.
 * ``xscale``: The scale of the x-axis. Every argument that could be passed to the matplotlib function
   ``set_xscale()`` is accepted. Common ones are 'linear' or 'log'. Default is 'log'.
+* ``yscale``: The scale of the y-axis. Every argument that could be passed to the matplotlib function
+  ``set_yscale()`` is accepted. Common ones are 'linear' or 'log'. Default is 'log'.
 
 Ratio plot (ratio)
 ------------------

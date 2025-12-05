@@ -5,7 +5,7 @@ Parent isotope contribution to SDDR irr 1:
 
   plot_type: dose contribution
   title: Parent contribution to SDDR
-  x_label: Time after shutdown [s]
+  x_label: "Time after shutdown $\\left[\\mathrm{s}\\right]$"
   y_labels: dummy
   x: dummy  # It is a very specific plot which knows which columns to use
   y: dummy # It is a very specific plot which knows which columns to use
@@ -17,7 +17,7 @@ Daughter isotope contribution to SDDR irr 1:
 
   plot_type: dose contribution
   title: Daughter contribution to SDDR
-  x_label: Time after shutdown [s]
+  x_label: "Time after shutdown $\\left[\\mathrm{s}\\right]$"
   y_labels: dummy
   x: dummy  # It is a very specific plot which knows which columns to use
   y: dummy # It is a very specific plot which knows which columns to use
@@ -30,7 +30,7 @@ Parent isotope contribution to SDDR irr 2:
 
   plot_type: dose contribution
   title: Parent contribution to SDDR
-  x_label: Time after shutdown [s]
+  x_label: "Time after shutdown $\\left[\\mathrm{s}\\right]$"
   y_labels: dummy
   x: dummy  # It is a very specific plot which knows which columns to use
   y: dummy # It is a very specific plot which knows which columns to use
@@ -42,7 +42,7 @@ Daughter isotope contribution to SDDR irr 2:
 
   plot_type: dose contribution
   title: Daughter contribution to SDDR
-  x_label: Time after shutdown [s]
+  x_label: "Time after shutdown $\\left[\\mathrm{s}\\right]$"
   y_labels: dummy
   x: dummy  # It is a very specific plot which knows which columns to use
   y: dummy # It is a very specific plot which knows which columns to use
@@ -53,7 +53,7 @@ SDDR in air, irr schedule 1:
     - SDDR in air irr. 1
   plot_type: ce
   title: SDDR in air, irr schedule 1
-  x_label: Time after shutdown [s]
+  x_label: "Time after shutdown $\\left[\\mathrm{s}\\right]$"
   y_labels: C/E
   x: Time
   y: Value
@@ -67,7 +67,7 @@ SDDR in air, irr schedule 2:
     - SDDR in air irr. 2
   plot_type: ce
   title: SDDR in air, irr schedule 2
-  x_label: Time after shutdown [s]
+  x_label: "Time after shutdown $\\left[\\mathrm{s}\\right]$"
   y_labels: C/E
   x: Time
   y: Value

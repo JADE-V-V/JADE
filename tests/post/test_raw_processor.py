@@ -465,6 +465,36 @@ class TestRawProcessor:
                 processor = RawProcessor(cfg, subfolder, path)
                 processor.process_raw_data()
 
+    def test_RCR_SS(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("RCR-SS.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "RCR-SS"),
+        ]
+
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            for subfolder in folder.iterdir():
+                processor = RawProcessor(cfg, subfolder, path)
+                processor.process_raw_data()
+
+    def test_RCR_Fe_Ni(self, tmpdir):
+        with as_file(RAW_CFG_FILES_MCNP.joinpath("RCR-Fe+Ni.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [
+            Path(SIMULATION_FOLDER, "_mcnp_-_FENDL 3.2c_", "RCR-Fe+Ni"),
+        ]
+
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            for subfolder in folder.iterdir():
+                processor = RawProcessor(cfg, subfolder, path)
+                processor.process_raw_data()
+
     def test_ISIS_800MeV_C(self, tmpdir):
         with as_file(RAW_CFG_FILES_MCNP.joinpath("ISIS-800MeV-C.yaml")) as f:
             cfg = ConfigRawProcessor.from_yaml(f)

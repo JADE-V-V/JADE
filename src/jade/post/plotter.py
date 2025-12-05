@@ -3,8 +3,10 @@ from __future__ import annotations
 import math
 from abc import ABC, abstractmethod
 
+import warnings
 import matplotlib.pyplot as plt
 import numpy as np
+
 import pandas as pd
 import seaborn as sns
 from f4enix.input.libmanager import LibManager
@@ -18,6 +20,7 @@ from matplotlib.ticker import AutoLocator, AutoMinorLocator, LogLocator, Multipl
 
 from jade.config.atlas_config import PlotConfig, PlotType
 from jade.post.manipulate_tally import compare_data, ComparisonType
+
 
 matplotlib.use("Agg")  # use a non-interactive backend
 LM = LibManager()
@@ -613,15 +616,17 @@ class CEPlot(Plot):
                             label,
                         )
                     else:
-                        axes[i].scatter(
-                            dfv.index,
-                            dfv.values,
-                            label=label,
-                            color=COLORS[idx],
-                            marker=MARKERS[idx],
-                            # the marker should be not filled
-                            facecolors="none",
-                        )
+                        with warnings.catch_warnings():
+                            warnings.simplefilter("ignore", category=UserWarning)
+                            axes[i].scatter(
+                                dfv.index,
+                                dfv.values,
+                                label=label,
+                                color=COLORS[idx],
+                                marker=MARKERS[idx],
+                                # the marker should be not filled
+                                facecolors="none",
+                            )
                     # add error bars
                     axes[i].errorbar(
                         dfv.index,
@@ -1019,21 +1024,25 @@ def _apply_CE_limits(
         alpha=0,
     )
 
-    # normal points
-    ax.scatter(
-        norm[0],
-        norm[1],
-        label=label,
-        color=COLORS[idx],
-        marker=MARKERS[idx],
-        # the marker should be not filled
-        facecolors="none",
-    )
-    # upper and lower limits
-    ax.scatter(upper[0], upper[1], marker=CARETUPBASE, c=COLORS[idx], facecolors="none")
-    ax.scatter(
-        lower[0], lower[1], marker=CARETDOWNBASE, c=COLORS[idx], facecolors="none"
-    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=UserWarning)
+        # normal points
+        ax.scatter(
+            norm[0],
+            norm[1],
+            label=label,
+            color=COLORS[idx],
+            marker=MARKERS[idx],
+            # the marker should be not filled
+            facecolors="none",
+        )
+        # upper and lower limits
+        ax.scatter(
+            upper[0], upper[1], marker=CARETUPBASE, c=COLORS[idx], facecolors="none"
+        )
+        ax.scatter(
+            lower[0], lower[1], marker=CARETDOWNBASE, c=COLORS[idx], facecolors="none"
+        )
     # additional legend
     leg = [
         Line2D(

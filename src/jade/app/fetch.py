@@ -12,8 +12,8 @@ import requests
 
 from jade.helper.aux_functions import PathLike
 
-BRANCH = "main"  # TODO change in main once merged the PR
-IAEA_URL = f"https://github.com/IAEA-NDS/open-benchmarks/archive/{BRANCH}.zip"
+IAEA_URL = r"https://github.com/IAEA-NDS/open-benchmarks/archive/main.zip"
+RAW_DATA_GITHUB_URL = r"https://github.com/JADE-V-V/JADE-RAW-RESULTS/archive/main.zip"
 
 
 def _fetch_from_git(
@@ -128,14 +128,23 @@ def _install_standard_folder_structure(
     exp_data_root: PathLike,
     path_to_inputs: str | os.PathLike,
     path_to_exp_data: str | os.PathLike,
+    only_exp_data: bool = False,
+    only_inputs: bool = False,
 ) -> bool:
     if isinstance(extracted_folder, bool):
         return False
 
-    for fetched_folder, install_folder in [
-        (path_to_inputs, inputs_root),
-        (path_to_exp_data, exp_data_root),
-    ]:
+    if only_exp_data:
+        to_install = [(path_to_exp_data, exp_data_root)]
+    elif only_inputs:
+        to_install = [(path_to_inputs, inputs_root)]
+    else:
+        to_install = [
+            (path_to_inputs, inputs_root),
+            (path_to_exp_data, exp_data_root),
+        ]
+
+    for fetched_folder, install_folder in to_install:
         _install_data(fetched_folder, install_folder)
 
     # Once done, delete the src folder
@@ -175,9 +184,7 @@ def fetch_iaea_inputs(inputs_root: PathLike, exp_data_root: PathLike) -> bool:
     return success
 
 
-def fetch_f4e_inputs(
-    inputs_root: PathLike, exp_data_root: PathLike, access_token: str
-) -> bool:
+def fetch_f4e_inputs(inputs_root: PathLike, access_token: str) -> bool:
     """Fetch F4E benchmark inputs and experimental data and copy them to
     the correct folder in jade structure. This will always override the available
     data.
@@ -186,8 +193,6 @@ def fetch_f4e_inputs(
     ----------
     inputs_root : PathLike
         path to the root folder where the inputs will be stored.
-    exp_data_root : PathLike
-        path to the root folder where the experimental data will be stored.
     access_token : str
         Authorization token to access the F4E GitLab.
 
@@ -207,11 +212,43 @@ def fetch_f4e_inputs(
     if not isinstance(extracted_folder, PathLike):  # anything else that went wrong
         return False
     path_to_inputs = Path(extracted_folder, "inputs")
+
+    success = _install_standard_folder_structure(
+        extracted_folder,
+        inputs_root,
+        "",
+        path_to_inputs,
+        "",
+        only_inputs=True,
+    )
+    return success
+
+
+def fetch_f4e_exp_data(exp_data_root: PathLike) -> bool:
+    """Fetch F4E benchmark experimental data and copy them to
+    the correct folder in jade structure. This will always override the available
+    data.
+
+    Parameters
+    ----------
+    exp_data_root : PathLike
+        path to the root folder where the experimental data will be stored.
+
+    Returns
+    -------
+    bool
+        True if the experimental data were successfully fetched, False otherwise.
+    """
+    extracted_folder = str(
+        _fetch_from_git(RAW_DATA_GITHUB_URL)
+    )  # no token required anymore
+
     path_to_exp_data = Path(
         extracted_folder,
-        "exp_results",
+        "ROOT",
+        "_exp_-_exp_",
     )
     success = _install_standard_folder_structure(
-        extracted_folder, inputs_root, exp_data_root, path_to_inputs, path_to_exp_data
+        extracted_folder, "", exp_data_root, "", path_to_exp_data, only_exp_data=True
     )
     return success

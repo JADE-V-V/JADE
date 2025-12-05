@@ -5,7 +5,7 @@ import logging
 import os
 from pathlib import Path
 
-from jade.config.raw_config import ConfigRawProcessor
+from jade.config.raw_config import ConfigRawProcessor, TallyModOption
 from jade.helper.aux_functions import PathLike, get_jade_version
 from jade.helper.constants import CODE
 from jade.post.manipulate_tally import CONCAT_FUNCTIONS, MOD_FUNCTIONS
@@ -84,6 +84,14 @@ class RawProcessor:
                     )
                     continue
                 for mod_option, keyargs in modifications:
+                    if mod_option == TallyModOption.VOLUME:
+                        keyargs = {
+                            "volumes": self.sim_output.output.cell_data.cell_volumes
+                        }
+                    if mod_option == TallyModOption.MASS:
+                        keyargs = {
+                            "masses": self.sim_output.output.cell_data.cell_masses
+                        }
                     tally = MOD_FUNCTIONS[mod_option](tally, **keyargs)
                 mod_tallies.append(tally)
             # in case the number of found tallies is zero skip the df printing

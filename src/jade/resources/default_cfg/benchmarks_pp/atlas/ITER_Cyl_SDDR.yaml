@@ -4,7 +4,7 @@ Neutron flux:
   plot_type: barplot
   title: Total neutron flux in ITER Cylindrical SDDR
   x_label: Location
-  y_labels: Neutron flux [#/cm^2/s]
+  y_labels: "Neutron flux $\\left[\\mathrm{cm}^{-2}\\cdot\\mathrm{s}^{-1}\\right]$"
   x: Cells-Segments
   y: Value
   plot_args:
@@ -15,7 +15,7 @@ Gamma flux at 0s after shutdown:
   plot_type: barplot
   title: Total photon flux at 0s after shutdown
   x_label: Location
-  y_labels: Photon flux [#/cm^2/s]
+  y_labels: "Photon flux $\\left[\\mathrm{cm}^{-2}\\cdot\\mathrm{s}^{-1}\\right]$"
   x: Cells
   y: Value
   subsets: [{'result': 'Gamma flux', 'values': {'Time': ['0s']}}]
@@ -27,7 +27,7 @@ Gamma flux at 1e6s after shutdown:
   plot_type: barplot
   title: Total photon flux at 1e6s after shutdown
   x_label: Location
-  y_labels: Photon flux [#/cm^2/s]
+  y_labels: "Photon flux $\\left[\\mathrm{cm}^{-2}\\cdot\\mathrm{s}^{-1}\\right]$"
   x: Cells
   y: Value
   subsets: [{'result': 'Gamma flux', 'values': {'Time': ['1e6s']}}]
@@ -39,7 +39,7 @@ SDDR at 0s after shutdown:
   plot_type: barplot
   title: SDDR in ITER Cylindrical SDDR
   x_label: Location
-  y_labels: SDDR [#/cm^2/s]
+  y_labels: "SDDR $\\left[\\mathrm{cm}^{-2}\\cdot\\mathrm{s}^{-1}\\right]$"
   x: Cells
   y: Value
   subsets: [{'result': 'SDDR', 'values': {'Time': ['0s']}}]
@@ -51,7 +51,7 @@ SDDR at 1e6s after shutdown:
   plot_type: barplot
   title: SDDR in ITER Cylindrical SDDR
   x_label: Location
-  y_labels: SDDR [#/cm^2/s]
+  y_labels: "SDDR $\\left[\\mathrm{cm}^{-2}\\cdot\\mathrm{s}^{-1}\\right]$"
   x: Cells
   y: Value
   subsets: [{'result': 'SDDR', 'values': {'Time': ['1e6s']}}]

@@ -1,0 +1,87 @@
+Neutron flux HPD:
+  results:
+   - Neutron flux HPD
+  plot_type: binned
+  title: Neutron flux [0.1,1.3] MeV
+  x_label: Energy [MeV]
+  y_labels: "Neutron fluence [$n/cm^2/s/MeV$]"
+  x: Energy
+  y: Value
+  plot_args:
+    show_error: true
+    show_CE: true
+Neutron flux HPD CE:
+  results:
+   - Neutron flux HPD
+  plot_type: ce
+  title: Neutron flux [0.1,1.3] MeV
+  x_label: Energy [MeV]
+  y_labels: C/E
+  x: Energy
+  y: Value
+  plot_args:
+    style: 'step'
+    ce_limits: [0.5, 1.5]
+Neutron flux SSD:
+  results:
+   - Neutron flux SSD
+  plot_type: binned
+  title: Neutron flux [1,12] MeV
+  x_label: Energy [MeV]
+  y_labels: "Neutron fluence [$n/cm^2/s/MeV$]"
+  x: Energy
+  y: Value
+  plot_args:
+    show_error: true
+    show_CE: true
+Neutron flux SSD CE:
+  results:
+   - Neutron flux SSD
+  plot_type: ce
+  title: Neutron flux [1,12] MeV
+  x_label: Energy [MeV]
+  y_labels: C/E
+  x: Energy
+  y: Value
+  plot_args:
+    style: 'step'
+    ce_limits: [0.5, 1.5]
+Cumulative Reaction Rate 58Ni(n,p)58Co:
+  results:
+    - Cumulative Reaction Rate Ni
+  plot_type: binned
+  title: Surface Reaction Rate for 58Ni(n,p)58Co
+  x_label: Energy [MeV]
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
+  x: Energy
+  y: Value
+  expand_runs: true
+  xlimits: [0.1, 30]
+  plot_args:
+    yscale: linear
+Cumulative Reaction Rate 115In(n,n')115mIn:
+  results:
+    - Cumulative Reaction Rate In
+  plot_type: binned
+  title: Surface Reaction Rate for 115In(n,n')115mIn
+  x_label: Energy [MeV]
+  y_labels: "Normalized Cumulative Reaction Rate [%]"
+  x: Energy
+  y: Value
+  expand_runs: true
+  xlimits: [0.1, 30]
+  plot_args:
+    yscale: linear
+Reaction Rate SR:
+  results:
+    - Total Reaction Rate Ni
+    - Total Reaction Rate In
+  plot_type: ce
+  title: Surface Reaction Rates for 58Ni(n,p)58Co and 115In(n,n')115mIn
+  x_label: Reaction
+  y_labels: C/E
+  x: Cells
+  y: Value
+  plot_args:
+    style: 'point'
+    ce_limits: [0.5, 1.5]

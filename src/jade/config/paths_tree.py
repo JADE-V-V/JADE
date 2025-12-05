@@ -137,7 +137,7 @@ class CfgTree:
         self.bench_additional_files = Path(root, "benchmarks")
         self.bench_pp = Path(root, "benchmarks_pp")
         self.bench_raw = Path(root, "benchmarks_pp/raw")
-        self.exe_cfg = Path(root, "exe_cfg")
+        self.exe_cfg = Path(root, "exe_config")
         self.env_vars_file = Path(root, "env_vars_cfg.yml")
         self.libs_cfg = Path(root, "libs_cfg.yml")
         self.run_cfg = Path(root, "run_cfg.yml")

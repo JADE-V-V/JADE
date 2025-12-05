@@ -64,6 +64,24 @@ class Table(ABC):
 
         return df.reset_index()
 
+    @staticmethod
+    def _get_safe_name(sheet_name: str) -> str:
+        """Cuts name string down to length 32 or smaller.
+
+        Parameters
+        ----------
+        sheet_name : str
+            Input sheet name string
+
+        Returns
+        -------
+        sheet_name
+            Shortened sheet name string
+        """
+        if len(sheet_name) > MAX_SHEET_NAME_LEN:
+            sheet_name = sheet_name[:MAX_SHEET_NAME_LEN]
+        return sheet_name
+
     def _add_sheet(
         self,
         sheet_name: str,
@@ -71,9 +89,19 @@ class Table(ABC):
         apply_conditional: bool = True,
         title: str | None = None,
     ):
-        if len(sheet_name) > MAX_SHEET_NAME_LEN:
-            sheet_name = sheet_name[:31]
+        """Function to add a worksheet from pandas dataframe
 
+        Parameters
+        ----------
+        sheet_name : str
+            Name of sheet
+        df : pd.DataFrame
+            Pandas dataframe containing sheet data
+        apply_conditional : bool, optional
+            Set to true to apply conditional formatting
+        title : str | None, optional
+            Sheet title
+        """
         ws = self.writer.book.add_worksheet(sheet_name)
         if title is None:
             title = sheet_name
@@ -104,7 +132,9 @@ class Table(ABC):
     def add_sheets(self):
         """Add the comparison sheets to the workbook."""
         dfs = self._get_sheet()
-        sheet_name = f"{self.cfg.comparison_type.value} {self.cfg.name}"
+        sheet_name = self._get_safe_name(
+            f"{self.cfg.comparison_type.value} {self.cfg.name}"
+        )
         title = f"{sheet_name} - {self.ref_tag} vs {self.target_tag}"
         self._add_sheet(sheet_name, dfs[0], apply_conditional=True, title=title)
 
@@ -112,7 +142,7 @@ class Table(ABC):
             for df, val, tag in zip(
                 [dfs[1], dfs[2]], ["ref", "target"], [self.ref_tag, self.target_tag]
             ):
-                sheet_name = f"{val} rel. err. {self.cfg.name}"
+                sheet_name = self._get_safe_name(f"{val} rel. err. {self.cfg.name}")
                 title = f"{tag} Relative Error for {self.cfg.name}"
                 self._add_sheet(sheet_name, df, title=title)
                 # apply standard formatting for error sheets

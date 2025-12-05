@@ -39,6 +39,24 @@ class TestJadeApp:
         app.run_benchmarks()
         assert len(os.listdir(tmpdir)) > 0
 
+    def test_run_benchmarks_global_job(self, tmpdir, monkeypatch):
+        app = JadeApp(root=DUMMY_ROOT, skip_init=True)
+        # override the simulation root folder
+        app.tree.simulations = tmpdir
+        # change the run config to job submission
+        app.run_cfg.env_vars.run_mode = RunMode.GLOBAL_JOB
+        # set the only input to false in all benchmarks
+        for bench in app.run_cfg.benchmarks.values():
+            bench.only_input = False
+            # Mock the lib.path to a valid string
+            for code, lib in bench.run:
+                lib.path = RUN_RES.joinpath("xsdir.txt")
+        monkeypatch.setattr("builtins.input", lambda _: "y")
+
+        commands = app.run_benchmarks(testing=True)
+        assert len(commands) == 1
+        assert commands[0].count("cd ") == 4
+
     def test_raw_process(self, tmpdir):
         app = JadeApp(root=DUMMY_ROOT, skip_init=True)
         # override the raw processor folder
@@ -57,6 +75,10 @@ class TestJadeApp:
         initial_mod_time = os.path.getmtime(filepath)
         app.raw_process(subset=["Oktavian"])
         assert os.path.getmtime(filepath) == initial_mod_time
+
+        # finally try the force option and check that the file was overridden
+        app.raw_process(subset=["Oktavian"], force=True)
+        assert os.path.getmtime(filepath) > initial_mod_time
 
     def test_post_process(self, tmpdir):
         app = JadeApp(root=DUMMY_ROOT, skip_init=True)
@@ -126,19 +148,19 @@ class TestJadeApp:
             0,
             10,
             {CODE.MCNP: "mcnp6.2"},
-            run_mode=RunMode.SERIAL,
-            code_configurations={
-                CODE.MCNP: Path(DUMMY_ROOT, "cfg/exe_config/mcnp_config.sh")
+            run_mode=RunMode.LOCAL,
+            code_job_template={
+                CODE.MCNP: Path(DUMMY_ROOT, "cfg/exe_config/mcnp_template.sh")
             },
-            batch_template=Path(DUMMY_ROOT, "cfg/batch_templates/Slurmtemplate.sh"),
-            batch_system="sbatch",
+            scheduler_command="sbatch",
+            exe_cfg_root=Path(DUMMY_ROOT, "cfg/exe_config"),
         )
         run_cfg = RunConfig(env_vars, {"Dummy_continue": cfg})
         app.run_cfg = run_cfg
         with pytest.raises(FileNotFoundError):
             app.continue_run()
 
-        env_vars.run_mode = RunMode.JOB_SUMISSION
+        env_vars.run_mode = RunMode.JOB_SUBMISSION
         run_cfg = RunConfig(env_vars, {"Dummy_continue": cfg})
         app.run_cfg = run_cfg
         command = app.continue_run(testing=True)

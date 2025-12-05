@@ -370,7 +370,7 @@ class TestRawProcessor:
 
     @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC not available")
     def test_FNG_HCPB_openmc(self, tmpdir):
-        with as_file(RAW_CFG_FILES_OPENMC.joinpath("Sphere.yaml")) as f:
+        with as_file(RAW_CFG_FILES_OPENMC.joinpath("FNG-HCPB.yaml")) as f:
             cfg = ConfigRawProcessor.from_yaml(f)
             
         folders = [Path(SIMULATION_FOLDER, "_openmc_-_FENDL 3.2b_", "FNG-HCPB"),

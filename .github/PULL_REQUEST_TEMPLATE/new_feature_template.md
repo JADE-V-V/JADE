@@ -1,3 +1,12 @@
+---
+name: New feature
+about: Add a new feature
+title: "[New feature] - XXX"
+labels: new feature
+assignees: ''
+
+---
+
 # New Feature Template
 
 ## Description

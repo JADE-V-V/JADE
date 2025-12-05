@@ -1,3 +1,12 @@
+---
+name: New benchmark
+about: Add a new benchmark to JADE
+title: "[New benchmark] - XXX"
+labels: new benchmark
+assignees: ''
+
+---
+
 # New Benchmark Template
 
 ## Description

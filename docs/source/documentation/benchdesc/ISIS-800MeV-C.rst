@@ -1,13 +1,16 @@
 ISIS Benchmark Experiment on Deep-Penetration Neutrons through Concrete and Iron Shields WITH 800 MeV PROTONS
--------
 
 .. important::
 
-    This benchmark is part of the SINBAD collection and cannot be freely distributed with JADE.
 
-The purpose of this experiment was to measure the deep-penetration neutrons through a thick bulk shield at an intense spallation neutron source facility, ISIS, of the Rutherford Appleton Laboratory (RAL), United Kingdom. 
-The experiments were performed with 800MeV protons. The protons stopped on a Tantalum target of 30cm effective thickness, located in a vacuum chamber and cooled by heavy water (D2O).  
-Different measurements were performed during the experiments to fully cover the neutron spectrum, including solid state neutron track detectors (SSNTD), thermoluminiscent dosimeters (TLD), activation detectors and an indium activation multi-moderator detector. The fast neutron flux was measured with the activation threshold detectors by using the C12(n,2n)C11, Al27(n,a)Na24 and the various threshold Bi209(n,xn)Bi210-x reactions. The activation of C12 dosimeters was measured between layers of ordinary concrete and steel located on top of the biological shield, i.e. at an emission angle of 90º relative to beam direction.
+    This benchmark is part of the SINBAD collection and cannot be freely distributed with JADE.
+
+    The purpose of this experiment was to measure the deep-penetration neutrons through a thick bulk shield at an intense spallation neutron source facility, ISIS, of the Rutherford Appleton Laboratory (RAL), United Kingdom.
+
+The experiments were performed with 800MeV protons. The protons stopped on a Tantalum target of 30cm effective thickness, located in a vacuum chamber and cooled by heavy water (D2O).
+
+Different measurements were performed during the experiments to fully cover the neutron spectrum, including solid state neutron track detectors (SSNTD), thermoluminiscent dosimeters (TLD), activation detectors and an indium activation multi-moderator detector. The fast neutron flux was measured with the activation threshold detectors by using the C12(n,2n)C11, Al27(n,a)Na24 and the various threshold Bi209(n,xn)Bi210-x reactions. The activation of C12 dosimeters was measured between layers of ordinary concrete and stell located on top of the biological shield, i.e. at an emission angle of 90º relative to beam direction.
+
 In this experiment additional shielding slabs of ordinary concrete and iron were placed upon the top center of the bulk shield just above the target, as shown in Fig. 1. 
 Figs. 2 - 4 show photos of this experiment at the top of the target station. The additional 
 concrete and iron were assembled by 119-cm-diameter by 20-cm-thick slabs of 2.36-g/cm3 

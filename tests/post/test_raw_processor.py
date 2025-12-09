@@ -23,7 +23,6 @@ RAW_CFG_FILES_MCNP = files(default_cfg).joinpath("benchmarks_pp/raw/mcnp")
 RAW_CFG_FILES_D1S = files(default_cfg).joinpath("benchmarks_pp/raw/d1s")
 RAW_CFG_FILES_OPENMC = files(default_cfg).joinpath("benchmarks_pp/raw/openmc")
 
-
 class TestRawProcessor:
     def test_process_raw_data(self, tmpdir):
         res1 = ResultConfig(
@@ -360,6 +359,21 @@ class TestRawProcessor:
 
         folders = [
             Path(SIMULATION_FOLDER, "_mcnp_-_JEFF 3.3_", "FNG-HCPB"),
+        ]
+
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            for subfolder in folder.iterdir():
+                processor = RawProcessor(cfg, subfolder, path)
+                processor.process_raw_data()
+
+    @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC not available")
+    def test_FNG_HCPB_openmc(self, tmpdir):
+        with as_file(RAW_CFG_FILES_OPENMC.joinpath("FNG-HCPB.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+            
+        folders = [Path(SIMULATION_FOLDER, "_openmc_-_FENDL 3.2b_", "FNG-HCPB"),
         ]
 
         for i, folder in enumerate(folders):

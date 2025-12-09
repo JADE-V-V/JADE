@@ -76,9 +76,12 @@ class TestJadeApp:
         app.raw_process(subset=["Oktavian"])
         assert os.path.getmtime(filepath) == initial_mod_time
 
-        # finally try the force option and check that the file was overridden
+        # try the force option and check that the file was overridden
         app.raw_process(subset=["Oktavian"], force=True)
         assert os.path.getmtime(filepath) > initial_mod_time
+
+        # try case where openmc is not available on windows
+        app.raw_process(subset=["TUD-W"])
 
     def test_post_process(self, tmpdir):
         app = JadeApp(root=DUMMY_ROOT, skip_init=True)

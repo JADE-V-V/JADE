@@ -18,7 +18,7 @@ from jade.config.pp_config import PostProcessConfig
 from jade.config.raw_config import ConfigRawProcessor
 from jade.config.run_config import RunConfig, RunMode
 from jade.config.status import GlobalStatus
-from jade.helper.__optionals__ import TKINTER_AVAIL
+from jade.helper.__optionals__ import TKINTER_AVAIL, OMC_AVAIL
 
 if TKINTER_AVAIL:
     from jade.gui.post_config_gui import PostConfigGUI
@@ -235,6 +235,13 @@ class JadeApp:
                 if (code, lib, bench) not in self.status.raw_data:
                     if subset is not None and bench not in subset:
                         continue
+                    # if openmc is not available in system, skip processing
+                    if code == CODE.OPENMC and not OMC_AVAIL:
+                        logging.warning(
+                            f"OpenMC not available in the system. Skipping {bench} processing."
+                        )
+                        continue
+
                     raw_cfg = get_config(root_cfg, code, bench)
                     if raw_cfg is None:
                         continue

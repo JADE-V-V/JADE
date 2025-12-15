@@ -223,6 +223,11 @@ class JadeApp:
 
         to_process = {}
         for code, lib, bench in successful:
+            # if openmc is not available in system, skip processing
+            if code == CODE.OPENMC and not OMC_AVAIL:
+                logging.warning(f"OpenMC not installed. Skipping {bench} processing.")
+                continue
+
             if force:
                 # process all the successful simulations, force override
                 raw_cfg = get_config(root_cfg, code, bench)
@@ -234,12 +239,6 @@ class JadeApp:
                 # only process if not already done
                 if (code, lib, bench) not in self.status.raw_data:
                     if subset is not None and bench not in subset:
-                        continue
-                    # if openmc is not available in system, skip processing
-                    if code == CODE.OPENMC and not OMC_AVAIL:
-                        logging.warning(
-                            f"OpenMC not available in the system. Skipping {bench} processing."
-                        )
                         continue
 
                     raw_cfg = get_config(root_cfg, code, bench)

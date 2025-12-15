@@ -113,7 +113,7 @@ class SingleRun(ABC):
             path to the output folder.
         """
         # write the input to the output folder
-        self.input._write(output_folder)
+        self.input.write(output_folder)
 
     def print_metadata(self, outpath: PathLike, metadata_file: PathLike):
         """Print the metadata of the run to the output folder.

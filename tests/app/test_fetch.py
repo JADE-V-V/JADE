@@ -51,7 +51,10 @@ def test_wrong_fetch_f4e_inputs(tmpdir):
     assert not success
 
 
-@pytest.mark.skipif(F4E_GITLAB_TOKEN is None, reason="No token found")
+@pytest.mark.skipif(
+    F4E_GITLAB_TOKEN is None or os.environ.get("GITHUB_ACTIONS") == "true",
+    reason="No token found or running on GitHub CI"
+)
 def test_fetch_f4e_inputs(tmpdir):
     assert F4E_GITLAB_TOKEN is not None
     # test correct fetching in an empty folder

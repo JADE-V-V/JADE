@@ -353,6 +353,21 @@ class TestRawProcessor:
                 processor = RawProcessor(cfg, subfolder, path)
                 processor.process_raw_data()
 
+    @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC not available")
+    def test_FNG_SS_openmc(self, tmpdir):
+        with as_file(RAW_CFG_FILES_OPENMC.joinpath("FNG-SS.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        folders = [Path(SIMULATION_FOLDER, "_openmc_-_FENDL 3.2b_", "FNG-SS"),
+        ]
+
+        for i, folder in enumerate(folders):
+            path = tmpdir.join(str(i))
+            os.makedirs(path)
+            for subfolder in folder.iterdir():
+                processor = RawProcessor(cfg, subfolder, path)
+                processor.process_raw_data()
+
     def test_FNG_HCPB(self, tmpdir):
         with as_file(RAW_CFG_FILES_MCNP.joinpath("FNG-HCPB.yaml")) as f:
             cfg = ConfigRawProcessor.from_yaml(f)

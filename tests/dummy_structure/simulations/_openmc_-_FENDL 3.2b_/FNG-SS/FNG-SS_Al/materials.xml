@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='utf-8'?>
+<materials>
+  <material id="1">
+    <density units="g/cm3" value="7.954"/>
+    <nuclide name="B10" wo="0.00028"/>
+    <nuclide name="B11" wo="0.00287"/>
+    <nuclide name="C12" wo="0.039520273803427465"/>
+    <nuclide name="C13" wo="0.000479726196572539"/>
+    <nuclide name="Si28" wo="0.3767"/>
+    <nuclide name="Si29" wo="0.0198"/>
+    <nuclide name="Si30" wo="0.0135"/>
+    <nuclide name="V50" wo="0.0003921925373160739"/>
+    <nuclide name="V51" wo="0.15960780746268394"/>
+    <nuclide name="Cr50" wo="0.7012"/>
+    <nuclide name="Cr52" wo="14.0615"/>
+    <nuclide name="Cr53" wo="1.6252"/>
+    <nuclide name="Cr54" wo="0.4122"/>
+    <nuclide name="Mn55" wo="1.14"/>
+    <nuclide name="Fe54" wo="3.8447"/>
+    <nuclide name="Fe56" wo="62.5851"/>
+    <nuclide name="Fe57" wo="1.4712"/>
+    <nuclide name="Fe58" wo="0.1992"/>
+    <nuclide name="Co59" wo="0.14"/>
+    <nuclide name="Ni58" wo="7.1901"/>
+    <nuclide name="Ni60" wo="2.865"/>
+    <nuclide name="Ni61" wo="0.1266"/>
+    <nuclide name="Ni62" wo="0.4103"/>
+    <nuclide name="Ni64" wo="0.1079"/>
+    <nuclide name="Cu63" wo="0.0617"/>
+    <nuclide name="Cu65" wo="0.0284"/>
+    <nuclide name="Mo92" wo="0.3015"/>
+    <nuclide name="Mo94" wo="0.1919"/>
+    <nuclide name="Mo95" wo="0.3339"/>
+    <nuclide name="Mo96" wo="0.3534"/>
+    <nuclide name="Mo97" wo="0.2046"/>
+    <nuclide name="Mo98" wo="0.5219"/>
+    <nuclide name="Mo100" wo="0.2126"/>
+  </material>
+  <material id="2">
+    <density units="g/cm3" value="1.0"/>
+    <nuclide ao="2.0" name="H1"/>
+    <nuclide ao="1.0" name="O16"/>
+  </material>
+  <material id="3">
+    <density units="g/cm3" value="8.94"/>
+    <nuclide name="Cu63" wo="0.685"/>
+    <nuclide name="Cu65" wo="0.315"/>
+  </material>
+  <material id="4">
+    <density units="atom/b-cm" value="4.614e-05"/>
+    <nuclide ao="0.788903" name="N14"/>
+    <nuclide ao="0.211097" name="O16"/>
+  </material>
+  <material id="5">
+    <density units="g/cm3" value="2.7"/>
+    <nuclide ao="1.0" name="Al27"/>
+  </material>
+  <material id="6">
+    <density units="g/cm3" value="2.6"/>
+    <nuclide name="H1" wo="0.005358"/>
+    <nuclide name="O16" wo="0.474193"/>
+    <nuclide name="Na23" wo="0.016312"/>
+    <nuclide name="Al27" wo="0.043491"/>
+    <nuclide name="Si28" wo="0.2753"/>
+  </material>
+  <material id="7">
+    <density units="g/cm3" value="8.4"/>
+    <nuclide ao="0.029" name="Fe54"/>
+    <nuclide ao="0.4586" name="Fe56"/>
+    <nuclide ao="0.011" name="Fe57"/>
+    <nuclide ao="0.0014" name="Fe58"/>
+    <nuclide ao="0.34585" name="Cu63"/>
+  </material>
+  <material id="8">
+    <density units="g/cm3" value="2.7"/>
+    <nuclide ao="1.0" name="Al27"/>
+  </material>
+  <material id="9">
+    <density units="g/cm3" value="0.07954"/>
+    <nuclide name="B10" wo="0.00028"/>
+    <nuclide name="B11" wo="0.00287"/>
+    <nuclide name="C12" wo="0.039520273803427465"/>
+    <nuclide name="C13" wo="0.000479726196572539"/>
+    <nuclide name="Si28" wo="0.3767"/>
+    <nuclide name="Si29" wo="0.0198"/>
+    <nuclide name="Si30" wo="0.0135"/>
+    <nuclide name="V50" wo="0.0003921925373160739"/>
+    <nuclide name="V51" wo="0.15960780746268394"/>
+    <nuclide name="Cr50" wo="0.7012"/>
+    <nuclide name="Cr52" wo="14.0615"/>
+    <nuclide name="Cr53" wo="1.6252"/>
+    <nuclide name="Cr54" wo="0.4122"/>
+    <nuclide name="Mn55" wo="1.14"/>
+    <nuclide name="Fe54" wo="3.8447"/>
+    <nuclide name="Fe56" wo="62.5851"/>
+    <nuclide name="Fe57" wo="1.4712"/>
+    <nuclide name="Fe58" wo="0.1992"/>
+    <nuclide name="Co59" wo="0.14"/>
+    <nuclide name="Ni58" wo="7.1901"/>
+    <nuclide name="Ni60" wo="2.865"/>
+    <nuclide name="Ni61" wo="0.1266"/>
+    <nuclide name="Ni62" wo="0.4103"/>
+    <nuclide name="Ni64" wo="0.1079"/>
+    <nuclide name="Cu63" wo="0.0617"/>
+    <nuclide name="Cu65" wo="0.0284"/>
+    <nuclide name="Mo92" wo="0.3015"/>
+    <nuclide name="Mo94" wo="0.1919"/>
+    <nuclide name="Mo95" wo="0.3339"/>
+    <nuclide name="Mo96" wo="0.3534"/>
+    <nuclide name="Mo97" wo="0.2046"/>
+    <nuclide name="Mo98" wo="0.5219"/>
+    <nuclide name="Mo100" wo="0.2126"/>
+  </material>
+  <material id="10">
+    <density units="g/cm3" value="0.73"/>
+    <nuclide ao="1.0" name="Al27"/>
+  </material>
+  <material id="11">
+    <density units="g/cm3" value="0.52"/>
+    <nuclide ao="1.0" name="Al27"/>
+  </material>
+  <material id="12">
+    <density units="g/cm3" value="2.7"/>
+    <nuclide ao="1.0" name="Fe56"/>
+  </material>
+  <material id="13">
+    <density units="g/cm3" value="2.7"/>
+    <nuclide ao="1.0" name="Fe56"/>
+  </material>
+  <material id="14">
+    <density units="g/cm3" value="2.7"/>
+    <nuclide ao="1.0" name="Fe56"/>
+  </material>
+  <material id="15">
+    <density units="g/cm3" value="2.7"/>
+    <nuclide ao="1.0" name="Fe56"/>
+  </material>
+</materials>

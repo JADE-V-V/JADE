@@ -1,0 +1,37 @@
+ ======================>     TALLY 4: AL-27(N,A)     <======================
+
+ Cell 500
+   Particle: neutron
+     Energy Function f([3.2e+06, ..., 6.0e+07]) = [0.0e+00, ..., 2.2e-04]
+       Total Material
+         Flux                                 1.35506e-05 +/- 3.97802e-08
+ Cell 501
+   Particle: neutron
+     Energy Function f([3.2e+06, ..., 6.0e+07]) = [0.0e+00, ..., 2.2e-04]
+       Total Material
+         Flux                                 3.34738e-06 +/- 2.42775e-08
+ Cell 502
+   Particle: neutron
+     Energy Function f([3.2e+06, ..., 6.0e+07]) = [0.0e+00, ..., 2.2e-04]
+       Total Material
+         Flux                                 3.53607e-07 +/- 7.13035e-09
+ Cell 503
+   Particle: neutron
+     Energy Function f([3.2e+06, ..., 6.0e+07]) = [0.0e+00, ..., 2.2e-04]
+       Total Material
+         Flux                                 9.71771e-08 +/- 5.61864e-09
+ Cell 504
+   Particle: neutron
+     Energy Function f([3.2e+06, ..., 6.0e+07]) = [0.0e+00, ..., 2.2e-04]
+       Total Material
+         Flux                                 1.59976e-08 +/- 2.37492e-09
+ Cell 505
+   Particle: neutron
+     Energy Function f([3.2e+06, ..., 6.0e+07]) = [0.0e+00, ..., 2.2e-04]
+       Total Material
+         Flux                                 1.6836e-09 +/- 6.3989e-10
+ Cell 506
+   Particle: neutron
+     Energy Function f([3.2e+06, ..., 6.0e+07]) = [0.0e+00, ..., 2.2e-04]
+       Total Material
+         Flux                                 4.95755e-10 +/- 4.93204e-10

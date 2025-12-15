@@ -12,7 +12,7 @@ from tqdm import tqdm
 
 import jade.resources as res
 from jade import resources
-from jade.app.fetch import fetch_f4e_inputs, fetch_iaea_inputs, fetch_f4e_exp_data
+from jade.app.fetch import fetch_f4e_inputs, fetch_iaea_inputs, fetch_nonIAEA_exp_data
 from jade.config.paths_tree import PathsTree
 from jade.config.pp_config import PostProcessConfig
 from jade.config.raw_config import ConfigRawProcessor
@@ -99,7 +99,7 @@ class JadeApp:
             logging.error("Failed to update the IAEA benchmark inputs.")
 
         # Install F4E exp data
-        success = fetch_f4e_exp_data(self.tree.exp_data)
+        success = fetch_nonIAEA_exp_data(self.tree.exp_data)
         if not success:
             logging.error("Failed to update the F4E experimental data.")
 

@@ -4,7 +4,7 @@ import os
 
 import pytest
 
-from jade.app.fetch import fetch_f4e_inputs, fetch_iaea_inputs, fetch_f4e_exp_data
+from jade.app.fetch import fetch_f4e_inputs, fetch_iaea_inputs, fetch_nonIAEA_exp_data
 
 # By default this should set the token to None if not found
 F4E_GITLAB_TOKEN = os.getenv("F4E_GITLAB_TOKEN")
@@ -71,11 +71,11 @@ def test_fetch_f4e_inputs(tmpdir):
 def test_fetch_f4e_exp_data(tmpdir):
     """ " Test that experimental data can be correctly fetched from the F4E GitLab."""
     exp_path = tmpdir.mkdir("exp")
-    success = fetch_f4e_exp_data(exp_path)
+    success = fetch_nonIAEA_exp_data(exp_path)
     assert success
     assert len(os.listdir(exp_path)) > 0
 
     # test that there no problems when the folder is not empty
-    success = fetch_f4e_exp_data(exp_path)
+    success = fetch_nonIAEA_exp_data(exp_path)
     assert success
     assert len(os.listdir(exp_path)) > 0

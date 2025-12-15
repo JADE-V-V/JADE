@@ -224,8 +224,8 @@ def fetch_f4e_inputs(inputs_root: PathLike, access_token: str) -> bool:
     return success
 
 
-def fetch_f4e_exp_data(exp_data_root: PathLike) -> bool:
-    """Fetch F4E benchmark experimental data and copy them to
+def fetch_nonIAEA_exp_data(exp_data_root: PathLike) -> bool:
+    """Fetch non IAEA benchmark experimental data and copy them to
     the correct folder in jade structure. This will always override the available
     data.
 

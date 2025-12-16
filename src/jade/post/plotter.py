@@ -1,17 +1,16 @@
 from __future__ import annotations
 
+import logging
 import math
+import warnings
 from abc import ABC, abstractmethod
 
-import warnings
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-import logging
-
 import pandas as pd
 import seaborn as sns
 from f4enix.input.libmanager import LibManager
-import matplotlib
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
@@ -20,8 +19,8 @@ from matplotlib.patches import Patch, Rectangle
 from matplotlib.ticker import AutoLocator, AutoMinorLocator, LogLocator, MultipleLocator
 
 from jade.config.atlas_config import PlotConfig, PlotType
-from jade.post.manipulate_tally import compare_data, ComparisonType
-
+from jade.helper.aux_functions import same_index
+from jade.post.manipulate_tally import ComparisonType, compare_data
 
 matplotlib.use("Agg")  # use a non-interactive backend
 LM = LibManager()
@@ -533,28 +532,35 @@ class CEPlot(Plot):
             ref = self.data[0][1].set_index([subcases[0], self.cfg.x])
         else:
             ref = self.data[0][1].set_index(self.cfg.x)
-        val1 = ref[self.cfg.y]
-        err1 = ref["Error"]
+        val1 = ref[self.cfg.y].sort_index()
+        err1 = ref["Error"].sort_index()
 
         for codelib, df in self.data[1:]:
             if subcases:
                 target = df.set_index([subcases[0], self.cfg.x])
             else:
                 target = df.set_index(self.cfg.x)
-            val2 = target[self.cfg.y]
-            err2 = target["Error"]
+            val2 = target[self.cfg.y].sort_index()
+            err2 = target["Error"].sort_index()
             # sometimes there are index which are numerical and may have slight
             # differences due to rounding. In reality the two must be the same
             # in a C/E plot
-            if not val1.index.equals(val2.index):
-                # this is a dirty fix, it may miss some edge cases but they
-                # should be fairly easy to spot from the plots
-                logging.debug("Indices do not match, substituting with experiment")
+            if same_index(val1.index, val2.index) is False:
+                logging.error(
+                    f"Indices do not match between reference and {codelib}: "
+                    f"{val1.index}, {val2.index}"
+                )
+                raise RuntimeError("Indices do not match.")
+            else:
                 val2.index = val1.index
                 err2.index = err1.index
 
             values, errors = compare_data(
-                val1, val2, err1, err2, comparison_type=ComparisonType.RATIO
+                val1,
+                val2,
+                err1,
+                err2,
+                comparison_type=ComparisonType.RATIO,
             )
             to_plot.append((codelib, values, errors))
 

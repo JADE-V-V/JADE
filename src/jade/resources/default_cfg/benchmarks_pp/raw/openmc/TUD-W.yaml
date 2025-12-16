@@ -4,15 +4,20 @@ Neutron spectra:
   1:
     - ['by_energy', {}]
     - [format_decimals,{"decimals":{"Energy":2}}]
+    - [scale, {'factor': 0.02284}]
+    - [delete_cols, {'cols': ['energy low [eV]']}]
 Photon spectra:
   concat_option: no_action
   2:
     - ['by_energy', {}]
-    - [format_decimals,{"decimals":{"Energy":2}}]
+    - [format_decimals,{"decimals":{"Energy":3}}]
+    - [scale, {'factor': 0.02284}]
+    - [delete_cols, {'cols': ['energy low [eV]']}]
 # coarse fluxes
 Neutron spectra coarse:
   concat_option: no_action
   1:
+    - [scale, {'factor': 0.02284}]
     - [condense_groups,
        {"bins": [1.15, 3, 6, 9, 12, 20],
         "group_column": "Energy"}
@@ -20,6 +25,7 @@ Neutron spectra coarse:
 Photon spectra coarse:
   concat_option: no_action
   2:
+    - [scale, {'factor': 0.02284}]
     - [condense_groups,
        {"bins": [0.4, 3, 6, 10],
         "group_column": "Energy"}

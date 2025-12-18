@@ -1,7 +1,6 @@
 import argparse
 
 from jade.app.app import JadeApp
-from jade.helper.aux_functions import add_rmode0
 
 
 def main():

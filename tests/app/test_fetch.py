@@ -4,7 +4,7 @@ import os
 
 import pytest
 
-from jade.app.fetch import fetch_f4e_inputs, fetch_iaea_inputs
+from jade.app.fetch import fetch_f4e_inputs, fetch_iaea_inputs, fetch_nonIAEA_exp_data
 
 # By default this should set the token to None if not found
 F4E_GITLAB_TOKEN = os.getenv("F4E_GITLAB_TOKEN")
@@ -46,27 +46,36 @@ def test_wrong_fetch_f4e_inputs(tmpdir):
     test also the overwriting"""
     # test correct fetching in an empty folder
     inp_path = tmpdir.mkdir("inputs")
-    exp_path = tmpdir.mkdir("exp")
-    success = fetch_f4e_inputs(inp_path, exp_path, access_token="wrongtoken")
+    success = fetch_f4e_inputs(inp_path, access_token="wrongtoken")
     assert not success
 
 
 @pytest.mark.skipif(
     F4E_GITLAB_TOKEN is None or os.environ.get("GITHUB_ACTIONS") == "true",
-    reason="No token found or running on GitHub CI"
+    reason="No token found or running on GitHub CI",
 )
 def test_fetch_f4e_inputs(tmpdir):
     assert F4E_GITLAB_TOKEN is not None
     # test correct fetching in an empty folder
     inp_path = tmpdir.mkdir("inputs")
-    exp_path = tmpdir.mkdir("exp")
-    success = fetch_f4e_inputs(inp_path, exp_path, F4E_GITLAB_TOKEN)
+    success = fetch_f4e_inputs(inp_path, F4E_GITLAB_TOKEN)
     assert success
     assert len(os.listdir(inp_path)) > 0
+
+    # test that there no problems when the folder is not empty
+    success = fetch_f4e_inputs(inp_path, F4E_GITLAB_TOKEN)
+    assert success
+    assert len(os.listdir(inp_path)) > 0
+
+
+def test_fetch_f4e_exp_data(tmpdir):
+    """ " Test that experimental data can be correctly fetched from the F4E GitLab."""
+    exp_path = tmpdir.mkdir("exp")
+    success = fetch_nonIAEA_exp_data(exp_path)
+    assert success
     assert len(os.listdir(exp_path)) > 0
 
     # test that there no problems when the folder is not empty
-    success = fetch_f4e_inputs(inp_path, exp_path, F4E_GITLAB_TOKEN)
+    success = fetch_nonIAEA_exp_data(exp_path)
     assert success
-    assert len(os.listdir(inp_path)) > 0
     assert len(os.listdir(exp_path)) > 0

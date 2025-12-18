@@ -6,6 +6,8 @@ import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Union
 
+import numpy as np
+import pandas as pd
 import yaml
 
 if TYPE_CHECKING:
@@ -135,3 +137,26 @@ class VerboseSafeDumper(yaml.SafeDumper):
 
     def ignore_aliases(self, data):
         return True
+
+
+def same_index(
+    index1: pd.Index | pd.MultiIndex, index2: pd.Index | pd.MultiIndex
+) -> bool:
+    """Check if two pandas indices are the same, allowing for small numerical differences."""
+    if index1.nlevels != index2.nlevels:
+        return False
+    for level in range(index1.nlevels):
+        subindex1 = index1.get_level_values(level)
+        subindex2 = index2.get_level_values(level)
+        if not subindex1.equals(subindex2):
+            # Check if both indices are numeric and match within a tolerance
+            try:
+                idx1 = np.array(subindex1, dtype=float)
+                idx2 = np.array(subindex2, dtype=float)
+                if np.allclose(idx1, idx2, rtol=1e-3):
+                    continue
+                else:
+                    return False
+            except Exception:
+                return False
+    return True

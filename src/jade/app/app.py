@@ -18,7 +18,7 @@ from jade.config.pp_config import PostProcessConfig
 from jade.config.raw_config import ConfigRawProcessor
 from jade.config.run_config import RunConfig, RunMode
 from jade.config.status import GlobalStatus
-from jade.helper.__optionals__ import TKINTER_AVAIL
+from jade.helper.__optionals__ import TKINTER_AVAIL, OMC_AVAIL
 
 if TKINTER_AVAIL:
     from jade.gui.post_config_gui import PostConfigGUI
@@ -223,6 +223,11 @@ class JadeApp:
 
         to_process = {}
         for code, lib, bench in successful:
+            # if openmc is not available in system, skip processing
+            if code == CODE.OPENMC and not OMC_AVAIL:
+                logging.warning(f"OpenMC not installed. Skipping {bench} processing.")
+                continue
+
             if force:
                 # process all the successful simulations, force override
                 raw_cfg = get_config(root_cfg, code, bench)
@@ -235,6 +240,7 @@ class JadeApp:
                 if (code, lib, bench) not in self.status.raw_data:
                     if subset is not None and bench not in subset:
                         continue
+
                     raw_cfg = get_config(root_cfg, code, bench)
                     if raw_cfg is None:
                         continue

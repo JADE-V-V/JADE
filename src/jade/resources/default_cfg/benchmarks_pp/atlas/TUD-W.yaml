@@ -1,10 +1,10 @@
-Neutron flux:
+Neutron spectra:
   results:
-    - Neutron flux
+    - Neutron spectra
   plot_type: binned
-  title: Neutron flux
+  title: Neutron spectra by unit energy
   x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
-  y_labels: "Neutron flux $\\left[\\frac{1}{MeV\\cdot n \\cdot cm^2}\\right]$"
+  y_labels: "Neutron spectra $\\left[\\frac{1}{MeV\\cdot n \\cdot cm^2}\\right]$"
   x: Energy
   y: Value
   expand_runs: true
@@ -13,13 +13,13 @@ Neutron flux:
     show_error: true
     xscale: linear
 #
-Photon flux:
+Photon spectra:
   results:
-    - Photon flux
+    - Photon spectra
   plot_type: binned
-  title: Photon flux
+  title: Photon spectra by unit energy
   x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
-  y_labels: "Photon flux $\\left[\\frac{1}{MeV\\cdot n \\cdot cm^2}\\right]$"
+  y_labels: "Photon spectra $\\left[\\frac{1}{MeV\\cdot n \\cdot cm^2}\\right]$"
   x: Energy
   y: Value
   expand_runs: true
@@ -27,3 +27,48 @@ Photon flux:
     show_CE: true
     show_error: true
     xscale: linear
+C/E neutron spectra (1-9 MeV):
+  results:
+    - Neutron spectra coarse
+  plot_type: ce
+  title: Neutron spectra C/E
+  x_label: Position
+  y_labels: 'dummy'
+  x: Case
+  y: Value
+  expand_runs: false
+  plot_args:
+    subcases: ["Energy", ['1.15 - 3', '3 - 6', '6 - 9']]
+    style: 'point'
+    ce_limits: [0.5, 1.5]
+    shorten_x_name: 1
+C/E neutron spectra (>9 MeV):
+  results:
+    - Neutron spectra coarse
+  plot_type: ce
+  title: Neutron spectra C/E
+  x_label: Position
+  y_labels: 'dummy'
+  x: Case
+  y: Value
+  expand_runs: false
+  plot_args:
+    subcases: ["Energy", ['9 - 12', '12 - 20']]
+    style: 'point'
+    ce_limits: [0.5, 1.5]
+    shorten_x_name: 1
+C/E photon spectra:
+  results:
+    - Photon spectra coarse
+  plot_type: ce
+  title: Photon spectra C/E
+  x_label: Position
+  y_labels: 'dummy'
+  x: Case
+  y: Value
+  expand_runs: false
+  plot_args:
+    subcases: ["Energy", ['0.4 - 3', '3 - 6', '6 - 10']]
+    style: 'point'
+    ce_limits: [0.5, 1.5]
+    shorten_x_name: 1

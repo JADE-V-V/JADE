@@ -87,18 +87,29 @@ Simple_Tokamak:
   nps: 1e9
   only_input: false
 # --- Experimental benchmarks ---
-Oktavian:
+ASPIS-PCA-Replica:
   codes:
     d1s: []
     mcnp: []
     openmc: []
     serpent: []
   custom_input: 
-  nps: 5e7
-  description: Oktavian Experiment
+  nps: 1e8
+  description: Winfrith Water/Iron Benchmark Experiment
   only_input: false
 #
-FNG:
+ASPIS-Fe88:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: ASPIS Iron-88 benchmark
+  only_input: false
+# -- FNG experiments --
+FNG-SDDR:
   codes:
     d1s: []
     mcnp: []
@@ -109,6 +120,127 @@ FNG:
   description: Frascati Neutron Generator SDDR experiment
   only_input: false
 #
+FNG-BKT:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e9
+  description: FNG Bulk Blanket and Shielding Experiment
+  only_input: false
+#
+FNG-W:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: FNG Tungsten
+  only_input: false
+#
+FNG-SiC:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: FNG Silicon Carbide
+  only_input: false
+#
+FNG-SS:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: FNG Stainless Steel
+  only_input: false
+#
+FNG-HCPB:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: FNG Helium Cooled Pebble Bed Tritium Breeder
+  only_input: false
+# -- FNS experiments --
+FNS-TOF:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: FNS Time-of-Flight Experiment
+  only_input: false
+# -- IPPE experiments --
+IPPE-DT:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: IPPE DT Iron Sphere Experiment
+  only_input: false
+#
+IPPE-CF:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: IPPE 252Cf experiment
+  only_input: false
+# -- Oktavian experiments --
+Oktavian:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: Oktavian Experiment
+  only_input: false
+# -- RCR experiments --
+RCR-Fe+Ni:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: RCR Iron/Nickel Sphere Experiment
+  only_input: false
+#
+RCR-SS:
+  codes:
+    d1s: []
+    mcnp: []
+    openmc: []
+    serpent: []
+  custom_input: 
+  nps: 1e8
+  description: RCR Stainless Steel Block Experiment
+  only_input: false
+# -- Tiara experiments --
 Tiara-BC:
   codes:
     d1s: []
@@ -141,51 +273,7 @@ Tiara-FC:
   nps: 1e8
   description: Tiara Fission Chambers detector
   only_input: false
-#
-FNS-TOF:
-  codes:
-    d1s: []
-    mcnp: []
-    openmc: []
-    serpent: []
-  custom_input: 
-  nps: 1e8
-  description: FNS Time-of-Flight Experiment
-  only_input: false
-#
-FNG-BKT:
-  codes:
-    d1s: []
-    mcnp: []
-    openmc: []
-    serpent: []
-  custom_input: 
-  nps: 1e9
-  description: FNG Bulk Blanket and Shielding Experiment
-  only_input: false
-#
-FNG-W:
-  codes:
-    d1s: []
-    mcnp: []
-    openmc: []
-    serpent: []
-  custom_input: 
-  nps: 1e8
-  description: FNG Tungsten
-  only_input: false
-#
-ASPIS-Fe88:
-  codes:
-    d1s: []
-    mcnp: []
-    openmc: []
-    serpent: []
-  custom_input: 
-  nps: 1e8
-  description: ASPIS Iron-88 benchmark
-  only_input: false
-#
+# -- TUD experiments --
 TUD-Fe:
   codes:
     d1s: []
@@ -241,7 +329,7 @@ IPPE-CF:
   description: IPPE 252Cf experiment
   only_input: false
 #
-FNG_HCPB:
+ISIS-800MeV-C:
   codes:
     d1s: []
     mcnp: []
@@ -249,5 +337,5 @@ FNG_HCPB:
     serpent: []
   custom_input: 
   nps: 1e8
-  description: FNG Helium Cooled Pebble Bed TBM Experiment
+  description: ISIS 800 MeV Proton Experiment
   only_input: false

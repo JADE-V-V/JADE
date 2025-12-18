@@ -251,14 +251,3 @@ FNG_HCPB:
   nps: 1e8
   description: FNG Helium Cooled Pebble Bed TBM Experiment
   only_input: false
-#
-FNG-SS:
-  codes:
-    d1s: []
-    mcnp: []
-    openmc: []
-    serpent: []
-  custom_input: 
-  nps: 1e8
-  description: FNG Stainless Steel (FNG SS)
-  only_input: false

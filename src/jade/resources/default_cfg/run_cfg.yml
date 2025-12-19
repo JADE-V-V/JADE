@@ -335,7 +335,7 @@ ISIS-800MeV-C:
     mcnp: []
     openmc: []
     serpent: []
-  custom_input: 
+  custom_input:
   nps: 1e8
   description: ISIS 800 MeV Proton Experiment
   only_input: false

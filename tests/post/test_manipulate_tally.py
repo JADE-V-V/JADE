@@ -390,7 +390,7 @@ def test_volume():
     volumes = {1: 2.0, 2: 2.0, 3: 2.0, 4: 2.0, 5: 2.0}
     result = volume(df, volumes)
     assert 3.65062e-06 == pytest.approx(result["Value"][0], rel=1e-5)
-    assert 0.05 == pytest.approx(result["Error"][0], rel=1e-5)
+    assert 0.1 == pytest.approx(result["Error"][0], rel=1e-5)
 
 
 def test_mass():

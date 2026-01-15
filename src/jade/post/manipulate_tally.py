@@ -342,11 +342,6 @@ def volume(tally: pd.DataFrame, volumes: dict[int, float]) -> pd.DataFrame:
                 tally["Value"] / volumes[cell],
                 tally["Value"],
             )
-            tally["Error"] = np.where(
-                (tally["Cells"] == cell),
-                tally["Error"] / volumes[cell],
-                tally["Error"],
-            )
     return tally
 
 
@@ -372,11 +367,6 @@ def mass(tally: pd.DataFrame, masses: dict[int, float]) -> pd.DataFrame:
                 (tally["Cells"] == cell),
                 tally["Value"] / masses[cell],
                 tally["Value"],
-            )
-            tally["Error"] = np.where(
-                (tally["Cells"] == cell),
-                tally["Error"] / masses[cell],
-                tally["Error"],
             )
     return tally
 

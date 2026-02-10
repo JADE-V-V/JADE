@@ -126,14 +126,12 @@ Reaction rate:
 Tritium activity:
   concat_option: no_action
   84: 
-      - [mass, {}]
       - [scale, {'factor': 2.57042574E+07}]
       - [replace, {'column': 'Cells', 'values': *depth_h3}]
 
 Tritium activity Pellet:
   concat_option: no_action
   84: 
-      - [mass, {}]
       - [scale, {'factor': 2.57042574E+07}]
       - [add_column_with_dict, {'ref_column': 'Cells', 'values': *depth_h3d, new_columns: [ 'Distance','Pellet']}]
       - [replace, {'column': 'Cells', 'values': *depth_h3}]  

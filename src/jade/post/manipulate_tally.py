@@ -68,10 +68,22 @@ def condense_groups(
     """
     tally["abs err"] = tally["Error"] * tally["Value"]
     # this divides the entries in coarse energy bins
+
     tally["coarse_bin"] = pd.cut(tally[group_column], bins=bins, right=False)
+    tally = tally.drop(columns=[group_column])
     tally[group_column] = tally["coarse_bin"].apply(
-        lambda x: f"{x.left:g} - {x.right:g}"
+        lambda x: f"{x.left:g} - {x.right:g}" if pd.notna(x) else "NaN"
     )
+    '''
+    labels = [f"{bins[i]:g} - {bins[i+1]:g}" for i in range(len(bins) - 1)]
+
+    tally[group_column] = pd.cut(
+        tally[group_column],
+        bins=bins,
+        right=False,
+        labels=labels,
+    )
+    '''
     del tally["coarse_bin"]
     grouped = tally.groupby(group_column, observed=False).agg(
         {"Value": "sum", "abs err": lambda x: math.sqrt((x**2).sum())}

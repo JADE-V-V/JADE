@@ -72,7 +72,7 @@ def condense_groups(
     tally["coarse_bin"] = pd.cut(tally[group_column], bins=bins, right=False)
     tally = tally.drop(columns=[group_column])
     tally[group_column] = tally["coarse_bin"].apply(
-        lambda x: f"{x.left:g} - {x.right:g}" if pd.notna(x) else "NaN"
+        lambda x: f"{x.left:g} - {x.right:g}" if pd.notna(x) else np.nan
     )
     '''
     labels = [f"{bins[i]:g} - {bins[i+1]:g}" for i in range(len(bins) - 1)]

@@ -62,8 +62,14 @@ jobs:
         run: |
           pip install git+https://github.com/openmc-dev/openmc.git@v0.15.0#egg=openmc
       
+      # Cap version also for python 11
+      - name: Install openmc (legacy)
+        if: runner.os == 'Linux' && matrix.python-version == '3.11'
+        run: |
+          pip install git+https://github.com/openmc-dev/openmc.git@v0.15.3#egg=openmc
+      
       - name: Install openmc
-        if: runner.os == 'Linux' && matrix.python-version != '3.10'
+        if: runner.os == 'Linux' && matrix.python-version != '3.10' && matrix.python-version != '3.11'
         run: |
           pip install git+https://github.com/openmc-dev/openmc.git
 
@@ -98,8 +104,8 @@ jobs:
       
       # Upload coverage to Codecov. Do it only for one case of the matrix.
       - name: Upload coverage to Codecov
-        # do it only once for python 3.10
-        if: matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest'
+        # do it only once for python 3.12
+        if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
         uses: codecov/codecov-action@v4
         with:
           verbose: true

@@ -168,3 +168,13 @@ class TestJadeApp:
         app.run_cfg = run_cfg
         command = app.continue_run(testing=True)
         assert "#!/bin/sh\n\n#SBATCH" in command[0]
+
+    def test_print_unfinished_runs(self, caplog):
+        import logging
+
+        # Set caplog to capture INFO level logs
+        caplog.set_level(logging.INFO)
+
+        app = JadeApp(root=DUMMY_ROOT, skip_init=True)
+        app.print_unfinished_runs()
+        assert "Dummy_continue2" in caplog.text

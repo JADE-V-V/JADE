@@ -34,8 +34,14 @@ def get_code_lib(string) -> tuple[str, str]:
     tuple[str, str]
         The code and library names.
     """
-    code = CODE_PATTERN.search(string).group()[1:-2]  # remove the "<" and ">-"
-    lib = LIB_PATTERN.search(string).group()[2:-1]  # remove the "-<" and ">"
+    code_match = CODE_PATTERN.search(string)
+    if code_match is None:
+        raise ValueError(f"Invalid code-lib string: {string}")
+    code = code_match.group()[1:-2]  # remove the "<" and ">-"
+    lib_match = LIB_PATTERN.search(string)
+    if lib_match is None:
+        raise ValueError(f"Invalid code-lib string: {string}")
+    lib = lib_match.group()[2:-1]  # remove the "-<" and ">"
     return code, lib
 
 

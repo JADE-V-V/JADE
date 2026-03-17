@@ -219,7 +219,7 @@ Oktavian:
   description: Oktavian Experiment
   only_input: false
 # -- RCR experiments --
-RCR-Fe+Ni:
+RCR-Sphere:
   codes:
     d1s: []
     mcnp: []

@@ -12,7 +12,7 @@ from f4enix.input.libmanager import LibManager
 from f4enix.input.materials import MatCardsList, Material, SubMaterial, Zaid
 from f4enix.input.MCNPinput import D1S_Input
 from f4enix.input.MCNPinput import Input as MCNPInput
-from f4enix.input.irradiation import Nuclide
+from f4enix.core.irradiation import Nuclide
 
 from jade.config.run_config import Library, LibraryD1S, LibraryMCNP
 from jade.helper.__optionals__ import OMC_AVAIL

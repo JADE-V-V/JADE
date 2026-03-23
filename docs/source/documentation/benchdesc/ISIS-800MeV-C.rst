@@ -1,9 +1,10 @@
 ISIS Benchmark Experiment on Deep-Penetration Neutrons through Concrete and Iron Shields WITH 800 MeV PROTONS
+-------------------------------------------------------------------------------------------------------------
 
 .. important::
 
 
-    This benchmark is part of the SINBAD collection and cannot be freely distributed with JADE.
+    This benchmark is part of the SINBAD collection and cannot be freely distributed with JADE.
 
     The purpose of this experiment was to measure the deep-penetration neutrons through a thick bulk shield at an intense spallation neutron source facility, ISIS, of the Rutherford Appleton Laboratory (RAL), United Kingdom.
 

@@ -27,8 +27,11 @@ DUMMY_ROOT = files(tests).joinpath("dummy_structure")
 class TestJadeApp:
     def test_run_benchmarks(self, tmpdir, monkeypatch):
         app = JadeApp(root=DUMMY_ROOT, skip_init=True)
+        # force the lazy computation of status before overriding the simulations folder
+        _ = app.status
         # override the simulation root folder
         app.tree.simulations = tmpdir
+
         # I should get here a request for override let's say no the first time
         monkeypatch.setattr("builtins.input", lambda _: "n")
         app.run_benchmarks()

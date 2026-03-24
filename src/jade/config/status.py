@@ -65,7 +65,9 @@ class GlobalStatus:
                 for sub_bench in os.listdir(bench_path):
                     # check if the run was successful
                     sub_bench_path = Path(bench_path, sub_bench)
-                    success = CODE_CHECKERS[code](sub_bench_path)
+                    success = CODE_CHECKERS[code].check_success(
+                        os.listdir(sub_bench_path)
+                    )
                     if success:
                         successful.append(sub_bench)
                     else:

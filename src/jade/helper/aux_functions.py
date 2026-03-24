@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.metadata
 import os
 import re
+from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING, Union
 
@@ -68,32 +69,61 @@ def print_code_lib(code: CODE, lib: Library | str, pretty: bool = False) -> str:
         return f"_{code.value}_-_{lib_name}_"
 
 
-def check_run_mcnp(folder: PathLike) -> bool:
-    """check if mcnp run was successful"""
-    try:
-        MCNPSimOutput.retrieve_files(folder)
-        return True
-    except FileNotFoundError:
-        return False
+class SimulationChecker(ABC):
+    """Abstract base class for simulation success checkers.
+
+    All code-specific checkers must inherit from this class and implement
+    the check_success method with the same signature.
+    """
+
+    @abstractmethod
+    def check_success(self, files: list[str]) -> bool:
+        """Check if a simulation run was successful.
+
+        Parameters
+        ----------
+        files : list[str]
+            List of output files to check for success.
+
+        Returns
+        -------
+        bool
+            True if the simulation completed successfully, False otherwise.
+        """
+        pass
 
 
-def check_run_openmc(folder: PathLike) -> bool:
-    """check if openmc run was successful"""
-    try:
-        OpenMCSimOutput.retrieve_file(folder)
-        return True
-    except FileNotFoundError:
-        return False
+class MCNPChecker(SimulationChecker):
+    """Checker for MCNP simulations."""
+
+    def check_success(self, files: list[str]) -> bool:
+        """Check if MCNP run was successful by verifying output files exist."""
+        return MCNPSimOutput.is_successfully_simulated(files)
 
 
-def check_run_serpent(folder: PathLike) -> bool:
-    # TODO implement the logic to check if the Serpent run was successful
-    raise NotImplementedError
+class OpenMCChecker(SimulationChecker):
+    """Checker for OpenMC simulations."""
+
+    def check_success(self, files: list[str]) -> bool:
+        """Check if OpenMC run was successful by verifying output files exist."""
+        return OpenMCSimOutput.is_successfully_simulated(files)
 
 
-def check_run_d1s(folder: PathLike) -> bool:
-    """check if d1s run was successful"""
-    return check_run_mcnp(folder)
+class SerpentChecker(SimulationChecker):
+    """Checker for Serpent simulations."""
+
+    def check_success(self, files: list[str]) -> bool:
+        """Check if Serpent run was successful."""
+        # TODO implement the logic to check if the Serpent run was successful
+        raise NotImplementedError("Serpent checker not yet implemented")
+
+
+class D1SChecker(SimulationChecker):
+    """Checker for D1S simulations."""
+
+    def check_success(self, files: list[str]) -> bool:
+        """Check if D1S run was successful (uses same logic as MCNP)."""
+        return MCNPChecker().check_success(files)
 
 
 def get_jade_version() -> str:
@@ -124,11 +154,13 @@ def add_rmode0(path: PathLike) -> None:
                             f.write("RMODE 0\n")
 
 
-CODE_CHECKERS = {
-    CODE.MCNP: check_run_mcnp,
-    CODE.OPENMC: check_run_openmc,
-    CODE.SERPENT: check_run_serpent,
-    CODE.D1S: check_run_d1s,
+# Dictionary mapping CODE enums to checker instances
+# All checkers implement the SimulationChecker interface
+CODE_CHECKERS: dict[CODE, SimulationChecker] = {
+    CODE.MCNP: MCNPChecker(),
+    CODE.OPENMC: OpenMCChecker(),
+    CODE.SERPENT: SerpentChecker(),
+    CODE.D1S: D1SChecker(),
 }
 
 

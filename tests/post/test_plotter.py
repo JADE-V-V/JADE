@@ -140,7 +140,7 @@ class TestCEPlot:
             plot_args={
                 "style": "step",
                 "ce_limits": [0.5, 1.5],
-                "subcases": ["Result", ["a", "b"]],
+                "subcases": ["Result", ["a", "b", "c"]],
             },
         )
         n_libs = 2
@@ -167,6 +167,8 @@ class TestCEPlot:
 
         plot = CEPlot(cfg, data)
         output = plot.plot()
+        # check only two rows in plot
+        assert len(output[0][1]) == 2
         output[0][0].savefig(tmpdir.join("test.png"))
 
 

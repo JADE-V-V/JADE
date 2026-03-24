@@ -151,7 +151,7 @@ class TestCEPlot:
             dfs = []
             for result in cfg.results:
                 # remove one set
-                if result == "a" and i == 1:
+                if result == "b" and i == 1:
                     continue
                 df = pd.DataFrame(
                     {

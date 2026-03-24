@@ -575,9 +575,9 @@ class CEPlot(Plot):
                         raise PlotIndexMismatchError(val1.index, val2.index, codelib)
                 else:
                     raise PlotIndexMismatchError(val1.index, val2.index, codelib)
-            else:
-                val2.index = val1.index
-                err2.index = err1.index
+
+            val2.index = val1.index
+            err2.index = err1.index
 
             values, errors = compare_data(
                 val1,

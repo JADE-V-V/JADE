@@ -127,6 +127,48 @@ class TestCEPlot:
         output = plot.plot()
         output[0][0].savefig(tmpdir.join("test.png"))
 
+    def test_missing_subcase(self, tmpdir):
+        cfg = PlotConfig(
+            name="test",
+            results=["a", "b", "c"],
+            plot_type=None,  # dummy value
+            title="test",
+            x_label="Case",
+            y_labels=["dummy"],
+            x="Case",
+            y="Value",
+            plot_args={
+                "style": "step",
+                "ce_limits": [0.5, 1.5],
+                "subcases": ["Result", ["a", "b"]],
+            },
+        )
+        n_libs = 2
+        n_cases = 50
+        data = []
+        for i in range(n_libs):
+            cases = range(n_cases)
+            dfs = []
+            for result in cfg.results:
+                # remove one set
+                if result == "a" and i == 1:
+                    continue
+                df = pd.DataFrame(
+                    {
+                        "Case": cases,
+                        "Value": np.random.rand(n_cases),
+                        "Error": np.random.rand(n_cases) * 0.1,
+                        # "Subcase": np.random.randint(0, 3),
+                    }
+                )
+                df["Result"] = result
+                dfs.append(df)
+            data.append((f"lib{i}", pd.concat(dfs)))
+
+        plot = CEPlot(cfg, data)
+        output = plot.plot()
+        output[0][0].savefig(tmpdir.join("test.png"))
+
 
 class TestBarPlot:
     def test_plot(self, tmpdir):

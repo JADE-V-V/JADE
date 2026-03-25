@@ -5,8 +5,10 @@ import string
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from jade.config.atlas_config import PlotConfig
+from jade.helper.errors import PlotIndexMismatchError
 from jade.post.plotter import BarPlot, BinnedPlot, CEPlot, WavesPlot
 
 
@@ -170,6 +172,47 @@ class TestCEPlot:
         # check only two rows in plot
         assert len(output[0][1]) == 2
         output[0][0].savefig(tmpdir.join("test.png"))
+
+    def test_trigger_index_match_error(self, tmpdir):
+        """trigger a PlotIndexMatchError in CEPlot"""
+        cfg = PlotConfig(
+            name="test",
+            results=["a"],
+            plot_type=None,  # dummy value
+            title="test",
+            x_label="Case",
+            y_labels=["dummy"],
+            x="Case",
+            y="Value",
+            plot_args={"style": "step"},
+        )
+
+        # Create reference data with cases 0-4
+        n_cases_ref = 5
+        df_ref = pd.DataFrame(
+            {
+                "Case": range(n_cases_ref),
+                "Value": np.random.rand(n_cases_ref),
+                "Error": np.random.rand(n_cases_ref) * 0.1,
+            }
+        )
+
+        # Create target data with DIFFERENT cases (5-9) to trigger mismatch
+        n_cases_target = 5
+        df_target = pd.DataFrame(
+            {
+                "Case": range(5, 5 + n_cases_target),
+                "Value": np.random.rand(n_cases_target),
+                "Error": np.random.rand(n_cases_target) * 0.1,
+            }
+        )
+
+        data = [("lib_ref", df_ref), ("lib_target", df_target)]
+
+        plot = CEPlot(cfg, data)
+        # Expect PlotIndexMismatchError to be raised when plotting
+        with pytest.raises(PlotIndexMismatchError):
+            plot.plot()
 
 
 class TestBarPlot:

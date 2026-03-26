@@ -1,8 +1,8 @@
-Neutron current on plasma boundary 0:
+Neutron current on plasma boundary (uncollided):
   results:
     - Neutron current on plasma boundary
   plot_type: barplot
-  title: Neutron current on plasma boundary
+  title: Neutron current on plasma boundary (uncollided)
   x_label: BLK n. #
   y_labels: "Neutron current $\\left[\\mathrm{cm}^{-2}\\cdot\\mathrm{s}^{-1}\\right]$"
   x: BLK n.
@@ -10,17 +10,17 @@ Neutron current on plasma boundary 0:
   subsets:
     [
       {
-        "result": "Neutron current on plasma boundary_0",
+        "result": "Neutron current on plasma boundary",
         "values": { "User": [0] },
       },
     ]
   plot_args:
     log: true
-Neutron current on plasma boundary 1:
+Neutron current on plasma boundary (collided):
   results:
     - Neutron current on plasma boundary
   plot_type: barplot
-  title: Neutron current on plasma boundary
+  title: Neutron current on plasma boundary (collided)
   x_label: BLK n. #
   y_labels: "Neutron current $\\left[\\mathrm{cm}^{-2}\\cdot\\mathrm{s}^{-1}\\right]$"
   x: BLK n.
@@ -28,16 +28,16 @@ Neutron current on plasma boundary 1:
   subsets:
     [
       {
-        "result": "Neutron current on plasma boundary_1",
+        "result": "Neutron current on plasma boundary",
         "values": { "User": [1] },
       },
     ]
 
-Neutron flux on plasma boundary 0:
+Neutron flux on plasma boundary (uncollided):
   results:
     - Neutron flux on plasma boundary
   plot_type: barplot
-  title: Neutron flux on plasma boundary
+  title: Neutron flux on plasma boundary (uncollided)
   x_label: BLK n. #
   y_labels: "Neutron flux $\\left[\\mathrm{cm}^{-2}\\cdot\\mathrm{s}^{-1}\\right]$"
   x: BLK n.
@@ -45,18 +45,18 @@ Neutron flux on plasma boundary 0:
   subsets:
     [
       {
-        "result": "Neutron flux on plasma boundary 0",
+        "result": "Neutron flux on plasma boundary",
         "values": { "User": [0] },
       },
     ]
   plot_args:
     log: true
 
-Neutron flux on plasma boundary 1:
+Neutron flux on plasma boundary (collided):
   results:
     - Neutron flux on plasma boundary
   plot_type: barplot
-  title: Neutron flux on plasma boundary
+  title: Neutron flux on plasma boundary (collided)
   x_label: BLK n. #
   y_labels: "Neutron flux $\\left[\\mathrm{cm}^{-2}\\cdot\\mathrm{s}^{-1}\\right]$"
   x: BLK n.
@@ -64,7 +64,7 @@ Neutron flux on plasma boundary 1:
   subsets:
     [
       {
-        "result": "Neutron flux on plasma boundary 1",
+        "result": "Neutron flux on plasma boundary",
         "values": { "User": [1] },
       },
     ]

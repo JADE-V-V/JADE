@@ -74,7 +74,7 @@ def condense_groups(
     tally[group_column] = tally["coarse_bin"].apply(
         lambda x: f"{x.left:g} - {x.right:g}" if pd.notna(x) else np.nan
     )
-    '''
+    """
     labels = [f"{bins[i]:g} - {bins[i+1]:g}" for i in range(len(bins) - 1)]
 
     tally[group_column] = pd.cut(
@@ -83,7 +83,7 @@ def condense_groups(
         right=False,
         labels=labels,
     )
-    '''
+    """
     del tally["coarse_bin"]
     grouped = tally.groupby(group_column, observed=False).agg(
         {"Value": "sum", "abs err": lambda x: math.sqrt((x**2).sum())}
@@ -510,7 +510,7 @@ def compare_data(
         for v1, v2, e1, e2 in zip(val1, val2, err1, err2):
             if v1 != v2:
                 error.append(
-                    np.sqrt((v1 * e1) ** 2 + (v2 * e2) ** 2) / (v1 - v2)
+                    np.abs(np.sqrt((v1 * e1) ** 2 + (v2 * e2) ** 2) / (v1 - v2))
                 )  # relative error propagation for substraction
             else:
                 error.append(
@@ -521,7 +521,7 @@ def compare_data(
         for v1, v2, e1, e2 in zip(val1, val2, err1, err2):
             if v1 != v2:
                 error.append(
-                    np.sqrt((v1 * v2 * e1) ** 2 + (v2 * e2) ** 2) / (v1 - v2)
+                    np.abs(np.sqrt((v2 * e1) ** 2 + (v2 * e2) ** 2) / (v1 - v2))
                 )  # relative error propagation for percentage
             else:
                 error.append(

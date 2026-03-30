@@ -312,6 +312,7 @@ class GlobalStatus:
         """
         libs = {}
         for code, lib in codelibs:
+            code = CODE(code)
             if lib == "exp":  # for the experiments we don't have metadata
                 continue
             if code not in libs:

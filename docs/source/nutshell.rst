@@ -47,7 +47,7 @@ When using JADE for scientific publications you are kindly encouraged to cite th
   2022, "Status of JADE, an open-source software for nuclear data libraries V&V",
   *Fusion Engineering and Design*, **187** 113380, doi: https://doi.org/10.1016/j.fusengdes.2022.113380
 
-For additional information contact: davide.laghi01@gmail.com
+For additional information contact: davide.laghi@f4e.europa.eu or alex.valentine@ukaea.uk.
 
 For additional information on future developments please check the issues list on the
 `JADE GitHub repository <https://github.com/dodu94/JADE/>`_ and :ref:`futuredev`.

@@ -15,6 +15,12 @@ benchmark in JADE.
     As explained in the :ref:`ecosystem` section, depending on their licensing
     policy, the benchmark inputs are stored in different GitHub/GitLab repositories.
 
+.. important::
+    For all FNG benchmarks in MCNP a SDEF source produced in 2021 by ENEA Frascati team (Davide Flammini et al.)
+    was used. The source is parametrized at 260 keV and was generated using the following rdum parameters:
+
+    "rdum    .260  1.6  0.0  0.001  0.0  0.001  1  1"
+
 Overview
 ========
 The following tables summarise the computational and experimental benchmarks

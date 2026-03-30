@@ -27,8 +27,11 @@ DUMMY_ROOT = files(tests).joinpath("dummy_structure")
 class TestJadeApp:
     def test_run_benchmarks(self, tmpdir, monkeypatch):
         app = JadeApp(root=DUMMY_ROOT, skip_init=True)
+        # force the lazy computation of status before overriding the simulations folder
+        _ = app.status
         # override the simulation root folder
         app.tree.simulations = tmpdir
+
         # I should get here a request for override let's say no the first time
         monkeypatch.setattr("builtins.input", lambda _: "n")
         app.run_benchmarks()
@@ -62,11 +65,11 @@ class TestJadeApp:
         # override the raw processor folder
         app.tree.raw = tmpdir
         app.status.raw_results_path = tmpdir
-        app.status.update()
+        # app.status.update()
 
         app.raw_process(subset=["Oktavian"])
         # manually update the status
-        app.status.update()
+        app.status.update_raw_results()
         filepath = Path(
             tmpdir,
             "_mcnp_-_FENDL 3.2c_/Oktavian/Oktavian_Al 21.csv",
@@ -87,7 +90,7 @@ class TestJadeApp:
         app = JadeApp(root=DUMMY_ROOT, skip_init=True)
         # override the post processor folder
         app.tree.postprocessing = tmpdir
-        app.status.update()
+        # app.status.update()
 
         app.post_process()
 

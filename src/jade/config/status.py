@@ -37,12 +37,26 @@ class GlobalStatus:
         """
         self.simulations_path = simulations_path
         self.raw_results_path = raw_results_path
-        self.update()
+        self._simulations = None
+        self._raw_data = None
 
-    def update(self):
-        """Update the status of the simulations and raw results"""
-        self.simulations = self._parse_simulations_folder(self.simulations_path)
-        self.raw_data = self._parse_raw_results_folder(self.raw_results_path)
+    @property
+    def simulations(self) -> dict[tuple[CODE, str, str], CodeLibRunStatus]:
+        if self._simulations is None:
+            self._simulations = self._parse_simulations_folder(self.simulations_path)
+        return self._simulations
+
+    @property
+    def raw_data(self) -> dict[tuple[CODE, str, str], list[str]]:
+        if self._raw_data is None:
+            self._raw_data = self._parse_raw_results_folder(self.raw_results_path)
+        return self._raw_data
+
+    def update_raw_results(self) -> None:
+        """Update the raw results by re-parsing the raw results folder. It should be used
+        after processing new raw results to update the status.
+        """
+        self._raw_data = self._parse_raw_results_folder(self.raw_results_path)
 
     def _parse_simulations_folder(
         self, simulations_path: PathLike
@@ -66,7 +80,9 @@ class GlobalStatus:
                 for sub_bench in os.listdir(bench_path):
                     # check if the run was successful
                     sub_bench_path = Path(bench_path, sub_bench)
-                    success = CODE_CHECKERS[code](sub_bench_path)
+                    success = CODE_CHECKERS[code].check_success(
+                        os.listdir(sub_bench_path)
+                    )
                     if success:
                         successful.append(sub_bench)
                     else:

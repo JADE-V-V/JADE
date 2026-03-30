@@ -311,9 +311,9 @@ class GlobalStatus:
             benchmark name.
         """
         libs = {}
-        for codelib in codelibs:
-            code, lib = get_code_lib(codelib)
-            code = CODE(code)
+        for code, lib in codelibs:
+            if lib == "exp":  # for the experiments we don't have metadata
+                continue
             if code not in libs:
                 libs[code] = []
             libs[code].append(lib)

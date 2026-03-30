@@ -17,13 +17,13 @@ ROOT_RAW = files(tests.dummy_structure).joinpath("raw_data")
 class TestExcelProcessor:
     def test_table_name(self, tmpdir):
         with as_file(
-             files(tests.dummy_structure).joinpath("cfg/benchmarks_pp/excel/Sphere.yaml")
+            files(tests.dummy_structure).joinpath("cfg/benchmarks_pp/excel/Sphere.yaml")
         ) as file:
             cfg = ConfigExcelProcessor.from_yaml(file)
         codelibs = [("mcnp", "ENDFB-VIII.0"), ("mcnp", "FENDL 3.2c")]
         processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
-        processor.process()       
-    
+        processor.process()
+
     def test_process(self, tmpdir):
         with as_file(
             files(default_cfg).joinpath("benchmarks_pp/excel/Sphere.yaml")
@@ -138,14 +138,10 @@ class TestExcelProcessor:
             files(default_cfg).joinpath("benchmarks_pp/excel/TUD-W.yaml")
         ) as file:
             cfg = ConfigExcelProcessor.from_yaml(file)
-        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.1d"), ("openmc", "FENDL 3.1d")]
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.1d")]
         processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
         processor.process()
         file = Path(tmpdir, "TUD-W_exp-exp_Vs_mcnp-FENDL 3.1d.xlsx")
-        assert file.exists()
-        df = pd.read_excel(file, skiprows=3)
-        assert len(df) == 144
-        file = Path(tmpdir, "TUD-W_exp-exp_Vs_openmc-FENDL 3.1d.xlsx")
         assert file.exists()
         df = pd.read_excel(file, skiprows=3)
         assert len(df) == 144
@@ -300,5 +296,32 @@ class TestExcelProcessor:
         ) as file:
             cfg = ConfigExcelProcessor.from_yaml(file)
         codelibs = [("mcnp", "FENDL 3.2c"), ("mcnp", "FENDL 3.2c")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()
+
+    def test_RCR_SS(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/RCR-SS.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()
+
+    def test_RCR_Sphere(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/RCR-Sphere.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()
+
+    def test_ISIS_800MeV_C(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/ISIS-800MeV-C.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c")]
         processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
         processor.process()

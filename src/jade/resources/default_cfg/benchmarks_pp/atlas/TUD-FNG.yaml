@@ -4,7 +4,7 @@ Neutron fluence:
     - Neutron fluence (pos B)
   plot_type: binned
   title: Neutron fluence
-  x_label: Energy [MeV]
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
   y_labels: "Neutron fluence $\\left[\\frac{1}{MeV\\cdot n \\cdot cm^2}\\right]$"
   x: Energy
   y: Value
@@ -17,7 +17,7 @@ Neutron fluence C/E:
     - Neutron fluence (pos B)
   plot_type: ce
   title: Neutron fluence C/E
-  x_label: Energy [MeV]
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
   y_labels: "C/E"
   x: Energy
   y: Value
@@ -32,7 +32,7 @@ Photon fluence:
     - Photon fluence (pos B)
   plot_type: binned
   title: Photon fluence
-  x_label: Energy [MeV]
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
   y_labels: "Photon fluence $\\left[\\frac{1}{MeV\\cdot n \\cdot cm^2}\\right]$"
   x: Energy
   y: Value
@@ -45,7 +45,7 @@ Photon fluence C/E:
     - Photon fluence (pos B)
   plot_type: ce
   title: Photon fluence C/E
-  x_label: Energy [MeV]
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
   y_labels: "C/E"
   x: Energy
   y: Value

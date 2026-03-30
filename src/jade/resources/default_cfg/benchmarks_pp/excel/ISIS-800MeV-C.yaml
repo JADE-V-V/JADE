@@ -1,0 +1,21 @@
+Reaction rates Ct:
+  results:
+    - Reaction rate Ct
+  comparison_type: ratio
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: ["Value", "Error"]
+  change_col_names:
+    { "Cells": "Shielding thickness [cm]", "Case": "Activation Foil", 0: "C/E" }
+
+Reaction rates Fe:
+  results:
+    - Reaction rate Fe
+  comparison_type: ratio
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: ["Value", "Error"]
+  change_col_names:
+    { "Cells": "Shielding thickness [cm]", "Case": "Activation Foil", 0: "C/E" }

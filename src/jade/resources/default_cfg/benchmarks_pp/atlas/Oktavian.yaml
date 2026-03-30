@@ -3,8 +3,8 @@ Neutron Leakage flux:
     - Neutron flux
   plot_type: binned
   title: Neutron leakage flux by unit lethargy
-  x_label: Energy [MeV]
-  y_labels: '[n/cm^2/s/u]'
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: "$\\left[\\mathrm{cm}^{-2}\\cdot\\mathrm{s}^{-1}\\cdot\\mathrm{u}^{-1}\\right]$"
   x: Energy
   y: Value
   expand_runs: true
@@ -17,8 +17,8 @@ Photon Leakage flux:
     - Gamma flux
   plot_type: binned
   title: Photon leakage flux by unit energy
-  x_label: Energy [MeV]
-  y_labels: '[n/cm^2/s/MeV]'
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: "$\\left[\\mathrm{cm}^{-2}\\cdot\\mathrm{s}^{-1}\\cdot\\mathrm{MeV}^{-1}\\right]$"
   x: Energy
   y: Value
   expand_runs: true

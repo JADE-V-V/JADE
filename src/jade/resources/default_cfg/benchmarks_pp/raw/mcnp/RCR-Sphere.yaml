@@ -1,0 +1,51 @@
+Neutron flux HPD:
+   concat_option: no_action
+   15:
+      - [select_subset, {'column': 'Dir', 'values': [0]}]
+      - [delete_cols, {'cols': ['Dir']}]
+      - [by_energy, {}]
+      - [format_decimals, {'decimals': {'Energy':4}}]
+      - [gaussian_broadening, {'fwhm_frac': 0.1}]
+Neutron flux SSD:
+   concat_option: no_action
+   5:
+     - [select_subset, {'column': 'Dir', 'values': [0]}]
+     - [delete_cols, {'cols': ['Dir']}]
+     - [by_energy, {}]
+     - [format_decimals, {'decimals': {'Energy':1}}]
+     - [gaussian_broadening, {'fwhm_frac': [0.1702, 0.1702, 0.1702, 0.1702, 0.1702, 0.1505, 0.1505, 0.1505, 0.1363, 0.1363, 0.1363, 0.1250, 0.1250, 0.1250, 0.1142, 0.1097, 0.1067, 0.1067, 0.1067, 0.0996, 0.0996, 0.0996, 0.0930, 0.0930, 0.0930, 0.0930, 0.0930,0.0930, 0.0805, 0.0805, 0.0805, 0.0805, 0.0805, 0.0805, 0.0805, 0.0805, 0.0805, 0.0805, 0.0805, 0.0805, 0.0805, 0.0659, 0.0659, 0.0659, 0.0659, 0.0659, 0.0659, 0.0659, 0.0659, 0.0659, 0.0659, 0.0659, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0546, 0.0546, 0.0546, 0.0546, 0.0546, 0.0546, 0.0546, 0.0546, 0.0546, 0.0546, 0.0546, 0.0546, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513]}]
+Coarse neutron flux HPD:
+   concat_option: no_action
+   15:
+      - [select_subset, {'column': 'Dir', 'values': [0]}]
+      - [delete_cols, {'cols': ['Dir']}]
+      - [by_energy, {}]
+      - [condense_groups, {"bins": [0.001, 0.01, 0.03, 0.06, 0.1, 0.15, 0.2, 0.4, 0.5, 0.7, 1.0, 1.2, 1.5, 2.0, 2.5, 3.0, 4.0, 7.0, 10.0, 20.0], "group_column": "Energy"}]
+Coarse neutron flux SSD:
+   concat_option: no_action
+   5:
+     - [select_subset, {'column': 'Dir', 'values': [0]}]
+     - [delete_cols, {'cols': ['Dir']}]
+     - [by_energy, {}]
+     - [condense_groups, {"bins": [0.1, 0.2, 0.4, 0.5, 0.7, 1.0, 1.2, 1.5, 2.0, 2.5, 3.0, 4.0, 7.0, 10.0, 20.0], "group_column": "Energy"}]
+Cumulative Reaction Rate Ni:
+    concat_option: no_action
+    4: 
+     - [groupby, {by: "Energy", action: "mean"}]
+     - [cumulative_sum, {}]
+Total Reaction Rate Ni:
+    concat_option: no_action
+    24: 
+     - [groupby, {by: "all", action: "mean"}]
+     - [add_column, {column: 'Cells', values: ["58Ni(n,p)58Co"]}]
+Cumulative Reaction Rate In:
+    concat_option: no_action
+    14: 
+     - [groupby, {by: "Energy", action: "mean"}]
+     - [cumulative_sum, {}]
+Total Reaction Rate In:
+    concat_option: no_action
+    34: 
+     - [groupby, {by: "all", action: "mean"}]
+     - [add_column, {column: 'Cells', values: ["115In(n,n')115mIn"]}]
+     - [delete_cols, {'cols': ['Dir','Segments','Multiplier','Energy']}]

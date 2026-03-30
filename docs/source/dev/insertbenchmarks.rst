@@ -54,6 +54,10 @@ OpenMC
   A compiled library file, ``libsource.so`` must be provided, which has been compiled using ``gcc`` 
   with shared libraries enabled. An example of how to compile an OpenMC source is provided in the
   `OpenMC documentation <https://docs.openmc.org/en/stable/usersguide/settings.html#compiled-sources>`_.
+- If the model uses weight windows, a weight windows file in HDF5 format should be provided.
+  The file should be named ``weight_windows.h5``. This weight window will be used in simulation if it is provided.
+- If dosimetry calculations are required, the IRDFF-II data library should be used and can be implemented using an ``openmc.EnergyFunctionFilter``
+  which is outlined in this `notebook <https://nbviewer.org/gist/paulromano/842b1df9eb2003747e2fd6d95514129a>`.
 - The tallies IDs should be explicitly fixed when creating the ``tallies.xml`` file. This prevents
   OpenMC from creating them automatically and, thus, potentially changing them between different runs
   of a same benchmark. If possible, the tallies identifiers should be the same as the ones used in the
@@ -169,6 +173,8 @@ and the tallies themselves can be modified through the use of *modifiers*.
 The currently supported modifiers are:
 
 * ``no_action``: no action is taken on the tally. No arguments are expected.
+* ``volume``: a volume divisor is applied to the tally, obtained from a ``volumes.json`` file supplied with the bechmark inputs. No arguments are expected.
+* ``mass``: a mass divisor is applied to the tally, obtained from a ``volumes.json`` file supplied with the bechmark inputs, and OpenMC ``xml`` files. No arguments are expected.
 * ``scale``: the tally is scaled by a factor. The *factor* is expected as key argument and the provided value can 
   be either a float, and integer or a list (of floats or integers). 
 * ``lethargy``: a neutron flux tally is expected and converted to a neutron flux per unit lethargy.
@@ -242,9 +248,9 @@ The currently supported modifiers are:
   If no *column* argument is provided, the cumulative sum is computed on the 'Value' column by default. The argument *norm* is True by default.
 
 * ``gaussian_broadening``: applies Gaussian broadening to the 'Value' column. The optional keyarg to provide is *fwhm_frac*, 
-which specifies the fraction of the FWHM (Full Width at Half Maximum) to use for Gaussian broadening. This can be provided either 
-as a single float value, which will be applied uniformly to all energy bins, or as a list of float values with the same length as the 
-'Energy' column, allowing for a different broadening parameter for each energy bin. If not specified, the default value is 0.1 (10%).
+  which specifies the fraction of the FWHM (Full Width at Half Maximum) to use for Gaussian broadening. This can be provided either 
+  as a single float value, which will be applied uniformly to all energy bins, or as a list of float values with the same length as the 
+  'Energy' column, allowing for a different broadening parameter for each energy bin. If not specified, the default value is 0.1 (10%).
 
 More than one modifiers can be applied in series to a single tally.
 If your benchmark requires a new modifier, please refer to :ref:`add_tally_mod`.
@@ -462,6 +468,13 @@ An example of plot configuration is shown below:
       limits: [0.5, 1.5]
       shorten_x_name: 2
     select_runs: SphereSDDR_\d+_[A-Za-z]+-\d+_
+
+Update the documentation
+==============================
+
+The final step to add a new benchmark to JADE, assuming that no new functionalities are added, as detailed
+below, is to add the associated documentation. This includes a description of the benchmark as well as updating
+the overview table of implemented benchmarks in :ref:`benchmarks`.
 
 Implement new functionalities
 =============================

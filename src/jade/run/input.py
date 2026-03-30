@@ -12,6 +12,7 @@ from f4enix.input.libmanager import LibManager
 from f4enix.input.materials import MatCardsList, Material, SubMaterial, Zaid
 from f4enix.input.MCNPinput import D1S_Input
 from f4enix.input.MCNPinput import Input as MCNPInput
+from f4enix.core.irradiation import Nuclide
 
 from jade.config.run_config import Library, LibraryD1S, LibraryMCNP
 from jade.helper.__optionals__ import OMC_AVAIL
@@ -459,7 +460,11 @@ class InputD1SSphere(InputD1S, InputMCNPSphere):
             assert daughter is not None
             self.inp.irrad_file.select_daughters_irradiation_file([daughter])
             # generate the reaction file with only the specific MT
-            reaction = Reaction(f"{zaid}.{lib.suffix}", MT, daughter)
+            reaction = Reaction(
+                Nuclide.from_int_string(f"{zaid}.{lib.suffix}"),
+                MT,
+                Nuclide.from_int_string(f"{daughter}.{lib.suffix}"),
+            )
             reacfile = ReactionFile([reaction])
             self.inp.reac_file = reacfile
             # also the name needs to be updated

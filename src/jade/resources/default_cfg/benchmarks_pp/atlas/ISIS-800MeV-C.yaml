@@ -1,0 +1,27 @@
+Reaction rates Ct:
+  results:
+    - Reaction rate Ct
+  plot_type: ce
+  title: Neutron Reaction Rate - C12(n,2n)C11
+  x_label: Shielding thickness [cm]
+  y_labels: C/E
+  x: Cells
+  y: Value
+  expand_runs: false
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]
+
+Reaction rates Fe:
+  results:
+    - Reaction rate Fe
+  plot_type: ce
+  title: Neutron Reaction Rate - C12(n,2n)C11
+  x_label: Shielding thickness [cm]
+  y_labels: C/E
+  x: Cells
+  y: Value
+  expand_runs: false
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]

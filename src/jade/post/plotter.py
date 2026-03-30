@@ -1,14 +1,16 @@
 from __future__ import annotations
 
+import logging
 import math
+import warnings
 from abc import ABC, abstractmethod
 
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 from f4enix.input.libmanager import LibManager
-import matplotlib
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
@@ -17,6 +19,8 @@ from matplotlib.patches import Patch, Rectangle
 from matplotlib.ticker import AutoLocator, AutoMinorLocator, LogLocator, MultipleLocator
 
 from jade.config.atlas_config import PlotConfig, PlotType
+from jade.helper.aux_functions import same_index
+from jade.post.manipulate_tally import ComparisonType, compare_data
 
 matplotlib.use("Agg")  # use a non-interactive backend
 LM = LibManager()
@@ -309,12 +313,14 @@ class BinnedPlot(Plot):
             plot_CE = self.cfg.plot_args.get("show_CE", False)
             subcases = self.cfg.plot_args.get("subcases", False)
             xscale = self.cfg.plot_args.get("xscale", "log")
+            yscale = self.cfg.plot_args.get("yscale", "log")
             scale_subcases = self.cfg.plot_args.get("scale_subcases", False)
         else:
             plot_error = False
             plot_CE = False
             subcases = False
             xscale = "log"
+            yscale = "log"
             scale_subcases = False
 
         # if subcases is used, nrows must be 1
@@ -353,12 +359,13 @@ class BinnedPlot(Plot):
         # Ticks
         subs = (0.2, 0.4, 0.6, 0.8)
         ax1.set_xscale(xscale)
-        ax1.set_yscale("log")
+        ax1.set_yscale(yscale)
         ax1.set_ylabel(self.cfg.y_labels[0])
         if xscale == "log":
             ax1.xaxis.set_major_locator(LogLocator(base=10, numticks=15))
-            ax1.yaxis.set_major_locator(LogLocator(base=10, numticks=15))
             ax1.xaxis.set_minor_locator(LogLocator(base=10.0, subs=subs, numticks=12))
+        if yscale == "log":
+            ax1.yaxis.set_major_locator(LogLocator(base=10, numticks=15))
             ax1.yaxis.set_minor_locator(LogLocator(base=10.0, subs=subs, numticks=12))
 
         # --- Error Plot ---
@@ -520,41 +527,57 @@ class CEPlot(Plot):
             raise ValueError(f"Style {style} not recognized")
 
         # compute the ratios
+        to_plot = []
         if subcases:
-            to_plot = []
-            for codelib, df in self.data[1:]:
-                to_plot.append(
-                    (
-                        codelib,
-                        df.set_index([subcases[0], self.cfg.x])[self.cfg.y]
-                        / self.data[0][1].set_index([subcases[0], self.cfg.x])[
-                            self.cfg.y
-                        ],
-                    )
-                )
+            ref = self.data[0][1].set_index([subcases[0], self.cfg.x])
         else:
-            to_plot = [
-                (
-                    codelib,
-                    df.set_index(self.cfg.x)[self.cfg.y]
-                    / self.data[0][1].set_index(self.cfg.x)[self.cfg.y],
+            ref = self.data[0][1].set_index(self.cfg.x)
+        val1 = ref[self.cfg.y].sort_index()
+        err1 = ref["Error"].sort_index()
+
+        for codelib, df in self.data[1:]:
+            if subcases:
+                target = df.set_index([subcases[0], self.cfg.x])
+            else:
+                target = df.set_index(self.cfg.x)
+            val2 = target[self.cfg.y].sort_index()
+            err2 = target["Error"].sort_index()
+            # sometimes there are index which are numerical and may have slight
+            # differences due to rounding. In reality the two must be the same
+            # in a C/E plot
+            if same_index(val1.index, val2.index) is False:
+                logging.error(
+                    f"Indices do not match between reference and {codelib}: "
+                    f"{val1.index}, {val2.index}"
                 )
-                for (codelib, df) in self.data[1:]
-            ]
+                raise RuntimeError("Indices do not match.")
+            else:
+                val2.index = val1.index
+                err2.index = err1.index
+
+            values, errors = compare_data(
+                val1,
+                val2,
+                err1,
+                err2,
+                comparison_type=ComparisonType.RATIO,
+            )
+            to_plot.append((codelib, values, errors))
 
         # Plot the data
-        for idx, (codelib, df) in enumerate(to_plot):
+        for idx, (codelib, df_vals, df_errors) in enumerate(to_plot):
             # Split the dfs into the subcases if needed
             if subcases:
                 dfs = []
                 for value in subcases[1]:
                     try:
-                        subset = df.loc[value]
+                        subset_val = df_vals.loc[value]
+                        subset_err = df_errors.loc[value]
                     except KeyError:
                         continue
-                    dfs.append((value, subset))
+                    dfs.append((value, subset_val, subset_err))
             else:
-                dfs = [(None, df)]
+                dfs = [(None, df_vals, df_errors)]
 
             # If this is the first lib, create the plot
             if idx == 0:
@@ -568,7 +591,7 @@ class CEPlot(Plot):
                     axes = ax
 
             # plot all subcases
-            for i, (case, df1) in enumerate(dfs):
+            for i, (case, dfv, dfe) in enumerate(dfs):
                 if i == 0:
                     label = codelib
                 else:
@@ -590,8 +613,8 @@ class CEPlot(Plot):
 
                 if style == "step":
                     axes[i].step(
-                        df1.index,
-                        df1.values,
+                        dfv.index,
+                        dfv.values,
                         label=label,
                         color=COLORS[idx],
                         linestyle=LINESTYLES[idx],
@@ -603,22 +626,40 @@ class CEPlot(Plot):
                         _apply_CE_limits(
                             ce_limits[0],
                             ce_limits[1],
-                            df1.values,
-                            df1.index,
+                            dfv.values,
+                            dfv.index,
                             axes[i],
                             idx,
                             label,
                         )
                     else:
-                        ax.scatter(
-                            df1.index,
-                            df1.values,
-                            label=label,
-                            color=COLORS[idx],
-                            marker=MARKERS[idx],
-                            # the marker should be not filled
-                            facecolors="none",
-                        )
+                        with warnings.catch_warnings():
+                            warnings.simplefilter("ignore", category=UserWarning)
+                            axes[i].scatter(
+                                dfv.index,
+                                dfv.values,
+                                label=label,
+                                color=COLORS[idx],
+                                marker=MARKERS[idx],
+                                # the marker should be not filled
+                                facecolors="none",
+                            )
+                    # add error bars
+                    axes[i].errorbar(
+                        dfv.index,
+                        dfv.values,
+                        yerr=dfe.values * dfv.values,
+                        # fmt="none",
+                        ecolor=COLORS[idx],
+                        # elinewidth=0.5,
+                        # capsize=2,
+                        # label=None,
+                    )
+                    # if it is a scatter plot we must check for categorical X axis
+                    # as this is not automatically detected by matplotlib
+                    if dfv.index.dtype == str or dfv.index.dtype == object:
+                        axes[i].set_xticks(range(len(dfv.index)))
+                        axes[i].set_xticklabels(dfv.index)
 
         # put the legend in the top right corner if it was not already placed
         if not axes[0].get_legend():
@@ -1000,21 +1041,25 @@ def _apply_CE_limits(
         alpha=0,
     )
 
-    # normal points
-    ax.scatter(
-        norm[0],
-        norm[1],
-        label=label,
-        color=COLORS[idx],
-        marker=MARKERS[idx],
-        # the marker should be not filled
-        facecolors="none",
-    )
-    # upper and lower limits
-    ax.scatter(upper[0], upper[1], marker=CARETUPBASE, c=COLORS[idx], facecolors="none")
-    ax.scatter(
-        lower[0], lower[1], marker=CARETDOWNBASE, c=COLORS[idx], facecolors="none"
-    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=UserWarning)
+        # normal points
+        ax.scatter(
+            norm[0],
+            norm[1],
+            label=label,
+            color=COLORS[idx],
+            marker=MARKERS[idx],
+            # the marker should be not filled
+            facecolors="none",
+        )
+        # upper and lower limits
+        ax.scatter(
+            upper[0], upper[1], marker=CARETUPBASE, c=COLORS[idx], facecolors="none"
+        )
+        ax.scatter(
+            lower[0], lower[1], marker=CARETDOWNBASE, c=COLORS[idx], facecolors="none"
+        )
     # additional legend
     leg = [
         Line2D(
@@ -1042,7 +1087,7 @@ def _apply_CE_limits(
     combined = handles + leg
 
     if label is not None:
-        ax.legend(handles=combined, loc="best")
+        ax.legend(handles=combined, bbox_to_anchor=(1, 1))
 
 
 def _rotate_ticks(ax: Axes) -> None:

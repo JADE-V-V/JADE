@@ -12,13 +12,13 @@ from tqdm import tqdm
 
 import jade.resources as res
 from jade import resources
-from jade.app.fetch import fetch_f4e_inputs, fetch_iaea_inputs
+from jade.app.fetch import fetch_f4e_inputs, fetch_iaea_inputs, fetch_nonIAEA_exp_data
 from jade.config.paths_tree import PathsTree
 from jade.config.pp_config import PostProcessConfig
 from jade.config.raw_config import ConfigRawProcessor
-from jade.config.run_config import RunConfig
+from jade.config.run_config import RunConfig, RunMode
 from jade.config.status import GlobalStatus
-from jade.helper.__optionals__ import TKINTER_AVAIL
+from jade.helper.__optionals__ import TKINTER_AVAIL, OMC_AVAIL
 
 if TKINTER_AVAIL:
     from jade.gui.post_config_gui import PostConfigGUI
@@ -28,7 +28,7 @@ from jade.helper.constants import CODE, EXP_TAG, FIRST_INITIALIZATION, JADE_TITL
 from jade.post.atlas_processor import AtlasProcessor
 from jade.post.excel_processor import ExcelProcessor
 from jade.post.raw_processor import RawProcessor
-from jade.run.benchmark import BenchmarkRunFactory
+from jade.run.benchmark import BenchmarkRunFactory, launch_global_jobs
 
 DEFAULT_SETTINGS_PATH = files(res).joinpath("default_cfg")
 
@@ -91,18 +91,24 @@ class JadeApp:
 
         This will re-fetch inputs from the various repositories that feed JADE.
         """
+        # install IAEA inputs and experimental data
         success = fetch_iaea_inputs(
             self.tree.benchmark_input_templates, self.tree.exp_data
         )
         if not success:
             logging.error("Failed to update the IAEA benchmark inputs.")
 
+        # Install F4E exp data
+        success = fetch_nonIAEA_exp_data(self.tree.exp_data)
+        if not success:
+            logging.error("Failed to update the F4E experimental data.")
+
+        # Install F4E inputs
         f4e_gitlab_token = os.getenv("F4E_GITLAB_TOKEN")
 
         if f4e_gitlab_token is not None:
             success = fetch_f4e_inputs(
                 self.tree.benchmark_input_templates,
-                self.tree.exp_data,
                 f4e_gitlab_token,
             )
             if not success:
@@ -134,7 +140,7 @@ class JadeApp:
                             os.remove(os.path.join(pathroot, file))
         logging.info("Runtpe files were removed successfully")
 
-    def run_benchmarks(self):
+    def run_benchmarks(self, testing: bool = False) -> list[str] | None:
         """Run the benchmarks according to the configuration."""
         logging.info("Running benchmarks")
         # first thing do to is to check if the benchmarks were already run
@@ -156,6 +162,7 @@ class JadeApp:
             proceed_flag = input("Do you want to continue? [y/n]: ").lower() == "y"
 
         if proceed_flag:
+            run_commands = []
             for bench_name, cfg in self.run_cfg.benchmarks.items():
                 benchmark = BenchmarkRunFactory.create(
                     cfg,
@@ -163,7 +170,16 @@ class JadeApp:
                     self.tree.benchmark_input_templates,
                     self.run_cfg.env_vars,
                 )
-                benchmark.run()
+                commands = benchmark.run()
+                run_commands.extend(commands)
+            # In case only one job is requested, build it after all commands
+            # have been collected
+            if self.run_cfg.env_vars.run_mode == RunMode.GLOBAL_JOB:
+                jobs = launch_global_jobs(
+                    run_commands, self.run_cfg.env_vars, test=testing
+                )
+                logging.info("Benchmarks run have been submitted.")
+                return jobs
         logging.info("Benchmarks run completed.")
 
     def continue_run(self, testing: bool = False):
@@ -181,28 +197,61 @@ class JadeApp:
         logging.info("Benchmarks run have been submitted.")
         return commands
 
-    def raw_process(self, subset: list[str] | None = None):
-        """Process the raw data from the simulations."""
+    def raw_process(self, force: bool = False, subset: list[str] | None = None):
+        """Process the raw data from the simulations.
+
+        Parameters
+        ----------
+        force : bool, optional
+            Whether to force the processing on all available simulations overriding
+            previous results, by default False
+        subset : list[str] | None, optional
+            A list of specific benchmarks to process, by default None
+        """
         logging.info("Processing raw data")
         # first identify all simulations that were successful but were not processed
         root_cfg = self.tree.cfg.bench_raw
         successful = self.status.get_successful_simulations()
+
+        def get_config(
+            root_cfg: Path, code: CODE, bench: str
+        ) -> ConfigRawProcessor | None:
+            # get the correspondent raw processor configuration
+            cfg_file = Path(root_cfg, f"{code.value}/{bench}.yaml")
+            try:
+                raw_cfg = ConfigRawProcessor.from_yaml(cfg_file)
+            except FileNotFoundError:
+                logging.warning(
+                    f"Configuration file for {code.value} {bench} not found"
+                )
+                return None
+            return raw_cfg
+
         to_process = {}
         for code, lib, bench in successful:
-            if (code, lib, bench) not in self.status.raw_data:
-                if subset is not None and bench not in subset:
-                    continue
-                # get the correspondent raw processor configuration
-                cfg_file = Path(root_cfg, f"{code.value}/{bench}.yaml")
-                try:
-                    raw_cfg = ConfigRawProcessor.from_yaml(cfg_file)
-                except FileNotFoundError:
-                    logging.warning(
-                        f"Configuration file for {code.value} {bench} not found"
-                    )
+            # if openmc is not available in system, skip processing
+            if code == CODE.OPENMC and not OMC_AVAIL:
+                logging.warning(f"OpenMC not installed. Skipping {bench} processing.")
+                continue
+
+            if force:
+                # process all the successful simulations, force override
+                raw_cfg = get_config(root_cfg, code, bench)
+                if raw_cfg is None:
                     continue
                 to_process[(code, lib, bench)] = raw_cfg
                 logging.info(f"Processing {code.value} {lib} {bench} benchmarks")
+            else:
+                # only process if not already done
+                if (code, lib, bench) not in self.status.raw_data:
+                    if subset is not None and bench not in subset:
+                        continue
+
+                    raw_cfg = get_config(root_cfg, code, bench)
+                    if raw_cfg is None:
+                        continue
+                    to_process[(code, lib, bench)] = raw_cfg
+                    logging.info(f"Processing {code.value} {lib} {bench} benchmarks")
 
         # process the raw data
         for (code, lib, bench), cfg in tqdm(to_process.items(), desc="Process raw"):

@@ -1,6 +1,6 @@
 Neutron(%):
   results:
-    - Neutron flux
+    - Neutron spectra
   comparison_type: percentage
   table_type: pivot
   x: Energy
@@ -12,7 +12,7 @@ Neutron(%):
 #
 Photon(%):
   results:
-    - Photon flux
+    - Photon spectra
   comparison_type: percentage
   table_type: pivot
   x: Energy
@@ -21,3 +21,13 @@ Photon(%):
   add_error: True
   change_col_names: {'Energy': 'Energy [MeV]', 'Case': 'Position'}
   conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+#
+CE table:
+  results:
+    - Neutron spectra coarse
+    - Photon spectra coarse
+  comparison_type: ratio
+  table_type: simple
+  x: ['Result', 'Case', 'Energy']
+  y: ['Value', 'Error']
+  change_col_names: {'Energy': 'Energy [MeV]', 'Value': 'C/E'}

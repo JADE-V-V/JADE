@@ -1,0 +1,7 @@
+{
+    "benchmark_name": "FNG-SS",
+    "benchmark_version": "1.0",
+    "jade_run_version": "0.1.dev1525+g821619113.d20251113",
+    "library": "FENDL 3.2b",
+    "code": "openmc"
+}

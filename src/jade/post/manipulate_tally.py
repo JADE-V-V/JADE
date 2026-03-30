@@ -68,10 +68,22 @@ def condense_groups(
     """
     tally["abs err"] = tally["Error"] * tally["Value"]
     # this divides the entries in coarse energy bins
+
     tally["coarse_bin"] = pd.cut(tally[group_column], bins=bins, right=False)
+    tally = tally.drop(columns=[group_column])
     tally[group_column] = tally["coarse_bin"].apply(
-        lambda x: f"{x.left:g} - {x.right:g}"
+        lambda x: f"{x.left:g} - {x.right:g}" if pd.notna(x) else np.nan
     )
+    '''
+    labels = [f"{bins[i]:g} - {bins[i+1]:g}" for i in range(len(bins) - 1)]
+
+    tally[group_column] = pd.cut(
+        tally[group_column],
+        bins=bins,
+        right=False,
+        labels=labels,
+    )
+    '''
     del tally["coarse_bin"]
     grouped = tally.groupby(group_column, observed=False).agg(
         {"Value": "sum", "abs err": lambda x: math.sqrt((x**2).sum())}
@@ -202,7 +214,7 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
 
 def delete_cols(tally: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
     """Delete the columns from the tally."""
-    return tally.drop(columns=cols)
+    return tally.drop(columns=cols, errors="ignore")
 
 
 def format_decimals(tally: pd.DataFrame, decimals: dict[str, int]) -> pd.DataFrame:
@@ -263,12 +275,10 @@ def cumulative_sum(
             / tally[column]
         )
     if norm:
-        # Normalize in percentage to the last value (total reaction rate)
+        # Normalize in percentage to the last value (total sum)
         tally[column] = tally[column] / tally[column].iloc[-1] * 100
         if column == "Value":
-            tally["Error"] = np.sqrt(
-                (tally["Error"] ** 2 + tally["Error"].iloc[-1] ** 2)
-            )
+            tally["Error"] = np.sqrt(tally["Error"] ** 2 + tally["Error"].iloc[-1] ** 2)
     return tally
 
 
@@ -321,6 +331,58 @@ def gaussian_broadening(
     return tally
 
 
+def volume(tally: pd.DataFrame, volumes: dict[int, float]) -> pd.DataFrame:
+    """Volume divisor function
+
+    Parameters
+    ----------
+    tally : pd.DataFrame
+        Tally to be modified
+    volumes : dict[int, float]
+        Cell volumes dictionary
+
+    Returns
+    -------
+    tally : pd.DataFrame
+        Modified tally
+    """
+    if "Cells" in tally:
+        cells = tally.Cells.unique()
+        for cell in cells:
+            tally["Value"] = np.where(
+                (tally["Cells"] == cell),
+                tally["Value"] / volumes[cell],
+                tally["Value"],
+            )
+    return tally
+
+
+def mass(tally: pd.DataFrame, masses: dict[int, float]) -> pd.DataFrame:
+    """Volume divisor function
+
+    Parameters
+    ----------
+    tally : pd.DataFrame
+        Tally to be modified
+    masses : dict[int, float]
+        Cell masses dictionary
+
+    Returns
+    -------
+    tally : pd.DataFrame
+        Modified tally
+    """
+    if "Cells" in tally:
+        cells = tally.Cells.unique()
+        for cell in cells:
+            tally["Value"] = np.where(
+                (tally["Cells"] == cell),
+                tally["Value"] / masses[cell],
+                tally["Value"],
+            )
+    return tally
+
+
 MOD_FUNCTIONS = {
     TallyModOption.LETHARGY: by_lethargy,
     TallyModOption.SCALE: scale,
@@ -339,6 +401,8 @@ MOD_FUNCTIONS = {
     TallyModOption.SELECT_SUBSET: select_subset,
     TallyModOption.CUMULATIVE_SUM: cumulative_sum,
     TallyModOption.GAUSSIAN_BROADENING: gaussian_broadening,
+    TallyModOption.VOLUME: volume,
+    TallyModOption.MASS: mass,
 }
 
 

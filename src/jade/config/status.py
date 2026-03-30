@@ -12,6 +12,7 @@ from jade.helper.aux_functions import (
     print_code_lib,
 )
 from jade.helper.constants import CODE
+from jade.helper.errors import VersionInconsistencyError
 
 
 class GlobalStatus:
@@ -230,7 +231,7 @@ class GlobalStatus:
             return True
         return False
 
-    def check_benchmark_version(self, benchmark: str, codelib: list[str]) -> bool:
+    def _get_benchmark_version(self, benchmark: str, codelib: list[str]) -> str:
         """Check that the version of the given benchmark is the same for all
         the simulations performed.
 
@@ -244,14 +245,48 @@ class GlobalStatus:
         -------
         bool
             True if the version is the same for all the simulations, False otherwise.
+        str | None
+            The version if it is the same for all the simulations, None otherwise.
         """
-        versions = []
+        versions = {}
         for code, lib, bench in self.simulations.keys():
             if bench == benchmark and print_code_lib(code, lib) in codelib:
-                versions.append(
-                    self.simulations[(code, lib, bench)].metadata["version"]
-                )
-        return len(set(versions)) <= 1
+                versions[(code, lib)] = self.simulations[(code, lib, bench)].metadata[
+                    "version"
+                ]
+
+        if len(set(versions.values())) == 1:
+            return list(versions.values())[0]
+        else:
+            raise VersionInconsistencyError(
+                f"The version of the benchmark {benchmark} is not the same for all the simulations performed. Versions found: {versions}"
+            )
+
+    def validate_post_processing(
+        self, code: CODE, benchmark: str, libs: list[str]
+    ) -> bool:
+        """Check that the post-processing can be performed for the given code and
+        benchmark. This is true if the benchmark version for the requested libs
+        are the same.
+
+        Parameters
+        ----------
+        code : Code
+            code used in the simulation.
+        benchmark : str
+            benchmark name.
+        libs : list[str]
+            list of libraries to check.
+
+        Returns
+        -------
+        bool
+            True if the post-processing can be performed, False otherwise.
+        """
+        # first of all check internal consistency
+
+        # then check that version is the same between libs
+        pass
 
 
 @dataclass

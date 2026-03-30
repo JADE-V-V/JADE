@@ -45,3 +45,7 @@ class TestGlobalStatus:
         assert len(benchmarks) == 0
         benchmarks = status.get_benchmark_from_raw_codelib("_mcnp_-_ENDFB-VIII.0_")
         assert len(benchmarks) == 2
+
+    def test_get_benchmark_version(self):
+        status = GlobalStatus(DUMMY_SIMULATIONS, DUMMY_RAW_RESULTS)
+        assert status._get_benchmark_version("Oktavian", "_mcnp_-_FENDL 3.2c_")

@@ -21,6 +21,11 @@ def main():
         help="Add the RMODE 0 card to all mcnp benchmarks",
         action="store_true",
     )
+    parser.add_argument(
+        "--unfinished",
+        help="Print the simulations that were not completed",
+        action="store_true",
+    )
 
     args = parser.parse_args()
 
@@ -35,6 +40,8 @@ def main():
         app.rmv_runtpe()
     if args.addrmode:
         app.add_rmode()
+    if args.unfinished:
+        app.print_unfinished_runs()
 
 
 if __name__ == "__main__":

@@ -364,3 +364,12 @@ class JadeApp:
         """Add the rmode=0 to the mcnp input files."""
         logging.info("Adding RMODE 0 to the MCNP input files")
         add_rmode0(self.tree.benchmark_input_templates)
+
+    def print_unfinished_runs(self):
+        """Print the simulations that were not completed."""
+        for key, status in self.status.simulations.items():
+            if len(status.failed_simulations) > 0:
+                code, lib, bench = key
+                logging.info(f"Unfinished simulations for {code} {lib} {bench}:")
+                for sim in status.failed_simulations:
+                    logging.info(f"\t{sim}")

@@ -314,6 +314,9 @@ class JadeApp:
                 )
                 continue
 
+            # check that the benchmark versions are consistent with each other
+            self.status.validate_codelibs(code_libs, benchmark)
+
             # prepare the new paths
             pp_path = self.tree.get_new_post_bench_path(benchmark)
             excel_folder = Path(pp_path, "excel")

@@ -1,6 +1,6 @@
 {
     "benchmark_name": "Oktavian",
-    "benchmark_version": "1.0",
+    "benchmark_version": "2.0",
     "jade_run_version": null,
     "library": "ENDFB-VIII.0",
     "code": "mcnp",

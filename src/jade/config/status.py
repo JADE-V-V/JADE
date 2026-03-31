@@ -12,6 +12,7 @@ from jade.helper.aux_functions import (
     print_code_lib,
 )
 from jade.helper.constants import CODE
+from jade.helper.errors import VersionInconsistencyError
 
 
 class GlobalStatus:
@@ -38,6 +39,7 @@ class GlobalStatus:
         self.raw_results_path = raw_results_path
         self._simulations = None
         self._raw_data = None
+        self._raw_metadata = None
 
     @property
     def simulations(self) -> dict[tuple[CODE, str, str], CodeLibRunStatus]:
@@ -48,14 +50,26 @@ class GlobalStatus:
     @property
     def raw_data(self) -> dict[tuple[CODE, str, str], list[str]]:
         if self._raw_data is None:
-            self._raw_data = self._parse_raw_results_folder(self.raw_results_path)
+            self._raw_data, self._raw_metadata = self._parse_raw_results_folder(
+                self.raw_results_path
+            )
         return self._raw_data
+
+    @property
+    def raw_metadata(self) -> dict[tuple[CODE, str, str], dict]:
+        if self._raw_metadata is None:
+            self._raw_data, self._raw_metadata = self._parse_raw_results_folder(
+                self.raw_results_path
+            )
+        return self._raw_metadata
 
     def update_raw_results(self) -> None:
         """Update the raw results by re-parsing the raw results folder. It should be used
         after processing new raw results to update the status.
         """
-        self._raw_data = self._parse_raw_results_folder(self.raw_results_path)
+        self._raw_data, self._raw_metadata = self._parse_raw_results_folder(
+            self.raw_results_path
+        )
 
     def _parse_simulations_folder(
         self, simulations_path: PathLike
@@ -109,9 +123,12 @@ class GlobalStatus:
 
     def _parse_raw_results_folder(
         self, path_raw: PathLike
-    ) -> dict[tuple[CODE, str, str], list[str]]:
+    ) -> tuple[
+        dict[tuple[CODE, str, str], list[str]], dict[tuple[CODE, str, str], dict]
+    ]:
         # simply store a dictionary with the processed raw results
         available_raw_data = {}
+        metadata = {}
         for code_lib in os.listdir(path_raw):
             codelib_path = Path(path_raw, code_lib)
             if not codelib_path.is_dir():
@@ -124,7 +141,10 @@ class GlobalStatus:
                 available_raw_data[(CODE(code), lib, benchmark)] = os.listdir(
                     bench_path
                 )
-        return available_raw_data
+                if lib != "exp":  # for the experiments we don't have metadata
+                    with open(os.path.join(bench_path, "metadata.json")) as infile:
+                        metadata[(CODE(code), lib, benchmark)] = json.load(infile)
+        return available_raw_data, metadata
 
     def was_simulated(self, code: CODE, lib: str, benchmark: str) -> bool:
         """Check if a simulation was already performed and if it was successful.
@@ -245,6 +265,62 @@ class GlobalStatus:
         if codelib in self.get_codelibs_from_raw_benchmark(benchmark):
             return True
         return False
+
+    def _validate_libs_processing(
+        self, code: CODE, benchmark: str, libs: list[str]
+    ) -> None:
+        """Check that the post-processing can be performed for the given code and
+        benchmark. This is true if the benchmark version for the requested libs
+        are the same.
+
+        Parameters
+        ----------
+        code : CODE
+            code used in the simulation.
+        benchmark : str
+            benchmark name.
+        libs : list[str]
+            list of libraries to check.
+
+        Returns
+        -------
+        bool
+            True if the post-processing can be performed, False otherwise.
+        """
+        versions = {}
+        for lib in libs:
+            versions[lib] = self.raw_metadata[(code, lib, benchmark)][
+                "benchmark_version"
+            ]
+        if len(set(versions.values())) > 1:
+            raise VersionInconsistencyError(
+                f"The versions of the requested libraries for {code} and benchmark {benchmark} are not consistent: {versions}"
+            )
+
+    def validate_codelibs(
+        self, codelibs: list[tuple[CODE, str]], benchmarks: str
+    ) -> None:
+        """Check that a list of codelibs can be post-processed together for a given benchmark.
+        This is true if the benchmark version for the requested libs are the same.
+
+        Parameters
+        ----------
+        codelibs : list[tuple[CODE, str]]
+            list of codelibs to check. Each codelib is a tuple with the code and library.
+        benchmark : str
+            benchmark name.
+        """
+        libs = {}
+        for code, lib in codelibs:
+            code = CODE(code)
+            if lib == "exp":  # for the experiments we don't have metadata
+                continue
+            if code not in libs:
+                libs[code] = []
+            libs[code].append(lib)
+
+        for code, lib_list in libs.items():
+            self._validate_libs_processing(code, benchmarks, lib_list)
 
 
 @dataclass

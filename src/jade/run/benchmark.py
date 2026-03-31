@@ -440,7 +440,7 @@ class BenchmarkRun:
         for single_run_folder in os.listdir(benchmark_root):
             single_run_root = Path(benchmark_root, single_run_folder)
             # check if the simulation has been completed
-            flag_run = CODE_CHECKERS[code](single_run_root)
+            flag_run = CODE_CHECKERS[code].check_success(os.listdir(single_run_root))
             if flag_run:
                 continue
 

@@ -183,3 +183,18 @@ Wave plots (Materials):
     limits: [0.5, 1.5]
     shorten_x_name: 2
   select_runs: SphereSDDR_M\d+
+#
+Neutron Leakage flux:
+  results:
+    - Leakage neutron flux by lethargy
+  plot_type: binned
+  title: Neutron leakage flux by unit lethargy
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: "$\\left[\\mathrm{cm}^{-2}\\cdot\\mathrm{n}_\\mathrm{s}^{-1}\\cdot\\mathrm{u}^{-1}\\right]$"
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_error: true
+    show_CE: true
+#

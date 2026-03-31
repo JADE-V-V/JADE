@@ -6,9 +6,15 @@ _cols: &del_cols
 Leakage neutron flux Vitamin-J 175:
   concat_option: no_action
   2: [[scale, {"factor": 3.182462327E-3}], [delete_cols, *del_cols]]
+Leakage neutron flux by lethargy:
+  concat_option: no_action
+  2: [[scale, {"factor": 3.182462327E-3}], [delete_cols, *del_cols], [lethargy, {}]]
 Leakage photon flux:
   concat_option: no_action
   22: [[scale, {"factor": 3.182462327E-3}], [delete_cols, *del_cols]]
+Leakage photon flux by energy:
+  concat_option: no_action
+  32: [[scale, {"factor": 3.182462327E-3}], [delete_cols, *del_cols], [by_energy, {}]]
 Leakage photon flux 24 groups:
   concat_option: no_action
   32: [[scale, {"factor": 3.182462327E-3}], [delete_cols, *del_cols]]

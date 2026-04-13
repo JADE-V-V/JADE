@@ -289,9 +289,10 @@ class GlobalStatus:
         """
         versions = {}
         for lib in libs:
+            # I want only the major version
             versions[lib] = self.raw_metadata[(code, lib, benchmark)][
                 "benchmark_version"
-            ]
+            ].split(".")[0]
         if len(set(versions.values())) > 1:
             raise VersionInconsistencyError(
                 f"The versions of the requested libraries for {code} and benchmark {benchmark} are not consistent: {versions}"

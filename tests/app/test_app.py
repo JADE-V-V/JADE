@@ -213,6 +213,13 @@ class TestJadeApp:
         run_cfg = RunConfig(env_vars, {"Sphere": cfg1})
         app.run_cfg = run_cfg
         command = app.continue_run(testing=True)
+        assert "#!/bin/sh\n\n#SBATCH" in command[0][1]
+        assert "Sphere_dummy1" in command[0][1]
+        assert "Sphere_m101" in command[1][1]
+
+        app.run_cfg.env_vars.run_mode = RunMode.GLOBAL_JOB
+        command = app.continue_run(testing=True)
         assert "#!/bin/sh\n\n#SBATCH" in command[0]
         assert "Sphere_m101" in command[0]
         assert "Sphere_dummy1" in command[0]
+        assert command[0].count('cd "') == 2

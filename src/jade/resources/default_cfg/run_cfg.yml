@@ -7,7 +7,7 @@ Sphere:
     serpent: []
   custom_input: '10'
   description: Sphere Leakage
-  nps: 1e8
+  nps: 1e9
   only_input: false
 #
 ITER_1D:
@@ -73,7 +73,7 @@ SphereSDDR:
     serpent: []
   custom_input: '10'
   description: Sphere SDDR
-  nps: 1e8
+  nps: 1e9
   only_input: false
 #
 Simple_Tokamak:

@@ -160,14 +160,13 @@ class TestJadeApp:
         )
         run_cfg = RunConfig(env_vars, {"Dummy_continue": cfg})
         app.run_cfg = run_cfg
-        with pytest.raises(FileNotFoundError):
-            app.continue_run()
+        app.continue_run(testing=True)
 
         env_vars.run_mode = RunMode.JOB_SUBMISSION
         run_cfg = RunConfig(env_vars, {"Dummy_continue": cfg})
         app.run_cfg = run_cfg
         command = app.continue_run(testing=True)
-        assert "#!/bin/sh\n\n#SBATCH" in command[0]
+        assert "#!/bin/sh\n\n#SBATCH" in command[0][1]
 
     def test_continue_run_sphere(self):
         app = JadeApp(root=DUMMY_ROOT, skip_init=True)

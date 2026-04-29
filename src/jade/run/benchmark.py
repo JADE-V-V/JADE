@@ -344,6 +344,7 @@ class SingleRunFactory:
         template_folder: PathLike,
         lib: Library,
         nps: int,
+        mock_input: bool = False,
     ) -> SingleRun:
         """Factory method to create a SingleRun object.
 
@@ -357,27 +358,57 @@ class SingleRunFactory:
             library to be used in the run.
         nps : int
             number of particle histories to simulate.
+        mock_input : bool, optional
+            flag to create a mock input for continue run purposes, by default False.
         """
         if code == CODE.MCNP:
             single_run_class = SingleRunMCNP
             if not isinstance(lib, LibraryMCNP):
                 raise ConfigError("An MCNP library needs to be provided for MCNP runs")
-            inp = InputMCNP(template_folder, lib)
+            if not mock_input:
+                inp = InputMCNP(template_folder, lib)
         elif code == CODE.OPENMC:
             single_run_class = SingleRunOpenMC
-            inp = InputOpenMC(template_folder, lib)
+            if not mock_input:
+                inp = InputOpenMC(template_folder, lib)
         elif code == CODE.SERPENT:
             single_run_class = SingleRunSerpent
-            inp = InputSerpent(template_folder, lib)
+            if not mock_input:
+                inp = InputSerpent(template_folder, lib)
         elif code == CODE.D1S:
             single_run_class = SingleRunD1S
             if not isinstance(lib, LibraryD1S):
                 raise ConfigError("A D1S library needs to be provided for D1S runs")
-            inp = InputD1S(template_folder, lib)
+            if not mock_input:
+                inp = InputD1S(template_folder, lib)
         else:
             raise ValueError(f"Code {code} not supported")
 
+        if mock_input:
+            # create a mock input with only the name,
+            # this is needed for continue run purposes
+            inp = MockInput(template_folder, lib)
+
         return single_run_class(inp, lib, nps)
+
+
+class MockInput:
+    """Class to create a mock input for continue run purposes. This is needed to create
+    the SingleRun object without having the actual input files, which may not be
+     present in continue run scenarios.
+    """
+
+    def __init__(self, template_folder: PathLike, lib: Library):
+        self.template_folder = template_folder
+        self.inp = None
+        self.name = os.path.basename(template_folder)
+        self.lib = lib
+
+    def translate(self):
+        pass
+
+    def set_nps(self, nps: int):
+        pass
 
 
 class BenchmarkRun:
@@ -444,19 +475,10 @@ class BenchmarkRun:
             if flag_run:
                 continue
 
-            sub_bench = os.path.basename(single_run_root)
-            # recover the input template
-            template_folder = os.path.join(
-                self.benchmark_templates_root, sub_bench, code.value
-            )
-            # create the single run
+            # create the single run using the mock input
             single_run = SingleRunFactory.create(
-                code, template_folder, lib, int(self.config.nps)
+                code, single_run_root, lib, int(self.config.nps), mock_input=True
             )
-            # need to override the name if MCNP to be sure there are no
-            # problems with Spheres
-            if code in (CODE.MCNP, CODE.D1S):
-                single_run.input._name = single_run_folder
             if not flag_datapath:
                 # this is the first run, we need to set the environment variables
                 name, value = single_run._get_lib_data_command()

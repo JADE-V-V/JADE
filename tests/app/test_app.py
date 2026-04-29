@@ -181,3 +181,38 @@ class TestJadeApp:
         app = JadeApp(root=DUMMY_ROOT, skip_init=True)
         app.print_unfinished_runs()
         assert "Dummy_continue2" in caplog.text
+
+    def test_continue_run_sphere(self):
+        app = JadeApp(root=DUMMY_ROOT, skip_init=True)
+        # override the run config file
+        lib = LibraryMCNP(
+            name="continue sphere", path=RUN_RES.joinpath("xsdir.txt"), suffix="31c"
+        )
+        perform = [
+            (CODE.MCNP, lib),
+        ]
+        cfg1 = BenchmarkRunConfig(
+            description="Dummy",
+            name="Sphere",
+            run=perform,
+            nps=10,
+            only_input=True,
+            additional_settings_path=Path(DUMMY_ROOT, "cfg/benchmarks/Sphere"),
+        )
+        env_vars = EnvironmentVariables(
+            0,
+            10,
+            {CODE.MCNP: "mcnp6.2"},
+            run_mode=RunMode.JOB_SUBMISSION,
+            code_job_template={
+                CODE.MCNP: Path(DUMMY_ROOT, "cfg/exe_config/mcnp_template.sh")
+            },
+            scheduler_command="sbatch",
+            exe_cfg_root=Path(DUMMY_ROOT, "cfg/exe_config"),
+        )
+        run_cfg = RunConfig(env_vars, {"Sphere": cfg1})
+        app.run_cfg = run_cfg
+        command = app.continue_run(testing=True)
+        assert "#!/bin/sh\n\n#SBATCH" in command[0]
+        assert "Sphere_m101" in command[0]
+        assert "Sphere_dummy1" in command[0]

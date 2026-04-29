@@ -160,7 +160,7 @@ FNG-SS:
     openmc: []
     serpent: []
   custom_input: 
-  nps: 1e9
+  nps: 1e10
   description: FNG Stainless Steel
   only_input: false
 #
@@ -171,7 +171,7 @@ FNG-HCPB:
     openmc: []
     serpent: []
   custom_input: 
-  nps: 5e8
+  nps: 1e10
   description: FNG Helium Cooled Pebble Bed Tritium Breeder
   only_input: false
 # -- FNS experiments --

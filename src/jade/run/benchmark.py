@@ -140,7 +140,11 @@ class SingleRun(ABC):
             json.dump(metadata, f, indent=4)
 
     def run(
-        self, env_vars: EnvironmentVariables, sim_folder: PathLike, test=False
+        self,
+        env_vars: EnvironmentVariables,
+        sim_folder: PathLike,
+        test=False,
+        continue_run=False,
     ) -> bool | str | list[str]:
         """Run the simulation.
 
@@ -152,6 +156,8 @@ class SingleRun(ABC):
             path to the simulation folder.
         test : bool, optional
             flag to run the simulation in test mode, by default False.
+        continue_run : bool, optional
+            flag to run the simulation in continue run mode, by default False.
 
         Returns
         -------
@@ -173,15 +179,23 @@ class SingleRun(ABC):
 
         flagnotrun = False
         if env_vars.run_mode == RunMode.JOB_SUBMISSION:
-            command = self._submit_job(
-                env_vars,
-                sim_folder,
-                run_command,
-                lib_data_command,
-                self.code,
-                test=test,
-            )
+            if continue_run and not test:
+                self._submit_job(
+                    env_vars,
+                    sim_folder,
+                    run_command,
+                    lib_data_command,
+                    self.code,
+                )
             if test:
+                command = self._submit_job(
+                    env_vars,
+                    sim_folder,
+                    run_command,
+                    lib_data_command,
+                    self.code,
+                    test=test,
+                )
                 return command
 
         elif env_vars.run_mode == RunMode.GLOBAL_JOB:
@@ -439,30 +453,27 @@ class BenchmarkRun:
         self.env_vars = env_vars
         self.simulation_root = simulation_root
 
-    def continue_run(self, testing=False):
+    def continue_run(self, testing: bool = False) -> list[tuple[list[str], PathLike]]:
         """Allow to continue a run on previously generated inputs. This allows to launch
         a single job and optimize HPC resources usage.
         """
         # recover the code and library from simulation root
+        total_command = []
         for code, lib in self.config.run:
-            command = self._get_continue_run_command(code, lib)
-            # if serial, send the command, otherwis build a job script
-            if self.env_vars.run_mode == RunMode.LOCAL:
-                subprocess.Popen(
-                    command,
-                    # check=True,
-                    # timeout=43200, serial can also last days on workstations
-                )
-            elif self.env_vars.run_mode == RunMode.JOB_SUBMISSION:
-                cwd = os.getcwd()
-                command = SingleRun._submit_job(
-                    self.env_vars, cwd, command, "", code, test=testing
-                )
-                return command
+            command = self._get_continue_run_command(code, lib, testing=testing)
+            runs = [(code, commands, folder) for commands, folder in command]
+            total_command.extend(runs)
 
-    def _get_continue_run_command(self, code: CODE, lib: Library) -> str:
+        return total_command
+
+    def _get_continue_run_command(
+        self,
+        code: CODE,
+        lib: Library,
+        testing: bool = False,
+    ) -> list[tuple[list[str], Path]]:
         # we can assume that the single run has been already originated
-        total_command = ""
+        commands = []
         codelib_folder = print_code_lib(code, lib)
         benchmark_root = os.path.join(
             self.simulation_root, codelib_folder, self.config.name
@@ -485,13 +496,17 @@ class BenchmarkRun:
                 os.environ[name] = value
                 flag_datapath = True
 
+            # store commands are needed only for global submission and test
+            # purposes. for other modes the jobs/processes have been already
+            # submitted
             command = single_run.run(
-                env_vars=self.env_vars, sim_folder=single_run_root, test=True
+                env_vars=self.env_vars,
+                sim_folder=single_run_root,
+                test=testing,
+                continue_run=True,
             )
-            assert isinstance(command, str)
-            cd_command = f"cd {single_run_root} {os.linesep}"
-            total_command = total_command + cd_command + command + os.linesep
-        return total_command
+            commands.append((command, single_run_root))
+        return commands
 
     def run(self) -> list[tuple[list[str] | None, PathLike]]:
         """Run the benchmark. This creates the inputs and runs the simulations for each

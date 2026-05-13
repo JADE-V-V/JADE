@@ -412,7 +412,17 @@ class MockInput:
     def __init__(self, template_folder: PathLike, lib: Library):
         self.template_folder = template_folder
         self.inp = None
-        self.name = os.path.basename(template_folder)
+        # localize the .i file
+        found = False
+        for file in os.listdir(template_folder):
+            if file.endswith(".i"):
+                found = True
+                break
+        if not found:
+            self.name = os.path.basename(template_folder)
+        else:
+            self.name = file[:-2]
+
         self.lib = lib
 
     def translate(self):

@@ -100,9 +100,8 @@ class TestBenchmarkRun:
         command = benchmark._get_continue_run_command(CODE.MCNP, lib, testing=True)
         # assert command == expected_command
         assert "Dummy_continue1" not in command[0][0]  # successful simulation
-        assert "Dummy_continue2" in command[0][0]  # correct simulation
         assert (
-            'mpirun -np 10 mcnp6.2 i=Dummy_continue2.i n=Dummy_continue2. xsdir="xsdir.txt" tasks 10'
+            'mpirun -np 10 mcnp6.2 i=Dummy2.i n=Dummy2. xsdir="xsdir.txt" tasks 10'
             in command[0][0]
         )
 

@@ -170,7 +170,7 @@ class TestJadeApp:
         run_cfg = RunConfig(env_vars, {"Dummy_continue": cfg})
         app.run_cfg = run_cfg
         command = app.continue_run(testing=True)
-        assert "#!/bin/sh\n\n#SBATCH" in command[0][1][1]
+        assert "#!/bin/sh\n\n#SBATCH" in command[0][1]
 
     def test_print_unfinished_runs(self, caplog):
         import logging

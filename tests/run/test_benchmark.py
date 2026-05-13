@@ -98,7 +98,6 @@ class TestBenchmarkRun:
         sim_folder = files(dummy_struct).joinpath("simulations")
         benchmark = BenchmarkRun(cfg, sim_folder, BENCHMARKS_ROOT, env_vars)
         command = benchmark._get_continue_run_command(CODE.MCNP, lib, testing=True)
-        command = benchmark._get_continue_run_command(CODE.MCNP, lib, testing=True)
         # assert command == expected_command
         assert "Dummy_continue1" not in command[0][0]  # successful simulation
         assert (

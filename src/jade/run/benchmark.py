@@ -144,7 +144,6 @@ class SingleRun(ABC):
         env_vars: EnvironmentVariables,
         sim_folder: PathLike,
         test=False,
-        continue_run=False,
     ) -> bool | str | list[str]:
         """Run the simulation.
 
@@ -156,8 +155,6 @@ class SingleRun(ABC):
             path to the simulation folder.
         test : bool, optional
             flag to run the simulation in test mode, by default False.
-        continue_run : bool, optional
-            flag to run the simulation in continue run mode, by default False.
 
         Returns
         -------
@@ -179,7 +176,7 @@ class SingleRun(ABC):
 
         flagnotrun = False
         if env_vars.run_mode == RunMode.JOB_SUBMISSION:
-            if continue_run and not test:
+            if not test:
                 self._submit_job(
                     env_vars,
                     sim_folder,
@@ -187,7 +184,7 @@ class SingleRun(ABC):
                     lib_data_command,
                     self.code,
                 )
-            if test:
+            else:
                 command = self._submit_job(
                     env_vars,
                     sim_folder,
@@ -415,7 +412,17 @@ class MockInput:
     def __init__(self, template_folder: PathLike, lib: Library):
         self.template_folder = template_folder
         self.inp = None
-        self.name = os.path.basename(template_folder)
+        # localize the .i file
+        found = False
+        for file in os.listdir(template_folder):
+            if file.endswith(".i"):
+                found = True
+                break
+        if not found:
+            self.name = os.path.basename(template_folder)
+        else:
+            self.name = file[:-2]
+
         self.lib = lib
 
     def translate(self):
@@ -503,7 +510,6 @@ class BenchmarkRun:
                 env_vars=self.env_vars,
                 sim_folder=single_run_root,
                 test=testing,
-                continue_run=True,
             )
             commands.append((command, single_run_root))
         return commands

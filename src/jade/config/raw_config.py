@@ -6,6 +6,9 @@ from enum import Enum
 import yaml
 
 from jade.helper.aux_functions import PathLike
+import re
+
+APPLY_TO_TAG = re.compile(r"apply_to#\d+")
 
 
 class ConfigRawProcessor:
@@ -29,7 +32,11 @@ class ConfigRawProcessor:
             # discard keys that start with _, they are aliases
             if isinstance(res_name, str) and res_name.startswith("_"):
                 continue
-            results.append(ResultConfig.from_dict(dict, res_name))
+            res_config = ResultConfig.from_dict(dict, res_name)
+            # convention to allow for same name across different runs
+            if res_config.apply_to is not None and APPLY_TO_TAG.search(res_name):
+                res_config.name = re.sub(APPLY_TO_TAG, "", res_config.name).strip()
+            results.append(res_config)
 
         return ConfigRawProcessor(results)
 
@@ -41,7 +48,7 @@ class ResultConfig:
 
     Parameters
     ----------
-    name : int
+    name : str
         Unique identifier of the result
     modify : dict[int, list[tuple[TallyModOption, dict]]]
         dictionary of tallies to be modified. For each specify the list of modifications
@@ -54,13 +61,13 @@ class ResultConfig:
         the specified runs in the list.
     """
 
-    name: int
+    name: str
     modify: dict[int, list[tuple[TallyModOption, dict]]]
     concat_option: TallyConcatOption
     apply_to: list[str] | None = None
 
     @classmethod
-    def from_dict(cls, dictionary: dict, name) -> ResultConfig:
+    def from_dict(cls, dictionary: dict, name: str) -> ResultConfig:
         mods = {}
         concat_option = TallyConcatOption(dictionary.pop("concat_option"))
         apply_to = dictionary.pop("apply_to", None)

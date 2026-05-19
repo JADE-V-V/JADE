@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import os
-from importlib.resources import files
+from importlib.resources import files, as_file
 from pathlib import Path
 
 import jade.resources.default_cfg.benchmarks_pp as res
+import tests.config.resources.raw_config as raw_res
 from jade.config.raw_config import (
     ConfigRawProcessor,
     ResultConfig,
@@ -42,3 +43,9 @@ class TestConfigRawProcessor:
         cfg = ConfigRawProcessor.from_yaml(file)
         assert len(cfg.results) == 23
         assert len(cfg.results[0].modify[4][0][1]["values"]) == 104
+
+    def test_apply_to(self):
+        file = files(raw_res).joinpath("apply_to.yaml")
+        with as_file(file) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+        assert cfg.results[0].name == cfg.results[1].name

@@ -1,0 +1,14 @@
+On-axis U-238 FC apply_to#1:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-00-00', 'Tiara-FC_fe-68-00-00']
+  14:
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["0"]}]
+On-axis U-238 FC apply_to#2:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-10-00']
+  14:
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["10"]}]

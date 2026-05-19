@@ -62,7 +62,8 @@ def _extract_zip(zip_content, dest: PathLike) -> PathLike:
     with zipfile.ZipFile(tmp_zip, "r") as zip_ref:
         main_folder_name = zip_ref.namelist()[0]
         zip_ref.extractall(extracted_folder)
-
+    # Delete the zip file
+    os.remove(tmp_zip)
     return Path(extracted_folder, main_folder_name)
 
 
@@ -122,7 +123,6 @@ def _install_data(fetch_folder: str | os.PathLike, install_folder: str | os.Path
             os.path.join(install_folder, item),
         )
 
-
 def _install_standard_folder_structure(
     extracted_folder: str | os.PathLike,
     inputs_root: PathLike,
@@ -149,7 +149,7 @@ def _install_standard_folder_structure(
         _install_data(fetched_folder, install_folder)
 
     # Once done, delete the src folder
-    shutil.rmtree(extracted_folder)
+    shutil.rmtree(os.path.join(extracted_folder))
 
     return True
 

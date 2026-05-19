@@ -24,3 +24,4 @@ The following is a list of the available utilities:
   reducing the storage memory occupied by the simulation outputs.
 * ``--addrmode``: This adds the "RMODE 0" card to all the MCNP input files. This is useful
   when running the benchmarks on a cluster with D1SUNED prompt version instead of vanilla MCNP.
+* ``--unfinished``: Print to log the simulations that were not completed correctly or have not been run yet.

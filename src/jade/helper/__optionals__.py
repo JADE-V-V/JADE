@@ -1,5 +1,7 @@
 import logging
 
+logger = logging.getLogger(__name__)
+
 # Handle OpenMC optional dependency with global flag.
 try:
     import openmc
@@ -7,7 +9,7 @@ try:
     OMC_AVAIL = True
 except ImportError:
     OMC_AVAIL = False
-    logging.warning(
+    logger.warning(
         "OpenMC has not been installed - see JADE installation instructions"
     )
 
@@ -19,4 +21,4 @@ try:
     TKINTER_AVAIL = True
 except ImportError:
     TKINTER_AVAIL = False
-    logging.warning("'tkinter' is not installed. GUI functionality will be disabled.")
+    logger.warning("'tkinter' is not installed. GUI functionality will be disabled.")

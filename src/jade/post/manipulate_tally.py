@@ -9,6 +9,8 @@ import pandas as pd
 from jade.config.excel_config import ComparisonType
 from jade.config.raw_config import TallyConcatOption, TallyModOption
 
+logger = logging.getLogger(__name__)
+
 
 # --- functions to modify tallies ---
 def by_lethargy(tally: pd.DataFrame) -> pd.DataFrame:
@@ -156,7 +158,7 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
     # Exclude the error column from the manipulation. The errror needs to be recomputed
     # as the squared root of the sum of the squared errors.
     if by not in tally.columns and by != "all":
-        logging.debug(f"Groupby column {by} not found in the tally")
+        logger.debug(f"Groupby column {by} not found in the tally")
         return tally
 
     if by == "all":
@@ -223,7 +225,7 @@ def format_decimals(tally: pd.DataFrame, decimals: dict[str, int]) -> pd.DataFra
         try:
             tally[col] = tally[col].astype(float).round(dec)
         except KeyError:
-            logging.debug(f"Column {col} not found in the tally.")
+            logger.debug(f"Column {col} not found in the tally.")
     return tally
 
 

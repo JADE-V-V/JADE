@@ -23,6 +23,8 @@ from jade.helper.aux_functions import same_index
 from jade.helper.errors import PlotIndexMismatchError
 from jade.post.manipulate_tally import ComparisonType, compare_data
 
+logger = logging.getLogger(__name__)
+
 matplotlib.use("Agg")  # use a non-interactive backend
 LM = LibManager()
 # Color-blind saver palette
@@ -555,7 +557,7 @@ class CEPlot(Plot):
                         val1.index.get_level_values(0)
                     ).symmetric_difference(set(val2.index.get_level_values(0)))
                     if len(missing_subcases) > 0:
-                        logging.warning(
+                        logger.warning(
                             f"Subcases {missing_subcases} are not present in both reference and {codelib}. "
                             f"These subcases will be removed from the plot."
                         )

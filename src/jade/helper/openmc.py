@@ -22,6 +22,8 @@ if TYPE_CHECKING:
 
     from jade.helper.aux_functions import PathLike
 
+logger = logging.getLogger(__name__)
+
 PAT_DIGITS = re.compile(r"\d+")
 
 
@@ -443,14 +445,14 @@ class OpenMCStatePoint:
                 self.tally_numbers.append(tally.id)
                 self.tally_comments.append(tally.name)
         except (FileNotFoundError, KeyError):
-            logging.warning(
+            logger.warning(
                 "OpenMC version not found in the statepoint file for %s",
                 spfile_path,
             )
         try:
             self.cell_data = OpenMCCellData.from_files(volfile_path, self.results_path)
         except (FileNotFoundError, TypeError):
-            logging.warning(
+            logger.warning(
                 "OpenMC volume file not found for %s, OpenMC xml files not found for %s",
                 volfile_path,
                 self.results_path,

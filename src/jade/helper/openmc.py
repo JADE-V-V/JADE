@@ -184,6 +184,10 @@ class OpenMCInputFiles:
         -------
         None
         """
+        # Reset OpenMC global ID registries to avoid duplicate ID warnings
+        # when creating multiple input instances from the same templates
+        openmc.reset_auto_ids()
+        
         files = os.listdir(path)
         if ("geometry.xml" in files) and ("materials.xml") in files:
             self.load_geometry(

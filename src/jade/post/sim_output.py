@@ -19,6 +19,8 @@ if TYPE_CHECKING:
 if OMC_AVAIL:
     import jade.helper.openmc as omc
 
+logger = logging.getLogger(__name__)
+
 
 class AbstractSimOutput(ABC):
     def __init__(self, sim_folder: PathLike) -> None:
@@ -227,11 +229,11 @@ class MCNPSimOutput(AbstractSimOutput):
             version = self.out.get_code_version()
             return version
         except ValueError:
-            logging.warning(
+            logger.warning(
                 "Code version not found in the output file or aux file for %s",
                 self.sim_folder,
             )
-            logging.debug(
+            logger.debug(
                 "Contents of the directory: %s",
                 os.listdir(os.path.dirname(self.sim_folder)),
             )

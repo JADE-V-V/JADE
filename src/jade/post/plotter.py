@@ -22,6 +22,8 @@ from jade.config.atlas_config import PlotConfig, PlotType
 from jade.helper.aux_functions import same_index
 from jade.post.manipulate_tally import ComparisonType, compare_data
 
+logger = logging.getLogger(__name__)
+
 matplotlib.use("Agg")  # use a non-interactive backend
 LM = LibManager()
 # Color-blind saver palette
@@ -546,7 +548,7 @@ class CEPlot(Plot):
             # differences due to rounding. In reality the two must be the same
             # in a C/E plot
             if same_index(val1.index, val2.index) is False:
-                logging.error(
+                logger.error(
                     f"Indices do not match between reference and {codelib}: "
                     f"{val1.index}, {val2.index}"
                 )

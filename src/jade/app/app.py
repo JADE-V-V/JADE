@@ -30,6 +30,8 @@ from jade.post.excel_processor import ExcelProcessor
 from jade.post.raw_processor import RawProcessor
 from jade.run.benchmark import BenchmarkRunFactory, launch_global_jobs
 
+logger = logging.getLogger(__name__)
+
 DEFAULT_SETTINGS_PATH = files(res).joinpath("default_cfg")
 
 
@@ -52,7 +54,7 @@ class JadeApp:
         self.pp_cfg = PostProcessConfig(self.tree.cfg.bench_pp)
 
         # Compute the global status
-        logging.info("Initializing the global status")
+        logger.info("Initializing the global status")
         self.status = GlobalStatus(
             simulations_path=self.tree.simulations,
             raw_results_path=self.tree.raw,
@@ -63,28 +65,34 @@ class JadeApp:
         log = os.path.join(
             self.tree.logs, "Log " + time.ctime().replace(":", "-") + ".txt"
         )
-        logger = logging.getLogger()
-        logger.setLevel(logging.INFO)
+        jade_logger = logging.getLogger("jade")
+        jade_logger.setLevel(logging.DEBUG)
+        
+        # Clear any existing handlers and prevent propagation to root logger
+        jade_logger.handlers.clear()
+        jade_logger.propagate = False
 
         # set the logging to a file and keep warnings to video
         # Create a file handler for logging INFO level messages
         file_handler = logging.FileHandler(log, encoding="utf-8")
-        file_handler.setLevel(logging.INFO)
+        file_handler.setLevel(logging.DEBUG)
         file_handler.setFormatter(
             logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         )
         # Create a console handler for logging WARNING and ERROR level messages
         console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.WARNING)
+        console_handler.setLevel(logging.INFO)
+        console_handler.setFormatter(
+            logging.Formatter(
+                "%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+                datefmt="%H:%M:%S",
+            )
+        )
 
-        for handler in logger.handlers:
-            # there should already be a streamhandler
-            if isinstance(handler, logging.StreamHandler):
-                handler.setLevel(logging.INFO)
-        logger.addHandler(file_handler)
-        logger.addHandler(console_handler)
+        jade_logger.addHandler(file_handler)
+        jade_logger.addHandler(console_handler)
 
-        logging.debug(JADE_TITLE)
+        jade_logger.debug(JADE_TITLE)
 
     def update_inputs(self):
         """Update the benchmark inputs for the simulations.
@@ -96,12 +104,12 @@ class JadeApp:
             self.tree.benchmark_input_templates, self.tree.exp_data
         )
         if not success:
-            logging.error("Failed to update the IAEA benchmark inputs.")
+            logger.error("Failed to update the IAEA benchmark inputs.")
 
         # Install F4E exp data
         success = fetch_nonIAEA_exp_data(self.tree.exp_data)
         if not success:
-            logging.error("Failed to update the F4E experimental data.")
+            logger.error("Failed to update the F4E experimental data.")
 
         # Install F4E inputs
         f4e_gitlab_token = os.getenv("F4E_GITLAB_TOKEN")
@@ -112,9 +120,9 @@ class JadeApp:
                 f4e_gitlab_token,
             )
             if not success:
-                logging.error("Failed to update the F4E benchmark inputs.")
+                logger.error("Failed to update the F4E benchmark inputs.")
         else:
-            logging.info("No F4E token found. Skipping F4E inputs update.")
+            logger.info("No F4E token found. Skipping F4E inputs update.")
 
     def restore_default_cfg(self, msg: str = ""):
         """Reset the configuration files to installation default. The session
@@ -138,11 +146,11 @@ class JadeApp:
                     for file in os.listdir(pathroot):
                         if file.endswith(".r"):
                             os.remove(os.path.join(pathroot, file))
-        logging.info("Runtpe files were removed successfully")
+        logger.info("Runtpe files were removed successfully")
 
     def run_benchmarks(self, testing: bool = False) -> list[str] | None:
         """Run the benchmarks according to the configuration."""
-        logging.info("Running benchmarks")
+        logger.info("Running benchmarks")
         # first thing do to is to check if the benchmarks were already run
         simulated = []
         for bench_name, cfg in self.run_cfg.benchmarks.items():
@@ -155,10 +163,10 @@ class JadeApp:
         # if yes, ask for confirmation before overriding
         proceed_flag = True
         if len(simulated) > 0:
-            logging.warning("The following benchmarks were already simulated:")
+            logger.warning("The following benchmarks were already simulated:")
             for code, lib, bench_name in simulated:
-                logging.warning(f"{code} - {lib.name}: {bench_name}")
-            logging.warning("If you continue, the results will be overwritten.")
+                logger.warning(f"{code} - {lib.name}: {bench_name}")
+            logger.warning("If you continue, the results will be overwritten.")
             proceed_flag = input("Do you want to continue? [y/n]: ").lower() == "y"
 
         if proceed_flag:
@@ -178,9 +186,9 @@ class JadeApp:
                 jobs = launch_global_jobs(
                     run_commands, self.run_cfg.env_vars, test=testing
                 )
-                logging.info("Benchmarks run have been submitted.")
+                logger.info("Benchmarks run have been submitted.")
                 return jobs
-        logging.info("Benchmarks run completed.")
+        logger.info("Benchmarks run completed.")
 
     def continue_run(self, testing: bool = False):
         """Continue the run of the benchmarks that were not completed."""
@@ -194,7 +202,7 @@ class JadeApp:
             )
             command = benchmark.continue_run(testing=testing)
             commands.append(command)
-        logging.info("Benchmarks run have been submitted.")
+        logger.info("Benchmarks run have been submitted.")
         return commands
 
     def raw_process(self, force: bool = False, subset: list[str] | None = None):
@@ -208,7 +216,7 @@ class JadeApp:
         subset : list[str] | None, optional
             A list of specific benchmarks to process, by default None
         """
-        logging.info("Processing raw data")
+        logger.info("Processing raw data")
         # first identify all simulations that were successful but were not processed
         root_cfg = self.tree.cfg.bench_raw
         successful = self.status.get_successful_simulations()
@@ -221,9 +229,7 @@ class JadeApp:
             try:
                 raw_cfg = ConfigRawProcessor.from_yaml(cfg_file)
             except FileNotFoundError:
-                logging.warning(
-                    f"Configuration file for {code.value} {bench} not found"
-                )
+                logger.warning(f"Configuration file for {code.value} {bench} not found")
                 return None
             return raw_cfg
 
@@ -231,7 +237,7 @@ class JadeApp:
         for code, lib, bench in successful:
             # if openmc is not available in system, skip processing
             if code == CODE.OPENMC and not OMC_AVAIL:
-                logging.warning(f"OpenMC not installed. Skipping {bench} processing.")
+                logger.warning(f"OpenMC not installed. Skipping {bench} processing.")
                 continue
 
             if force:
@@ -240,7 +246,7 @@ class JadeApp:
                 if raw_cfg is None:
                     continue
                 to_process[(code, lib, bench)] = raw_cfg
-                logging.info(f"Processing {code.value} {lib} {bench} benchmarks")
+                logger.info(f"Processing {code.value} {lib} {bench} benchmarks")
             else:
                 # only process if not already done
                 if (code, lib, bench) not in self.status.raw_data:
@@ -251,7 +257,7 @@ class JadeApp:
                     if raw_cfg is None:
                         continue
                     to_process[(code, lib, bench)] = raw_cfg
-                    logging.info(f"Processing {code.value} {lib} {bench} benchmarks")
+                    logger.info(f"Processing {code.value} {lib} {bench} benchmarks")
 
         # process the raw data
         for (code, lib, bench), cfg in tqdm(to_process.items(), desc="Process raw"):
@@ -265,11 +271,11 @@ class JadeApp:
                 processor = RawProcessor(cfg, sim_folder, out_folder)
                 processor.process_raw_data()
 
-        logging.info("Raw data processing completed.")
+        logger.info("Raw data processing completed.")
 
     def post_process(self):
         """Post-process the data."""
-        logging.info("Post-processing data")
+        logger.info("Post-processing data")
         # load the pp code-lib requests
         with open(self.tree.cfg.pp_cfg) as f:
             to_pp = yaml.safe_load(f)
@@ -277,7 +283,7 @@ class JadeApp:
         benchmarks = to_pp["benchmarks"]
 
         for benchmark in tqdm(benchmarks, desc="Benchmarks"):
-            logging.info(f"Post-processing {benchmark}")
+            logger.info(f"Post-processing {benchmark}")
             # get the benchmark configurations
             excel_cfg = self.pp_cfg.excel_cfgs[benchmark]
             atlas_cfg = self.pp_cfg.atlas_cfgs[benchmark]
@@ -295,11 +301,11 @@ class JadeApp:
                 if self.status.is_raw_available(codelib, benchmark):
                     code_libs.append((code, lib))
                 else:
-                    logging.info(f"{codelib} is not available for {benchmark}")
+                    logger.info(f"{codelib} is not available for {benchmark}")
 
             # in case there are less than two code-libs skip the comparison
             if len(code_libs) < 2:
-                logging.warning(
+                logger.warning(
                     f"Less than two code-libs available for {benchmark}, skipped"
                 )
                 continue
@@ -312,7 +318,7 @@ class JadeApp:
             os.mkdir(atlas_folder)
 
             # perform the excel processing
-            logging.info("Processing Excel files for %s", benchmark)
+            logger.info("Processing Excel files for %s", benchmark)
             excel_processor = ExcelProcessor(
                 self.tree.raw,
                 excel_folder,
@@ -322,7 +328,7 @@ class JadeApp:
             excel_processor.process()
 
             # perform the atlas processing
-            logging.info("Processing Atlas files for %s", benchmark)
+            logger.info("Processing Atlas files for %s", benchmark)
             atlas_processor = AtlasProcessor(
                 self.tree.raw,
                 atlas_folder,
@@ -335,24 +341,24 @@ class JadeApp:
     def start_run_config_gui(self):
         """Start the configuration GUI."""
         if not TKINTER_AVAIL:
-            logging.error("Tkinter is not available. Cannot start the GUI.")
+            logger.error("Tkinter is not available. Cannot start the GUI.")
         else:
-            logging.info("Starting the configuration GUI")
+            logger.info("Starting the configuration GUI")
             app = ConfigGUI(self.tree.cfg.run_cfg, self.tree.cfg.libs_cfg)
             app.window.mainloop()
 
     def start_pp_config_gui(self):
         """Start the post-processing configuration GUI."""
         if not TKINTER_AVAIL:
-            logging.error("Tkinter is not available. Cannot start the GUI.")
+            logger.error("Tkinter is not available. Cannot start the GUI.")
         else:
-            logging.info("Starting the post-processing configuration GUI")
+            logger.info("Starting the post-processing configuration GUI")
             app = PostConfigGUI(self.status)
             app.mainloop()
 
     def add_rmode(self):
         """Add the rmode=0 to the mcnp input files."""
-        logging.info("Adding RMODE 0 to the MCNP input files")
+        logger.info("Adding RMODE 0 to the MCNP input files")
         add_rmode0(self.tree.benchmark_input_templates)
 
     def print_unfinished_runs(self):

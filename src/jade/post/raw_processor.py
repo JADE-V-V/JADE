@@ -11,6 +11,8 @@ from jade.helper.constants import CODE
 from jade.post.manipulate_tally import CONCAT_FUNCTIONS, MOD_FUNCTIONS
 from jade.post.sim_output import MCNPSimOutput, OpenMCSimOutput
 
+logger = logging.getLogger(__name__)
+
 
 class RawProcessor:
     def __init__(
@@ -79,7 +81,7 @@ class RawProcessor:
                     tally = self.sim_output.tallydata[tallyid].copy()
                 except KeyError:
                     # for some benchmarks it may happen that the tally is not found
-                    logging.warning(
+                    logger.warning(
                         "Tally %s not found for %s", tallyid, self.single_run_name
                     )
                     continue
@@ -112,7 +114,7 @@ class RawProcessor:
             ) as file:
                 metadata = json.load(file)
         except FileNotFoundError:
-            logging.warning("No metadata file found at %s", self.sim_folder)
+            logger.warning("No metadata file found at %s", self.sim_folder)
             metadata = {}
 
         return metadata

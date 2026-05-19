@@ -114,6 +114,9 @@ def add_rmode0(path: PathLike) -> None:
                 if file.endswith(".i"):
                     with open(os.path.join(pathroot, file)) as f:
                         lines = f.readlines()
+                    # Remove trailing empty lines at the end of file
+                    while lines and lines[-1].strip() == "":
+                        lines.pop()
                     with open(os.path.join(pathroot, file), "w") as f:
                         found = False
                         for line in lines:
@@ -121,6 +124,8 @@ def add_rmode0(path: PathLike) -> None:
                                 found = True
                             f.write(line)
                         if not found:
+                            if not lines[-1].endswith("\n"):
+                                f.write("\n")
                             f.write("RMODE 0\n")
 
 

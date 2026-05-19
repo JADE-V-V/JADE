@@ -1,13 +1,22 @@
 from __future__ import annotations
 
 from importlib.resources import as_file, files
-
+from pathlib import Path
+from f4enix import Input
 import pandas as pd
+import os
 
 from jade.config.run_config import LibraryOpenMC
-from jade.helper.aux_functions import get_code_lib, print_code_lib, same_index
+from jade.helper.aux_functions import (
+    get_code_lib,
+    print_code_lib,
+    same_index,
+    add_rmode0,
+)
+import shutil
 from jade.helper.constants import CODE
 from tests.config import resources as conf_res
+from tests.helper import res as helper_res
 
 
 def test_code_lib():
@@ -35,3 +44,17 @@ def test_same_index():
     assert same_index(index1, index5) is False
     assert same_index(index6, index7) is False
     assert same_index(index6, index8) is True
+
+
+def test_add_rmode0(tmp_path: Path):
+    src = files(helper_res).joinpath("rmode")
+    dst = tmp_path.joinpath("root/mcnp")
+    shutil.copytree(src=src, dst=dst)
+    add_rmode0(dst)
+    # Verify that the card is properly added
+    for file in os.listdir(dst):
+        if file.endswith(".i"):
+            inp = Input.from_input(dst.joinpath(file))
+            assert "RMODE" in inp.other_data.keys(), (
+                f"RMODE card not found in the input file {file}"
+            )

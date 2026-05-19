@@ -66,18 +66,28 @@ class JadeApp:
             self.tree.logs, "Log " + time.ctime().replace(":", "-") + ".txt"
         )
         jade_logger = logging.getLogger("jade")
-        jade_logger.setLevel(logging.INFO)
+        jade_logger.setLevel(logging.DEBUG)
+        
+        # Clear any existing handlers and prevent propagation to root logger
+        jade_logger.handlers.clear()
+        jade_logger.propagate = False
 
         # set the logging to a file and keep warnings to video
         # Create a file handler for logging INFO level messages
         file_handler = logging.FileHandler(log, encoding="utf-8")
-        file_handler.setLevel(logging.INFO)
+        file_handler.setLevel(logging.DEBUG)
         file_handler.setFormatter(
             logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         )
         # Create a console handler for logging WARNING and ERROR level messages
         console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.WARNING)
+        console_handler.setLevel(logging.INFO)
+        console_handler.setFormatter(
+            logging.Formatter(
+                "%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+                datefmt="%H:%M:%S",
+            )
+        )
 
         jade_logger.addHandler(file_handler)
         jade_logger.addHandler(console_handler)
@@ -219,9 +229,7 @@ class JadeApp:
             try:
                 raw_cfg = ConfigRawProcessor.from_yaml(cfg_file)
             except FileNotFoundError:
-                logger.warning(
-                    f"Configuration file for {code.value} {bench} not found"
-                )
+                logger.warning(f"Configuration file for {code.value} {bench} not found")
                 return None
             return raw_cfg
 

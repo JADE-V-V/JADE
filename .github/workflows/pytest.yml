@@ -64,17 +64,18 @@ jobs:
         run: |
           pip install git+https://github.com/openmc-dev/openmc.git@3b5ac08bfb754ef93ff3db12fcda2ecbd0dbe464
       
-      - name: Get OpenMC latest tag
-        if: runner.os == 'Linux'
-        id: openmc-tag
-        run: |
-          TAG=$(curl -s https://api.github.com/repos/openmc-dev/openmc/releases/latest | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
+      # - name: Get OpenMC latest tag
+      #   if: runner.os == 'Linux'
+      #   id: openmc-tag
+      #   run: |
+      #     TAG=$(curl -s https://api.github.com/repos/openmc-dev/openmc/releases/latest | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+      #     echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Install openmc
         if: runner.os == 'Linux' && matrix.python-version != '3.11'
+        # pip install git+https://github.com/openmc-dev/openmc.git@${{ steps.openmc-tag.outputs.tag }}
         run: |
-          pip install git+https://github.com/openmc-dev/openmc.git@${{ steps.openmc-tag.outputs.tag }}
+          pip install git+https://github.com/openmc-dev/openmc.git
 
       # Install dependencies windows
       - name: Install dependencies Windows 

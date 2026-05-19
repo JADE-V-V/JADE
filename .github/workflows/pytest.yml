@@ -65,6 +65,7 @@ jobs:
           pip install git+https://github.com/openmc-dev/openmc.git@3b5ac08bfb754ef93ff3db12fcda2ecbd0dbe464
       
       - name: Get OpenMC latest tag
+        if: runner.os == 'Linux'
         id: openmc-tag
         run: |
           TAG=$(curl -s https://api.github.com/repos/openmc-dev/openmc/releases/latest | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')

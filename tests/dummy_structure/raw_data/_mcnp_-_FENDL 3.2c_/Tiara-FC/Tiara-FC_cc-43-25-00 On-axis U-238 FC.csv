@@ -1,2 +1,2 @@
-Cells,Segments,Value,Error,Fission Cell,Offset
-107,1,9912.45,0.0007,U-238,on-axis
+Cells,Dir,Segments,Value,Error,Fission Cell,Offset,Shielding depth (cm)
+107,0,1,9912.45,0.0007,U-238,on-axis,25

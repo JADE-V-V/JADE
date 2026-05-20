@@ -283,7 +283,7 @@ class OpenMCSimOutput(AbstractSimOutput):
         sim_folder: PathLike,
     ) -> None:
         """
-        Class representing all outputs coming from OpenMC run
+        Class representing all outputs coming from OpenMC run excluding Sphere
 
         Parameters
         ----------
@@ -454,7 +454,7 @@ class OpenMCSphereSimOutput(OpenMCSimOutput):
         sim_folder: PathLike,
     ) -> None:
         """
-        Class representing all outputs coming from OpenMC run
+        Class representing all outputs coming from OpenMC Sphere run
 
         Parameters
         ----------

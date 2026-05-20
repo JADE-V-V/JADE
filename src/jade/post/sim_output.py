@@ -481,7 +481,6 @@ class OpenMCSphereSimOutput(OpenMCSimOutput):
         self._tallydata, self._totalbin = self._process_tally()
         self.stat_checks = None
 
-        
     def _create_dataframes(
         self, tallies: dict
     ) -> tuple[dict[int, pd.DataFrame], dict[int, pd.DataFrame]]:
@@ -528,7 +527,8 @@ class OpenMCSphereSimOutput(OpenMCSimOutput):
 
             # If tally is Sphere, and is tally 14,24,34 then need to normalise by atomic density
             # Need to generate atomic density for a given Sphere input
-            if id in [14, 24, 34]:
+            RR_tally_IDs = [14, 24, 34]
+            if id in RR_tally_IDs:
                 sorted_tally["Value"] = sorted_tally["Value"] / self.atomic_density
                 sorted_tally["Error"] = sorted_tally["Error"] / self.atomic_density
             else:
@@ -540,7 +540,6 @@ class OpenMCSphereSimOutput(OpenMCSimOutput):
             tallydata[id] = sorted_tally
             totalbin[id] = None
         return tallydata, totalbin
-
 
 def _remove_constant_columns(df: pd.DataFrame) -> pd.DataFrame:
     """eliminate unnecessary columns from OpenMC tally data"""

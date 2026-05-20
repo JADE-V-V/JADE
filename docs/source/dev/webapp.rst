@@ -92,4 +92,4 @@ subset
     a list [column_name, value] is expected. The effect is that from the total raw data table, only the rows that contain value in the specified column will be retained for plotting.
 
 only_ratio
-    forces the plot always to be C/E (ratio). This is sometimes useful for some of the experimental benchmarls where absolute values are not that important.
+    forces the plot always to be C/E (ratio). This is sometimes useful for some of the experimental benchmarks where absolute values are not that important.

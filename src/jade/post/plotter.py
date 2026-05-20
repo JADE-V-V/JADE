@@ -506,8 +506,9 @@ class BinnedPlot(Plot):
                 )
             elif idx == 0 and plot_CE:
                 # print error band
-                y_upper = 1 + err_multi
-                y_lower = 1 - err_multi
+                rel_err = np.array(df["Error"])
+                y_upper = 1 + rel_err
+                y_lower = 1 - rel_err
                 CE_ax.fill_between(
                     df[self.cfg.x].values,
                     y_lower,

@@ -82,11 +82,19 @@ The following is an example of the settings of a transport library:
             path: /path/to/xsdir  # path to the xsdir file
             suffix: 32c  # correspondent suffix in the xsdir file
         openmc:
-            path: pathtolib  # path to the library file
+            path: path/to/cross_sections.xml  # path to the library file
         serpent:  # TODO
             path: pathtolib
 
 There is no need to provide paths for the codes that the user does not intend to use.
+
+In some cases, certain cross sections may be missing from a library for given material. This requires an alternative library to be used for the missing nuclides. 
+In the case of the Sphere for OpenMC where the standard material definitions are used, this requires an update to `cross_sections.xml` file **after** generation of the inputs. The user may run the Sphere benchmark with the `cross_sections.xml`
+for a particular library and after discovering certain runs are not completed due to missing nuclides, update the `cross_sections.xml` file, appending a library which 
+contains those that are missing. The user may then perform a continue run using the `--cnt` run (see :ref:`run`). Otherwise if the user is aware from the start that certain
+nuclides are missing, they may first generate the inputs using the `OnlyInput` run option (see :ref:`continue`) and thereafter change the `cross_sections.xml` file 
+that is being pointed to before running. In benchmarks other than the Sphere, the user may point to a complete `cross_sections.xml` in their original
+configuration (noting OpenMC uses cross sections in the order they appear in the file) however this **must not** be done prior to generation of the inputs for the Sphere as the `cross_sections.xml` is used to determine which nuclides are run. 
 
 Finally, an example of a D1S library settings:
 

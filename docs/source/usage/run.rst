@@ -5,6 +5,8 @@ Run
 Before being able to run JADE, the instructions contained in :ref:`install` and
 :ref:`config` must be followed.
 
+.. _run:
+
 Configure the run
 =================
 Once the software is installed and
@@ -101,6 +103,8 @@ simply run in the root directory from the command line:
 or 
 
     | ``python -m jade --run``
+
+.. _continue:
 
 Continue executions
 ===================

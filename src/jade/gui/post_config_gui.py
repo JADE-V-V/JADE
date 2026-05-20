@@ -15,6 +15,8 @@ import jade.resources as res
 from jade.config.status import GlobalStatus
 from jade.helper.aux_functions import VerboseSafeDumper
 
+logger = logging.getLogger(__name__)
+
 
 class PostConfigGUI(tk.Tk):
     def __init__(self, status: GlobalStatus):
@@ -171,4 +173,4 @@ if __name__ == "__main__":
         app = PostConfigGUI(status)
         app.mainloop()
     else:
-        logging.error("The GUI cannot be launched because 'tkinter' is not installed.")
+        logger.error("The GUI cannot be launched because 'tkinter' is not installed.")

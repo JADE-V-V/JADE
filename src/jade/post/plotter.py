@@ -20,7 +20,10 @@ from matplotlib.ticker import AutoLocator, AutoMinorLocator, LogLocator, Multipl
 
 from jade.config.atlas_config import PlotConfig, PlotType
 from jade.helper.aux_functions import same_index
+from jade.helper.errors import PlotIndexMismatchError
 from jade.post.manipulate_tally import ComparisonType, compare_data
+
+logger = logging.getLogger(__name__)
 
 matplotlib.use("Agg")  # use a non-interactive backend
 LM = LibManager()
@@ -546,14 +549,37 @@ class CEPlot(Plot):
             # differences due to rounding. In reality the two must be the same
             # in a C/E plot
             if same_index(val1.index, val2.index) is False:
-                logging.error(
-                    f"Indices do not match between reference and {codelib}: "
-                    f"{val1.index}, {val2.index}"
-                )
-                raise RuntimeError("Indices do not match.")
-            else:
-                val2.index = val1.index
-                err2.index = err1.index
+                # it may happen that a specific subcase is not present in all libs.
+                # if so, we still want to plot, just removing that subcase from the
+                # list
+                if subcases:
+                    missing_subcases = set(
+                        val1.index.get_level_values(0)
+                    ).symmetric_difference(set(val2.index.get_level_values(0)))
+                    if len(missing_subcases) > 0:
+                        logger.warning(
+                            f"Subcases {missing_subcases} are not present in both reference and {codelib}. "
+                            f"These subcases will be removed from the plot."
+                        )
+                        val1 = val1[
+                            ~val1.index.get_level_values(0).isin(missing_subcases)
+                        ]
+                        err1 = err1[
+                            ~err1.index.get_level_values(0).isin(missing_subcases)
+                        ]
+                        val2 = val2[
+                            ~val2.index.get_level_values(0).isin(missing_subcases)
+                        ]
+                        err2 = err2[
+                            ~err2.index.get_level_values(0).isin(missing_subcases)
+                        ]
+                    else:
+                        raise PlotIndexMismatchError(val1.index, val2.index, codelib)
+                else:
+                    raise PlotIndexMismatchError(val1.index, val2.index, codelib)
+
+            val2.index = val1.index
+            err2.index = err1.index
 
             values, errors = compare_data(
                 val1,

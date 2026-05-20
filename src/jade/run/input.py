@@ -23,6 +23,8 @@ from jade.helper.errors import ConfigError
 if OMC_AVAIL:
     import jade.helper.openmc as omc
 
+logger = logging.getLogger(__name__)
+
 
 class Input(ABC):
     def __init__(self, template_folder: PathLike, lib: Library):
@@ -353,7 +355,7 @@ class InputD1S(Input):
         try:
             self.inp.irrad_file = IrradiationFile.from_text(irrfile)
         except FileNotFoundError:
-            logging.debug("d1S irradition file not found")
+            logger.debug("d1S irradition file not found")
         try:
             self.inp.reac_file = ReactionFile.from_text(reacfile)
         except FileNotFoundError:
@@ -363,9 +365,9 @@ class InputD1S(Input):
                 self.inp.reac_file = self.inp.get_reaction_file(
                     self.lm, self.lib.suffix, set_as_attribute=True
                 )
-                logging.debug("d1S reaction file not found, created from irrad file")
+                logger.debug("d1S reaction file not found, created from irrad file")
             else:
-                logging.debug("d1S reaction file not found")
+                logger.debug("d1S reaction file not found")
 
     @property
     def code(self) -> CODE:

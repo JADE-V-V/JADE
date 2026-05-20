@@ -12,6 +12,8 @@ from jade.helper.aux_functions import PathLike, print_code_lib
 from jade.helper.constants import CODE
 from jade.post.excel_routines import TableFactory
 
+logger = logging.getLogger(__name__)
+
 TITLE = "{}-{} Vs {}-{}. Result: {}"
 FILE_NAME = "{}_{}-{}_Vs_{}-{}.xlsx"
 
@@ -53,7 +55,7 @@ class ExcelProcessor:
         for i, (code_tag, lib) in enumerate(self.codelibs):
             code = CODE(code_tag)
             codelib = print_code_lib(code, lib)
-            logging.info("Parsing reference data")
+            logger.info("Parsing reference data")
             raw_folder = Path(self.raw_root, codelib, self.cfg.benchmark)
 
             # First store all reference dfs
@@ -79,7 +81,7 @@ class ExcelProcessor:
                         self.cfg.benchmark, ref_code.value, ref_lib, code.value, lib
                     ),
                 )
-                logging.info(f"Writing the resulting excel file {outfile}")
+                logger.info(f"Writing the resulting excel file {outfile}")
                 with pd.ExcelWriter(outfile) as writer:
                     for table_cfg in self.cfg.tables:
                         # this gets a concatenated dataframe with all results that needs
@@ -160,7 +162,7 @@ class ExcelProcessor:
                 df["Case"] = run_name
                 dfs.append(df)
         if len(dfs) == 0:
-            logging.warning(f"No data found for {target_result}")
+            logger.warning(f"No data found for {target_result}")
             return pd.DataFrame()
         return pd.concat(dfs)
 

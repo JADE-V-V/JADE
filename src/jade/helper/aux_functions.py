@@ -34,8 +34,14 @@ def get_code_lib(string) -> tuple[str, str]:
     tuple[str, str]
         The code and library names.
     """
-    code = CODE_PATTERN.search(string).group()[1:-2]  # remove the "<" and ">-"
-    lib = LIB_PATTERN.search(string).group()[2:-1]  # remove the "-<" and ">"
+    code_match = CODE_PATTERN.search(string)
+    if code_match is None:
+        raise ValueError(f"Invalid code-lib string: {string}")
+    code = code_match.group()[1:-2]  # remove the "<" and ">-"
+    lib_match = LIB_PATTERN.search(string)
+    if lib_match is None:
+        raise ValueError(f"Invalid code-lib string: {string}")
+    lib = lib_match.group()[2:-1]  # remove the "-<" and ">"
     return code, lib
 
 
@@ -114,6 +120,9 @@ def add_rmode0(path: PathLike) -> None:
                 if file.endswith(".i"):
                     with open(os.path.join(pathroot, file)) as f:
                         lines = f.readlines()
+                    # Remove trailing empty lines at the end of file
+                    while lines and lines[-1].strip() == "":
+                        lines.pop()
                     with open(os.path.join(pathroot, file), "w") as f:
                         found = False
                         for line in lines:
@@ -121,6 +130,8 @@ def add_rmode0(path: PathLike) -> None:
                                 found = True
                             f.write(line)
                         if not found:
+                            if not lines[-1].endswith("\n"):
+                                f.write("\n")
                             f.write("RMODE 0\n")
 
 

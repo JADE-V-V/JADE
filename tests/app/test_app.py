@@ -209,3 +209,13 @@ class TestJadeApp:
         assert "Sphere_m101" in command[0]
         assert "Sphere_dummy1" in command[0]
         assert command[0].count('cd "') == 2
+
+    def test_print_unfinished_runs(self, caplog):
+        import logging
+
+        # Set caplog to capture INFO level logs
+        caplog.set_level(logging.INFO)
+
+        app = JadeApp(root=DUMMY_ROOT, skip_init=True)
+        app.print_unfinished_runs()
+        assert "Dummy_continue2" in caplog.text

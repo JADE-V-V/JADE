@@ -1,9 +1,9 @@
 {
-    "benchmark_name": "C-Model",
     "benchmark_version": "1.0",
-    "jade_run_version": "3.1.0",
+    "jade_run_version": "3.0.1",
+    "benchmark_name": "C_Model",
     "library": "FENDL 3.2c",
     "code": "mcnp",
-    "jade_version": "3.1.0",
-    "code_version": "6.2"
+    "jade_version": "3.1.1.dev181+g8162787",
+    "code_version": "d1suned411"
 }

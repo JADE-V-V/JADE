@@ -264,6 +264,18 @@ class MCNPSimOutput(AbstractSimOutput):
 
         return mctal, outp, meshtal
 
+    @staticmethod
+    def is_successfully_simulated(files: list[str]) -> bool:
+        """Check if the simulation was successful by verifying output files exist."""
+        mctal_found = False
+        output_found = False
+        for file in files:
+            if file.endswith(".m"):
+                mctal_found = True
+            elif file.endswith(".o"):
+                output_found = True
+        return mctal_found and output_found
+
 
 class OpenMCSimOutput(AbstractSimOutput):
     def __init__(
@@ -334,6 +346,15 @@ class OpenMCSimOutput(AbstractSimOutput):
         file3 = os.path.join(results_path, file3) if file3 else None
 
         return file1, file2, file3
+
+    @staticmethod
+    def is_successfully_simulated(files: list[str]) -> bool:
+        """Check if the simulation was successful by verifying output files exist."""
+        statepoint_found = False
+        for file in files:
+            if file.startswith("statepoint") and file.endswith(".h5"):
+                statepoint_found = True
+        return statepoint_found
 
     def _create_dataframes(
         self, tallies: dict

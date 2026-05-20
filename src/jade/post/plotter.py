@@ -441,14 +441,29 @@ class BinnedPlot(Plot):
                     where="pre",
                 )
                 newX = _get_error_x_pos(x)
-                ax1.errorbar(
-                    newX,
-                    y[1:],
-                    linewidth=0,
-                    yerr=err_multi,
-                    elinewidth=0.5,
-                    color=COLORS[idx],
-                )
+
+                # For the first library (reference/experimental), use filled error band
+                if idx == 0 and codelib == "exp - exp":
+                    y_upper = np.concatenate(([0], y[1:] + err_multi))
+                    y_lower = np.concatenate(([0], y[1:] - err_multi))
+                    ax1.fill_between(
+                        x,
+                        y_lower,
+                        y_upper,
+                        color=COLORS[idx],
+                        alpha=0.2,
+                        step="pre",
+                    )
+                else:
+                    # For other libraries, keep error bars
+                    ax1.errorbar(
+                        newX,
+                        y[1:],
+                        linewidth=0,
+                        yerr=err_multi,
+                        elinewidth=0.5,
+                        color=COLORS[idx],
+                    )
                 # add a label if needed (only one per group)
                 if subcases and idx == 0:
                     lbl = subcases[1][i]
@@ -488,6 +503,18 @@ class BinnedPlot(Plot):
                     linestyle=linestyle,
                     linewidth=linewidth,
                     where="pre",
+                )
+            elif idx == 0 and plot_CE:
+                # print error band
+                y_upper = 1 + err_multi
+                y_lower = 1 - err_multi
+                CE_ax.fill_between(
+                    df[self.cfg.x].values,
+                    y_lower,
+                    y_upper,
+                    color=COLORS[idx],
+                    alpha=0.2,
+                    step="pre",
                 )
 
         # Final operations

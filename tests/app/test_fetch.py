@@ -26,6 +26,7 @@ def test_fetch_iaea_inputs(tmpdir):
     assert success
     assert len(os.listdir(inp_path)) > 0
     assert len(os.listdir(exp_path)) > 0
+    assert not os.path.exists(os.path.join(tmpdir, "extracted"))
 
     # # check failed authentication (this can be used later for gitlab)
     # # try to get the token from local secret file
@@ -66,6 +67,7 @@ def test_fetch_f4e_inputs(tmpdir):
     success = fetch_f4e_inputs(inp_path, F4E_GITLAB_TOKEN)
     assert success
     assert len(os.listdir(inp_path)) > 0
+    assert not os.path.exists(os.path.join(tmpdir, "extracted"))
 
 
 def test_fetch_f4e_exp_data(tmpdir):
@@ -79,3 +81,4 @@ def test_fetch_f4e_exp_data(tmpdir):
     success = fetch_nonIAEA_exp_data(exp_path)
     assert success
     assert len(os.listdir(exp_path)) > 0
+    assert not os.path.exists(os.path.join(tmpdir, "extracted"))

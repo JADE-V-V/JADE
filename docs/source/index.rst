@@ -37,8 +37,8 @@ GitHub repository <https://github.com/JADE-V-V/JADE/issues>`_.
    
    usage/usage_idx
    dev/dev_idx
-   usage/utilities
-   documentation/docu_idx.rst
+   benchmarks/benchmark_idx
+   about/about_idx
 
 
 Indices and tables

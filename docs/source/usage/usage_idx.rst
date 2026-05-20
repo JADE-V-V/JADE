@@ -26,5 +26,6 @@ JADE execution
 
    run
    postprocessing
+   utilities
    tipstricks
    troubleshooting

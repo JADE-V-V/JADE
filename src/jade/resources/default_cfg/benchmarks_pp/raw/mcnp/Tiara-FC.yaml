@@ -1,20 +1,290 @@
-On-axis U-238 FC:
+# 0 cm shielding depth
+On-axis U-238 FC apply_to#1:
   concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-00-00', 'Tiara-FC_fe-68-00-00']
   14: 
     - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
     - [add_column, {"column": "Offset", "values": ["on-axis"]}]
-On-axis Th-232 FC:
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["0"]}]
+On-axis Th-232 FC apply_to#1:
   concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-00-00', 'Tiara-FC_fe-68-00-00']
   24: 
     - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
     - [add_column, {"column": "Offset", "values": ["on-axis"]}]
-20 cm U-238 FC:
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["0"]}]
+20 cm U-238 FC apply_to#1:
   concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-00-00', 'Tiara-FC_fe-68-00-00']
   34: 
     - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
     - [add_column, {"column": "Offset", "values": ["20 cm"]}]
-20 cm Th-232 FC:
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["0"]}]
+20 cm Th-232 FC apply_to#1:
   concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-00-00', 'Tiara-FC_fe-68-00-00']
   44: 
     - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
     - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["0"]}]
+# 10 cm shielding depth    
+On-axis U-238 FC apply_to#2:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-10-00']
+  14: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["10"]}]
+On-axis Th-232 FC apply_to#2:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-10-00']
+  24: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["10"]}]
+20 cm U-238 FC apply_to#2:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-10-00']
+  34: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["10"]}]
+20 cm Th-232 FC apply_to#2:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-10-00']
+  44: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["10"]}]
+# 20 cm shielding depth
+On-axis U-238 FC apply_to#3:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-20-00', 'Tiara-FC_fe-68-20-00']
+  14: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["20"]}]
+On-axis Th-232 FC apply_to#3:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-20-00', 'Tiara-FC_fe-68-20-00']
+  24: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["20"]}]
+20 cm U-238 FC apply_to#3:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-20-00', 'Tiara-FC_fe-68-20-00']
+  34: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["20"]}]
+20 cm Th-232 FC apply_to#3:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-20-00', 'Tiara-FC_fe-68-20-00']
+  44: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["20"]}]
+# 25 cm shielding depth
+On-axis U-238 FC apply_to#4:
+  concat_option: concat
+  apply_to: ['Tiara-FC_cc-43-25-00', 'Tiara-FC_cc-68-25-00']
+  14: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["25"]}]
+On-axis Th-232 FC apply_to#4:
+  concat_option: concat
+  apply_to: ['Tiara-FC_cc-43-25-00', 'Tiara-FC_cc-68-25-00']
+  24: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["25"]}]
+20 cm U-238 FC apply_to#4:
+  concat_option: concat
+  apply_to: ['Tiara-FC_cc-43-25-00', 'Tiara-FC_cc-68-25-00']
+  34: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["25"]}]
+20 cm Th-232 FC apply_to#4:
+  concat_option: concat
+  apply_to: ['Tiara-FC_cc-43-25-00', 'Tiara-FC_cc-68-25-00']
+  44: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["25"]}]
+# 40 cm shielding depth
+On-axis U-238 FC apply_to#5:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-40-00', 'Tiara-FC_fe-68-40-00']
+  14: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["40"]}]
+On-axis Th-232 FC apply_to#5:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-40-00', 'Tiara-FC_fe-68-40-00']
+  24: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["40"]}]
+20 cm U-238 FC apply_to#5:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-40-00', 'Tiara-FC_fe-68-40-00']
+  34: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["40"]}]
+20 cm Th-232 FC apply_to#5:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-40-00', 'Tiara-FC_fe-68-40-00']
+  44: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["40"]}]
+# 50 cm shielding depth
+On-axis U-238 FC apply_to#6:
+  concat_option: concat
+  apply_to: ['Tiara-FC_cc-43-50-00', 'Tiara-FC_cc-68-50-00']
+  14: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["50"]}]
+On-axis Th-232 FC apply_to#6:
+  concat_option: concat
+  apply_to: ['Tiara-FC_cc-43-50-00', 'Tiara-FC_cc-68-50-00']
+  24: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["50"]}]
+20 cm U-238 FC apply_to#6:
+  concat_option: concat
+  apply_to: ['Tiara-FC_cc-43-50-00', 'Tiara-FC_cc-68-50-00']
+  34: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["50"]}]
+20 cm Th-232 FC apply_to#6:
+  concat_option: concat
+  apply_to: ['Tiara-FC_cc-43-50-00', 'Tiara-FC_cc-68-50-00']
+  44: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["50"]}]
+# 70 cm shielding depth
+On-axis U-238 FC apply_to#7:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-70-00', 'Tiara-FC_fe-68-70-00']
+  14: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["70"]}]
+On-axis Th-232 FC apply_to#7:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-70-00', 'Tiara-FC_fe-68-70-00']
+  24: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["70"]}]
+20 cm U-238 FC apply_to#7:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-70-00', 'Tiara-FC_fe-68-70-00']
+  34: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["70"]}]
+20 cm Th-232 FC apply_to#7:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-43-70-00', 'Tiara-FC_fe-68-70-00']
+  44: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["70"]}]
+# 100 cm shielding depth
+On-axis U-238 FC apply_to#8:
+  concat_option: concat
+  apply_to: ['Tiara-FC_cc-43-100-00', 'Tiara-FC_cc-68-100-00', 'Tiara-FC_fe-68-100-00']
+  14: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["100"]}]
+On-axis Th-232 FC apply_to#8:
+  concat_option: concat
+  apply_to: ['Tiara-FC_cc-43-100-00', 'Tiara-FC_cc-68-100-00', 'Tiara-FC_fe-68-100-00']
+  24: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["100"]}]
+20 cm U-238 FC apply_to#8:
+  concat_option: concat
+  apply_to: ['Tiara-FC_cc-43-100-00', 'Tiara-FC_cc-68-100-00', 'Tiara-FC_fe-68-100-00']
+  34: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["100"]}]
+20 cm Th-232 FC apply_to#8:
+  concat_option: concat
+  apply_to: ['Tiara-FC_cc-43-100-00', 'Tiara-FC_cc-68-100-00', 'Tiara-FC_fe-68-100-00']
+  44: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["100"]}]
+# 130 cm shielding depth
+On-axis U-238 FC apply_to#9:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-68-130-00']
+  14: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["130"]}]
+On-axis Th-232 FC apply_to#9:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-68-130-00']
+  24: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["130"]}]
+20 cm U-238 FC apply_to#9:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-68-130-00']
+  34: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["130"]}]
+20 cm Th-232 FC apply_to#9:
+  concat_option: concat
+  apply_to: ['Tiara-FC_fe-68-130-00']
+  44: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["130"]}]
+# 150 cm shielding depth
+On-axis U-238 FC apply_to#10:
+  concat_option: concat
+  apply_to: ['Tiara-FC_cc-68-150-00']
+  14: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["150"]}]
+On-axis Th-232 FC apply_to#10:
+  concat_option: concat
+  apply_to: ['Tiara-FC_cc-68-150-00']
+  24: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["on-axis"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["150"]}]
+20 cm U-238 FC apply_to#10:
+  concat_option: concat
+  apply_to: ['Tiara-FC_cc-68-150-00']
+  34: 
+    - [add_column, {"column": "Fission Cell", "values": ["U-238"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["150"]}]
+20 cm Th-232 FC apply_to#10:
+  concat_option: concat
+  apply_to: ['Tiara-FC_cc-68-150-00']
+  44: 
+    - [add_column, {"column": "Fission Cell", "values": ["Th-232"]}]
+    - [add_column, {"column": "Offset", "values": ["20 cm"]}]
+    - [add_column, {"column": "Shielding depth (cm)", "values": ["150"]}]

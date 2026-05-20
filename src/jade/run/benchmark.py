@@ -996,6 +996,8 @@ def launch_global_jobs(
     # first organize the different commands by code
     commands_by_code: dict[CODE, list[tuple[list[str], PathLike]]] = {}
     for code, command, folder in commands:
+        if not command:  # skip only inputs
+            continue
         if code not in commands_by_code:
             commands_by_code[code] = []
         commands_by_code[code].append((command, folder))

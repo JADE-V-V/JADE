@@ -500,7 +500,7 @@ class OpenMCStatePoint:
         for column in df.columns:
             if "[eV]" in column:
                 df[column] *= 1e-6
-        if ("heating" or "damage-energy") in df["score"].values:
+        if df["score"].isin(["heating", "damage-energy"]).any():
             df["mean"] = np.where(
                 (df["score"] == "heating") | (df["score"] == "damage-energy"),
                 1e-6 * df["mean"],

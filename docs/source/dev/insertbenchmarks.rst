@@ -8,6 +8,9 @@ The easiest way to contribute to JADE is to widen its benchmarks suite.
 
 This section of the guide describes how to add custom benchmarks to the JADE suite.
 
+Please consider adding support for your benchmark also to JADE WebApp. More information on
+how to do so can be found in :ref:`webapp`.
+
 Where should I put the benchmarks input files?
 ==============================================
 

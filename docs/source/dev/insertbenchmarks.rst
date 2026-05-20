@@ -302,7 +302,23 @@ to which the configuration is applicable:
     44: [[no_action, {}]]  # Example of tally that is left untouched. 44 is the tally identifier used in the transport code.
     46: [[scale, {"factor": 1e5}], [lethargy, {}]]  # Example of tally that is scaled and converted to flux per unit lethargy.
 
+The *yaml* raw configuration file is read as a dictionary, which results in all *result names* (keys of the dictionary)
+having to be different. However, if the *apply_to* option is specified, the string *apply_to#n*, where n is an integer, can be appended to the result name
+to make it unique. JADE will delete this suffix when creating the .csv files, which allows to have the same *result name* for different subcases:
 
+.. code-block:: yaml
+
+  result name apply_to#1:
+    apply_to: [run1]
+    concat_option: sum  
+    44: [[no_action, {}]]
+    46: [[scale, {"factor": 1e5}], [lethargy, {}]]
+
+  result name apply_to#2: # The result name is the same as the previous one, except for the suffix 'apply_to#2'.
+    apply_to: [run2] 
+    concat_option: sum 
+    44: [[scale, {"factor": 1e5}]]  # Different modifiers are applied with respect to run1.
+    46: [[lethargy, {}]]  # Different modifiers are applied with respect to run1.
 
 Add the excel config file
 =========================

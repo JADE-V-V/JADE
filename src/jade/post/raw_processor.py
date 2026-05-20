@@ -9,7 +9,7 @@ from jade.config.raw_config import ConfigRawProcessor, TallyModOption
 from jade.helper.aux_functions import PathLike, get_jade_version
 from jade.helper.constants import CODE
 from jade.post.manipulate_tally import CONCAT_FUNCTIONS, MOD_FUNCTIONS
-from jade.post.sim_output import MCNPSimOutput, OpenMCSimOutput
+from jade.post.sim_output import MCNPSimOutput, OpenMCSimOutput, OpenMCSphereSimOutput
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +54,10 @@ class RawProcessor:
         if self.code in (CODE.MCNP, CODE.D1S):
             self.sim_output = MCNPSimOutput(sim_folder)
         elif self.code == CODE.OPENMC:
-            self.sim_output = OpenMCSimOutput(sim_folder)
+            if self.metadata.get("benchmark_name") =="Sphere":
+                self.sim_output = OpenMCSphereSimOutput(sim_folder)
+            else:
+                self.sim_output = OpenMCSimOutput(sim_folder)
         else:
             raise NotImplementedError(
                 f"Code {self.code} not implemented yet for raw data processing"

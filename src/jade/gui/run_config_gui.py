@@ -17,6 +17,8 @@ import jade.resources as res
 from jade.helper.aux_functions import PathLike, VerboseSafeDumper
 from jade.helper.constants import CODE_TAGS
 
+logger = logging.getLogger(__name__)
+
 
 class ConfigGUI:
     def __init__(self, yaml_run: PathLike, yaml_libs: PathLike) -> None:
@@ -317,4 +319,4 @@ if __name__ == "__main__":
         if app.window:
             app.window.mainloop()
     else:
-        logging.error("The GUI cannot be launched because 'tkinter' is not installed.")
+        logger.error("The GUI cannot be launched because 'tkinter' is not installed.")

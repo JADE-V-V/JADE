@@ -295,7 +295,7 @@ class TestExcelProcessor:
             files(default_cfg).joinpath("benchmarks_pp/excel/C-Model.yaml")
         ) as file:
             cfg = ConfigExcelProcessor.from_yaml(file)
-        codelibs = [("mcnp", "FENDL 3.2c"), ("mcnp", "FENDL 3.2c")]
+        codelibs = [("mcnp", "FENDL 3.2c"), ("mcnp", "ENDFB-VIII.0")]
         processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
         processor.process()
 

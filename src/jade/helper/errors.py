@@ -22,3 +22,18 @@ class PostProcessConfigError(Exception):
     ):
         self.message = message
         super().__init__(self.message)
+
+
+class PlotIndexMismatchError(Exception):
+    """Exception raised when the indices of the dataframes do not match."""
+
+    def __init__(
+        self,
+        index1,
+        index2,
+        codelib,
+    ):
+        self.message = (
+            f"Indices do not match between reference and {codelib}: {index1}, {index2}"
+        )
+        super().__init__(self.message)

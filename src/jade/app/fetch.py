@@ -149,7 +149,9 @@ def _install_standard_folder_structure(
         _install_data(fetched_folder, install_folder)
 
     # Once done, delete the src folder
-    shutil.rmtree(os.path.join(tempfile.gettempdir(), "extracted"))
+    extracted_root = Path(extracted_folder).parent
+    if extracted_root.exists() and extracted_root.name == "extracted":
+        shutil.rmtree(extracted_root)
 
     return True
 

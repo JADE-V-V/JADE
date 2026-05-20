@@ -21,6 +21,9 @@ benchmark in JADE.
 
     "rdum    .260  1.6  0.0  0.001  0.0  0.001  1  1"
 
+    For additional details on the source generation, the reader is referred to
+    `Absolute experimental and numerical calibration of the 14 MeV neutron source at the Frascati neutron generator <https://doi.org/10.1063/1.1147035>`_.
+
 Overview
 ========
 The following tables summarise the computational and experimental benchmarks

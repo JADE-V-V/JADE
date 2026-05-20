@@ -2,9 +2,12 @@ from __future__ import annotations
 
 from importlib.resources import files
 
+import pytest
+
 import tests.dummy_structure as dummy_struct
 from jade.config.status import GlobalStatus
 from jade.helper.constants import CODE
+from jade.helper.errors import VersionInconsistencyError
 from tests.config import resources
 
 DUMMY_STRUCT = files(dummy_struct)
@@ -45,3 +48,13 @@ class TestGlobalStatus:
         assert len(benchmarks) == 0
         benchmarks = status.get_benchmark_from_raw_codelib("_mcnp_-_ENDFB-VIII.0_")
         assert len(benchmarks) == 2
+
+    def test_validate_post_processing(self):
+        status = GlobalStatus(DUMMY_SIMULATIONS, DUMMY_RAW_RESULTS)
+        with pytest.raises(VersionInconsistencyError):
+            status._validate_libs_processing(
+                CODE.MCNP, "Oktavian", ["FENDL 3.2c", "ENDFB-VIII.0"]
+            )
+        status._validate_libs_processing(
+            CODE.MCNP, "Sphere", ["FENDL 3.2c", "ENDFB-VIII.0"]
+        )

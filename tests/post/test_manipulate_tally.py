@@ -18,9 +18,8 @@ from src.jade.post.manipulate_tally import (
     divide_by_bin,
     format_decimals,
     gaussian_broadening,
-    volume,
-    mass,
     groupby,
+    mass,
     no_action,
     no_concat,
     ratio,
@@ -30,6 +29,7 @@ from src.jade.post.manipulate_tally import (
     subtract_tallies,
     sum_tallies,
     tof_to_energy,
+    volume,
 )
 
 
@@ -200,27 +200,28 @@ def test_add_column_with_dict():
     pd.testing.assert_frame_equal(result, expected)
 
 
-def test_groupby():
+def test_groupby(recwarn):
     data = {
-        "Energy": [1, 1, 2, 2],
-        "Value": [1, 2, 3, 4],
-        "Error": [0.1, 0.2, 0.3, 0.1],
+        "Energy": [1, 1, 2, 2, 3, 3],
+        "Value": [1, 2, 3, 4, 0, 0],
+        "Error": [0.1, 0.2, 0.3, 0.1, 0.0, 0.0],
     }
     df = pd.DataFrame(data)
+
     result = groupby(df.copy(), "Energy", "sum")
-    assert (result["Value"] == [3, 7]).all()
+    assert (result["Value"] == [3, 7, 0]).all()
     assert (
         result["Error"].iloc[0]
         == np.sqrt((0.1 * 1) ** 2 + (0.2 * 2) ** 2) / result["Value"].iloc[0]
     )
     result = groupby(df.copy(), "Energy", "mean")
-    assert (result["Value"] == [1.5, 3.5]).all()
+    assert (result["Value"] == [1.5, 3.5, 0.0]).all()
     result = groupby(df.copy(), "Energy", "max")
-    assert (result["Value"] == [2, 4]).all()
-    assert (result["Error"] == [0.2, 0.1]).all()
+    assert (result["Value"] == [2, 4, 0]).all()
+    assert (result["Error"] == [0.2, 0.1, 0.0]).all()
     result = groupby(df.copy(), "Energy", "min")
-    assert (result["Value"] == [1, 3]).all()
-    assert (result["Error"] == [0.1, 0.3]).all()
+    assert (result["Value"] == [1, 3, 0]).all()
+    assert (result["Error"] == [0.1, 0.3, 0.0]).all()
     result = groupby(df.copy(), "all", "sum")
     assert result["Value"].iloc[0] == 10
     assert (
@@ -229,6 +230,7 @@ def test_groupby():
         / result["Value"].iloc[0]
     )
     assert len(result) == 1
+    assert len(recwarn) == 0  # If any warning is raised, the test fails
 
 
 def test_delete_cols():

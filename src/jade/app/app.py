@@ -67,7 +67,7 @@ class JadeApp:
         )
         jade_logger = logging.getLogger("jade")
         jade_logger.setLevel(logging.DEBUG)
-        
+
         # Clear any existing handlers and prevent propagation to root logger
         jade_logger.handlers.clear()
         jade_logger.propagate = False
@@ -201,7 +201,11 @@ class JadeApp:
                 self.run_cfg.env_vars,
             )
             command = benchmark.continue_run(testing=testing)
-            commands.append(command)
+            commands.extend(command)
+
+        if self.run_cfg.env_vars.run_mode == RunMode.GLOBAL_JOB:
+            commands = launch_global_jobs(commands, self.run_cfg.env_vars, test=testing)
+
         logger.info("Benchmarks run have been submitted.")
         return commands
 

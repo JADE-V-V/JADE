@@ -13,6 +13,8 @@ from jade.post.atlas import Atlas
 from jade.post.excel_processor import ExcelProcessor
 from jade.post.plotter import PlotFactory
 
+logger = logging.getLogger(__name__)
+
 
 class AtlasProcessor:
     def __init__(
@@ -64,7 +66,7 @@ class AtlasProcessor:
                 code = CODE(code_tag)
                 codelib_pretty = print_code_lib(code, lib, pretty=True)
                 codelib = print_code_lib(code, lib)
-                logging.info("Parsing reference data")
+                logger.info("Parsing reference data")
                 raw_folder = Path(self.raw_root, codelib, self.cfg.benchmark)
 
                 try:
@@ -80,7 +82,7 @@ class AtlasProcessor:
                             cases[case] = _cases[case]
                 except ValueError:
                     # No objects to concatenate, i.e., no results for this code-lib
-                    logging.warning(
+                    logger.warning(
                         f"No results for {codelib_pretty} in {plot_cfg.name} plot"
                     )
 

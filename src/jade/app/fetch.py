@@ -12,6 +12,8 @@ import requests
 
 from jade.helper.aux_functions import PathLike
 
+logger = logging.getLogger(__name__)
+
 IAEA_URL = r"https://github.com/IAEA-NDS/open-benchmarks/archive/main.zip"
 RAW_DATA_GITHUB_URL = r"https://github.com/JADE-V-V/JADE-RAW-RESULTS/archive/main.zip"
 
@@ -91,8 +93,8 @@ def fetch_from_gitlab(
     try:
         gl.auth()
     except gitlab.exceptions.GitlabAuthenticationError as e:
-        logging.error("Gitlab authentication failed")
-        logging.error(e)
+        logger.error("Gitlab authentication failed")
+        logger.error(e)
         return False
 
     # select the correct project
@@ -102,7 +104,7 @@ def fetch_from_gitlab(
             found = True
             break
     if not found:
-        logging.error(f"Successful authentication but project {path} not found")
+        logger.error(f"Successful authentication but project {path} not found")
         return False
 
     binary = project.repository_archive(sha=branch, format="zip")

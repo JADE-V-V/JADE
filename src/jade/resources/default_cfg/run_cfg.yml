@@ -7,7 +7,7 @@ Sphere:
     serpent: []
   custom_input: '10'
   description: Sphere Leakage
-  nps: 1e8
+  nps: 1e9
   only_input: false
 #
 ITER_1D:
@@ -73,7 +73,7 @@ SphereSDDR:
     serpent: []
   custom_input: '10'
   description: Sphere SDDR
-  nps: 1e8
+  nps: 1e9
   only_input: false
 #
 Simple_Tokamak:
@@ -160,7 +160,7 @@ FNG-SS:
     openmc: []
     serpent: []
   custom_input: 
-  nps: 1e9
+  nps: 1e10
   description: FNG Stainless Steel
   only_input: false
 #
@@ -171,7 +171,7 @@ FNG-HCPB:
     openmc: []
     serpent: []
   custom_input: 
-  nps: 5e8
+  nps: 1e10
   description: FNG Helium Cooled Pebble Bed Tritium Breeder
   only_input: false
 # -- FNS experiments --

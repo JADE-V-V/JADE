@@ -17,6 +17,8 @@ import matplotlib.pyplot as plt
 
 from jade.helper.aux_functions import PathLike
 
+logger = logging.getLogger(__name__)
+
 
 class Atlas:
     def __init__(self, template: PathLike, name: str):
@@ -177,7 +179,7 @@ class Atlas:
         outpath_word = os.path.join(outpath, self.outname + ".docx")
         # outpath_pdf = os.path.join(outpath, self.outname + ".pdf")
         if len(outpath_word) > 259:
-            logging.warning(
+            logger.warning(
                 "The path to the word document is too long, the file will be truncated"
             )
             outpath_word = outpath_word[:254] + ".docx"

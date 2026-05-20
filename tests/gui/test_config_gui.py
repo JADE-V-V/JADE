@@ -2,18 +2,23 @@ from __future__ import annotations
 
 from importlib.resources import files
 from pathlib import Path
-from tkinter import filedialog, messagebox, ttk
 
 import pytest
-from ttkthemes import ThemedTk
 
 import jade.resources
-from jade.gui.run_config_gui import ConfigGUI
 from unittest.mock import patch
+
+from jade.helper.__optionals__ import TKINTER_AVAIL
+
+if TKINTER_AVAIL:
+    from tkinter import filedialog, messagebox, ttk
+    from ttkthemes import ThemedTk
+    from jade.gui.run_config_gui import ConfigGUI
+
 
 DEFAULT_CFG = files(jade.resources).joinpath("default_cfg")
 
-
+@pytest.mark.skipif(not TKINTER_AVAIL, reason="tkinter is not available")
 class TestConfigGui:
     @pytest.fixture(scope="session")
     def config_gui(self):
@@ -39,6 +44,7 @@ class TestConfigGui:
         # assert config_gui.notebook.tab(1, "text") == "Libraries"
         assert isinstance(config_gui.save_button, ttk.Button)
 
+    @pytest.mark.skipif(not TKINTER_AVAIL, reason="tkinter is not available")
     def test_save_settings(self, config_gui, monkeypatch, tmpdir):
         def mock_return_file(defaultextension=None, filetypes=None):
             return tmpdir.join("test_output.yml")

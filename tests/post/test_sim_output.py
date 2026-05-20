@@ -55,6 +55,7 @@ def openmc_sphere_sim_output() -> OpenMCSphereSimOutput:
 class TestOpenMCSimoutput:
     pass
 
+@pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC is not available")
 class TestOpenMCSphereSimOutput:
     def test_openmc_sphere_tallydata(self, openmc_sphere_sim_output):
         assert isinstance(openmc_sphere_sim_output.tallydata, dict)

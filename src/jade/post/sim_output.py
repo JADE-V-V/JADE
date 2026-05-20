@@ -351,13 +351,10 @@ class OpenMCSimOutput(AbstractSimOutput):
     def is_successfully_simulated(files: list[str]) -> bool:
         """Check if the simulation was successful by verifying output files exist."""
         statepoint_found = False
-        output_found = False
         for file in files:
             if file.startswith("statepoint") and file.endswith(".h5"):
                 statepoint_found = True
-            elif file.endswith(".out"):
-                output_found = True
-        return statepoint_found and output_found
+        return statepoint_found
 
     def _create_dataframes(
         self, tallies: dict

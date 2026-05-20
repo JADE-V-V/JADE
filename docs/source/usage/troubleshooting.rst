@@ -55,9 +55,30 @@ or
 
 you can solve the issue installing the following libraries:
 
-```
-conda install -c conda-forge libgl
-conda install -c conda-forge xorg-libxrender
-```
+.. code-block:: bash
+    conda install -c conda-forge libgl
+    conda install -c conda-forge xorg-libxrender
+
+
+ImportError: urllib3 v2 only supports OpenSSL 1.1.1+
+====================================================
+
+There are a few systems where the installation may fail while fetching the benchmark
+data from the internet due to old version installed of OpenSSL.
+The drop in support is described `here <https://github.com/urllib3/urllib3/issues/2168>`_.
+
+If this error is encountered either the openSSL can be upgraded:
+
+.. code-block:: bash
+
+    brew install openssl@1.1
+
+or the urllib3 version (jade dependency) can be downgraded:
+
+.. code-block:: bash
+
+    pip install urllib3==1.26.6
+
+see `here <https://stackoverflow.com/questions/76187256/importerror-urllib3-v2-0-only-supports-openssl-1-1-1-currently-the-ssl-modu>`_ for additional info on the fix.
 
 

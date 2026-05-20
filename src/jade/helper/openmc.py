@@ -184,6 +184,10 @@ class OpenMCInputFiles:
         -------
         None
         """
+        # Reset OpenMC global ID registries to avoid duplicate ID warnings
+        # when creating multiple input instances from the same templates
+        openmc.reset_auto_ids()
+
         files = os.listdir(path)
         if ("geometry.xml" in files) and ("materials.xml") in files:
             self.load_geometry(
@@ -400,7 +404,15 @@ class OpenMCInputFiles:
             weight_windows_outfile = os.path.join(path, "weight_windows.h5")
             shutil.copyfile(self.weight_windows_file, weight_windows_outfile)
             self.settings.weight_windows_on = True
-            self.settings.weight_windows = openmc.hdf5_to_wws(weight_windows_outfile)
+            try:
+                self.settings.weight_windows = openmc.WeightWindowsList.from_hdf5(
+                    weight_windows_outfile
+                )
+            except AttributeError:
+                # Older versions than 0.15.3 still have this deprecated functio
+                self.settings.weight_windows = openmc.hdf5_to_wws(
+                    weight_windows_outfile
+                )
         model = openmc.Model(
             geometry=self.geometry, settings=self.settings, tallies=self.tallies
         )

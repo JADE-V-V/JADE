@@ -493,6 +493,12 @@ class BenchmarkRun:
             if flag_run:
                 continue
 
+            # if MCNP or similar, check for output file and remove if found
+            if code == CODE.MCNP or code == CODE.D1S:
+                for file in os.listdir(single_run_root):
+                    if file.endswith(".o"):
+                        os.remove(Path(single_run_root, file))
+
             # create the single run using the mock input
             single_run = SingleRunFactory.create(
                 code, single_run_root, lib, int(self.config.nps), mock_input=True

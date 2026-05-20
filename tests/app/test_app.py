@@ -168,8 +168,9 @@ class TestJadeApp:
         command = app.continue_run(testing=True)
         assert "#!/bin/sh\n\n#SBATCH" in command[0][1]
 
-    def test_continue_run_sphere(self):
-        app = JadeApp(root=DUMMY_ROOT, skip_init=True)
+    def test_continue_run_sphere(self, tmp_path):
+        shutil.copytree(DUMMY_ROOT, tmp_path.joinpath("root"))
+        app = JadeApp(root=tmp_path.joinpath("root"), skip_init=True)
         # override the run config file
         lib = LibraryMCNP(
             name="continue sphere", path=RUN_RES.joinpath("xsdir.txt"), suffix="31c"
@@ -209,6 +210,12 @@ class TestJadeApp:
         assert "Sphere_m101" in command[0]
         assert "Sphere_dummy1" in command[0]
         assert command[0].count('cd "') == 2
+
+        # check that the .o file has been removed
+        path_sim = Path(
+            app.tree.simulations, "_mcnp_-_continue sphere_/Sphere/Sphere_dummy1"
+        )
+        assert len(os.listdir(path_sim)) == 2
 
     def test_print_unfinished_runs(self, caplog):
         import logging

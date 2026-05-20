@@ -1,7 +1,7 @@
-.. _benchmarks:
+.. _about_jade:
 
 ##########
-Benchmarks
+About JADE
 ##########
 
 This section contains useful information about the projects like, License,

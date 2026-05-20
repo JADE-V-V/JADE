@@ -11,6 +11,9 @@ _times: &times
 Leakage neutron flux Vitamin-J 175:
   concat_option: no_action
   2: [[no_action, {}]]
+Leakage neutron flux by lethargy:
+  concat_option: no_action
+  2: [[lethargy, {}]]
 Leakage photon flux:
   concat_option: no_action
   22:

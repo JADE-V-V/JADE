@@ -33,3 +33,9 @@ classes are required.
     ./insertbenchmarks
     ./pp_gallery
     ./add_transport_code
+
+.. toctree::
+    :maxdepth: 2
+    :caption: WebApp
+    
+    ./webapp

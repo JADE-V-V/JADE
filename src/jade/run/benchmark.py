@@ -140,7 +140,10 @@ class SingleRun(ABC):
             json.dump(metadata, f, indent=4)
 
     def run(
-        self, env_vars: EnvironmentVariables, sim_folder: PathLike, test=False
+        self,
+        env_vars: EnvironmentVariables,
+        sim_folder: PathLike,
+        test=False,
     ) -> bool | str | list[str]:
         """Run the simulation.
 
@@ -173,15 +176,23 @@ class SingleRun(ABC):
 
         flagnotrun = False
         if env_vars.run_mode == RunMode.JOB_SUBMISSION:
-            command = self._submit_job(
-                env_vars,
-                sim_folder,
-                run_command,
-                lib_data_command,
-                self.code,
-                test=test,
-            )
-            if test:
+            if not test:
+                self._submit_job(
+                    env_vars,
+                    sim_folder,
+                    run_command,
+                    lib_data_command,
+                    self.code,
+                )
+            else:
+                command = self._submit_job(
+                    env_vars,
+                    sim_folder,
+                    run_command,
+                    lib_data_command,
+                    self.code,
+                    test=test,
+                )
                 return command
 
         elif env_vars.run_mode == RunMode.GLOBAL_JOB:
@@ -344,6 +355,7 @@ class SingleRunFactory:
         template_folder: PathLike,
         lib: Library,
         nps: int,
+        mock_input: bool = False,
     ) -> SingleRun:
         """Factory method to create a SingleRun object.
 
@@ -357,27 +369,67 @@ class SingleRunFactory:
             library to be used in the run.
         nps : int
             number of particle histories to simulate.
+        mock_input : bool, optional
+            flag to create a mock input for continue run purposes, by default False.
         """
         if code == CODE.MCNP:
             single_run_class = SingleRunMCNP
             if not isinstance(lib, LibraryMCNP):
                 raise ConfigError("An MCNP library needs to be provided for MCNP runs")
-            inp = InputMCNP(template_folder, lib)
+            if not mock_input:
+                inp = InputMCNP(template_folder, lib)
         elif code == CODE.OPENMC:
             single_run_class = SingleRunOpenMC
-            inp = InputOpenMC(template_folder, lib)
+            if not mock_input:
+                inp = InputOpenMC(template_folder, lib)
         elif code == CODE.SERPENT:
             single_run_class = SingleRunSerpent
-            inp = InputSerpent(template_folder, lib)
+            if not mock_input:
+                inp = InputSerpent(template_folder, lib)
         elif code == CODE.D1S:
             single_run_class = SingleRunD1S
             if not isinstance(lib, LibraryD1S):
                 raise ConfigError("A D1S library needs to be provided for D1S runs")
-            inp = InputD1S(template_folder, lib)
+            if not mock_input:
+                inp = InputD1S(template_folder, lib)
         else:
             raise ValueError(f"Code {code} not supported")
 
+        if mock_input:
+            # create a mock input with only the name,
+            # this is needed for continue run purposes
+            inp = MockInput(template_folder, lib)
+
         return single_run_class(inp, lib, nps)
+
+
+class MockInput:
+    """Class to create a mock input for continue run purposes. This is needed to create
+    the SingleRun object without having the actual input files, which may not be
+     present in continue run scenarios.
+    """
+
+    def __init__(self, template_folder: PathLike, lib: Library):
+        self.template_folder = template_folder
+        self.inp = None
+        # localize the .i file
+        found = False
+        for file in os.listdir(template_folder):
+            if file.endswith(".i"):
+                found = True
+                break
+        if not found:
+            self.name = os.path.basename(template_folder)
+        else:
+            self.name = file[:-2]
+
+        self.lib = lib
+
+    def translate(self):
+        pass
+
+    def set_nps(self, nps: int):
+        pass
 
 
 class BenchmarkRun:
@@ -408,30 +460,27 @@ class BenchmarkRun:
         self.env_vars = env_vars
         self.simulation_root = simulation_root
 
-    def continue_run(self, testing=False):
+    def continue_run(self, testing: bool = False) -> list[tuple[list[str], PathLike]]:
         """Allow to continue a run on previously generated inputs. This allows to launch
         a single job and optimize HPC resources usage.
         """
         # recover the code and library from simulation root
+        total_command = []
         for code, lib in self.config.run:
-            command = self._get_continue_run_command(code, lib)
-            # if serial, send the command, otherwis build a job script
-            if self.env_vars.run_mode == RunMode.LOCAL:
-                subprocess.Popen(
-                    command,
-                    # check=True,
-                    # timeout=43200, serial can also last days on workstations
-                )
-            elif self.env_vars.run_mode == RunMode.JOB_SUBMISSION:
-                cwd = os.getcwd()
-                command = SingleRun._submit_job(
-                    self.env_vars, cwd, command, "", code, test=testing
-                )
-                return command
+            command = self._get_continue_run_command(code, lib, testing=testing)
+            runs = [(code, commands, folder) for commands, folder in command]
+            total_command.extend(runs)
 
-    def _get_continue_run_command(self, code: CODE, lib: Library) -> str:
+        return total_command
+
+    def _get_continue_run_command(
+        self,
+        code: CODE,
+        lib: Library,
+        testing: bool = False,
+    ) -> list[tuple[list[str], Path]]:
         # we can assume that the single run has been already originated
-        total_command = ""
+        commands = []
         codelib_folder = print_code_lib(code, lib)
         benchmark_root = os.path.join(
             self.simulation_root, codelib_folder, self.config.name
@@ -440,36 +489,36 @@ class BenchmarkRun:
         for single_run_folder in os.listdir(benchmark_root):
             single_run_root = Path(benchmark_root, single_run_folder)
             # check if the simulation has been completed
-            flag_run = CODE_CHECKERS[code](single_run_root)
+            flag_run = CODE_CHECKERS[code].check_success(os.listdir(single_run_root))
             if flag_run:
                 continue
 
-            sub_bench = os.path.basename(single_run_root)
-            # recover the input template
-            template_folder = os.path.join(
-                self.benchmark_templates_root, sub_bench, code.value
-            )
-            # create the single run
+            # if MCNP or similar, check for output file and remove if found
+            if code == CODE.MCNP or code == CODE.D1S:
+                for file in os.listdir(single_run_root):
+                    if file.endswith(".o"):
+                        os.remove(Path(single_run_root, file))
+
+            # create the single run using the mock input
             single_run = SingleRunFactory.create(
-                code, template_folder, lib, int(self.config.nps)
+                code, single_run_root, lib, int(self.config.nps), mock_input=True
             )
-            # need to override the name if MCNP to be sure there are no
-            # problems with Spheres
-            if code in (CODE.MCNP, CODE.D1S):
-                single_run.input._name = single_run_folder
             if not flag_datapath:
                 # this is the first run, we need to set the environment variables
                 name, value = single_run._get_lib_data_command()
                 os.environ[name] = value
                 flag_datapath = True
 
+            # store commands are needed only for global submission and test
+            # purposes. for other modes the jobs/processes have been already
+            # submitted
             command = single_run.run(
-                env_vars=self.env_vars, sim_folder=single_run_root, test=True
+                env_vars=self.env_vars,
+                sim_folder=single_run_root,
+                test=testing,
             )
-            assert isinstance(command, str)
-            cd_command = f"cd {single_run_root} {os.linesep}"
-            total_command = total_command + cd_command + command + os.linesep
-        return total_command
+            commands.append((command, single_run_root))
+        return commands
 
     def run(self) -> list[tuple[list[str] | None, PathLike]]:
         """Run the benchmark. This creates the inputs and runs the simulations for each

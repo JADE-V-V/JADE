@@ -27,8 +27,11 @@ DUMMY_ROOT = files(tests).joinpath("dummy_structure")
 class TestJadeApp:
     def test_run_benchmarks(self, tmpdir, monkeypatch):
         app = JadeApp(root=DUMMY_ROOT, skip_init=True)
+        # force the lazy computation of status before overriding the simulations folder
+        _ = app.status
         # override the simulation root folder
         app.tree.simulations = tmpdir
+
         # I should get here a request for override let's say no the first time
         monkeypatch.setattr("builtins.input", lambda _: "n")
         app.run_benchmarks()
@@ -62,11 +65,11 @@ class TestJadeApp:
         # override the raw processor folder
         app.tree.raw = tmpdir
         app.status.raw_results_path = tmpdir
-        app.status.update()
+        # app.status.update()
 
         app.raw_process(subset=["Oktavian"])
         # manually update the status
-        app.status.update()
+        app.status.update_raw_results()
         filepath = Path(
             tmpdir,
             "_mcnp_-_FENDL 3.2c_/Oktavian/Oktavian_Al 21.csv",
@@ -87,7 +90,7 @@ class TestJadeApp:
         app = JadeApp(root=DUMMY_ROOT, skip_init=True)
         # override the post processor folder
         app.tree.postprocessing = tmpdir
-        app.status.update()
+        # app.status.update()
 
         app.post_process()
 
@@ -160,14 +163,62 @@ class TestJadeApp:
         )
         run_cfg = RunConfig(env_vars, {"Dummy_continue": cfg})
         app.run_cfg = run_cfg
-        with pytest.raises(FileNotFoundError):
-            app.continue_run()
+        app.continue_run(testing=True)
 
         env_vars.run_mode = RunMode.JOB_SUBMISSION
         run_cfg = RunConfig(env_vars, {"Dummy_continue": cfg})
         app.run_cfg = run_cfg
         command = app.continue_run(testing=True)
+        assert "#!/bin/sh\n\n#SBATCH" in command[0][1]
+
+    def test_continue_run_sphere(self, tmp_path):
+        shutil.copytree(DUMMY_ROOT, tmp_path.joinpath("root"))
+        app = JadeApp(root=tmp_path.joinpath("root"), skip_init=True)
+        # override the run config file
+        lib = LibraryMCNP(
+            name="continue sphere", path=RUN_RES.joinpath("xsdir.txt"), suffix="31c"
+        )
+        perform = [
+            (CODE.MCNP, lib),
+        ]
+        cfg1 = BenchmarkRunConfig(
+            description="Dummy",
+            name="Sphere",
+            run=perform,
+            nps=10,
+            only_input=True,
+            additional_settings_path=Path(DUMMY_ROOT, "cfg/benchmarks/Sphere"),
+        )
+        env_vars = EnvironmentVariables(
+            0,
+            10,
+            {CODE.MCNP: "mcnp6.2"},
+            run_mode=RunMode.JOB_SUBMISSION,
+            code_job_template={
+                CODE.MCNP: Path(DUMMY_ROOT, "cfg/exe_config/mcnp_template.sh")
+            },
+            scheduler_command="sbatch",
+            exe_cfg_root=Path(DUMMY_ROOT, "cfg/exe_config"),
+        )
+        run_cfg = RunConfig(env_vars, {"Sphere": cfg1})
+        app.run_cfg = run_cfg
+        command = app.continue_run(testing=True)
+        assert "#!/bin/sh\n\n#SBATCH" in command[0][1]
+        assert "Sphere_dummy1" in command[0][1]
+        assert "Sphere_m101" in command[1][1]
+
+        app.run_cfg.env_vars.run_mode = RunMode.GLOBAL_JOB
+        command = app.continue_run(testing=True)
         assert "#!/bin/sh\n\n#SBATCH" in command[0]
+        assert "Sphere_m101" in command[0]
+        assert "Sphere_dummy1" in command[0]
+        assert command[0].count('cd "') == 2
+
+        # check that the .o file has been removed
+        path_sim = Path(
+            app.tree.simulations, "_mcnp_-_continue sphere_/Sphere/Sphere_dummy1"
+        )
+        assert len(os.listdir(path_sim)) == 2
 
     def test_print_unfinished_runs(self, caplog):
         import logging

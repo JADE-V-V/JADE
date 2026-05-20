@@ -119,10 +119,9 @@ or
 
     | ``python -m jade --cnt``
 
+For MCNP and D1S, the continue run will also automatically delete the .o output file so that
+the simulation can be restarted without errors.
+
 .. tip:: 
     The continue run is particularly useful when used in combination with
     the *Only Input* option.
-
-.. warning:: 
-    if a simulation was terminated abruptly, output files will need to
-    be deleted before issuing the continue command.

@@ -36,7 +36,11 @@ DEFAULT_SETTINGS_PATH = files(res).joinpath("default_cfg")
 
 
 class JadeApp:
-    def __init__(self, root: PathLike | None = None, skip_init: bool = False):
+    def __init__(
+        self,
+        root: PathLike | None = None,
+        skip_init: bool = False,
+    ):
         if root is None:
             root = os.getcwd()
 
@@ -53,12 +57,18 @@ class JadeApp:
         # parse the post-processing config
         self.pp_cfg = PostProcessConfig(self.tree.cfg.bench_pp)
 
-        # Compute the global status
-        logger.info("Initializing the global status")
-        self.status = GlobalStatus(
-            simulations_path=self.tree.simulations,
-            raw_results_path=self.tree.raw,
-        )
+        self._status = None
+
+    @property
+    def status(self) -> GlobalStatus:
+        """Lazy-load the global status on first access."""
+        if self._status is None:
+            logger.info("Initializing the global status (lazy-loaded)")
+            self._status = GlobalStatus(
+                simulations_path=self.tree.simulations,
+                raw_results_path=self.tree.raw,
+            )
+        return self._status
 
     def initialize_log(self) -> None:
         """Initialize the custom python logger for JADE."""
@@ -67,7 +77,7 @@ class JadeApp:
         )
         jade_logger = logging.getLogger("jade")
         jade_logger.setLevel(logging.DEBUG)
-        
+
         # Clear any existing handlers and prevent propagation to root logger
         jade_logger.handlers.clear()
         jade_logger.propagate = False
@@ -201,7 +211,11 @@ class JadeApp:
                 self.run_cfg.env_vars,
             )
             command = benchmark.continue_run(testing=testing)
-            commands.append(command)
+            commands.extend(command)
+
+        if self.run_cfg.env_vars.run_mode == RunMode.GLOBAL_JOB:
+            commands = launch_global_jobs(commands, self.run_cfg.env_vars, test=testing)
+
         logger.info("Benchmarks run have been submitted.")
         return commands
 

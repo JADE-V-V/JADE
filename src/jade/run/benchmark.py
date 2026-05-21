@@ -496,7 +496,7 @@ class BenchmarkRun:
             # if MCNP or similar, check for output file and remove if found
             if code == CODE.MCNP or code == CODE.D1S:
                 for file in os.listdir(single_run_root):
-                    if file.endswith(".o"):
+                    if file.endswith(".o") or file.endswith(".r"):
                         os.remove(Path(single_run_root, file))
 
             # create the single run using the mock input

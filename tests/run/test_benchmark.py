@@ -325,7 +325,7 @@ class TestSingleRunMCNP:
         command = single_run.run(env_vars, tmpdir, test=True)
         assert "#!/bin/sh\n\n#SBATCH" in command
         # avoid linux path breaking in case of lib names with spaces
-        assert '--workdir="' in command
+        assert '--chdir="' in command
         assert '--output="' in command
         assert '--error="' in command
 

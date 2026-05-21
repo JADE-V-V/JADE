@@ -383,6 +383,6 @@ class JadeApp:
         for key, status in self.status.simulations.items():
             if len(status.failed_simulations) > 0:
                 code, lib, bench = key
-                logging.info(f"Unfinished simulations for {code} {lib} {bench}:")
+                logger.info(f"Unfinished simulations for {code} {lib} {bench}:")
                 for sim in status.failed_simulations:
-                    logging.info(f"\t{sim}")
+                    logger.info(f"\t{sim}")

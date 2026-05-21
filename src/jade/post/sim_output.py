@@ -491,11 +491,7 @@ class OpenMCSphereSimOutput(OpenMCSimOutput):
         atomic_densities = materials[1].get_nuclide_atom_densities()
         self.atomic_density = sum(atomic_densities.values())
 
-        self.output = omc.OpenMCStatePoint(statefile, volfile)
-        self._tally_numbers = self.output.tally_numbers
-        self._tally_comments = self.output.tally_comments
-        self._tallydata, self._totalbin = self._process_tally()
-        self.stat_checks = None
+        super().__init__(sim_folder)
 
     def _create_dataframes(
         self, tallies: dict

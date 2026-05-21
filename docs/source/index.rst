@@ -5,7 +5,6 @@
 
 Welcome to JADE's documentation!
 ================================
-Version: |release|
 
 JADE is a Verification & Validation (V&V) framework for nuclear data libraries and transport codes.
 Use JADE to automatically generate, run and post-process benchmarks and compare the results obtained
@@ -34,11 +33,11 @@ GitHub repository <https://github.com/JADE-V-V/JADE/issues>`_.
 .. toctree::
    :maxdepth: 3
    :caption: JADE:
-   
+
    usage/usage_idx
    dev/dev_idx
    benchmarks/benchmark_idx
-   about/about_idx
+   about/publications
 
 
 Indices and tables

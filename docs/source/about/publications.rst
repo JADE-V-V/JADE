@@ -1,6 +1,6 @@
-######################################
-List of Publications and Contributions
-######################################
+############
+Publications
+############
 
 Publications featuring JADE
 ===========================

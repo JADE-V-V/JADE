@@ -20,18 +20,31 @@ classes are required.
 
 .. toctree::
     :maxdepth: 2
-    :caption: General guidelines
+    :caption: General information
     
+    ./architecture_overview
     ./workflow
     ./testing
 
 .. toctree::
     :maxdepth: 2
     :caption: Add a new benchmark
-    
-    ./architecture_overview
-    ./insertbenchmarks
+
+    ./add_benchmark/where_inputs
+    ./add_benchmark/raw_cfg
+    ./add_benchmark/excel_cfg
+    ./add_benchmark/atlas_cfg
+
+.. toctree::
+    :maxdepth: 2
+    :caption: Existing and new plots
+
     ./pp_gallery
+
+.. toctree::
+    :maxdepth: 2
+    :caption: Add a new transport code
+    
     ./add_transport_code
 
 .. toctree::

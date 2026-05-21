@@ -13,12 +13,12 @@ also include the reference repository of the benchmarks.
 
 .. csv-table::
     :file: computational_overview.csv
-    :widths: 60 30 30
+    :widths: 40 25 20 15
     :header-rows: 1
 
 **EXPERIMENTAL BENCHMARKS:**
 
 .. csv-table::
     :file: exp_overview.csv
-    :widths: 60 30 30
+    :widths: 40 25 20 15
     :header-rows: 1

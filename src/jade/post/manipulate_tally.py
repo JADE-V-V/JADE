@@ -167,7 +167,9 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
         # Valid both for sum and mean
         error = pd.Series(
             np.sqrt(((tally["Error"] * tally["Value"]) ** 2).sum())
-            / tally["Value"].sum(),
+            / tally["Value"].sum()
+            if tally["Value"].sum() != 0
+            else 0,
             name="Error",
         )
     else:
@@ -181,6 +183,8 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
             # Valid both for sum and mean
             err = (
                 np.sqrt(np.sum((subset_error * subset_value) ** 2)) / subset_value.sum()
+                if subset_value.sum() != 0
+                else 0
             )
             rows.append(err)
         error = pd.Series(rows, name="Error")

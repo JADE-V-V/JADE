@@ -27,3 +27,12 @@ Photon heating:
 Leakage neutron flux:
   concat_option: no_action
   12: [[scale, {"factor": 3.182462327E-3}], [delete_cols, *del_cols]]
+He ppm production:
+  concat_option: no_action
+  14: [[no_action, {}]]
+T production:
+  concat_option: no_action
+  24: [[no_action, {}]]
+DPA production:
+  concat_option: no_action
+  34: [[no_action, {}]]

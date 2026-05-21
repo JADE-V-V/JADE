@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<geometry>
+  <cell id="1" material="void" region="-1" universe="0"/>
+  <cell id="2" material="1" region="1 -2" universe="0"/>
+  <cell id="3" material="void" region="2 -3" universe="0"/>
+  <cell id="4" material="void" region="3" universe="0"/>
+  <surface id="1" type="sphere" coeffs="0.0 0.0 0.0 5.0"/>
+  <surface id="2" type="sphere" coeffs="0.0 0.0 0.0 50.0"/>
+  <surface id="3" type="sphere" boundary="vacuum" coeffs="0.0 0.0 0.0 50.01"/>
+</geometry>

@@ -283,7 +283,7 @@ class OpenMCSimOutput(AbstractSimOutput):
         sim_folder: PathLike,
     ) -> None:
         """
-        Class representing all outputs coming from OpenMC run
+        Class representing all outputs coming from OpenMC run excluding Sphere
 
         Parameters
         ----------
@@ -355,6 +355,44 @@ class OpenMCSimOutput(AbstractSimOutput):
             if file.startswith("statepoint") and file.endswith(".h5"):
                 statepoint_found = True
         return statepoint_found
+    
+    def _prep_tally(self, filter_lookup: dict[str, str], tally: pd.DataFrame) -> pd.DataFrame:
+        '''
+        Function to prepare the tally dataframe for JADE formatting, by renaming the columns and sorting by the filters.
+        
+        Parameters
+        ----------
+        filter_lookup : dict
+            Dictionary to map OpenMC filter names to JADE column names
+        tally : pd.DataFrame
+            The OpenMC tally dataframe to be prepared for JADE formatting
+
+        Returns
+        -------
+        sorted_tally : pd.DataFrame
+            The sorted and renamed tally dataframe ready for JADE formatting
+
+        '''
+        filters = []
+        new_columns = {}
+        if "cell" in tally.columns:
+            filters.append("cell")
+        if "surface" in tally.columns:
+            filters.append("surface")
+        if "energy high [eV]" in tally.columns:
+            filters.append("energy high [eV]")
+        if "time" in tally.columns:
+            filters.append("time")
+        new_columns = dict(
+            (k, filter_lookup[k]) for k in filters if k in filter_lookup)
+        new_columns["mean"] = filter_lookup["mean"]
+        new_columns["std. dev."] = filter_lookup["std. dev."]
+        sorted_tally = tally.sort_values(filters)
+        sorted_tally = sorted_tally.reset_index(drop=True)
+        sorted_tally = sorted_tally.rename(columns=new_columns)
+        # remove constant columns
+        sorted_tally = _remove_constant_columns(sorted_tally)
+        return sorted_tally
 
     def _create_dataframes(
         self, tallies: dict
@@ -398,29 +436,11 @@ class OpenMCSimOutput(AbstractSimOutput):
             "Error",
         ]
         for id, tally in tallies.items():
-            filters = []
-            new_columns = {}
-            if "cell" in tally.columns:
-                filters.append("cell")
-            if "surface" in tally.columns:
-                filters.append("surface")
-            if "energy high [eV]" in tally.columns:
-                filters.append("energy high [eV]")
-            if "time" in tally.columns:
-                filters.append("time")
-            new_columns = dict(
-                (k, filter_lookup[k]) for k in filters if k in filter_lookup
-            )
-            new_columns["mean"] = filter_lookup["mean"]
-            new_columns["std. dev."] = filter_lookup["std. dev."]
-            sorted_tally = tally.sort_values(filters)
-            sorted_tally = sorted_tally.reset_index(drop=True)
-            sorted_tally = sorted_tally.rename(columns=new_columns)
-            # remove constant columns
-            sorted_tally = _remove_constant_columns(sorted_tally)
+            sorted_tally = self._prep_tally(filter_lookup, tally)
+            
             if "Value" in sorted_tally.columns and "Error" in sorted_tally.columns:
                 sorted_tally["Error"] = sorted_tally["Error"] / sorted_tally["Value"]
-
+            
             tallydata[id] = sorted_tally
             totalbin[id] = None
         return tallydata, totalbin
@@ -443,6 +463,95 @@ class OpenMCSimOutput(AbstractSimOutput):
     def _read_code_version(self) -> str | None:
         return self.output.version
 
+
+class OpenMCSphereSimOutput(OpenMCSimOutput):
+    def __init__(
+        self,
+        sim_folder: PathLike,
+    ) -> None:
+        """
+        Class representing all outputs coming from OpenMC Sphere run
+
+        Parameters
+        ----------
+        output_path : str | os.PathLike
+            Path to simulation output files
+
+        Returns
+        -------
+        None.
+
+        """
+        _, statefile, volfile = self.retrieve_file(sim_folder)
+        
+        # Retrieving atomic density for normalisation of the DPA, He and T production tallies
+        self.input = omc.OpenMCInputFiles(sim_folder)
+        materials = self.input.geometry.get_all_materials()
+        # There is only one material in the Sphere input so this is hard coded
+        atomic_densities = materials[1].get_nuclide_atom_densities()
+        self.atomic_density = sum(atomic_densities.values())
+
+        super().__init__(sim_folder)
+
+    def _create_dataframes(
+        self, tallies: dict
+    ) -> tuple[dict[int, pd.DataFrame], dict[int, pd.DataFrame]]:
+        """
+        Function to create dataframes in JADE format from OpenMC dataframes.
+
+        Parameters
+        ----------
+        tallies : dict
+            Dictionary of OpenMC tally dataframes, indexed by tally number
+
+        Returns
+        -------
+        tallydata : dict[int, pd.DataFrame]
+            Dictionary of JADE formatted tally dataframes, indexed by tally number
+        totalbin : dict[int, None]]
+            Dictionary of JADE formatted total tally values, each are None for OpenMC
+        """
+        tallydata = {}
+        totalbin = {}
+        filter_lookup = {
+            "cell": "Cells",
+            "surface": "Segments",
+            "energy high [eV]": "Energy",
+            "time": "Time",
+            "mean": "Value",
+            "std. dev.": "Error",
+        }
+        columns = [
+            "Cells",
+            "User",
+            "Segments",
+            "Cosine",
+            "Energy",
+            "Time",
+            "Cor C",
+            "Cor B",
+            "Cor A",
+            "Value",
+            "Error",
+        ]
+        for id, tally in tallies.items():
+            sorted_tally = self._prep_tally(filter_lookup, tally)
+
+            # If tally is Sphere, and is tally 14,24,34 then need to normalise by atomic density
+            # Need to generate atomic density for a given Sphere input
+            RR_tally_IDs = [14, 24, 34]
+            if id in RR_tally_IDs:
+                sorted_tally["Value"] = sorted_tally["Value"] / self.atomic_density
+                sorted_tally["Error"] = sorted_tally["Error"] / self.atomic_density
+            else:
+                pass
+            
+            if "Value" in sorted_tally.columns and "Error" in sorted_tally.columns:
+                sorted_tally["Error"] = sorted_tally["Error"] / sorted_tally["Value"]
+            
+            tallydata[id] = sorted_tally
+            totalbin[id] = None
+        return tallydata, totalbin
 
 def _remove_constant_columns(df: pd.DataFrame) -> pd.DataFrame:
     """eliminate unnecessary columns from OpenMC tally data"""

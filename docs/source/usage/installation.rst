@@ -49,8 +49,7 @@ on which version of OpenMC is being run.
   ``sudo apt-get install python3-tk`` before installing JADE.
 
 .. warning:: 
-  Development cycles of OpenMC are quite fast. For instance, after version 0.15.0
-  OpenMC does not support anymore python 3.10. Be sure to install an OpenMC version
+  Development cycles of OpenMC are quite fast. Be sure to install an OpenMC version
   that your python environment supports.  
 
 .. _installdevelop:

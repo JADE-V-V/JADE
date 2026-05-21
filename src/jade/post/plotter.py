@@ -872,9 +872,11 @@ class BarPlot(Plot):
         if self.cfg.plot_args is not None:
             log = self.cfg.plot_args.get("log", False)
             maxgroups = self.cfg.plot_args.get("max_groups", 20)
+            shorten_x_name = self.cfg.plot_args.get("shorten_x_name", False)
         else:
             log = False
             maxgroups = 20
+            shorten_x_name = False
 
         # Override log parameter if variation is low on y axis
         if log:
@@ -888,7 +890,7 @@ class BarPlot(Plot):
 
         # Check if the data is higher than max
         labels = self.data[0][1][self.cfg.x].values
-        nrows = len(labels) // maxgroups + 1
+        nrows = (len(labels)-1) // maxgroups + 1
         if nrows == 1:
             nlabels = len(labels)
         else:
@@ -936,6 +938,9 @@ class BarPlot(Plot):
 
         # By default seaborn is going to put the y label. delete all y label in axes
         for ax in axes:
+            # change the label text
+            if shorten_x_name:
+                _shorten_x_name(ax, shorten_x_name)
             ax.set_ylabel("")
             ax.set_xlabel("")
             _rotate_ticks(ax)

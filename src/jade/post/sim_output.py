@@ -357,6 +357,22 @@ class OpenMCSimOutput(AbstractSimOutput):
         return statepoint_found
     
     def _prep_tally(self, filter_lookup, tally: pd.DataFrame) -> None:
+        '''
+        Function to prepare the tally dataframe for JADE formatting, by renaming the columns and sorting by the filters.
+        
+        Parameters
+        ----------
+        filter_lookup : dict
+            Dictionary to map OpenMC filter names to JADE column names
+        tally : pd.DataFrame
+            The OpenMC tally dataframe to be prepared for JADE formatting
+
+        Returns
+        -------
+        sorted_tally : pd.DataFrame
+            The sorted and renamed tally dataframe ready for JADE formatting
+
+        '''
         filters = []
         new_columns = {}
         if "cell" in tally.columns:

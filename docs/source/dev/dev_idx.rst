@@ -37,7 +37,7 @@ classes are required.
 
 .. toctree::
     :maxdepth: 2
-    :caption: Existing and new plots
+    :caption: Tables and Plots
 
     ./pp_gallery
 

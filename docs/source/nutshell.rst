@@ -8,7 +8,7 @@ JADE in a nutshell
 JADE is a tool for validation and verification (V&V) of nuclear data libraries.
 Development was initially started by NIER, University of Bologna (UNIBO) and Fusion For Energy (F4E),
 and it is today carried out mainly by F4E and the United Kingdom Atomic Energy Authority (UKAEA).
-You can find an up to date and detailed list of contributors in the :ref:`contributor_list` section.
+
 
 JADE is an open source, Python 3 based software able to:
 
@@ -49,8 +49,8 @@ When using JADE for scientific publications you are kindly encouraged to cite th
 
 For additional information contact: davide.laghi@f4e.europa.eu or alex.valentine@ukaea.uk.
 
-For additional information on future developments please check the issues list on the
-`JADE GitHub repository <https://github.com/dodu94/JADE/>`_.
+For additional information on future developments please check the
+`JADE GitHub repository <https://github.com/JADE-V-V/JADE>`_.
 
 .. seealso:: 
   * **MCNP**, Werner C.J., 2017, "MCNP User’S Manual Code", Los Alamos: LAUR-17-29981 (version 6.2).

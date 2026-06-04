@@ -286,6 +286,10 @@ These are the extra ``plot_args`` that this type of plot can accept:
   by default it is set to 20.
 * ``log``: if True, the y-axis is set to log scale. Default is False. The code also analyses the data to be plotted
   and if the values span in less than 2 order of magnitude the log scale is not applied.
+* ``shorten_x_name``: this type of plots are often categorical. In the event of using the 
+cases as x axis, the long names of the benchmark runs can become problematic. This option
+will split the name of the benchmark run on the '_' symbols and retain only the last N chunks
+where N is the specified *shorten_x_name* value.
 
 Waves plot (waves)
 ------------------

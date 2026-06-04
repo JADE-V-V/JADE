@@ -67,5 +67,91 @@ Photon spectrum in PF coils [175 group]:
     subcases: ["Cells", ["PF_coil_1", "PF_coil_2", "PF_coil_3", "PF_coil_4"]]
     scale_subcases: true
     style : 'step'
+Neutron Heating in PF coils:
+  results:
+    - Neutron nuclear heating in PF coils
+  plot_type: barplot
+  title: Neutron heating in PF coils 
+  x_label: "Cells"
+  y_labels: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  x: Cells
+  y: Value
+  expand_runs: false
+  plot_args:
+    show_error: false
+    show_CE: false
+    log: False
+Neutron Heating in blanket:
+  results:
+    - Neutron nuclear heating in blanket
+  plot_type: barplot
+  title: Neutron heating in blanket
+  x_label: "Cells"
+  y_labels: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  x: Cells
+  y: Value
+  expand_runs: false
+  plot_args:
+    max_groups: 20
+    log: False
+    shorten_x_name: 3
+Neutron Heating in VV:
+  results:
+    - Neutron nuclear heating in VV
+  plot_type: barplot
+  title: Neutron heating in VV 
+  x_label: "Cells"
+  y_labels: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  x: Cells
+  y: Value
+  expand_runs: false
+  plot_args:
+    show_error: false
+    show_CE: false
+    log: False
+#
+Photon Heating in PF coils:
+  results:
+    - Photon nuclear heating in PF coils
+  plot_type: barplot
+  title: Photon heating in PF coils 
+  x_label: "Cells"
+  y_labels: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  x: Cells
+  y: Value
+  expand_runs: false
+  plot_args:
+    show_error: false
+    show_CE: false
+    log: False
+Photon Heating in blanket:
+  results:
+    - Photon nuclear heating in blanket
+  plot_type: barplot
+  title: Photon heating in blanket
+  x_label: "Cells"
+  y_labels: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  x: Cells
+  y: Value
+  expand_runs: false
+  plot_args:
+    max_groups: 20
+    log: False
+    shorten_x_name: 3
+#
+Photon Heating in VV:
+  results:
+    - Photon nuclear heating in VV
+  plot_type: barplot
+  title: Photon heating in VV 
+  x_label: "Cells"
+  y_labels: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  x: Cells
+  y: Value
+  expand_runs: false
+  plot_args:
+    show_error: false
+    show_CE: false
+    log: False
 
 

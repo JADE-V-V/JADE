@@ -558,27 +558,35 @@ class OpenMCStatePoint:
         photon_tallies = {}
         heating_tallies_df = {}
         for id, tally in heating_tallies.items():
-            particle_filter = tally.find_filter(openmc.ParticleFilter)
-            if "neutron" in particle_filter.bins:
-                heating_tallies_df[id] = self._get_tally_data(tally)
-            if "photon" in particle_filter.bins:
-                photon_tallies[id] = tally
+            try:
+                particle_filter = tally.find_filter(openmc.ParticleFilter)
+            except ValueError:
+                particle_filter = None
+            if particle_filter:
+                if "neutron" in particle_filter.bins:
+                    heating_tallies_df[id] = self._get_tally_data(tally)
+                if "photon" in particle_filter.bins:
+                    photon_tallies[id] = tally
+                    heating_tallies_df[id] = self._get_tally_data(tally)
+            else:
                 heating_tallies_df[id] = self._get_tally_data(tally)
         for id, photon_tally in photon_tallies.items():
             photon_cell_filter = photon_tally.find_filter(openmc.CellFilter)
             for _, tally in heating_tallies.items():
-                particle_filter = tally.find_filter(openmc.ParticleFilter)
+                try:
+                    particle_filter = tally.find_filter(openmc.ParticleFilter)
+                except ValueError:
+                    particle_filter =  None
                 cell_filter = tally.find_filter(openmc.CellFilter)
-                if (
-                    ("electron" in particle_filter.bins)
-                    or ("positron" in particle_filter.bins)
-                ) and (photon_cell_filter == cell_filter):
-                    tally_df = self._get_tally_data(tally)
-                    heating_tallies_df[id]["mean"] += tally_df["mean"]
-                    heating_tallies_df[id]["std. dev."] = (
-                        heating_tallies_df[id]["std. dev."].pow(2)
-                        + tally_df["std. dev."].pow(2)
-                    ).pow(0.5)
+                if particle_filter and cell_filter:
+                    if photon_cell_filter == cell_filter:
+                        if "electron" or "positron" in particle_filter.bins:
+                            tally_df = self._get_tally_data(tally)
+                            heating_tallies_df[id]["mean"] += tally_df["mean"]
+                            heating_tallies_df[id]["std. dev."] = (
+                                heating_tallies_df[id]["std. dev."].pow(2)
+                                + tally_df["std. dev."].pow(2)
+                            ).pow(0.5)
         return heating_tallies_df
 
     def tallies_to_dataframes(self) -> dict:

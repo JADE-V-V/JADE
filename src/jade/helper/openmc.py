@@ -580,12 +580,15 @@ class OpenMCStatePoint:
                 cell_filter = tally.find_filter(openmc.CellFilter)
                 if particle_filter and cell_filter:
                     if photon_cell_filter == cell_filter:
-                        if "electron" or "positron" in particle_filter.bins:
+                        if (
+                            "electron" in particle_filter.bins
+                            or "positron" in particle_filter.bins
+                        ):
                             tally_df = self._get_tally_data(tally)
                             heating_tallies_df[id]["mean"] += tally_df["mean"]
                             heating_tallies_df[id]["std. dev."] = (
                                 heating_tallies_df[id]["std. dev."].pow(2)
-                                + tally_df["std. dev."].pow(2)
+                                 tally_df["std. dev."].pow(2)
                             ).pow(0.5)
         return heating_tallies_df
 

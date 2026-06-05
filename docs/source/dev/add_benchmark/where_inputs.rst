@@ -77,9 +77,9 @@ OpenMC
 .. note:: 
   If the benchmark contains total heating tallies, total heating can be obtained when a heating score is recorded and
   no ``openmc.ParticleFilter`` is applied to the tally. This is equivalent to the ``+F6`` tally option in MCNP. If the 
-  benchmark contains a photon heating tally, the user should add 3 seperate tallies for the same ``openmc.CellFilter``, with 
+  benchmark contains a photon heating tally, the user should add 3 separate tallies for the same ``openmc.CellFilter``, with 
   ``openmc.ParticleFilter`` values set to "photon", "positron" and "electron" respectively. JADE will automatically combine 
-  these tallies together, to produce an equivalent repsonse to the MCNP photon tally.
+  these tallies together, to produce an equivalent response to the MCNP photon tally.
 
 
 Serpent

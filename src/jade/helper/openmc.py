@@ -588,7 +588,7 @@ class OpenMCStatePoint:
                             heating_tallies_df[id]["mean"] += tally_df["mean"]
                             heating_tallies_df[id]["std. dev."] = (
                                 heating_tallies_df[id]["std. dev."].pow(2)
-                                 tally_df["std. dev."].pow(2)
+                                + tally_df["std. dev."].pow(2)
                             ).pow(0.5)
         return heating_tallies_df
 

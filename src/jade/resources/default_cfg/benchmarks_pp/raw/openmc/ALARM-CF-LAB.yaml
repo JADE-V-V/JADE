@@ -1,0 +1,75 @@
+Total neutron flux:
+  concat_option: no_action
+  14: [['volume',{}]]
+# 
+Neutron spectra (pos 1):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [601]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+#
+Neutron spectra (pos 2):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [602]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+#
+Neutron spectra (pos 3):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [603]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+#
+Neutron spectra (pos 4):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [604]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+#
+Neutron spectra (pos 5):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [605]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+#
+Neutron spectra (pos 6):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [606]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+#
+Neutron spectra (pos 7):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [607]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+#
+Neutron spectra (pos 8):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [608]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+#
+Neutron spectra (pos 9):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [609]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+#
+Neutron spectra (pos 10):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [610]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+#
+Count rates 2 inches:
+  concat_option: no_action
+  24: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['volume',{}]]
+#
+Count rates 3 inches:
+  concat_option: no_action
+  34: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['volume',{}]]
+#
+Count rates 5 inches:
+  concat_option: no_action
+  44: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['volume',{}]]
+#
+Count rates 5 inches (without Cd):
+  concat_option: no_action
+  54: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['volume',{}]]
+#
+Count rates 8 inches:
+  concat_option: no_action
+  64: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['volume',{}]]
+#
+Count rates 10 inches:
+  concat_option: no_action
+  74: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['volume',{}]]
+#
+Count rates 12 inches:
+  concat_option: no_action
+  84: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['volume',{}]]
+#
+1 MeV Si equivalent fluence:
+  concat_option: no_action
+  94: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['volume',{}]]

@@ -4,43 +4,43 @@ Total neutron flux:
 # 
 Neutron spectra (pos 1):
   concat_option: no_action
-  4: [['select_subset', {'column': 'Cells', 'values': [601]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+  4: [['select_subset', {'column': 'Cells', 'values': [601]}], ['delete_cols', {'cols': ['Cells', 'energy low [eV]']}], ['volume',{}]]
 #
 Neutron spectra (pos 2):
   concat_option: no_action
-  4: [['select_subset', {'column': 'Cells', 'values': [602]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+  4: [['select_subset', {'column': 'Cells', 'values': [602]}], ['delete_cols', {'cols': ['Cells', 'energy low [eV]']}], ['volume',{}],['format_decimals', {'decimals':{'Energy':10}}]]
 #
 Neutron spectra (pos 3):
   concat_option: no_action
-  4: [['select_subset', {'column': 'Cells', 'values': [603]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+  4: [['select_subset', {'column': 'Cells', 'values': [603]}], ['delete_cols', {'cols': ['Cells', 'energy low [eV]']}], ['volume',{}],['format_decimals', {'decimals':{'Energy':10}}]]
 #
 Neutron spectra (pos 4):
   concat_option: no_action
-  4: [['select_subset', {'column': 'Cells', 'values': [604]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+  4: [['select_subset', {'column': 'Cells', 'values': [604]}], ['delete_cols', {'cols': ['Cells', 'energy low [eV]']}], ['volume',{}],['format_decimals', {'decimals':{'Energy':10}}]]
 #
 Neutron spectra (pos 5):
   concat_option: no_action
-  4: [['select_subset', {'column': 'Cells', 'values': [605]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+  4: [['select_subset', {'column': 'Cells', 'values': [605]}], ['delete_cols', {'cols': ['Cells', 'energy low [eV]']}], ['volume',{}],['format_decimals', {'decimals':{'Energy':10}}]]
 #
 Neutron spectra (pos 6):
   concat_option: no_action
-  4: [['select_subset', {'column': 'Cells', 'values': [606]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+  4: [['select_subset', {'column': 'Cells', 'values': [606]}], ['delete_cols', {'cols': ['Cells', 'energy low [eV]']}], ['volume',{}],['format_decimals', {'decimals':{'Energy':10}}]]
 #
 Neutron spectra (pos 7):
   concat_option: no_action
-  4: [['select_subset', {'column': 'Cells', 'values': [607]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+  4: [['select_subset', {'column': 'Cells', 'values': [607]}], ['delete_cols', {'cols': ['Cells', 'energy low [eV]']}], ['volume',{}],['format_decimals', {'decimals':{'Energy':10}}]]
 #
 Neutron spectra (pos 8):
   concat_option: no_action
-  4: [['select_subset', {'column': 'Cells', 'values': [608]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+  4: [['select_subset', {'column': 'Cells', 'values': [608]}], ['delete_cols', {'cols': ['Cells', 'energy low [eV]']}], ['volume',{}],['format_decimals', {'decimals':{'Energy':10}}]]
 #
 Neutron spectra (pos 9):
   concat_option: no_action
-  4: [['select_subset', {'column': 'Cells', 'values': [609]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+  4: [['select_subset', {'column': 'Cells', 'values': [609]}], ['delete_cols', {'cols': ['Cells', 'energy low [eV]']}], ['volume',{}],['format_decimals', {'decimals':{'Energy':10}}]]
 #
 Neutron spectra (pos 10):
   concat_option: no_action
-  4: [['select_subset', {'column': 'Cells', 'values': [610]}], ['delete_cols', {'cols': ['Cells']}], ['volume',{}]]
+  4: [['select_subset', {'column': 'Cells', 'values': [610]}], ['delete_cols', {'cols': ['Cells', 'energy low [eV]']}], ['volume',{}],['format_decimals', {'decimals':{'Energy':10}}]]
 #
 Count rates 2 inches:
   concat_option: no_action

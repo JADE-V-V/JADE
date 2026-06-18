@@ -4,7 +4,7 @@ Total neutron flux:
 # 
 Neutron spectra (pos 1):
   concat_option: no_action
-  4: [['select_subset', {'column': 'Cells', 'values': [601]}], ['delete_cols', {'cols': ['Cells', 'energy low [eV]']}], ['volume',{}]]
+  4: [['select_subset', {'column': 'Cells', 'values': [601]}], ['delete_cols', {'cols': ['Cells', 'energy low [eV]']}], ['volume',{}],['format_decimals', {'decimals':{'Energy':10}}]]
 #
 Neutron spectra (pos 2):
   concat_option: no_action

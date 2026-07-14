@@ -3,5 +3,7 @@
     "benchmark_version": "1.0",
     "jade_run_version": "3.1.0",
     "library": "FENDL 3.2c",
-    "code": "mcnp"
+    "code": "mcnp",
+    "jade_version": "4.1.1.dev267+g79ff10d31",
+    "code_version": "6.2"
 }

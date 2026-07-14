@@ -557,6 +557,7 @@ class TestRawProcessor:
                 processor = RawProcessor(cfg, subfolder, path)
                 processor.process_raw_data()
 
+    @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC not available")
     def test_ALARM_CF_LAB_openmc(self, tmpdir):
         with as_file(RAW_CFG_FILES_OPENMC.joinpath("ALARM-CF-LAB.yaml")) as f:
             cfg = ConfigRawProcessor.from_yaml(f)

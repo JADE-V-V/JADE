@@ -325,3 +325,12 @@ class TestExcelProcessor:
         codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c")]
         processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
         processor.process()
+
+    def test_ALARM_CF_LAB(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/ALARM-CF-LAB.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c"), ("openmc", "FENDL 3.2b")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()

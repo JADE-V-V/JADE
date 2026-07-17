@@ -46,7 +46,6 @@
   change_col_names: {'Cells': 'Detector position', 'Case': 'Labyrinth case'}
   conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
 #
-#
 8" Count Rates(%):
   results:
     - Count rates 8 inches
@@ -58,6 +57,7 @@
   add_error: True
   change_col_names: {'Cells': 'Detector position', 'Case': 'Labyrinth case'}
   conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+#
 10" Count Rates(%):
   results:
     - Count rates 10 inches

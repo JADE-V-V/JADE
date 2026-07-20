@@ -38,3 +38,5 @@ Experimental Benchmarks
 .. include:: benchdesc/rcr/rcr-fe+ni.rst
 
 .. include:: benchdesc/ISIS-800MeV-C.rst
+
+.. include:: benchdesc/alarm-cf-lab.rst

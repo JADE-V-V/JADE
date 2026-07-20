@@ -486,7 +486,7 @@ class BenchmarkRun:
             self.simulation_root, codelib_folder, self.config.name
         )
         flag_datapath = False
-        for single_run_folder in os.listdir(benchmark_root):
+        for single_run_folder in sorted(os.listdir(benchmark_root)):
             single_run_root = Path(benchmark_root, single_run_folder)
             # check if the simulation has been completed
             flag_run = CODE_CHECKERS[code].check_success(os.listdir(single_run_root))

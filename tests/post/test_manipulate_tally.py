@@ -38,14 +38,33 @@ def test_by_lethargy():
     df = pd.DataFrame(data)
     result = by_lethargy(df.copy())
     assert (df["Energy"] == result["Energy"]).all()
-    assert (df["Value"] != result["Value"]).all()
+    assert (
+        result["Value"]
+        == [10 / np.log(1 / 1e-10), 20 / np.log(2 / 1), 30 / np.log(3 / 2)]
+    ).all()
+
+    data = {"Energy": ["0.1 - 1", "1.1 - 2", "2.3 - 3"], "Value": [10, 20, 30]}
+    df = pd.DataFrame(data)
+    result = by_lethargy(df.copy())
+    assert (df["Energy"] == result["Energy"]).all()
+    assert (
+        result["Value"]
+        == [10 / np.log(1 / 0.1), 20 / np.log(2 / 1.1), 30 / np.log(3 / 2.3)]
+    ).all()
 
 
 def test_by_energy():
     data = {"Energy": [15, 20, 35], "Value": [10, 20, 30]}
     df = pd.DataFrame(data)
     result = by_energy(df.copy())
-    assert (df["Value"] != result["Value"]).all()
+    assert (
+        result["Value"] == [10 / (15 - 1e-10), 20 / (20 - 15), 30 / (35 - 20)]
+    ).all()
+
+    data = {"Energy": ["10 - 15", "18 - 25", "25 - 35"], "Value": [10, 20, 30]}
+    df = pd.DataFrame(data)
+    result = by_energy(df.copy())
+    assert (result["Value"] == [10 / (15 - 10), 20 / (25 - 18), 30 / (35 - 25)]).all()
 
 
 def test_by_bin():

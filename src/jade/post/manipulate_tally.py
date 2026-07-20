@@ -17,13 +17,25 @@ def by_lethargy(tally: pd.DataFrame) -> pd.DataFrame:
     """Convert values by energy into values by unit lethargy."""
     # Energies for lethargy computation
     energies = tally["Energy"].values
-    flux = tally["Value"].values
+    flux = tally["Value"].values.astype(float)
 
-    ergs = [1e-10]  # Additional "zero" energy for lethargy computation
-    ergs.extend(energies.tolist())
-    ergs = np.array(ergs)
-
-    flux = flux / np.log(ergs[1:] / ergs[:-1])
+    lower_bound = 1e-10  # Additional "zero" bin
+    for i, e in enumerate(energies):
+        if (
+            isinstance(e, str) and " - " in e
+        ):  # if energy column read as string, extract energy bin bounds
+            lower_bound, upper_bound = map(
+                float, e.split(" - ")
+            )  # a bin might not be populated, read explicitly lower and upper bounds
+            flux[i] = flux[i] / np.log(
+                upper_bound / lower_bound
+            )  # normalize by lethargy
+        else:
+            upper_bound = float(e)  # read energy value as bin upper bound
+            flux[i] = flux[i] / np.log(
+                upper_bound / lower_bound
+            )  # normalize by lethargy
+            lower_bound = upper_bound  # assign lower bound for next iteration
 
     tally["Value"] = flux
     return tally
@@ -37,13 +49,27 @@ def by_energy(tally: pd.DataFrame) -> pd.DataFrame:
 def divide_by_bin(tally: pd.DataFrame, column_name: str) -> pd.DataFrame:
     """Convert values by time into values by unit time."""
     bins = tally[column_name].values
-    flux = tally["Value"].values
+    flux = tally["Value"].values.astype(float)
+    energy = column_name == "Energy"
 
-    bin_intervals = [1e-10]  # Additional "zero" bin
-    bin_intervals.extend(bins.tolist())
-    bin_intervals = np.array(bin_intervals)
+    lower_bound = 1e-10  # Additional "zero" bin
+    for i, b in enumerate(bins):
+        if (
+            isinstance(b, str) and " - " in b and energy
+        ):  # if energy column read as string, extract energy bin bounds
+            lower_bound, upper_bound = map(
+                float, b.split(" - ")
+            )  # a bin might not be populated, read explicitly lower and upper bounds
+            flux[i] = flux[i] / np.abs(
+                upper_bound - lower_bound
+            )  # normalize by bin width
+        else:
+            upper_bound = float(b)  # read energy value as bin upper bound
+            flux[i] = flux[i] / np.abs(
+                upper_bound - lower_bound
+            )  # normalize by bin width
+            lower_bound = upper_bound  # assign lower bound for next iteration
 
-    flux = flux / np.abs((bin_intervals[1:] - bin_intervals[:-1]))
     tally["Value"] = flux
     return tally
 

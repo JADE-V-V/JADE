@@ -115,8 +115,11 @@ def condense_groups(
         grouped["Error"] = grouped["abs err"] / grouped["Value"]
     del grouped["abs err"]
     # drop zero values
-    grouped = grouped[grouped["Value"] != 0]
-    return grouped.reset_index()
+    grouped = grouped[grouped["Value"] != 0].reset_index()
+    grouped[["Lower energy", "Upper energy"]] = (
+        grouped["Energy"].str.split(" - ", expand=True).astype(float)
+    )
+    return grouped
 
 
 def scale(

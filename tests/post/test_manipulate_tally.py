@@ -189,6 +189,8 @@ def test_condense_groups():
         val += df.iloc[i]["Value"]
     assert pytest.approx(result["Error"][0]) == math.sqrt(err) / val
     assert pytest.approx(result["Error"][1]) == 0.1
+    assert (result["Lower energy"] == [0, 3.1]).all()
+    assert (result["Upper energy"] == [3.1, 10]).all()
 
     result = condense_groups(df.copy(), bins=[0, 1, 3])
     assert len(result) == 1

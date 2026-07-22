@@ -88,11 +88,9 @@ The currently supported modifiers are:
 * ``scale``: the tally is scaled by a factor. The *factor* is expected as key argument and the provided value can 
   be either a float, and integer or a list (of floats or integers). 
 * ``lethargy``: a neutron flux tally is expected and converted to a neutron flux per unit lethargy.
-  No arguments are expected. If the *result* has been previously condensed into coarse bins with the ``condense_groups`` modifier,
-  the columns *Lower energy* and *Upper energy*, storing the lower and upper coarse bin edges respectively, are expected to be present in the *result*.
+  No arguments are expected.
 * ``by_energy``: a flux tally is expected and converted to a flux per unit energy.
-  No arguments are expected. If the *result* has been previously condensed into coarse bins with the ``condense_groups`` modifier,
-  the columns *Lower energy* and *Upper energy*, storing the lower and upper coarse bin edges respectively, are expected to be present in the *result*.
+  No arguments are expected.
 * ``by_bin``: a flux tally is expected and converted to a flux per unit bin.
   The *column_name* is expected as key argument and the provided value has to be the name of the binning column in 
   the form of a string.
@@ -102,8 +100,6 @@ The currently supported modifiers are:
   
   * *bins*: a list of floats representing the new bin edges.
   * *group_column*: the name of the binning column (e.g. 'Energy').
-  If a ``lethargy`` or ``by_energy`` modifier is applied after ``condense_groups``, the columns *Lower energy* and *Upper energy*, storing the lower and upper coarse bin 
-  edges respectively, must be added to the *result* before the normalization.
 * ``replace``: replaces a column values based on a dictionary. Two keyargs needs to be passed:
 
   * *column*: the name of the column to be replaced.

@@ -749,14 +749,12 @@ class DoseContributionPlot(Plot):
         isotopes.sort()
 
         for idx, isotope in enumerate(isotopes):
-            if int(isotope) == 0:
+            # we may need to remove the 0 channel of D1S
+            if isotope == "0.0":
                 continue
-            for i, (codelib, df) in enumerate(self.data):
-                if i == 0:
-                    _, label = LM.get_zaidname(str(abs(isotope)))
-                else:
-                    label = None
 
+            # normal execution
+            for i, (codelib, df) in enumerate(self.data):
                 tot_dose = df.groupby("Time", sort=False).sum()["Value"]
                 try:
                     y = df.loc[isotope].set_index("Time")["Value"] / tot_dose * 100
@@ -769,14 +767,14 @@ class DoseContributionPlot(Plot):
                     y,
                     color=COLORS[idx],
                     marker=MARKERS[idx],
-                    label=label,
+                    label=isotope,
                     linewidth=0.5,
                 )
+                axes[i].set_title(codelib)
 
         for i, ax in enumerate(axes):
             # --- Plot details ---
             # ax details
-            ax.set_title(codelib)
             ax.set_ylabel("SDDR [%]")
             ax.tick_params(which="major", width=1.00, length=5)
             ax.tick_params(axis="y", which="minor", width=0.75, length=2.50)

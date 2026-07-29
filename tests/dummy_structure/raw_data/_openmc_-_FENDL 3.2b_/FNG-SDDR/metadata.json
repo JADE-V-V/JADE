@@ -2,8 +2,8 @@
     "benchmark_name": "FNG-SDDR",
     "benchmark_version": "1.0",
     "jade_run_version": "3.0.1",
-    "library": "99c-32c",
-    "code": "d1s",
+    "library": "FENDL 3.2b",
+    "code": "openmc",
     "jade_version": "4.4.1.dev13+ge27beedd8",
-    "code_version": null
+    "code_version": "0.15.3"
 }

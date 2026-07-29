@@ -302,12 +302,14 @@ class OpenMCSimOutput(AbstractSimOutput):
         self.output = omc.OpenMCStatePoint(statefile, volfile)
         self._tally_numbers = self.output.tally_numbers
         self._tally_comments = self.output.tally_comments
-        self._tallydata, self._totalbin = self._process_tally()
-        self.stat_checks = None
+
         if irr_scenario:
             self.irr_scenario = IrradiationScenario.from_ascii(irr_scenario)
         else:
             self.irr_scenario = None
+
+        self._tallydata, self._totalbin = self._process_tally()
+        self.stat_checks = None
 
     @property
     def tally_numbers(self) -> list[int]:
@@ -486,7 +488,7 @@ class OpenMCSimOutput(AbstractSimOutput):
 
                 # Get the nuclides
                 nuclides = []
-                for nuclide in df["parentnuclide"]:
+                for nuclide in df.index:
                     # Convert OpenMC metastables to F4Enix convention
                     nuclide = nuclide.replace("_m1", "m").replace("_m2", "m")
                     nuclides.append(Nuclide.from_formula(nuclide))
@@ -516,7 +518,7 @@ class OpenMCSimOutput(AbstractSimOutput):
             logger.warning(
                 "No SDDR tallies found even if irradiation scenario is provided."
             )
-        return data
+        return tally_data
 
 
 

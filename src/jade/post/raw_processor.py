@@ -4,7 +4,7 @@ import json
 import logging
 import os
 from pathlib import Path
-
+import pandas as pd
 from jade.config.raw_config import ConfigRawProcessor, TallyModOption
 from jade.helper.aux_functions import PathLike, get_jade_version
 from jade.helper.constants import CODE
@@ -12,6 +12,7 @@ from jade.post.manipulate_tally import CONCAT_FUNCTIONS, MOD_FUNCTIONS
 from jade.post.sim_output import MCNPSimOutput, OpenMCSimOutput, OpenMCSphereSimOutput
 
 logger = logging.getLogger(__name__)
+pd.set_option('future.no_silent_downcasting', True)
 
 
 class RawProcessor:

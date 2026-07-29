@@ -1,0 +1,20 @@
+# FNG campaign 1
+
+IRRADIATION
+
+# Time / Unit / Intensity
+19440 s 2.32e10  
+61680 s    0
+32940 s 2.87e10
+54840 s    0
+15720 s 1.90e10
+6360 s    0  
+8940 s 1.36e10
+
+COOLING
+# absolute time after irradiation / unit
+86400  s
+604800 s
+1296000 s
+2592000 s
+5184000 s

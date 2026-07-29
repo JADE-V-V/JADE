@@ -1,0 +1,44 @@
+ ===========================>     TALLY 100     <===========================
+
+ Cell 651
+   Energy Function f([1.0e+04, ..., 1.0e+07]) = [4.9e-02, ..., 2.4e+01]
+     Particle: photon
+       Parent Nuclide Sc48
+         Total Material
+           Flux                                 5.3032e-08 +/- 4.69681e-08
+       Parent Nuclide Cr51
+         Total Material
+           Flux                                 8.99669e-07 +/- 1.09441e-07
+       Parent Nuclide Mn54
+         Total Material
+           Flux                                 1.379e-05 +/- 9.12007e-07
+       Parent Nuclide Mn56
+         Total Material
+           Flux                                 0.000131065 +/- 3.58315e-06
+       Parent Nuclide Fe59
+         Total Material
+           Flux                                 5.22143e-07 +/- 8.29225e-08
+       Parent Nuclide Co57
+         Total Material
+           Flux                                 0 +/- 0
+       Parent Nuclide Co58
+         Total Material
+           Flux                                 1.89066e-05 +/- 8.90777e-07
+       Parent Nuclide Co60
+         Total Material
+           Flux                                 4.47558e-05 +/- 2.67439e-06
+       Parent Nuclide Ni57
+         Total Material
+           Flux                                 2.81868e-06 +/- 4.79197e-07
+       Parent Nuclide Cu64
+         Total Material
+           Flux                                 1.51995e-07 +/- 4.85284e-08
+       Parent Nuclide Nb92
+         Total Material
+           Flux                                 1.9724e-07 +/- 8.52478e-08
+       Parent Nuclide Nb96
+         Total Material
+           Flux                                 5.16343e-08 +/- 1.24767e-08
+       Parent Nuclide Mo99
+         Total Material
+           Flux                                 7.89246e-07 +/- 1.76328e-07

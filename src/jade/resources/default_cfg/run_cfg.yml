@@ -116,7 +116,7 @@ FNG-SDDR:
     openmc: []
     serpent: []
   custom_input: 
-  nps: 1e8
+  nps: 1e9
   description: Frascati Neutron Generator SDDR experiment
   only_input: false
 #

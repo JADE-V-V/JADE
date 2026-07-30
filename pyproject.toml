@@ -22,7 +22,7 @@ dependencies = [
     "matplotlib",
     "aspose-words",
     "requests",
-    "f4enix >= 0.19.0",
+    "f4enix >= 0.21.0",
     "pyyaml",
     "seaborn",
     "python-gitlab"

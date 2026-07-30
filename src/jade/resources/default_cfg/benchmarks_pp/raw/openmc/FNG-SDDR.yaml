@@ -1,0 +1,59 @@
+# Some useful aliases to avoid duplication
+_times: &times1
+  86400s: 86400
+  604800s: 604800
+  1296000s: 1296000
+  2592000s: 2592000
+  5184000s: 5184000
+# --------------------------------------------------------
+_times2: &times2
+  4380s: 4380
+  6180s: 6180
+  7488s: 7488
+  11580s: 11580
+  17280s: 17280
+  24480s: 24480
+  34080s: 34080
+  45780s: 45780
+  57240s: 57240
+  72550s: 72550
+  90720s: 90720
+  132000s: 132000
+  212400s: 212400
+  345600s: 345600
+  479300s: 479300
+  708500s: 708500
+  1050000s: 1050000
+  1670000s: 1670000
+  1710000s: 1710000
+
+# --------------------------------------------------------
+SDDR in air irr. 1:
+  concat_option: no_action
+  apply_to: FNG-SDDR_1
+  100:
+    - [replace, {'column': 'Time', 'values': *times1}]
+    - [groupby, {by: 'Time', 'action': 'sum'}]
+    - [scale, {'factor': 1.25300582110546e-10}] # this includes the volume and conversion to Sv/h
+SDDR in air (daughters) irr. 1:
+  apply_to: FNG-SDDR_1
+  concat_option: no_action
+  100: 
+    - [replace, {'column': 'Time', 'values': *times1}]
+    - [scale, {'factor': 1.25300582110546e-10}] # this includes the volume and conversion to Sv/h
+
+
+SDDR in air irr. 2:
+  concat_option: no_action
+  apply_to: FNG-SDDR_2
+  100:
+    - [replace, {'column': 'Time', 'values': *times2}]
+    - [groupby, {by: 'Time', 'action': 'sum'}]
+    - [scale, {'factor': 4.709113134961974e-11}] # this includes the volume and conversion to Sv/h
+SDDR in air (daughters) irr. 2:
+  apply_to: FNG-SDDR_2
+  concat_option: no_action
+  100: 
+    - [replace, {'column': 'Time', 'values': *times2}]
+    - [scale, {'factor': 4.709113134961974e-11}] # this includes the volume and conversion to Sv/h
+

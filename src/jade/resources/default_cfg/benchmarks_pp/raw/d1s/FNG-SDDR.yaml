@@ -26,6 +26,45 @@ _times2: &times2
   17: 1050000
   18: 1670000
   19: 1710000
+# --------------------------------------------------------
+_daughters: &daughters
+  21048.: Sc48
+  24051.: Cr51
+  25056.: Mn56
+  25054.: Mn54
+  26059.: Fe59
+  27060.: Co60
+  27058.: Co58
+  27057.: Co57
+  28057.: Ni57
+  29064.: Cu64
+  41092.: Nb92m
+  41096.: Nb96
+  42099.: Mo99
+
+_parents: &parents
+  -23051.:   V51
+  -24050.:  Cr50
+  -24052.:  Cr52
+  -25055.:  Mn55
+  -26054.:  Fe54
+  -26056.:  Fe56
+  -26057.:  Fe57
+  -26058.:  Fe58
+  -27059.:  Co59
+  -28058.:  Ni58
+  -28060.:  Ni60
+  -28061.:  Ni61
+  -28062.:  Ni62
+  -29063.:  Cu63
+  -29065.:  Cu65
+  -41093.:  Nb93
+  -42092.:  Mo92
+  -42096.:  Mo96
+  -42098.:  Mo98
+  -42100.: Mo100
+
+  
 
 # --------------------------------------------------------
 SDDR in air irr. 1:
@@ -38,11 +77,13 @@ SDDR in air (daughters) irr. 1:
   concat_option: no_action
   14: 
   - [replace, {'column': 'Time', 'values': *times1}]
+  - [replace, {'column': 'User', 'values': *daughters}]
 SDDR in air (parents) irr. 1:
   apply_to: FNG-SDDR_1
   concat_option: no_action
   24: 
   - [replace, {'column': 'Time', 'values': *times1}]
+  - [replace, {'column': 'User', 'values': *parents}]
 
 SDDR in air irr. 2:
   concat_option: no_action
@@ -54,9 +95,11 @@ SDDR in air (daughters) irr. 2:
   concat_option: no_action
   14: 
   - [replace, {'column': 'Time', 'values': *times2}]
+  - [replace, {'column': 'User', 'values': *daughters}]
 SDDR in air (parents) irr. 2:
   apply_to: FNG-SDDR_2
   concat_option: no_action
   24: 
   - [replace, {'column': 'Time', 'values': *times2}]
+  - [replace, {'column': 'User', 'values': *parents}]
 

@@ -10,6 +10,8 @@ import pandas as pd
 from f4enix.output.MCNPoutput import Output
 from f4enix.output.mctal import Mctal, Tally
 from f4enix.output.meshtal import Meshtal
+from f4enix.core.irradiation import TCF_Computer
+from f4enix.core.irradiation import IrradiationScenario, Nuclide
 
 from jade.helper.__optionals__ import OMC_AVAIL
 
@@ -295,11 +297,17 @@ class OpenMCSimOutput(AbstractSimOutput):
         None.
 
         """
-        _, statefile, volfile = self.retrieve_file(sim_folder)
+        _, statefile, volfile, irr_scenario = self.retrieve_file(sim_folder)
 
         self.output = omc.OpenMCStatePoint(statefile, volfile)
         self._tally_numbers = self.output.tally_numbers
         self._tally_comments = self.output.tally_comments
+
+        if irr_scenario:
+            self.irr_scenario = IrradiationScenario.from_ascii(irr_scenario)
+        else:
+            self.irr_scenario = None
+
         self._tallydata, self._totalbin = self._process_tally()
         self.stat_checks = None
 
@@ -335,6 +343,8 @@ class OpenMCSimOutput(AbstractSimOutput):
                 file2 = file_name
             elif file_name == "volumes.json":
                 file3 = file_name
+            elif file_name.endswith(".irr"):
+                file4 = file_name
 
         if file1 is None or file2 is None:
             raise FileNotFoundError(
@@ -344,8 +354,9 @@ class OpenMCSimOutput(AbstractSimOutput):
         file1 = os.path.join(results_path, file1)
         file2 = os.path.join(results_path, file2)
         file3 = os.path.join(results_path, file3) if file3 else None
+        file4 = os.path.join(results_path, file4) if file4 else None
 
-        return file1, file2, file3
+        return file1, file2, file3, file4
 
     @staticmethod
     def is_successfully_simulated(files: list[str]) -> bool:
@@ -458,10 +469,57 @@ class OpenMCSimOutput(AbstractSimOutput):
         """
         tallies = self.output.tallies_to_dataframes()
         tallydata, totalbin = self._create_dataframes(tallies)
+        if self.irr_scenario:
+            tallydata = self._apply_tcf(tallydata)
         return tallydata, totalbin
 
     def _read_code_version(self) -> str | None:
         return self.output.version
+
+    def _apply_tcf(self, data: dict[int, pd.DataFrame]) -> dict[int, pd.DataFrame]:
+        """Use F4Enix to compute time correction factors and apply them to D1S
+        calculations."""
+        found = False
+        tally_data = {}
+        for key, df in data.items():
+            if "parentnuclide" in df.columns:
+                found = True
+                df = df.set_index("parentnuclide")
+
+                # Get the nuclides
+                nuclides = []
+                for nuclide in df.index:
+                    # Convert OpenMC metastables to F4Enix convention
+                    nuclide = nuclide.replace("_m1", "m").replace("_m2", "m")
+                    nuclides.append(Nuclide.from_formula(nuclide))
+
+                assert self.irr_scenario is not None
+                tcf_results = TCF_Computer().compute_correction_factors(
+                    self.irr_scenario, nuclides, norm=1
+                )
+                tcf = pd.DataFrame(tcf_results)
+                tcf.columns = [nuclide.write_to_formula() for nuclide in nuclides]
+                tcf.index = self.irr_scenario.cooling_labels
+                tcf = tcf.T
+
+                tcf = tcf.mul(df["Value"], axis=0)
+                tcf['Error'] = df['Error']  # Keep the original error column
+
+                # and now melt it
+                df = tcf.reset_index().melt(
+                    id_vars=['index', 'Error'],
+                    var_name='Time',
+                    value_name='Value')
+                df = df.rename(columns={'index': 'User'})
+
+            tally_data[key] = df
+
+        if not found:
+            logger.warning(
+                "No SDDR tallies found even if irradiation scenario is provided."
+            )
+        return tally_data
+
 
 
 class OpenMCSphereSimOutput(OpenMCSimOutput):
@@ -482,7 +540,7 @@ class OpenMCSphereSimOutput(OpenMCSimOutput):
         None.
 
         """
-        _, statefile, volfile = self.retrieve_file(sim_folder)
+        _, statefile, volfile, _ = self.retrieve_file(sim_folder)
         
         # Retrieving atomic density for normalisation of the DPA, He and T production tallies
         self.input = omc.OpenMCInputFiles(sim_folder)

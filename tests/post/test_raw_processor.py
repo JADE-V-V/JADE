@@ -424,6 +424,15 @@ class TestRawProcessor:
             processor = RawProcessor(cfg, folder, tmpdir)
             processor.process_raw_data()
 
+    @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC not available")
+    def test_FNG_SDDR_openmc(self, tmpdir):
+        with as_file(RAW_CFG_FILES_OPENMC.joinpath("FNG-SDDR.yaml")) as f:
+            cfg = ConfigRawProcessor.from_yaml(f)
+
+        for folder in Path(SIMULATION_FOLDER, "_openmc_-_FENDL 3.2b_", "FNG-SDDR").iterdir():
+            processor = RawProcessor(cfg, folder, tmpdir)
+            processor.process_raw_data()
+
     def test_TUD_Fe(self, tmpdir):
         with as_file(RAW_CFG_FILES_MCNP.joinpath("TUD-Fe.yaml")) as f:
             cfg = ConfigRawProcessor.from_yaml(f)

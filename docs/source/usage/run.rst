@@ -92,6 +92,10 @@ button.
     when the run is started. This is the file to be overridden and it is also the file that 
     is loaded when the run GUI is opened. That is, settings of the previous run remain saved.
 
+.. important::
+    If you plan to run Direct 1 Step (D1S) calculations using OpenMC, make sure to
+    make available the ``OPENMC_CHAIN_FILE`` environment variable to your system.
+    If running in HPC, this can be added to the job submission template.
 
 Run the benchmarks
 ==================

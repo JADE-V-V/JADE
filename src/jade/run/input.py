@@ -243,6 +243,15 @@ class InputOpenMC(Input):
         self.inp.write(output_folder)
         # Copy tally_factors.yaml if present
         tallies_yaml = os.path.join(self.template_folder, "tally_factors.yaml")
+        # look for an irr file in the template folder, if it exists, copy it to the output folder
+        irr_file = None
+        for file in os.listdir(self.template_folder):
+            if file.endswith(".irr"):
+                irr_file = os.path.join(self.template_folder, file)
+                break
+        if irr_file is not None:
+            outfile = os.path.join(output_folder, os.path.basename(irr_file))
+            shutil.copyfile(irr_file, outfile)
         if os.path.exists(tallies_yaml):
             outfile = os.path.join(output_folder, "tally_factors.yaml")
             shutil.copyfile(tallies_yaml, outfile)

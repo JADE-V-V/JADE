@@ -9,7 +9,7 @@ import pytest
 
 from jade.config.atlas_config import PlotConfig
 from jade.helper.errors import PlotIndexMismatchError
-from jade.post.plotter import BarPlot, BinnedPlot, CEPlot, WavesPlot
+from jade.post.plotter import BarPlot, BinnedPlot, CEPlot, ScatterPlot, WavesPlot
 
 
 class TestBinnedPlot:
@@ -251,3 +251,62 @@ class TestBarPlot:
         plot = BarPlot(cfg, data)
         output = plot.plot()
         output[0][0].savefig(tmpdir.join("test.png"), bbox_inches="tight")
+
+
+class TestScatterPlot:
+    def _make_cfg(self, **plot_args):
+        return PlotConfig(
+            name="test",
+            results=["dummy"],
+            plot_type=None,
+            title="Scatter test",
+            x_label="Case",
+            y_labels=["Value"],
+            x="Case",
+            y="Value",
+            plot_args=plot_args if plot_args else None,
+        )
+
+    def _make_data(self, n_libs=3, n_cases=10):
+        cases = [f"case_{i}" for i in range(n_cases)]
+        data = []
+        for i in range(n_libs):
+            df = pd.DataFrame(
+                {
+                    "Case": cases,
+                    "Value": np.random.rand(n_cases) + 0.5,
+                    "Error": np.random.rand(n_cases) * 0.1,
+                }
+            )
+            data.append((f"lib{i}", df))
+        return data
+
+    def test_plot_categorical(self, tmpdir):
+        cfg = self._make_cfg()
+        data = self._make_data()
+        plot = ScatterPlot(cfg, data)
+        output = plot.plot()
+        assert len(output) == 1
+        fig, axes = output[0]
+        assert len(axes) == 2
+        fig.savefig(tmpdir.join("test_scatter.png"), bbox_inches="tight")
+
+    def test_plot_numerical_with_ce_limits(self, tmpdir):
+        cfg = self._make_cfg(ce_limits=[0.5, 1.5])
+        n_cases = 10
+        data = []
+        for i in range(3):
+            df = pd.DataFrame(
+                {
+                    "Case": np.linspace(1, 10, n_cases),
+                    "Value": np.random.rand(n_cases) + 0.5,
+                    "Error": np.random.rand(n_cases) * 0.1,
+                }
+            )
+            data.append((f"lib{i}", df))
+        plot = ScatterPlot(cfg, data)
+        output = plot.plot()
+        assert len(output) == 1
+        fig, axes = output[0]
+        assert len(axes) == 2
+        fig.savefig(tmpdir.join("test_scatter_ce.png"), bbox_inches="tight")

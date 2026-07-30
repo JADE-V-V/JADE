@@ -989,6 +989,167 @@ class BarPlot(Plot):
         return fig, axes
 
 
+class ScatterPlot(Plot):
+    def _get_figure(self) -> tuple[Figure, list[Axes]]:
+        # Get optional args
+        if self.cfg.plot_args is not None:
+            ce_limits = self.cfg.plot_args.get("ce_limits", None)
+            rotate_ticks = self.cfg.plot_args.get("rotate_ticks", False)
+            shorten_x_name = self.cfg.plot_args.get("shorten_x_name", False)
+            xscale = self.cfg.plot_args.get("xscale", "linear")
+            yscale = self.cfg.plot_args.get("yscale", "linear")
+        else:
+            ce_limits = None
+            rotate_ticks = False
+            shorten_x_name = False
+            xscale = "linear"
+            yscale = "linear"
+
+        gridspec_kw = {"height_ratios": [3, 1], "hspace": 0.10}
+        fig, (ax_main, ax_ce) = plt.subplots(
+            nrows=2,
+            ncols=1,
+            sharex=True,
+            gridspec_kw=gridspec_kw,
+        )
+
+        # --- Configure axes ---
+        ax_main.set_ylabel(self.cfg.y_labels[0])
+        ax_main.set_yscale(yscale)
+        ax_main.set_xscale(xscale)
+
+        ax_ce.axhline(y=1, linestyle="--", color="black", linewidth=0.5)
+        ax_ce.set_ylabel("C/E")
+        if ce_limits:
+            ax_ce.set_ylim(bottom=ce_limits[0], top=ce_limits[1])
+            ax_ce.yaxis.set_major_locator(MultipleLocator(0.25))
+            ax_ce.yaxis.set_minor_locator(AutoMinorLocator(2))
+        else:
+            ax_ce.yaxis.set_major_locator(AutoLocator())
+            ax_ce.yaxis.set_minor_locator(AutoMinorLocator())
+
+        # --- Reference (experimental) data ---
+        ref_name, ref_df = self.data[0]
+        ref_df = ref_df.set_index(self.cfg.x)
+        val_ref = ref_df[self.cfg.y]
+        err_ref = ref_df["Error"].abs()
+        abs_err_ref = val_ref * err_ref
+
+        is_categorical = val_ref.index.dtype == object or val_ref.index.dtype == str
+        x_pos_ref = np.arange(len(val_ref)) if is_categorical else val_ref.index.values
+
+        ax_main.errorbar(
+            x_pos_ref,
+            val_ref.values,
+            yerr=abs_err_ref.values,
+            fmt=MARKERS[0],
+            color=COLORS[0],
+            label=ref_name,
+            markersize=5,
+            elinewidth=0.8,
+            capsize=3,
+        )
+
+        if is_categorical:
+            ax_main.set_xticks(x_pos_ref)
+            ax_main.set_xticklabels(val_ref.index)
+
+        # --- Computational data ---
+        for idx, (codelib, df) in enumerate(self.data[1:], start=1):
+            df = df.set_index(self.cfg.x)
+            if same_index(val_ref.index, df.index) is False:
+                raise PlotIndexMismatchError(val_ref.index, df.index, codelib)
+            df.index = val_ref.index
+
+            val_comp = df[self.cfg.y]
+            err_comp = df["Error"].abs()
+            abs_err_comp = val_comp * err_comp
+
+            x_pos_comp = (
+                np.arange(len(val_comp)) if is_categorical else val_comp.index.values
+            )
+
+            # Top axis: scatter points + error bars
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", category=UserWarning)
+                ax_main.errorbar(
+                    x_pos_comp,
+                    val_comp.values,
+                    yerr=abs_err_comp.values,
+                    fmt=MARKERS[idx],
+                    color=COLORS[idx],
+                    label=codelib,
+                    markersize=5,
+                    elinewidth=0.8,
+                    capsize=3,
+                    linestyle="none",
+                )
+
+            # C/E axis: ratio with propagated relative error
+            with np.errstate(divide="ignore", invalid="ignore"):
+                ce_vals = np.array(val_comp, dtype=float) / np.array(
+                    val_ref, dtype=float
+                )
+            ce_abs_err = np.sqrt(
+                np.array(err_ref, dtype=float) ** 2
+                + np.array(err_comp, dtype=float) ** 2
+            ) * np.abs(ce_vals)
+
+            if ce_limits:
+                _apply_CE_limits(
+                    ce_limits[0],
+                    ce_limits[1],
+                    ce_vals,
+                    x_pos_comp,
+                    ax_ce,
+                    idx,
+                    None,
+                )
+                # Overlay error bars on top of the CE limit scatter
+                norm_mask = (ce_vals >= ce_limits[0]) & (ce_vals <= ce_limits[1])
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore", category=UserWarning)
+                    ax_ce.errorbar(
+                        x_pos_comp[norm_mask],
+                        ce_vals[norm_mask],
+                        yerr=ce_abs_err[norm_mask],
+                        fmt="none",
+                        ecolor=COLORS[idx],
+                        elinewidth=0.8,
+                        capsize=3,
+                    )
+            else:
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore", category=UserWarning)
+                    ax_ce.errorbar(
+                        x_pos_comp,
+                        ce_vals,
+                        yerr=ce_abs_err,
+                        fmt=MARKERS[idx],
+                        color=COLORS[idx],
+                        markersize=5,
+                        elinewidth=0.8,
+                        capsize=3,
+                    )
+
+        # --- Legend and finishing touches ---
+        ax_main.legend(loc="best")
+
+        axes = [ax_main, ax_ce]
+        for ax in axes:
+            ax.grid(True, which="major", linewidth=0.50, alpha=0.5)
+            ax.grid(True, which="minor", linewidth=0.20, alpha=0.5)
+            ax.tick_params(which="major", width=1.00, length=5)
+            ax.tick_params(which="minor", width=0.75, length=2.50)
+
+        if rotate_ticks:
+            _rotate_ticks(ax_ce)
+        if shorten_x_name:
+            _shorten_x_name(ax_ce, shorten_x_name)
+
+        return fig, axes
+
+
 class PlotFactory:
     @staticmethod
     def create_plot(
@@ -1006,6 +1167,8 @@ class PlotFactory:
             return WavesPlot(plot_config, data)
         elif plot_config.plot_type == PlotType.BARPLOT:
             return BarPlot(plot_config, data)
+        elif plot_config.plot_type == PlotType.SCATTER:
+            return ScatterPlot(plot_config, data)
         else:
             raise NotImplementedError(
                 f"Plot type {plot_config.plot_type} not implemented"

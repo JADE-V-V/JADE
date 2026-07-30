@@ -329,3 +329,49 @@ These are the extra ``plot_args`` that this type of plot can accept:
   will split the name of the benchmark run on the '_' symbols and retain only the last N chunks
   where N is the specified *shorten_x_name* value.
 
+Scatter plot (scatter)
+----------------------
+
+A two-panel plot that compares experimental and computational values directly. The top panel shows all
+data series as scatter points with absolute uncertainty bars. The bottom panel shows the C/E ratio
+(computational / experimental) with propagated uncertainty bars and a reference line at 1.
+
+The first entry in the data list is treated as the experimental reference; all subsequent entries are
+computational libraries.
+
+The following is an example of scatter plot used for an activation foils benchmark.
+
+.. image:: /img/plot_gallery/scatter_example.png
+    :width: 800
+    :align: center
+
+This plot can be produced by the following YAML configuration:
+
+.. code-block:: yaml
+
+  Reaction rates:
+    results:
+      - Activation foils
+    plot_type: scatter
+    title: Reaction rates — Activation foils benchmark
+    x_label: Isotope
+    y_labels: 'Reaction rate [1/cm²/s]'
+    x: Case
+    y: Value
+    expand_runs: true
+    plot_args:
+      ce_limits: [0.5, 1.5]
+      rotate_ticks: true
+
+These are the extra ``plot_args`` that this type of plot can accept:
+
+* ``ce_limits``: define a minimum and maximum limit for the C/E panel. The first value is the y min limit
+  and the second is the y max limit. Triangles are plotted on the limit line for data that exceeds it.
+* ``xscale``: scale of the x-axis. Every argument accepted by matplotlib ``set_xscale()`` is valid.
+  Common values are ``'linear'`` or ``'log'``. Default is ``'linear'``.
+* ``yscale``: scale of the y-axis of the top panel. Default is ``'linear'``.
+* ``rotate_ticks``: if ``true``, the x-axis tick labels are rotated by 45 degrees. Default is ``false``.
+* ``shorten_x_name``: splits tick labels on ``'_'`` and retains only the last N chunks, where N is the
+  specified value. Useful when case names are long.
+
+

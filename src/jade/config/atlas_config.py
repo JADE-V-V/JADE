@@ -202,3 +202,4 @@ class PlotType(Enum):
     DOSE_CONTRIBUTION = "dose contribution"
     WAVES = "waves"
     BARPLOT = "barplot"
+    SCATTER = "scatter"

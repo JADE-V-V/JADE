@@ -47,31 +47,30 @@ Daughter isotope contribution to SDDR irr 2:
   x: dummy  # It is a very specific plot which knows which columns to use
   y: dummy # It is a very specific plot which knows which columns to use
 
-
 SDDR in air, irr schedule 1:
   results:
     - SDDR in air irr. 1
-  plot_type: ce
+  plot_type: scatter
   title: SDDR in air, irr schedule 1
   x_label: "Time after shutdown $\\left[\\mathrm{s}\\right]$"
-  y_labels: C/E
+  y_labels: SDDR [Sv/h]
   x: Time
   y: Value
   expand_runs: true
   plot_args:
-    style: point
     ce_limits: [0.5, 1.5]
+    yscale: log
 
 SDDR in air, irr schedule 2:
   results:
     - SDDR in air irr. 2
-  plot_type: ce
+  plot_type: scatter
   title: SDDR in air, irr schedule 2
   x_label: "Time after shutdown $\\left[\\mathrm{s}\\right]$"
-  y_labels: C/E
+  y_labels: SDDR [Sv/h]
   x: Time
   y: Value
   expand_runs: true
   plot_args:
-    style: point
     ce_limits: [0.5, 1.5]
+    yscale: log

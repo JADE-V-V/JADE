@@ -9,7 +9,7 @@ from pathlib import Path
 
 from f4enix.input.d1suned import IrradiationFile, Reaction, ReactionFile
 from f4enix.input.libmanager import LibManager
-from f4enix.input.materials import MatCardsList, Material, SubMaterial, Zaid
+from f4enix.input.materials import MatCardsList, Material, Zaid
 from f4enix.input.MCNPinput import D1S_Input
 from f4enix.input.MCNPinput import Input as MCNPInput
 from f4enix.core.irradiation import Nuclide
@@ -137,7 +137,6 @@ class InputMCNP(Input):
         if self.lib.suffix is None:
             raise ValueError("suffix must be provided for MCNP libraries")
         self.inp.translate(self.lib.suffix, self.lm)
-        self.inp.update_zaidinfo(self.lm)
 
     def _write(self, output_folder: PathLike):
         # write the new input
@@ -183,10 +182,9 @@ class InputMCNPSphere(InputMCNP):
         matlist = MatCardsList([material])
 
         # adjourn density and material
-        self.inp.materials = matlist
+        self.inp.mat_section = matlist
         sphere_cell = self.inp.cells["2"]
-        sphere_cell.set_d(density)
-        sphere_cell.lines = sphere_cell.card()
+        sphere_cell.density = float(density)
 
     def _get_material(self, zaid: str | Material) -> Material:
         if isinstance(zaid, Material):
@@ -202,10 +200,9 @@ class InputMCNPSphere(InputMCNP):
                 zaidlib = "31c"
             else:
                 zaidlib = self.lib.suffix
-            zaidob = Zaid(1, zaid[:-3], zaid[-3:], zaidlib)
+            zaidob = Zaid(1, Nuclide.from_int_string(zaid + "." + zaidlib))
             name, formula = self.lm.get_zaidname(zaid)
-            submat = SubMaterial("M1", [zaidob], header="C " + name + " " + formula)
-            material = Material([zaidob], None, "M1", submaterials=[submat])
+            material = Material("M1", [zaidob], header="C " + name + " " + formula)
             # override the input name
             self._name = f"{self.name}_{zaid}_{formula}"
 
@@ -276,10 +273,9 @@ class InputOpenMcSphere(InputOpenMC):
 
     def _assign_zaid_material(self, zaid: str | Material, density: str):
         material = self._get_material(zaid)
-        material.density = float(density)
         materials = MatCardsList([material])
         # Assign material
-        self.inp.matlist_to_openmc(materials, self.lm)
+        self.inp.matlist_to_openmc(materials, self.lm, {material.name: float(density)})
 
     def _get_material(self, zaid: str | Material) -> Material:
         if isinstance(zaid, Material):
@@ -291,10 +287,9 @@ class InputOpenMcSphere(InputOpenMC):
             self._name = f"{self.name}_{truename}"
         else:
             # zaid suffix used here is irrelevant, as it is not used in the OpenMC
-            zaidob = Zaid(1, zaid[:-3], zaid[-3:], "00c")
+            zaidob = Zaid(1, Nuclide.from_int_string(zaid + ".00c"))
             name, formula = self.lm.get_zaidname(zaid)
-            submat = SubMaterial("M1", [zaidob], header="C " + name + " " + formula)
-            material = Material([zaidob], None, "M1", submaterials=[submat])
+            material = Material("M1", [zaidob], header="C " + name + " " + formula)
             # override the input name
             self._name = f"{self.name}_{zaid}_{formula}"
 
@@ -386,7 +381,6 @@ class InputD1S(Input):
 
     def translate(self):
         self.inp.smart_translate(self.lib.suffix, self.lib.transport_suffix, self.lm)
-        self.inp.update_zaidinfo(self.lm)
 
     def _write(self, output_folder: PathLike):
         # write the new input

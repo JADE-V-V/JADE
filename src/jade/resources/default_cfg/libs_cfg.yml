@@ -1,4 +1,11 @@
 # --- Transport libraries ---
+# ACTINV data combinations are configured separately; see usage/actinv in the docs.
+# Example (replace the paths before enabling):
+# TENDL2025-patched-ENDF8-JEFF33:
+#   actinv:
+#     path: /data/activation/tendl-2025-patched-neutron-709g.npz
+#     decay_primary: /data/decay/endf-b-viii-0_decay.dat
+#     decay_fallback: /data/decay/jeff-3-3_decay.dat
 FENDL 3.2c:
   mcnp:
     path: /path/to/xsdir
@@ -49,5 +56,4 @@ D1SUNED (FENDL 3.2b+TENDL2017):
     suffix: 93c
     transport_library_path: /path/to/xsdir
     transport_suffix: 32c
-
 

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 import logging
+import math
 import os
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -12,6 +14,7 @@ from f4enix.output.mctal import Mctal, Tally
 from f4enix.output.meshtal import Meshtal
 
 from jade.helper.__optionals__ import OMC_AVAIL
+from jade.helper.actinv import schedule_endpoints
 
 if TYPE_CHECKING:
     from jade.helper.aux_functions import PathLike
@@ -571,3 +574,105 @@ def _remove_constant_columns(df: pd.DataFrame) -> pd.DataFrame:
                 # Should work as long as they are the exact same value
                 del df[column]
     return df
+
+
+class ActinvSimOutput(AbstractSimOutput):
+    """Parser for an ACTINV ``result.json`` written by ``actinv run``.
+
+    Exposes two pseudo-tallies per run: tally 1 is total decay heat (W/g) and
+    tally 2 is total activity (Bq/g), both binned on the schedule's elapsed
+    time (``time`` column, seconds). ``Error=0`` represents absent Monte Carlo
+    sampling error only; nuclear-data and model uncertainty are not reported.
+    """
+
+    HEAT_TALLY = 1
+    ACTIVITY_TALLY = 2
+
+    def __init__(self, sim_folder: PathLike) -> None:
+        result_file = Path(sim_folder, "result.json")
+        with open(result_file, encoding="utf-8") as f:
+            self._result = json.load(f)
+        super().__init__(sim_folder)
+
+        steps = self._result["steps"]
+        if not isinstance(steps, list) or not steps:
+            raise ValueError("ACTINV result has no steps")
+        previous = 0.0
+        for step in steps:
+            heat_parts = step["heat_W_per_g"]
+            activity_values = list(step["activity_Bq_per_g"].values())
+            numeric = [step["t_s"], step["flux"], *activity_values]
+            numeric.extend(
+                heat_parts[key] for key in ("total", "alpha", "beta", "gamma")
+            )
+            if any(
+                isinstance(value, bool)
+                or not isinstance(value, (float, int))
+                or not math.isfinite(value)
+                or value < 0
+                for value in numeric
+            ):
+                raise ValueError(
+                    "ACTINV result contains invalid time, flux, heat or activity"
+                )
+            if step["t_s"] <= previous:
+                raise ValueError("ACTINV result times must be strictly increasing")
+            previous = step["t_s"]
+            if not math.isclose(
+                heat_parts["total"],
+                sum(heat_parts[key] for key in ("alpha", "beta", "gamma")),
+                rel_tol=1e-12,
+                abs_tol=1e-20,
+            ):
+                raise ValueError("ACTINV heat components do not sum to total")
+        times = [s["t_s"] for s in steps]
+        heat = [s["heat_W_per_g"]["total"] for s in steps]
+        activity = [sum(s["activity_Bq_per_g"].values()) for s in steps]
+        if not all(math.isfinite(value) for value in activity):
+            raise ValueError("ACTINV total activity is nonfinite")
+
+        self._tallydata = {
+            self.HEAT_TALLY: pd.DataFrame({"time": times, "Value": heat, "Error": 0.0}),
+            self.ACTIVITY_TALLY: pd.DataFrame(
+                {"time": times, "Value": activity, "Error": 0.0}
+            ),
+        }
+        self._totalbin = {self.HEAT_TALLY: None, self.ACTIVITY_TALLY: None}
+        self._tally_numbers = [self.HEAT_TALLY, self.ACTIVITY_TALLY]
+        self._tally_comments = [
+            "total decay heat [W/g]",
+            "total activity [Bq/g]",
+        ]
+
+    @property
+    def tallydata(self) -> dict[int, pd.DataFrame]:
+        return self._tallydata
+
+    @property
+    def totalbin(self) -> dict[int, pd.DataFrame]:
+        return self._totalbin
+
+    @property
+    def tally_numbers(self) -> list[int]:
+        return self._tally_numbers
+
+    @property
+    def tally_comments(self) -> list[str]:
+        return self._tally_comments
+
+    def _read_code_version(self) -> str:
+        solver = self._result["certificate"]["solver"]
+        if not isinstance(solver, str) or not solver.startswith("actinv-core "):
+            raise ValueError("ACTINV result has no valid solver version")
+        return solver
+
+    def validate_schedule(self, spec: dict) -> None:
+        expected = schedule_endpoints(spec["schedule"])
+        steps = self._result["steps"]
+        if len(steps) != len(expected):
+            raise ValueError("ACTINV result step count does not match input")
+        for step, (time, flux) in zip(steps, expected):
+            if not math.isclose(step["t_s"], time, rel_tol=1e-12, abs_tol=1e-6):
+                raise ValueError("ACTINV result time does not match input")
+            if not math.isclose(step["flux"], flux, rel_tol=1e-12, abs_tol=0):
+                raise ValueError("ACTINV result flux does not match input")

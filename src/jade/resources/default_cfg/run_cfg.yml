@@ -87,6 +87,15 @@ Simple_Tokamak:
   nps: 1e9
   only_input: false
 # --- Experimental benchmarks ---
+# Initial inventory benchmark; source data hosting is pending. See usage/actinv.
+FNS-DecayHeat:
+  codes:
+    actinv: []
+  custom_input: null
+  description: FNS iron five-minute decay heat (draft)
+  nps: 1  # ignored by the deterministic ACTINV solver
+  only_input: false
+#
 ASPIS-PCA-Replica:
   codes:
     d1s: []

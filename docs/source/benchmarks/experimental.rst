@@ -27,6 +27,10 @@ Experimental Benchmarks
 
 .. include:: benchdesc/fns-tof.rst
 
+.. _fnsdecayheat:
+
+.. include:: benchdesc/fns-decay-heat.rst
+
 .. include:: benchdesc/tud-fe.rst
 
 .. include:: benchdesc/ippe/ippe_dt.rst

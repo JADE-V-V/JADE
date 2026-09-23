@@ -64,6 +64,7 @@ class ConfigGUI:
             "d1s",
             "openmc",
             "serpent",
+            "actinv",
             "nps",
             "custom_input",
         )
@@ -77,6 +78,7 @@ class ConfigGUI:
         self.bench_tree.heading("d1s", text="D1SUNED")
         self.bench_tree.heading("openmc", text="OpenMC")
         self.bench_tree.heading("serpent", text="Serpent")
+        self.bench_tree.heading("actinv", text="ACTINV")
         self.bench_tree.heading("nps", text="NPS")
         self.bench_tree.heading("custom_input", text="Custom Input")
 
@@ -120,7 +122,7 @@ class ConfigGUI:
 
         benchmark_libs = {}
         for benchmark, values in cfg.items():
-            codes = {"mcnp": "", "d1s": "", "openmc": "", "serpent": ""}
+            codes = {code: "" for code in CODE_TAGS if code != "exp"}
 
             if values["only_input"]:
                 only_input = "X"
@@ -134,7 +136,7 @@ class ConfigGUI:
             for code in CODE_TAGS:
                 if code == "exp":
                     continue
-                libs = values["codes"][code]
+                libs = values["codes"].get(code, [])
                 if len(libs) > 0:
                     codes[code] = "X"
                     # store the libraries to be run for each benchmark
@@ -151,6 +153,7 @@ class ConfigGUI:
                     codes["d1s"],
                     codes["openmc"],
                     codes["serpent"],
+                    codes.get("actinv", ""),
                     values["nps"],
                     custom_inp,
                 ),
@@ -176,6 +179,7 @@ class ConfigGUI:
                 "d1s",
                 "openmc",
                 "serpent",
+                "actinv",
             ):  # Checkboxes for "Generate Input" and "Run Benchmark"
                 new_value = "X" if current_value == "" else ""
                 self.bench_tree.set(row_id, column_id, new_value)
@@ -229,7 +233,7 @@ class ConfigGUI:
         selected_benchmarks = {}
         for child in self.bench_tree.get_children():
             values = self.bench_tree.item(child, "values")
-            if any(value == "X" for value in values[2:7]):
+            if any(value == "X" for value in values[2:8]):
                 benchmark_name = values[0]
                 selected_benchmarks[benchmark_name] = values
 

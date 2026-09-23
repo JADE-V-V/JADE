@@ -28,7 +28,7 @@ from jade.helper.constants import CODE, EXP_TAG, FIRST_INITIALIZATION, JADE_TITL
 from jade.post.atlas_processor import AtlasProcessor
 from jade.post.excel_processor import ExcelProcessor
 from jade.post.raw_processor import RawProcessor
-from jade.run.benchmark import BenchmarkRunFactory, launch_global_jobs
+from jade.run.benchmark import BenchmarkRunFactory, SingleRunACTINV, launch_global_jobs
 
 logger = logging.getLogger(__name__)
 
@@ -158,9 +158,23 @@ class JadeApp:
                             os.remove(os.path.join(pathroot, file))
         logger.info("Runtpe files were removed successfully")
 
+    def _check_actinv_environment(self, *, include_input_only: bool = False) -> None:
+        """Validate execution settings for ACTINV runs before any benchmark starts.
+
+        Continuation executes generated inputs even when only_input is set.
+        """
+        if any(
+            code == CODE.ACTINV
+            for cfg in self.run_cfg.benchmarks.values()
+            if include_input_only or not cfg.only_input
+            for code, _ in cfg.run
+        ):
+            SingleRunACTINV.check_environment(self.run_cfg.env_vars)
+
     def run_benchmarks(self, testing: bool = False) -> list[str] | None:
         """Run the benchmarks according to the configuration."""
         logger.info("Running benchmarks")
+        self._check_actinv_environment()
         # first thing do to is to check if the benchmarks were already run
         simulated = []
         for bench_name, cfg in self.run_cfg.benchmarks.items():
@@ -202,6 +216,7 @@ class JadeApp:
 
     def continue_run(self, testing: bool = False):
         """Continue the run of the benchmarks that were not completed."""
+        self._check_actinv_environment(include_input_only=True)
         commands = []
         for bench_name, cfg in self.run_cfg.benchmarks.items():
             benchmark = BenchmarkRunFactory.create(

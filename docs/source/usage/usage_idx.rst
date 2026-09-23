@@ -41,6 +41,7 @@ JADE execution
    :caption: JADE execution
 
    run
+   actinv
    postprocessing
    utilities
    tipstricks

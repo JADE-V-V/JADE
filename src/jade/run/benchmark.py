@@ -377,10 +377,7 @@ class SingleRunACTINV(SingleRun):
 
     @staticmethod
     def check_environment(env_vars: EnvironmentVariables) -> None:
-        """Reject session settings this local scalar adapter cannot honour.
-
-        Also called before any benchmark starts or any results are removed.
-        """
+        """Reject unsupported settings immediately before an ACTINV execution."""
         if not env_vars.executables.get(CODE.ACTINV):
             raise ConfigError("Set executables: actinv in env_vars_cfg.yml")
         if env_vars.run_mode != RunMode.LOCAL:
@@ -619,16 +616,11 @@ class BenchmarkRun:
             The executable for the code to be used was not set in the main config file.
         """
         benchmark_runs = []
-        if not self.config.only_input and any(
-            code == CODE.ACTINV for code, _ in self.config.run
-        ):
-            # before any previous results of this benchmark are removed
-            SingleRunACTINV.check_environment(self.env_vars)
         # first we run the benchmark for each code-lib couple
         for code, lib in self.config.run:
             # --- perform some consistency checks here ---
-            # if a code is requested, its executable should also be provided
-            if not (code == CODE.ACTINV and self.config.only_input):
+            # Input-only generation needs no executable, regardless of the code.
+            if not self.config.only_input:
                 try:
                     self.env_vars.executables[code]
                 except KeyError:

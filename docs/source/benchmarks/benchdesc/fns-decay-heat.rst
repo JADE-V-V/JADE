@@ -50,4 +50,5 @@ The source archive is ``https://www-nds.iaea.org/conderc/fusion/files/fns.zip``
 The relevant members under ``fns/Fe/`` are ``1996exp_5min.exp``,
 ``1996exp_5min_fluxes``, ``TENDL-2017_1996exp_5min.i`` and
 ``total_1996exp_5min.pdf``. Obtain the source data separately under their
-applicable terms. ACTINV configuration is described in :doc:`../../usage/actinv`.
+applicable terms. See :ref:`actinv_libraries` for data configuration and
+:ref:`actinv_run` for input and execution requirements.

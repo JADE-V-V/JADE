@@ -1,5 +1,5 @@
 # --- Transport libraries ---
-# ACTINV data combinations are configured separately; see usage/actinv in the docs.
+# ACTINV data combinations are configured separately; see usage/user_configuration.
 # Example (replace the paths before enabling):
 # TENDL2025-patched-ENDF8-JEFF33:
 #   actinv:

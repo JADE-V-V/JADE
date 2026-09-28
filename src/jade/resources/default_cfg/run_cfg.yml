@@ -87,7 +87,7 @@ Simple_Tokamak:
   nps: 1e9
   only_input: false
 # --- Experimental benchmarks ---
-# Initial inventory benchmark; source data hosting is pending. See usage/actinv.
+# Initial inventory benchmark; source data hosting is pending. See usage/run.
 FNS-DecayHeat:
   codes:
     actinv: []

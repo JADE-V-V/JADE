@@ -1,8 +1,13 @@
+from __future__ import annotations
+
 import logging
+from importlib.resources import as_file, files
 
 import yaml
 
+import jade.resources as res
 from jade.helper.__optionals__ import TKINTER_AVAIL
+from jade.helper.aux_functions import PathLike, VerboseSafeDumper
 
 if TKINTER_AVAIL:
     import tkinter as tk
@@ -10,12 +15,13 @@ if TKINTER_AVAIL:
 
     from ttkthemes import ThemedTk
 
-
-from importlib.resources import as_file, files
-
-import jade.resources as res
-from jade.helper.aux_functions import PathLike, VerboseSafeDumper
-from jade.helper.constants import CODE_TAGS
+CODE_NAMES = {
+    "mcnp": "MCNP",
+    "d1s": "D1SUNED",
+    "openmc": "OpenMC",
+    "serpent": "Serpent",
+    "actinv": "ACTINV",
+}
 
 logger = logging.getLogger(__name__)
 
@@ -60,27 +66,23 @@ class ConfigGUI:
             "name",
             "description",
             "generate",
-            "mcnp",
-            "d1s",
-            "openmc",
-            "serpent",
-            "actinv",
+            *CODE_NAMES,
             "nps",
             "custom_input",
         )
         self.bench_tree = ttk.Treeview(
             self.benchmarks_tab, columns=columns, show="headings"
         )
-        self.bench_tree.heading("name", text="Benchmark Name")
-        self.bench_tree.heading("description", text="Description")
-        self.bench_tree.heading("generate", text="Only Input")
-        self.bench_tree.heading("mcnp", text="MCNP")
-        self.bench_tree.heading("d1s", text="D1SUNED")
-        self.bench_tree.heading("openmc", text="OpenMC")
-        self.bench_tree.heading("serpent", text="Serpent")
-        self.bench_tree.heading("actinv", text="ACTINV")
-        self.bench_tree.heading("nps", text="NPS")
-        self.bench_tree.heading("custom_input", text="Custom Input")
+        headings = {
+            "name": "Benchmark Name",
+            "description": "Description",
+            "generate": "Only Input",
+            **CODE_NAMES,
+            "nps": "NPS",
+            "custom_input": "Custom Input",
+        }
+        for column, label in headings.items():
+            self.bench_tree.heading(column, text=label)
 
         self.bench_tree.column("name", width=150)
         self.bench_tree.column("description", width=250)
@@ -90,8 +92,10 @@ class ConfigGUI:
         self.bench_tree.pack(expand=True, fill="both")
 
         # Create a mapping from column identifiers to column names
-        self.bench_column_mapping = {f"#{i+1}": col for i, col in enumerate(columns)}
-        self.bench_id_column_mapping = {col: f"#{i+1}" for i, col in enumerate(columns)}
+        self.bench_column_mapping = {f"#{i + 1}": col for i, col in enumerate(columns)}
+        self.bench_id_column_mapping = {
+            col: f"#{i + 1}" for i, col in enumerate(columns)
+        }
 
         self.load_yaml_run(self.yaml_run)
 
@@ -112,8 +116,8 @@ class ConfigGUI:
 
         self.libraries_tree.pack(expand=True, fill="both")
         # Create a mapping from column identifiers to column names
-        self.lib_column_mapping = {f"#{i+1}": col for i, col in enumerate(columns)}
-        self.lib_id_column_mapping = {col: f"#{i+1}" for i, col in enumerate(columns)}
+        self.lib_column_mapping = {f"#{i + 1}": col for i, col in enumerate(columns)}
+        self.lib_id_column_mapping = {col: f"#{i + 1}" for i, col in enumerate(columns)}
 
     def load_yaml_run(self, yaml_file):
         with open(yaml_file) as f:
@@ -122,7 +126,7 @@ class ConfigGUI:
 
         benchmark_libs = {}
         for benchmark, values in cfg.items():
-            codes = {code: "" for code in CODE_TAGS if code != "exp"}
+            codes = {code: "" for code in CODE_NAMES}
 
             if values["only_input"]:
                 only_input = "X"
@@ -133,9 +137,7 @@ class ConfigGUI:
             if custom_inp is None:
                 custom_inp = ""
 
-            for code in CODE_TAGS:
-                if code == "exp":
-                    continue
+            for code in CODE_NAMES:
                 libs = values["codes"].get(code, [])
                 if len(libs) > 0:
                     codes[code] = "X"
@@ -149,11 +151,7 @@ class ConfigGUI:
                     benchmark,
                     values["description"],
                     only_input,
-                    codes["mcnp"],
-                    codes["d1s"],
-                    codes["openmc"],
-                    codes["serpent"],
-                    codes.get("actinv", ""),
+                    *(codes[code] for code in CODE_NAMES),
                     values["nps"],
                     custom_inp,
                 ),
@@ -173,14 +171,7 @@ class ConfigGUI:
             column_index = int(column_id[1:]) - 1
             current_value = item["values"][column_index]
 
-            if column_name in (
-                "generate",
-                "mcnp",
-                "d1s",
-                "openmc",
-                "serpent",
-                "actinv",
-            ):  # Checkboxes for "Generate Input" and "Run Benchmark"
+            if column_name == "generate" or column_name in CODE_NAMES:
                 new_value = "X" if current_value == "" else ""
                 self.bench_tree.set(row_id, column_id, new_value)
             elif column_name in ("name", "description"):
@@ -233,7 +224,11 @@ class ConfigGUI:
         selected_benchmarks = {}
         for child in self.bench_tree.get_children():
             values = self.bench_tree.item(child, "values")
-            if any(value == "X" for value in values[2:8]):
+            if any(
+                value == "X"
+                for column, value in zip(self.bench_column_mapping.values(), values)
+                if column == "generate" or column in CODE_NAMES
+            ):
                 benchmark_name = values[0]
                 selected_benchmarks[benchmark_name] = values
 
@@ -265,11 +260,11 @@ class ConfigGUI:
             values = self.bench_tree.item(child, "values")
             row = {"codes": {}}
             for i, value in enumerate(values):
-                col = self.bench_column_mapping[f"#{i+1}"]
+                col = self.bench_column_mapping[f"#{i + 1}"]
                 if col == "name":
                     name = value
                     libs = self._get_lib_settings(name)
-                elif col in CODE_TAGS:
+                elif col in CODE_NAMES:
                     if value == "X":
                         row["codes"][col] = libs
                     else:
@@ -309,7 +304,7 @@ class ConfigGUI:
                 libs = []
                 for i, value in enumerate(values[1:]):
                     if value == "X":
-                        col = self.lib_column_mapping[f"#{i+2}"]
+                        col = self.lib_column_mapping[f"#{i + 2}"]
                         libs.append(col)
 
         return libs

@@ -8,7 +8,8 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from unittest.mock import Mock
+from types import SimpleNamespace
+from unittest.mock import MagicMock, Mock
 
 import pandas as pd
 import pytest
@@ -32,7 +33,7 @@ from jade.post.excel_routines import Table
 from jade.post.manipulate_tally import cooling_time
 from jade.post.raw_processor import RawProcessor
 from jade.post.sim_output import ActinvSimOutput
-from jade.run.benchmark import BenchmarkRun, SingleRunFactory
+from jade.run.benchmark import BenchmarkRun, SingleRunACTINV, SingleRunFactory
 from jade.run.input import InputACTINV
 
 ROOT = Path(__file__).parents[2]
@@ -239,39 +240,58 @@ def test_unsupported_execution_rejected(folder, lib, env, field, value):
         run.run(env, folder, test=True)
 
 
-def test_rejected_settings_keep_previous_results(app):
-    previous = app.tree.simulations / "_actinv_-_first_" / "FNS-DecayHeat" / "iron"
-    previous.mkdir(parents=True)
+def test_runner_rejected_settings_keep_previous_results(folder, lib, env, monkeypatch):
     for name in ("result.json", "actinv.complete"):
-        (previous / name).write_text("previous")
-    app.run_cfg.env_vars.exe_prefix = "srun"
+        (folder / name).write_text("previous")
+    launch = Mock()
+    monkeypatch.setattr(subprocess, "run", launch)
+    env.exe_prefix = "srun"
+    run = SingleRunFactory.create(CODE.ACTINV, folder, lib, 1)
     with pytest.raises(ConfigError, match="prefix"):
-        BenchmarkRun(
-            app.run_cfg.benchmarks["FNS-DecayHeat"],
-            app.tree.simulations,
-            app.tree.benchmark_input_templates,
-            app.run_cfg.env_vars,
-        ).run()
-    assert sorted(os.listdir(previous)) == ["actinv.complete", "result.json"]
+        run.run(env, folder)
+    launch.assert_not_called()
+    for name in ("result.json", "actinv.complete"):
+        assert (folder / name).read_text() == "previous"
 
 
 @pytest.mark.parametrize(
     "method,only_input",
     [("run_benchmarks", False), ("continue_run", False), ("continue_run", True)],
 )
-def test_session_checks_settings_before_any_benchmark(
-    app, monkeypatch, method, only_input
-):
-    app.run_cfg.benchmarks["FNS-DecayHeat"].only_input = only_input
+def test_session_checks_settings_in_actinv_runner(app, monkeypatch, method, only_input):
+    benchmark = app.run_cfg.benchmarks["FNS-DecayHeat"]
+    app.run_cfg.benchmarks = {"FNS-DecayHeat": benchmark}
+    if method == "continue_run":
+        benchmark.only_input = True
+        app.run_benchmarks()
+    benchmark.only_input = only_input
     app.run_cfg.env_vars.exe_prefix = "srun"  # as in JADE's shipped defaults
-
-    def started(*args, **kwargs):
-        raise AssertionError("work started before the settings were checked")
-
-    monkeypatch.setattr("jade.app.app.BenchmarkRunFactory.create", started)
-    monkeypatch.setattr("builtins.input", started)
+    check = Mock(wraps=SingleRunACTINV.check_environment)
+    launch = Mock()
+    monkeypatch.setattr(SingleRunACTINV, "check_environment", check)
+    monkeypatch.setattr(subprocess, "run", launch)
     with pytest.raises(ConfigError, match="prefix"):
         getattr(app, method)()
+    check.assert_called_once_with(app.run_cfg.env_vars)
+    launch.assert_not_called()
+    generated = app.tree.simulations / "_actinv_-_first_" / "FNS-DecayHeat" / "iron"
+    assert (generated / "spec.json").exists()
+
+
+def test_continue_completed_actinv_needs_no_execution_settings(app, monkeypatch):
+    benchmark = app.run_cfg.benchmarks["FNS-DecayHeat"]
+    benchmark.only_input = True
+    app.run_cfg.benchmarks = {"FNS-DecayHeat": benchmark}
+    app.run_benchmarks()
+    generated = app.tree.simulations / "_actinv_-_first_" / "FNS-DecayHeat" / "iron"
+    (generated / "result.json").write_text(json.dumps(result()))
+    (generated / "actinv.complete").write_text("ACTINV result validated\n")
+    app.run_cfg.env_vars.executables = {}
+    app.run_cfg.env_vars.exe_prefix = "srun"
+    check = Mock()
+    monkeypatch.setattr(SingleRunACTINV, "check_environment", check)
+    assert app.continue_run() == []
+    check.assert_not_called()
 
 
 @pytest.mark.parametrize("entry_point", ["application", "benchmark"])
@@ -336,25 +356,19 @@ def test_old_gui_configuration_loads_and_actinv_roundtrips(tmp_path, monkeypatch
     tree.reset_mock()
     gui.load_yaml_run(owner, path)
     values = tree.insert.call_args.kwargs["values"]
-    assert values[7] == "X"
+    columns = (
+        "name",
+        "description",
+        "generate",
+        *run_config_gui.CODE_NAMES,
+        "nps",
+        "custom_input",
+    )
+    assert values[columns.index("actinv")] == "X"
     tree.get_children.return_value = ["row"]
     tree.item.return_value = values
     owner.bench_column_mapping = {
-        f"#{i + 1}": column
-        for i, column in enumerate(
-            (
-                "name",
-                "description",
-                "generate",
-                "mcnp",
-                "d1s",
-                "openmc",
-                "serpent",
-                "actinv",
-                "nps",
-                "custom_input",
-            )
-        )
+        f"#{i + 1}": column for i, column in enumerate(columns)
     }
     owner._get_lib_settings.return_value = ["first"]
     monkeypatch.setattr(
@@ -368,6 +382,76 @@ def test_old_gui_configuration_loads_and_actinv_roundtrips(tmp_path, monkeypatch
     assert yaml.safe_load(path.read_text())["FNS-DecayHeat"]["codes"]["actinv"] == [
         "first"
     ]
+
+
+@pytest.mark.parametrize("extend", [False, True], ids=["reorder", "add-code"])
+def test_gui_code_mapping_drives_selection_and_save(tmp_path, monkeypatch, extend):
+    codes = dict(reversed(run_config_gui.CODE_NAMES.items()))
+    selected = "actinv"
+    if extend:
+        codes = {**run_config_gui.CODE_NAMES, "future": "Future code"}
+        selected = "future"
+    monkeypatch.setattr(run_config_gui, "CODE_NAMES", codes)
+    path = tmp_path / "run.yml"
+    path.write_text(
+        yaml.safe_dump(
+            {
+                "FNS-DecayHeat": {
+                    "codes": {selected: ["first"]},
+                    "description": "heat",
+                    "nps": 1,
+                    "only_input": False,
+                    "custom_input": None,
+                }
+            }
+        )
+    )
+    tree = Mock()
+    widgets = Mock(Treeview=Mock(return_value=tree))
+    monkeypatch.setattr(run_config_gui, "ttk", widgets, raising=False)
+    monkeypatch.setattr(
+        run_config_gui, "tk", SimpleNamespace(CENTER="center"), raising=False
+    )
+    monkeypatch.setattr(
+        run_config_gui,
+        "filedialog",
+        Mock(asksaveasfilename=Mock(return_value=str(path))),
+        raising=False,
+    )
+    monkeypatch.setattr(run_config_gui, "messagebox", Mock(), raising=False)
+    gui = run_config_gui.ConfigGUI.__new__(run_config_gui.ConfigGUI)
+    gui.yaml_run = path
+    gui.benchmarks_tab = Mock()
+    gui.create_benchmarks_tab()
+    columns = widgets.Treeview.call_args.kwargs["columns"]
+    assert list(columns[3:-2]) == list(codes)
+    tree.heading.assert_any_call(selected, text=codes[selected])
+    values = list(tree.insert.call_args.kwargs["values"])
+    assert values[columns.index(selected)] == "X"
+    tree.get_children.return_value = ["row"]
+    tree.item.side_effect = lambda row, option=None: (
+        values if option else {"values": values}
+    )
+    gui.libraries_tree = MagicMock()
+    gui.libraries_tree.get_children.return_value = []
+    gui.libraries_tree.__getitem__.return_value = ("benchmark", "first")
+    gui.update_libraries_tab()
+    gui.libraries_tree.insert.assert_called_once_with(
+        "", "end", values=["FNS-DecayHeat", "X"]
+    )
+    column_id = gui.bench_id_column_mapping[selected]
+    tree.identify.return_value = "cell"
+    tree.identify_row.return_value = "row"
+    tree.identify_column.return_value = column_id
+    gui.on_benchmark_click(SimpleNamespace(x=0, y=0))
+    tree.set.assert_called_once_with("row", column_id, "")
+    gui.libraries_tree.get_children.return_value = ["lib-row"]
+    gui.libraries_tree.item.return_value = ["FNS-DecayHeat", "X"]
+    gui.lib_column_mapping = {"#1": "benchmark", "#2": "first"}
+    gui.save_settings()
+    saved = yaml.safe_load(path.read_text())["FNS-DecayHeat"]["codes"]
+    assert saved[selected] == ["first"]
+    assert all(saved[code] == [] for code in codes if code != selected)
 
 
 def test_scalar_parse_and_cooling_units(tmp_path):

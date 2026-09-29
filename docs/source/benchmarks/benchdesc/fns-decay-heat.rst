@@ -26,29 +26,13 @@ retained without assuming a confidence level or covariance. With ACTINV's zero
 sampling-error field, JADE propagates that relative experimental error to C/E.
 The table and plot do not represent total predictive uncertainty.
 
-Input and measurement hosting is pending maintainer agreement and confirmation
-of redistribution terms. This draft supplies the adapter and post-processing
-configuration; these data are not installed by JADE's normal input download yet.
-For a local installation, the required layout is:
+JADE-ready inputs and measurements are supplied through
+`IAEA Open Benchmarks <https://github.com/IAEA-NDS/open-benchmarks/tree/main/jade_open_benchmarks>`_.
+JADE's standard IAEA input download installs the benchmark templates and
+experimental results. The
+`benchmark source notes <https://github.com/IAEA-NDS/open-benchmarks/blob/main/jade_open_benchmarks/fns_decay_heat.md>`_
+record the original CoNDERC files and conversions.
 
-.. code-block:: text
-
-   benchmark_templates/FNS-DecayHeat/
-     benchmark_metadata.json
-     Fe-1996-5min/actinv/spec.json
-   raw_data/_exp_-_exp_/FNS-DecayHeat/
-     Fe-1996-5min Decay heat.csv
-
-The input folder contains exactly one scalar spec JSON. Metadata uses
-``{"name": "FNS-DecayHeat", "version": {"actinv": "1.0.0"}}``.
-The experimental CSV columns are ``time,Value,Error`` in seconds after shutdown,
-microW/g and relative reported error, respectively. Benchmark case names must
-not contain spaces because JADE separates case and result names with a space.
-
-The source archive is ``https://www-nds.iaea.org/conderc/fusion/files/fns.zip``
-(SHA-256 ``ba1dd6cb150a4aa3e0d81461054aec7d415ef19d946aba8b9886b31de218252d``).
-The relevant members under ``fns/Fe/`` are ``1996exp_5min.exp``,
-``1996exp_5min_fluxes``, ``TENDL-2017_1996exp_5min.i`` and
-``total_1996exp_5min.pdf``. Obtain the source data separately under their
-applicable terms. See :ref:`actinv_libraries` for data configuration and
-:ref:`actinv_run` for input and execution requirements.
+Activation and decay libraries are installed separately. See
+:ref:`actinv_libraries` for data configuration and :ref:`actinv_run` for input
+and execution requirements.

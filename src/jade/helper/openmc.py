@@ -18,7 +18,7 @@ import pandas as pd
 
 if TYPE_CHECKING:
     from f4enix.input.libmanager import LibManager
-    from f4enix.input.materials import MatCardsList, Material, SubMaterial, Zaid
+    from f4enix.input.materials import MatCardsList, Material, Zaid
 
     from jade.helper.aux_functions import PathLike
 
@@ -256,8 +256,8 @@ class OpenMCInputFiles:
 
         Parameters
         ----------
-        talllies : str
-            path to geometry input xml
+        tallies : str
+            path to tallies input xml
 
         Returns
         -------
@@ -293,7 +293,7 @@ class OpenMCInputFiles:
 
         Parameters
         ----------
-        zaid : str
+        zaid : Zaid
             Zaid to be added to the OpenMC material
         openmc_material : openmc.Material
             An instance of the OpenMC Material class representing the material used in the simulation.
@@ -302,7 +302,7 @@ class OpenMCInputFiles:
         -------
         None
         """
-        nuclide = zaid.get_fullname(libmanager).replace("-", "")
+        nuclide = zaid.fullname
         # if no istope number is in the nuclide, a zero needs to be added
         if PAT_DIGITS.search(nuclide) is None:
             nuclide = nuclide + "0"
@@ -311,33 +311,9 @@ class OpenMCInputFiles:
         else:
             openmc_material.add_nuclide(nuclide, 100 * abs(zaid.fraction), "ao")
 
-    def submat_to_openmc(
-        self,
-        submaterial: SubMaterial,
-        openmc_material: openmc.Material,
-        libmanager: LibManager,
+    def mat_to_openmc(
+        self, material: Material, libmanager: LibManager, density: float
     ) -> None:
-        """Handle submaterials in OpenMC
-
-        Parameters
-        ----------
-        submaterial : SubMaterial
-            An instance of the SubMaterial class representing a subcomponent of a material.
-            It contains elements, each of which has ZAIDs (nuclide identifiers).
-        openmc_material : openmc.Material
-            An instance of the OpenMC Material class representing the material used in the simulation.
-        libmanager : libmanager.LibManager
-            An instance of the LibManager class responsible for managing external libraries.
-
-        Returns
-        -------
-        None
-        """
-        for elem in submaterial.elements:
-            for zaid in elem.zaids:
-                self.zaid_to_openmc(zaid, openmc_material, libmanager)
-
-    def mat_to_openmc(self, material: Material, libmanager: LibManager) -> None:
         """Convert a material to an OpenMC material and handle its submaterials.
 
         Parameters
@@ -346,6 +322,8 @@ class OpenMCInputFiles:
             An instance of the Material class representing the material to be converted.
         libmanager : LibManager
             An instance of the LibManager class responsible for managing external libraries.
+        density : float
+            The density to be assigned to the material.
 
         Returns
         -------
@@ -353,35 +331,40 @@ class OpenMCInputFiles:
         """
         matid = int(re.sub("[^0-9]", "", str(material.name)))
         matname = str(material.name)
-        matdensity = abs(material.density)
-        if material.density < 0:
+        matdensity = abs(density)
+        if density < 0:
             density_units = "g/cc"
         else:
             raise ValueError("Density should be provided negative (mass)")
         openmc_material = openmc.Material(matid, name=matname)
         openmc_material.set_density(density_units, matdensity)
-        if material.submaterials is not None:
-            for submaterial in material.submaterials:
-                self.submat_to_openmc(submaterial, openmc_material, libmanager)
+        for zaid in material.zaids:
+            self.zaid_to_openmc(zaid, openmc_material, libmanager)
+
         self.materials.append(openmc_material)
 
-    def matlist_to_openmc(self, matlist: MatCardsList, libmanager: LibManager) -> None:
+    def matlist_to_openmc(
+        self, matlist: MatCardsList, libmanager: LibManager, densities: dict[str, float]
+    ) -> None:
         """Convert a list of materials to OpenMC materials and load the geometry.
 
         Parameters
         ----------
         matlist : MatCardsList
-            A list of Material instances to be converted. Each material should have the necessary
+            A list of Material instances to be converted. Each material should have
+            the necessary
             attributes required by the mat_to_openmc method.
         libmanager : LibManager
             An instance of the LibManager class responsible for managing external libraries.
+        densities : dict[str, float]
+            A dictionary mapping material names to their respective densities.
 
         Returns
         -------
         None
         """
         for material in matlist:
-            self.mat_to_openmc(material, libmanager)
+            self.mat_to_openmc(material, libmanager, densities[material.name])
         self.load_geometry(os.path.join(self.path, "geometry.xml"), self.materials)
 
     def write(self, path: PathLike) -> None:
@@ -576,7 +559,7 @@ class OpenMCStatePoint:
                 try:
                     particle_filter = tally.find_filter(openmc.ParticleFilter)
                 except ValueError:
-                    particle_filter =  None
+                    particle_filter = None
                 cell_filter = tally.find_filter(openmc.CellFilter)
                 if particle_filter and cell_filter:
                     if photon_cell_filter == cell_filter:

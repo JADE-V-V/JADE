@@ -22,8 +22,7 @@ dependencies = [
     "matplotlib",
     "aspose-words",
     "requests",
-    # F4Enix 1.x removed the SubMaterial API used by the input adapters.
-    "f4enix >= 0.19.0, < 1.0.0",
+    "f4enix >= 1.0.0",
     "pyyaml",
     "seaborn",
     "python-gitlab"

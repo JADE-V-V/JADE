@@ -3,7 +3,8 @@ FNS decay heat: iron, five-minute irradiation
 
 This initial subset contains the 1996 FNS iron experiment with a 300-second
 irradiation and all 20 reported cooling-time measurements, distributed through
-`IAEA CoNDERC <https://www-nds.iaea.org/conderc/>`_. It is a decay-heat
+`IAEA CoNDERC <https://www-nds.iaea.org/conderc/>`_ in the
+`FNS source archive <https://www-nds.iaea.org/conderc/fusion/files/fns.zip>`_. It is a decay-heat
 experiment, distinct from the FNS time-of-flight benchmark. The supplied
 709-group neutron spectrum and irradiation history are used directly; no
 transport calculation is needed.
@@ -29,9 +30,7 @@ The table and plot do not represent total predictive uncertainty.
 JADE-ready inputs and measurements are supplied through
 `IAEA Open Benchmarks <https://github.com/IAEA-NDS/open-benchmarks/tree/main/jade_open_benchmarks>`_.
 JADE's standard IAEA input download installs the benchmark templates and
-experimental results. The
-`benchmark source notes <https://github.com/IAEA-NDS/open-benchmarks/blob/main/jade_open_benchmarks/fns_decay_heat.md>`_
-record the original CoNDERC files and conversions.
+experimental results.
 
 Activation and decay libraries are installed separately. See
 :ref:`actinv_libraries` for data configuration and :ref:`actinv_run` for input

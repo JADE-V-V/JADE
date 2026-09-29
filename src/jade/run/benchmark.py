@@ -695,7 +695,7 @@ class SphereBenchmarkRun(BenchmarkRun):
         # benchmarks folder
         matpath = Path(Path(self.benchmark_templates_root).parent, "TypicalMaterials")
         inpmat = ipt.Input.from_input(matpath)
-        materials = inpmat.materials
+        materials = inpmat.mat_section
 
         # init a libmanager to get the zaid names
         lm = LibManager()
@@ -850,7 +850,7 @@ class SphereSDDRBenchmarkRun(SphereBenchmarkRun):
         # benchmarks folder
         matpath = Path(Path(self.benchmark_templates_root).parent, "TypicalMaterials")
         inpmat = ipt.Input.from_input(matpath)
-        materials = inpmat.materials
+        materials = inpmat.mat_section
 
         # init a libmanager to get the zaid names
         lm = LibManager()

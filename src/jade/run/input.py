@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 import os
 import shutil
@@ -14,8 +15,9 @@ from f4enix.input.MCNPinput import D1S_Input
 from f4enix.input.MCNPinput import Input as MCNPInput
 from f4enix.core.irradiation import Nuclide
 
-from jade.config.run_config import Library, LibraryD1S, LibraryMCNP
+from jade.config.run_config import Library, LibraryACTINV, LibraryD1S, LibraryMCNP
 from jade.helper.__optionals__ import OMC_AVAIL
+from jade.helper.actinv import schedule_endpoints
 from jade.helper.aux_functions import PathLike
 from jade.helper.constants import CODE, DOSIMETRY_LIBS
 from jade.helper.errors import ConfigError
@@ -465,3 +467,90 @@ class InputD1SSphere(InputD1S, InputMCNPSphere):
             self.inp.reac_file = reacfile
             # also the name needs to be updated
             self._name = f"{self.name}_{MT}"
+
+
+class InputACTINV(Input):
+    """One scalar neutron spec, with inline spectrum and explicit selected data."""
+
+    def __init__(self, template_folder: PathLike, lib: LibraryACTINV):
+        candidates = []
+        for file in sorted(os.listdir(template_folder)):
+            if file.endswith(".json") and file not in (
+                "metadata.json",
+                "volumes.json",
+                "result.json",
+            ):
+                filepath = os.path.join(template_folder, file)
+                with open(filepath, encoding="utf-8") as f:
+                    spec = json.load(f)
+                if not isinstance(spec, dict):
+                    continue
+                if spec.get("spec") == "actinv-mesh-spec-1":
+                    raise ConfigError(
+                        "ACTINV mesh inputs are not supported by this adapter"
+                    )
+                if spec.get("spec") == "actinv-spec-1":
+                    candidates.append((file, spec))
+        if len(candidates) != 1:
+            raise ConfigError(
+                f"Expected exactly one ACTINV scalar spec in {template_folder}"
+            )
+        file, spec = candidates[0]
+        try:
+            schedule_endpoints(spec["schedule"])
+        except (ValueError, TypeError, KeyError) as error:
+            raise ConfigError(f"Invalid ACTINV schedule: {error}") from error
+        if spec.get("projectile", "neutron") != "neutron":
+            raise ConfigError("ACTINV adapter currently supports neutron inputs only")
+        spectrum = spec.get("spectrum", {})
+        if (
+            spectrum.get("structure") != "fispact-709"
+            or len(spectrum.get("flux_per_group", [])) != 709
+        ):
+            raise ConfigError("ACTINV adapter requires an inline fispact-709 spectrum")
+        # Auxiliary datasets need their own selection/translation contract.
+        for option in (
+            "uncertainty",
+            "radiological",
+            "damage",
+            "self_shielding",
+            "fission_yields",
+            "photon",
+        ):
+            if spec.get(option):
+                raise ConfigError(
+                    f"ACTINV adapter does not yet support option {option}"
+                )
+        self.template_folder = template_folder
+        self.spec = spec
+        self._name = file[:-5]
+        self._lib = lib
+
+    @property
+    def code(self) -> CODE:
+        return CODE.ACTINV
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def lib(self) -> LibraryACTINV:
+        return self._lib
+
+    def set_nps(self, nps: int):
+        # deterministic solver: no particle histories to set
+        self.nps = nps
+
+    def translate(self):
+        # Replace catalog and file references alike; a JADE selection is authoritative.
+        self.spec["library"] = {"path": str(self.lib.path), "sha256": self.lib.sha256}
+        self.spec["decay"] = {"primary": str(self.lib.decay_primary)}
+        if self.lib.decay_fallback is not None:
+            self.spec["decay"]["fallback"] = str(self.lib.decay_fallback)
+
+    def _write(self, output_folder: PathLike):
+        outfile = Path(output_folder, f"{self.name}.json")
+        with open(outfile, "w", encoding="utf-8") as f:
+            json.dump(self.spec, f, indent=2, allow_nan=False)
+            f.write("\n")

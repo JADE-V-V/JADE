@@ -52,6 +52,15 @@ on which version of OpenMC is being run.
   Development cycles of OpenMC are quite fast. Be sure to install an OpenMC version
   that your python environment supports.  
 
+ACTINV installation
+~~~~~~~~~~~~~~~~~~~
+
+Install the ACTINV CLI separately and configure its executable path as described
+in :ref:`actinv_environment`. JADE runs
+``actinv run <input>.json <output>.json`` as a subprocess, so no ACTINV Python
+dependency is required. The initial adapter supports local, deterministic
+neutron activation of one material per ``actinv-spec-1`` JSON input.
+
 .. _installdevelop:
 
 Developer Installation

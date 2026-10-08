@@ -214,6 +214,20 @@ class TestCEPlot:
         with pytest.raises(PlotIndexMismatchError):
             plot.plot()
 
+        # Test partial index match
+        df_target = pd.DataFrame(
+            {
+                "Case": range(2, 8),
+                "Value": list(df_ref.loc[2:4, "Value"] * 2) + [1.0] * 3,
+                "Error": [0.1] * 6,
+            }
+        )
+        plot = CEPlot(cfg, [("lib_ref", df_ref), ("lib_target", df_target)])
+        output = plot.plot()
+        line = output[0][0].axes[0].lines[1]
+        np.testing.assert_array_equal(line.get_xdata(), [2, 3, 4])
+        np.testing.assert_allclose(np.asarray(line.get_ydata()), [2.0, 2.0, 2.0])
+
 
 class TestBarPlot:
     def test_plot(self, tmpdir):

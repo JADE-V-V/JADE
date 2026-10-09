@@ -650,7 +650,7 @@ class CEPlot(Plot):
 
             # If this is the first lib, create the plot
             if idx == 0:
-                gridspec_kw = {"hspace": 0.25}
+                gridspec_kw = {"hspace": 0.4}
                 fig, ax = plt.subplots(
                     nrows=len(dfs), sharex=True, gridspec_kw=gridspec_kw
                 )
@@ -668,7 +668,7 @@ class CEPlot(Plot):
 
                 if idx == 0:  # operations to be performed only once per plot
                     axes[i].set_ylabel("C/E")
-                    axes[i].set_title(case, fontdict={"fontsize": "medium"})
+                    axes[i].set_title(case, fontdict={"fontsize": "medium"}, pad=2)
                     axes[i].axhline(y=1, linestyle="--", color="black")
                     axes[i].grid("True", which="major", linewidth=0.50, alpha=0.5)
                     axes[i].grid("True", which="minor", linewidth=0.20, alpha=0.5)

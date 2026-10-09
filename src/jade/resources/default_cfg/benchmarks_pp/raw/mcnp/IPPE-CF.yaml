@@ -8,14 +8,78 @@ Neutron flux SSD:
   12:
     - [by_energy, {}]
 
-Coarse neutron flux HPD:
+Coarse neutron flux HPD apply_to#1:
    concat_option: no_action
+   apply_to: ["IPPE-CF_FE_S1_NP"]
    2:
     - [condense_groups, {"bins": [0.001, 0.01,0.03, 0.06, 0.1, 0.15, 0.2, 0.4, 0.5, 0.7], "group_column": "Energy"}]
-
-Coarse neutron flux SSD:
+    - [add_column, {"column": "Iron sphere diameter", "values": "IPPE-CF_FE_S1_NP (20cm diameter)"}]
+Coarse neutron flux HPD apply_to#2:
    concat_option: no_action
+   apply_to: ["IPPE-CF_FE_S2_NP"]
+   2:
+    - [condense_groups, {"bins": [0.001, 0.01,0.03, 0.06, 0.1, 0.15, 0.2, 0.4, 0.5, 0.7], "group_column": "Energy"}]
+    - [add_column, {"column": "Iron sphere diameter", "values": "IPPE-CF_FE_S2_NP (30cm diameter)"}]
+Coarse neutron flux HPD apply_to#3:
+   concat_option: no_action
+   apply_to: ["IPPE-CF_FE_S3_NP"]
+   2:
+    - [condense_groups, {"bins": [0.001, 0.01,0.03, 0.06, 0.1, 0.15, 0.2, 0.4, 0.5, 0.7], "group_column": "Energy"}]
+    - [add_column, {"column": "Iron sphere diameter", "values": "IPPE-CF_FE_S3_NP (40cm diameter)"}]
+Coarse neutron flux HPD apply_to#4:
+   concat_option: no_action
+   apply_to: ["IPPE-CF_FE_S4_NP"]
+   2:
+    - [condense_groups, {"bins": [0.001, 0.01,0.03, 0.06, 0.1, 0.15, 0.2, 0.4, 0.5, 0.7], "group_column": "Energy"}]
+    - [add_column, {"column": "Iron sphere diameter", "values": "IPPE-CF_FE_S4_NP (50cm diameter)"}]
+Coarse neutron flux HPD apply_to#5:
+   concat_option: no_action
+   apply_to: ["IPPE-CF_FE_S5_NP"]
+   2:
+    - [condense_groups, {"bins": [0.001, 0.01,0.03, 0.06, 0.1, 0.15, 0.2, 0.4, 0.5, 0.7], "group_column": "Energy"}]
+    - [add_column, {"column": "Iron sphere diameter", "values": "IPPE-CF_FE_S5_NP (60cm diameter)"}]
+Coarse neutron flux HPD apply_to#6:
+   concat_option: no_action
+   apply_to: ["IPPE-CF_FE_S6_NP"]
+   2:
+    - [condense_groups, {"bins": [0.001, 0.01,0.03, 0.06, 0.1, 0.15, 0.2, 0.4, 0.5, 0.7], "group_column": "Energy"}]
+    - [add_column, {"column": "Iron sphere diameter", "values": "IPPE-CF_FE_S6_NP (70cm diameter)"}]
+
+Coarse neutron flux SSD apply_to#1:
+   concat_option: no_action
+   apply_to: ["IPPE-CF_FE_S1_NP"]
    12:
     - [condense_groups, {"bins": [0.2, 0.4, 0.5, 0.7, 1, 1.2, 1.5, 2, 2.5, 3, 4, 7, 10, 20], "group_column": "Energy"}]
+    - [add_column, {"column": "Iron sphere diameter", "values": "IPPE-CF_FE_S1_NP (20cm diameter)"}]
+Coarse neutron flux SSD apply_to#2:
+   concat_option: no_action
+   apply_to: ["IPPE-CF_FE_S2_NP"]
+   12:
+    - [condense_groups, {"bins": [0.2, 0.4, 0.5, 0.7, 1, 1.2, 1.5, 2, 2.5, 3, 4, 7, 10, 20], "group_column": "Energy"}]
+    - [add_column, {"column": "Iron sphere diameter", "values": "IPPE-CF_FE_S2_NP (30cm diameter)"}]
+Coarse neutron flux SSD apply_to#3:
+   concat_option: no_action
+   apply_to: ["IPPE-CF_FE_S3_NP"]
+   12:
+    - [condense_groups, {"bins": [0.2, 0.4, 0.5, 0.7, 1, 1.2, 1.5, 2, 2.5, 3, 4, 7, 10, 20], "group_column": "Energy"}]
+    - [add_column, {"column": "Iron sphere diameter", "values": "IPPE-CF_FE_S3_NP (40cm diameter)"}]
+Coarse neutron flux SSD apply_to#4:
+   concat_option: no_action
+   apply_to: ["IPPE-CF_FE_S4_NP"]
+   12:
+    - [condense_groups, {"bins": [0.2, 0.4, 0.5, 0.7, 1, 1.2, 1.5, 2, 2.5, 3, 4, 7, 10, 20], "group_column": "Energy"}]
+    - [add_column, {"column": "Iron sphere diameter", "values": "IPPE-CF_FE_S4_NP (50cm diameter)"}]
+Coarse neutron flux SSD apply_to#5:
+   concat_option: no_action
+   apply_to: ["IPPE-CF_FE_S5_NP"]
+   12:
+    - [condense_groups, {"bins": [0.2, 0.4, 0.5, 0.7, 1, 1.2, 1.5, 2, 2.5, 3, 4, 7, 10, 20], "group_column": "Energy"}]
+    - [add_column, {"column": "Iron sphere diameter", "values": "IPPE-CF_FE_S5_NP (60cm diameter)"}]
+Coarse neutron flux SSD apply_to#6:
+   concat_option: no_action
+   apply_to: ["IPPE-CF_FE_S6_NP"]
+   12:
+    - [condense_groups, {"bins": [0.2, 0.4, 0.5, 0.7, 1, 1.2, 1.5, 2, 2.5, 3, 4, 7, 10, 20], "group_column": "Energy"}]
+    - [add_column, {"column": "Iron sphere diameter", "values": "IPPE-CF_FE_S6_NP (70cm diameter)"}]
 
 # 0.0, 2.5E-8, 0.001, 0.01, 0.03, 0.06, 0.1, 0.15, 0.2, 0.4, 0.5, 0.7, 1.0, 1.2, 1.5, 2.0, 2.5, 3.0, 4.0, 7.0, 10.0, 20.0, 50.0, 1000.0

@@ -1,4 +1,4 @@
-Binned plots:
+Binned spectra plots:
   results:
     - Neutron leakage flux at 0 deg
     - Neutron leakage flux at 12.2 deg
@@ -6,7 +6,7 @@ Binned plots:
     - Neutron leakage flux at 41.8 deg
     - Neutron leakage flux at 66.8 deg
   plot_type: binned
-  title: Leakage lethragy flux
+  title: Leakage lethargy flux
   x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
   y_labels: "Leakage lethargy flux $\\left[\\mathrm{s}^{-1}\\cdot\\mathrm{u}^{-1}\\cdot\\mathrm{cm}^{-2}\\right]$"
   x: Energy
@@ -18,7 +18,7 @@ Binned plots:
     subcases: ["Angle", ['0 deg', '12.2 deg', '24.9 deg', '41.8 deg', '66.8 deg']]
     scale_subcases: true
 #
-C/E plots:
+C/E spectra plots:
   results:
     - Neutron leakage flux at 0 deg
     - Neutron leakage flux at 12.2 deg
@@ -30,6 +30,26 @@ C/E plots:
   x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
   y_labels: 'dummy'
   x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    subcases: ["Angle", ['0 deg', '12.2 deg', '24.9 deg', '41.8 deg', '66.8 deg']]
+    style: 'step'
+    ce_limits: [0.5, 1.5]
+    xscale: log
+#
+Coarse binned leakage flux C/E:
+  results:
+    - Coarse leakage flux at 0 deg
+    - Coarse leakage flux at 12.2 deg
+    - Coarse leakage flux at 24.9 deg
+    - Coarse leakage flux at 41.8 deg
+    - Coarse leakage flux at 66.8 deg
+  plot_type: ce
+  title: C/E
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: 'dummy'
+  x: Upper energy
   y: Value
   expand_runs: true
   plot_args:

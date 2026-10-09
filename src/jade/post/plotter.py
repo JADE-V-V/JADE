@@ -563,10 +563,11 @@ class CEPlot(Plot):
             ref = self.data[0][1].set_index([subcases[0], self.cfg.x])
         else:
             ref = self.data[0][1].set_index(self.cfg.x)
-        val1 = ref[self.cfg.y].sort_index()
-        err1 = ref["Error"].sort_index()
-
         for codelib, df in self.data[1:]:
+            # Reset the reference values for each codelib, as subcases or specific indices
+            # might have been dropped on previous iterations
+            val1 = ref[self.cfg.y].sort_index()
+            err1 = ref["Error"].sort_index()
             if subcases:
                 target = df.set_index([subcases[0], self.cfg.x])
             else:
@@ -601,10 +602,24 @@ class CEPlot(Plot):
                         err2 = err2[
                             ~err2.index.get_level_values(0).isin(missing_subcases)
                         ]
-                    else:
-                        raise PlotIndexMismatchError(val1.index, val2.index, codelib)
-                else:
+
+                if val1.empty or val2.empty:
                     raise PlotIndexMismatchError(val1.index, val2.index, codelib)
+
+                # If indices still don't match after removing missing subcases,
+                # try to find the common index and use only the matching entries
+                if same_index(val1.index, val2.index) is False:
+                    common_index = val1.index.intersection(val2.index)
+                    if common_index.empty:
+                        raise PlotIndexMismatchError(val1.index, val2.index, codelib)
+                    logger.warning(
+                        "Unmatched entries between reference and %s will be ignored.",
+                        codelib,
+                    )
+                    val1 = val1.loc[common_index]
+                    err1 = err1.loc[common_index]
+                    val2 = val2.loc[common_index]
+                    err2 = err2.loc[common_index]
 
             val2.index = val1.index
             err2.index = err1.index
@@ -635,7 +650,7 @@ class CEPlot(Plot):
 
             # If this is the first lib, create the plot
             if idx == 0:
-                gridspec_kw = {"hspace": 0.25}
+                gridspec_kw = {"hspace": 0.4}
                 fig, ax = plt.subplots(
                     nrows=len(dfs), sharex=True, gridspec_kw=gridspec_kw
                 )
@@ -653,7 +668,7 @@ class CEPlot(Plot):
 
                 if idx == 0:  # operations to be performed only once per plot
                     axes[i].set_ylabel("C/E")
-                    axes[i].set_title(case, fontdict={"fontsize": "medium"})
+                    axes[i].set_title(case, fontdict={"fontsize": "medium"}, pad=2)
                     axes[i].axhline(y=1, linestyle="--", color="black")
                     axes[i].grid("True", which="major", linewidth=0.50, alpha=0.5)
                     axes[i].grid("True", which="minor", linewidth=0.20, alpha=0.5)
@@ -918,7 +933,7 @@ class BarPlot(Plot):
 
         # Check if the data is higher than max
         labels = self.data[0][1][self.cfg.x].values
-        nrows = (len(labels)-1) // maxgroups + 1
+        nrows = (len(labels) - 1) // maxgroups + 1
         if nrows == 1:
             nlabels = len(labels)
         else:

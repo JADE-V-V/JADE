@@ -7,8 +7,10 @@ Neutron flux time domain:
     - [tof_to_energy, {"L": 6.825}]
     - [scale, {'factor': 5.85E6}]
     - [by_energy, {}]
-Coarse neutron flux time domain:
+#
+Coarse neutron flux time domain apply_to#1:
   concat_option: no_action
+  apply_to: ["IPPE-DT_FE_S1"]
   15:
     - [select_subset, {'column': 'Dir', 'values': [0]}]
     - [delete_cols, {'cols': ['Dir']}]
@@ -16,4 +18,52 @@ Coarse neutron flux time domain:
     - [tof_to_energy, {"L": 6.825}]
     - [scale, {'factor': 5.85E6}]
     - [condense_groups, {"bins": [0.01, 0.03, 0.06, 0.1, 0.15, 0.2, 0.4, 0.5, 0.7, 1, 1.2, 1.5, 2, 2.5, 3, 4, 7, 10, 20], "group_column": "Energy"}]
-
+    - [add_column, {"column": "Iron thickness", "values": "IPPE-DT_FE_S1 (2.5cm Fe)"}]
+#
+Coarse neutron flux time domain apply_to#2:
+  concat_option: no_action
+  apply_to: ["IPPE-DT_FE_S2"]
+  15:
+    - [select_subset, {'column': 'Dir', 'values': [0]}]
+    - [delete_cols, {'cols': ['Dir']}]
+    - [scale, {'factor': 1e-8, "column": Time}]
+    - [tof_to_energy, {"L": 6.825}]
+    - [scale, {'factor': 5.85E6}]
+    - [condense_groups, {"bins": [0.01, 0.03, 0.06, 0.1, 0.15, 0.2, 0.4, 0.5, 0.7, 1, 1.2, 1.5, 2, 2.5, 3, 4, 7, 10, 20], "group_column": "Energy"}]
+    - [add_column, {"column": "Iron thickness", "values": "IPPE-DT_FE_S2 (7.5cm Fe)"}]
+#
+Coarse neutron flux time domain apply_to#3:
+  concat_option: no_action
+  apply_to: ["IPPE-DT_FE_S3"]
+  15:
+    - [select_subset, {'column': 'Dir', 'values': [0]}]
+    - [delete_cols, {'cols': ['Dir']}]
+    - [scale, {'factor': 1e-8, "column": Time}]
+    - [tof_to_energy, {"L": 6.825}]
+    - [scale, {'factor': 5.85E6}]
+    - [condense_groups, {"bins": [0.01, 0.03, 0.06, 0.1, 0.15, 0.2, 0.4, 0.5, 0.7, 1, 1.2, 1.5, 2, 2.5, 3, 4, 7, 10, 20], "group_column": "Energy"}]
+    - [add_column, {"column": "Iron thickness", "values": "IPPE-DT_FE_S3 (10.0cm Fe)"}]
+#
+Coarse neutron flux time domain apply_to#4:
+  concat_option: no_action
+  apply_to: ["IPPE-DT_FE_S4"]
+  15:
+    - [select_subset, {'column': 'Dir', 'values': [0]}]
+    - [delete_cols, {'cols': ['Dir']}]
+    - [scale, {'factor': 1e-8, "column": Time}]
+    - [tof_to_energy, {"L": 6.825}]
+    - [scale, {'factor': 5.85E6}]
+    - [condense_groups, {"bins": [0.01, 0.03, 0.06, 0.1, 0.15, 0.2, 0.4, 0.5, 0.7, 1, 1.2, 1.5, 2, 2.5, 3, 4, 7, 10, 20], "group_column": "Energy"}]
+    - [add_column, {"column": "Iron thickness", "values": "IPPE-DT_FE_S4 (18.1cm Fe)"}]
+#
+Coarse neutron flux time domain apply_to#5:
+  concat_option: no_action
+  apply_to: ["IPPE-DT_FE_S5"]
+  15:
+    - [select_subset, {'column': 'Dir', 'values': [0]}]
+    - [delete_cols, {'cols': ['Dir']}]
+    - [scale, {'factor': 1e-8, "column": Time}]
+    - [tof_to_energy, {"L": 6.825}]
+    - [scale, {'factor': 5.85E6}]
+    - [condense_groups, {"bins": [0.01, 0.03, 0.06, 0.1, 0.15, 0.2, 0.4, 0.5, 0.7, 1, 1.2, 1.5, 2, 2.5, 3, 4, 7, 10, 20], "group_column": "Energy"}]
+    - [add_column, {"column": "Iron thickness", "values": "IPPE-DT_FE_S5 (28.0cm Fe)"}]

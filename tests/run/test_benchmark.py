@@ -33,7 +33,8 @@ RUN_RES = files(resources)
 
 
 class TestBenchmarkRun:
-    def test_run_mcnp(self, tmpdir):
+    @pytest.mark.parametrize("executables", [{CODE.MCNP: "mcnp6.2"}, {}])
+    def test_run_mcnp(self, tmpdir, executables):
         perform = [
             (CODE.MCNP, LibraryMCNP(name="FENDL 3.2c", path=None, suffix="31c")),
             (CODE.MCNP, LibraryMCNP(name="ENDF VII-1", path=None, suffix="00c")),
@@ -49,7 +50,7 @@ class TestBenchmarkRun:
         env_vars = EnvironmentVariables(
             10,
             10,
-            {CODE.MCNP: "mcnp6.2"},
+            executables,
             run_mode=RunMode.JOB_SUBMISSION,
             code_job_template={
                 CODE.MCNP: Path(DEFAULT_CFG, "exe_config/mcnp_template.sh")

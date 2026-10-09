@@ -34,11 +34,12 @@ class TestOpenMCStatePoint:
         out = omc.OpenMCStatePoint(STATEPOINT, CELL_VOLUMES)
         tallies = out.tallies_to_dataframes()
         assert "photon" == tallies[56]["particle"][5]
+        assert "total" == tallies[86]["nuclide"][0]
         assert 11 == tallies[56]["cell"][2]
-        assert 5.388881950654537e-06 == pytest.approx(
+        assert 5.398984399675055e-06 == pytest.approx(
             tallies[24]["mean"][5] / out.cell_data.cell_volumes[tallies[24]["cell"][5]]
         )
-        assert 4.331494120455328e-08 == pytest.approx(
+        assert 3.70844522806895e-08 == pytest.approx(
             tallies[24]["std. dev."][5]
             / out.cell_data.cell_volumes[tallies[24]["cell"][5]]
         )

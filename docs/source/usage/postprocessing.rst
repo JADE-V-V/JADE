@@ -33,6 +33,15 @@ In case the processing was changed and there is a need to re-generate the raw da
 can simply delete the folders corresponding to the benchmarks that need to be re-processed in the
 ``raw_data`` folder.
 
+ACTINV raw results
+------------------
+
+The ACTINV output reader exposes total heat as tally 1 in W/g and total activity
+as tally 2 in Bq/g, with elapsed time in seconds. ``Error=0`` means no Monte Carlo
+sampling error is supplied; it does not mean zero uncertainty in nuclear data,
+the irradiation history or the model. The FNS benchmark separately retains
+reported experimental errors.
+
 JADE post-processing
 ====================
 
@@ -68,6 +77,18 @@ and close the GUI.
     The user is free to save the file to whatever location in case multiple settings need to
     be prepared. Nevertheless, JADE will always look for the ``<root>/cfg/pp_cfg.yml`` file
     when executing the post-processing.
+
+ACTINV comparisons
+^^^^^^^^^^^^^^^^^^
+
+For comparisons, list the experiment and the ACTINV library in
+``cfg/pp_cfg.yml``. JADE always uses ``_exp_-_exp_`` as the reference, so the ratio
+is calculated/measured:
+
+.. code-block:: yaml
+
+   benchmarks: [FNS-DecayHeat]
+   code_libs: [_exp_-_exp_, _actinv_-_TENDL2025-patched-ENDF8-JEFF33_]
 
 Execute the post-processing
 ---------------------------

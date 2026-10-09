@@ -1,0 +1,252 @@
+Total neutron flux and 1 MeV Si equivalent fluence:
+  results:
+    - Total neutron flux
+    - 1 MeV Si equivalent fluence
+  plot_type: waves
+  title: Ratio plots
+  x_label: Detector position
+  y_labels: ""
+  x: Cells
+  y: Value
+  expand_runs: true
+  plot_args:
+    limits: [0.9, 1.1]
+#
+Neutron spectra (pos 1):
+  results:
+    - Neutron spectra (pos 1)
+  plot_type: binned
+  title: Neutron spectra (pos 1)
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: "Neutron flux $\\left[\\mathrm{n}/\\mathrm{cm}^2\\right]$"
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_CE: true
+    show_error: true
+#
+Neutron spectra (pos 2):
+  results:
+    - Neutron spectra (pos 2)
+  plot_type: binned
+  title: Neutron spectra (pos 2)
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: "Neutron flux $\\left[\\mathrm{n}/\\mathrm{cm}^2\\right]$"
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_CE: true
+    show_error: true
+#
+Neutron spectra (pos 3):
+  results:
+    - Neutron spectra (pos 3)
+  plot_type: binned
+  title: Neutron spectra (pos 3)
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: "Neutron flux $\\left[\\mathrm{n}/\\mathrm{cm}^2\\right]$"
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_CE: true
+    show_error: true
+#
+Neutron spectra (pos 4):
+  results:
+    - Neutron spectra (pos 4)
+  plot_type: binned
+  title: Neutron spectra (pos 4)
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: "Neutron flux $\\left[\\mathrm{n}/\\mathrm{cm}^2\\right]$"
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_CE: true
+    show_error: true
+#
+Neutron spectra (pos 5):
+  results:
+    - Neutron spectra (pos 5)
+  plot_type: binned
+  title: Neutron spectra (pos 5)
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: "Neutron flux $\\left[\\mathrm{n}/\\mathrm{cm}^2\\right]$"
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_CE: true
+    show_error: true
+#
+Neutron spectra (pos 6):
+  results:
+    - Neutron spectra (pos 6)
+  plot_type: binned
+  title: Neutron spectra (pos 6)
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: "Neutron flux $\\left[\\mathrm{n}/\\mathrm{cm}^2\\right]$"
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_CE: true
+    show_error: true
+#
+Neutron spectra (pos 7):
+  results:
+    - Neutron spectra (pos 7)
+  plot_type: binned
+  title: Neutron spectra (pos 7)
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: "Neutron flux $\\left[\\mathrm{n}/\\mathrm{cm}^2\\right]$"
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_CE: true
+    show_error: true
+#
+Neutron spectra (pos 8):
+  results:
+    - Neutron spectra (pos 8)
+  plot_type: binned
+  title: Neutron spectra (pos 8)
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: "Neutron flux $\\left[\\mathrm{n}/\\mathrm{cm}^2\\right]$"
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_CE: true
+    show_error: true
+#
+Neutron spectra (pos 9):
+  results:
+    - Neutron spectra (pos 9)
+  plot_type: binned
+  title: Neutron spectra (pos 9)
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: "Neutron flux $\\left[\\mathrm{n}/\\mathrm{cm}^2\\right]$"
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_CE: true
+    show_error: true
+#
+Neutron spectra (pos 10):
+  results:
+    - Neutron spectra (pos 10)
+  plot_type: binned
+  title: Neutron spectra (pos 10)
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: "Neutron flux $\\left[\\mathrm{n}/\\mathrm{cm}^2\\right]$"
+  x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_CE: true
+    show_error: true
+#
+Neutron Count Rates - 2 inches:
+  results:
+    - Count rates 2 inches
+  plot_type: ce
+  title: Neutron Count Rates - 2" Bonner Spheres
+  x_label: "Detector position"
+  y_labels: C/E
+  x: Cells
+  y: Value
+  expand_runs: true
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]
+#
+Neutron Count Rates - 3 inches:
+  results:
+    - Count rates 3 inches
+  plot_type: ce
+  title: Neutron Count Rates - 3" Bonner Spheres
+  x_label: "Detector position"
+  y_labels: C/E
+  x: Cells
+  y: Value
+  expand_runs: true
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]
+#
+Neutron Count Rates - 5 inches:
+  results:
+    - Count rates 5 inches
+  plot_type: ce
+  title: Neutron Count Rates - 5" Bonner Spheres
+  x_label: "Detector position"
+  y_labels: C/E
+  x: Cells
+  y: Value
+  expand_runs: true
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]
+#
+Neutron Count Rates - 5 inches (without Cd):
+  results:
+    - Count rates 5 inches (without Cd)
+  plot_type: ce
+  title: Neutron Count Rates - 5" Bonner Spheres (without Cd)
+  x_label: "Detector position"
+  y_labels: C/E
+  x: Cells
+  y: Value
+  expand_runs: true
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]
+#
+Neutron Count Rates - 8 inches:
+  results:
+    - Count rates 8 inches
+  plot_type: ce
+  title: Neutron Count Rates - 8" Bonner Spheres
+  x_label: "Detector position"
+  y_labels: C/E
+  x: Cells
+  y: Value
+  expand_runs: true
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]
+#
+Neutron Count Rates - 10 inches:
+  results:
+    - Count rates 10 inches
+  plot_type: ce
+  title: Neutron Count Rates - 10" Bonner Spheres
+  x_label: "Detector position"
+  y_labels: C/E
+  x: Cells
+  y: Value
+  expand_runs: true
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]
+#
+Neutron Count Rates - 12 inches:
+  results:
+    - Count rates 12 inches
+  plot_type: ce
+  title: Neutron Count Rates - 12" Bonner Spheres
+  x_label: "Detector position"
+  y_labels: C/E
+  x: Cells
+  y: Value
+  expand_runs: true
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]
+#

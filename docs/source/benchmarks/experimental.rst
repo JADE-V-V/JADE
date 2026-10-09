@@ -27,6 +27,10 @@ Experimental Benchmarks
 
 .. include:: benchdesc/fns-tof.rst
 
+.. _fnsdecayheat:
+
+.. include:: benchdesc/fns-decay-heat.rst
+
 .. include:: benchdesc/tud-fe.rst
 
 .. include:: benchdesc/ippe/ippe_dt.rst
@@ -38,3 +42,5 @@ Experimental Benchmarks
 .. include:: benchdesc/rcr/rcr-fe+ni.rst
 
 .. include:: benchdesc/ISIS-800MeV-C.rst
+
+.. include:: benchdesc/alarm-cf-lab.rst

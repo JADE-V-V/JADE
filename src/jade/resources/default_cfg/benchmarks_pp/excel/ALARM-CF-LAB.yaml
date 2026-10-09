@@ -1,0 +1,83 @@
+2" Count Rates(%):
+  results:
+    - Count rates 2 inches
+  comparison_type: percentage
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: Value
+  add_error: True
+  change_col_names: {'Cells': 'Detector position', 'Case': 'Labyrinth case'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+#
+3" Count Rates(%):
+  results:
+    - Count rates 3 inches
+  comparison_type: percentage
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: Value
+  add_error: True
+  change_col_names: {'Cells': 'Detector position', 'Case': 'Labyrinth case'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+#
+5" Count Rates(%):
+  results:
+    - Count rates 5 inches
+  comparison_type: percentage
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: Value
+  add_error: True
+  change_col_names: {'Cells': 'Detector position', 'Case': 'Labyrinth case'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+#
+5" (no Cd) Count Rates(%):
+  results:
+    - Count rates 5 inches (without Cd)
+  comparison_type: percentage
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: Value
+  add_error: True
+  change_col_names: {'Cells': 'Detector position', 'Case': 'Labyrinth case'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+#
+8" Count Rates(%):
+  results:
+    - Count rates 8 inches
+  comparison_type: percentage
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: Value
+  add_error: True
+  change_col_names: {'Cells': 'Detector position', 'Case': 'Labyrinth case'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+#
+10" Count Rates(%):
+  results:
+    - Count rates 10 inches
+  comparison_type: percentage
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: Value
+  add_error: True
+  change_col_names: {'Cells': 'Detector position', 'Case': 'Labyrinth case'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}
+#
+12" Count Rates(%):
+  results:
+    - Count rates 12 inches
+  comparison_type: percentage
+  table_type: pivot
+  x: Cells
+  y: Case
+  value: Value
+  add_error: True
+  change_col_names: {'Cells': 'Detector position', 'Case': 'Labyrinth case'}
+  conditional_formatting: {"red": 20, "orange": 10, "yellow": 5}

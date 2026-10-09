@@ -91,6 +91,7 @@ class TallyModOption(Enum):
 
     LETHARGY = "lethargy"
     SCALE = "scale"
+    COOLING_TIME = "cooling_time"
     NO_ACTION = "no_action"
     BY_ENERGY = "by_energy"
     BY_BIN = "by_bin"

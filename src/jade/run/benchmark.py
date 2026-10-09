@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import json
 import os
+import shlex
 import shutil
 import subprocess
+import tempfile
 from abc import ABC, abstractmethod
 from pathlib import Path
 
@@ -17,6 +19,7 @@ from jade.config.run_config import (
     BenchmarkRunConfig,
     EnvironmentVariables,
     Library,
+    LibraryACTINV,
     LibraryD1S,
     LibraryMCNP,
     RunMode,
@@ -29,8 +32,10 @@ from jade.helper.aux_functions import (
 )
 from jade.helper.constants import CODE
 from jade.helper.errors import ConfigError
+from jade.post.sim_output import ActinvSimOutput
 from jade.run.input import (
     Input,
+    InputACTINV,
     InputD1S,
     InputD1SSphere,
     InputMCNP,
@@ -348,6 +353,69 @@ class SingleRunD1S(SingleRunMCNP):
         return CODE.D1S
 
 
+class SingleRunACTINV(SingleRun):
+    """Implementation of the SingleRun class for ACTINV runs.
+
+    ACTINV is deterministic: ``nps`` is accepted by the factory but unused.
+    The command is ``actinv run <spec>.json result.json`` executed in the run
+    folder.
+    """
+
+    TIMEOUT_SECONDS = 180
+
+    @property
+    def code(self) -> CODE:
+        return CODE.ACTINV
+
+    def _build_command(self, config: EnvironmentVariables) -> list[str]:
+        executable = config.executables[self.code]
+        return [executable, "run", f"{self.input.name}.json", "result.json"]
+
+    def _get_lib_data_command(self) -> tuple[str, str]:
+        # Required by the base interface. Translated specs use absolute data paths.
+        return "ACTINV_DATA_DIR", str(Path(self.lib.path).parent)
+
+    @staticmethod
+    def check_environment(env_vars: EnvironmentVariables) -> None:
+        """Reject unsupported settings immediately before an ACTINV execution."""
+        if not env_vars.executables.get(CODE.ACTINV):
+            raise ConfigError("Set executables: actinv in env_vars_cfg.yml")
+        if env_vars.run_mode != RunMode.LOCAL:
+            raise ConfigError("ACTINV currently supports local execution only")
+        if env_vars.exe_prefix or (env_vars.mpi_tasks or 0) > 1:
+            raise ConfigError(
+                "ACTINV requires no executable prefix and at most one MPI task"
+            )
+
+    def run(self, env_vars: EnvironmentVariables, sim_folder: PathLike, test=False):
+        self.check_environment(env_vars)
+        command = self._build_command(env_vars)
+        if test:
+            return shlex.join(command)
+        folder = Path(sim_folder).resolve()
+        marker = folder / "actinv.complete"
+        marker.unlink(missing_ok=True)
+        # The scalar CLI is a leaf process. subprocess.run kills and reaps it on
+        # timeout and on cancellation; no shell or MPI wrapper is involved.
+        with tempfile.TemporaryDirectory(prefix=".actinv-", dir=folder) as temporary:
+            result_path = Path(temporary) / "result.json"
+            command[-1] = str(result_path)
+            with (folder / "dump.out").open("w", encoding="utf-8") as log:
+                subprocess.run(
+                    command,
+                    cwd=folder,
+                    stdout=log,
+                    stderr=subprocess.STDOUT,
+                    check=True,
+                    timeout=self.TIMEOUT_SECONDS,
+                )
+            parsed = ActinvSimOutput(temporary)
+            parsed.validate_schedule(self.input.spec)
+            result_path.replace(folder / "result.json")
+            marker.write_text("ACTINV result validated\n", encoding="utf-8")
+        return True
+
+
 class SingleRunFactory:
     @staticmethod
     def create(
@@ -392,9 +460,27 @@ class SingleRunFactory:
                 raise ConfigError("A D1S library needs to be provided for D1S runs")
             if not mock_input:
                 inp = InputD1S(template_folder, lib)
+        elif code == CODE.ACTINV:
+            single_run_class = SingleRunACTINV
+            if not isinstance(lib, LibraryACTINV):
+                raise ConfigError(
+                    "An ACTINV library needs to be provided for ACTINV runs"
+                )
+            if not mock_input:
+                inp = InputACTINV(template_folder, lib)
         else:
             raise ValueError(f"Code {code} not supported")
 
+        if mock_input and code == CODE.ACTINV:
+            # Use the persisted filename and refuse to silently change its data.
+            inp = InputACTINV(template_folder, lib)
+            original = (inp.spec.get("library"), inp.spec.get("decay"))
+            inp.translate()
+            if original != (inp.spec["library"], inp.spec["decay"]):
+                raise ConfigError(
+                    "ACTINV continuation data differ; regenerate the benchmark"
+                )
+            return single_run_class(inp, lib, nps)
         if mock_input:
             # create a mock input with only the name,
             # this is needed for continue run purposes
@@ -486,7 +572,7 @@ class BenchmarkRun:
             self.simulation_root, codelib_folder, self.config.name
         )
         flag_datapath = False
-        for single_run_folder in os.listdir(benchmark_root):
+        for single_run_folder in sorted(os.listdir(benchmark_root)):
             single_run_root = Path(benchmark_root, single_run_folder)
             # check if the simulation has been completed
             flag_run = CODE_CHECKERS[code].check_success(os.listdir(single_run_root))
@@ -533,13 +619,14 @@ class BenchmarkRun:
         # first we run the benchmark for each code-lib couple
         for code, lib in self.config.run:
             # --- perform some consistency checks here ---
-            # if a code is requested, its executable should also be provided
-            try:
-                self.env_vars.executables[code]
-            except KeyError:
-                raise ConfigError(
-                    f"An assessment was requested using {code.value} but the executable was not set in the main config file"
-                )
+            # Input-only generation needs no executable, regardless of the code.
+            if not self.config.only_input:
+                try:
+                    self.env_vars.executables[code]
+                except KeyError:
+                    raise ConfigError(
+                        f"An assessment was requested using {code.value} but the executable was not set in the main config file"
+                    )
 
             code_lib = print_code_lib(code, lib)
 
@@ -695,7 +782,7 @@ class SphereBenchmarkRun(BenchmarkRun):
         # benchmarks folder
         matpath = Path(Path(self.benchmark_templates_root).parent, "TypicalMaterials")
         inpmat = ipt.Input.from_input(matpath)
-        materials = inpmat.materials
+        materials = inpmat.mat_section
 
         # init a libmanager to get the zaid names
         lm = LibManager()
@@ -850,7 +937,7 @@ class SphereSDDRBenchmarkRun(SphereBenchmarkRun):
         # benchmarks folder
         matpath = Path(Path(self.benchmark_templates_root).parent, "TypicalMaterials")
         inpmat = ipt.Input.from_input(matpath)
-        materials = inpmat.materials
+        materials = inpmat.mat_section
 
         # init a libmanager to get the zaid names
         lm = LibManager()

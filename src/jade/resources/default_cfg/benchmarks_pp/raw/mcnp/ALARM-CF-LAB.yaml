@@ -1,0 +1,300 @@
+# Some useful aliases to avoid duplication
+_cells: &cells
+  601: 1
+  602: 2
+  603: 3
+  604: 4
+  605: 5
+  606: 6
+  607: 7
+  608: 8
+  609: 9
+  610: 10
+# --------------------------------------------------------
+Total neutron flux:
+  concat_option: no_action
+  14: [['replace',{'column':'Cells', 'values':*cells}]]
+# 
+Neutron spectra (pos 1):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [601]}], ['delete_cols', {'cols': ['Cells']}]]
+#
+Neutron spectra (pos 2):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [602]}], ['delete_cols', {'cols': ['Cells']}]]
+#
+Neutron spectra (pos 3):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [603]}], ['delete_cols', {'cols': ['Cells']}]]
+#
+Neutron spectra (pos 4):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [604]}], ['delete_cols', {'cols': ['Cells']}]]
+#
+Neutron spectra (pos 5):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [605]}], ['delete_cols', {'cols': ['Cells']}]]
+#
+Neutron spectra (pos 6):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [606]}], ['delete_cols', {'cols': ['Cells']}]]
+#
+Neutron spectra (pos 7):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [607]}], ['delete_cols', {'cols': ['Cells']}]]
+#
+Neutron spectra (pos 8):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [608]}], ['delete_cols', {'cols': ['Cells']}]]
+#
+Neutron spectra (pos 9):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [609]}], ['delete_cols', {'cols': ['Cells']}]]
+#
+Neutron spectra (pos 10):
+  concat_option: no_action
+  4: [['select_subset', {'column': 'Cells', 'values': [610]}], ['delete_cols', {'cols': ['Cells']}]]
+#
+Count rates 2 inches apply_to#1:
+  apply_to: ['ALARM-CF-LAB_1A', 'ALARM-CF-LAB_1B']
+  concat_option: no_action
+  24: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}]]
+#
+Count rates 3 inches apply_to#1:
+  apply_to: ['ALARM-CF-LAB_1A', 'ALARM-CF-LAB_1B']
+  concat_option: no_action
+  34: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}]]
+#
+Count rates 5 inches apply_to#1:
+  apply_to: ['ALARM-CF-LAB_1A', 'ALARM-CF-LAB_1B']
+  concat_option: no_action
+  44: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}]]
+#
+Count rates 5 inches (without Cd) apply_to#1:
+  apply_to: ['ALARM-CF-LAB_1A', 'ALARM-CF-LAB_1B']
+  concat_option: no_action
+  54: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}]]
+#
+Count rates 8 inches apply_to#1:
+  apply_to: ['ALARM-CF-LAB_1A', 'ALARM-CF-LAB_1B']
+  concat_option: no_action
+  64: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}]]
+#
+Count rates 10 inches apply_to#1:
+  apply_to: ['ALARM-CF-LAB_1A', 'ALARM-CF-LAB_1B']
+  concat_option: no_action
+  74: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}]]
+#
+Count rates 12 inches apply_to#1:
+  apply_to: ['ALARM-CF-LAB_1A', 'ALARM-CF-LAB_1B']
+  concat_option: no_action
+  84: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}]]
+#
+Count rates 2 inches apply_to#2:
+  apply_to: ['ALARM-CF-LAB_2A', 'ALARM-CF-LAB_3A']
+  concat_option: no_action
+  24: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,6,7,8]}]]
+#
+Count rates 3 inches apply_to#2:
+  apply_to: ['ALARM-CF-LAB_2A', 'ALARM-CF-LAB_3A']
+  concat_option: no_action
+  34: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,6,7,8]}]]
+#
+Count rates 5 inches apply_to#2:
+  apply_to: ['ALARM-CF-LAB_2A', 'ALARM-CF-LAB_3A']
+  concat_option: no_action
+  44: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,6,7,8]}]]
+#
+Count rates 5 inches (without Cd) apply_to#2:
+  apply_to: ['ALARM-CF-LAB_2A', 'ALARM-CF-LAB_3A']
+  concat_option: no_action
+  54: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,6,7,8]}]]
+#
+Count rates 8 inches apply_to#2:
+  apply_to: ['ALARM-CF-LAB_2A', 'ALARM-CF-LAB_3A']
+  concat_option: no_action
+  64: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,6,7,8]}]]
+#
+Count rates 10 inches apply_to#2:
+  apply_to: ['ALARM-CF-LAB_2A', 'ALARM-CF-LAB_3A']
+  concat_option: no_action
+  74: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,6,7,8]}]]
+#
+Count rates 12 inches apply_to#2:
+  apply_to: ['ALARM-CF-LAB_2A', 'ALARM-CF-LAB_3A']
+  concat_option: no_action
+  84: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,6,7,8]}]]
+#
+Count rates 2 inches apply_to#3:
+  apply_to: ['ALARM-CF-LAB_2B']
+  concat_option: no_action
+  24: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,7]}]]
+Count rates 3 inches apply_to#3:
+  apply_to: ['ALARM-CF-LAB_2B']
+  concat_option: no_action
+  34: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,7]}]]
+#
+Count rates 5 inches apply_to#3:
+  apply_to: ['ALARM-CF-LAB_2B']
+  concat_option: no_action
+  44: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,7]}]]
+#
+Count rates 5 inches (without Cd) apply_to#3:
+  apply_to: ['ALARM-CF-LAB_2B']
+  concat_option: no_action
+  54: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,7]}]]
+#
+Count rates 8 inches apply_to#3:
+  apply_to: ['ALARM-CF-LAB_2B']
+  concat_option: no_action
+  64: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,7]}]]
+#
+Count rates 10 inches apply_to#3:
+  apply_to: ['ALARM-CF-LAB_2B']
+  concat_option: no_action
+  74: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,7]}]]
+#
+Count rates 12 inches apply_to#3:
+  apply_to: ['ALARM-CF-LAB_2B']
+  concat_option: no_action
+  84: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,7]}]]
+#
+Count rates 2 inches apply_to#4:
+  apply_to: ['ALARM-CF-LAB_3B']
+  concat_option: no_action
+  24: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,6,7]}]]
+Count rates 3 inches apply_to#4:
+  apply_to: ['ALARM-CF-LAB_3B']
+  concat_option: no_action
+  34: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,6,7]}]]
+#
+Count rates 5 inches apply_to#4:
+  apply_to: ['ALARM-CF-LAB_3B']
+  concat_option: no_action
+  44: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,6,7]}]]
+#
+Count rates 5 inches (without Cd) apply_to#4:
+  apply_to: ['ALARM-CF-LAB_3B']
+  concat_option: no_action
+  54: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,6,7]}]]
+#
+Count rates 8 inches apply_to#4:
+  apply_to: ['ALARM-CF-LAB_3B']
+  concat_option: no_action
+  64: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,6,7]}]]
+#
+Count rates 10 inches apply_to#4:
+  apply_to: ['ALARM-CF-LAB_3B']
+  concat_option: no_action
+  74: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,6,7]}]]
+#
+Count rates 12 inches apply_to#4:
+  apply_to: ['ALARM-CF-LAB_3B']
+  concat_option: no_action
+  84: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[4,5,6,7]}]]
+#
+Count rates 2 inches apply_to#5:
+  apply_to: ['ALARM-CF-LAB_4A']
+  concat_option: no_action
+  24: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[1,2,3,4,5,6,7,8]}]]
+Count rates 3 inches apply_to#5:
+  apply_to: ['ALARM-CF-LAB_4A']
+  concat_option: no_action
+  34: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[1,2,3,4,5,6,7,8]}]]
+#
+Count rates 5 inches apply_to#5:
+  apply_to: ['ALARM-CF-LAB_4A']
+  concat_option: no_action
+  44: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[1,2,3,4,5,6,7,8]}]]
+#
+Count rates 5 inches (without Cd) apply_to#5:
+  apply_to: ['ALARM-CF-LAB_4A']
+  concat_option: no_action
+  54: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[1,2,3,4,5,6,7,8]}]]
+#
+Count rates 8 inches apply_to#5:
+  apply_to: ['ALARM-CF-LAB_4A']
+  concat_option: no_action
+  64: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[1,2,3,4,5,6,7,8]}]]
+#
+Count rates 10 inches apply_to#5:
+  apply_to: ['ALARM-CF-LAB_4A']
+  concat_option: no_action
+  74: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[1,2,3,4,5,6,7,8]}]]
+#
+Count rates 12 inches apply_to#5:
+  apply_to: ['ALARM-CF-LAB_4A']
+  concat_option: no_action
+  84: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[1,2,3,4,5,6,7,8]}]]
+#
+Count rates 2 inches apply_to#6:
+  apply_to: ['ALARM-CF-LAB_4B']
+  concat_option: no_action
+  24: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[5,6,7,8]}]]
+Count rates 3 inches apply_to#6:
+  apply_to: ['ALARM-CF-LAB_4B']
+  concat_option: no_action
+  34: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[5,6,7,8]}]]
+#
+Count rates 5 inches apply_to#6:
+  apply_to: ['ALARM-CF-LAB_4B']
+  concat_option: no_action
+  44: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[5,6,7,8]}]]
+#
+Count rates 5 inches (without Cd) apply_to#6:
+  apply_to: ['ALARM-CF-LAB_4B']
+  concat_option: no_action
+  54: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[5,6,7,8]}]]
+#
+Count rates 8 inches apply_to#6:
+  apply_to: ['ALARM-CF-LAB_4B']
+  concat_option: no_action
+  64: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[5,6,7,8]}]]
+#
+Count rates 10 inches apply_to#6:
+  apply_to: ['ALARM-CF-LAB_4B']
+  concat_option: no_action
+  74: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[5,6,7,8]}]]
+#
+Count rates 12 inches apply_to#6:
+  apply_to: ['ALARM-CF-LAB_4B']
+  concat_option: no_action
+  84: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[5,6,7,8]}]]
+#
+Count rates 2 inches apply_to#7:
+  apply_to: ['ALARM-CF-LAB_5A']
+  concat_option: no_action
+  24: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[7,8]}]]
+Count rates 3 inches apply_to#7:
+  apply_to: ['ALARM-CF-LAB_5A']
+  concat_option: no_action
+  34: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[7,8]}]]
+#
+Count rates 5 inches apply_to#7:
+  apply_to: ['ALARM-CF-LAB_5A']
+  concat_option: no_action
+  44: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[7,8]}]]
+#
+Count rates 5 inches (without Cd) apply_to#7:
+  apply_to: ['ALARM-CF-LAB_5A']
+  concat_option: no_action
+  54: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[7,8]}]]
+#
+Count rates 8 inches apply_to#7:
+  apply_to: ['ALARM-CF-LAB_5A']
+  concat_option: no_action
+  64: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[7,8]}]]
+#
+Count rates 10 inches apply_to#7:
+  apply_to: ['ALARM-CF-LAB_5A']
+  concat_option: no_action
+  74: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[7,8]}]]
+#
+Count rates 12 inches apply_to#7:
+  apply_to: ['ALARM-CF-LAB_5A']
+  concat_option: no_action
+  84: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['scale', {'factor': 5.66E8}], ['replace',{'column':'Cells', 'values':*cells}], ['select_subset', {'column':'Cells', 'values':[7,8]}]]
+#
+1 MeV Si equivalent fluence:
+  concat_option: no_action
+  94: [['groupby', {'by':'Cells', 'action':'sum'}], ['delete_cols', {'cols': ['Energy']}], ['replace',{'column':'Cells', 'values':*cells}]]

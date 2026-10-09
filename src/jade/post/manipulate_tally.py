@@ -139,6 +139,29 @@ def no_action(tally: pd.DataFrame) -> pd.DataFrame:
     return tally
 
 
+def cooling_time(tally: pd.DataFrame, shutdown_time: float) -> pd.DataFrame:
+    """Select endpoints strictly after shutdown and express time since shutdown.
+
+    All times use seconds. Values and relative errors are unchanged; this is
+    an origin change, not a time-bin integration or interpolation. An output
+    endpoint must exist at the configured shutdown time. This check does not
+    establish that irradiation actually ended there.
+    """
+    tolerance = 1e-6
+    if not math.isfinite(shutdown_time) or shutdown_time < 0:
+        raise ValueError("shutdown_time must be finite and nonnegative")
+    times = tally["time"].to_numpy(dtype=float)
+    if not np.isfinite(times).all() or not (np.diff(times) > 0).all():
+        raise ValueError("Time endpoints must be finite and strictly increasing")
+    if not (np.abs(times - shutdown_time) <= tolerance).any():
+        raise ValueError(f"No output endpoint at shutdown_time={shutdown_time} s")
+    cooling = tally.loc[tally["time"] > shutdown_time + tolerance].copy()
+    if cooling.empty:
+        raise ValueError("No output endpoints after shutdown")
+    cooling["time"] -= shutdown_time
+    return cooling.reset_index(drop=True)
+
+
 def select_subset(tally: pd.DataFrame, column: str, values: list) -> pd.DataFrame:
     """Select a subset of the tally based on the provided column and values."""
     return tally.set_index(column).loc[values].reset_index()
@@ -414,6 +437,7 @@ def mass(tally: pd.DataFrame, masses: dict[int, float]) -> pd.DataFrame:
 
 
 MOD_FUNCTIONS = {
+    TallyModOption.COOLING_TIME: cooling_time,
     TallyModOption.LETHARGY: by_lethargy,
     TallyModOption.SCALE: scale,
     TallyModOption.NO_ACTION: no_action,

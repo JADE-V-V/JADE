@@ -103,6 +103,11 @@ class AtlasProcessor:
     ):
         """Generate a plot for each case/run"""
         for case, data in cases.items():
+            if len(data) < 2 and plot_cfg.plot_type.value in ("ce", "ratio"):
+                logger.warning(
+                    f"Skipping {case} for {plot_cfg.name}: at least 2 code-libraries are needed to compare."
+                )
+                continue
             atlas.doc.add_heading(case, level=2)
             cfg = deepcopy(plot_cfg)
             cfg.name = f"{cfg.name} {case}"

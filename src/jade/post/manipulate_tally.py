@@ -15,15 +15,25 @@ logger = logging.getLogger(__name__)
 # --- functions to modify tallies ---
 def by_lethargy(tally: pd.DataFrame) -> pd.DataFrame:
     """Convert values by energy into values by unit lethargy."""
+
+    flux = tally["Value"].values.astype(float)
     # Energies for lethargy computation
-    energies = tally["Energy"].values
-    flux = tally["Value"].values
-
-    ergs = [1e-10]  # Additional "zero" energy for lethargy computation
-    ergs.extend(energies.tolist())
-    ergs = np.array(ergs)
-
-    flux = flux / np.log(ergs[1:] / ergs[:-1])
+    # If the result is coarse binned (prior condense_groups applied), Lower and Upper energy columns are required to compute the lethargy
+    if "Lower energy" in tally.columns and "Upper energy" in tally.columns:
+        lower_bounds = np.array(tally["Lower energy"].values)
+        upper_bounds = np.array(tally["Upper energy"].values)
+        flux = flux / np.log(upper_bounds / lower_bounds)  # normalize by lethargy
+    else:  # if no prior condense_groups was applied, read directly the energy column
+        ergs = tally["Energy"].values
+        if ergs.dtype == object:
+            logger.debug(
+                "Coarse binned results require the inclusion of 'Lower energy' and 'Upper energy' columns in the csv results to normalize by lethargy."
+            )
+        energies = [1e-10]
+        energies.extend(ergs.astype(float))
+        flux = flux / np.log(
+            np.array(energies[1:]) / np.array(energies[:-1])
+        )  # normalize by lethargy
 
     tally["Value"] = flux
     return tally
@@ -37,13 +47,24 @@ def by_energy(tally: pd.DataFrame) -> pd.DataFrame:
 def divide_by_bin(tally: pd.DataFrame, column_name: str) -> pd.DataFrame:
     """Convert values by time into values by unit time."""
     bins = tally[column_name].values
-    flux = tally["Value"].values
+    flux = tally["Value"].values.astype(float)
+    energy = column_name == "Energy"
 
-    bin_intervals = [1e-10]  # Additional "zero" bin
-    bin_intervals.extend(bins.tolist())
-    bin_intervals = np.array(bin_intervals)
+    if "Lower energy" in tally.columns and "Upper energy" in tally.columns:
+        lower_bounds = np.array(tally["Lower energy"].values)
+        upper_bounds = np.array(tally["Upper energy"].values)
+        flux = flux / np.abs(upper_bounds - lower_bounds)  # normalize by bin width
+    else:
+        if energy and bins.dtype == object:
+            logger.debug(
+                "Coarse binned results require the inclusion of 'Lower energy' and 'Upper energy' columns in the csv results to normalize by energy."
+            )
+        bins = [1e-10]
+        bins.extend(tally[column_name].values.astype(float))
+        flux = flux / np.abs(
+            np.array(bins[1:]) - np.array(bins[:-1])
+        )  # normalize by bin width
 
-    flux = flux / np.abs((bin_intervals[1:] - bin_intervals[:-1]))
     tally["Value"] = flux
     return tally
 
@@ -94,8 +115,11 @@ def condense_groups(
         grouped["Error"] = grouped["abs err"] / grouped["Value"]
     del grouped["abs err"]
     # drop zero values
-    grouped = grouped[grouped["Value"] != 0]
-    return grouped.reset_index()
+    grouped = grouped[grouped["Value"] != 0].reset_index()
+    grouped[["Lower energy", "Upper energy"]] = (
+        grouped["Energy"].str.split(" - ", expand=True).astype(float)
+    )
+    return grouped
 
 
 def scale(

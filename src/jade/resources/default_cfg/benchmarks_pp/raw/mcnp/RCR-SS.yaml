@@ -22,16 +22,16 @@ Coarse neutron flux HPD:
    15:
       - [select_subset, {'column': 'Dir', 'values': [0]}]
       - [delete_cols, {'cols': ['Dir']}]
-      - [by_energy, {}]
       - [condense_groups, {"bins": [0.001, 0.01, 0.03, 0.06, 0.1, 0.15, 0.2, 0.4, 0.5, 0.7, 1.0, 1.2, 1.5, 2.0, 2.5, 3.0, 4.0, 7.0, 10.0, 20.0], "group_column": "Energy"}]
+      - [by_energy, {}]
 Coarse neutron flux SSD:
    apply_to: [RCR-SS_SR]
    concat_option: no_action
    5:
      - [select_subset, {'column': 'Dir', 'values': [0]}]
      - [delete_cols, {'cols': ['Dir']}]
-     - [by_energy, {}]
      - [condense_groups, {"bins": [0.1, 0.2, 0.4, 0.5, 0.7, 1.0, 1.2, 1.5, 2.0, 2.5, 3.0, 4.0, 7.0, 10.0, 20.0], "group_column": "Energy"}]
+     - [by_energy, {}]
 Cumulative Reaction Rate Ni (SR):
     apply_to: [RCR-SS_SR]
     concat_option: no_action

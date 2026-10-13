@@ -12,3 +12,19 @@ Neutron Leakage flux:
   plot_args:
     show_error: false
     show_CE: false
+#
+Coarse binned leakage flux C/E:
+  results:
+    - Coarse neutron flux time domain
+  plot_type: ce
+  title: C/E
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: 'dummy'
+  x: Upper energy
+  y: Value
+  expand_runs: false
+  plot_args:
+    subcases: ["Iron thickness", ["IPPE-DT_FE_S1 (2.5cm Fe)", "IPPE-DT_FE_S2 (7.5cm Fe)", "IPPE-DT_FE_S3 (10.0cm Fe)", "IPPE-DT_FE_S4 (18.1cm Fe)", "IPPE-DT_FE_S5 (28.0cm Fe)"]]
+    style: 'step'
+    ce_limits: [0.5, 1.5]
+    xscale: log

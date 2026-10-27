@@ -8,6 +8,7 @@ executables:
   openmc:  path/to/openmc/executable  # idem
   serpent: path/to/serpent/executable  # idem
   d1s: path/to/d1s/executable  # idem
+  actinv:  # path to ACTINV; local mode with exe_prefix: null and mpi_tasks: 0 only
 
 # run mode is either "local", "job" or "global_job"
 # local: the code will be run locally on the machine where JADE is running

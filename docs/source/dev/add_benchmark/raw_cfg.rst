@@ -117,6 +117,14 @@ The currently supported modifiers are:
   * *new_columns*: the names of the new columns.
   
 * ``keep_last_row``: keeps only the last row of the tally. No arguments are expected. 
+* ``cooling_time``: converts elapsed time to seconds after shutdown. The required
+  *shutdown_time* argument is a finite, non-negative time in seconds. The tally's
+  *time* column must be finite and strictly increasing, and include the shutdown
+  endpoint within ``1e-6`` seconds. Rows at or before that endpoint are removed;
+  the remaining times have *shutdown_time* subtracted. Values and errors are
+  unchanged, and no interpolation is performed. This modifier checks the
+  endpoint, not whether irradiation actually ends there.
+
 * ``groupby``: this implements the pandas groupby method. The keyargs to provide are:
   
   * *by*: the name of the column to group by. If 'all' the operation is performed on the

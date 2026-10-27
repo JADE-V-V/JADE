@@ -165,6 +165,13 @@ def add_rmode0(path: PathLike) -> None:
                             f.write("RMODE 0\n")
 
 
+class ACTINVChecker(SimulationChecker):
+    """Only the adapter publishes the marker, after validating a fresh result."""
+
+    def check_success(self, files: list[str]) -> bool:
+        return "result.json" in files and "actinv.complete" in files
+
+
 # Dictionary mapping CODE enums to checker instances
 # All checkers implement the SimulationChecker interface
 CODE_CHECKERS: dict[CODE, SimulationChecker] = {
@@ -172,6 +179,7 @@ CODE_CHECKERS: dict[CODE, SimulationChecker] = {
     CODE.OPENMC: OpenMCChecker(),
     CODE.SERPENT: SerpentChecker(),
     CODE.D1S: D1SChecker(),
+    CODE.ACTINV: ACTINVChecker(),
 }
 
 

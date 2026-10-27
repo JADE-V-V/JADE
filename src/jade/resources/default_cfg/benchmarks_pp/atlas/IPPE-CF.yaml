@@ -12,6 +12,22 @@ Neutron flux HPD:
     show_error: false
     show_CE: false
 #
+Coarse binned neutron flux HPD:
+  results:
+    - Coarse neutron flux HPD
+  plot_type: ce
+  title: IPPE CF Coarse neutron flux (HPD)
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: 'dummy'
+  x: Upper energy
+  y: Value
+  expand_runs: false
+  plot_args:
+    subcases: ["Iron sphere diameter", ["IPPE-CF_FE_S1_NP (20cm diameter)", "IPPE-CF_FE_S2_NP (30cm diameter)", "IPPE-CF_FE_S3_NP (40cm diameter)", "IPPE-CF_FE_S4_NP (50cm diameter)", "IPPE-CF_FE_S5_NP (60cm diameter)", "IPPE-CF_FE_S6_NP (70cm diameter)"]]
+    style: 'step'
+    ce_limits: [0.5, 1.5]
+    xscale: log
+#
 Neutron flux SSD:
   results:
     - Neutron flux SSD
@@ -25,3 +41,19 @@ Neutron flux SSD:
   plot_args:
     show_error: false
     show_CE: false
+#
+Coarse binned neutron flux SSD:
+  results:
+    - Coarse neutron flux SSD
+  plot_type: ce
+  title: IPPE CF Coarse neutron flux (SSD)
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: 'dummy'
+  x: Upper energy
+  y: Value
+  expand_runs: false
+  plot_args:
+    subcases: ["Iron sphere diameter", ["IPPE-CF_FE_S1_NP (20cm diameter)", "IPPE-CF_FE_S2_NP (30cm diameter)", "IPPE-CF_FE_S3_NP (40cm diameter)", "IPPE-CF_FE_S4_NP (50cm diameter)", "IPPE-CF_FE_S5_NP (60cm diameter)", "IPPE-CF_FE_S6_NP (70cm diameter)"]]
+    style: 'step'
+    ce_limits: [0.5, 1.5]
+    xscale: log

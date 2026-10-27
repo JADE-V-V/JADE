@@ -68,10 +68,9 @@ class TestIputMCNP:
 
         # Check if the file was written correctly
         read_inp = ipt.Input.from_input(Path(tmpdir).joinpath("Oktavian_Al.i"))
-        nps_lines = read_inp.other_data["NPS"].lines
-        assert len(nps_lines) == 1
-        assert nps_lines[0][:6] == "NPS 10"
-        assert read_inp.materials["M1"].submaterials[0].zaidList[0].library == "31c"
+        nps_line = read_inp.other_data["NPS"].text
+        assert nps_line[:6] == "NPS 10"
+        assert read_inp.mat_section["M1"].zaids[0].library == "31c"
         assert os.path.exists(Path(tmpdir).joinpath("wwinp"))
 
 
@@ -114,10 +113,9 @@ class TestInputMCNPSphere:
 
         # Check if the file was written correctly
         read_inp = ipt.Input.from_input(Path(tmpdir).joinpath("Sphere_1001_H-1.i"))
-        nps_lines = read_inp.other_data["NPS"].lines
-        assert len(nps_lines) == 1
-        assert nps_lines[0][:6] == "NPS 10"
-        assert read_inp.materials["M1"].submaterials[0].zaidList[0].library == "31c"
+        nps_line = read_inp.other_data["NPS"].text
+        assert nps_line[:6] == "NPS 10"
+        assert read_inp.mat_section["M1"].zaids[0].library == "31c"
 
 
 @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC not available")

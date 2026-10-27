@@ -68,6 +68,34 @@ are all optional:
 
 
 
+.. _actinv_environment:
+
+ACTINV execution settings
+-------------------------
+
+Use these settings in ``cfg/env_vars_cfg.yml`` for ACTINV:
+
+.. code-block:: yaml
+
+   mpi_tasks: 0
+   openmp_threads: 1
+   executables:
+     actinv: /path/to/actinv
+   run_mode: local
+   code_job_template: {}
+   exe_prefix: null
+
+The initial adapter rejects multiple MPI tasks, executable prefixes and
+scheduler modes when an ACTINV case executes. These settings apply to the whole
+JADE session; JADE's default configuration sets ``exe_prefix: srun``, which must
+be cleared for ACTINV. JADE's ``openmp_threads`` setting does not configure
+ACTINV.
+
+With ``only_input: true``, input generation needs no executable and does not
+impose these execution settings. ``continue`` executes previously generated
+inputs and checks the settings even if ``only_input`` is still true. See
+:ref:`actinv_run` for input requirements and execution behaviour.
+
 Configure the libraries
 =======================
 Another mandatory configuration is the one of nuclear data libraries. The user should provide the path to
@@ -108,6 +136,32 @@ Finally, an example of a D1S library settings:
             # isotopes will be set to be activated (i.e. will use the D1S library)
             transport_library_path: /path/to/xsdir  # path to the xsdir file for the transport lib
             transport_suffix: 32c  # correspondent suffix in the xsdir file for the transport lib
+
+.. _actinv_libraries:
+
+ACTINV activation and decay data
+--------------------------------
+
+In ``cfg/libs_cfg.yml``, each ACTINV library name selects an explicit activation
+and decay combination. Paths should be absolute; relative paths resolve from
+the directory where JADE starts. The activation NPZ requires its companion
+``<stem>_index.json`` with schema ``actinv-library-index-2``, neutron projectile
+and ``fispact-709`` groups.
+
+.. code-block:: yaml
+
+   TENDL2025-patched-ENDF8-JEFF33:
+     actinv:
+       path: /data/activation/tendl-2025-patched-neutron-709g.npz
+       decay_primary: /data/decay/endf-b-viii-0_decay.dat
+       decay_fallback: /data/decay/jeff-3-3_decay.dat
+
+Library names label JADE's tables and plots, so name the data actually used:
+the example activation file is ACTINV's patched derivative of TENDL-2025, not
+an official TENDL release. ``decay_fallback`` is optional. The selected
+configuration replaces all template library and decay references, including
+catalog references. A missing file is an error. There is no automatic choice of
+a different file or retention of a template fallback when none is configured.
 
 
    

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import os
 import xml.etree.ElementTree as ET
 from abc import ABC, abstractmethod
@@ -349,6 +351,55 @@ class LibraryD1S(LibraryMCNP):
     transport_suffix: str
 
 
+@dataclass
+class LibraryACTINV(Library):
+    """Explicit activation NPZ and decay files for scalar neutron calculations.
+
+    Relative paths are resolved against the JADE working directory when the
+    configuration is loaded. The activation index must accompany the NPZ.
+    No directory scanning or implicit catalog selection is performed.
+    """
+
+    decay_primary: PathLike
+    decay_fallback: PathLike | None = None
+
+    def __post_init__(self):
+        for field in ("path", "decay_primary", "decay_fallback"):
+            value = getattr(self, field)
+            if field == "decay_fallback" and value is None:
+                continue
+            if not isinstance(value, (str, os.PathLike)) or not str(value):
+                raise ConfigError(f"ACTINV {field} must name a data file")
+            resolved = Path(value).expanduser().resolve()
+            if not resolved.is_file():
+                raise ConfigError(f"ACTINV {field} file not found: {resolved}")
+            setattr(self, field, resolved)
+        if self.path.suffix != ".npz":
+            raise ConfigError("ACTINV path must name an activation .npz file")
+        index_path = self.path.with_name(f"{self.path.stem}_index.json")
+        try:
+            index = json.loads(index_path.read_text(encoding="utf-8"))
+            if (
+                index["schema"] != "actinv-library-index-2"
+                or index.get("projectile", "neutron") != "neutron"
+                or index["groups"] != "fispact-709"
+            ):
+                raise ValueError("expected neutron fispact-709 activation index")
+            self._available_zaids = sorted({str(t["za"]) for t in index["targets"]})
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            raise ConfigError(
+                f"Invalid ACTINV activation index {index_path}: {error}"
+            ) from error
+        digest = hashlib.sha256()
+        with self.path.open("rb") as source:
+            for chunk in iter(lambda: source.read(1 << 20), b""):
+                digest.update(chunk)
+        self.sha256 = digest.hexdigest()
+
+    def get_lib_zaids(self) -> list[str]:
+        return self._available_zaids
+
+
 class LibraryFactory:
     def __init__(self, lib_cfg: PathLike) -> None:
         """Factory objects which helps to create the correct Library for each code
@@ -404,6 +455,8 @@ class LibraryFactory:
             return LibrarySerpent(name, **kwargs)
         elif code == CODE.D1S:
             return LibraryD1S(name, **kwargs)
+        elif code == CODE.ACTINV:
+            return LibraryACTINV(name, **kwargs)
         else:
             raise ConfigError(f"Code {code} not supported")
 
@@ -492,7 +545,7 @@ class BenchmarkRunConfig:
             # skip the experiment tag
             if code_tag == "exp":
                 continue
-            libs = options["codes"][code_tag]
+            libs = options["codes"].get(code_tag, [])
             for lib in libs:
                 run.append((CODE(code_tag), lib_factory.create(CODE(code_tag), lib)))
 

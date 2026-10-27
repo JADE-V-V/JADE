@@ -6,6 +6,7 @@ class CODE(Enum):
     OPENMC = "openmc"
     SERPENT = "serpent"
     D1S = "d1s"
+    ACTINV = "actinv"
     EXPERIMENT = "exp"
 
 

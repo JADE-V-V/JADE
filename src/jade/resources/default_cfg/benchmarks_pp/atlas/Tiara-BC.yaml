@@ -14,7 +14,7 @@ Binned plots:
     subcases: ["Offset", ['on-axis', '20 cm', '40 cm']]
     xscale: linear
 #
-C/E plots:
+C/E fine binned plots:
   results:
     - Neutron yield
   plot_type: ce
@@ -22,6 +22,21 @@ C/E plots:
   x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
   y_labels: 'dummy'
   x: Energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    subcases: ["Offset", ['on-axis', '20 cm', '40 cm']]
+    style: 'step'
+    ce_limits: [0.5, 1.5]
+#
+C/E coarse binned plots:
+  results:
+    - Coarse neutron yield
+  plot_type: ce
+  title: Coarse neutron yield C/E
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: 'dummy'
+  x: Upper energy
   y: Value
   expand_runs: true
   plot_args:

@@ -15,15 +15,25 @@ logger = logging.getLogger(__name__)
 # --- functions to modify tallies ---
 def by_lethargy(tally: pd.DataFrame) -> pd.DataFrame:
     """Convert values by energy into values by unit lethargy."""
+
+    flux = tally["Value"].values.astype(float)
     # Energies for lethargy computation
-    energies = tally["Energy"].values
-    flux = tally["Value"].values
-
-    ergs = [1e-10]  # Additional "zero" energy for lethargy computation
-    ergs.extend(energies.tolist())
-    ergs = np.array(ergs)
-
-    flux = flux / np.log(ergs[1:] / ergs[:-1])
+    # If the result is coarse binned (prior condense_groups applied), Lower and Upper energy columns are required to compute the lethargy
+    if "Lower energy" in tally.columns and "Upper energy" in tally.columns:
+        lower_bounds = np.array(tally["Lower energy"].values)
+        upper_bounds = np.array(tally["Upper energy"].values)
+        flux = flux / np.log(upper_bounds / lower_bounds)  # normalize by lethargy
+    else:  # if no prior condense_groups was applied, read directly the energy column
+        ergs = tally["Energy"].values
+        if ergs.dtype == object:
+            logger.debug(
+                "Coarse binned results require the inclusion of 'Lower energy' and 'Upper energy' columns in the csv results to normalize by lethargy."
+            )
+        energies = [1e-10]
+        energies.extend(ergs.astype(float))
+        flux = flux / np.log(
+            np.array(energies[1:]) / np.array(energies[:-1])
+        )  # normalize by lethargy
 
     tally["Value"] = flux
     return tally
@@ -37,13 +47,24 @@ def by_energy(tally: pd.DataFrame) -> pd.DataFrame:
 def divide_by_bin(tally: pd.DataFrame, column_name: str) -> pd.DataFrame:
     """Convert values by time into values by unit time."""
     bins = tally[column_name].values
-    flux = tally["Value"].values
+    flux = tally["Value"].values.astype(float)
+    energy = column_name == "Energy"
 
-    bin_intervals = [1e-10]  # Additional "zero" bin
-    bin_intervals.extend(bins.tolist())
-    bin_intervals = np.array(bin_intervals)
+    if "Lower energy" in tally.columns and "Upper energy" in tally.columns:
+        lower_bounds = np.array(tally["Lower energy"].values)
+        upper_bounds = np.array(tally["Upper energy"].values)
+        flux = flux / np.abs(upper_bounds - lower_bounds)  # normalize by bin width
+    else:
+        if energy and bins.dtype == object:
+            logger.debug(
+                "Coarse binned results require the inclusion of 'Lower energy' and 'Upper energy' columns in the csv results to normalize by energy."
+            )
+        bins = [1e-10]
+        bins.extend(tally[column_name].values.astype(float))
+        flux = flux / np.abs(
+            np.array(bins[1:]) - np.array(bins[:-1])
+        )  # normalize by bin width
 
-    flux = flux / np.abs((bin_intervals[1:] - bin_intervals[:-1]))
     tally["Value"] = flux
     return tally
 
@@ -94,8 +115,11 @@ def condense_groups(
         grouped["Error"] = grouped["abs err"] / grouped["Value"]
     del grouped["abs err"]
     # drop zero values
-    grouped = grouped[grouped["Value"] != 0]
-    return grouped.reset_index()
+    grouped = grouped[grouped["Value"] != 0].reset_index()
+    grouped[["Lower energy", "Upper energy"]] = (
+        grouped["Energy"].str.split(" - ", expand=True).astype(float)
+    )
+    return grouped
 
 
 def scale(
@@ -113,6 +137,29 @@ def scale(
 def no_action(tally: pd.DataFrame) -> pd.DataFrame:
     """Do nothing to the tally."""
     return tally
+
+
+def cooling_time(tally: pd.DataFrame, shutdown_time: float) -> pd.DataFrame:
+    """Select endpoints strictly after shutdown and express time since shutdown.
+
+    All times use seconds. Values and relative errors are unchanged; this is
+    an origin change, not a time-bin integration or interpolation. An output
+    endpoint must exist at the configured shutdown time. This check does not
+    establish that irradiation actually ended there.
+    """
+    tolerance = 1e-6
+    if not math.isfinite(shutdown_time) or shutdown_time < 0:
+        raise ValueError("shutdown_time must be finite and nonnegative")
+    times = tally["time"].to_numpy(dtype=float)
+    if not np.isfinite(times).all() or not (np.diff(times) > 0).all():
+        raise ValueError("Time endpoints must be finite and strictly increasing")
+    if not (np.abs(times - shutdown_time) <= tolerance).any():
+        raise ValueError(f"No output endpoint at shutdown_time={shutdown_time} s")
+    cooling = tally.loc[tally["time"] > shutdown_time + tolerance].copy()
+    if cooling.empty:
+        raise ValueError("No output endpoints after shutdown")
+    cooling["time"] -= shutdown_time
+    return cooling.reset_index(drop=True)
 
 
 def select_subset(tally: pd.DataFrame, column: str, values: list) -> pd.DataFrame:
@@ -390,6 +437,7 @@ def mass(tally: pd.DataFrame, masses: dict[int, float]) -> pd.DataFrame:
 
 
 MOD_FUNCTIONS = {
+    TallyModOption.COOLING_TIME: cooling_time,
     TallyModOption.LETHARGY: by_lethargy,
     TallyModOption.SCALE: scale,
     TallyModOption.NO_ACTION: no_action,

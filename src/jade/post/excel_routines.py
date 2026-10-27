@@ -180,7 +180,7 @@ class Table(ABC):
             col_names = {k: v for k, v in names.items() if k in df.columns.names}
             df.columns = df.columns.rename(col_names)
         else:
-            df.rename(columns=names, inplace=True)
+            df.columns = df.rename(columns=names).columns
 
     @staticmethod
     def _select_common_index_data(
@@ -223,7 +223,7 @@ class PivotTable(Table):
         )
         # this is needed to avoid NaN in the multiindex which would cause incorrect dump
         value_df.columns = pd.MultiIndex.from_frame(
-            value_df.columns.to_frame().fillna("")
+            value_df.columns.to_frame().astype(object).fillna("")
         )
 
         if self.cfg.add_error:
@@ -233,7 +233,7 @@ class PivotTable(Table):
             # this is needed to avoid NaN in the multiindex which would cause incorrect
             # dump
             ref_err.columns = pd.MultiIndex.from_frame(
-                ref_err.columns.to_frame().fillna("")
+                ref_err.columns.to_frame().astype(object).fillna("")
             )
 
             target_err = self.target_df.pivot(
@@ -242,7 +242,7 @@ class PivotTable(Table):
             # this is needed to avoid NaN in the multiindex which would cause incorrect
             # dump
             target_err.columns = pd.MultiIndex.from_frame(
-                target_err.columns.to_frame().fillna("")
+                target_err.columns.to_frame().astype(object).fillna("")
             )
 
             return [value_df, ref_err, target_err]

@@ -130,7 +130,7 @@ class MCNPSimOutput(AbstractSimOutput):
         tallydata = mctal.tallydata
         total_bin = mctal.totalbin
         for dictionary in [tallydata, total_bin]:
-            for _, df in dictionary.items():
+            for key, df in dictionary.items():
                 if df is not None:
                     if (
                         "Cells" in df.columns
@@ -156,9 +156,8 @@ class MCNPSimOutput(AbstractSimOutput):
                         if len(usr_bins) <= 2 and "total" in usr_bins:
                             # then the column does not add any additional info, to drop
                             del df["User"]
-                            # and drop the duplicates ignoring the warning
-                            with pd.option_context("mode.chained_assignment", None):
-                                df.drop_duplicates(inplace=True)
+                            # and drop the duplicates
+                            dictionary[key] = df.drop_duplicates()
                     except KeyError:
                         pass  # no user column
 
@@ -195,17 +194,16 @@ class MCNPSimOutput(AbstractSimOutput):
             else:
                 self._tally_comments.append("")
 
-        for df in tallydata.values():
+        for key, df in tallydata.items():
             # drop a row if it contains total in whatever column
             if "total" in df.values:
-                df.drop(
+                tallydata[key] = df.drop(
                     df[
                         df.apply(
                             lambda row: row.astype(str).str.contains("total").any(),
                             axis=1,
                         )
-                    ].index,
-                    inplace=True,
+                    ].index
                 )
 
         self._tallydata = tallydata

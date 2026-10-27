@@ -19,6 +19,7 @@ classifiers = [
 ]
 dependencies = [
     "xlsxwriter < 4",
+    "python-docx < 2",
     "matplotlib < 4",
     "requests < 3",
     "f4enix >= 1.2.1, < 2",

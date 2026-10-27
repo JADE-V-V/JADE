@@ -41,7 +41,8 @@ docs = [
     "sphinx-book-theme < 2",
     "sphinx-copybutton < 0.6",
     "sphinx-togglebutton < 0.5",
-    "sphinx-design < 0.8"
+    "sphinx-design < 0.8",
+    "pydata-sphinx-theme < 1",
 ]
 ui = [
     "ttkthemes < 4"

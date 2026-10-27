@@ -8,12 +8,12 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from pathlib import Path
 
+from f4enix.core.irradiation import Nuclide
 from f4enix.input.d1suned import IrradiationFile, Reaction, ReactionFile
 from f4enix.input.libmanager import LibManager
 from f4enix.input.materials import MatCardsList, Material, Zaid
 from f4enix.input.MCNPinput import D1S_Input
 from f4enix.input.MCNPinput import Input as MCNPInput
-from f4enix.core.irradiation import Nuclide
 
 from jade.config.run_config import Library, LibraryACTINV, LibraryD1S, LibraryMCNP
 from jade.helper.__optionals__ import OMC_AVAIL
@@ -36,19 +36,16 @@ class Input(ABC):
     @abstractmethod
     def code(self) -> CODE:
         """Code of the input file."""
-        pass
 
     @property
     @abstractmethod
     def name(self) -> str:
         """Name of the input file. E.g. ITER_1D"""
-        pass
 
     @property
     @abstractmethod
     def lib(self) -> Library:
         """Library used for the input file."""
-        pass
 
     @abstractmethod
     def set_nps(self, nps: int):
@@ -59,7 +56,6 @@ class Input(ABC):
         nps : int
             number of particles to simulate.
         """
-        pass
 
     @abstractmethod
     def translate(self):
@@ -70,13 +66,11 @@ class Input(ABC):
         lib : Library
             library to which the input needs to be translated to.
         """
-        pass
 
     @abstractmethod
     def _write(self, output_folder: PathLike):
         """Write the input files to the output folder. This should handle also
         additional files such as the wwinp for MCNP."""
-        pass
 
     def write(self, output_folder: PathLike):
         """Write the input files to the output folder. Specific files are hendled

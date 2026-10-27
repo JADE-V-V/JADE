@@ -2,21 +2,23 @@ from __future__ import annotations
 
 from importlib.resources import files
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
 import jade.resources
-from unittest.mock import patch
-
 from jade.helper.__optionals__ import TKINTER_AVAIL
 
 if TKINTER_AVAIL:
     from tkinter import filedialog, messagebox, ttk
+
     from ttkthemes import ThemedTk
+
     from jade.gui.run_config_gui import ConfigGUI
 
 
 DEFAULT_CFG = files(jade.resources).joinpath("default_cfg")
+
 
 @pytest.mark.skipif(not TKINTER_AVAIL, reason="tkinter is not available")
 class TestConfigGui:

@@ -123,7 +123,7 @@ def condense_groups(
 
 
 def scale(
-    tally: pd.DataFrame, factor: int | float | list = 1, column: str = "Value"
+    tally: pd.DataFrame, factor: float | list = 1, column: str = "Value"
 ) -> pd.DataFrame:
     """Scale the tally values."""
     if isinstance(factor, list):
@@ -357,7 +357,7 @@ def gaussian_broadening(
                 "Length of fwhm_frac list must match number of rows in tally."
             )
     else:
-        raise ValueError("fwhm_frac must be a float or a list of floats.")
+        raise TypeError("fwhm_frac must be a float or a list of floats.")
 
     Eb = tally["Energy"].values.astype(float)
     Yb = np.zeros_like(tally["Value"])

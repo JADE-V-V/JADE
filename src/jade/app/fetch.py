@@ -71,7 +71,7 @@ def _extract_zip(zip_content, dest: PathLike) -> PathLike:
 
 
 def fetch_from_gitlab(
-    url: str, path: str, branch: str, authorization_token: str = None
+    url: str, path: str, branch: str, authorization_token: str | None = None
 ) -> PathLike | bool:
     """Download a repository from GitLab and extract
     it to a temporary folder. It can also deal with authentication. Supported

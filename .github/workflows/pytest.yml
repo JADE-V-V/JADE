@@ -2,7 +2,7 @@ name: pytest
 
 # Controls when the workflow will run
 on: [push, pull_request, workflow_dispatch]
-  # Triggers the workflow on push or pull request events but only for the master branch
+  # Triggers the workflow on push or pull request events for all branches
   # workflow_dispatch allows you to run this workflow manually from the Actions tab
 
 jobs:
@@ -10,17 +10,15 @@ jobs:
     # The type of runner and python versions that the job will run on
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-20.04, ubuntu-latest]
-        python-version: ["3.11", '3.12', '3.13']
+        os: [windows-latest, ubuntu-latest]
+        python-version: ['3.11', '3.12', '3.13', '3.14']
         full-test:
-          - ${{ contains(github.ref, 'master') || contains(github.ref, 'main') || startsWith(github.ref, 'refs/heads/release') }}
+          - ${{ github.ref == 'refs/heads/developing' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/release') }}
         exclude:
           - full-test: false
-            python-version: ["3.10"]
+            python-version: '3.11'
           - full-test: false
-            python-version: ["3.11"]
-          - full-test: false
-            os: "ubuntu-20.04"
+            python-version: '3.12'
       fail-fast: false
     runs-on: ${{ matrix.os }}
 
@@ -108,8 +106,8 @@ jobs:
       
       # Upload coverage to Codecov. Do it only for one case of the matrix.
       - name: Upload coverage to Codecov
-        # do it only once for python 3.12
-        if: matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
+        # do it only once for python 3.13 (runs on every branch)
+        if: matrix.python-version == '3.13' && matrix.os == 'ubuntu-latest'
         uses: codecov/codecov-action@v4
         with:
           verbose: true

@@ -23,7 +23,7 @@ Or if you are using Anaconda:
   | ``conda activate jade``
 
 .. warning:: 
-  JADE officially supports only Python 3.11, 3.12 and 3.13.
+  JADE officially supports only Python 3.11, 3.12, 3.13 and 3.14.
   It may work with other versions, but they are untested.
 
 Install the JADE package

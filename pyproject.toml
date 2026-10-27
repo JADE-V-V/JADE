@@ -11,7 +11,7 @@ authors = [
 ]
 description = "JADE, a V&V tool for nuclear data libraries and transport codes"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: European Union Public Licence 1.2 (EUPL 1.2)",

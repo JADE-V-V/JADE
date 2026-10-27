@@ -103,7 +103,7 @@ def fetch_from_gitlab(
         logger.error("Gitlab authentication failed")
         logger.error(e)
         return False
-    except requests.exceptions.RequestException as e:
+    except gitlab.exceptions.GitlabConnectionError as e:
         logger.error(f"Could not connect to {url}")
         logger.error(e)
         return False

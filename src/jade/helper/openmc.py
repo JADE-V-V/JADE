@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 PAT_DIGITS = re.compile(r"\d+")
+CHARGED_SECONDARY_PARTICLES = ("electron", "positron")
 
 
 @dataclass
@@ -525,12 +526,111 @@ class OpenMCStatePoint:
         df = self._normalise_df(df)
         return df
 
-    def _combine_heating_tallies(self, heating_tallies: dict) -> dict:
-        """Extract tally data from statepoint file
+    @staticmethod
+    def _particle_bins(tally: openmc.Tally) -> set[str]:
+        """Get the particle bins of a tally
 
         Parameters
         ----------
-        tallies : dict
+        tally : openmc.Tally
+            openmc tally
+
+        Returns
+        -------
+        set[str]
+            particle bins of the tally, empty if it has no particle filter
+        """
+        for tally_filter in tally.filters:
+            if isinstance(tally_filter, openmc.ParticleFilter):
+                return set(tally_filter.bins)
+        return set()
+
+    @staticmethod
+    def _same_heating_domain(tally1: openmc.Tally, tally2: openmc.Tally) -> bool:
+        """Check if two tallies score over the same phase space, ignoring the
+        particle filter, so that their results can be summed bin by bin
+
+        Parameters
+        ----------
+        tally1 : openmc.Tally
+            first openmc tally
+        tally2 : openmc.Tally
+            second openmc tally
+
+        Returns
+        -------
+        bool
+            True if the tallies have the same filters (apart from the particle
+            filter) and the same nuclides
+        """
+        filters1 = [
+            f for f in tally1.filters if not isinstance(f, openmc.ParticleFilter)
+        ]
+        filters2 = [
+            f for f in tally2.filters if not isinstance(f, openmc.ParticleFilter)
+        ]
+        if len(filters1) != len(filters2):
+            return False
+        if list(tally1.nuclides) != list(tally2.nuclides):
+            return False
+
+        def _equal(filter1, filter2) -> bool:
+            try:
+                return bool(filter1 == filter2)
+            except ValueError:
+                return False
+
+        return all(any(_equal(f1, f2) for f2 in filters2) for f1 in filters1)
+
+    @staticmethod
+    def _fold_charged_into_photon(df: pd.DataFrame) -> pd.DataFrame:
+        """Sum the electron and positron heating rows into the matching photon
+        heating rows. Before OpenMC 0.16.0 the heating from photon-induced
+        electrons and positrons is scored in the electron and positron bins,
+        from 0.16.0 it is attributed to the parent photon and those bins are
+        zero, so the sum is valid for both.
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            tally dataframe, possibly containing electron and positron rows
+
+        Returns
+        -------
+        pd.DataFrame
+            tally dataframe where heating electron and positron rows have been
+            summed into the photon ones
+        """
+        if "particle" not in df.columns:
+            return df
+        to_fold = (df["score"] == "heating") & df["particle"].isin(
+            CHARGED_SECONDARY_PARTICLES
+        )
+        if not to_fold.any():
+            return df
+        columns = df.columns
+        df = df.copy()
+        df.loc[to_fold, "particle"] = "photon"
+        df["variance"] = df["std. dev."].pow(2)
+        keys = [col for col in columns if col not in ["mean", "std. dev."]]
+        # Errors are combined in quadrature
+        df = (
+            df.groupby(keys, sort=False, dropna=False)[["mean", "variance"]]
+            .sum()
+            .reset_index()
+        )
+        df["std. dev."] = df["variance"].pow(0.5)
+        return df[columns]
+
+    def _combine_heating_tallies(self, heating_tallies: dict) -> dict:
+        """Combine photon, electron and positron heating tallies. Electron and
+        positron heating can be scored either in the same tally of the photon
+        heating (additional particle bins) or in separate tallies with the same
+        filters. In both cases it is summed into the photon heating.
+
+        Parameters
+        ----------
+        heating_tallies : dict
             Dictionary containing all OpenMC heating tallies
 
         Returns
@@ -539,40 +639,33 @@ class OpenMCStatePoint:
             dictionary of pandas dataframes containing combined tally data
         """
         photon_tallies = {}
+        charged_tallies = {}
         heating_tallies_df = {}
         for id, tally in heating_tallies.items():
-            try:
-                particle_filter = tally.find_filter(openmc.ParticleFilter)
-            except ValueError:
-                particle_filter = None
-            if particle_filter:
-                if "neutron" in particle_filter.bins:
-                    heating_tallies_df[id] = self._get_tally_data(tally)
-                if "photon" in particle_filter.bins:
-                    photon_tallies[id] = tally
-                    heating_tallies_df[id] = self._get_tally_data(tally)
+            particle_bins = self._particle_bins(tally)
+            if particle_bins and particle_bins.issubset(CHARGED_SECONDARY_PARTICLES):
+                charged_tallies[id] = tally
+            elif "photon" in particle_bins:
+                photon_tallies[id] = tally
             else:
                 heating_tallies_df[id] = self._get_tally_data(tally)
         for id, photon_tally in photon_tallies.items():
-            photon_cell_filter = photon_tally.find_filter(openmc.CellFilter)
-            for _, tally in heating_tallies.items():
-                try:
-                    particle_filter = tally.find_filter(openmc.ParticleFilter)
-                except ValueError:
-                    particle_filter = None
-                cell_filter = tally.find_filter(openmc.CellFilter)
-                if particle_filter and cell_filter:
-                    if photon_cell_filter == cell_filter:
-                        if (
-                            "electron" in particle_filter.bins
-                            or "positron" in particle_filter.bins
-                        ):
-                            tally_df = self._get_tally_data(tally)
-                            heating_tallies_df[id]["mean"] += tally_df["mean"]
-                            heating_tallies_df[id]["std. dev."] = (
-                                heating_tallies_df[id]["std. dev."].pow(2)
-                                + tally_df["std. dev."].pow(2)
-                            ).pow(0.5)
+            photon_bins = self._particle_bins(photon_tally)
+            dfs = [self._get_tally_data(photon_tally)]
+            for tally in charged_tallies.values():
+                if not self._same_heating_domain(photon_tally, tally):
+                    continue
+                tally_df = self._get_tally_data(tally)
+                # only add the particles not already scored in the photon tally
+                dfs.append(
+                    tally_df[
+                        (tally_df["score"] == "heating")
+                        & ~tally_df["particle"].isin(photon_bins)
+                    ]
+                )
+            heating_tallies_df[id] = self._fold_charged_into_photon(
+                pd.concat(dfs, ignore_index=True)
+            )
         return heating_tallies_df
 
     def tallies_to_dataframes(self) -> dict:

@@ -23,7 +23,7 @@ Or if you are using Anaconda:
   | ``conda activate jade``
 
 .. warning:: 
-  JADE officially supports only Python 3.10, 3.11 and 3.12.
+  JADE officially supports only Python 3.11, 3.12 and 3.13.
   It may work with other versions, but they are untested.
 
 Install the JADE package
@@ -74,10 +74,21 @@ You can either dowload the zip file or clone it using git with:
 Moving into the downloaded folder, the user can install the ``jade`` python package
 through a local pip install.
 
-It is recommeded to use the '-e' option when installing (editable mode)
-and you should also install the additional 'dev' dependencies. 
+It is recommended to use the '-e' option when installing (editable mode),
+together with the optional dependency groups needed for development:
 
-  | ``pip install -e .[dev]``
+  | ``pip install -e .[dev,ui,docs]``
+
+The available optional dependency groups are:
+
+- ``dev``: testing and formatting tools (``pytest``, ``pytest-cov``, ``pytest-xvfb``, ``ruff``).
+- ``ui``: GUI dependencies (``ttkthemes``). Skip it on systems without Tkinter.
+- ``docs``: tools needed to build this documentation locally (``sphinx`` and its extensions).
+
+All dependencies are declared in ``pyproject.toml``, which is the single source of truth
+(the documentation build on Read the Docs also installs from it). Most dependencies are capped
+at their current major version (minor version for ``0.x`` packages); when bumping a cap,
+make sure the test suite still passes.
 
 If your dev system allows it, install also openmc in the same python environment.
 

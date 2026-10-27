@@ -11,7 +11,7 @@ JADE is a Python V&V (Verification & Validation) framework for nuclear data libr
 ## Setup
 
 ```bash
-pip install -e .[dev,ui]   # dev tools: pytest, ruff, sphinx; ui: ttkthemes
+pip install -e .[dev,ui,docs]   # dev: pytest, ruff; ui: ttkthemes; docs: sphinx
 ```
 
 ## Running Tests

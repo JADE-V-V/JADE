@@ -6,8 +6,9 @@ from pathlib import Path
 
 import f4enix.input.MCNPinput as ipt
 import pytest
+from f4enix.input.d1suned import IrradiationFile, ReactionFile
 from f4enix.input.libmanager import LibManager
-from f4enix.input.materials import Zaid
+from f4enix.input.materials import Material, Zaid
 
 import jade.resources.default_cfg.benchmarks as bench
 import tests.dummy_structure.benchmark_templates as res
@@ -117,6 +118,24 @@ class TestInputMCNPSphere:
         assert nps_line[:6] == "NPS 10"
         assert read_inp.mat_section["M1"].zaids[0].library == "31c"
 
+    def test_material_header(self, libMCNP, tmpdir):
+        # header without trailing newline (as stored by f4enix) must not be
+        # glued to the extra comment lines, producing an invalid "CC" line
+        template_folder = TEMPLATE_ROOT.joinpath("Sphere/Sphere/mcnp")
+        zaid = Zaid.from_string("1001.31c 1.0")
+        material = Material("M101", [zaid], header="C my material\nC")
+        inp = InputMCNPSphere(template_folder, libMCNP, material, "1.0")
+        inp.write(tmpdir)
+
+        read_inp = ipt.Input.from_input(Path(tmpdir).joinpath("Sphere_M101.i"))
+        header = read_inp.mat_section["M1"].header
+        assert header.splitlines() == [
+            "C my material",
+            "C",
+            "C",
+            "C True name:M101",
+        ]
+
 
 @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC not available")
 class TestInputOpenMCSphere:
@@ -148,3 +167,25 @@ class TestInputD1SSphere:
         assert os.path.exists(Path(tmpdir).joinpath("SphereSDDR_11023_Na-23_16.i"))
         assert os.path.getsize(Path(tmpdir).joinpath("irrad")) > 0
         assert os.path.getsize(Path(tmpdir).joinpath("react")) > 0
+
+    def test_input_generation_material(self, tmpdir, libD1S):
+        # the irradiation file must keep exactly the daughters produced by the
+        # reactions (it used to be silently emptied)
+        template_folder = TEMPLATE_ROOT.joinpath("SphereSDDR/SphereSDDR/d1s")
+        irrad_file = CONFIG_BENCH.joinpath("SphereSDDR/irrad_99c.txt")
+        materials = ipt.Input.from_input(
+            TEMPLATE_ROOT.joinpath("TypicalMaterials")
+        ).mat_section
+        inp = InputD1SSphere(
+            template_folder, libD1S, materials["M101"], "1.0", irrad_file=irrad_file
+        )
+        inp.set_nps(10)
+        inp.translate()
+        inp.write(tmpdir)
+
+        irrad = IrradiationFile.from_text(Path(tmpdir).joinpath("irrad"))
+        react = ReactionFile.from_text(Path(tmpdir).joinpath("react"))
+        irrad_daughters = {d.write_to_int_string() for d in irrad.get_daughters()}
+        react_daughters = {r.daughter.write_to_int_string() for r in react.reactions}
+        assert len(irrad_daughters) > 0
+        assert irrad_daughters == react_daughters

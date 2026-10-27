@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 IAEA_URL = r"https://github.com/IAEA-NDS/open-benchmarks/archive/main.zip"
 RAW_DATA_GITHUB_URL = r"https://github.com/JADE-V-V/JADE-RAW-RESULTS/archive/main.zip"
+GITLAB_TIMEOUT = 30  # seconds
 
 
 def _fetch_from_git(
@@ -90,11 +91,20 @@ def fetch_from_gitlab(
     extracted_folder: Pathlike | bool
         path to the extracted folder. False if the download was not successful.
     """
-    gl = gitlab.Gitlab(url=url, private_token=authorization_token, ssl_verify=False)
+    gl = gitlab.Gitlab(
+        url=url,
+        private_token=authorization_token,
+        ssl_verify=False,
+        timeout=GITLAB_TIMEOUT,
+    )
     try:
         gl.auth()
     except gitlab.exceptions.GitlabAuthenticationError as e:
         logger.error("Gitlab authentication failed")
+        logger.error(e)
+        return False
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Could not connect to {url}")
         logger.error(e)
         return False
 
@@ -124,6 +134,7 @@ def _install_data(fetch_folder: str | os.PathLike, install_folder: str | os.Path
             os.path.join(fetch_folder, item),
             os.path.join(install_folder, item),
         )
+
 
 def _install_standard_folder_structure(
     extracted_folder: str | os.PathLike,

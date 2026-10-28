@@ -3,12 +3,21 @@ from __future__ import annotations
 import os
 import tempfile
 
+import gitlab
 import pytest
+import requests
 
-from jade.app.fetch import fetch_f4e_inputs, fetch_iaea_inputs, fetch_nonIAEA_exp_data
+from jade.app.fetch import (
+    fetch_f4e_inputs,
+    fetch_from_gitlab,
+    fetch_iaea_inputs,
+    fetch_nonIAEA_exp_data,
+)
 
 # By default this should set the token to None if not found
 F4E_GITLAB_TOKEN = os.getenv("F4E_GITLAB_TOKEN")
+# The F4E GitLab is not reachable from GitHub runners
+ON_CI = os.getenv("GITHUB_ACTIONS") == "true"
 
 
 def test_fetch_iaea_inputs(tmpdir):
@@ -52,8 +61,20 @@ def test_wrong_fetch_f4e_inputs(tmpdir):
     assert not success
 
 
+def test_fetch_from_gitlab_unreachable(monkeypatch):
+    """An unreachable GitLab host must not crash the fetch, just return False."""
+
+    def raise_connection_error(self):
+        raise requests.exceptions.ConnectionError("unreachable host")
+
+    monkeypatch.setattr(gitlab.Gitlab, "auth", raise_connection_error)
+    assert not fetch_from_gitlab(
+        "https://nonexistent.invalid/", "some/repo", "main", "token"
+    )
+
+
 @pytest.mark.skipif(
-    F4E_GITLAB_TOKEN is None or os.environ.get("GITHUB_ACTIONS") == "true",
+    F4E_GITLAB_TOKEN is None or ON_CI,
     reason="No token found or running on GitHub CI",
 )
 def test_fetch_f4e_inputs(tmpdir):

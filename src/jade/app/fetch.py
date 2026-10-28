@@ -103,7 +103,11 @@ def fetch_from_gitlab(
         logger.error("Gitlab authentication failed")
         logger.error(e)
         return False
-    except gitlab.exceptions.GitlabConnectionError as e:
+    # python-gitlab lets requests errors (e.g. unreachable host) propagate as they are
+    except (
+        gitlab.exceptions.GitlabConnectionError,
+        requests.exceptions.RequestException,
+    ) as e:
         logger.error(f"Could not connect to {url}")
         logger.error(e)
         return False

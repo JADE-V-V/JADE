@@ -4,14 +4,14 @@ JADE is a Python V&V (Verification & Validation) framework for nuclear data libr
 
 - **Documentation**: [ReadTheDocs](https://jade-a-nuclear-data-libraries-vv-tool.readthedocs.io/en/latest/)
 - **PyPI package**: `jadevv` (imports as `jade`)
-- **Python**: ≥ 3.10
+- **Python**: ≥ 3.11
 
 ---
 
 ## Setup
 
 ```bash
-pip install -e .[dev,ui]   # dev tools: pytest, ruff, sphinx; ui: ttkthemes
+pip install -e .[dev,ui,docs]   # dev: pytest, ruff; ui: ttkthemes; docs: sphinx
 ```
 
 ## Running Tests
@@ -59,8 +59,8 @@ Every transport-code-extensible concept uses this pattern:
 
 ```python
 # helper/constants.py
-class CODE(str, Enum):
-    mcnp = "mcnp"; openmc = "openmc"; serpent = "serpent"; d1s = "d1s"; exp = "exp"
+class CODE(Enum):
+    MCNP = "mcnp"; OPENMC = "openmc"; SERPENT = "serpent"; D1S = "d1s"; ACTINV = "actinv"; EXPERIMENT = "exp"
 
 # e.g. run/benchmark.py
 class SingleRun(ABC): ...
@@ -70,7 +70,7 @@ class SingleRunFactory:
     def create(code: CODE, ...) -> SingleRun: ...
 ```
 
-The same pattern applies to `Library`/`LibraryFactory`, `Input`/`InputFactory`, and `AbstractSimOutput`.
+The same pattern applies to `Library`/`LibraryFactory`. `Input` subclasses are selected by `CODE` inside `BenchmarkRun` (`run/benchmark.py`), and `AbstractSimOutput` subclasses inside `RawProcessor.__init__()` (`post/raw_processor.py`).
 
 ### Config construction: always via named classmethods
 
@@ -96,7 +96,7 @@ Expensive state (e.g. `GlobalStatus.simulations`) uses `@property` with an inter
 
 ### `from __future__ import annotations`
 
-Every module starts with this import.
+New modules should start with this import (most existing modules already do).
 
 ---
 
@@ -114,8 +114,8 @@ See [dev guide](docs/source/dev/add_transport_code.rst) for full details. The fo
 
 1. `src/jade/helper/constants.py` — add tag to `CODE` enum
 2. `src/jade/config/run_config.py` — subclass `Library`, register in `LibraryFactory`
-3. `src/jade/run/benchmark.py` + `src/jade/run/input.py` — subclass `SingleRun` (implement `_build_command()`, `_get_lib_data_command()`) and `Input` (implement `set_nps()`, `translate()`, `_write()`); register in `SingleRunFactory`
-4. `src/jade/post/sim_output.py` — subclass `AbstractSimOutput`; wire into `RawProcessor.__init__()`
+3. `src/jade/run/benchmark.py` + `src/jade/run/input.py` — subclass `SingleRun` (implement `_build_command()`, `_get_lib_data_command()`) and `Input` (implement `set_nps()`, `translate()`, `_write()`); register in `SingleRunFactory` and in the input selection of `BenchmarkRun`
+4. `src/jade/post/sim_output.py` — subclass `AbstractSimOutput`; wire into `RawProcessor.__init__()` in `src/jade/post/raw_processor.py`
 
 Add tests mirroring the new code's path under `tests/`.
 
@@ -135,7 +135,7 @@ Input files are hosted externally (not in this repo): IAEA GitHub for open bench
 
 ## Branching & Versioning
 
-- Permanent branches: `master` (stable), `developing` (integration)
+- Permanent branches: `developing` (default, integration), `master` (stable)
 - Branch types: `Feature/*` and `Benchmark/*` off `developing`; `Release/*` for stabilization; `Hotfix/*` off `master`
 - **Semantic versioning**: Major = non-backwards-compatible change (new transport code, class restructure, folder layout). Minor = new features/benchmarks. Patch = bug fixes.
 - Every bug fix must include a regression test.
@@ -145,7 +145,8 @@ Input files are hosted externally (not in this repo): IAEA GitHub for open bench
 
 ## CI Matrix
 
-- **OS**: `ubuntu-latest`, `ubuntu-20.04`, `windows-latest`
-- **Python**: 3.11, 3.12, 3.13
-- Full matrix only on `master`/`release*`; feature branches run latest Python on Ubuntu only.
+- **OS**: `ubuntu-latest`, `windows-latest`
+- **Python**: 3.11, 3.12, 3.13, 3.14
+- Full matrix only on pushes to `developing`/`master`/`release*`; other branches and PRs run only the two latest Python versions (both OSes).
+- Coverage is uploaded to Codecov from the Ubuntu / Python 3.13 job.
 - OpenMC is installed on Linux only; Windows CI skips OpenMC tests.

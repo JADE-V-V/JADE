@@ -260,7 +260,7 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
         # a series has been created but we want a df
         df = df.to_frame().T
     else:
-        df.reset_index(inplace=True)
+        df = df.reset_index()
 
     return df
 

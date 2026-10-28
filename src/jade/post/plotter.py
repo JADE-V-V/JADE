@@ -753,9 +753,9 @@ class DoseContributionPlot(Plot):
         if isinstance(axes, Axes):
             axes = [axes]
 
+        data = [(codelib, df.set_index("User")) for codelib, df in self.data]
         indices = []
-        for idx, (codelib, df) in enumerate(self.data):
-            df.set_index("User", inplace=True)
+        for _, df in data:
             indices.extend(df.index.to_list())
 
         # build a common index of isotopes so that the colors are the same for all
@@ -766,7 +766,7 @@ class DoseContributionPlot(Plot):
         for idx, isotope in enumerate(isotopes):
             if int(isotope) == 0:
                 continue
-            for i, (codelib, df) in enumerate(self.data):
+            for i, (_, df) in enumerate(data):
                 if i == 0:
                     _, label = LM.get_zaidname(str(abs(isotope)))
                 else:
@@ -788,7 +788,7 @@ class DoseContributionPlot(Plot):
                     linewidth=0.5,
                 )
 
-        for i, ax in enumerate(axes):
+        for ax, (codelib, _) in zip(axes, data):
             # --- Plot details ---
             # ax details
             ax.set_title(codelib)
@@ -1177,6 +1177,8 @@ def _shorten_x_name(ax: Axes, shorten_x_name: int) -> None:
     for label in ax.get_xticklabels():
         split = label.get_text().split("_")
         new_labels.append(" ".join(split[-shorten_x_name:]))
+    # fix the current ticks so that the new labels stay attached to them
+    ax.set_xticks(ax.get_xticks())
     ax.set_xticklabels(new_labels)
 
 

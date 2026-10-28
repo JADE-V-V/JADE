@@ -11,38 +11,39 @@ authors = [
 ]
 description = "JADE, a V&V tool for nuclear data libraries and transport codes"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: European Union Public Licence 1.2 (EUPL 1.2)",
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "xlsxwriter",
-    "matplotlib",
-    "aspose-words",
-    "requests",
-    "f4enix >= 1.0.0",
-    "pyyaml",
-    "seaborn",
-    "python-gitlab"
+    "xlsxwriter < 4",
+    "matplotlib < 4",
+    "requests < 3",
+    "f4enix >= 1.2.1, < 2",
+    "pyyaml < 7",
+    "seaborn < 0.14",
+    "python-gitlab < 9"
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest",
-    "pytest-cov",
-    "pytest-xvfb",  # needed for headless display
+    "pytest < 10",
+    "pytest-cov < 8",
+    "pytest-xvfb < 4",  # needed for headless display
     "ruff",  # best formatter that should be used by everybody
-    "sphinx",
-    "myst-parser",
-    "sphinx-book-theme",
-    "sphinx-copybutton",
-    "sphinx-togglebutton",
-    "sphinx-design"
+]
+docs = [
+    "sphinx < 10",
+    "myst-parser < 6",
+    "sphinx-book-theme < 2",
+    "sphinx-copybutton < 0.6",
+    "sphinx-togglebutton < 0.5",
+    "sphinx-design < 0.8"
 ]
 ui = [
-    "ttkthemes"
+    "ttkthemes < 4"
 ]
 
 [project.urls]

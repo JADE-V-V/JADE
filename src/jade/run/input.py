@@ -192,7 +192,9 @@ class InputMCNPSphere(InputMCNP):
         if isinstance(zaid, Material):
             material = deepcopy(zaid)  # just to be sure not to mess with something
             truename = material.name
-            material.header = f"{material.header}C\nC True name:{truename}"
+            # f4enix strips the trailing newline from headers
+            header = f"{material.header}\n" if material.header else ""
+            material.header = f"{header}C\nC True name:{truename}"
             material.name = "M1"
             # override the input name
             self._name = f"{self.name}_{truename}"
@@ -283,7 +285,9 @@ class InputOpenMcSphere(InputOpenMC):
         if isinstance(zaid, Material):
             material = deepcopy(zaid)  # just to be sure not to mess with something
             truename = material.name
-            material.header = f"{material.header}C\nC True name:{truename}"
+            # f4enix strips the trailing newline from headers
+            header = f"{material.header}\n" if material.header else ""
+            material.header = f"{header}C\nC True name:{truename}"
             material.name = "M1"
             # override the input name
             self._name = f"{self.name}_{truename}"
@@ -445,12 +449,13 @@ class InputD1SSphere(InputD1S, InputMCNPSphere):
         if isinstance(zaid, Material):
             if self.lib.suffix is None:
                 raise ConfigError("suffix must be provided for D1S libraries")
-            self.inp.reac_file = ReactionFile(
-                self.inp.get_potential_paths(self.lm, lib.suffix)
-            )
-            daughters = []
-            for reac in self.inp.reac_file.reactions:
-                daughters.append(reac.daughter)
+            # keep only reactions whose daughters are in the irradiation file,
+            # and only the irradiations of daughters produced by those reactions
+            self.inp.get_reaction_file(self.lm, lib.suffix, set_as_attribute=True)
+            daughters = [
+                reac.daughter.write_to_int_string()
+                for reac in self.inp.reac_file.reactions
+            ]
             self.inp.irrad_file.select_daughters_irradiation_file(daughters)
             self._name = f"{self.name}_All"
         else:
@@ -461,7 +466,7 @@ class InputD1SSphere(InputD1S, InputMCNPSphere):
             reaction = Reaction(
                 Nuclide.from_int_string(f"{zaid}.{lib.suffix}"),
                 MT,
-                Nuclide.from_int_string(f"{daughter}.{lib.suffix}"),
+                Nuclide.from_int_string(daughter),
             )
             reacfile = ReactionFile([reaction])
             self.inp.reac_file = reacfile

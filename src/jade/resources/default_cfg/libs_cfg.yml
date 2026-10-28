@@ -13,7 +13,8 @@ FENDL 3.2c:
   openmc:
     path: pathtolib
   serpent:
-    path: pathtolib
+    path: /path/to/xsdata
+    suffix: 32c
 #
 FENDL 3.1d:
   mcnp:
@@ -22,7 +23,8 @@ FENDL 3.1d:
   openmc:
     path: pathtolib
   serpent:
-    path: pathtolib
+    path: /path/to/xsdata
+    suffix: 31c
 #
 ENDFB-VIII.0:
   mcnp:
@@ -31,7 +33,8 @@ ENDFB-VIII.0:
   openmc:
     path: pathtolib
   serpent:
-    path: pathtolib
+    path: /path/to/xsdata
+    suffix: 00c
 #
 IRDFF-II:
   mcnp:
@@ -40,7 +43,8 @@ IRDFF-II:
   openmc:
     path: pathtolib
   serpent:
-    path: pathtolib
+    path: /path/to/xsdata
+    suffix: 34y
 # --- Decay libraries ---
 #
 D1SUNED (FENDL 3.1d+EAF2007):

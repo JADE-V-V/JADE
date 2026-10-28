@@ -1,0 +1,11 @@
+# Detector numbers refer to the Serpent Sphere template (det 4 and det 14).
+# Only the results available in the template are processed.
+Leakage neutron flux Vitamin-J 175:
+  concat_option: no_action
+  4: [[no_action, {}]]
+Leakage neutron flux by lethargy:
+  concat_option: no_action
+  4: [[lethargy, {}]]
+Leakage photon flux 24 groups:
+  concat_option: no_action
+  14: [[no_action, {}]]

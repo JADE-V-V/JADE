@@ -81,6 +81,12 @@ jobs:
         run: |
           pip install -e .[dev,ui]     
 
+      # serpentTools is not a JADE dependency (as for OpenMC), install it for testing
+      # setuptools is needed since serpentTools still imports distutils
+      - name: Install serpentTools
+        run: |
+          pip install serpentTools setuptools
+
       # Activate environment and run pytest
       - name: Testing - Linux
         if: runner.os == 'Linux'

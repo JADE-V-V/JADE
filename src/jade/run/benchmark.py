@@ -22,6 +22,7 @@ from jade.config.run_config import (
     LibraryACTINV,
     LibraryD1S,
     LibraryMCNP,
+    LibrarySerpent,
     RunMode,
 )
 from jade.helper.aux_functions import (
@@ -43,6 +44,7 @@ from jade.run.input import (
     InputOpenMC,
     InputOpenMcSphere,
     InputSerpent,
+    InputSerpentSphere,
 )
 
 
@@ -339,10 +341,16 @@ class SingleRunSerpent(SingleRun):
         return CODE.SERPENT
 
     def _build_command(self, config: EnvironmentVariables) -> list[str]:
-        raise NotImplementedError
+        executable = config.executables[self.code]
+        run_command = [executable, f"{self.input.name}.i"]
+        omp_threads = config.openmp_threads
+        if omp_threads is not None and omp_threads > 1:
+            run_command.extend(["-omp", str(omp_threads)])
 
-    def _get_lib_data_command(self) -> str:
-        raise NotImplementedError
+        return run_command
+
+    def _get_lib_data_command(self) -> tuple[str, str]:
+        return "SERPENT_ACELIB", str(self.lib.path)
 
 
 class SingleRunD1S(SingleRunMCNP):
@@ -452,6 +460,10 @@ class SingleRunFactory:
                 inp = InputOpenMC(template_folder, lib)
         elif code == CODE.SERPENT:
             single_run_class = SingleRunSerpent
+            if not isinstance(lib, LibrarySerpent):
+                raise ConfigError(
+                    "A Serpent library needs to be provided for Serpent runs"
+                )
             if not mock_input:
                 inp = InputSerpent(template_folder, lib)
         elif code == CODE.D1S:
@@ -726,6 +738,13 @@ class SphereBenchmarkRun(BenchmarkRun):
             elif code == CODE.OPENMC:
                 inp = InputOpenMcSphere(template_folder, lib, zaid, str(-1 * density))
                 single_run = SingleRunOpenMC(inp, lib, nps)
+            elif code == CODE.SERPENT:
+                if not isinstance(lib, LibrarySerpent):
+                    raise ConfigError(
+                        "A Serpent library needs to be provided for Serpent runs"
+                    )
+                inp = InputSerpentSphere(template_folder, lib, zaid, str(-1 * density))
+                single_run = SingleRunSerpent(inp, lib, nps)
             else:
                 raise NotImplementedError(f"Code {code} not supported for Sphere")
             ans = self._run_single_run(
@@ -759,6 +778,15 @@ class SphereBenchmarkRun(BenchmarkRun):
                     template_folder, lib, material, str(-1 * float(density))
                 )
                 single_run = SingleRunOpenMC(inp, lib, int(self.config.nps))
+            elif code == CODE.SERPENT:
+                if not isinstance(lib, LibrarySerpent):
+                    raise ConfigError(
+                        "A Serpent library needs to be provided for Serpent runs"
+                    )
+                inp = InputSerpentSphere(
+                    template_folder, lib, material, str(-1 * float(density))
+                )
+                single_run = SingleRunSerpent(inp, lib, int(self.config.nps))
             else:
                 raise NotImplementedError(f"Code {code} not supported for Sphere")
             ans = self._run_single_run(

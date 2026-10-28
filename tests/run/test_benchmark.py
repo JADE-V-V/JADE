@@ -14,14 +14,18 @@ from jade.config.run_config import (
     LibraryD1S,
     LibraryMCNP,
     LibraryOpenMC,
+    LibrarySerpent,
     RunMode,
 )
 from jade.helper.__optionals__ import OMC_AVAIL
 from jade.helper.constants import CODE
+from jade.helper.errors import ConfigError
 from jade.run.benchmark import (
     BenchmarkRun,
+    SingleRunFactory,
     SingleRunMCNP,
     SingleRunOpenMC,
+    SingleRunSerpent,
     SphereBenchmarkRun,
     SphereSDDRBenchmarkRun,
 )
@@ -212,6 +216,56 @@ class TestSphereBenchmarkRun:
 
         assert len(os.listdir(tmpdir)) == 1
 
+    def test_run_serpent(self, tmpdir):
+        with as_file(RUN_RES.joinpath("test.xsdata")) as infile:
+            lib = LibrarySerpent(name="FENDL 3.2c", path=infile, suffix="32c")
+        cfg = BenchmarkRunConfig(
+            description="Sphere benchmark",
+            name="Sphere",
+            run=[(CODE.SERPENT, lib)],
+            nps=10,
+            only_input=True,
+            custom_inp=2,
+            additional_settings_path=DEFAULT_CFG.joinpath("benchmarks/Sphere"),
+        )
+        env_vars = EnvironmentVariables(
+            None,
+            0,
+            {CODE.SERPENT: "sss2"},
+            run_mode=RunMode.LOCAL,
+        )
+
+        benchmark = SphereBenchmarkRun(cfg, tmpdir, BENCHMARKS_ROOT, env_vars)
+        benchmark.run()
+
+        root = Path(tmpdir, "_serpent_-_FENDL 3.2c_", "Sphere")
+        assert sorted(os.listdir(root)) == [
+            "Sphere_1001_H-1",
+            "Sphere_1002_H-2",
+            "Sphere_M101_SS316L(N)-IG",
+            "Sphere_M400_Water",
+        ]
+        assert sorted(os.listdir(Path(root, "Sphere_1001_H-1"))) == [
+            "Sphere_1001_H-1.i",
+            "metadata.json",
+        ]
+
+    def test_run_serpent_wrong_lib(self, tmpdir):
+        lib = LibraryMCNP(name="FENDL 3.2c", path=None, suffix="31c")
+        cfg = BenchmarkRunConfig(
+            description="Sphere benchmark",
+            name="Sphere",
+            run=[(CODE.SERPENT, lib)],
+            nps=10,
+            only_input=True,
+            custom_inp=2,
+            additional_settings_path=DEFAULT_CFG.joinpath("benchmarks/Sphere"),
+        )
+        env_vars = EnvironmentVariables(None, 0, {}, run_mode=RunMode.LOCAL)
+        benchmark = SphereBenchmarkRun(cfg, tmpdir, BENCHMARKS_ROOT, env_vars)
+        with pytest.raises(ConfigError):
+            benchmark.run()
+
 
 class TestSphereSDDRBenchmarkRun:
     def test_run_mcnp(self, tmpdir):
@@ -344,3 +398,49 @@ class TestSingleRunOpenMC:
         single_run = SingleRunOpenMC(mock_input, lib, 100)
         command = single_run._build_command(env_vars)
         assert command == ["openmc", "--threads", "10"]
+
+
+class TestSingleRunSerpent:
+    @pytest.fixture()
+    def lib(self):
+        with as_file(RUN_RES.joinpath("test.xsdata")) as xsdata:
+            return LibrarySerpent(name="FENDL 3.2c", path=xsdata, suffix="32c")
+
+    def test_run(self, env_vars, lib):
+        env_vars.executables[CODE.SERPENT] = "sss2"
+        single_run = SingleRunSerpent(MockInput(), lib, 100)
+        command = single_run.run(env_vars, "dummy", test=True)
+        assert command == "mpirun -np 5 sss2 name.i -omp 10 > dump.out"
+
+        env_vars.mpi_tasks = 1
+        env_vars.openmp_threads = 1
+        command = single_run.run(env_vars, "dummy", test=True)
+        assert command == "sss2 name.i > dump.out"
+
+        name, value = single_run._get_lib_data_command()
+        assert name == "SERPENT_ACELIB"
+        assert value == str(lib.path)
+
+    def test_submit_job(self, env_vars, lib, tmpdir):
+        env_vars.executables[CODE.SERPENT] = "sss2"
+        env_vars.run_mode = RunMode.JOB_SUBMISSION
+        env_vars.code_job_template[CODE.SERPENT] = Path(
+            DEFAULT_CFG, "exe_config/serpent_template.sh"
+        )
+        single_run = SingleRunSerpent(MockInput(), lib, 100)
+        command = single_run.run(env_vars, tmpdir, test=True)
+        assert f'export SERPENT_ACELIB="{lib.path}"' in command
+        assert "sss2 name.i -omp 10" in command
+
+    def test_factory(self, lib):
+        template = BENCHMARKS_ROOT.joinpath("Sphere", "Sphere", "serpent")
+        single_run = SingleRunFactory.create(CODE.SERPENT, template, lib, 100)
+        assert isinstance(single_run, SingleRunSerpent)
+        assert single_run.input.name == "Sphere"
+        # mock input for continue runs
+        single_run = SingleRunFactory.create(
+            CODE.SERPENT, template, lib, 100, mock_input=True
+        )
+        assert single_run.input.name == "Sphere"
+        with pytest.raises(ConfigError):
+            SingleRunFactory.create(CODE.SERPENT, template, MockLibrary("a", "b"), 1)

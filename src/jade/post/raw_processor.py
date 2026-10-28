@@ -14,6 +14,7 @@ from jade.post.sim_output import (
     MCNPSimOutput,
     OpenMCSimOutput,
     OpenMCSphereSimOutput,
+    SerpentSimOutput,
 )
 
 logger = logging.getLogger(__name__)
@@ -63,6 +64,8 @@ class RawProcessor:
                 self.sim_output = OpenMCSphereSimOutput(sim_folder)
             else:
                 self.sim_output = OpenMCSimOutput(sim_folder)
+        elif self.code == CODE.SERPENT:
+            self.sim_output = SerpentSimOutput(sim_folder)
         elif self.code == CODE.ACTINV:
             self.sim_output = ActinvSimOutput(sim_folder)
         else:

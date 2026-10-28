@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import shutil
 from abc import ABC, abstractmethod
 from copy import deepcopy
@@ -15,7 +16,14 @@ from f4enix.input.MCNPinput import D1S_Input
 from f4enix.input.MCNPinput import Input as MCNPInput
 from f4enix.core.irradiation import Nuclide
 
-from jade.config.run_config import Library, LibraryACTINV, LibraryD1S, LibraryMCNP
+from jade.config.run_config import (
+    Library,
+    LibraryACTINV,
+    LibraryD1S,
+    LibraryMCNP,
+    LibrarySerpent,
+)
+from jade.helper import serpent
 from jade.helper.__optionals__ import OMC_AVAIL
 from jade.helper.actinv import schedule_endpoints
 from jade.helper.aux_functions import PathLike
@@ -303,29 +311,130 @@ class InputOpenMcSphere(InputOpenMC):
 
 
 class InputSerpent(Input):
+    # number of batches used to compute the statistical errors
+    BATCHES = 100
+
     @property
     def code(self) -> CODE:
-        return CODE.OPENMC
+        return CODE.SERPENT
 
     @property
     def name(self) -> str:
         return self._name
 
     @property
-    def lib(self) -> Library:
+    def lib(self) -> LibrarySerpent:
         return self._lib
 
-    def __init__(self, template_folder: PathLike, lib: Library):
-        raise NotImplementedError
+    def __init__(self, template_folder: PathLike, lib: LibrarySerpent):
+        """Implementation of the Input class for Serpent inputs. Additional files
+        in the template folder (e.g. included geometry files) are copied as they are.
+
+        Parameters
+        ----------
+        template_folder : PathLike
+            path to the folder containing the template input file (.i).
+        lib : LibrarySerpent
+            library to be used for the input file.
+        """
+        self.template_folder = template_folder
+        filepath = serpent.find_input_file(template_folder)
+        self.inp = serpent.SerpentInput.from_file(filepath)
+        self._name = filepath.stem
+        self._lib = lib
+        self._lm = None
+
+    @property
+    def lm(self) -> LibManager:
+        """Library manager aware of the nuclides available in the Serpent library."""
+        if self._lm is None:
+            self._lm = serpent.get_serpent_libmanager(
+                self.lib.tablenames, self.lib.suffix
+            )
+        return self._lm
 
     def set_nps(self, nps: int):
-        raise NotImplementedError
+        # external source simulation
+        self.inp.set_option("nps", nps, min(self.BATCHES, nps))
 
     def translate(self):
-        raise NotImplementedError
+        if self.lib.suffix is None:
+            raise ConfigError("suffix must be provided for Serpent libraries")
+        self.inp.translate(self.lib.suffix, self.lm)
+        # the library is provided through the SERPENT_ACELIB environment variable
+        self.inp.remove_set_option("acelib")
+        if self.lib.photon_data_dir is not None:
+            self.inp.set_option("pdatadir", f'"{self.lib.photon_data_dir}"')
 
     def _write(self, output_folder: PathLike):
-        raise NotImplementedError
+        self.inp.write(Path(output_folder, f"{self.name}.i"))
+        # copy any additional file (e.g. included files)
+        for file in os.listdir(self.template_folder):
+            source = Path(self.template_folder, file)
+            if source.suffix == ".i" or file == "volumes.json" or source.is_dir():
+                continue
+            shutil.copyfile(source, Path(output_folder, file))
+
+
+class InputSerpentSphere(InputSerpent):
+    # name of the material used in the sphere template
+    MATERIAL_NAME = "1"
+
+    def __init__(
+        self,
+        template_folder: PathLike,
+        lib: LibrarySerpent,
+        zaid: str | Material,
+        density: str,
+    ):
+        """Subclass of the Serpent Input to deal with the sphere benchmark. The
+        material of the sphere is dynamically generated for all zaids/materials.
+
+        Parameters
+        ----------
+        template_folder : PathLike
+            path to the folder containing the template input file.
+        lib : LibrarySerpent
+            library to be used for the input file.
+        zaid : str | Material
+            zaid or the material to be used in the sphere.
+        density : str
+            density of the material/isotope in the sphere (negative for g/cc).
+        """
+        super().__init__(template_folder, lib)
+        self._assign_zaid_material(zaid, density)
+
+    def _assign_zaid_material(self, zaid: str | Material, density: str):
+        material = self._get_material(zaid)
+        # the translation is done here since the material is created from scratch
+        material.translate(self.lib.suffix, self.lm)
+        self.inp.remove_materials()
+        self.inp.add_card(
+            serpent.material_to_text(
+                self.MATERIAL_NAME, float(density), material.zaids, material.header
+            )
+        )
+
+    def _get_material(self, zaid: str | Material) -> Material:
+        if isinstance(zaid, Material):
+            material = deepcopy(zaid)  # just to be sure not to mess with something
+            truename = material.name
+            # MCNP style comments are not valid in Serpent
+            header = material.header if material.header else ""
+            header = "\n".join(
+                re.sub(r"^[Cc](\s|$)", "", line).strip() for line in header.splitlines()
+            )
+            material.header = f"{header}\nTrue name:{truename}".strip()
+            # override the input name
+            self._name = f"{self.name}_{truename}"
+        else:
+            zaidob = Zaid(1, Nuclide.from_int_string(f"{zaid}.{self.lib.suffix}"))
+            name, formula = self.lm.get_zaidname(zaid)
+            material = Material("M1", [zaidob], header=f"{name} {formula}")
+            # override the input name
+            self._name = f"{self.name}_{zaid}_{formula}"
+
+        return material
 
 
 class InputD1S(Input):

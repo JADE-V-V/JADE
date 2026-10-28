@@ -297,11 +297,49 @@ class LibrarySerpent(Library):
     name : str
         extended name of the library.
     path : PathLike
-        path to the libraries or to the xsdir containing it.
+        path to the Serpent cross section directory file (.xsdata).
+    suffix : str
+        suffix of the continuous energy neutron data in the xsdata (e.g. 32c).
+    photon_data_dir : PathLike | None, optional
+        directory containing the photon physics data (``set pdatadir``). Needed only
+        for coupled neutron-photon calculations, by default None.
     """
 
+    suffix: str
+    photon_data_dir: PathLike | None = None
+
+    def __post_init__(self):
+        # the xsdata is parsed only when needed (e.g. translation or Sphere)
+        self._tablenames = None
+
+    @property
+    def tablenames(self) -> list[tuple[str, str]]:
+        """(zaid, suffix) couples of the continuous energy neutron tables available
+        in the xsdata (e.g. ("1001", "32c")). Isomeric states are excluded."""
+        if self._tablenames is None:
+            self._tablenames = self._read_xsdata()
+        return self._tablenames
+
     def get_lib_zaids(self) -> list[str]:
-        raise NotImplementedError("Serpent library not implemented yet")
+        return [zaid for zaid, suffix in self.tablenames if suffix == self.suffix]
+
+    def _read_xsdata(self) -> list[tuple[str, str]]:
+        # Each xsdata line reads: alias ZAID type ZA isomeric AW T binary path
+        # type 1 identifies continuous energy neutron data. Every table is usually
+        # listed twice with different aliases, duplicates are removed.
+        tablenames = []
+        with open(self.path) as f:
+            for line in f:
+                pieces = line.split()
+                if len(pieces) < 9 or pieces[2] != "1" or pieces[4] != "0":
+                    continue
+                try:
+                    zaid, suffix = pieces[1].split(".")
+                except ValueError:
+                    continue
+                if (zaid, suffix) not in tablenames:
+                    tablenames.append((zaid, suffix))
+        return tablenames
 
 
 @dataclass

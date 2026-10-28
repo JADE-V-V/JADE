@@ -13,6 +13,7 @@ jobs:
 
       # Lint (includes import sorting). Ruff version is pinned so that the rule set
       # does not change under our feet when a new ruff release adds default rules.
+      # Keep in sync with the ruff pin in pyproject.toml (dev extra).
       - name: Ruff check
         uses: astral-sh/ruff-action@v3
         with:

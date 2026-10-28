@@ -33,7 +33,7 @@ dev = [
     "pytest < 10",
     "pytest-cov < 8",
     "pytest-xvfb < 4",  # needed for headless display
-    "ruff",  # best formatter that should be used by everybody
+    "ruff == 0.17.3",  # keep in sync with .github/workflows/lint.yml
 ]
 docs = [
     "sphinx < 10",
@@ -65,3 +65,7 @@ jade = 'src/jade'
 [tool.setuptools.package-data]
 "*" = ["*.txt", '*.csv', '*.sh', '*.cmd', '*.docx', '*.ico']
 
+[tool.ruff.lint]
+# Import sorting is in the default rule set of the pinned ruff, but older
+# versions (and editor-bundled ruff) do not enable it. Keep it explicit.
+extend-select = ["I"]

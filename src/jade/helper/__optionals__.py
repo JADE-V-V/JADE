@@ -13,6 +13,18 @@ except ImportError:
         "OpenMC has not been installed - see JADE installation instructions"
     )
 
+# Handle serpentTools optional dependency with global flag. serpentTools still
+# imports distutils, which on Python >= 3.12 is only provided by setuptools.
+try:
+    import serpentTools  # noqa: F401
+
+    SERPENT_AVAIL = True
+except ImportError:
+    SERPENT_AVAIL = False
+    logger.warning(
+        "serpentTools has not been installed - see JADE installation instructions"
+    )
+
 try:
     import tkinter as tk
 

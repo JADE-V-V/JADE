@@ -81,6 +81,12 @@ jobs:
         run: |
           pip install -e .[dev,ui]     
 
+      # serpentTools is not a JADE dependency (as for OpenMC), install it for testing
+      # setuptools is needed since serpentTools still imports distutils
+      - name: Install serpentTools
+        run: |
+          pip install serpentTools setuptools
+
       # Activate environment and run pytest
       - name: Testing - Linux
         if: runner.os == 'Linux'
@@ -88,7 +94,7 @@ jobs:
           set -o pipefail
           git config --global http.sslBackend schannel
           source /usr/local/Modules/init/sh
-          pytest --cov=. -cov-config=jade.coveragerc --cov-report xml
+          pytest --cov=. --cov-config=.coveragerc --cov-report xml
         env:
           ACCESS_TOKEN_GITHUB: ${{ secrets.ACCESS_TOKEN_GITHUB }}
           F4E_GITLAB_TOKEN: ${{ secrets.F4E_GITLAB_TOKEN }}

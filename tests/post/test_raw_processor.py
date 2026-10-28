@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 from importlib.resources import as_file, files
 from pathlib import Path
@@ -14,14 +15,17 @@ from jade.config.raw_config import (
     TallyConcatOption,
     TallyModOption,
 )
-from jade.helper.__optionals__ import OMC_AVAIL
+from jade.helper.__optionals__ import OMC_AVAIL, SERPENT_AVAIL
 from jade.post.raw_processor import RawProcessor
 from jade.resources import default_cfg
+from tests.post.resources import serpent as serpent_res
 
 SIMULATION_FOLDER = files(dummy_struct).joinpath("simulations")
 RAW_CFG_FILES_MCNP = files(default_cfg).joinpath("benchmarks_pp/raw/mcnp")
 RAW_CFG_FILES_D1S = files(default_cfg).joinpath("benchmarks_pp/raw/d1s")
 RAW_CFG_FILES_OPENMC = files(default_cfg).joinpath("benchmarks_pp/raw/openmc")
+RAW_CFG_FILES_SERPENT = files(default_cfg).joinpath("benchmarks_pp/raw/serpent")
+SERPENT_RES = files(serpent_res)
 
 
 class TestRawProcessor:
@@ -572,3 +576,23 @@ class TestRawProcessor:
             for subfolder in folder.iterdir():
                 processor = RawProcessor(cfg, subfolder, path)
                 processor.process_raw_data()
+
+
+@pytest.mark.skipif(not SERPENT_AVAIL, reason="serpentTools not available")
+def test_Sphere_serpent(tmpdir):
+    with as_file(RAW_CFG_FILES_SERPENT.joinpath("Sphere.yaml")) as f:
+        cfg = ConfigRawProcessor.from_yaml(f)
+    with as_file(SERPENT_RES.joinpath("Sphere_1001_H-1")) as folder:
+        processor = RawProcessor(cfg, folder, tmpdir)
+        processor.process_raw_data()
+    assert sorted(os.listdir(tmpdir)) == [
+        "Sphere_1001_H-1 Leakage neutron flux Vitamin-J 175.csv",
+        "Sphere_1001_H-1 Leakage neutron flux by lethargy.csv",
+        "Sphere_1001_H-1 Leakage photon flux 24 groups.csv",
+        "metadata.json",
+    ]
+    df = pd.read_csv(Path(tmpdir, "Sphere_1001_H-1 Leakage photon flux 24 groups.csv"))
+    assert list(df.columns) == ["Energy", "Value", "Error"]
+    assert len(df) == 24
+    with open(Path(tmpdir, "metadata.json")) as f:
+        assert json.load(f)["code_version"] == "Serpent 2.2.1"

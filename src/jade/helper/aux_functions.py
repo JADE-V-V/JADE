@@ -14,7 +14,7 @@ import yaml
 if TYPE_CHECKING:
     from jade.config.run_config import Library
 from jade.helper.constants import CODE
-from jade.post.sim_output import MCNPSimOutput, OpenMCSimOutput
+from jade.post.sim_output import MCNPSimOutput, OpenMCSimOutput, SerpentSimOutput
 
 PathLike = Union[str, os.PathLike, Path]
 
@@ -119,9 +119,8 @@ class SerpentChecker(SimulationChecker):
     """Checker for Serpent simulations."""
 
     def check_success(self, files: list[str]) -> bool:
-        """Check if Serpent run was successful."""
-        # TODO implement the logic to check if the Serpent run was successful
-        raise NotImplementedError("Serpent checker not yet implemented")
+        """Check if Serpent run was successful by verifying output files exist."""
+        return SerpentSimOutput.is_successfully_simulated(files)
 
 
 class D1SChecker(SimulationChecker):

@@ -12,8 +12,14 @@ from f4enix.input.materials import Material, Zaid
 
 import jade.resources.default_cfg.benchmarks as bench
 import tests.dummy_structure.benchmark_templates as res
-from jade.config.run_config import LibraryD1S, LibraryMCNP, LibraryOpenMC
+from jade.config.run_config import (
+    LibraryD1S,
+    LibraryMCNP,
+    LibraryOpenMC,
+    LibrarySerpent,
+)
 from jade.helper.__optionals__ import OMC_AVAIL
+from jade.helper.constants import CODE
 
 if OMC_AVAIL:
     import openmc
@@ -25,6 +31,8 @@ from jade.run.input import (
     InputMCNPSphere,
     InputOpenMC,
     InputOpenMcSphere,
+    InputSerpent,
+    InputSerpentSphere,
 )
 from tests.run import resources
 
@@ -40,6 +48,15 @@ def libOpenMC():
     # The None in the path tricks into using the default xsdir in F4Enix
     with as_file(files(resources).joinpath("cross_sections.xml")) as file:
         lib = LibraryOpenMC(name="test", path=file)
+    return lib
+
+
+@pytest.fixture()
+def libSerpent():
+    with as_file(files(resources).joinpath("test.xsdata")) as file:
+        lib = LibrarySerpent(
+            name="test", path=file, suffix="32c", photon_data_dir="/photon/data"
+        )
     return lib
 
 
@@ -189,3 +206,64 @@ class TestInputD1SSphere:
         react_daughters = {r.daughter.write_to_int_string() for r in react.reactions}
         assert len(irrad_daughters) > 0
         assert irrad_daughters == react_daughters
+
+
+class TestInputSerpent:
+    def test_input_generation(self, libSerpent, tmpdir):
+        with as_file(files(resources).joinpath("serpent_template")) as template:
+            inp = InputSerpent(template, libSerpent)
+        assert inp.code == CODE.SERPENT
+        assert inp.name == "bench"
+        inp.set_nps(1000)
+        inp.translate()
+        inp.write(tmpdir)
+
+        assert sorted(os.listdir(tmpdir)) == ["bench.i", "geom.txt"]
+        with open(Path(tmpdir, "bench.i")) as f:
+            text = f.read()
+        assert "set nps 1000 100" in text
+        assert "set nps 50" not in text
+        # the library is given through the environment variable
+        assert "acelib" not in text
+        assert 'set pdatadir "/photon/data"' in text
+        assert "26056.32c" in text
+        assert ".31c" not in text
+
+    def test_set_nps_few_particles(self, libSerpent):
+        with as_file(files(resources).joinpath("serpent_template")) as template:
+            inp = InputSerpent(template, libSerpent)
+        inp.set_nps(10)
+        assert "set nps 10 10" in inp.inp.text
+
+
+class TestInputSerpentSphere:
+    def test_input_generation(self, tmpdir, libSerpent):
+        template = TEMPLATE_ROOT.joinpath("Sphere", "Sphere", "serpent")
+        inp = InputSerpentSphere(template, libSerpent, "1001", "-0.0708")
+        assert inp.name == "Sphere_1001_H-1"
+        inp.translate()
+        inp.write(tmpdir)
+        with open(Path(tmpdir, "Sphere_1001_H-1.i")) as f:
+            text = f.read()
+        materials = inp.inp.get_materials()
+        assert len(materials) == 1
+        assert materials[0].name == "1"
+        assert materials[0].pairs == [("1001.32c", "1.000000e+00")]
+        assert "mat 1 -0.0708" in text
+        assert "% hydrogen H-1" in text
+
+    def test_material(self, tmpdir, libSerpent):
+        mat_path = TEMPLATE_ROOT.joinpath("TypicalMaterials")
+        material = ipt.Input.from_input(mat_path).mat_section["M101"]
+        template = TEMPLATE_ROOT.joinpath("Sphere", "Sphere", "serpent")
+        inp = InputSerpentSphere(template, libSerpent, material, "-7.93")
+        assert inp.name == "Sphere_M101"
+        inp.write(tmpdir)
+        with open(Path(tmpdir, "Sphere_M101.i")) as f:
+            text = f.read()
+        assert "% True name:M101" in text
+        # MCNP comments are converted
+        assert "\nC " not in text
+        pairs = inp.inp.get_materials()[0].pairs
+        assert len(pairs) == len(material.zaids)
+        assert all(nuclide.endswith(".32c") for nuclide, _ in pairs)

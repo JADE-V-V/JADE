@@ -111,10 +111,21 @@ The following is an example of the settings of a transport library:
             suffix: 32c  # correspondent suffix in the xsdir file
         openmc:
             path: path/to/cross_sections.xml  # path to the library file
-        serpent:  # TODO
-            path: pathtolib
+        serpent:
+            path: /path/to/xsdata  # path to the xsdata file
+            suffix: 32c  # suffix of the neutron data in the xsdata file
+            # optional, only needed for coupled neutron-photon transport
+            photon_data_dir: /path/to/photon_data  # written as 'set pdatadir'
 
 There is no need to provide paths for the codes that the user does not intend to use.
+
+For Serpent, the xsdata file is passed to the code through the ``SERPENT_ACELIB``
+environment variable, any ``set acelib`` card in the benchmark templates is removed.
+The nuclides of all ``mat`` cards identified by their ZA number (e.g. ``26000.31c``)
+are translated to the requested suffix, expanding natural elements when they are not
+available in the xsdata (same logic used for MCNP). Materials using symbolic names
+(e.g. ``Fe-56.31c``) are left untouched. The number of histories is set with
+``set nps <nps> <batches>`` (external source mode).
 
 In some cases, certain cross sections may be missing from a library for given material. This requires an alternative library to be used for the missing nuclides. 
 In the case of the Sphere for OpenMC where the standard material definitions are used, this requires an update to `cross_sections.xml` file **after** generation of the inputs. The user may run the Sphere benchmark with the `cross_sections.xml`

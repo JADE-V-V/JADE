@@ -8,6 +8,7 @@ import os
 
 from jade.config.run_config import LibraryOpenMC
 from jade.helper.aux_functions import (
+    CODE_CHECKERS,
     get_code_lib,
     print_code_lib,
     same_index,
@@ -58,3 +59,9 @@ def test_add_rmode0(tmp_path: Path):
             assert "RMODE" in inp.other_data.keys(), (
                 f"RMODE card not found in the input file {file}"
             )
+
+
+def test_serpent_checker():
+    checker = CODE_CHECKERS[CODE.SERPENT]
+    assert checker.check_success(["Sphere.i", "Sphere.i_res.m", "Sphere.i_det0.m"])
+    assert not checker.check_success(["Sphere.i", "metadata.json"])

@@ -52,6 +52,13 @@ on which version of OpenMC is being run.
   Development cycles of OpenMC are quite fast. Be sure to install an OpenMC version
   that your python environment supports.  
 
+Similarly, if planning to use Serpent, it is responsibility of the user to install
+`serpentTools <https://serpent-tools.readthedocs.io>`_ in the same python environment,
+which is used to parse the Serpent outputs. Since ``serpentTools`` still relies on
+``distutils``, ``setuptools`` is also needed for Python 3.12 and above:
+
+  | ``pip install serpentTools setuptools``
+
 ACTINV installation
 ~~~~~~~~~~~~~~~~~~~
 
@@ -90,7 +97,7 @@ All dependencies are declared in ``pyproject.toml``, which is the single source 
 at their current major version (minor version for ``0.x`` packages); when bumping a cap,
 make sure the test suite still passes.
 
-If your dev system allows it, install also openmc in the same python environment.
+If your dev system allows it, install also openmc and serpentTools in the same python environment.
 
 Instantiate a JADE folder tree
 ------------------------------

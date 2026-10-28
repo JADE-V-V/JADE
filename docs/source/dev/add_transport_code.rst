@@ -27,5 +27,12 @@ The following steps are required to add a new transport code to JADE:
    This new class can be connected with its ENUM tag in the ``__init__()`` method of the
    :class:`RawProcessor` class at  ``src/jade/post/raw_processor.py``.
 
+Serpent can be used as a reference implementation of all these steps:
+:class:`LibrarySerpent`, :class:`InputSerpent`, :class:`InputSerpentSphere`,
+:class:`SingleRunSerpent` and :class:`SerpentSimOutput`. The text based manipulation of
+the Serpent inputs is collected in ``src/jade/helper/serpent.py``. If the success of a
+simulation cannot be determined by the existing checkers, also add a
+:class:`SimulationChecker` to ``CODE_CHECKERS`` in ``src/jade/helper/aux_functions.py``.
+
 Clearly, suitable tests should also be added to ensure the correct functioning of the newly implemented
 classes.

@@ -6,21 +6,25 @@ import math
 import os
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 import pandas as pd
 from f4enix.output.MCNPoutput import Output
 from f4enix.output.mctal import Mctal, Tally
 from f4enix.output.meshtal import Meshtal
 
-from jade.helper.__optionals__ import OMC_AVAIL
+from jade.helper.__optionals__ import OMC_AVAIL, SERPENT_AVAIL
 from jade.helper.actinv import schedule_endpoints
+from jade.helper.serpent import SerpentInput, find_input_file
 
 if TYPE_CHECKING:
     from jade.helper.aux_functions import PathLike
 
 if OMC_AVAIL:
     import jade.helper.openmc as omc
+
+if SERPENT_AVAIL:
+    import serpentTools
 
 logger = logging.getLogger(__name__)
 
@@ -553,6 +557,186 @@ class OpenMCSphereSimOutput(OpenMCSimOutput):
             tallydata[id] = sorted_tally
             totalbin[id] = None
         return tallydata, totalbin
+
+
+class SerpentSimOutput(AbstractSimOutput):
+    # serpentTools name of the detector bins -> JADE column. Bins of
+    # universes, materials and lattices are all mapped to the "User" column.
+    BIN_COLUMNS: ClassVar[dict[str, str]] = {
+        "cell": "Cells",
+        "universe": "User",
+        "material": "User",
+        "lattice": "User",
+        "reaction": "Multiplier",
+        "energy": "Energy",
+        "time": "time",
+        "xmesh": "Cor A",
+        "ymesh": "Cor B",
+        "zmesh": "Cor C",
+    }
+    # grids containing the bin boundaries of the detectors
+    GRIDS: ClassVar[dict[str, str]] = {
+        "energy": "E",
+        "time": "T",
+        "xmesh": "X",
+        "ymesh": "Y",
+        "zmesh": "Z",
+    }
+
+    def __init__(self, sim_folder: PathLike) -> None:
+        """
+        Class parsing all outputs coming from a Serpent run. Detectors are mapped to
+        tallies, only detectors with integer names are considered. The bins of
+        the detectors are identified by their upper boundary (energy, time and
+        meshes) or by the name used in the input (cells, universes, materials,
+        lattices and reaction MT). Errors are relative as for MCNP.
+
+        Parameters
+        ----------
+        sim_folder : PathLike
+            Path to the simulation folder containing the output files.
+        """
+        if not SERPENT_AVAIL:
+            raise ImportError(
+                "serpentTools is needed to process Serpent outputs, please install it"
+            )
+        self.sim_folder = sim_folder
+        self.input_file, self.res_file, self.det_file = self.retrieve_files(sim_folder)
+        self.stat_checks = None
+        self.code_version = self._read_code_version()
+
+        self._tallydata = {}
+        self._totalbin = {}
+        self._tally_numbers = []
+        self._tally_comments = []
+        if self.det_file is None:
+            logger.warning("No detector output found in %s", sim_folder)
+            return
+
+        detectors_bins = SerpentInput.from_file(self.input_file).get_detectors()
+        reader = serpentTools.read(str(self.det_file), reader="det")
+        for name, detector in reader.detectors.items():
+            try:
+                tally_number = int(name)
+            except ValueError:
+                logger.warning(
+                    "Detector %s skipped, only integer names are supported", name
+                )
+                continue
+            self._tally_numbers.append(tally_number)
+            self._tally_comments.append(f"det {name}")
+            self._tallydata[tally_number] = self._detector_to_df(
+                detector, detectors_bins.get(name, {})
+            )
+            self._totalbin[tally_number] = None
+
+    def _detector_to_df(
+        self, detector: serpentTools.Detector, input_bins: dict[str, list[str]]
+    ) -> pd.DataFrame:
+        bins = detector.bins
+        cols = list(detector.DET_COLS)
+        if bins.shape[1] == len(cols) - 1:
+            # Serpent versions older than 2.1.30 do not have time bins
+            cols.remove("time")
+        df = pd.DataFrame(bins, columns=cols)
+        df = df.drop(columns=["value"]).rename(
+            columns={"tally": "Value", "error": "Error"}
+        )
+
+        # drop the bins that are not used
+        for col in list(self.BIN_COLUMNS):
+            if col in df.columns and df[col].nunique() == 1:
+                del df[col]
+        mapped = [
+            self.BIN_COLUMNS[col] for col in df.columns if col in self.BIN_COLUMNS
+        ]
+        if len(set(mapped)) < len(mapped):
+            raise NotImplementedError(
+                f"Detector {detector.name} has more than one binning among "
+                "universes, materials and lattices"
+            )
+
+        # substitute the bin indexes with meaningful values
+        for col in df.columns:
+            if col not in self.BIN_COLUMNS:
+                continue
+            idx = df[col].astype(int) - 1
+            if col in self.GRIDS:
+                # upper boundary of the bins
+                grid = detector.grids[self.GRIDS[col]]
+                df[col] = grid[idx.values, 1]
+            elif col in input_bins and len(input_bins[col]) == idx.max() + 1:
+                names = input_bins[col]
+                df[col] = [_to_number(names[i]) for i in idx]
+            else:
+                df[col] = idx + 1
+
+        df = df.rename(columns=self.BIN_COLUMNS)
+        # same column order of MCNP tallies
+        order = ["Cells", "User", "Multiplier", "Energy", "time", "Cor C", "Cor B"]
+        order += ["Cor A", "Value", "Error"]
+        df = df[[col for col in order if col in df.columns]]
+        return df.reset_index(drop=True)
+
+    @property
+    def tallydata(self) -> dict[int, pd.DataFrame]:
+        return self._tallydata
+
+    @property
+    def totalbin(self) -> dict[int, pd.DataFrame]:
+        return self._totalbin
+
+    @property
+    def tally_numbers(self) -> list[int]:
+        return self._tally_numbers
+
+    @property
+    def tally_comments(self) -> list[str]:
+        return self._tally_comments
+
+    def _read_code_version(self) -> str | None:
+        if self.res_file is not None:
+            with open(self.res_file) as f:
+                for line in f:
+                    if line.startswith("VERSION"):
+                        return line.split("=")[1].strip(" ;'\n")
+        logger.warning("Code version not found for %s", self.sim_folder)
+        return None
+
+    @staticmethod
+    def retrieve_files(
+        results_path: PathLike,
+    ) -> tuple[Path, Path | None, Path | None]:
+        res_file = None
+        det_file = None
+        for file_name in os.listdir(results_path):
+            if file_name.endswith("_res.m"):
+                res_file = Path(results_path, file_name)
+            elif file_name.endswith("_det0.m"):
+                det_file = Path(results_path, file_name)
+
+        if res_file is None:
+            raise FileNotFoundError(
+                f"The following path does not contain the required files for Serpent output: {results_path}"
+            )
+
+        return find_input_file(results_path), res_file, det_file
+
+    @staticmethod
+    def is_successfully_simulated(files: list[str]) -> bool:
+        """Check if the simulation was successful by verifying output files exist."""
+        return any(file.endswith("_res.m") for file in files)
+
+
+def _to_number(value: str) -> int | float | str:
+    """Convert bin names to numbers when possible (e.g. cell names)."""
+    for cast in (int, float):
+        try:
+            return cast(value)
+        except ValueError:
+            continue
+    return value
+
 
 def _remove_constant_columns(df: pd.DataFrame) -> pd.DataFrame:
     """eliminate unnecessary columns from OpenMC tally data"""

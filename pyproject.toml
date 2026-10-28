@@ -19,6 +19,7 @@ classifiers = [
 ]
 dependencies = [
     "xlsxwriter < 4",
+    "python-docx < 2",
     "matplotlib < 4",
     "requests < 3",
     "f4enix >= 1.2.1, < 2",
@@ -32,7 +33,7 @@ dev = [
     "pytest < 10",
     "pytest-cov < 8",
     "pytest-xvfb < 4",  # needed for headless display
-    "ruff",  # best formatter that should be used by everybody
+    "ruff == 0.17.3",  # keep in sync with .github/workflows/lint.yml
 ]
 docs = [
     "sphinx < 10",
@@ -40,7 +41,8 @@ docs = [
     "sphinx-book-theme < 2",
     "sphinx-copybutton < 0.6",
     "sphinx-togglebutton < 0.5",
-    "sphinx-design < 0.8"
+    "sphinx-design < 0.8",
+    "pydata-sphinx-theme < 1",
 ]
 ui = [
     "ttkthemes < 4"
@@ -63,3 +65,7 @@ jade = 'src/jade'
 [tool.setuptools.package-data]
 "*" = ["*.txt", '*.csv', '*.sh', '*.cmd', '*.docx', '*.ico']
 
+[tool.ruff.lint]
+# Import sorting is in the default rule set of the pinned ruff, but older
+# versions (and editor-bundled ruff) do not enable it. Keep it explicit.
+extend-select = ["I"]

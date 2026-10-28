@@ -1,0 +1,28 @@
+name: lint
+
+# Controls when the workflow will run
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  ruff:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+
+      # Lint (includes import sorting). Ruff version is pinned so that the rule set
+      # does not change under our feet when a new ruff release adds default rules.
+      # Keep in sync with the ruff pin in pyproject.toml (dev extra).
+      - name: Ruff check
+        uses: astral-sh/ruff-action@v3
+        with:
+          version: "0.17.3"
+          args: "check"
+
+      # Fail if any file is not formatted
+      - name: Ruff format
+        uses: astral-sh/ruff-action@v3
+        with:
+          version: "0.17.3"
+          args: "format --check --diff"

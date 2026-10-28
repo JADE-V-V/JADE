@@ -96,7 +96,6 @@ class SingleRun(ABC):
         """
         # This method needs to build the command to run the code, will be different
         # depending on codes
-        pass
 
     @abstractmethod
     def _get_lib_data_command(self) -> tuple[str, str]:
@@ -252,9 +251,6 @@ class SingleRun(ABC):
         """
         # store cwd to get back to it after job submission
         cwd = os.getcwd()
-        user = (
-            subprocess.run("whoami", capture_output=True).stdout.decode("utf-8").strip()
-        )
         os.chdir(directory)
         job_script = os.path.join(
             directory, os.path.basename(directory) + "_job_script"
@@ -275,7 +271,9 @@ class SingleRun(ABC):
 
         # Submit the job using the specified batch system (checked for existence in post_init)
         if not test:
-            subprocess.run([env_vars.scheduler_command, job_script], cwd=directory)
+            subprocess.run(
+                [env_vars.scheduler_command, job_script], cwd=directory, check=False
+            )
         # return to the original directory
         os.chdir(cwd)
 
@@ -582,7 +580,7 @@ class BenchmarkRun:
             # if MCNP or similar, check for output file and remove if found
             if code == CODE.MCNP or code == CODE.D1S:
                 for file in os.listdir(single_run_root):
-                    if file.endswith(".o") or file.endswith(".r"):
+                    if file.endswith((".o", ".r")):
                         os.remove(Path(single_run_root, file))
 
             # create the single run using the mock input
@@ -1038,8 +1036,11 @@ def replace_template_vars(
 
     """
     job_template = env_vars.code_job_template[code]
-    # store cwd to get back to it after job submission
-    user = subprocess.run("whoami", capture_output=True).stdout.decode("utf-8").strip()
+    user = (
+        subprocess.run("whoami", capture_output=True, check=False)
+        .stdout.decode("utf-8")
+        .strip()
+    )
     job_script = os.path.join(directory, os.path.basename(directory) + "_job_script")
 
     if not os.path.isfile(job_template):
@@ -1049,7 +1050,7 @@ def replace_template_vars(
     with open(job_template) as fin:
         # Replace placeholders in batch file template with actual values
         contents = fin.read()
-        contents = contents.replace("INITIAL_DIR", f'"{str(directory)}"')
+        contents = contents.replace("INITIAL_DIR", f'"{directory!s}"')
         contents = contents.replace("OUT_FILE", f'"{job_script + ".out"}"')
         contents = contents.replace("ERROR_FILE", f'"{job_script + ".err"}"')
         contents = contents.replace("MPI_TASKS", str(env_vars.mpi_tasks))
@@ -1106,7 +1107,9 @@ def launch_global_jobs(
         if not test:
             with open(job_script, "w") as fout:
                 fout.write(contents)
-            subprocess.run([env_vars.scheduler_command, job_script], cwd=cwd)
+            subprocess.run(
+                [env_vars.scheduler_command, job_script], cwd=cwd, check=False
+            )
     # return to the original directory
     os.chdir(cwd)
     return scripts

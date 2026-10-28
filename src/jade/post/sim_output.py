@@ -49,7 +49,6 @@ class AbstractSimOutput(ABC):
         dict[str, pd.DataFrame]
             Dictionary of tally dataframes, indexed by tally number.
         """
-        pass
 
     @property
     @abstractmethod
@@ -73,7 +72,6 @@ class AbstractSimOutput(ABC):
         list[int]
             List of tally numbers.
         """
-        pass
 
     @property
     @abstractmethod
@@ -85,7 +83,6 @@ class AbstractSimOutput(ABC):
         list[str]
             List of tally comments.
         """
-        pass
 
     @abstractmethod
     def _read_code_version(self) -> str:
@@ -96,7 +93,6 @@ class AbstractSimOutput(ABC):
         str
             The code version.
         """
-        pass
 
 
 class MCNPSimOutput(AbstractSimOutput):
@@ -327,7 +323,6 @@ class OpenMCSimOutput(AbstractSimOutput):
         file1 = None
         file2 = None
         file3 = None
-        file4 = None
 
         for file_name in os.listdir(results_path):
             if file_name.endswith(".out"):
@@ -356,11 +351,13 @@ class OpenMCSimOutput(AbstractSimOutput):
             if file.startswith("statepoint") and file.endswith(".h5"):
                 statepoint_found = True
         return statepoint_found
-    
-    def _prep_tally(self, filter_lookup: dict[str, str], tally: pd.DataFrame) -> pd.DataFrame:
-        '''
+
+    def _prep_tally(
+        self, filter_lookup: dict[str, str], tally: pd.DataFrame
+    ) -> pd.DataFrame:
+        """
         Function to prepare the tally dataframe for JADE formatting, by renaming the columns and sorting by the filters.
-        
+
         Parameters
         ----------
         filter_lookup : dict
@@ -373,7 +370,7 @@ class OpenMCSimOutput(AbstractSimOutput):
         sorted_tally : pd.DataFrame
             The sorted and renamed tally dataframe ready for JADE formatting
 
-        '''
+        """
         filters = []
         new_columns = {}
         if "cell" in tally.columns:
@@ -384,8 +381,7 @@ class OpenMCSimOutput(AbstractSimOutput):
             filters.append("energy high [eV]")
         if "time" in tally.columns:
             filters.append("time")
-        new_columns = dict(
-            (k, filter_lookup[k]) for k in filters if k in filter_lookup)
+        new_columns = {k: filter_lookup[k] for k in filters if k in filter_lookup}
         new_columns["mean"] = filter_lookup["mean"]
         new_columns["std. dev."] = filter_lookup["std. dev."]
         sorted_tally = tally.sort_values(filters)
@@ -423,25 +419,12 @@ class OpenMCSimOutput(AbstractSimOutput):
             "mean": "Value",
             "std. dev.": "Error",
         }
-        columns = [
-            "Cells",
-            "User",
-            "Segments",
-            "Cosine",
-            "Energy",
-            "Time",
-            "Cor C",
-            "Cor B",
-            "Cor A",
-            "Value",
-            "Error",
-        ]
         for id, tally in tallies.items():
             sorted_tally = self._prep_tally(filter_lookup, tally)
-            
+
             if "Value" in sorted_tally.columns and "Error" in sorted_tally.columns:
                 sorted_tally["Error"] = sorted_tally["Error"] / sorted_tally["Value"]
-            
+
             tallydata[id] = sorted_tally
             totalbin[id] = None
         return tallydata, totalbin
@@ -483,8 +466,8 @@ class OpenMCSphereSimOutput(OpenMCSimOutput):
         None.
 
         """
-        _, statefile, volfile = self.retrieve_file(sim_folder)
-        
+        self.retrieve_file(sim_folder)
+
         # Retrieving atomic density for normalisation of the DPA, He and T production tallies
         self.input = omc.OpenMCInputFiles(sim_folder)
         materials = self.input.geometry.get_all_materials()
@@ -522,19 +505,6 @@ class OpenMCSphereSimOutput(OpenMCSimOutput):
             "mean": "Value",
             "std. dev.": "Error",
         }
-        columns = [
-            "Cells",
-            "User",
-            "Segments",
-            "Cosine",
-            "Energy",
-            "Time",
-            "Cor C",
-            "Cor B",
-            "Cor A",
-            "Value",
-            "Error",
-        ]
         for id, tally in tallies.items():
             sorted_tally = self._prep_tally(filter_lookup, tally)
 
@@ -546,13 +516,14 @@ class OpenMCSphereSimOutput(OpenMCSimOutput):
                 sorted_tally["Error"] = sorted_tally["Error"] / self.atomic_density
             else:
                 pass
-            
+
             if "Value" in sorted_tally.columns and "Error" in sorted_tally.columns:
                 sorted_tally["Error"] = sorted_tally["Error"] / sorted_tally["Value"]
-            
+
             tallydata[id] = sorted_tally
             totalbin[id] = None
         return tallydata, totalbin
+
 
 def _remove_constant_columns(df: pd.DataFrame) -> pd.DataFrame:
     """eliminate unnecessary columns from OpenMC tally data"""

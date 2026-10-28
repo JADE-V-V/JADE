@@ -158,7 +158,7 @@ class Plot(ABC):
         if self.cfg.v_lines is None:
             return
 
-        if "major" in self.cfg.v_lines.keys():
+        if "major" in self.cfg.v_lines:
             lines = self.cfg.v_lines["major"]
             for line in lines:
                 # Check first if the value is in the axis limits
@@ -166,7 +166,7 @@ class Plot(ABC):
                     ax.axvline(line, color="black")
 
         # minor lines
-        if "minor" in self.cfg.v_lines.keys():
+        if "minor" in self.cfg.v_lines:
             lines = self.cfg.v_lines["minor"]
             for line in lines:
                 # Check first if the value is in the axis limits
@@ -186,7 +186,7 @@ class Plot(ABC):
         if self.cfg.additional_labels is None:
             return
 
-        if "major" in self.cfg.additional_labels.keys():
+        if "major" in self.cfg.additional_labels:
             labels = self.cfg.additional_labels["major"]
             bbox_dic = {
                 "boxstyle": "round,pad=0.5",
@@ -195,7 +195,7 @@ class Plot(ABC):
             }
             _place_labels(labels, ax, 0.93, bbox=bbox_dic)
 
-        if "minor" in self.cfg.additional_labels.keys():
+        if "minor" in self.cfg.additional_labels:
             # minor labels
             labels = self.cfg.additional_labels["minor"]
             _place_labels(labels, ax, 0.87)
@@ -204,7 +204,7 @@ class Plot(ABC):
 def _place_labels(
     labels: list[tuple[str, float | int]],
     ax: Axes,
-    ypos_perc: float | int,
+    ypos_perc: float,
     bbox: dict | None = None,
 ) -> None:
     """Helper function to place labels on the correct position in the plot"""
@@ -1031,8 +1031,8 @@ class PlotFactory:
 
 # Aux functions
 def _get_limits(
-    lowerlimit: float | int,
-    upperlimit: float | int,
+    lowerlimit: float,
+    upperlimit: float,
     ydata: list | np.ndarray,
     xdata: list | np.ndarray,
 ):
@@ -1095,8 +1095,8 @@ def _get_error_x_pos(x_array: np.ndarray) -> np.ndarray:
 
 
 def _apply_CE_limits(
-    min: float | int,
-    max: float | int,
+    min: float,
+    max: float,
     ydata: np.ndarray,
     xdata: np.ndarray,
     ax: Axes,

@@ -71,7 +71,7 @@ def _extract_zip(zip_content, dest: PathLike) -> PathLike:
 
 
 def fetch_from_gitlab(
-    url: str, path: str, branch: str, authorization_token: str = None
+    url: str, path: str, branch: str, authorization_token: str | None = None
 ) -> PathLike | bool:
     """Download a repository from GitLab and extract
     it to a temporary folder. It can also deal with authentication. Supported
@@ -103,7 +103,11 @@ def fetch_from_gitlab(
         logger.error("Gitlab authentication failed")
         logger.error(e)
         return False
-    except requests.exceptions.RequestException as e:
+    # python-gitlab lets requests errors (e.g. unreachable host) propagate as they are
+    except (
+        gitlab.exceptions.GitlabConnectionError,
+        requests.exceptions.RequestException,
+    ) as e:
         logger.error(f"Could not connect to {url}")
         logger.error(e)
         return False

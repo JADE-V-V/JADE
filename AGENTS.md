@@ -75,8 +75,8 @@ The same pattern applies to `Library`/`LibraryFactory`. `Input` subclasses are s
 ### Config construction: always via named classmethods
 
 ```python
-run_cfg = RunConfig.from_root(paths_tree)       # reads 4 YAML files
-run_cfg = RunConfig.from_yamls(env_path, ...)   # explicit paths
+run_cfg = RunConfig.from_root(paths_tree)  # reads 4 YAML files
+run_cfg = RunConfig.from_yamls(env_path, ...)  # explicit paths
 ```
 
 Never construct config dataclasses directly.

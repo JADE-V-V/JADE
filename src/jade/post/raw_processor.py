@@ -59,7 +59,7 @@ class RawProcessor:
         if self.code in (CODE.MCNP, CODE.D1S):
             self.sim_output = MCNPSimOutput(sim_folder)
         elif self.code == CODE.OPENMC:
-            if self.metadata.get("benchmark_name") =="Sphere":
+            if self.metadata.get("benchmark_name") == "Sphere":
                 self.sim_output = OpenMCSphereSimOutput(sim_folder)
             else:
                 self.sim_output = OpenMCSimOutput(sim_folder)

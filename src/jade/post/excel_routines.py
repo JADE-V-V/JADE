@@ -157,7 +157,6 @@ class Table(ABC):
     def _get_sheet(self) -> list[pd.DataFrame]:
         """this is the core of the table, its data. It should return a list of
         dataframes that will be added to the workbook (one per sheet)."""
-        pass
 
     @staticmethod
     def _rename_columns(df: pd.DataFrame, names: dict[str, str]) -> None:
@@ -251,7 +250,7 @@ class PivotTable(Table):
 
 class SpherePivotTable(PivotTable):
     """Pivot table with custom sorting for Sphere benchmark.
-    
+
     Sorts the index by:
     1. Isotopes first (sorted by Z number extracted from the case name)
     2. Materials second (sorted alphabetically)
@@ -260,27 +259,27 @@ class SpherePivotTable(PivotTable):
     def _get_sheet(self) -> list[pd.DataFrame]:
         # Get the parent class results
         dfs = super()._get_sheet()
-        
+
         # Apply sorting to all dataframes
         sorted_dfs = []
         for df in dfs:
             sorted_df = self._sort_sphere_index(df)
             sorted_dfs.append(sorted_df)
-        
+
         return sorted_dfs
 
     @staticmethod
     def _sort_sphere_index(df: pd.DataFrame) -> pd.DataFrame:
         """Sort the index of the dataframe for Sphere benchmark.
-        
+
         Isotopes (cases starting with numbers) are sorted by their Z number,
         and materials (cases starting with 'M') are sorted alphabetically.
-        
+
         Parameters
         ----------
         df : pd.DataFrame
             DataFrame with index to sort
-            
+
         Returns
         -------
         pd.DataFrame
@@ -288,7 +287,7 @@ class SpherePivotTable(PivotTable):
         """
         if df.empty:
             return df
-            
+
         # Get the index name(s)
         if isinstance(df.index, pd.MultiIndex):
             # For multi-index, we need to sort by the first level (Case)
@@ -297,16 +296,16 @@ class SpherePivotTable(PivotTable):
         else:
             # For single index
             cases = df.index.unique()
-        
+
         # Separate isotopes and materials
         isotopes = []
         materials = []
-        
+
         for case in cases:
             case_str = str(case)
             # Check if it starts with a digit (isotope) or 'M' (material)
             # Expected format: "Sphere_1001_H-1" for isotopes or "Sphere_M101" for materials
-            parts = case_str.split('_')
+            parts = case_str.split("_")
             if len(parts) >= 2:
                 identifier = parts[1]  # e.g., "1001" or "M101"
                 if identifier[0].isdigit():
@@ -321,7 +320,7 @@ class SpherePivotTable(PivotTable):
                         # Unknown format, use the identifier as-is for sorting
                         z_number = int(identifier) if identifier.isdigit() else 0
                     isotopes.append((z_number, case))
-                elif identifier.startswith('M'):
+                elif identifier.startswith("M"):
                     materials.append(case)
                 else:
                     # Unknown format, treat as material
@@ -329,14 +328,14 @@ class SpherePivotTable(PivotTable):
             else:
                 # Unknown format, treat as material
                 materials.append(case)
-        
+
         # Sort isotopes by Z number, materials alphabetically
         isotopes.sort(key=lambda x: x[0])
         materials.sort()
-        
+
         # Create the sorted order
         sorted_order = [case for _, case in isotopes] + materials
-        
+
         # Reindex the dataframe
         if isinstance(df.index, pd.MultiIndex):
             # For multi-index, we need to reindex by the first level
@@ -351,7 +350,7 @@ class SpherePivotTable(PivotTable):
         else:
             # Simple reindex for single index
             df = df.reindex(sorted_order)
-        
+
         return df
 
 

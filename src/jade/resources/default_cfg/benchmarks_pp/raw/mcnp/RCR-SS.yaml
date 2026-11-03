@@ -6,7 +6,7 @@ Neutron flux HPD:
       - [delete_cols, {'cols': ['Dir']}]
       - [by_energy, {}]
       - [format_decimals, {'decimals': {'Energy':4}}]
-      - [gaussian_broadening, {'fwhm_frac': 0.1}]
+      - [gaussian_broadening, {'energies':{'0.1':{'no_scaling':{'fwhm_frac': 0.0}},'1.3335':{'no_scaling':{'fwhm_frac': 0.1}}}}]
 Neutron flux SSD:
    apply_to: [RCR-SS_SR]
    concat_option: no_action
@@ -15,7 +15,25 @@ Neutron flux SSD:
      - [delete_cols, {'cols': ['Dir']}]
      - [by_energy, {}]
      - [format_decimals, {'decimals': {'Energy':1}}]
-     - [gaussian_broadening, {'fwhm_frac': [0.1702, 0.1702, 0.1702, 0.1702, 0.1505, 0.1505, 0.1505, 0.1363, 0.1363, 0.1363, 0.1250, 0.1250, 0.1250, 0.1142, 0.1097, 0.1067, 0.1067, 0.1067, 0.0996, 0.0996, 0.0996, 0.0930, 0.0930, 0.0930, 0.0930, 0.0930,0.0930, 0.0805, 0.0805, 0.0805, 0.0805, 0.0805, 0.0805, 0.0805, 0.0805, 0.0805, 0.0805, 0.0805, 0.0805, 0.0805, 0.0659, 0.0659, 0.0659, 0.0659, 0.0659, 0.0659, 0.0659, 0.0659, 0.0659, 0.0659, 0.0659, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0591, 0.0546, 0.0546, 0.0546, 0.0546, 0.0546, 0.0546, 0.0546, 0.0546, 0.0546, 0.0546, 0.0546, 0.0546, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0525, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513, 0.0513]}]
+     - [gaussian_broadening, {'energies':{
+          '1.0':{'no_scaling':{'fwhm_frac': 0.0}}, 
+          '1.35':{'no_scaling':{'fwhm_frac': 0.1702}}, 
+          '1.65':{'no_scaling':{'fwhm_frac': 0.1505}}, 
+          '1.92':{'no_scaling':{'fwhm_frac': 0.1363}},
+          '2.23':{'no_scaling':{'fwhm_frac': 0.1250}},
+          '2.35':{'no_scaling':{'fwhm_frac': 0.1142}},
+          '2.37':{'no_scaling':{'fwhm_frac': 0.1102}},
+          '2.47':{'no_scaling':{'fwhm_frac': 0.1097}},
+          '2.73':{'no_scaling':{'fwhm_frac': 0.1067}},
+          '3.01':{'no_scaling':{'fwhm_frac': 0.0996}},
+          '3.68':{'no_scaling':{'fwhm_frac': 0.0930}},
+          '4.97':{'no_scaling':{'fwhm_frac': 0.0805}},
+          '6.07':{'no_scaling':{'fwhm_frac': 0.0659}},
+          '7.41':{'no_scaling':{'fwhm_frac': 0.0591}},
+          '8.61':{'no_scaling':{'fwhm_frac': 0.0546}},
+          '10.00':{'no_scaling':{'fwhm_frac': 0.0525}},
+          '12.00':{'no_scaling':{'fwhm_frac': 0.0513}},
+          }}]
 Coarse neutron flux HPD:
    apply_to: [RCR-SS_SR]
    concat_option: no_action

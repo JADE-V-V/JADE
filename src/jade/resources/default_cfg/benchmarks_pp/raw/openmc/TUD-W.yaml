@@ -6,6 +6,13 @@ Neutron spectra:
     - [format_decimals,{"decimals":{"Energy":2}}]
     - [scale, {'factor': 0.02284}]
     - [delete_cols, {'cols': ['energy low [eV]']}]
+    - ['gaussian_broadening', {'energies': {
+          '0.1928':{'no_scaling':{'fwhm_frac':0.2}}, 
+          '0.9951':{'no_scaling':{'fwhm_frac':0.15}},
+          '2.9745':{'no_scaling':{'fwhm_frac':0.1}},
+          '3.664':{'no_scaling':{'fwhm_frac':0.05}},
+          '13.836':{'no_scaling':{'fwhm_frac':0.03}},
+          '15.5':{'no_scaling':{'fwhm_frac':0.02}}}}]
 Photon spectra:
   concat_option: no_action
   2:

@@ -357,60 +357,75 @@ def test_cumulative_sum():
         cumulative_sum(df, column="Error")
 
 
-def test_gaussian_broadening():
+def test_gaussian_broadening(caplog):
     data = {
-        "Energy": [0.1000, 0.1059, 0.1122, 0.1188, 0.1259],
-        "Value": [7.301230e-06, 5.373435e-06, 6.279305e-06, 7.781032e-06, 1.129645e-05],
-        "Error": [0.1, 0.2, 0.3, 0.4, 0.5],
+        "Energy": [1.0, 2.0, 4.0],
+        "Value": [1.0, 2.0, 3.0],
+        "Error": [0.1, 0.2, 0.3],
     }
-    df = pd.DataFrame(data)
+    eref = 2.0
+    fwhm_cases = [0.2, [0.1, 0.2, 0.3]]
+    scaling_cases = [
+        ("no_scaling", None),
+        ("linear", 1),
+        ("square", 2),
+        ("square_root", 0.5),
+    ]
 
-    # Test with default fwhm_frac
-    result = gaussian_broadening(df.copy())
-    assert len(result) == len(df)
+    for scaling, exponent in scaling_cases:
+        for fwhm_frac in fwhm_cases:
+            tally = pd.DataFrame(data)
+            scaling_config = {"fwhm_frac": fwhm_frac}
+            if exponent is not None:
+                scaling_config["Eref"] = eref
 
-    assert result["Value"].tolist() == pytest.approx(
-        [
-            6.61055830e-06,
-            6.53424775e-06,
-            6.67475584e-06,
-            8.80555537e-06,
-            9.40633474e-06,
-        ],
-        rel=1e-2,
+            result = gaussian_broadening(
+                tally.copy(), {"4.0": {scaling: scaling_config}}
+            )
+
+            energies = np.array(data["Energy"])
+            source_widths = np.diff(energies, prepend=1e-10)
+            expected_values = np.zeros(len(energies))
+            expected_error_variances = np.zeros(len(energies))
+            for source_index, source_energy in enumerate(energies):
+                source_fwhm = (
+                    fwhm_frac
+                    if isinstance(fwhm_frac, float)
+                    else fwhm_frac[source_index]
+                )
+                sigma = source_fwhm * source_energy / (2 * np.sqrt(2 * np.log(2)))
+                scale = 1.0 if exponent is None else (source_energy / eref) ** exponent
+                kernel = np.exp(
+                    -0.5 * ((energies - source_energy) / (scale * sigma)) ** 2
+                ) / (sigma * np.sqrt(2 * np.pi) * scale)
+                contribution = (
+                    data["Value"][source_index] * kernel * source_widths[source_index]
+                )
+                expected_values += contribution
+                expected_error_variances += (
+                    data["Error"][source_index] * contribution
+                ) ** 2
+
+            assert len(result) == len(tally)
+            assert result["Value"].to_numpy() == pytest.approx(expected_values)
+            assert result["Error"].to_numpy() == pytest.approx(
+                np.sqrt(expected_error_variances) / expected_values
+            )
+
+    tally = pd.DataFrame(
+        {"Energy": [1.0, 2.0], "Value": [1.0, 2.0], "Error": [0.1, 0.2]}
     )
+    with pytest.raises(ValueError, match="Reference energy.*Eref"):
+        gaussian_broadening(tally.copy(), {"2.0": {"linear": {"fwhm_frac": 0.2}}})
+    with pytest.raises(ValueError, match="Length of FWHM fraction list"):
+        gaussian_broadening(tally.copy(), {"2.0": {"no_scaling": {"fwhm_frac": [0.1]}}})
+    with pytest.raises(ValueError, match="Unknown scaling factor option"):
+        gaussian_broadening(tally.copy(), {"2.0": {"cubic": {"fwhm_frac": 0.2}}})
 
-    # Test with single float fwhm_frac
-    result = gaussian_broadening(df.copy(), fwhm_frac=0.15)
-    assert len(result) == len(df)
-    assert result["Value"].tolist() == pytest.approx(
-        [
-            6.17342002e-06,
-            7.27380890e-06,
-            7.71537669e-06,
-            8.78467520e-06,
-            8.08417119e-06,
-        ],
-        rel=1e-2,
-    )
-
-    # Test with list fwhm_frac
-    result = gaussian_broadening(df.copy(), fwhm_frac=[0.05, 0.05, 0.05, 0.05, 0.05])
-    assert len(result) == len(df)
-    assert result["Value"].tolist() == pytest.approx(
-        [
-            7.31409730e-06,
-            5.44059484e-06,
-            6.31197038e-06,
-            7.85001867e-06,
-            1.11147708e-05,
-        ],
-        rel=1e-2,
-    )
-
-    # Test with mismatched list length
-    with pytest.raises(ValueError, match="Length of fwhm_frac list must match"):
-        gaussian_broadening(df.copy(), fwhm_frac=[0.1, 0.2])
+    result = gaussian_broadening(tally.copy(), {"2.0": {"no_scaling": {}}})
+    assert "FWHM fraction not found" in caplog.text
+    assert np.isfinite(result["Value"]).all()
+    assert np.isfinite(result["Error"]).all()
 
 
 def test_volume():

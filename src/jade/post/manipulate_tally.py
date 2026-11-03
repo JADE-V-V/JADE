@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import math
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -335,52 +336,119 @@ def cumulative_sum(
     return tally
 
 
-def gaussian_broadening(
-    tally: pd.DataFrame, fwhm_frac: float | list[float] = 0.10
-) -> pd.DataFrame:
+def gaussian_broadening(tally: pd.DataFrame, energies: dict) -> pd.DataFrame:
     """Apply Gaussian broadening to the tally.
 
     Parameters
     ----------
     tally : pd.DataFrame
         tally dataframe to modify
-    fwhm_frac: float | list[float]
-        FWHM fraction(s) to apply. Default is 0.10 (10%) for all energy bins.
+    energies : dict
+        Dictionary of energy bins
     """
-    # If fwhm_frac is a single float, convert it to a list with the same length as the tally
-    if isinstance(fwhm_frac, (float, int)):
-        fwhm_frac = [float(fwhm_frac)] * len(tally["Energy"])
-    # If fwhm_frac is a list, check that its length matches the number of rows in the tally
-    elif isinstance(fwhm_frac, list):
-        if len(fwhm_frac) != len(tally["Energy"]):
+
+    total_energy = []
+    hist_energies = [0.0]
+    broadened_values = np.zeros(len(tally), dtype=float)
+    broadened_errors = np.zeros(len(tally), dtype=float)
+    for energy in energies.keys():
+        broad_energies = tally["Energy"][
+            (tally["Energy"] <= float(energy)) & (tally["Energy"] > hist_energies[-1])
+        ].tolist()
+        flag = False
+        if "no_scaling" in energies[energy]:
+            scaling = "no_scaling"
+            scale = 1
+            flag = True
+        elif "linear" in energies[energy]:
+            scaling = "linear"
+            s = 1
+            flag = True
+        elif "square" in energies[energy]:
+            scaling = "square"
+            s = 2
+            flag = True
+        elif "square_root" in energies[energy]:
+            scaling = "square_root"
+            s = 0.5
+            flag = True
+        if not flag:
             raise ValueError(
-                "Length of fwhm_frac list must match number of rows in tally."
+                f"Unknown scaling factor option: {energies[energy]}. The scaling factor type must be one of 'no_scaling', 'linear', 'square', or 'square_root'."
             )
-    else:
-        raise ValueError("fwhm_frac must be a float or a list of floats.")
+        if scaling != "no_scaling":
+            try:
+                eref = energies[energy][scaling]["Eref"]
+            except KeyError:
+                raise ValueError(
+                    f"Reference energy for scaling (Eref) not found for energy {energy} MeV, scaling type {scaling}. When using this scaling type (different to 'no_scaling'), Eref (energy at the peak maximum) must be specified."
+                )
+        try:
+            fwhm_frac = energies[energy][scaling]["fwhm_frac"]
+            if isinstance(fwhm_frac, float):
+                fwhm_frac = [fwhm_frac] * len(broad_energies)
+            elif isinstance(fwhm_frac, list) and len(fwhm_frac) != len(broad_energies):
+                raise ValueError(
+                    "Length of FWHM fraction list must match the number of energy bins of the tally within the indicated energy range."
+                )
+            elif not isinstance(fwhm_frac, (list, float)):
+                raise ValueError("FWHM fraction must be a float or a list of floats.")
+        except KeyError:
+            # If the scaling type is not found as a key in the energies dictionary (only a string is present), use the default FWHM fraction of 0.10 (10%) for all energy bins.
+            fwhm_frac = [0.10] * len(broad_energies)
+            logger.warning(
+                f"FWHM fraction not found for energy {energy} MeV, scaling type {scaling}. Using default FWHM fraction of 0.10 for all affected energy bins."
+            )
+        total_energy.append(broad_energies)
 
-    Eb = tally["Energy"].values.astype(float)
-    Yb = np.zeros_like(tally["Value"])
-    Errb = np.zeros_like(tally["Error"])
-    sigma = (
-        np.array(fwhm_frac) * np.array(tally["Energy"]) / (2 * np.sqrt(2 * np.log(2)))
-    )
+        Eb = tally["Energy"].values.astype(float)
+        Yb = np.zeros(len(tally), dtype=float)
+        Errb = np.zeros(len(tally), dtype=float)
+        all_widths = np.diff(np.array(Eb), prepend=1e-10)
 
-    # Apply Gaussian broadening
-    for Ei, si, Yi, Erri in zip(tally["Energy"], sigma, tally["Value"], tally["Error"]):
-        if Yi == 0:
-            continue
-        width = 4 * si
-        mask = (Eb >= Ei - width) & (Eb <= Ei + width)
-        x = Eb[mask]
-        k = np.exp(-0.5 * ((x - Ei) / si) ** 2)
-        k /= k.sum()
-        Yb[mask] += Yi * k
-        Errb[mask] += (Erri * Yi * k) ** 2
+        broad_values = tally["Value"][
+            (tally["Energy"] <= float(energy)) & (tally["Energy"] > hist_energies[-1])
+        ].tolist()
+        broad_errors = tally["Error"][
+            (tally["Energy"] <= float(energy)) & (tally["Energy"] > hist_energies[-1])
+        ].tolist()
+        broad_sigma = (
+            np.array(fwhm_frac) * broad_energies / (2 * np.sqrt(2 * np.log(2)))
+        )
+        broad_widths = all_widths[
+            (tally["Energy"] <= float(energy)) & (tally["Energy"] > hist_energies[-1])
+        ]
 
+        # Apply Gaussian broadening
+        for Ei, si, Yi, Erri, bw in zip(
+            broad_energies, broad_sigma, broad_values, broad_errors, broad_widths
+        ):
+            if Yi == 0:
+                continue
+            if si == 0:
+                idx = np.flatnonzero(Eb == Ei)[0]
+                Yb[idx] += Yi
+                Errb[idx] += (Erri * Yi) ** 2
+                continue
+            if scaling != "no_scaling":
+                scale = (Ei / eref) ** s
+            k = np.exp(-0.5 * ((Eb - Ei) / (scale * si)) ** 2) / (
+                si * np.sqrt(2 * np.pi) * scale
+            )
+            Yb += Yi * k * bw
+            Errb += (Erri * Yi * k * bw) ** 2
+        broadened_values += Yb
+        broadened_errors += Errb
+        hist_energies.append(float(energy))
     # Assign the new broadened values to the tally
-    tally["Value"] = Yb
-    tally["Error"] = np.sqrt(Errb) / Yb
+    tally["Value"] = broadened_values
+    tally["Error"] = np.sqrt(broadened_errors) / broadened_values
+    if len(total_energy) != tally["Energy"].size:
+        logger.warning(
+            "Gaussian broadening is not being applied to the full spectra. The following energy bins are not covered by the defined broadening:"
+            f"{set(tally['Energy']) - set(np.concatenate(total_energy))}"
+        )
+
     return tally
 
 

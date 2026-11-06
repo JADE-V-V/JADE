@@ -336,55 +336,75 @@ def cumulative_sum(
     return tally
 
 
-def gaussian_broadening(tally: pd.DataFrame, energies: dict) -> pd.DataFrame:
+def gaussian_broadening(
+    tally: pd.DataFrame, column: str, bins: dict, integral: bool = False
+) -> pd.DataFrame:
     """Apply Gaussian broadening to the tally.
 
     Parameters
     ----------
     tally : pd.DataFrame
         tally dataframe to modify
-    energies : dict
-        Dictionary of energy bins
+    column : str
+        name of the column to use for Gaussian broadening ("Energy", or "Time")
+    bins : dict
+        Dictionary of bins for the specified column
+    integral : bool, optional
+        If true, divide bin totals by their widths before broadening and
+        multiply by the destination widths afterward. The first lower edge is
+        1e-10, consistent with the existing Gaussian quadrature.
     """
+    if not isinstance(integral, bool):
+        raise TypeError("integral must be a boolean")
+    if integral:
+        widths = np.diff(tally[column].to_numpy(dtype=float), prepend=1e-10)
+        if not np.isfinite(widths).all() or np.any(widths <= 0):
+            raise ValueError(
+                "Integral bin edges must be finite and increasing from 1e-10"
+            )
+        # Normalize per bin width
+        input_values = tally["Value"].to_numpy(dtype=float) / widths
 
-    total_energy = []
-    hist_energies = [0.0]
+    total_bin = []
+    hist_bins = [0.0]
     broadened_values = np.zeros(len(tally), dtype=float)
     broadened_errors = np.zeros(len(tally), dtype=float)
-    for energy in energies.keys():
-        broad_energies = tally["Energy"][
-            (tally["Energy"] <= float(energy)) & (tally["Energy"] > hist_energies[-1])
+    # Iterate over all bins specified in the bins dictionary
+    for bin in bins.keys():
+        broad_energies = tally[column][
+            (tally[column] <= float(bin)) & (tally[column] > hist_bins[-1])
         ].tolist()
         flag = False
-        if "no_scaling" in energies[energy]:
+        # Check for scaling type in the current bin
+        if "no_scaling" in bins[bin]:
             scaling = "no_scaling"
             scale = 1
             flag = True
-        elif "linear" in energies[energy]:
+        elif "linear" in bins[bin]:
             scaling = "linear"
             s = 1
             flag = True
-        elif "square" in energies[energy]:
+        elif "square" in bins[bin]:
             scaling = "square"
             s = 2
             flag = True
-        elif "square_root" in energies[energy]:
+        elif "square_root" in bins[bin]:
             scaling = "square_root"
             s = 0.5
             flag = True
         if not flag:
             raise ValueError(
-                f"Unknown scaling factor option: {energies[energy]}. The scaling factor type must be one of 'no_scaling', 'linear', 'square', or 'square_root'."
+                f"Unknown scaling factor option: {bins[bin]}. The scaling factor type must be one of 'no_scaling', 'linear', 'square', or 'square_root'."
             )
         if scaling != "no_scaling":
             try:
-                eref = energies[energy][scaling]["Eref"]
+                ref = bins[bin][scaling]["Ref"]
             except KeyError:
                 raise ValueError(
-                    f"Reference energy for scaling (Eref) not found for energy {energy} MeV, scaling type {scaling}. When using this scaling type (different to 'no_scaling'), Eref (energy at the peak maximum) must be specified."
+                    f"Reference value (energy or time, depending on the column parameter) for scaling (Ref) not found for bin {bin}, scaling type {scaling}. When using this scaling type (different to 'no_scaling'), Ref (bin value at the peak maximum) must be specified."
                 )
         try:
-            fwhm_frac = energies[energy][scaling]["fwhm_frac"]
+            fwhm_frac = bins[bin][scaling]["fwhm_frac"]
             if isinstance(fwhm_frac, float):
                 fwhm_frac = [fwhm_frac] * len(broad_energies)
             elif isinstance(fwhm_frac, list) and len(fwhm_frac) != len(broad_energies):
@@ -397,29 +417,34 @@ def gaussian_broadening(tally: pd.DataFrame, energies: dict) -> pd.DataFrame:
             # If the scaling type is not found as a key in the energies dictionary (only a string is present), use the default FWHM fraction of 0.10 (10%) for all energy bins.
             fwhm_frac = [0.10] * len(broad_energies)
             logger.warning(
-                f"FWHM fraction not found for energy {energy} MeV, scaling type {scaling}. Using default FWHM fraction of 0.10 for all affected energy bins."
+                f"FWHM fraction not found for bin {bin}, scaling type {scaling}. Using default FWHM fraction of 0.10 for all affected energy bins."
             )
-        total_energy.append(broad_energies)
+        total_bin.append(broad_energies)
 
-        Eb = tally["Energy"].values.astype(float)
+        Eb = tally[column].values.astype(float)
         Yb = np.zeros(len(tally), dtype=float)
         Errb = np.zeros(len(tally), dtype=float)
         all_widths = np.diff(np.array(Eb), prepend=1e-10)
 
+        # Select the values and errors for the current bin range
         broad_values = tally["Value"][
-            (tally["Energy"] <= float(energy)) & (tally["Energy"] > hist_energies[-1])
+            (tally[column] <= float(bin)) & (tally[column] > hist_bins[-1])
         ].tolist()
+        if integral:
+            broad_values = input_values[
+                (tally[column] <= float(bin)) & (tally[column] > hist_bins[-1])
+            ].tolist()
         broad_errors = tally["Error"][
-            (tally["Energy"] <= float(energy)) & (tally["Energy"] > hist_energies[-1])
+            (tally[column] <= float(bin)) & (tally[column] > hist_bins[-1])
         ].tolist()
         broad_sigma = (
             np.array(fwhm_frac) * broad_energies / (2 * np.sqrt(2 * np.log(2)))
         )
         broad_widths = all_widths[
-            (tally["Energy"] <= float(energy)) & (tally["Energy"] > hist_energies[-1])
+            (tally[column] <= float(bin)) & (tally[column] > hist_bins[-1])
         ]
 
-        # Apply Gaussian broadening
+        # Apply Gaussian broadening to the current bin range
         for Ei, si, Yi, Erri, bw in zip(
             broad_energies, broad_sigma, broad_values, broad_errors, broad_widths
         ):
@@ -431,24 +456,222 @@ def gaussian_broadening(tally: pd.DataFrame, energies: dict) -> pd.DataFrame:
                 Errb[idx] += (Erri * Yi) ** 2
                 continue
             if scaling != "no_scaling":
-                scale = (Ei / eref) ** s
+                # Compute the scaling factor for the current bin
+                scale = (Ei / ref) ** s
             k = np.exp(-0.5 * ((Eb - Ei) / (scale * si)) ** 2) / (
                 si * np.sqrt(2 * np.pi) * scale
             )
+            # Apply the Gaussian kernel to the current bin
+            Yb += Yi * k * bw
+            Errb += (Erri * Yi * k * bw) ** 2
+
+        broadened_values += Yb
+        broadened_errors += Errb
+        hist_bins.append(float(bin))
+    # Assign the new broadened values to the tally
+    tally["Value"] = broadened_values * widths if integral else broadened_values
+    tally["Error"] = np.divide(
+        np.sqrt(broadened_errors),
+        broadened_values,
+        out=np.zeros_like(broadened_values),
+        where=broadened_values != 0,
+    )
+
+    # Raise warning if not all bins are covered by the gaussian broadening
+    if sum(map(len, total_bin)) != tally[column].size:
+        logger.warning(
+            "Gaussian broadening is not being applied to the full spectra. The following energy bins are not covered by the defined broadening:"
+            f"{set(tally[column]) - set(np.concatenate(total_bin))}"
+        )
+
+    return tally
+
+
+def response_broadening(
+    tally: pd.DataFrame,
+    column: str,
+    response_values: list | np.ndarray,
+    response_bins: list | np.ndarray | None = None,
+    scaling: dict | None = None,
+    integral: bool = False,
+) -> pd.DataFrame:
+    """Broaden a differential tally using a normalized response.
+
+    ``column`` contains strictly increasing upper bin edges; the first bin
+    starts at zero. The response is integrated over source and destination
+    bins, assuming uniform density within each source bin. Width scaling is evaluated at
+    source-bin midpoints. The output is not renormalized.
+
+    Parameters
+    ----------
+    tally : pd.DataFrame
+        Tally dataframe to modify.
+    column : str
+        Name of the bin-edge column, either "Energy" or "Time".
+    response_values : list or np.ndarray
+        Response function values (user-defined)
+    response_bins : list or np.ndarray, optional
+        Bins at which response_values are sampled, in the same units
+        as the tally bins. If None, uses tally bins (these must then be valid offsets).
+    scaling : dict, optional
+        Successive upper limits defining source-bin ranges.
+        Each range accepts ``no_scaling``, ``linear``, ``square`` or
+        ``square_root``, for example {4.0: {}, 8.0: {"linear": {"Ref": 3.0}}}.
+        An empty range configuration means no scaling. Omitting scaling applies
+        the unscaled response to the full spectrum. Supplied limits must be
+        increasing; source bins above the last limit are not included.
+        Ref is a positive reference value (peak maximum) in the units of ``column``.
+    integral : bool, optional
+        If true, integral values are assumed.
+        Default is false, assuming differential values.
+    """
+    if not isinstance(integral, bool):
+        raise TypeError("integral must be a boolean")
+    Eb = tally[column].to_numpy(dtype=float)
+    input_values = tally["Value"].to_numpy(dtype=float)
+    input_errors = tally["Error"].to_numpy(dtype=float)
+
+    edges = np.concatenate(([1e-10], Eb))
+    all_widths = np.diff(edges)
+    if integral:
+        # Normalize per bin width
+        input_values = input_values / all_widths
+
+    broad_bins = np.asarray(Eb if response_bins is None else response_bins, dtype=float)
+    density = np.asarray(response_values, dtype=float)
+    if broad_bins.shape != density.shape:
+        raise ValueError(
+            "The response_bins and response_values array parameters must have the same length."
+        )
+    intervals = np.diff(broad_bins)
+    area = np.sum((density[:-1] / 2 + density[1:] / 2) * intervals)
+
+    density = density / area
+
+    # First and second antiderivatives of the piecewise-linear response density.
+    # The second allows integration over both source and destination bin intervals.
+    cumulative = np.concatenate(
+        ([0.0], np.cumsum((density[:-1] + density[1:]) * intervals / 2))
+    )
+    slopes = np.diff(density) / intervals
+    second_cumulative = np.concatenate(
+        (
+            [0.0],
+            np.cumsum(
+                cumulative[:-1] * intervals
+                + density[:-1] * intervals**2 / 2
+                + slopes * intervals**3 / 6
+            ),
+        )
+    )
+
+    def response_second_integral(offsets: np.ndarray) -> np.ndarray:
+        clipped = np.clip(offsets, broad_bins[0], broad_bins[-1])
+        indices = np.clip(
+            np.searchsorted(broad_bins, clipped, side="right") - 1,
+            0,
+            len(intervals) - 1,
+        )
+        delta = clipped - broad_bins[indices]
+        # Beyond the response support, the first integral is constant, so the second is linear.
+        return (
+            second_cumulative[indices]
+            + cumulative[indices] * delta
+            + density[indices] * delta**2 / 2
+            + slopes[indices] * delta**3 / 6
+            + cumulative[-1] * np.maximum(offsets - broad_bins[-1], 0.0)
+        )
+
+    midpoints = edges[:-1] / 2 + edges[1:] / 2
+    scaling_options = {"no_scaling", "linear", "square", "square_root"}
+    bins = scaling or {Eb[-1]: {}}
+
+    total_bin = []
+    hist_bins = [0.0]
+    broadened_values = np.zeros(len(tally), dtype=float)
+    broadened_errors = np.zeros(len(tally), dtype=float)
+    for bin in bins.keys():
+        if not math.isfinite(float(bin)) or float(bin) <= hist_bins[-1]:
+            raise ValueError(
+                "Response scaling range edges must be finite and increasing"
+            )
+        selected = (Eb <= float(bin)) & (Eb > hist_bins[-1])
+        broad_energies = Eb[selected].tolist()
+        config = bins[bin]
+        if not set(config).issubset(scaling_options):
+            raise ValueError(f"Unknown scaling factor option: {config}")
+        # Check scaling type for the current bin range
+        if not config or "no_scaling" in config:
+            scaling_type = "no_scaling"
+            scale = 1.0
+        elif "linear" in config:
+            scaling_type = "linear"
+            s = 1
+        elif "square" in config:
+            scaling_type = "square"
+            s = 2
+        elif "square_root" in config:
+            scaling_type = "square_root"
+            s = 0.5
+        if scaling_type != "no_scaling":
+            try:
+                ref = float(config[scaling_type]["Ref"])
+            except (KeyError, TypeError, ValueError):
+                raise ValueError("Ref must be specified for response width scaling")
+        total_bin.append(broad_energies)
+
+        Yb = np.zeros(len(tally), dtype=float)
+        Errb = np.zeros(len(tally), dtype=float)
+        broad_values = input_values[selected].tolist()
+        broad_errors = input_errors[selected].tolist()
+        broad_widths = all_widths[selected]
+        broad_midpoints = midpoints[selected]
+        # Iterate over the bins within the current bin range to implement the response function broadening
+        for Ei, midpoint, Yi, Erri, bw in zip(
+            broad_energies, broad_midpoints, broad_values, broad_errors, broad_widths
+        ):
+            if Yi == 0:
+                continue
+            if scaling_type != "no_scaling":
+                with np.errstate(over="ignore", invalid="ignore"):
+                    scale = (midpoint / ref) ** s
+            # Ei and Ei - bw bound the source bin; edges bound every destination bin.
+            # All four edge differences are needed to average over both intervals.
+            # Averaging over both intervals ensures better approximation of the response function over the source bin
+            source_lower = Ei - bw
+            upper_from_lower = (edges[1:] - source_lower) * scale
+            upper_from_upper = (edges[1:] - Ei) * scale
+            lower_from_lower = (edges[:-1] - source_lower) * scale
+            lower_from_upper = (edges[:-1] - Ei) * scale
+            # Divide by scale and by both widths for bin averaging.
+            k = np.maximum(
+                response_second_integral(upper_from_lower)
+                - response_second_integral(upper_from_upper)
+                - response_second_integral(lower_from_lower)
+                + response_second_integral(lower_from_upper),
+                0.0,
+            ) / (scale * bw * all_widths)
+            # Apply the response function broadening
             Yb += Yi * k * bw
             Errb += (Erri * Yi * k * bw) ** 2
         broadened_values += Yb
         broadened_errors += Errb
-        hist_energies.append(float(energy))
-    # Assign the new broadened values to the tally
-    tally["Value"] = broadened_values
-    tally["Error"] = np.sqrt(broadened_errors) / broadened_values
-    if len(total_energy) != tally["Energy"].size:
-        logger.warning(
-            "Gaussian broadening is not being applied to the full spectra. The following energy bins are not covered by the defined broadening:"
-            f"{set(tally['Energy']) - set(np.concatenate(total_energy))}"
-        )
+        hist_bins.append(float(bin))
 
+    # If integral tally values were provided, revert the bin normalization applied at the beginning of the function
+    tally["Value"] = broadened_values * all_widths if integral else broadened_values
+    tally["Error"] = np.divide(
+        np.sqrt(broadened_errors),
+        broadened_values,
+        out=np.zeros_like(broadened_values),
+        where=broadened_values != 0,
+    )
+    if sum(map(len, total_bin)) != tally[column].size:
+        logger.warning(
+            "Response broadening is not being applied to the full spectra. "
+            "The following bins are not covered by the defined broadening: %s",
+            set(Eb) - set(np.concatenate(total_bin)),
+        )
     return tally
 
 
@@ -508,6 +731,7 @@ MOD_FUNCTIONS = {
     TallyModOption.COOLING_TIME: cooling_time,
     TallyModOption.LETHARGY: by_lethargy,
     TallyModOption.SCALE: scale,
+    TallyModOption.RESPONSE_BROADENING: response_broadening,
     TallyModOption.NO_ACTION: no_action,
     TallyModOption.BY_ENERGY: by_energy,
     TallyModOption.BY_BIN: divide_by_bin,

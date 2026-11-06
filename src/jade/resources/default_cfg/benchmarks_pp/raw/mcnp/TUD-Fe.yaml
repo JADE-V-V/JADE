@@ -2,13 +2,16 @@ Neutron fluence (energy):
   concat_option: no_action
   5: 
     - ['by_energy', {}]
-    - ['gaussian_broadening', {'energies': {
+    - ['gaussian_broadening', {
+      'column': 'Energy',
+      'bins': {
           '0.1928':{'no_scaling':{'fwhm_frac':0.2}}, 
           '0.9951':{'no_scaling':{'fwhm_frac':0.15}},
           '2.9745':{'no_scaling':{'fwhm_frac':0.1}},
           '3.664':{'no_scaling':{'fwhm_frac':0.05}},
           '13.836':{'no_scaling':{'fwhm_frac':0.03}},
-          '15.5':{'no_scaling':{'fwhm_frac':0.02}}}}]
+          '15.5':{'no_scaling':{'fwhm_frac':0.02}}},
+      'integral': false}]
 Neutron fluence (time):
   concat_option: no_action
   15:

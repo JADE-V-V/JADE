@@ -3,9 +3,8 @@ from __future__ import annotations
 import os
 from importlib.resources import files
 
-import pytest
-
 import pandas as pd
+import pytest
 
 from jade.helper.__optionals__ import OMC_AVAIL
 from tests.post.resources import openmc as resources

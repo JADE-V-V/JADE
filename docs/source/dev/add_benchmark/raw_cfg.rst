@@ -165,10 +165,104 @@ The currently supported modifiers are:
   to be used for the cumulative sum, and *norm*, a boolean indicating whether to normalize the result with respect to the total sum (a percentage is returned).
   If no *column* argument is provided, the cumulative sum is computed on the 'Value' column by default. The argument *norm* is True by default.
 
-* ``gaussian_broadening``: applies Gaussian broadening to the 'Value' column. The optional keyarg to provide is *fwhm_frac*, 
-  which specifies the fraction of the FWHM (Full Width at Half Maximum) to use for Gaussian broadening. This can be provided either 
-  as a single float value, which will be applied uniformly to all energy bins, or as a list of float values with the same length as the 
-  'Energy' column, allowing for a different broadening parameter for each energy bin. If not specified, the default value is 0.1 (10%).
+* ``gaussian_broadening``: applies Gaussian broadening to the 'Value' column. 
+  Three parameters, two of which are mandatory, are expected:
+
+    * *column* (*str*): the name of the column to be used as a reference for the broadening (e.g., "Energy" or "Time").
+    * *integral* (Optional, *bool*): boolean indicating whether the provided spectra ('Value' column in the tally) is bin-integrated (equivalently, non-normalized previously using either the *by_energy* or 
+      *by_bin* tally modifiers). Default is false (differential). If integral spectra is provided, it will be normalized, the broadening will be applied, and the result will be bin-integrated before being returned.
+      The broadening will be applied to the bin-integrated values.
+    * *bins* (*dict*): dictionary specifying the broadening scaling factor to be applied for each *column* bin range. The keys are the 
+      successive upper *column* range limits (*str*), and the values are dictionaries which require a key indicating the type of scaling (``no_scaling``, ``linear``, 
+      ``square``, or ``square_root``) and two values: the first one is ``fwhm_frac`` (the full width at half maximum fraction, *float* or *list[float]*), and the second one is ``Ref`` (in the units of ``column``). The ``Ref`` value is only required 
+      if a scaling option different from ``no_scaling`` is used. The definition of this dictionary allows to assign different scaling
+      factors to different *column* ranges independently.
+    
+  For example:
+
+  .. code-block:: yaml
+
+    - [gaussian_broadening, {
+        'column': 'Energy',
+        'bins':{
+        '1.0':{'no_scaling':{'fwhm_frac': 0.0}}, 
+        '4.97':{'no_scaling':{'fwhm_frac': [0.035, 0.0805]}},
+        '10.00':{'square':{'fwhm_frac': 0.0525, 'Ref': 8.0}},
+        },
+        'integral': false
+        }]
+
+  In the example above, the response broadening is applied to differential energy spectra.
+  For energies lower or equal than 1.0 MeV, no gaussian broadening is applied (because ``fwhm_frac`` is 0.0).
+  For energies between 1.0 MeV and 4.97 MeV (included), no scaling is applied during the gaussian broadening. In this energy range, there are 2 energy bins in the tally: the lower one gets a FWHM of 3.5% 
+  and the upper one gets a FWHM of 8.05%.
+  For energies higher than 4.97 MeV and up to 10.0 MeV, a square scaling with a reference energy of 8.0 MeV (peak maximum) is applied in the broadening (with FWHM of 5.25%).
+
+  The experimental spectra are affected by the resolution of the measurements. This tally modifier allows for the inclusion of resolution broadening effects using a 
+  gaussian approximation. The resolution broadening is governed by the following convolution integral:
+  
+.. math::
+
+  F(x) = \int F_m(x-u)\,p(u)\,du
+  \tag{4}
+
+where:
+
+  * :math:`F`: resolution-broadened spectrum,
+  * :math:`F_m`: calculated spectrum,
+  * :math:`p(u)`: resolution-broadening function.
+
+In this case, :math:`p(u)` is a gaussian function, which can include a scaling factor to account for the resolution dependence on the reference variable (e.g., energy or time):
+
+.. math::
+
+   p(u) = \frac{1}{\sqrt{2\pi}\,\sigma\,s}
+          \exp\left[-\frac{u^2}{2(s\sigma)^2}\right]
+
+where :math:`s` is the scaling factor. This tally modifier allows for three
+different types of scaling:
+
+* ``linear``: :math:`s = \frac{x}{\text{Ref}}`,
+* ``square``: :math:`s = \left(\frac{x}{\text{Ref}}\right)^2`,
+* ``square_root``: :math:`s = \sqrt{\frac{x}{\text{Ref}}}`,
+
+where :math:`x` is the reference variable (e.g., energy or time) and
+:math:`\text{Ref}` is the reference value (peak maximum) used for scaling.
+
+* ``response_broadening``: broadens differential spectra ('Value' column in tallies) using a user-defined response function. 
+  Five parameters, two of which are mandatory, are expected:
+
+  * *column* (*str*): the name of the column to be used as a reference for the broadening (e.g., "Energy" or "Time").
+  * *response_bins* (Optional, *list* or *np.ndarray*): list of bins of the response function (corresponding to the values provided in *response_values*). The bins must be expressed relative 
+    to the peak maximum of the spectra (negative values indicate bins below the peak, positive values indicate bins above the peak). These bins don't need to be the same as the tally bins.
+  * *response_values* (*list* or *np.ndarray*): list of response function values corresponding to the bins specified in *response_bins*. 
+  * *integral* (Optional, *bool*): boolean indicating whether the provided spectra ('Value' column in the tally) is bin-integrated (equivalently, non-normalized previously using either the *by_energy* or 
+    *by_bin* tally modifiers). Default is false (differential). If integral spectra is provided, it will be normalized, the broadening will be applied, and the result will be bin-integrated before being returned.
+    The broadening will be applied to the bin-integrated values.
+  * *scaling* (Optional, *dict*): dictionary specifying the broadening scaling factor to be applied for each *column* bin range. The keys are the 
+    successive upper *column* range limits (*str*), and the values are dictionaries which require a key indicating the type of scaling (``no_scaling``, ``linear``, 
+    ``square``, or ``square_root``) and a value ``Ref`` (*float*, in the units of ``column``) if a scaling option different from ``no_scaling`` is used. If this parameter
+    is not provided, no scaling factor is applied anywhere in the broadening of the spectra. The definition of this dictionary allows to assign different scaling
+    factors to different *column* ranges independently.
+  
+  For example:
+
+  .. code-block:: yaml
+
+     - [response_broadening, {column: Energy, integral: true,
+                              response_bins: [5.6, 9.3, 11.7],
+                              response_values: [0.234, 0.657, 0.456],
+                              scaling: {4.0: {"no_scaling": {}}, 12.0: {"linear": {"Ref": 8.0}}}}]
+
+  In the example above, the response broadening is applied to non-normalized energy spectra.
+  The response function is provided using the *response_bins* and *response_values* parameters.
+  For energies lower or equal than 4.0 MeV, no scaling is applied during the broadening. 
+  For energies higher than 4.0 MeV and up to 12.0 MeV, a linear scaling with a reference energy of 8.0 MeV 
+  (peak maximum) is applied in the broadening.
+
+  The same convolution integral as the one described for the *gaussian_broadening* tally modifier is applied when using this 
+  tally modifier as well. However, in this case, the resolution-broadening function :math:`p(u)`: is the
+  response function provided by the user. The scaling factors available are the same as for the *gaussian_broadening* tally modifier.
 
 More than one modifiers can be applied in series to a single tally.
 If your benchmark requires a new modifier, please refer to :ref:`add_tally_mod`.

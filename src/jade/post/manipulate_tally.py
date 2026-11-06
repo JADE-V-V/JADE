@@ -495,19 +495,14 @@ def response_broadening(
     scaling: dict | None = None,
     integral: bool = False,
 ) -> pd.DataFrame:
-    """Broaden a differential tally using a normalized response.
-
-    ``column`` contains strictly increasing upper bin edges; the first bin
-    starts at zero. The response is integrated over source and destination
-    bins, assuming uniform density within each source bin. Width scaling is evaluated at
-    source-bin midpoints. The output is not renormalized.
+    """Broaden a differential tally using a normalized response function.
 
     Parameters
     ----------
     tally : pd.DataFrame
         Tally dataframe to modify.
     column : str
-        Name of the bin-edge column, either "Energy" or "Time".
+        name of the column to use for user-defined response function broadening ("Energy", or "Time")
     response_values : list or np.ndarray
         Response function values (user-defined)
     response_bins : list or np.ndarray, optional

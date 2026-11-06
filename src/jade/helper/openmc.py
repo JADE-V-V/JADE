@@ -647,7 +647,6 @@ class OpenMCStatePoint:
             else:
                 heating_tallies_df[id] = self._get_tally_data(tally)
         for id, photon_tally in photon_tallies.items():
-<<<<<<< HEAD
             photon_bins = self._particle_bins(photon_tally)
             dfs = [self._get_tally_data(photon_tally)]
             for tally in charged_tallies.values():
@@ -664,30 +663,6 @@ class OpenMCStatePoint:
             heating_tallies_df[id] = self._fold_charged_into_photon(
                 pd.concat(dfs, ignore_index=True)
             )
-=======
-            photon_cell_filter = photon_tally.find_filter(openmc.CellFilter)
-            for tally in heating_tallies.values():
-                try:
-                    particle_filter = tally.find_filter(openmc.ParticleFilter)
-                except ValueError:
-                    particle_filter = None
-                cell_filter = tally.find_filter(openmc.CellFilter)
-                if (
-                    particle_filter
-                    and cell_filter
-                    and photon_cell_filter == cell_filter
-                    and (
-                        "electron" in particle_filter.bins
-                        or "positron" in particle_filter.bins
-                    )
-                ):
-                    tally_df = self._get_tally_data(tally)
-                    heating_tallies_df[id]["mean"] += tally_df["mean"]
-                    heating_tallies_df[id]["std. dev."] = (
-                        heating_tallies_df[id]["std. dev."].pow(2)
-                        + tally_df["std. dev."].pow(2)
-                    ).pow(0.5)
->>>>>>> developing
         return heating_tallies_df
 
     def tallies_to_dataframes(self) -> dict:

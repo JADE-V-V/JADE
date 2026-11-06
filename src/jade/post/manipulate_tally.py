@@ -651,6 +651,10 @@ def response_broadening(
                 + response_second_integral(lower_from_upper),
                 0.0,
             ) / (scale * bw * all_widths)
+            k[
+                (lower_from_upper >= broad_bins[-1])
+                | (upper_from_lower <= broad_bins[0])
+            ] = 0.0
             # Apply the response function broadening
             Yb += Yi * k * bw
             Errb += (Erri * Yi * k * bw) ** 2

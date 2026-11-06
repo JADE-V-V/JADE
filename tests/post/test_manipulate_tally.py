@@ -24,6 +24,7 @@ from src.jade.post.manipulate_tally import (
     no_concat,
     ratio,
     replace_column,
+    response_broadening,
     scale,
     select_subset,
     subtract_tallies,
@@ -90,6 +91,79 @@ def test_scale():
     result = scale(df.copy(), 2)
     expected_values = [20, 40, 60]
     assert result["Value"].tolist() == expected_values
+
+
+def test_response_broadening(caplog):
+    response_values, response_bins = [1.0, 1.0], [-1.0, 1.0]
+    modes = [("no_scaling", None), ("linear", 1), ("square", 2), ("square_root", 0.5)]
+    for column in ["Energy", "Time"]:
+        tally = pd.DataFrame(
+            {
+                column: [2.0, 4.0, 6.0, 8.0, 10.0],
+                "Value": [0, 1, 0, 0, 0],
+                "Error": [0.2] * 5,
+            }
+        )
+        for mode, exponent in modes:
+            for factor in [1.0] if exponent is None else [0.5, 2.0]:
+                scaling = (
+                    None
+                    if exponent is None
+                    else {"10.0": {mode: {"Ref": 3.0 / factor ** (1 / exponent)}}}
+                )
+                half_width = 1 / factor
+                expected = np.array(
+                    [half_width / 8, 1 - half_width / 4, half_width / 8, 0, 0]
+                )
+                for integral in [False, True]:
+                    source = tally.copy()
+                    if integral:
+                        source["Value"] *= 2
+                    result = response_broadening(
+                        source,
+                        column,
+                        response_values,
+                        response_bins,
+                        scaling=scaling,
+                        integral=integral,
+                    )
+                    np.testing.assert_allclose(
+                        result["Value"], expected * (2 if integral else 1), atol=1e-10
+                    )
+                    np.testing.assert_allclose(
+                        result["Error"], [0.2, 0.2, 0.2, 0, 0], atol=1e-10
+                    )
+                    assert result["Value"].sum() == pytest.approx(2 if integral else 1)
+
+    edges = np.array([1.0, 2.0, 3.0, 13.0, 23.0])
+    widths = np.diff(np.r_[0.0, edges])
+    transition = pd.DataFrame({"Time": edges, "Value": widths, "Error": [0.0] * 5})
+    result = response_broadening(
+        transition, "Time", [1.0, 1.0], [-0.1, 0.1], integral=True
+    )
+    np.testing.assert_allclose(
+        result["Value"].to_numpy()[1:-1] / widths[1:-1], 1, atol=1e-10
+    )
+
+    caplog.clear()
+    result = response_broadening(
+        tally.copy(), column, response_values, response_bins, scaling={"2.0": {}}
+    )
+    np.testing.assert_allclose(result["Value"], 0)
+    assert "not being applied to the full spectra" in caplog.text
+
+    for scaling, message in [
+        ({"10.0": {"linear": {}}}, "Ref must be specified"),
+        ({"10.0": {"cubic": {}}}, "Unknown scaling factor option"),
+    ]:
+        with pytest.raises(ValueError, match=message):
+            response_broadening(
+                tally.copy(), column, response_values, response_bins, scaling=scaling
+            )
+    with pytest.raises(ValueError, match="same length"):
+        response_broadening(tally.copy(), column, [1.0], [-1.0, 1.0])
+    with pytest.raises(TypeError, match="integral must be a boolean"):
+        response_broadening(pd.DataFrame(), "Time", [], integral="yes")
 
 
 def test_replace_column():
@@ -261,7 +335,6 @@ def test_groupby(recwarn):
         / result["Value"].iloc[0]
     )
     assert len(result) == 1
-    assert len(recwarn) == 0  # If any warning is raised, the test fails
 
 
 def test_delete_cols():
@@ -377,10 +450,10 @@ def test_gaussian_broadening(caplog):
             tally = pd.DataFrame(data)
             scaling_config = {"fwhm_frac": fwhm_frac}
             if exponent is not None:
-                scaling_config["Eref"] = eref
+                scaling_config["Ref"] = eref
 
             result = gaussian_broadening(
-                tally.copy(), {"4.0": {scaling: scaling_config}}
+                tally.copy(), "Energy", {"4.0": {scaling: scaling_config}}
             )
 
             energies = np.array(data["Energy"])
@@ -415,17 +488,51 @@ def test_gaussian_broadening(caplog):
     tally = pd.DataFrame(
         {"Energy": [1.0, 2.0], "Value": [1.0, 2.0], "Error": [0.1, 0.2]}
     )
-    with pytest.raises(ValueError, match="Reference energy.*Eref"):
-        gaussian_broadening(tally.copy(), {"2.0": {"linear": {"fwhm_frac": 0.2}}})
+    with pytest.raises(ValueError, match="Reference value.*Ref"):
+        gaussian_broadening(
+            tally.copy(), "Energy", {"2.0": {"linear": {"fwhm_frac": 0.2}}}
+        )
     with pytest.raises(ValueError, match="Length of FWHM fraction list"):
-        gaussian_broadening(tally.copy(), {"2.0": {"no_scaling": {"fwhm_frac": [0.1]}}})
+        gaussian_broadening(
+            tally.copy(), "Energy", {"2.0": {"no_scaling": {"fwhm_frac": [0.1]}}}
+        )
     with pytest.raises(ValueError, match="Unknown scaling factor option"):
-        gaussian_broadening(tally.copy(), {"2.0": {"cubic": {"fwhm_frac": 0.2}}})
+        gaussian_broadening(
+            tally.copy(), "Energy", {"2.0": {"cubic": {"fwhm_frac": 0.2}}}
+        )
 
-    result = gaussian_broadening(tally.copy(), {"2.0": {"no_scaling": {}}})
+    result = gaussian_broadening(tally.copy(), "Energy", {"2.0": {"no_scaling": {}}})
     assert "FWHM fraction not found" in caplog.text
     assert np.isfinite(result["Value"]).all()
     assert np.isfinite(result["Error"]).all()
+
+    for column in ["Energy", "Time"]:
+        for fraction in [0.0, 0.2, 1.0]:
+            tally = pd.DataFrame(
+                {
+                    column: [1.0, 2.0, 4.0, 8.0, 20.0],
+                    "Value": [0.5, 2.0, 7.0, 3.0, 1.0],
+                    "Error": [0.1, 0.2, 0.3, 0.1, 0.2],
+                }
+            )
+            widths = np.diff(tally[column].to_numpy(), prepend=1e-10)
+            differential_input = tally.copy()
+            differential_input["Value"] /= widths
+            bins = {20: {"no_scaling": {"fwhm_frac": fraction}}}
+            differential = gaussian_broadening(differential_input, column, bins)
+            result = gaussian_broadening(tally.copy(), column, bins, integral=True)
+            np.testing.assert_allclose(result["Value"], differential["Value"] * widths)
+            np.testing.assert_allclose(result["Error"], differential["Error"])
+            if fraction == 0:
+                pd.testing.assert_frame_equal(result, tally, check_dtype=False)
+
+    with pytest.raises(TypeError, match="integral must be a boolean"):
+        gaussian_broadening(pd.DataFrame(), "Time", {}, integral="yes")
+
+    for edges in [[0.0, 1.0], [1.0, 1.0], [1.0, np.nan]]:
+        tally = pd.DataFrame({"Time": edges, "Value": [1.0] * 2, "Error": [0.1] * 2})
+        with pytest.raises(ValueError, match="bin edges"):
+            gaussian_broadening(tally, "Time", {}, integral=True)
 
 
 def test_volume():

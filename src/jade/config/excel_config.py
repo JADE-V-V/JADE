@@ -116,7 +116,7 @@ class TableConfig:
         if self.conditional_formatting:
             assert len(self.conditional_formatting) == 3
             for key in ["red", "yellow", "orange"]:
-                assert key in self.conditional_formatting.keys()
+                assert key in self.conditional_formatting
 
     @classmethod
     def from_dict(cls, dictionary: dict, name) -> TableConfig:

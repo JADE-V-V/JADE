@@ -1,12 +1,12 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from enum import Enum
 
 import yaml
 
 from jade.helper.aux_functions import PathLike
-import re
 
 APPLY_TO_TAG = re.compile(r"apply_to#\d+")
 

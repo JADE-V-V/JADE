@@ -1,19 +1,20 @@
 from __future__ import annotations
 
+import os
+import shutil
 from importlib.resources import as_file, files
 from pathlib import Path
-from f4enix import Input
+
 import pandas as pd
-import os
+from f4enix import Input
 
 from jade.config.run_config import LibraryOpenMC
 from jade.helper.aux_functions import (
+    add_rmode0,
     get_code_lib,
     print_code_lib,
     same_index,
-    add_rmode0,
 )
-import shutil
 from jade.helper.constants import CODE
 from tests.config import resources as conf_res
 from tests.helper import res as helper_res
@@ -55,6 +56,6 @@ def test_add_rmode0(tmp_path: Path):
     for file in os.listdir(dst):
         if file.endswith(".i"):
             inp = Input.from_input(dst.joinpath(file))
-            assert "RMODE" in inp.other_data.keys(), (
+            assert "RMODE" in inp.other_data, (
                 f"RMODE card not found in the input file {file}"
             )

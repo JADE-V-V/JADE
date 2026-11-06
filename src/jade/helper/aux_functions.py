@@ -5,7 +5,7 @@ import os
 import re
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 from jade.helper.constants import CODE
 from jade.post.sim_output import MCNPSimOutput, OpenMCSimOutput
 
-PathLike = Union[str, os.PathLike, Path]
+PathLike = str | os.PathLike | Path
 
 CODE_PATTERN = re.compile(r"_.+_-")
 LIB_PATTERN = re.compile(r"-_.+_")
@@ -96,7 +96,6 @@ class SimulationChecker(ABC):
         bool
             True if the simulation completed successfully, False otherwise.
         """
-        pass
 
 
 class MCNPChecker(SimulationChecker):
@@ -208,6 +207,6 @@ def same_index(
                     continue
                 else:
                     return False
-            except Exception:
+            except (ValueError, TypeError):
                 return False
     return True

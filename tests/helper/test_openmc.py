@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import os
 from importlib.resources import files
 
-import pytest, os
+import pytest
 
 import pandas as pd
 

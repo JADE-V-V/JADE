@@ -108,9 +108,9 @@ class OpenMCCellData:
         cell_volumes: dict[int, float], cell_densities: dict[int, float]
     ) -> dict[int, float]:
         cell_masses = {}
-        for cell in cell_volumes:
+        for cell, volume in cell_volumes.items():
             if cell in cell_densities:
-                cell_masses[cell] = cell_volumes[cell] * cell_densities[cell]
+                cell_masses[cell] = volume * cell_densities[cell]
         return cell_masses
 
     def volumes(self, cells: iter | None = None) -> dict[int, float]:
@@ -122,9 +122,7 @@ class OpenMCCellData:
         volumes : dict
             Dictionary of volumes, indexed by cell number
         """
-        volumes = dict(
-            (k, self.cell_volumes[k]) for k in cells if k in self.cell_volumes
-        )
+        volumes = {k: self.cell_volumes[k] for k in cells if k in self.cell_volumes}
         return volumes
 
     def densities(self, cells: iter | None = None) -> dict[int, float]:
@@ -136,9 +134,9 @@ class OpenMCCellData:
         densities : dict
             Dictionary of densities, indexed by cell number
         """
-        densities = dict(
-            (k, self.cell_densities[k]) for k in cells if k in self.cell_densities
-        )
+        densities = {
+            k: self.cell_densities[k] for k in cells if k in self.cell_densities
+        }
         return densities
 
     def masses(self, cells: iter | None = None) -> dict[int, float]:
@@ -150,7 +148,7 @@ class OpenMCCellData:
         masses : dict
             Dictionary of masses, indexed by cell number
         """
-        masses = dict((k, self.cell_masses[k]) for k in cells if k in self.cell_masses)
+        masses = {k: self.cell_masses[k] for k in cells if k in self.cell_masses}
         return masses
 
 
@@ -280,8 +278,7 @@ class OpenMCInputFiles:
         -------
         None
         """
-        if nps < batches:
-            batches = nps
+        batches = min(batches, nps)
 
         self.settings.batches = batches
         self.settings.particles = int(nps / batches)
@@ -437,7 +434,7 @@ class OpenMCStatePoint:
             self.statepoint = openmc.StatePoint(spfile_path)
             self.tally_numbers = []
             self.tally_comments = []
-            for _, tally in self.statepoint.tallies.items():
+            for tally in self.statepoint.tallies.values():
                 self.tally_numbers.append(tally.id)
                 self.tally_comments.append(tally.name)
         except (FileNotFoundError, KeyError):
@@ -650,6 +647,7 @@ class OpenMCStatePoint:
             else:
                 heating_tallies_df[id] = self._get_tally_data(tally)
         for id, photon_tally in photon_tallies.items():
+<<<<<<< HEAD
             photon_bins = self._particle_bins(photon_tally)
             dfs = [self._get_tally_data(photon_tally)]
             for tally in charged_tallies.values():
@@ -666,6 +664,30 @@ class OpenMCStatePoint:
             heating_tallies_df[id] = self._fold_charged_into_photon(
                 pd.concat(dfs, ignore_index=True)
             )
+=======
+            photon_cell_filter = photon_tally.find_filter(openmc.CellFilter)
+            for tally in heating_tallies.values():
+                try:
+                    particle_filter = tally.find_filter(openmc.ParticleFilter)
+                except ValueError:
+                    particle_filter = None
+                cell_filter = tally.find_filter(openmc.CellFilter)
+                if (
+                    particle_filter
+                    and cell_filter
+                    and photon_cell_filter == cell_filter
+                    and (
+                        "electron" in particle_filter.bins
+                        or "positron" in particle_filter.bins
+                    )
+                ):
+                    tally_df = self._get_tally_data(tally)
+                    heating_tallies_df[id]["mean"] += tally_df["mean"]
+                    heating_tallies_df[id]["std. dev."] = (
+                        heating_tallies_df[id]["std. dev."].pow(2)
+                        + tally_df["std. dev."].pow(2)
+                    ).pow(0.5)
+>>>>>>> developing
         return heating_tallies_df
 
     def tallies_to_dataframes(self) -> dict:
@@ -678,7 +700,7 @@ class OpenMCStatePoint:
         """
         tallies = {}
         heating_tallies = {}
-        for _, tally in self.statepoint.tallies.items():
+        for tally in self.statepoint.tallies.values():
             if "heating" in tally.scores:
                 heating_tallies[tally.id] = tally
             else:

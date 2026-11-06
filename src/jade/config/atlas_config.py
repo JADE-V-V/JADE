@@ -160,23 +160,23 @@ class PlotConfig:
         # Ensure correct format of additional labels if present
         if self.additional_labels is not None:
             try:
-                for key in self.additional_labels.keys():
+                for key in self.additional_labels:
                     assert key in ["major", "minor"]
                     assert isinstance(self.additional_labels[key], list)
                     for label, position in self.additional_labels[key]:
                         assert isinstance(label, str)
-                        assert isinstance(position, float) or isinstance(position, int)
+                        assert isinstance(position, (float, int))
             except AssertionError:
                 raise ConfigError("Invalid format for 'additional_labels'")
 
         # Ensure correct format of v_lines if present
         if self.v_lines is not None:
             try:
-                for key in self.v_lines.keys():
+                for key in self.v_lines:
                     assert key in ["major", "minor"]
                     assert isinstance(self.v_lines[key], list)
                     for line in self.v_lines[key]:
-                        assert isinstance(line, float) or isinstance(line, int)
+                        assert isinstance(line, (float, int))
             except AssertionError:
                 raise ConfigError("Invalid format for 'v_lines'")
 
@@ -187,8 +187,8 @@ class PlotConfig:
                     assert len(rec) == 4
                     assert isinstance(rec[0], str)
                     assert isinstance(rec[1], str)
-                    assert isinstance(rec[2], float) or isinstance(rec[2], int)
-                    assert isinstance(rec[3], float) or isinstance(rec[3], int)
+                    assert isinstance(rec[2], (float, int))
+                    assert isinstance(rec[3], (float, int))
             except AssertionError:
                 raise ConfigError("Invalid format for 'recs'")
 

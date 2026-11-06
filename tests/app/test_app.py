@@ -5,8 +5,6 @@ import shutil
 from importlib.resources import files
 from pathlib import Path
 
-import pytest
-
 import tests
 from jade.app.app import JadeApp
 from jade.config.run_config import (
@@ -228,9 +226,9 @@ class TestJadeApp:
         assert "Sphere_dummy1" in command_sorted[0][1]
         assert "Sphere_m101" in command_sorted[1][1]
 
-        #assert "#!/bin/sh\n\n#SBATCH" in command[0][1]
-        #assert "Sphere_dummy1" in command[1][1]
-        #assert "Sphere_m101" in command[0][1]
+        # assert "#!/bin/sh\n\n#SBATCH" in command[0][1]
+        # assert "Sphere_dummy1" in command[1][1]
+        # assert "Sphere_m101" in command[0][1]
 
         app.run_cfg.env_vars.run_mode = RunMode.GLOBAL_JOB
         command = app.continue_run(testing=True)

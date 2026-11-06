@@ -11,38 +11,41 @@ authors = [
 ]
 description = "JADE, a V&V tool for nuclear data libraries and transport codes"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: European Union Public Licence 1.2 (EUPL 1.2)",
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "xlsxwriter",
-    "matplotlib",
-    "aspose-words",
-    "requests",
-    "f4enix >= 1.0.0",
-    "pyyaml",
-    "seaborn",
-    "python-gitlab"
+    "xlsxwriter < 4",
+    "python-docx < 2",
+    "matplotlib < 4",
+    "requests < 3",
+    "f4enix >= 1.2.1, < 2",
+    "pyyaml < 7",
+    "seaborn < 0.14",
+    "python-gitlab < 9"
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest",
-    "pytest-cov",
-    "pytest-xvfb",  # needed for headless display
-    "ruff",  # best formatter that should be used by everybody
-    "sphinx",
-    "myst-parser",
-    "sphinx-book-theme",
-    "sphinx-copybutton",
-    "sphinx-togglebutton",
-    "sphinx-design"
+    "pytest < 10",
+    "pytest-cov < 8",
+    "pytest-xvfb < 4",  # needed for headless display
+    "ruff == 0.17.3",  # keep in sync with .github/workflows/lint.yml
+]
+docs = [
+    "sphinx < 10",
+    "myst-parser < 6",
+    "sphinx-book-theme < 2",
+    "sphinx-copybutton < 0.6",
+    "sphinx-togglebutton < 0.5",
+    "sphinx-design < 0.8",
+    "pydata-sphinx-theme < 1",
 ]
 ui = [
-    "ttkthemes"
+    "ttkthemes < 4"
 ]
 
 [project.urls]
@@ -62,3 +65,7 @@ jade = 'src/jade'
 [tool.setuptools.package-data]
 "*" = ["*.txt", '*.csv', '*.sh', '*.cmd', '*.docx', '*.ico']
 
+[tool.ruff.lint]
+# Import sorting is in the default rule set of the pinned ruff, but older
+# versions (and editor-bundled ruff) do not enable it. Keep it explicit.
+extend-select = ["I"]

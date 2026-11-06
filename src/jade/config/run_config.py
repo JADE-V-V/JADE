@@ -248,7 +248,6 @@ class Library(ABC):
         list[str]
             list of zaids available in the library. Zaid numbers to be used
         """
-        pass
 
 
 @dataclass

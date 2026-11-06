@@ -84,7 +84,7 @@ class TestRunConfig:
         run_cfg_file = paths_tree.cfg.run_cfg
         lib_cfg_file = paths_tree.cfg.libs_cfg
         additional_settings_root = paths_tree.cfg.bench_additional_files
-        run_cfg = RunConfig.from_yamls(
+        RunConfig.from_yamls(
             env_vars_file,
             paths_tree.cfg.exe_cfg,
             run_cfg_file,

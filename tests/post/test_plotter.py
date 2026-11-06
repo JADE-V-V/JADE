@@ -2,14 +2,23 @@ from __future__ import annotations
 
 import random
 import string
+import warnings
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pytest
 
 from jade.config.atlas_config import PlotConfig
 from jade.helper.errors import PlotIndexMismatchError
-from jade.post.plotter import BarPlot, BinnedPlot, CEPlot, WavesPlot
+from jade.post.plotter import (
+    BarPlot,
+    BinnedPlot,
+    CEPlot,
+    DoseContributionPlot,
+    WavesPlot,
+    _shorten_x_name,
+)
 
 
 class TestBinnedPlot:
@@ -265,3 +274,48 @@ class TestBarPlot:
         plot = BarPlot(cfg, data)
         output = plot.plot()
         output[0][0].savefig(tmpdir.join("test.png"), bbox_inches="tight")
+
+
+class TestDoseContributionPlot:
+    def test_plot(self, tmpdir):
+        cfg = PlotConfig(
+            name="test",
+            results=["a"],
+            plot_type=None,  # dummy value
+            title="test",
+            x_label="Time",
+            y_labels=["dummy"],
+            x="Time",
+            y="Value",
+        )
+        data = []
+        for lib in ["lib0", "lib1"]:
+            df = pd.DataFrame(
+                {
+                    "User": [11024, 11024, 27060, 27060],
+                    "Time": [1, 2, 1, 2],
+                    "Value": np.random.rand(4),
+                    "Error": np.random.rand(4) * 0.1,
+                }
+            )
+            data.append((lib, df))
+
+        plot = DoseContributionPlot(cfg, data)
+        fig, axes = plot.plot()[0]
+        fig.savefig(tmpdir.join("test.png"))
+
+        # each subplot is titled after its own code-lib
+        assert [ax.get_title() for ax in axes] == ["lib0", "lib1"]
+        # the input data is not modified
+        for _, df in data:
+            assert "User" in df.columns
+
+
+def test_shorten_x_name():
+    fig, ax = plt.subplots()
+    ax.plot(["a_b_c", "d_e_f"], [1, 2])
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        _shorten_x_name(ax, 2)
+    assert [label.get_text() for label in ax.get_xticklabels()] == ["b c", "e f"]
+    plt.close(fig)

@@ -124,7 +124,7 @@ def condense_groups(
 
 
 def scale(
-    tally: pd.DataFrame, factor: int | float | list = 1, column: str = "Value"
+    tally: pd.DataFrame, factor: float | list = 1, column: str = "Value"
 ) -> pd.DataFrame:
     """Scale the tally values."""
     if isinstance(factor, list):
@@ -261,7 +261,7 @@ def groupby(tally: pd.DataFrame, by: str, action: str) -> pd.DataFrame:
         # a series has been created but we want a df
         df = df.to_frame().T
     else:
-        df.reset_index(inplace=True)
+        df = df.reset_index()
 
     return df
 

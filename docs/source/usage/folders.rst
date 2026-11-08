@@ -168,6 +168,14 @@ raw_data
 and represents the interface between the part of JADE that is code-dependent and the part that is
 code-independent.
 
+Raw results are organized as ``raw_data/_<code>_-_<code version>_-_<library>_/<benchmark>``,
+e.g. ``raw_data/_openmc_-_0.15.0_-_FENDL 3.2c_/Oktavian``. The code version is read from the
+simulation output during the raw data processing, so that results obtained with different
+versions of the same transport code can coexist and be compared. Folders without code version
+(``_<code>_-_<library>_``) are still supported: they are used for experimental data
+(``_exp_-_exp_``), when the code version cannot be read from the output, and for raw results
+produced by older JADE versions (see the ``--migrate-raw`` utility to rename them).
+
 simulations
 ===========
 ``<JADE_root>\simulations`` contains the output files of the simulations.

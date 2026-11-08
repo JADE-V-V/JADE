@@ -6,6 +6,7 @@ import shlex
 import shutil
 import subprocess
 import tempfile
+import uuid
 from abc import ABC, abstractmethod
 from pathlib import Path
 
@@ -119,7 +120,12 @@ class SingleRun(ABC):
         # write the input to the output folder
         self.input.write(output_folder)
 
-    def print_metadata(self, outpath: PathLike, metadata_file: PathLike):
+    def print_metadata(
+        self,
+        outpath: PathLike,
+        metadata_file: PathLike,
+        run_id: str | None = None,
+    ):
         """Print the metadata of the run to the output folder.
 
         Parameters
@@ -128,6 +134,10 @@ class SingleRun(ABC):
             path to the output folder for the run metadata file.
         metadata_file : PathLike
             path to the input metadata file.
+        run_id : str | None, optional
+            unique identifier shared by all the single runs of a code-lib benchmark
+            run. It is used to link the raw results to the simulation they were
+            produced from. By default None.
         """
         # read, update and add metadata file to the run directory
         with open(metadata_file) as f:
@@ -139,6 +149,8 @@ class SingleRun(ABC):
         metadata["jade_run_version"] = get_jade_version()
         metadata["library"] = self.lib.name
         metadata["code"] = self.code.value
+        if run_id is not None:
+            metadata["run_id"] = run_id
         outfile = os.path.join(outpath, "metadata.json")
         with open(outfile, "w", encoding="utf-8") as f:
             json.dump(metadata, f, indent=4)
@@ -543,6 +555,8 @@ class BenchmarkRun:
         self.config = config
         self.env_vars = env_vars
         self.simulation_root = simulation_root
+        # unique id of the code-lib run currently being generated
+        self._run_id = None
 
     def continue_run(self, testing: bool = False) -> list[tuple[list[str], PathLike]]:
         """Allow to continue a run on previously generated inputs. This allows to launch
@@ -640,6 +654,7 @@ class BenchmarkRun:
                 shutil.rmtree(root_benchmark)
                 os.mkdir(root_benchmark)
 
+            self._run_id = uuid.uuid4().hex
             runs = self._run_sub_benchmarks(root_benchmark, code, lib)
             # add the code to each tuple
             runs = [(code, commands, folder) for commands, folder in runs]
@@ -679,7 +694,9 @@ class BenchmarkRun:
     ) -> list[str] | None:
         single_run.write(sub_bench_folder)
         input_metadata_file = os.path.join(root_templates, "benchmark_metadata.json")
-        single_run.print_metadata(sub_bench_folder, input_metadata_file)
+        single_run.print_metadata(
+            sub_bench_folder, input_metadata_file, run_id=self._run_id
+        )
 
         if not self.config.only_input:
             ans = single_run.run(self.env_vars, sub_bench_folder)

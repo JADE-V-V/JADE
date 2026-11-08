@@ -26,6 +26,22 @@ def main():
         help="Print the simulations that were not completed",
         action="store_true",
     )
+    parser.add_argument(
+        "--migrate-raw",
+        help=(
+            "Rename raw results folders to include the code version. Optionally "
+            "provide the raw results root (default: the JADE raw_data folder)"
+        ),
+        nargs="?",
+        const="",
+        default=None,
+        metavar="RAW_ROOT",
+    )
+    parser.add_argument(
+        "--dry-run",
+        help="Used with --migrate-raw, only print the planned changes",
+        action="store_true",
+    )
 
     args = parser.parse_args()
 
@@ -42,6 +58,9 @@ def main():
         app.add_rmode()
     if args.unfinished:
         app.print_unfinished_runs()
+    if args.migrate_raw is not None:
+        raw_root = args.migrate_raw if args.migrate_raw else None
+        app.migrate_raw_results(raw_root, dry_run=args.dry_run)
 
 
 if __name__ == "__main__":

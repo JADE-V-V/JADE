@@ -6,14 +6,19 @@ from importlib.resources import as_file, files
 from pathlib import Path
 
 import pandas as pd
+import pytest
 from f4enix import Input
 
 from jade.config.run_config import LibraryOpenMC
 from jade.helper.aux_functions import (
     add_rmode0,
     get_code_lib,
+    get_code_lib_version,
     print_code_lib,
     same_index,
+    sanitize_code_version,
+    unpack_codelib,
+    version_sort_key,
 )
 from jade.helper.constants import CODE
 from tests.config import resources as conf_res
@@ -27,6 +32,62 @@ def test_code_lib():
     code_lib = print_code_lib(code, lib)
 
     assert get_code_lib(code_lib) == (code.value, lib.name)
+
+
+def test_code_lib_version():
+    # version is optional and round-trips
+    codelib = print_code_lib(CODE.OPENMC, "FENDL 3.2c", version="0.15.0")
+    assert codelib == "_openmc_-_0.15.0_-_FENDL 3.2c_"
+    assert get_code_lib_version(codelib) == ("openmc", "FENDL 3.2c", "0.15.0")
+    # get_code_lib ignores the version
+    assert get_code_lib(codelib) == ("openmc", "FENDL 3.2c")
+    # legacy strings have no version
+    assert get_code_lib_version("_mcnp_-_FENDL 3.2c_") == ("mcnp", "FENDL 3.2c", None)
+    assert get_code_lib_version("_exp_-_exp_") == ("exp", "exp", None)
+    # pretty format
+    assert print_code_lib(CODE.MCNP, "FENDL 3.2c", pretty=True) == "mcnp - FENDL 3.2c"
+    assert (
+        print_code_lib(CODE.MCNP, "FENDL 3.2c", pretty=True, version="6.2")
+        == "mcnp 6.2 - FENDL 3.2c"
+    )
+
+
+@pytest.mark.parametrize(
+    "string",
+    ["mcnp_-_lib", "_mcnp_", "_mcnp_-__", "_a_-_b_-_c_-_d_", "", "_"],
+)
+def test_code_lib_version_invalid(string):
+    with pytest.raises(ValueError):
+        get_code_lib_version(string)
+
+
+def test_sanitize_code_version():
+    assert sanitize_code_version(None) is None
+    assert sanitize_code_version("  ") is None
+    assert sanitize_code_version("0.15.0") == "0.15.0"
+    assert sanitize_code_version("6.3/beta") == "6.3-beta"
+    assert sanitize_code_version("a_-_b") == "a-b"
+    # result can always be embedded and parsed back
+    version = sanitize_code_version('x:y_-_z"')
+    codelib = print_code_lib(CODE.MCNP, "lib", version=version)
+    assert get_code_lib_version(codelib)[2] == version
+
+
+def test_version_sort_key():
+    versions = ["0.15.0", None, "0.9.1", "0.14.3", "6.2", "6.10"]
+    assert sorted(versions, key=version_sort_key) == [
+        None,
+        "0.9.1",
+        "0.14.3",
+        "0.15.0",
+        "6.2",
+        "6.10",
+    ]
+
+
+def test_unpack_codelib():
+    assert unpack_codelib(("mcnp", "lib")) == (CODE.MCNP, "lib", None)
+    assert unpack_codelib(("openmc", "lib", "0.15.0")) == (CODE.OPENMC, "lib", "0.15.0")
 
 
 def test_same_index():

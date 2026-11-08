@@ -21,7 +21,10 @@ logger = logging.getLogger(__name__)
 
 class RawProcessor:
     def __init__(
-        self, cfg: ConfigRawProcessor, sim_folder: PathLike, out_folder: PathLike
+        self,
+        cfg: ConfigRawProcessor,
+        sim_folder: PathLike,
+        out_folder: PathLike | None,
     ) -> None:
         """Object in charge of processing the raw data from the simulation and to obtain
         the final raw csv results.
@@ -32,8 +35,11 @@ class RawProcessor:
             Instructions on how to process the raw data.
         sim_folder : PathLike
             Path to the simulation folder containing the output files.
-        out_folder : PathLike
-            path to the output folder where the .csv will be stored.
+        out_folder : PathLike | None
+            path to the output folder where the .csv will be stored. It can be set
+            after initialization (e.g. once the code version has been read from
+            the simulation output) but it must be defined before calling
+            process_raw_data().
 
         Raises
         ------
@@ -74,12 +80,14 @@ class RawProcessor:
         """Process the raw data from the simulation and store the results in the output
         folder as .csv files.
         """
+        if self.out_folder is None:
+            raise ValueError("The output folder must be set before processing")
         # dump the metadata
         metadatafile = Path(self.out_folder, "metadata.json")
         # if it is still not present, dump the metadata
         if not metadatafile.exists():
             self.metadata["jade_version"] = get_jade_version()
-            self.metadata["code_version"] = self.sim_output._read_code_version()
+            self.metadata["code_version"] = self.sim_output.code_version
             with open(metadatafile, "w") as file:
                 json.dump(self.metadata, file, indent=4)
 

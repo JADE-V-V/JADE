@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 from importlib.resources import as_file, files
 from pathlib import Path
@@ -66,6 +67,19 @@ class TestBenchmarkRun:
             len(os.listdir(Path(tmpdir, "_mcnp_-_FENDL 3.2c_/Oktavian/Oktavian_Al")))
             == 3
         )
+
+        # all the single runs of a code-lib share the same run_id, different
+        # code-libs get a different one
+        run_ids = {}
+        for codelib in os.listdir(tmpdir):
+            bench_root = Path(tmpdir, codelib, "Oktavian")
+            ids = set()
+            for sub in os.listdir(bench_root):
+                with open(Path(bench_root, sub, "metadata.json")) as f:
+                    ids.add(json.load(f)["run_id"])
+            assert len(ids) == 1
+            run_ids[codelib] = ids.pop()
+        assert len(set(run_ids.values())) == 2
 
     @pytest.mark.skipif(not OMC_AVAIL, reason="OpenMC not available")
     def test_run_openmc(self, tmpdir):

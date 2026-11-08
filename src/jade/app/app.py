@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import itertools
+import json
 import logging
 import os
 import shutil
@@ -23,8 +25,15 @@ from jade.helper.__optionals__ import OMC_AVAIL, TKINTER_AVAIL
 if TKINTER_AVAIL:
     from jade.gui.post_config_gui import PostConfigGUI
     from jade.gui.run_config_gui import ConfigGUI
-from jade.helper.aux_functions import PathLike, add_rmode0, get_code_lib, print_code_lib
+from jade.helper.aux_functions import (
+    PathLike,
+    add_rmode0,
+    get_code_lib,
+    print_code_lib,
+    sanitize_code_version,
+)
 from jade.helper.constants import CODE, EXP_TAG, FIRST_INITIALIZATION, JADE_TITLE
+from jade.helper.raw_migration import migrate_raw_results
 from jade.post.atlas_processor import AtlasProcessor
 from jade.post.excel_processor import ExcelProcessor
 from jade.post.raw_processor import RawProcessor
@@ -263,7 +272,7 @@ class JadeApp:
                 logger.info(f"Processing {code.value} {lib} {bench} benchmarks")
             else:
                 # only process if not already done
-                if (code, lib, bench) not in self.status.raw_data:
+                if not self.status.is_simulation_processed(code, lib, bench):
                     if subset is not None and bench not in subset:
                         continue
 
@@ -276,15 +285,46 @@ class JadeApp:
         # process the raw data
         for (code, lib, bench), cfg in tqdm(to_process.items(), desc="Process raw"):
             folders = self.tree.get_bench_sim_folders(code, lib, bench)
-            out_folder = Path(self.tree.raw, print_code_lib(code, lib), bench)
+            if len(folders) == 0:
+                continue
+            # The code version is read from the first simulation output and it
+            # becomes part of the raw results folder name
+            processors = (
+                RawProcessor(cfg, sim_folder, None) for sim_folder, _ in folders
+            )
+            first = next(processors)
+            version = sanitize_code_version(first.sim_output.code_version)
+            if version is None:
+                logger.warning(
+                    "Code version could not be read for %s %s %s. Raw results will "
+                    "be stored without code version.",
+                    code.value,
+                    lib,
+                    bench,
+                )
+            out_folder = Path(
+                self.tree.raw, print_code_lib(code, lib, version=version), bench
+            )
             # always ovveride eventual previous results here
             if out_folder.exists():
+                _warn_raw_overwrite(out_folder, first.metadata)
                 shutil.rmtree(out_folder)
             os.makedirs(out_folder, exist_ok=True)
-            for sim_folder, _ in folders:
-                processor = RawProcessor(cfg, sim_folder, out_folder)
+            for processor in itertools.chain([first], processors):
+                run_version = sanitize_code_version(processor.sim_output.code_version)
+                if run_version != version:
+                    logger.warning(
+                        "Code version %s of %s differs from %s used for the raw "
+                        "results folder %s",
+                        run_version,
+                        processor.sim_folder,
+                        version,
+                        out_folder,
+                    )
+                processor.out_folder = out_folder
                 processor.process_raw_data()
 
+        self.status.update_raw_results()
         logger.info("Raw data processing completed.")
 
     def post_process(self):
@@ -310,12 +350,21 @@ class JadeApp:
 
             for codelib in codelibs_tags:
                 # Check if the code-lib is available in this benchmark
-                # if yes, append it to the list
-                code, lib = get_code_lib(codelib)
-                if self.status.is_raw_available(codelib, benchmark):
-                    code_libs.append((code, lib))
-                else:
+                # if yes, append it to the list. If no code version is specified
+                # the most recent one is used.
+                resolved = self.status.resolve_codelib(codelib, benchmark)
+                if resolved is None:
                     logger.info(f"{codelib} is not available for {benchmark}")
+                    continue
+                code, lib, version = resolved
+                if (code.value, lib, version) in code_libs:
+                    continue  # same raw data requested twice
+                code_libs.append((code.value, lib, version))
+                logger.info(
+                    "Using %s for %s",
+                    print_code_lib(code, lib, pretty=True, version=version),
+                    benchmark,
+                )
 
             # in case there are less than two code-libs skip the comparison
             if len(code_libs) < 2:
@@ -378,6 +427,28 @@ class JadeApp:
         logger.info("Adding RMODE 0 to the MCNP input files")
         add_rmode0(self.tree.benchmark_input_templates)
 
+    def migrate_raw_results(self, raw_root: PathLike | None = None, dry_run=False):
+        """Rename raw results folders produced by older JADE versions so that they
+        include the code version (read from their metadata).
+
+        Parameters
+        ----------
+        raw_root : PathLike | None, optional
+            root of the raw results to migrate, by default the raw results folder
+            of this JADE installation.
+        dry_run : bool, optional
+            only log the planned moves, by default False.
+        """
+        if raw_root is None:
+            raw_root = self.tree.raw
+        logger.info("Migrating raw results in %s", raw_root)
+        moves = migrate_raw_results(raw_root, dry_run=dry_run)
+        n_moved = len([move for move in moves if move.destination is not None])
+        n_skipped = len(moves) - n_moved
+        verb = "would be moved" if dry_run else "moved"
+        logger.info("%d folders %s, %d skipped", n_moved, verb, n_skipped)
+        self.status.update_raw_results()
+
     def print_unfinished_runs(self):
         """Print the simulations that were not completed."""
         for key, status in self.status.simulations.items():
@@ -386,3 +457,32 @@ class JadeApp:
                 logger.info(f"Unfinished simulations for {code} {lib} {bench}:")
                 for sim in status.failed_simulations:
                     logger.info(f"\t{sim}")
+
+
+def _warn_raw_overwrite(out_folder: PathLike, new_metadata: dict) -> None:
+    """Log the overwriting of existing raw results, warning in particular if the
+    benchmark version of the new results differs from the one being replaced.
+    """
+    old_version = None
+    metadata_file = Path(out_folder, "metadata.json")
+    if metadata_file.exists():
+        try:
+            with open(metadata_file) as f:
+                old_version = json.load(f).get("benchmark_version")
+        except (OSError, json.JSONDecodeError):
+            old_version = None
+    new_version = new_metadata.get("benchmark_version")
+    if (
+        old_version is not None
+        and new_version is not None
+        and old_version != new_version
+    ):
+        logger.warning(
+            "Overwriting raw results in %s: benchmark version %s will be replaced "
+            "by version %s",
+            out_folder,
+            old_version,
+            new_version,
+        )
+    else:
+        logger.info("Overwriting existing raw results in %s", out_folder)

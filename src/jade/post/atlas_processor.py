@@ -7,8 +7,7 @@ from pathlib import Path
 import pandas as pd
 
 from jade.config.atlas_config import ConfigAtlasProcessor, PlotConfig
-from jade.helper.aux_functions import PathLike, print_code_lib
-from jade.helper.constants import CODE
+from jade.helper.aux_functions import PathLike, print_code_lib, unpack_codelib
 from jade.post.atlas import Atlas
 from jade.post.excel_processor import ExcelProcessor
 from jade.post.plotter import PlotFactory
@@ -22,7 +21,7 @@ class AtlasProcessor:
         raw_root: PathLike,
         atlas_folder_path: PathLike,
         cfg: ConfigAtlasProcessor,
-        codelibs: list[tuple[str, str]],
+        codelibs: list[tuple[str, str] | tuple[str, str, str | None]],
         word_templatee_path: PathLike,
     ) -> None:
         """Object responsible to produce the excel comparison results for a given
@@ -36,8 +35,9 @@ class AtlasProcessor:
             path to the atlas folder where the results will be stored
         cfg : ConfigAtlasProcessor
             configuration options for the excel processor
-        codelibs : list[tuple[str, str]]
-            list of code-lib results that should be compared. The first one is
+        codelibs : list[tuple[str, str] | tuple[str, str, str | None]]
+            list of code-lib results that should be compared. Each element is a
+            (code, lib) or (code, lib, code version) tuple. The first one is
             interpreted as the reference data.
         word_templatee_path : PathLike
             path to the word template to be used in the atlas generation.
@@ -62,10 +62,10 @@ class AtlasProcessor:
             dfs = []
             cases = {}
             # get global df results for each code-lib
-            for code_tag, lib in self.codelibs:
-                code = CODE(code_tag)
-                codelib_pretty = print_code_lib(code, lib, pretty=True)
-                codelib = print_code_lib(code, lib)
+            for codelib_tuple in self.codelibs:
+                code, lib, version = unpack_codelib(codelib_tuple)
+                codelib_pretty = print_code_lib(code, lib, pretty=True, version=version)
+                codelib = print_code_lib(code, lib, version=version)
                 logger.info("Parsing reference data")
                 raw_folder = Path(self.raw_root, codelib, self.cfg.benchmark)
 

@@ -9,7 +9,9 @@ from jade.helper.aux_functions import (
     CODE_CHECKERS,
     PathLike,
     get_code_lib,
+    get_code_lib_version,
     print_code_lib,
+    version_sort_key,
 )
 from jade.helper.constants import CODE
 from jade.helper.errors import VersionInconsistencyError
@@ -31,9 +33,12 @@ class GlobalStatus:
         simulations : dict[tuple[CODE, str, str], CodeLibRunStatus]
             dictionary with the status of the simulations. eys are tuples with the code,
             library and benchmark name.
-        raw_data : dict[tuple[CODE, str, str], list[str]]
+        raw_data : dict[tuple[CODE, str, str | None, str], list[str]]
             dictionary with the list of benchmarks for which the raw results where
-            processed. keys are tuples with the code, library and benchmark name.
+            processed. keys are tuples with the code, library, code version and
+            benchmark name. The code version is None for raw results stored without
+            version (e.g. experimental data or results produced by older JADE
+            versions).
         """
         self.simulations_path = simulations_path
         self.raw_results_path = raw_results_path
@@ -48,7 +53,7 @@ class GlobalStatus:
         return self._simulations
 
     @property
-    def raw_data(self) -> dict[tuple[CODE, str, str], list[str]]:
+    def raw_data(self) -> dict[tuple[CODE, str, str | None, str], list[str]]:
         if self._raw_data is None:
             self._raw_data, self._raw_metadata = self._parse_raw_results_folder(
                 self.raw_results_path
@@ -56,7 +61,7 @@ class GlobalStatus:
         return self._raw_data
 
     @property
-    def raw_metadata(self) -> dict[tuple[CODE, str, str], dict]:
+    def raw_metadata(self) -> dict[tuple[CODE, str, str | None, str], dict]:
         if self._raw_metadata is None:
             self._raw_data, self._raw_metadata = self._parse_raw_results_folder(
                 self.raw_results_path
@@ -124,7 +129,8 @@ class GlobalStatus:
     def _parse_raw_results_folder(
         self, path_raw: PathLike
     ) -> tuple[
-        dict[tuple[CODE, str, str], list[str]], dict[tuple[CODE, str, str], dict]
+        dict[tuple[CODE, str, str | None, str], list[str]],
+        dict[tuple[CODE, str, str | None, str], dict],
     ]:
         # simply store a dictionary with the processed raw results
         available_raw_data = {}
@@ -133,17 +139,16 @@ class GlobalStatus:
             codelib_path = Path(path_raw, code_lib)
             if not codelib_path.is_dir():
                 continue
-            code, lib = get_code_lib(code_lib)
+            code, lib, version = get_code_lib_version(code_lib)
             for benchmark in os.listdir(codelib_path):
                 bench_path = Path(codelib_path, benchmark)
                 if not bench_path.is_dir():
                     continue
-                available_raw_data[(CODE(code), lib, benchmark)] = os.listdir(
-                    bench_path
-                )
+                key = (CODE(code), lib, version, benchmark)
+                available_raw_data[key] = os.listdir(bench_path)
                 if lib != "exp":  # for the experiments we don't have metadata
                     with open(os.path.join(bench_path, "metadata.json")) as infile:
-                        metadata[(CODE(code), lib, benchmark)] = json.load(infile)
+                        metadata[key] = json.load(infile)
         return available_raw_data, metadata
 
     def was_simulated(self, code: CODE, lib: str, benchmark: str) -> bool:
@@ -193,14 +198,15 @@ class GlobalStatus:
         Returns
         -------
         set[str]
-            list of code-libraries for which the raw data was processed.
+            list of code-libraries (including the code version when available)
+            for which the raw data was processed.
         set[str]
             list of benchmarks for which the raw data was processed.
         """
         code_libs = []
         benchmarks = []
-        for code, lib, benchmark in self.raw_data:
-            code_libs.append(print_code_lib(code, lib))
+        for code, lib, version, benchmark in self.raw_data:
+            code_libs.append(print_code_lib(code, lib, version=version))
             benchmarks.append(benchmark)
         return set(code_libs), set(benchmarks)
 
@@ -216,15 +222,16 @@ class GlobalStatus:
         Returns
         -------
         set[str]
-            list of codelib for which the raw data of the requested benchmark is available.
+            list of codelib (including the code version when available) for which
+            the raw data of the requested benchmark is available.
         """
         if isinstance(benchmarks, str):
             benchmarks = [benchmarks]
 
         codelibs = []
-        for code, lib, bench in self.raw_data:
+        for code, lib, version, bench in self.raw_data:
             if bench in benchmarks:
-                codelibs.append(print_code_lib(code, lib))
+                codelibs.append(print_code_lib(code, lib, version=version))
         return set(codelibs)
 
     def get_benchmark_from_raw_codelib(self, codelibs: str | list[str]) -> set[str]:
@@ -234,18 +241,90 @@ class GlobalStatus:
         Parameters
         ----------
         codelib : str | list[str]
-            codelib name.
+            codelib name. If a codelib does not specify the code version, any
+            available version is matched.
 
         Returns
         -------
         set[str]
             list of benchmarks for which the raw data of the requested codelib is available.
         """
+        if isinstance(codelibs, str):
+            codelibs = [codelibs]
+        requests = [get_code_lib_version(codelib) for codelib in codelibs]
+
         benchmarks = []
-        for code, lib, bench in self.raw_data:
-            if print_code_lib(code, lib) in codelibs:
-                benchmarks.append(bench)
+        for code, lib, version, bench in self.raw_data:
+            for req_code, req_lib, req_version in requests:
+                if (
+                    code.value == req_code
+                    and lib == req_lib
+                    and (req_version is None or req_version == version)
+                ):
+                    benchmarks.append(bench)
+                    break
         return set(benchmarks)
+
+    def get_raw_versions(
+        self, code: CODE, lib: str, benchmark: str
+    ) -> list[str | None]:
+        """Get all the code versions for which raw data is available for a given
+        code, library and benchmark.
+
+        Parameters
+        ----------
+        code : CODE
+            code used in the simulation.
+        lib : str
+            library name.
+        benchmark : str
+            benchmark name.
+
+        Returns
+        -------
+        list[str | None]
+            available code versions sorted from the oldest to the most recent. None
+            indicates raw data stored without code version.
+        """
+        versions = [
+            version
+            for raw_code, raw_lib, version, bench in self.raw_data
+            if raw_code == code and raw_lib == lib and bench == benchmark
+        ]
+        return sorted(versions, key=version_sort_key)
+
+    def resolve_codelib(
+        self, codelib: str, benchmark: str
+    ) -> tuple[CODE, str, str | None] | None:
+        """Resolve a code-lib string into the raw data to use for a benchmark.
+
+        If the code-lib string specifies a code version, that exact version is
+        required. Otherwise the most recent available code version is selected.
+
+        Parameters
+        ----------
+        codelib : str
+            codelib string, e.g. _openmc_-_FENDL 3.2c_ or
+            _openmc_-_0.15.0_-_FENDL 3.2c_
+        benchmark : str
+            benchmark name.
+
+        Returns
+        -------
+        tuple[CODE, str, str | None] | None
+            code, library and code version of the raw data to use. None if no raw
+            data is available.
+        """
+        code_tag, lib, version = get_code_lib_version(codelib)
+        code = CODE(code_tag)
+        available = self.get_raw_versions(code, lib, benchmark)
+        if len(available) == 0:
+            return None
+        if version is not None:
+            if version in available:
+                return code, lib, version
+            return None
+        return code, lib, available[-1]
 
     def is_raw_available(self, codelib: str, benchmark: str) -> bool:
         """Check if the raw data is available for the given codelib and benchmark.
@@ -253,7 +332,8 @@ class GlobalStatus:
         Parameters
         ----------
         codelib : str
-            codelib string.
+            codelib string. If no code version is specified, any version is
+            accepted.
         benchmark : str
             benchmark name.
 
@@ -262,10 +342,56 @@ class GlobalStatus:
         bool
             True if the raw data is available, False otherwise.
         """
-        return codelib in self.get_codelibs_from_raw_benchmark(benchmark)
+        return self.resolve_codelib(codelib, benchmark) is not None
+
+    def is_simulation_processed(self, code: CODE, lib: str, benchmark: str) -> bool:
+        """Check if the raw data for a given simulation has already been produced.
+
+        Simulations generated by recent JADE versions carry a ``run_id`` that is
+        propagated to the raw results metadata, so that a new run (e.g. with a
+        different code version) is recognized as not processed yet. For older
+        simulations without ``run_id``, the simulation is considered processed if
+        any raw data is available for the same code, library and benchmark.
+
+        Parameters
+        ----------
+        code : CODE
+            code used in the simulation.
+        lib : str
+            library name.
+        benchmark : str
+            benchmark name.
+
+        Returns
+        -------
+        bool
+            True if the simulation was already processed.
+        """
+        candidates = [
+            key
+            for key in self.raw_data
+            if key[0] == code and key[1] == lib and key[3] == benchmark
+        ]
+        if len(candidates) == 0:
+            return False
+
+        run_id = None
+        sim = self.simulations.get((code, lib, benchmark))
+        if sim is not None and sim.metadata is not None:
+            run_id = sim.metadata.get("run_id")
+        if run_id is None:
+            return True
+
+        for key in candidates:
+            if self.raw_metadata.get(key, {}).get("run_id") == run_id:
+                return True
+        return False
 
     def _validate_libs_processing(
-        self, code: CODE, benchmark: str, libs: list[str]
+        self,
+        code: CODE,
+        benchmark: str,
+        libs: list[str | tuple[str, str | None]],
     ) -> None:
         """Check that the post-processing can be performed for the given code and
         benchmark. This is true if the benchmark version for the requested libs
@@ -277,46 +403,59 @@ class GlobalStatus:
             code used in the simulation.
         benchmark : str
             benchmark name.
-        libs : list[str]
-            list of libraries to check.
+        libs : list[str | tuple[str, str | None]]
+            list of libraries to check. Each element is either a library name (the
+            most recent code version is used) or a (library, code version) tuple.
 
-        Returns
-        -------
-        bool
-            True if the post-processing can be performed, False otherwise.
+        Raises
+        ------
+        VersionInconsistencyError
+            if the benchmark versions are not consistent.
         """
         versions = {}
         for lib in libs:
+            if isinstance(lib, str):
+                lib_name = lib
+                code_version = self.get_raw_versions(code, lib, benchmark)[-1]
+            else:
+                lib_name, code_version = lib
+            label = print_code_lib(code, lib_name, pretty=True, version=code_version)
             # I want only the major version
-            versions[lib] = self.raw_metadata[(code, lib, benchmark)][
-                "benchmark_version"
-            ].split(".")[0]
+            versions[label] = self.raw_metadata[
+                (code, lib_name, code_version, benchmark)
+            ]["benchmark_version"].split(".")[0]
         if len(set(versions.values())) > 1:
             raise VersionInconsistencyError(
                 f"The versions of the requested libraries for {code} and benchmark {benchmark} are not consistent: {versions}"
             )
 
     def validate_codelibs(
-        self, codelibs: list[tuple[CODE, str]], benchmarks: str
+        self,
+        codelibs: list[tuple[CODE, str] | tuple[CODE, str, str | None]],
+        benchmarks: str,
     ) -> None:
         """Check that a list of codelibs can be post-processed together for a given benchmark.
         This is true if the benchmark version for the requested libs are the same.
 
         Parameters
         ----------
-        codelibs : list[tuple[CODE, str]]
-            list of codelibs to check. Each codelib is a tuple with the code and library.
+        codelibs : list[tuple[CODE, str] | tuple[CODE, str, str | None]]
+            list of codelibs to check. Each codelib is a tuple with the code, the
+            library and, optionally, the code version.
         benchmark : str
             benchmark name.
         """
         libs = {}
-        for code, lib in codelibs:
-            code = CODE(code)
+        for codelib in codelibs:
+            code = CODE(codelib[0])
+            lib = codelib[1]
             if lib == "exp":  # for the experiments we don't have metadata
                 continue
-            if code not in libs:
-                libs[code] = []
-            libs[code].append(lib)
+            if len(codelib) > 2:
+                entry = (lib, codelib[2])
+            else:
+                entry = lib
+            libs.setdefault(code, []).append(entry)
 
         for code, lib_list in libs.items():
             self._validate_libs_processing(code, benchmarks, lib_list)

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+import logging
 import os
 import shutil
 from importlib.resources import files
@@ -15,6 +17,7 @@ from jade.config.run_config import (
     RunMode,
 )
 from jade.helper.constants import CODE
+from jade.post.sim_output import MCNPSimOutput
 from tests.run import resources as run_res
 
 RUN_RES = files(run_res)
@@ -101,6 +104,55 @@ class TestJadeApp:
 
         # try case where openmc is not available on windows
         app.raw_process(subset=["TUD-W"])
+
+    def test_raw_process_code_version(self, tmpdir, monkeypatch, caplog):
+        app = JadeApp(root=DUMMY_ROOT, skip_init=True)
+        app.tree.raw = tmpdir
+        app.status.raw_results_path = tmpdir
+        monkeypatch.setattr(MCNPSimOutput, "_read_code_version", lambda self: "6.3")
+
+        app.raw_process(subset=["Oktavian"])
+        out_folder = Path(tmpdir, "_mcnp_-_6.3_-_FENDL 3.2c_", "Oktavian")
+        assert Path(out_folder, "Oktavian_Al 21.csv").exists()
+        with open(Path(out_folder, "metadata.json")) as f:
+            assert json.load(f)["code_version"] == "6.3"
+        assert not Path(tmpdir, "_mcnp_-_FENDL 3.2c_").exists()
+        # status is updated with the versioned key
+        assert (CODE.MCNP, "FENDL 3.2c", "6.3", "Oktavian") in app.status.raw_data
+
+        # overwriting results of a different benchmark version logs a warning
+        metadata_file = Path(out_folder, "metadata.json")
+        with open(metadata_file) as f:
+            metadata = json.load(f)
+        metadata["benchmark_version"] = "0.1"
+        with open(metadata_file, "w") as f:
+            json.dump(metadata, f)
+        with caplog.at_level(logging.WARNING):
+            app.raw_process(subset=["Oktavian"], force=True)
+        assert "benchmark version 0.1 will be replaced" in caplog.text
+
+    def test_post_process_code_version(self, tmpdir):
+        app = JadeApp(root=DUMMY_ROOT, skip_init=True)
+        raw = Path(tmpdir, "raw")
+        shutil.copytree(
+            Path(app.tree.raw, "_mcnp_-_FENDL 3.2c_"),
+            Path(raw, "_mcnp_-_6.2_-_FENDL 3.2c_"),
+        )
+        shutil.copytree(
+            Path(app.tree.raw, "_mcnp_-_ENDFB-VIII.0_"),
+            Path(raw, "_mcnp_-_ENDFB-VIII.0_"),
+        )
+        app.tree.raw = raw
+        app.status.raw_results_path = raw
+        app.status.update_raw_results()
+        app.tree.postprocessing = Path(tmpdir, "pp")
+        os.mkdir(app.tree.postprocessing)
+
+        # the unversioned request in pp_cfg.yml resolves to the 6.2 raw data
+        app.post_process()
+        excel_files = [p.name for p in Path(app.tree.postprocessing).rglob("*.xlsx")]
+        assert len(excel_files) > 0
+        assert all("mcnp 6.2-FENDL 3.2c" in name for name in excel_files)
 
     def test_post_process(self, tmpdir):
         app = JadeApp(root=DUMMY_ROOT, skip_init=True)

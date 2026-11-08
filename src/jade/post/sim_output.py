@@ -37,7 +37,15 @@ class AbstractSimOutput(ABC):
             Path to the simulation folder containing the output files.
         """
         self.sim_folder = sim_folder
-        self.code_version = self._read_code_version()
+        self._code_version = self._read_code_version()
+
+    @property
+    def code_version(self) -> str | None:
+        """Version of the code used for the simulation. Subclasses that do not call
+        the parent __init__ read it lazily."""
+        if not hasattr(self, "_code_version"):
+            self._code_version = self._read_code_version()
+        return self._code_version
 
     @property
     @abstractmethod

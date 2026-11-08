@@ -8,7 +8,7 @@ from pathlib import Path
 import pandas as pd
 
 from jade.config.excel_config import ConfigExcelProcessor
-from jade.helper.aux_functions import PathLike, print_code_lib
+from jade.helper.aux_functions import PathLike, print_code_lib, unpack_codelib
 from jade.helper.constants import CODE
 from jade.post.excel_routines import TableFactory
 
@@ -24,7 +24,7 @@ class ExcelProcessor:
         raw_root: PathLike,
         excel_folder_path: PathLike,
         cfg: ConfigExcelProcessor,
-        codelibs: list[tuple[str, str]],
+        codelibs: list[tuple[str, str] | tuple[str, str, str | None]],
     ) -> None:
         """Object responsible to produce the excel comparison results for a given
         benchmark.
@@ -37,8 +37,9 @@ class ExcelProcessor:
             path to the excel folder where the results will be stored
         cfg : ConfigExcelProcessor
             configuration options for the excel processor
-        codelibs : list[tuple[str, str]]
-            list of code-lib results that should be compared. The first one is
+        codelibs : list[tuple[str, str] | tuple[str, str, str | None]]
+            list of code-lib results that should be compared. Each element is a
+            (code, lib) or (code, lib, code version) tuple. The first one is
             interpreted as the reference data.
         """
         self.excel_folder_path = excel_folder_path
@@ -52,9 +53,10 @@ class ExcelProcessor:
         the configuration file. Each excel file will contain all the requested tables.
         """
         reference_dfs = {}
-        for i, (code_tag, lib) in enumerate(self.codelibs):
-            code = CODE(code_tag)
-            codelib = print_code_lib(code, lib)
+        for i, codelib_tuple in enumerate(self.codelibs):
+            code, lib, version = unpack_codelib(codelib_tuple)
+            codelib = print_code_lib(code, lib, version=version)
+            code_label = _code_label(code, version)
             logger.info("Parsing reference data")
             raw_folder = Path(self.raw_root, codelib, self.cfg.benchmark)
 
@@ -62,6 +64,8 @@ class ExcelProcessor:
             if i == 0:
                 ref_code = code
                 ref_lib = lib
+                ref_version = version
+                ref_code_label = code_label
                 for table_cfg in self.cfg.tables:
                     target_df = self._get_table_df(
                         table_cfg.results, raw_folder, subsets=table_cfg.subsets
@@ -78,7 +82,7 @@ class ExcelProcessor:
                 outfile = Path(
                     self.excel_folder_path,
                     FILE_NAME.format(
-                        self.cfg.benchmark, ref_code.value, ref_lib, code.value, lib
+                        self.cfg.benchmark, ref_code_label, ref_lib, code_label, lib
                     ),
                 )
                 logger.info(f"Writing the resulting excel file {outfile}")
@@ -96,11 +100,15 @@ class ExcelProcessor:
                             )
 
                         title = TITLE.format(
-                            ref_code.value, ref_lib, code.value, lib, table_cfg.name
+                            ref_code_label, ref_lib, code_label, lib, table_cfg.name
                         )
                         ref_df = reference_dfs[table_cfg.name]
-                        ref_pretty = print_code_lib(ref_code, ref_lib, pretty=True)
-                        target_pretty = print_code_lib(code, lib, pretty=True)
+                        ref_pretty = print_code_lib(
+                            ref_code, ref_lib, pretty=True, version=ref_version
+                        )
+                        target_pretty = print_code_lib(
+                            code, lib, pretty=True, version=version
+                        )
                         table = TableFactory.create_table(
                             table_cfg.table_type,
                             [
@@ -182,3 +190,11 @@ def _check_for_subsets(subsets: list[dict] | None, curr_res) -> None | dict:
             if curr_res == subset["result"]:
                 return subset
     return None
+
+
+def _code_label(code: CODE, version: str | None) -> str:
+    """Code label used in excel titles and file names, including the version if
+    available."""
+    if version is None:
+        return code.value
+    return f"{code.value} {version}"

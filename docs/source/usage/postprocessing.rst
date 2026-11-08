@@ -33,6 +33,14 @@ In case the processing was changed and there is a need to re-generate the raw da
 can simply delete the folders corresponding to the benchmarks that need to be re-processed in the
 ``raw_data`` folder.
 
+The raw results of each benchmark are stored in a folder that includes the transport code
+version, e.g. ``_openmc_-_0.15.0_-_FENDL 3.2c_``. Re-running a benchmark with a new code version
+therefore does not overwrite the results obtained with the previous one. Each simulation is
+tagged with a unique ``run_id`` that is propagated to the raw results metadata, so that a new
+run is processed automatically even if raw data for the same code-library pair already exists.
+Re-processing a run produced with the same code version overwrites the previous raw results;
+a warning is logged if the benchmark version of the replaced results differs.
+
 ACTINV raw results
 ------------------
 
@@ -89,6 +97,24 @@ is calculated/measured:
 
    benchmarks: [FNS-DecayHeat]
    code_libs: [_exp_-_exp_, _actinv_-_TENDL2025-patched-ENDF8-JEFF33_]
+
+Selecting code versions
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Code-lib entries in ``cfg/pp_cfg.yml`` may or may not specify the code version:
+
+* ``_openmc_-_FENDL 3.2c_``: the most recent code version available for each benchmark is used;
+* ``_openmc_-_0.14.3_-_FENDL 3.2c_``: exactly this code version is used.
+
+This allows, for instance, to compare two versions of the same code with the same library:
+
+.. code-block:: yaml
+
+   benchmarks: [Oktavian]
+   code_libs: [_exp_-_exp_, _openmc_-_0.14.3_-_FENDL 3.2c_, _openmc_-_0.15.0_-_FENDL 3.2c_]
+
+When available, the code version is reported in the Excel and atlas labels
+(e.g. ``openmc 0.15.0 - FENDL 3.2c``).
 
 Execute the post-processing
 ---------------------------

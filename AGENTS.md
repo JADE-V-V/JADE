@@ -88,7 +88,8 @@ Never construct config dataclasses directly.
 ### Folder naming convention for code-lib pairs
 
 Simulation output folders follow `_<code>_-_<lib name>_`, e.g. `_mcnp_-_FENDL 3.2c_`.  
-Encode/decode with `print_code_lib()` / `get_code_lib()` from `src/jade/helper/aux_functions.py`.
+Raw results folders also include the code version read from the output: `_<code>_-_<version>_-_<lib name>_`, e.g. `_openmc_-_0.15.0_-_FENDL 3.2c_` (the version is omitted for `_exp_-_exp_`, legacy results, or when it cannot be read).  
+Encode/decode with `print_code_lib(..., version=...)` / `get_code_lib()` / `get_code_lib_version()` from `src/jade/helper/aux_functions.py`. `GlobalStatus.raw_data` keys are `(CODE, lib, version, benchmark)`; use `GlobalStatus.resolve_codelib()` to map a pp code-lib string (version optional → latest) to raw data.
 
 ### Lazy-loading properties
 

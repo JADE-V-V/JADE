@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 import math
-from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -370,41 +369,41 @@ def gaussian_broadening(
     broadened_values = np.zeros(len(tally), dtype=float)
     broadened_errors = np.zeros(len(tally), dtype=float)
     # Iterate over all bins specified in the bins dictionary
-    for bin in bins.keys():
+    for bin, value in bins.items():
         broad_energies = tally[column][
             (tally[column] <= float(bin)) & (tally[column] > hist_bins[-1])
         ].tolist()
         flag = False
         # Check for scaling type in the current bin
-        if "no_scaling" in bins[bin]:
+        if "no_scaling" in value:
             scaling = "no_scaling"
             scale = 1
             flag = True
-        elif "linear" in bins[bin]:
+        elif "linear" in value:
             scaling = "linear"
             s = 1
             flag = True
-        elif "square" in bins[bin]:
+        elif "square" in value:
             scaling = "square"
             s = 2
             flag = True
-        elif "square_root" in bins[bin]:
+        elif "square_root" in value:
             scaling = "square_root"
             s = 0.5
             flag = True
         if not flag:
             raise ValueError(
-                f"Unknown scaling factor option: {bins[bin]}. The scaling factor type must be one of 'no_scaling', 'linear', 'square', or 'square_root'."
+                f"Unknown scaling factor option: {value}. The scaling factor type must be one of 'no_scaling', 'linear', 'square', or 'square_root'."
             )
         if scaling != "no_scaling":
             try:
-                ref = bins[bin][scaling]["Ref"]
+                ref = value[scaling]["Ref"]
             except KeyError:
                 raise ValueError(
                     f"Reference value (energy or time, depending on the column parameter) for scaling (Ref) not found for bin {bin}, scaling type {scaling}. When using this scaling type (different to 'no_scaling'), Ref (bin value at the peak maximum) must be specified."
                 )
         try:
-            fwhm_frac = bins[bin][scaling]["fwhm_frac"]
+            fwhm_frac = value[scaling]["fwhm_frac"]
             if isinstance(fwhm_frac, float):
                 fwhm_frac = [fwhm_frac] * len(broad_energies)
             elif isinstance(fwhm_frac, list) and len(fwhm_frac) != len(broad_energies):
@@ -585,14 +584,14 @@ def response_broadening(
     hist_bins = [0.0]
     broadened_values = np.zeros(len(tally), dtype=float)
     broadened_errors = np.zeros(len(tally), dtype=float)
-    for bin in bins.keys():
+    for bin, value in bins.items():
         if not math.isfinite(float(bin)) or float(bin) <= hist_bins[-1]:
             raise ValueError(
                 "Response scaling range edges must be finite and increasing"
             )
         selected = (Eb <= float(bin)) & (Eb > hist_bins[-1])
         broad_energies = Eb[selected].tolist()
-        config = bins[bin]
+        config = value
         if not set(config).issubset(scaling_options):
             raise ValueError(f"Unknown scaling factor option: {config}")
         # Check scaling type for the current bin range

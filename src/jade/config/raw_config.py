@@ -107,6 +107,7 @@ class TallyModOption(Enum):
     SELECT_SUBSET = "select_subset"
     CUMULATIVE_SUM = "cumulative_sum"
     GAUSSIAN_BROADENING = "gaussian_broadening"
+    RESPONSE_BROADENING = "response_broadening"
     VOLUME = "volume"
     MASS = "mass"
 

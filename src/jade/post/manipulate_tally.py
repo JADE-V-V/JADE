@@ -74,6 +74,7 @@ def condense_groups(
 ) -> pd.DataFrame:
     """Condense the tally into groups. Mostly used to obtain coarser energy groups.
     If no values are ancountered in a group the group is not included in the output.
+    Empty results retain the output columns.
 
     Parameters
     ----------
@@ -117,7 +118,10 @@ def condense_groups(
     # drop zero values
     grouped = grouped[grouped["Value"] != 0].reset_index()
     grouped[["Lower energy", "Upper energy"]] = (
-        grouped["Energy"].str.split(" - ", expand=True).astype(float)
+        grouped["Energy"]
+        .str.split(" - ", expand=True)
+        .reindex(columns=[0, 1])
+        .astype(float)
     )
     return grouped
 

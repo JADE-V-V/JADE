@@ -269,6 +269,11 @@ def test_condense_groups():
     result = condense_groups(df.copy(), bins=[0, 1, 3])
     assert len(result) == 1
 
+    for source in [df.assign(Value=0), df.assign(Energy=20)]:
+        empty = condense_groups(source, bins=[0, 3.1, 10])
+        assert empty.empty
+        assert empty.columns.equals(result.columns)
+
 
 def test_add_column():
     data = {"Energy": [1, 2, 3], "Value": [10, 20, 30]}

@@ -192,7 +192,7 @@ The currently supported modifiers are:
         'integral': false
         }]
 
-  In the example above, the response broadening is applied to differential energy spectra.
+  In the example above, the gaussian broadening is applied to differential energy spectra.
   For energies lower or equal than 1.0 MeV, no gaussian broadening is applied (because ``fwhm_frac`` is 0.0).
   For energies between 1.0 MeV and 4.97 MeV (included), no scaling is applied during the gaussian broadening. In this energy range, there are 2 energy bins in the tally: the lower one gets a FWHM of 3.5% 
   and the upper one gets a FWHM of 8.05%.

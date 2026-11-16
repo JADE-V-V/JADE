@@ -10,7 +10,7 @@ Neutron spectra:
           '2.9745':{'no_scaling':{'fwhm_frac':0.1}},
           '3.664':{'no_scaling':{'fwhm_frac':0.05}},
           '13.836':{'no_scaling':{'fwhm_frac':0.03}},
-          '15.5':{'no_scaling':{'fwhm_frac':0.02}}},
+          '15.7':{'no_scaling':{'fwhm_frac':0.02}}},
       'integral': false}]
 Photon spectra:  
   concat_option: no_action
@@ -26,7 +26,7 @@ Neutron spectra coarse:
           '2.9745':{'no_scaling':{'fwhm_frac':0.1}},
           '3.664':{'no_scaling':{'fwhm_frac':0.05}},
           '13.836':{'no_scaling':{'fwhm_frac':0.03}},
-          '15.5':{'no_scaling':{'fwhm_frac':0.02}}},
+          '15.7':{'no_scaling':{'fwhm_frac':0.02}}},
       'integral': true}]
     - [condense_groups,
        {"bins": [1.15, 3, 6, 9, 12, 20],

@@ -5,6 +5,7 @@ import os
 # import win32com.client
 # import aspose.words
 import docx
+import matplotlib.pyplot as plt
 
 # from docx.enum.table import WD_ALIGN_VERTICAL
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -13,9 +14,10 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 # from docx.oxml.ns import nsdecls, qn
 from docx.shared import Inches
 from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
 
 from jade.helper.aux_functions import PathLike
+
+DEFAULT_IMG_WIDTH = Inches(7.5)
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +46,7 @@ class Atlas:
         self.outname = "atlas_" + name  # Name for the outfile
         self.doc = doc  # Word Document
 
-    def insert_img(self, figure: Figure, width=Inches(7.5)):
+    def insert_img(self, figure: Figure, width=DEFAULT_IMG_WIDTH):
         """Insert an image in the word document
 
         Parameters

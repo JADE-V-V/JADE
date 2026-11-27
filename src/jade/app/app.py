@@ -18,7 +18,7 @@ from jade.config.pp_config import PostProcessConfig
 from jade.config.raw_config import ConfigRawProcessor
 from jade.config.run_config import RunConfig, RunMode
 from jade.config.status import GlobalStatus
-from jade.helper.__optionals__ import TKINTER_AVAIL, OMC_AVAIL
+from jade.helper.__optionals__ import OMC_AVAIL, TKINTER_AVAIL
 
 if TKINTER_AVAIL:
     from jade.gui.post_config_gui import PostConfigGUI
@@ -147,8 +147,8 @@ class JadeApp:
     def rmv_runtpe(self):
         """Remove the runtpe files from the simulation folders of mcnp."""
         # Walk through the root folder and remove the runtpe files
-        for pathroot, folder, files in os.walk(self.tree.simulations):
-            if len(files) > 0 and len(folder) == 0:  # only files and no folders
+        for pathroot, folder, filenames in os.walk(self.tree.simulations):
+            if len(filenames) > 0 and len(folder) == 0:  # only files and no folders
                 # get the code
                 codelib = Path(pathroot).parent.parent.name
                 code, _ = get_code_lib(codelib)
@@ -203,7 +203,7 @@ class JadeApp:
     def continue_run(self, testing: bool = False):
         """Continue the run of the benchmarks that were not completed."""
         commands = []
-        for bench_name, cfg in self.run_cfg.benchmarks.items():
+        for cfg in self.run_cfg.benchmarks.values():
             benchmark = BenchmarkRunFactory.create(
                 cfg,
                 self.tree.simulations,

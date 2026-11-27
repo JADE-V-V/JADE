@@ -1,12 +1,12 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from enum import Enum
 
 import yaml
 
 from jade.helper.aux_functions import PathLike
-import re
 
 APPLY_TO_TAG = re.compile(r"apply_to#\d+")
 
@@ -91,6 +91,7 @@ class TallyModOption(Enum):
 
     LETHARGY = "lethargy"
     SCALE = "scale"
+    COOLING_TIME = "cooling_time"
     NO_ACTION = "no_action"
     BY_ENERGY = "by_energy"
     BY_BIN = "by_bin"
@@ -106,6 +107,7 @@ class TallyModOption(Enum):
     SELECT_SUBSET = "select_subset"
     CUMULATIVE_SUM = "cumulative_sum"
     GAUSSIAN_BROADENING = "gaussian_broadening"
+    RESPONSE_BROADENING = "response_broadening"
     VOLUME = "volume"
     MASS = "mass"
 

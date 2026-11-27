@@ -199,7 +199,7 @@ class GlobalStatus:
         """
         code_libs = []
         benchmarks = []
-        for code, lib, benchmark in self.raw_data.keys():
+        for code, lib, benchmark in self.raw_data:
             code_libs.append(print_code_lib(code, lib))
             benchmarks.append(benchmark)
         return set(code_libs), set(benchmarks)
@@ -222,7 +222,7 @@ class GlobalStatus:
             benchmarks = [benchmarks]
 
         codelibs = []
-        for code, lib, bench in self.raw_data.keys():
+        for code, lib, bench in self.raw_data:
             if bench in benchmarks:
                 codelibs.append(print_code_lib(code, lib))
         return set(codelibs)
@@ -242,7 +242,7 @@ class GlobalStatus:
             list of benchmarks for which the raw data of the requested codelib is available.
         """
         benchmarks = []
-        for code, lib, bench in self.raw_data.keys():
+        for code, lib, bench in self.raw_data:
             if print_code_lib(code, lib) in codelibs:
                 benchmarks.append(bench)
         return set(benchmarks)
@@ -262,9 +262,7 @@ class GlobalStatus:
         bool
             True if the raw data is available, False otherwise.
         """
-        if codelib in self.get_codelibs_from_raw_benchmark(benchmark):
-            return True
-        return False
+        return codelib in self.get_codelibs_from_raw_benchmark(benchmark)
 
     def _validate_libs_processing(
         self, code: CODE, benchmark: str, libs: list[str]

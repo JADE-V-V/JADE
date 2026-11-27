@@ -3,13 +3,12 @@ from __future__ import annotations
 from importlib.resources import files
 from unittest.mock import patch
 
-import jade.resources
-from jade.config.status import GlobalStatus
-from tests import dummy_structure
-
 import pytest
 
+import jade.resources
+from jade.config.status import GlobalStatus
 from jade.helper.__optionals__ import TKINTER_AVAIL
+from tests import dummy_structure
 
 if TKINTER_AVAIL:
     from jade.gui.post_config_gui import PostConfigGUI
@@ -17,6 +16,7 @@ if TKINTER_AVAIL:
 DUMMY_STRUCT = files(dummy_structure)
 
 DEFAULT_CFG = files(jade.resources).joinpath("default_cfg")
+
 
 @pytest.mark.skipif(not TKINTER_AVAIL, reason="tkinter is not available")
 class TestPostConfigGui:

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 import logging
+import math
 import os
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -12,6 +14,7 @@ from f4enix.output.mctal import Mctal, Tally
 from f4enix.output.meshtal import Meshtal
 
 from jade.helper.__optionals__ import OMC_AVAIL
+from jade.helper.actinv import schedule_endpoints
 
 if TYPE_CHECKING:
     from jade.helper.aux_functions import PathLike
@@ -46,7 +49,6 @@ class AbstractSimOutput(ABC):
         dict[str, pd.DataFrame]
             Dictionary of tally dataframes, indexed by tally number.
         """
-        pass
 
     @property
     @abstractmethod
@@ -70,7 +72,6 @@ class AbstractSimOutput(ABC):
         list[int]
             List of tally numbers.
         """
-        pass
 
     @property
     @abstractmethod
@@ -82,7 +83,6 @@ class AbstractSimOutput(ABC):
         list[str]
             List of tally comments.
         """
-        pass
 
     @abstractmethod
     def _read_code_version(self) -> str:
@@ -93,7 +93,6 @@ class AbstractSimOutput(ABC):
         str
             The code version.
         """
-        pass
 
 
 class MCNPSimOutput(AbstractSimOutput):
@@ -127,7 +126,7 @@ class MCNPSimOutput(AbstractSimOutput):
         tallydata = mctal.tallydata
         total_bin = mctal.totalbin
         for dictionary in [tallydata, total_bin]:
-            for _, df in dictionary.items():
+            for key, df in dictionary.items():
                 if df is not None:
                     if (
                         "Cells" in df.columns
@@ -153,9 +152,8 @@ class MCNPSimOutput(AbstractSimOutput):
                         if len(usr_bins) <= 2 and "total" in usr_bins:
                             # then the column does not add any additional info, to drop
                             del df["User"]
-                            # and drop the duplicates ignoring the warning
-                            with pd.option_context("mode.chained_assignment", None):
-                                df.drop_duplicates(inplace=True)
+                            # and drop the duplicates
+                            dictionary[key] = df.drop_duplicates()
                     except KeyError:
                         pass  # no user column
 
@@ -192,17 +190,16 @@ class MCNPSimOutput(AbstractSimOutput):
             else:
                 self._tally_comments.append("")
 
-        for df in tallydata.values():
+        for key, df in tallydata.items():
             # drop a row if it contains total in whatever column
             if "total" in df.values:
-                df.drop(
+                tallydata[key] = df.drop(
                     df[
                         df.apply(
                             lambda row: row.astype(str).str.contains("total").any(),
                             axis=1,
                         )
-                    ].index,
-                    inplace=True,
+                    ].index
                 )
 
         self._tallydata = tallydata
@@ -326,7 +323,6 @@ class OpenMCSimOutput(AbstractSimOutput):
         file1 = None
         file2 = None
         file3 = None
-        file4 = None
 
         for file_name in os.listdir(results_path):
             if file_name.endswith(".out"):
@@ -355,11 +351,13 @@ class OpenMCSimOutput(AbstractSimOutput):
             if file.startswith("statepoint") and file.endswith(".h5"):
                 statepoint_found = True
         return statepoint_found
-    
-    def _prep_tally(self, filter_lookup: dict[str, str], tally: pd.DataFrame) -> pd.DataFrame:
-        '''
+
+    def _prep_tally(
+        self, filter_lookup: dict[str, str], tally: pd.DataFrame
+    ) -> pd.DataFrame:
+        """
         Function to prepare the tally dataframe for JADE formatting, by renaming the columns and sorting by the filters.
-        
+
         Parameters
         ----------
         filter_lookup : dict
@@ -372,7 +370,7 @@ class OpenMCSimOutput(AbstractSimOutput):
         sorted_tally : pd.DataFrame
             The sorted and renamed tally dataframe ready for JADE formatting
 
-        '''
+        """
         filters = []
         new_columns = {}
         if "cell" in tally.columns:
@@ -383,8 +381,7 @@ class OpenMCSimOutput(AbstractSimOutput):
             filters.append("energy high [eV]")
         if "time" in tally.columns:
             filters.append("time")
-        new_columns = dict(
-            (k, filter_lookup[k]) for k in filters if k in filter_lookup)
+        new_columns = {k: filter_lookup[k] for k in filters if k in filter_lookup}
         new_columns["mean"] = filter_lookup["mean"]
         new_columns["std. dev."] = filter_lookup["std. dev."]
         sorted_tally = tally.sort_values(filters)
@@ -422,25 +419,12 @@ class OpenMCSimOutput(AbstractSimOutput):
             "mean": "Value",
             "std. dev.": "Error",
         }
-        columns = [
-            "Cells",
-            "User",
-            "Segments",
-            "Cosine",
-            "Energy",
-            "Time",
-            "Cor C",
-            "Cor B",
-            "Cor A",
-            "Value",
-            "Error",
-        ]
         for id, tally in tallies.items():
             sorted_tally = self._prep_tally(filter_lookup, tally)
-            
+
             if "Value" in sorted_tally.columns and "Error" in sorted_tally.columns:
                 sorted_tally["Error"] = sorted_tally["Error"] / sorted_tally["Value"]
-            
+
             tallydata[id] = sorted_tally
             totalbin[id] = None
         return tallydata, totalbin
@@ -482,8 +466,8 @@ class OpenMCSphereSimOutput(OpenMCSimOutput):
         None.
 
         """
-        _, statefile, volfile = self.retrieve_file(sim_folder)
-        
+        self.retrieve_file(sim_folder)
+
         # Retrieving atomic density for normalisation of the DPA, He and T production tallies
         self.input = omc.OpenMCInputFiles(sim_folder)
         materials = self.input.geometry.get_all_materials()
@@ -521,19 +505,6 @@ class OpenMCSphereSimOutput(OpenMCSimOutput):
             "mean": "Value",
             "std. dev.": "Error",
         }
-        columns = [
-            "Cells",
-            "User",
-            "Segments",
-            "Cosine",
-            "Energy",
-            "Time",
-            "Cor C",
-            "Cor B",
-            "Cor A",
-            "Value",
-            "Error",
-        ]
         for id, tally in tallies.items():
             sorted_tally = self._prep_tally(filter_lookup, tally)
 
@@ -545,13 +516,14 @@ class OpenMCSphereSimOutput(OpenMCSimOutput):
                 sorted_tally["Error"] = sorted_tally["Error"] / self.atomic_density
             else:
                 pass
-            
+
             if "Value" in sorted_tally.columns and "Error" in sorted_tally.columns:
                 sorted_tally["Error"] = sorted_tally["Error"] / sorted_tally["Value"]
-            
+
             tallydata[id] = sorted_tally
             totalbin[id] = None
         return tallydata, totalbin
+
 
 def _remove_constant_columns(df: pd.DataFrame) -> pd.DataFrame:
     """eliminate unnecessary columns from OpenMC tally data"""
@@ -571,3 +543,105 @@ def _remove_constant_columns(df: pd.DataFrame) -> pd.DataFrame:
                 # Should work as long as they are the exact same value
                 del df[column]
     return df
+
+
+class ActinvSimOutput(AbstractSimOutput):
+    """Parser for an ACTINV ``result.json`` written by ``actinv run``.
+
+    Exposes two pseudo-tallies per run: tally 1 is total decay heat (W/g) and
+    tally 2 is total activity (Bq/g), both binned on the schedule's elapsed
+    time (``time`` column, seconds). ``Error=0`` represents absent Monte Carlo
+    sampling error only; nuclear-data and model uncertainty are not reported.
+    """
+
+    HEAT_TALLY = 1
+    ACTIVITY_TALLY = 2
+
+    def __init__(self, sim_folder: PathLike) -> None:
+        result_file = Path(sim_folder, "result.json")
+        with open(result_file, encoding="utf-8") as f:
+            self._result = json.load(f)
+        super().__init__(sim_folder)
+
+        steps = self._result["steps"]
+        if not isinstance(steps, list) or not steps:
+            raise ValueError("ACTINV result has no steps")
+        previous = 0.0
+        for step in steps:
+            heat_parts = step["heat_W_per_g"]
+            activity_values = list(step["activity_Bq_per_g"].values())
+            numeric = [step["t_s"], step["flux"], *activity_values]
+            numeric.extend(
+                heat_parts[key] for key in ("total", "alpha", "beta", "gamma")
+            )
+            if any(
+                isinstance(value, bool)
+                or not isinstance(value, (float, int))
+                or not math.isfinite(value)
+                or value < 0
+                for value in numeric
+            ):
+                raise ValueError(
+                    "ACTINV result contains invalid time, flux, heat or activity"
+                )
+            if step["t_s"] <= previous:
+                raise ValueError("ACTINV result times must be strictly increasing")
+            previous = step["t_s"]
+            if not math.isclose(
+                heat_parts["total"],
+                sum(heat_parts[key] for key in ("alpha", "beta", "gamma")),
+                rel_tol=1e-12,
+                abs_tol=1e-20,
+            ):
+                raise ValueError("ACTINV heat components do not sum to total")
+        times = [s["t_s"] for s in steps]
+        heat = [s["heat_W_per_g"]["total"] for s in steps]
+        activity = [sum(s["activity_Bq_per_g"].values()) for s in steps]
+        if not all(math.isfinite(value) for value in activity):
+            raise ValueError("ACTINV total activity is nonfinite")
+
+        self._tallydata = {
+            self.HEAT_TALLY: pd.DataFrame({"time": times, "Value": heat, "Error": 0.0}),
+            self.ACTIVITY_TALLY: pd.DataFrame(
+                {"time": times, "Value": activity, "Error": 0.0}
+            ),
+        }
+        self._totalbin = {self.HEAT_TALLY: None, self.ACTIVITY_TALLY: None}
+        self._tally_numbers = [self.HEAT_TALLY, self.ACTIVITY_TALLY]
+        self._tally_comments = [
+            "total decay heat [W/g]",
+            "total activity [Bq/g]",
+        ]
+
+    @property
+    def tallydata(self) -> dict[int, pd.DataFrame]:
+        return self._tallydata
+
+    @property
+    def totalbin(self) -> dict[int, pd.DataFrame]:
+        return self._totalbin
+
+    @property
+    def tally_numbers(self) -> list[int]:
+        return self._tally_numbers
+
+    @property
+    def tally_comments(self) -> list[str]:
+        return self._tally_comments
+
+    def _read_code_version(self) -> str:
+        solver = self._result["certificate"]["solver"]
+        if not isinstance(solver, str) or not solver.startswith("actinv-core "):
+            raise ValueError("ACTINV result has no valid solver version")
+        return solver
+
+    def validate_schedule(self, spec: dict) -> None:
+        expected = schedule_endpoints(spec["schedule"])
+        steps = self._result["steps"]
+        if len(steps) != len(expected):
+            raise ValueError("ACTINV result step count does not match input")
+        for step, (time, flux) in zip(steps, expected):
+            if not math.isclose(step["t_s"], time, rel_tol=1e-12, abs_tol=1e-6):
+                raise ValueError("ACTINV result time does not match input")
+            if not math.isclose(step["flux"], flux, rel_tol=1e-12, abs_tol=0):
+                raise ValueError("ACTINV result flux does not match input")

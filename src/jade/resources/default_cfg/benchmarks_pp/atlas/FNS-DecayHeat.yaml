@@ -1,0 +1,12 @@
+Decay heat CE:
+  results: [Decay heat]
+  plot_type: ce
+  title: FNS iron decay heat - reported experimental errors
+  x_label: Cooling time [s]
+  y_labels: C/E
+  x: time
+  y: Value
+  expand_runs: true
+  plot_args:
+    style: point
+    ce_limits: [0.5, 1.5]

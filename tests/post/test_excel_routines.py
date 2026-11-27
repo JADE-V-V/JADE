@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -167,7 +169,8 @@ class TestSpherePivotTable:
     def test_get_sheet_integration(self):
         """Test the full _get_sheet method with sorting applied"""
         import tempfile
-        from jade.config.excel_config import ComparisonType, TableConfig
+
+        from jade.config.excel_config import ComparisonType
 
         # Create test data
         data = {
@@ -186,8 +189,8 @@ class TestSpherePivotTable:
 
         # Create a mock config
         class MockConfig:
-            x = ["Case"]
-            y = ["Energy"]
+            x: ClassVar[list[str]] = ["Case"]
+            y: ClassVar[list[str]] = ["Energy"]
             value = "Value"
             add_error = False
             comparison_type = ComparisonType.PERCENTAGE

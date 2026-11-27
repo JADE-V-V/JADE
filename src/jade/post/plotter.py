@@ -158,7 +158,7 @@ class Plot(ABC):
         if self.cfg.v_lines is None:
             return
 
-        if "major" in self.cfg.v_lines.keys():
+        if "major" in self.cfg.v_lines:
             lines = self.cfg.v_lines["major"]
             for line in lines:
                 # Check first if the value is in the axis limits
@@ -166,7 +166,7 @@ class Plot(ABC):
                     ax.axvline(line, color="black")
 
         # minor lines
-        if "minor" in self.cfg.v_lines.keys():
+        if "minor" in self.cfg.v_lines:
             lines = self.cfg.v_lines["minor"]
             for line in lines:
                 # Check first if the value is in the axis limits
@@ -186,7 +186,7 @@ class Plot(ABC):
         if self.cfg.additional_labels is None:
             return
 
-        if "major" in self.cfg.additional_labels.keys():
+        if "major" in self.cfg.additional_labels:
             labels = self.cfg.additional_labels["major"]
             bbox_dic = {
                 "boxstyle": "round,pad=0.5",
@@ -195,7 +195,7 @@ class Plot(ABC):
             }
             _place_labels(labels, ax, 0.93, bbox=bbox_dic)
 
-        if "minor" in self.cfg.additional_labels.keys():
+        if "minor" in self.cfg.additional_labels:
             # minor labels
             labels = self.cfg.additional_labels["minor"]
             _place_labels(labels, ax, 0.87)
@@ -204,7 +204,7 @@ class Plot(ABC):
 def _place_labels(
     labels: list[tuple[str, float | int]],
     ax: Axes,
-    ypos_perc: float | int,
+    ypos_perc: float,
     bbox: dict | None = None,
 ) -> None:
     """Helper function to place labels on the correct position in the plot"""
@@ -563,10 +563,11 @@ class CEPlot(Plot):
             ref = self.data[0][1].set_index([subcases[0], self.cfg.x])
         else:
             ref = self.data[0][1].set_index(self.cfg.x)
-        val1 = ref[self.cfg.y].sort_index()
-        err1 = ref["Error"].sort_index()
-
         for codelib, df in self.data[1:]:
+            # Reset the reference values for each codelib, as subcases or specific indices
+            # might have been dropped on previous iterations
+            val1 = ref[self.cfg.y].sort_index()
+            err1 = ref["Error"].sort_index()
             if subcases:
                 target = df.set_index([subcases[0], self.cfg.x])
             else:
@@ -601,10 +602,24 @@ class CEPlot(Plot):
                         err2 = err2[
                             ~err2.index.get_level_values(0).isin(missing_subcases)
                         ]
-                    else:
-                        raise PlotIndexMismatchError(val1.index, val2.index, codelib)
-                else:
+
+                if val1.empty or val2.empty:
                     raise PlotIndexMismatchError(val1.index, val2.index, codelib)
+
+                # If indices still don't match after removing missing subcases,
+                # try to find the common index and use only the matching entries
+                if same_index(val1.index, val2.index) is False:
+                    common_index = val1.index.intersection(val2.index)
+                    if common_index.empty:
+                        raise PlotIndexMismatchError(val1.index, val2.index, codelib)
+                    logger.warning(
+                        "Unmatched entries between reference and %s will be ignored.",
+                        codelib,
+                    )
+                    val1 = val1.loc[common_index]
+                    err1 = err1.loc[common_index]
+                    val2 = val2.loc[common_index]
+                    err2 = err2.loc[common_index]
 
             val2.index = val1.index
             err2.index = err1.index
@@ -635,7 +650,7 @@ class CEPlot(Plot):
 
             # If this is the first lib, create the plot
             if idx == 0:
-                gridspec_kw = {"hspace": 0.25}
+                gridspec_kw = {"hspace": 0.4}
                 fig, ax = plt.subplots(
                     nrows=len(dfs), sharex=True, gridspec_kw=gridspec_kw
                 )
@@ -653,7 +668,7 @@ class CEPlot(Plot):
 
                 if idx == 0:  # operations to be performed only once per plot
                     axes[i].set_ylabel("C/E")
-                    axes[i].set_title(case, fontdict={"fontsize": "medium"})
+                    axes[i].set_title(case, fontdict={"fontsize": "medium"}, pad=2)
                     axes[i].axhline(y=1, linestyle="--", color="black")
                     axes[i].grid("True", which="major", linewidth=0.50, alpha=0.5)
                     axes[i].grid("True", which="minor", linewidth=0.20, alpha=0.5)
@@ -738,9 +753,9 @@ class DoseContributionPlot(Plot):
         if isinstance(axes, Axes):
             axes = [axes]
 
+        data = [(codelib, df.set_index("User")) for codelib, df in self.data]
         indices = []
-        for idx, (codelib, df) in enumerate(self.data):
-            df.set_index("User", inplace=True)
+        for _, df in data:
             indices.extend(df.index.to_list())
 
         # build a common index of isotopes so that the colors are the same for all
@@ -751,7 +766,7 @@ class DoseContributionPlot(Plot):
         for idx, isotope in enumerate(isotopes):
             if int(isotope) == 0:
                 continue
-            for i, (codelib, df) in enumerate(self.data):
+            for i, (_, df) in enumerate(data):
                 if i == 0:
                     _, label = LM.get_zaidname(str(abs(isotope)))
                 else:
@@ -773,7 +788,7 @@ class DoseContributionPlot(Plot):
                     linewidth=0.5,
                 )
 
-        for i, ax in enumerate(axes):
+        for ax, (codelib, _) in zip(axes, data):
             # --- Plot details ---
             # ax details
             ax.set_title(codelib)
@@ -918,7 +933,7 @@ class BarPlot(Plot):
 
         # Check if the data is higher than max
         labels = self.data[0][1][self.cfg.x].values
-        nrows = (len(labels)-1) // maxgroups + 1
+        nrows = (len(labels) - 1) // maxgroups + 1
         if nrows == 1:
             nlabels = len(labels)
         else:
@@ -1016,8 +1031,8 @@ class PlotFactory:
 
 # Aux functions
 def _get_limits(
-    lowerlimit: float | int,
-    upperlimit: float | int,
+    lowerlimit: float,
+    upperlimit: float,
     ydata: list | np.ndarray,
     xdata: list | np.ndarray,
 ):
@@ -1080,8 +1095,8 @@ def _get_error_x_pos(x_array: np.ndarray) -> np.ndarray:
 
 
 def _apply_CE_limits(
-    min: float | int,
-    max: float | int,
+    min: float,
+    max: float,
     ydata: np.ndarray,
     xdata: np.ndarray,
     ax: Axes,
@@ -1162,6 +1177,8 @@ def _shorten_x_name(ax: Axes, shorten_x_name: int) -> None:
     for label in ax.get_xticklabels():
         split = label.get_text().split("_")
         new_labels.append(" ".join(split[-shorten_x_name:]))
+    # fix the current ticks so that the new labels stay attached to them
+    ax.set_xticks(ax.get_xticks())
     ax.set_xticklabels(new_labels)
 
 

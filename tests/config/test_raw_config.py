@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from importlib.resources import files, as_file
+from importlib.resources import as_file, files
 from pathlib import Path
 
 import jade.resources.default_cfg.benchmarks_pp as res
@@ -36,7 +36,7 @@ class TestConfigRawProcessor:
         for code in os.listdir(CFG_ROOT):
             code_folder = Path(CFG_ROOT, code)
             for file in os.listdir(code_folder):
-                cfg = ConfigRawProcessor.from_yaml(Path(code_folder, file))
+                ConfigRawProcessor.from_yaml(Path(code_folder, file))
 
     def test_aliases(self):
         file = Path(CFG_ROOT, "mcnp", "ITER_1D.yaml")

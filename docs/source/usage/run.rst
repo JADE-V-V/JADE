@@ -61,6 +61,10 @@ OpenMC
 D1S
     Runs (or only generate) the benchmark input for D1SUNED.
 
+ACTINV
+    Runs (or only generates) the deterministic activation input for ACTINV.
+    The NPS cut-off is unused for this code.
+
 NPS cut-off
     Number of histories to be simulated. Default values should provide
     sufficient statistical convergence but users are free to increase them.
@@ -92,6 +96,30 @@ button.
     when the run is started. This is the file to be overridden and it is also the file that 
     is loaded when the run GUI is opened. That is, settings of the previous run remain saved.
 
+
+.. _actinv_run:
+
+ACTINV inputs
+-------------
+
+Select the benchmark and library in ``cfg/run_cfg.yml``:
+
+.. code-block:: yaml
+
+   FNS-DecayHeat:
+     codes:
+       actinv: [TENDL2025-patched-ENDF8-JEFF33]
+     description: FNS iron five-minute irradiation
+     nps: 1
+     only_input: false
+     custom_input: null
+
+``nps`` is an unused compatibility field. ACTINV is deterministic, so increasing
+it does not improve the solution. The input must supply an inline 709-group
+spectrum and a positive-duration schedule. Mesh inputs, non-neutron projectiles,
+uncertainty sampling and other optional response calculations are outside this
+initial adapter. Configure the executable and nuclear data as described in
+:ref:`actinv_environment` and :ref:`actinv_libraries`.
 
 Run the benchmarks
 ==================
@@ -129,3 +157,17 @@ the simulation can be restarted without errors.
 .. tip:: 
     The continue run is particularly useful when used in combination with
     the *Only Input* option.
+
+ACTINV execution and continuation
+---------------------------------
+
+Each scalar ACTINV process has a 180-second timeout. Successful runs require
+valid finite output at every requested schedule endpoint before JADE writes
+``actinv.complete``. Once execution starts, a failed, timed-out or interrupted
+attempt removes any old completion marker. Unsupported execution settings are
+rejected before launching that case.
+
+``continue`` restarts an incomplete scalar case from its persisted input; it
+does not resume an internal solver checkpoint. Changing the selected data
+requires regenerating the input. See :ref:`fnsdecayheat` for the initial case,
+data layout and availability.

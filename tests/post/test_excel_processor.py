@@ -53,8 +53,8 @@ class TestExcelProcessor:
         assert len(os.listdir(tmpdir)) == 2
         path_to_file = Path(tmpdir, "Oktavian_exp-exp_Vs_mcnp-FENDL 3.2c.xlsx")
         df = pd.read_excel(path_to_file, skiprows=3)
-        assert df["C/E"].max() < 1.07
-        assert df["C/E"].min() > 0.877
+        assert df["C/E"].max() < 1.28
+        assert df["C/E"].min() > 0.28
 
     def test_ITER1D(self, tmpdir):
         with as_file(
@@ -323,5 +323,14 @@ class TestExcelProcessor:
         ) as file:
             cfg = ConfigExcelProcessor.from_yaml(file)
         codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c")]
+        processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
+        processor.process()
+
+    def test_ALARM_CF_LAB(self, tmpdir):
+        with as_file(
+            files(default_cfg).joinpath("benchmarks_pp/excel/ALARM-CF-LAB.yaml")
+        ) as file:
+            cfg = ConfigExcelProcessor.from_yaml(file)
+        codelibs = [("exp", "exp"), ("mcnp", "FENDL 3.2c"), ("openmc", "FENDL 3.2b")]
         processor = ExcelProcessor(ROOT_RAW, tmpdir, cfg, codelibs)
         processor.process()

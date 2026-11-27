@@ -1,0 +1,10 @@
+Decay heat CE:
+  results: [Decay heat]
+  comparison_type: ratio
+  table_type: simple
+  x: time
+  y: [Value, Error]
+  change_col_names:
+    time: Cooling time [s]
+    Value: C/E
+    Error: Relative reported experimental error

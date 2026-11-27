@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 import os
 import shutil
@@ -7,15 +8,16 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from pathlib import Path
 
+from f4enix.core.irradiation import Nuclide
 from f4enix.input.d1suned import IrradiationFile, Reaction, ReactionFile
 from f4enix.input.libmanager import LibManager
-from f4enix.input.materials import MatCardsList, Material, SubMaterial, Zaid
+from f4enix.input.materials import MatCardsList, Material, Zaid
 from f4enix.input.MCNPinput import D1S_Input
 from f4enix.input.MCNPinput import Input as MCNPInput
-from f4enix.core.irradiation import Nuclide
 
-from jade.config.run_config import Library, LibraryD1S, LibraryMCNP
+from jade.config.run_config import Library, LibraryACTINV, LibraryD1S, LibraryMCNP
 from jade.helper.__optionals__ import OMC_AVAIL
+from jade.helper.actinv import schedule_endpoints
 from jade.helper.aux_functions import PathLike
 from jade.helper.constants import CODE, DOSIMETRY_LIBS
 from jade.helper.errors import ConfigError
@@ -34,19 +36,16 @@ class Input(ABC):
     @abstractmethod
     def code(self) -> CODE:
         """Code of the input file."""
-        pass
 
     @property
     @abstractmethod
     def name(self) -> str:
         """Name of the input file. E.g. ITER_1D"""
-        pass
 
     @property
     @abstractmethod
     def lib(self) -> Library:
         """Library used for the input file."""
-        pass
 
     @abstractmethod
     def set_nps(self, nps: int):
@@ -57,7 +56,6 @@ class Input(ABC):
         nps : int
             number of particles to simulate.
         """
-        pass
 
     @abstractmethod
     def translate(self):
@@ -68,13 +66,11 @@ class Input(ABC):
         lib : Library
             library to which the input needs to be translated to.
         """
-        pass
 
     @abstractmethod
     def _write(self, output_folder: PathLike):
         """Write the input files to the output folder. This should handle also
         additional files such as the wwinp for MCNP."""
-        pass
 
     def write(self, output_folder: PathLike):
         """Write the input files to the output folder. Specific files are hendled
@@ -137,7 +133,6 @@ class InputMCNP(Input):
         if self.lib.suffix is None:
             raise ValueError("suffix must be provided for MCNP libraries")
         self.inp.translate(self.lib.suffix, self.lm)
-        self.inp.update_zaidinfo(self.lm)
 
     def _write(self, output_folder: PathLike):
         # write the new input
@@ -183,16 +178,17 @@ class InputMCNPSphere(InputMCNP):
         matlist = MatCardsList([material])
 
         # adjourn density and material
-        self.inp.materials = matlist
+        self.inp.mat_section = matlist
         sphere_cell = self.inp.cells["2"]
-        sphere_cell.set_d(density)
-        sphere_cell.lines = sphere_cell.card()
+        sphere_cell.density = float(density)
 
     def _get_material(self, zaid: str | Material) -> Material:
         if isinstance(zaid, Material):
             material = deepcopy(zaid)  # just to be sure not to mess with something
             truename = material.name
-            material.header = f"{material.header}C\nC True name:{truename}"
+            # f4enix strips the trailing newline from headers
+            header = f"{material.header}\n" if material.header else ""
+            material.header = f"{header}C\nC True name:{truename}"
             material.name = "M1"
             # override the input name
             self._name = f"{self.name}_{truename}"
@@ -202,10 +198,9 @@ class InputMCNPSphere(InputMCNP):
                 zaidlib = "31c"
             else:
                 zaidlib = self.lib.suffix
-            zaidob = Zaid(1, zaid[:-3], zaid[-3:], zaidlib)
+            zaidob = Zaid(1, Nuclide.from_int_string(zaid + "." + zaidlib))
             name, formula = self.lm.get_zaidname(zaid)
-            submat = SubMaterial("M1", [zaidob], header="C " + name + " " + formula)
-            material = Material([zaidob], None, "M1", submaterials=[submat])
+            material = Material("M1", [zaidob], header="C " + name + " " + formula)
             # override the input name
             self._name = f"{self.name}_{zaid}_{formula}"
 
@@ -276,25 +271,25 @@ class InputOpenMcSphere(InputOpenMC):
 
     def _assign_zaid_material(self, zaid: str | Material, density: str):
         material = self._get_material(zaid)
-        material.density = float(density)
         materials = MatCardsList([material])
         # Assign material
-        self.inp.matlist_to_openmc(materials, self.lm)
+        self.inp.matlist_to_openmc(materials, self.lm, {material.name: float(density)})
 
     def _get_material(self, zaid: str | Material) -> Material:
         if isinstance(zaid, Material):
             material = deepcopy(zaid)  # just to be sure not to mess with something
             truename = material.name
-            material.header = f"{material.header}C\nC True name:{truename}"
+            # f4enix strips the trailing newline from headers
+            header = f"{material.header}\n" if material.header else ""
+            material.header = f"{header}C\nC True name:{truename}"
             material.name = "M1"
             # override the input name
             self._name = f"{self.name}_{truename}"
         else:
             # zaid suffix used here is irrelevant, as it is not used in the OpenMC
-            zaidob = Zaid(1, zaid[:-3], zaid[-3:], "00c")
+            zaidob = Zaid(1, Nuclide.from_int_string(zaid + ".00c"))
             name, formula = self.lm.get_zaidname(zaid)
-            submat = SubMaterial("M1", [zaidob], header="C " + name + " " + formula)
-            material = Material([zaidob], None, "M1", submaterials=[submat])
+            material = Material("M1", [zaidob], header="C " + name + " " + formula)
             # override the input name
             self._name = f"{self.name}_{zaid}_{formula}"
 
@@ -386,7 +381,6 @@ class InputD1S(Input):
 
     def translate(self):
         self.inp.smart_translate(self.lib.suffix, self.lib.transport_suffix, self.lm)
-        self.inp.update_zaidinfo(self.lm)
 
     def _write(self, output_folder: PathLike):
         # write the new input
@@ -449,12 +443,13 @@ class InputD1SSphere(InputD1S, InputMCNPSphere):
         if isinstance(zaid, Material):
             if self.lib.suffix is None:
                 raise ConfigError("suffix must be provided for D1S libraries")
-            self.inp.reac_file = ReactionFile(
-                self.inp.get_potential_paths(self.lm, lib.suffix)
-            )
-            daughters = []
-            for reac in self.inp.reac_file.reactions:
-                daughters.append(reac.daughter)
+            # keep only reactions whose daughters are in the irradiation file,
+            # and only the irradiations of daughters produced by those reactions
+            self.inp.get_reaction_file(self.lm, lib.suffix, set_as_attribute=True)
+            daughters = [
+                reac.daughter.write_to_int_string()
+                for reac in self.inp.reac_file.reactions
+            ]
             self.inp.irrad_file.select_daughters_irradiation_file(daughters)
             self._name = f"{self.name}_All"
         else:
@@ -465,9 +460,96 @@ class InputD1SSphere(InputD1S, InputMCNPSphere):
             reaction = Reaction(
                 Nuclide.from_int_string(f"{zaid}.{lib.suffix}"),
                 MT,
-                Nuclide.from_int_string(f"{daughter}.{lib.suffix}"),
+                Nuclide.from_int_string(daughter),
             )
             reacfile = ReactionFile([reaction])
             self.inp.reac_file = reacfile
             # also the name needs to be updated
             self._name = f"{self.name}_{MT}"
+
+
+class InputACTINV(Input):
+    """One scalar neutron spec, with inline spectrum and explicit selected data."""
+
+    def __init__(self, template_folder: PathLike, lib: LibraryACTINV):
+        candidates = []
+        for file in sorted(os.listdir(template_folder)):
+            if file.endswith(".json") and file not in (
+                "metadata.json",
+                "volumes.json",
+                "result.json",
+            ):
+                filepath = os.path.join(template_folder, file)
+                with open(filepath, encoding="utf-8") as f:
+                    spec = json.load(f)
+                if not isinstance(spec, dict):
+                    continue
+                if spec.get("spec") == "actinv-mesh-spec-1":
+                    raise ConfigError(
+                        "ACTINV mesh inputs are not supported by this adapter"
+                    )
+                if spec.get("spec") == "actinv-spec-1":
+                    candidates.append((file, spec))
+        if len(candidates) != 1:
+            raise ConfigError(
+                f"Expected exactly one ACTINV scalar spec in {template_folder}"
+            )
+        file, spec = candidates[0]
+        try:
+            schedule_endpoints(spec["schedule"])
+        except (ValueError, TypeError, KeyError) as error:
+            raise ConfigError(f"Invalid ACTINV schedule: {error}") from error
+        if spec.get("projectile", "neutron") != "neutron":
+            raise ConfigError("ACTINV adapter currently supports neutron inputs only")
+        spectrum = spec.get("spectrum", {})
+        if (
+            spectrum.get("structure") != "fispact-709"
+            or len(spectrum.get("flux_per_group", [])) != 709
+        ):
+            raise ConfigError("ACTINV adapter requires an inline fispact-709 spectrum")
+        # Auxiliary datasets need their own selection/translation contract.
+        for option in (
+            "uncertainty",
+            "radiological",
+            "damage",
+            "self_shielding",
+            "fission_yields",
+            "photon",
+        ):
+            if spec.get(option):
+                raise ConfigError(
+                    f"ACTINV adapter does not yet support option {option}"
+                )
+        self.template_folder = template_folder
+        self.spec = spec
+        self._name = file[:-5]
+        self._lib = lib
+
+    @property
+    def code(self) -> CODE:
+        return CODE.ACTINV
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def lib(self) -> LibraryACTINV:
+        return self._lib
+
+    def set_nps(self, nps: int):
+        # deterministic solver: no particle histories to set
+        self.nps = nps
+
+    def translate(self):
+        # Replace catalog and file references alike; a JADE selection is authoritative.
+        self.spec["library"] = {"path": str(self.lib.path), "sha256": self.lib.sha256}
+        self.spec["decay"] = {"primary": str(self.lib.decay_primary)}
+        if self.lib.decay_fallback is not None:
+            self.spec["decay"]["fallback"] = str(self.lib.decay_fallback)
+
+    def _write(self, output_folder: PathLike):
+        outfile = Path(output_folder, f"{self.name}.json")
+        with open(outfile, "w", encoding="utf-8") as f:
+            json.dump(self.spec, f, indent=2, allow_nan=False)
+            f.write("\n")

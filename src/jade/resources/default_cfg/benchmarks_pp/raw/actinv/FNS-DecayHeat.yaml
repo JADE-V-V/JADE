@@ -1,0 +1,5 @@
+Decay heat:
+  concat_option: no_action
+  # Stabilize decimal-second labels after floating-point subtraction so JADE's
+  # exact table-index intersection retains every measured endpoint.
+  1: [[cooling_time, {shutdown_time: 300.0}], [format_decimals, {decimals: {time: 9}}], [scale, {factor: 1000000.0}]]

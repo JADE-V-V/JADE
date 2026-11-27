@@ -25,3 +25,31 @@ Photon Leakage flux:
   plot_args:
     show_error: false
     show_CE: true
+#
+Coarse neutron leakage flux:
+  results:
+    - Coarse neutron flux
+  plot_type: ce
+  title: C/E
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: 'dummy'
+  x: Upper energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_error: false
+    show_CE: true
+#
+Coarse photon leakage flux:
+  results:
+    - Coarse gamma flux
+  plot_type: ce
+  title: C/E
+  x_label: "Energy $\\left[\\mathrm{MeV}\\right]$"
+  y_labels: 'dummy'
+  x: Upper energy
+  y: Value
+  expand_runs: true
+  plot_args:
+    show_error: false
+    show_CE: true
